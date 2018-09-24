@@ -25,6 +25,7 @@ import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
+import org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -437,6 +438,10 @@ public class PropertyMapping extends ModelElement {
 
             if ( result.getSourceType().isCollectionType() ) {
                 result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
+            }
+            else if ( result.getSourceType().isStreamType() ) {
+                result = new StreamAdderWrapper(
+                    result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
