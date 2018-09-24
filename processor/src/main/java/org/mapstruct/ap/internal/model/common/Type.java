@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -632,7 +633,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             candidates = getAccessorCandidates( collectionProperty, Iterable.class );
         }
         else if ( collectionProperty.isStreamType() ) {
-            candidates = getAccessorCandidates( collectionProperty, getClassForName( JavaStreamConstants.STREAM_FQN ) );
+            candidates = getAccessorCandidates( collectionProperty, Stream.class );
         }
         else {
             return null;
@@ -654,24 +655,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         return null;
-    }
-
-    /**
-     * Retrieves a class for a given class name.
-     *
-     * @param className fully qualified class name
-     * @return the class
-     * @throws IllegalArgumentException if no class could be found for the class name
-     */
-    private Class<?> getClassForName(String className) throws IllegalArgumentException {
-        Class<?> theClass;
-        try {
-            theClass = Class.forName( className );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new IllegalArgumentException( "class not found: " + className );
-        }
-        return theClass;
     }
 
     /**
