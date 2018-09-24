@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.util;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -148,8 +147,15 @@ public class MapperConfiguration {
         }
     }
 
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
+    public NullValueCheckStrategyPrism getNullValueCheckStrategy(NullValueCheckStrategyPrism beanPrism,
+                                                                 NullValueCheckStrategyPrism mappingPrism) {
+        if ( mappingPrism != null ) {
+            return mappingPrism;
+        }
+        else if ( beanPrism != null ) {
+            return beanPrism;
+        }
+        else if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
             return NullValueCheckStrategyPrism.valueOf( mapperConfigPrism.nullValueCheckStrategy() );
         }
         else {

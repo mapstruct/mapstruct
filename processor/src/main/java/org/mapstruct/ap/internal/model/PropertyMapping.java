@@ -5,17 +5,11 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -32,6 +26,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -50,6 +45,11 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -196,6 +196,7 @@ public class PropertyMapping extends ModelElement {
         private MappingOptions forgeMethodWithMappingOptions;
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
+        private NullValueCheckStrategyPrism nullValueCheckStrategyPrism;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
@@ -249,6 +250,12 @@ public class PropertyMapping extends ModelElement {
          */
         public PropertyMappingBuilder forgedNamedBased(boolean forgedNamedBased) {
             this.forgedNamedBased = forgedNamedBased;
+            return this;
+        }
+
+        public PropertyMappingBuilder nullValueCheckStrategyPrism(
+            NullValueCheckStrategyPrism nullValueCheckStrategyPrism) {
+            this.nullValueCheckStrategyPrism = nullValueCheckStrategyPrism;
             return this;
         }
 
@@ -426,9 +433,14 @@ public class PropertyMapping extends ModelElement {
                     !rhs.isSourceReferenceParameter(), mapNullToDefault );
             }
             else {
-                NullValueCheckStrategyPrism nvcs = method.getMapperConfiguration().getNullValueCheckStrategy();
-                return new SetterWrapper( rhs, method.getThrownTypes(), nvcs, isFieldAssignment(), targetType );
+                   return new SetterWrapper( rhs, method.getThrownTypes(), getNvcs(), isFieldAssignment(), targetType );
             }
+        }
+
+        private NullValueCheckStrategyPrism getNvcs() {
+            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            NullValueCheckStrategyPrism nvcsBean = beanMapping != null ? beanMapping.getNullValueCheckStrategy() : null;
+            return method.getMapperConfiguration().getNullValueCheckStrategy( nvcsBean, nullValueCheckStrategyPrism );
         }
 
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
@@ -456,6 +468,7 @@ public class PropertyMapping extends ModelElement {
                 .targetAccessorType( targetAccessorType )
                 .rightHandSide( rightHandSide )
                 .assignment( rhs )
+                .nullValueCheckStrategy( getNvcs() )
                 .build();
         }
 

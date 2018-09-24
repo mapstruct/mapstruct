@@ -365,19 +365,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
 
-                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
-                SelectionParameters selectionParameters = null;
 
-                if ( mappingOptions.getBeanMapping() != null ) {
-                    nullValueMappingStrategy = mappingOptions.getBeanMapping().getNullValueMappingStrategy();
-                    selectionParameters = mappingOptions.getBeanMapping().getSelectionParameters();
-                }
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .nullValueMappingStrategy( nullValueMappingStrategy )
-                    .selectionParameters( selectionParameters )
                     .build();
 
                 if ( beanMappingMethod != null ) {

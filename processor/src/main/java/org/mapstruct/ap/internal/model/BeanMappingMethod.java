@@ -75,8 +75,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
-        private NullValueMappingStrategyPrism nullValueMappingStrategy;
-        private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<String>();
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
@@ -135,16 +133,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder selectionParameters(SelectionParameters selectionParameters) {
-            this.selectionParameters = selectionParameters;
-            return this;
-        }
-
-        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
-            this.nullValueMappingStrategy = nullValueMappingStrategy;
-            return this;
-        }
-
         public BeanMappingMethod build() {
             // map properties with mapping
             boolean mappingErrorOccured = handleDefinedMappings();
@@ -168,12 +156,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
             reportErrorForUnmappedSourcePropertiesIfRequired();
 
+            // get bean mapping (when specified as annotation )
+            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+
             // mapNullToDefault
+            NullValueMappingStrategyPrism nullValueMappingStrategy =
+                beanMapping != null ? beanMapping.getNullValueMappingStrategy() : null;
             boolean mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
 
 
-            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+            // selectionParameters
+            SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
 
+            // check if there's a factory method for the result type
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
                 factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod(
@@ -481,6 +477,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .dependsOn( mapping.getDependsOn() )
                         .defaultValue( mapping.getDefaultValue() )
                         .defaultJavaExpression( mapping.getDefaultJavaExpression() )
+                        .nullValueCheckStrategyPrism( mapping.getNullValueCheckStrategy() )
                         .build();
                     handledTargets.add( propertyName );
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -597,6 +594,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                                 .forgeMethodWithMappingOptions( extractAdditionalOptions( targetPropertyName, false ) )
+                                .nullValueCheckStrategyPrism( mapping != null ? mapping.getNullValueCheckStrategy()
+                                    : null )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -660,6 +659,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                             .forgeMethodWithMappingOptions( extractAdditionalOptions( targetProperty.getKey(), false ) )
+                            .nullValueCheckStrategyPrism( mapping != null ? mapping.getNullValueCheckStrategy() : null )
                             .build();
 
                         propertyMappings.add( propertyMapping );

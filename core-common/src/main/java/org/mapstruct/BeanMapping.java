@@ -11,6 +11,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+
 /**
  * Configures the mapping between two bean types.
  * <p>
@@ -60,6 +62,15 @@ public @interface BeanMapping {
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * Determines when to include a null check on the source property value of a bean mapping.
+     *
+     * Can be overridden by the one on {@link MapperConfig}, {@link Mapper}  or {@link Mapping}.
+     *
+     * @return strategy how to do null checking
+     */
+    NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
 
     /**
      * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No

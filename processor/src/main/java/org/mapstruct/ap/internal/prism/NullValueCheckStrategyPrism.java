@@ -7,7 +7,7 @@ package org.mapstruct.ap.internal.prism;
 
 
 /**
- * Prism for the enum {@link org.mapstruct.SourceValuePresenceCheckStrategy}
+ * Prism for the enum {@link org.mapstruct.NullValueCheckStrategy}
  *
  * @author Sean Huang
  */
