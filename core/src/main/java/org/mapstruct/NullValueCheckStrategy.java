@@ -33,6 +33,6 @@ public enum NullValueCheckStrategy {
     /**
      * This option always includes a null check.
      */
-    ALWAYS,
+    ALWAYS;
 
 }

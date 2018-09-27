@@ -5,12 +5,20 @@
  */
 package org.mapstruct.ap.test.bugs._1273;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueMappingStrategy;
+import java.util.ArrayList;
 
-@Mapper( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
+import org.mapstruct.Mapper;
+import org.mapstruct.ObjectFactory;
+
+@Mapper
 public interface EntityMapperReturnDefault {
 
     Dto asTarget(Entity entity);
 
+    @ObjectFactory
+    default Dto createDto() {
+        Dto result = new Dto();
+        result.setLongs( new ArrayList<>(  ) );
+        return result;
+    }
 }

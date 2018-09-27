@@ -242,6 +242,7 @@ public @interface Mapping {
      * If not possible, MapStruct will try to apply a user defined mapping method.
      * </li>
      * </ul>
+     * <p>
      * </li>
      * <li>other
      * <p>
@@ -266,5 +267,18 @@ public @interface Mapping {
      * @return strategy how to do null checking
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
+
+    /**
+     * The strategy to be applied when the source property is {@code null}. If no strategy is configured, the
+     * strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()},
+     * {@link BeanMapping#nullValuePropertyMappingStrategy()} or
+     * {@link Mapper#nullValuePropertyMappingStrategy()} will be applied.
+     *
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value.
+     */
+    NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy()
+        default NullValuePropertyMappingStrategy.SET_TO_NULL;
 
 }

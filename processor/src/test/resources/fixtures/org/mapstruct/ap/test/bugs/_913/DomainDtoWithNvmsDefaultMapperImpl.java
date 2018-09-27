@@ -32,9 +32,6 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( list != null ) {
                 domain.setStrings( new HashSet<String>( list ) );
             }
-            else {
-                domain.setStrings( new HashSet<String>() );
-            }
             List<String> list1 = source.getStringsWithDefault();
             if ( list1 != null ) {
                 domain.setStringsWithDefault( new ArrayList<String>( list1 ) );
@@ -45,9 +42,6 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             List<String> list2 = source.getStringsInitialized();
             if ( list2 != null ) {
                 domain.setStringsInitialized( new HashSet<String>( list2 ) );
-            }
-            else {
-                domain.setStringsInitialized( new HashSet<String>() );
             }
         }
 

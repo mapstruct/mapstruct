@@ -5,12 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._1273;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Dto {
 
-    List<Long> longs = new ArrayList<Long>();
+    List<Long> longs;
 
     public List<Long> getLongs() {
         return longs;

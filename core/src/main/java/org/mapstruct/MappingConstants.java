@@ -16,17 +16,18 @@ public final class MappingConstants {
     }
 
     /**
-     * Represents a {@code null} source or target.
+     * In an {@link ValueMapping} this represents a {@code null} source or target.
      */
     public static final String NULL = "<NULL>";
 
     /**
-     * Represents any source that is not already mapped by either a defined mapping or by means of name based mapping.
+     * In an {@link ValueMapping} this represents any source that is not already mapped by either a defined mapping or
+     * by means of name based mapping.
      */
     public static final String ANY_REMAINING = "<ANY_REMAINING>";
 
     /**
-     * Represents any source that is not already mapped by a defined mapping.
+     * In an {@link ValueMapping} this represents any source that is not already mapped by a defined mapping.
      */
     public static final String ANY_UNMAPPED = "<ANY_UNMAPPED>";
 

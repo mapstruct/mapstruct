@@ -12,6 +12,10 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 
 /**
  * Wraps the assignment in a target setter.
@@ -24,6 +28,7 @@ public class UpdateWrapper extends AssignmentWrapper {
     private final Assignment factoryMethod;
     private final Type targetImplementationType;
     private final boolean includeSourceNullCheck;
+    private final boolean includeExplicitNullWhenSourceIsNull;
     private final boolean mapNullToDefault;
 
     public UpdateWrapper( Assignment decoratedAssignment,
@@ -32,13 +37,14 @@ public class UpdateWrapper extends AssignmentWrapper {
                           boolean fieldAssignment,
                           Type targetType,
                           boolean includeSourceNullCheck,
-                          boolean mapNullToDefault ) {
+                          NullValuePropertyMappingStrategyPrism nvpms) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
         this.targetImplementationType = determineImplType( factoryMethod, targetType );
         this.includeSourceNullCheck = includeSourceNullCheck;
-        this.mapNullToDefault = mapNullToDefault;
+        this.mapNullToDefault = nvpms == SET_TO_DEFAULT;
+        this.includeExplicitNullWhenSourceIsNull = nvpms == SET_TO_NULL;
     }
 
     private static Type determineImplType(Assignment factoryMethod, Type targetType) {
@@ -89,6 +95,10 @@ public class UpdateWrapper extends AssignmentWrapper {
 
     public boolean isIncludeSourceNullCheck() {
         return includeSourceNullCheck;
+    }
+
+    public boolean isIncludeExplicitNullWhenSourceIsNull() {
+        return includeExplicitNullWhenSourceIsNull;
     }
 
     public boolean isMapNullToDefault() {

@@ -20,5 +20,4 @@ public final class MappingConstantsPrism {
     public static final String ANY_REMAINING = "<ANY_REMAINING>";
 
     public static final String ANY_UNMAPPED = "<ANY_UNMAPPED>";
-
 }

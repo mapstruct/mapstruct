@@ -129,13 +129,23 @@ public @interface Mapper {
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.ACCESSOR_ONLY;
 
     /**
-     * The strategy to be applied when {@code null} is passed as source value to the methods of this mapper. If no
-     * strategy is configured, the strategy given via {@link MapperConfig#nullValueMappingStrategy()} will be applied,
-     * using {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     * The strategy to be applied when {@code null} is passed as source argument value to the methods of this mapper.
+     * If no strategy is configured, the strategy given via {@link MapperConfig#nullValueMappingStrategy()} will be
+     * applied, using {@link NullValueMappingStrategy#RETURN_NULL} by default.
      *
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * The strategy to be applied when a source bean property is {@code null}. If no strategy is configured, the
+     * strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()} will be applied,
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value.
+     */
+    NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
      * The strategy to use for applying method-level configuration annotations of prototype methods in the interface

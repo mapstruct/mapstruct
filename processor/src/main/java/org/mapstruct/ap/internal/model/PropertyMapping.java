@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -197,7 +198,9 @@ public class PropertyMapping extends ModelElement {
         private MappingOptions forgeMethodWithMappingOptions;
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
-        private NullValueCheckStrategyPrism nullValueCheckStrategyPrism;
+        private NullValueCheckStrategyPrism nvcs;
+        private NullValueMappingStrategyPrism nvms;
+        private NullValuePropertyMappingStrategyPrism nvpms;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
@@ -254,13 +257,33 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder nullValueCheckStrategyPrism(
-            NullValueCheckStrategyPrism nullValueCheckStrategyPrism) {
-            this.nullValueCheckStrategyPrism = nullValueCheckStrategyPrism;
+        public PropertyMappingBuilder nullValueCheckStrategy(NullValueCheckStrategyPrism nvcs ) {
+            this.nvcs = nvcs;
+            return this;
+        }
+
+        public PropertyMappingBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyPrism nvpms ) {
+            this.nvpms = nvpms;
             return this;
         }
 
         public PropertyMapping build() {
+
+            MapperConfiguration mapperConfiguration = method.getMapperConfiguration();
+            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+
+            // null value check strategy (determine true value based on hierarchy)
+            NullValueCheckStrategyPrism nvcsBean = beanMapping != null ? beanMapping.getNullValueCheckStrategy() : null;
+            this.nvcs = mapperConfiguration.getNullValueCheckStrategy( nvcsBean, nvcs );
+
+            // null value mapping strategy
+            this.nvms = mapperConfiguration.getNullValueMappingStrategy();
+
+            // null value property mapping strategy (determine true value based on hierarchy)
+            NullValuePropertyMappingStrategyPrism nvpmsBean =
+                beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
+            this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
+
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
             rightHandSide.setUseElementAsSourceTypeForMatching(
@@ -425,23 +448,20 @@ public class PropertyMapping extends ModelElement {
                     );
                 }
 
-                boolean mapNullToDefault = method.getMapperConfiguration().
-                    getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
-                return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
-                    !rhs.isSourceReferenceParameter(), mapNullToDefault );
+                return new UpdateWrapper(
+                    rhs,
+                    method.getThrownTypes(),
+                    factory, isFieldAssignment(),
+                    targetType,
+                    !rhs.isSourceReferenceParameter(),
+                    nvpms
+                );
             }
             else {
-                   return new SetterWrapper( rhs, method.getThrownTypes(), getNvcs(), isFieldAssignment(), targetType );
+                   return new SetterWrapper( rhs, method.getThrownTypes(), nvcs, isFieldAssignment(), targetType );
             }
-        }
-
-        private NullValueCheckStrategyPrism getNvcs() {
-            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
-            NullValueCheckStrategyPrism nvcsBean = beanMapping != null ? beanMapping.getNullValueCheckStrategy() : null;
-            return method.getMapperConfiguration().getNullValueCheckStrategy( nvcsBean, nullValueCheckStrategyPrism );
         }
 
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
@@ -473,7 +493,8 @@ public class PropertyMapping extends ModelElement {
                 .targetAccessorType( targetAccessorType )
                 .rightHandSide( rightHandSide )
                 .assignment( rhs )
-                .nullValueCheckStrategy( getNvcs() )
+                .nullValueCheckStrategy( nvcs )
+                .nullValuePropertyMappingStrategy( nvpms )
                 .build();
         }
 
@@ -831,14 +852,17 @@ public class PropertyMapping extends ModelElement {
                             );
                         }
 
-                        boolean mapNullToDefault = method.getMapperConfiguration().
-                            getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-
                         Assignment factoryMethod =
                             ObjectFactoryMethodResolver.getFactoryMethod( method, targetType, null, ctx );
 
-                        assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
-                            isFieldAssignment(), targetType, false, mapNullToDefault );
+                        assignment = new UpdateWrapper(
+                            assignment,
+                            method.getThrownTypes(),
+                            factoryMethod,
+                            isFieldAssignment(),
+                            targetType,
+                            false,
+                            null );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );

@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -33,6 +34,7 @@ public class BeanMapping {
     private final boolean ignoreByDefault;
     private final List<String> ignoreUnmappedSourceProperties;
     private final BuilderPrism builder;
+    private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
 
     /**
      * creates a mapping for inheritance. Will set ignoreByDefault to false.
@@ -44,6 +46,7 @@ public class BeanMapping {
         return new BeanMapping(
             map.selectionParameters,
             map.nullValueMappingStrategy,
+            map.nullValuePropertyMappingStrategy,
             map.nullValueCheckStrategy,
             map.reportingPolicy,
             false,
@@ -66,6 +69,11 @@ public class BeanMapping {
                             ? null
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
+        NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy =
+            null == beanMapping.values.nullValuePropertyMappingStrategy()
+                ? null
+                : NullValuePropertyMappingStrategyPrism.valueOf( beanMapping.nullValuePropertyMappingStrategy() );
+
         NullValueCheckStrategyPrism nullValueCheckStrategy =
             null == beanMapping.values.nullValueCheckStrategy()
                 ? null
@@ -79,8 +87,8 @@ public class BeanMapping {
 
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
             && beanMapping.ignoreUnmappedSourceProperties().isEmpty()
-            && ( nullValueMappingStrategy == null ) && ( nullValueCheckStrategy == null )  && !ignoreByDefault
-            && builderMapping == null ) {
+            && ( nullValueMappingStrategy == null ) && ( nullValuePropertyMappingStrategy == null )
+            && ( nullValueCheckStrategy == null )  && !ignoreByDefault && builderMapping == null ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
@@ -96,6 +104,7 @@ public class BeanMapping {
         return new BeanMapping(
             cmp,
             nullValueMappingStrategy,
+            nullValuePropertyMappingStrategy,
             nullValueCheckStrategy,
             null,
             ignoreByDefault,
@@ -115,6 +124,7 @@ public class BeanMapping {
             null,
             null,
             null,
+            null,
             ReportingPolicyPrism.IGNORE,
             false,
             Collections.<String>emptyList(),
@@ -123,11 +133,12 @@ public class BeanMapping {
     }
 
     private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
-                        NullValueCheckStrategyPrism nvcs,
+                        NullValuePropertyMappingStrategyPrism nvpms, NullValueCheckStrategyPrism nvcs,
                         ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault,
                         List<String> ignoreUnmappedSourceProperties, BuilderPrism builder) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
+        this.nullValuePropertyMappingStrategy = nvpms;
         this.nullValueCheckStrategy = nvcs;
         this.reportingPolicy = reportingPolicy;
         this.ignoreByDefault = ignoreByDefault;
@@ -141,6 +152,10 @@ public class BeanMapping {
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
         return nullValueMappingStrategy;
+    }
+
+    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
+        return nullValuePropertyMappingStrategy;
     }
 
     public NullValueCheckStrategyPrism getNullValueCheckStrategy() {

@@ -5,11 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.Named;
+import org.mapstruct.ObjectFactory;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -22,6 +25,7 @@ public interface DomainDtoWithPresenceCheckMapper {
 
     DomainDtoWithPresenceCheckMapper INSTANCE = Mappers.getMapper( DomainDtoWithPresenceCheckMapper.class );
 
+    @BeanMapping( qualifiedByName = "DomainObjectFactory" )
     @Mappings({
         @Mapping(target = "strings", source = "strings"),
         @Mapping(target = "longs", source = "strings"),
@@ -36,4 +40,13 @@ public interface DomainDtoWithPresenceCheckMapper {
 
     @InheritConfiguration( name = "create" )
     Domain updateWithReturn(DtoWithPresenceCheck source, @MappingTarget Domain target);
+
+    @ObjectFactory
+    @Named( "DomainObjectFactory" )
+    default Domain createNullDomain() {
+        Domain domain = new Domain();
+        domain.setLongs( null );
+        domain.setStrings( null );
+        return domain;
+    }
 }
