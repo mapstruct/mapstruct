@@ -7,15 +7,15 @@ package org.mapstruct;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
-
 /**
  * Configures the mapping of one bean attribute or enum constant.
  * <p>
@@ -32,6 +32,8 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *
  * @author Gunnar Morling
  */
+
+@Repeatable(Mappings.class)
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface Mapping {
@@ -98,9 +100,6 @@ public @interface Mapping {
      * If not possible, MapStruct will try to apply a user defined mapping method.
      * </li>
      * </ul>
-     * <p>
-     * Please note that grouping underscores and binary literals are not supported in Java 6
-     * </p>
      * </li>
      * <li>other
      * <p>
@@ -207,7 +206,6 @@ public @interface Mapping {
      */
     String[] qualifiedByName() default { };
 
-
     /**
      * Specifies the result type of the mapping method to be used in case multiple mapping methods qualify.
      *
@@ -244,9 +242,6 @@ public @interface Mapping {
      * If not possible, MapStruct will try to apply a user defined mapping method.
      * </li>
      * </ul>
-     * <p>
-     * Please note that grouping underscores and binary literals are not supported in Java 6
-     * </p>
      * </li>
      * <li>other
      * <p>
