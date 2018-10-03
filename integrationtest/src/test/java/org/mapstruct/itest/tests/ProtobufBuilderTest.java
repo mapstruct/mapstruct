@@ -17,12 +17,8 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
 @RunWith(ProcessorSuiteRunner.class)
 @ProcessorSuite(baseDir = "protobufBuilderTest",
     processorTypes = {
-        ProcessorSuite.ProcessorType.ORACLE_JAVA_6,
-        ProcessorSuite.ProcessorType.ORACLE_JAVA_7,
         ProcessorSuite.ProcessorType.ORACLE_JAVA_8,
         ProcessorSuite.ProcessorType.ORACLE_JAVA_9,
-        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_6,
-        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_7
     })
 public class ProtobufBuilderTest {
 }

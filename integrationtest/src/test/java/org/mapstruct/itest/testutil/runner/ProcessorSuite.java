@@ -5,14 +5,14 @@
  */
 package org.mapstruct.itest.testutil.runner;
 
+import org.apache.maven.it.Verifier;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
-
-import org.apache.maven.it.Verifier;
 
 /**
  * Declares the content of the integration test.
@@ -39,15 +39,6 @@ public @interface ProcessorSuite {
      * @author Andreas Gudian
      */
     enum ProcessorType {
-        /**
-         * Use an Oracle JDK 1.6 (or 1.6.x) via toolchain support to perform the processing
-         */
-        ORACLE_JAVA_6( new Toolchain( "oracle", "1.6", "1.7" ), "javac", "1.6" ),
-
-        /**
-         * Use an Oracle JDK 1.7 (or 1.7.x) via toolchain support to perform the processing
-         */
-        ORACLE_JAVA_7( new Toolchain( "oracle", "1.7", "1.8" ), "javac", "1.7" ),
 
         /**
          * Use the same JDK that runs the mvn build to perform the processing
@@ -58,18 +49,6 @@ public @interface ProcessorSuite {
          * Use an Oracle JDK 1.9 (or 1.9.x) via toolchain support to perform the processing
          */
         ORACLE_JAVA_9( new Toolchain( "oracle", "9", "10" ), "javac", "1.9" ),
-
-        /**
-         * Use the eclipse compiler with 1.6 source/target level from tycho-compiler-jdt to perform the build and
-         * processing
-         */
-        ECLIPSE_JDT_JAVA_6( null, "jdt", "1.6" ),
-
-        /**
-         * Use the eclipse compiler with 1.7 source/target level from tycho-compiler-jdt to perform the build and
-         * processing
-         */
-        ECLIPSE_JDT_JAVA_7( null, "jdt", "1.7" ),
 
         /**
          * Use the eclipse compiler with 1.8 source/target level from tycho-compiler-jdt to perform the build and
@@ -86,14 +65,12 @@ public @interface ProcessorSuite {
         /**
          * Use all processing variants, but without the maven-procesor-plugin
          */
-        ALL_WITHOUT_PROCESSOR_PLUGIN(ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_6,
-            ECLIPSE_JDT_JAVA_7, ECLIPSE_JDT_JAVA_8),
+        ALL_WITHOUT_PROCESSOR_PLUGIN( ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_8),
 
         /**
          * Use all available processing variants
          */
-        ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_6, ECLIPSE_JDT_JAVA_7,
-            ECLIPSE_JDT_JAVA_8, PROCESSOR_PLUGIN_JAVA_8 ),
+        ALL( ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_8, PROCESSOR_PLUGIN_JAVA_8 ),
 
         /**
          * Use all JDK8 compatible processing variants
