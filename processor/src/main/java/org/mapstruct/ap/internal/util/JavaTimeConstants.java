@@ -20,6 +20,8 @@ public final class JavaTimeConstants {
 
     public static final String DATE_TIME_FORMATTER_FQN = "java.time.format.DateTimeFormatter";
 
+    public static final String INSTANT = "java.time.Instant";
+
     private JavaTimeConstants() {
     }
 }
