@@ -7,12 +7,14 @@ package org.mapstruct.ap.test.conversion.java8time;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -227,6 +229,21 @@ public class Java8TimeConversionTest {
         source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source.getForDateConversionWithZonedDateTime() ).isEqualTo( dateTime );
+    }
+
+    @Test
+    public void testInstantToDateMapping() {
+        Instant instant = Instant.ofEpochMilli( 1539366615000L );
+
+        Source source = new Source();
+        source.setForDateConversionWithInstant( instant );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+        Date date = target.getForDateConversionWithInstant();
+        assertThat( date ).isNotNull();
+        assertThat( date.getTime() ).isEqualTo( 1539366615000L );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( source.getForDateConversionWithInstant() ).isEqualTo( instant );
     }
 
     @Test

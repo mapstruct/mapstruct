@@ -222,6 +222,7 @@ public class Conversions {
         register( JavaTimeConstants.ZONED_DATE_TIME_FQN, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_FQN, Date.class, new JavaLocalDateToDateConversion() );
+        register( JavaTimeConstants.INSTANT, Date.class, new JavaInstantToDateConversion() );
 
     }
 

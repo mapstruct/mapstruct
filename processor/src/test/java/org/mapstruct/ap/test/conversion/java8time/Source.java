@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,6 +31,8 @@ public class Source {
     private LocalDateTime forDateConversionWithLocalDateTime;
 
     private LocalDate forDateConversionWithLocalDate;
+
+    private Instant forDateConversionWithInstant;
 
     public ZonedDateTime getZonedDateTime() {
         return zonedDateTime;
@@ -93,5 +96,13 @@ public class Source {
 
     public void setForDateConversionWithLocalDate(LocalDate forDateConversionWithLocalDate) {
         this.forDateConversionWithLocalDate = forDateConversionWithLocalDate;
+    }
+
+    public Instant getForDateConversionWithInstant() {
+        return forDateConversionWithInstant;
+    }
+
+    public void setForDateConversionWithInstant(Instant forDateConversionWithInstant) {
+        this.forDateConversionWithInstant = forDateConversionWithInstant;
     }
 }
