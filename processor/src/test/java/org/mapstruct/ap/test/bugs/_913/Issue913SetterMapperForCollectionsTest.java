@@ -218,7 +218,7 @@ public class Issue913SetterMapperForCollectionsTest {
         Domain domain = DomainDtoWithPresenceCheckMapper.INSTANCE.create( dto );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNull();
+        assertThat( domain.getStrings() ).isEmpty();
         assertThat( domain.getLongs() ).isNull();
     }
 
@@ -284,8 +284,8 @@ public class Issue913SetterMapperForCollectionsTest {
         Domain domain = DomainDtoWithNcvsAlwaysMapper.INSTANCE.create( dto );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNull();
-        assertThat( domain.getLongs() ).isNull();
+        assertThat( domain.getStrings() ).isEmpty();
+        assertThat( domain.getLongs() ).isEmpty();
     }
 
     /**

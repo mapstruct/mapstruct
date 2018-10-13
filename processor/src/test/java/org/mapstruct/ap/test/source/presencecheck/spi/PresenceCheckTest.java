@@ -6,6 +6,8 @@
 package org.mapstruct.ap.test.source.presencecheck.spi;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -26,7 +28,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SoccerTeamMapper.class,
     SoccerTeamSource.class,
     GoalKeeper.class,
-    SoccerTeamTarget.class
+    SoccerTeamTarget.class,
+    TargetWithPresenceTracking.class,
+    SourceTargetWithPresenceTrackingMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckTest {
@@ -198,5 +202,46 @@ public class PresenceCheckTest {
         SoccerTeamTarget target = SoccerTeamMapper.INSTANCE.mapNested( soccerTeamSource );
 
         assertThat( target.getGoalKeeperName() ).isNull();
+    }
+
+    @Test
+    public void testPresenceWithSourcesAbsent() {
+
+        Source source = new Source();
+
+        source.setHasSomePrimitiveDouble( false );
+        source.setHasSomeInteger( false );
+        source.setHasSomeList( false );
+        source.setHasSomeArray( false );
+
+        TargetWithPresenceTracking target = SourceTargetWithPresenceTrackingMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target.getSomePrimitiveDouble() ).isEqualTo( 0d );
+        assertThat( target.getSomeInteger() ).isNull();
+        assertThat( target.getSomeList() ).isNull();
+        assertThat( target.getSomeArray() ).isNull();
+
+        assertFalse( target.hasSomePrimitiveDouble() );
+        assertFalse( target.hasSomeInteger() );
+        assertFalse( target.hasSomeList() );
+        assertFalse( target.hasSomeArray() );
+    }
+
+    @Test
+    public void testPresenceWithSourcePresent() {
+        Source source = new Source();
+
+        source.setSomePrimitiveDouble( 5.0 );
+        source.setSomeInteger( 7 );
+        source.setSomeList( Arrays.asList( "first", "second" ) );
+        source.setSomeArray( new String[]{ "x", "y" } );
+
+        TargetWithPresenceTracking target = SourceTargetWithPresenceTrackingMapper.INSTANCE.sourceToTarget( source );
+
+        assertTrue( target.hasSomePrimitiveDouble() );
+        assertTrue( target.hasSomeInteger() );
+        assertTrue( target.hasSomeList() );
+        assertTrue( target.hasSomeArray() );
+
     }
 }
