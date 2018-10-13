@@ -64,7 +64,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>2.0.0.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -115,10 +115,10 @@ apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:2.0.0.Final'
+    compile 'org.mapstruct:mapstruct:1.3.0.Final'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:2.0.0.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:2.0.0.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final' // if you are using mapstruct in test code
 }
 ...
 ```
