@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.jar.Manifest;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 
 import org.mapstruct.ap.internal.version.VersionInformation;
 
@@ -37,15 +38,19 @@ public class DefaultVersionInformation implements VersionInformation {
     private final String runtimeVersion;
     private final String runtimeVendor;
     private final String compiler;
+    private final boolean sourceVersionAtLeast9;
     private final boolean eclipseJDT;
     private final boolean javac;
 
-    DefaultVersionInformation(String runtimeVersion, String runtimeVendor, String compiler) {
+    DefaultVersionInformation(String runtimeVersion, String runtimeVendor, String compiler,
+        SourceVersion sourceVersion) {
         this.runtimeVersion = runtimeVersion;
         this.runtimeVendor = runtimeVendor;
         this.compiler = compiler;
         this.eclipseJDT = compiler.startsWith( COMPILER_NAME_ECLIPSE_JDT );
         this.javac = compiler.startsWith( COMPILER_NAME_JAVAC );
+        // If the difference between the source version and RELEASE_6 is more that 2 than we are at least on 9
+        this.sourceVersionAtLeast9 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 2;
     }
 
     @Override
@@ -69,6 +74,11 @@ public class DefaultVersionInformation implements VersionInformation {
     }
 
     @Override
+    public boolean isSourceVersionAtLeast9() {
+        return sourceVersionAtLeast9;
+    }
+
+    @Override
     public boolean isEclipseJDTCompiler() {
         return eclipseJDT;
     }
@@ -84,7 +94,12 @@ public class DefaultVersionInformation implements VersionInformation {
 
         String compiler = getCompiler( processingEnv );
 
-        return new DefaultVersionInformation( runtimeVersion, runtimeVendor, compiler );
+        return new DefaultVersionInformation(
+            runtimeVersion,
+            runtimeVendor,
+            compiler,
+            processingEnv.getSourceVersion()
+        );
     }
 
     private static String getCompiler(ProcessingEnvironment processingEnv) {
