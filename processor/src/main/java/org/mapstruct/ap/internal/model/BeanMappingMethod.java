@@ -470,6 +470,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .sourceMethod( method )
                         .targetProperty( targetProperty )
                         .targetPropertyName( mapping.getTargetName() )
+                        .sourcePropertyName( mapping.getSourceName() )
                         .sourceReference( sourceRef )
                         .selectionParameters( mapping.getSelectionParameters() )
                         .formattingParameters( mapping.getFormattingParameters() )

@@ -30,10 +30,10 @@ public class AdderWrapper extends AssignmentWrapper {
     public AdderWrapper( Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
-                         String targetPropertyName ) {
+                         String adderIteratorName ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        String desiredName = Nouns.singularize( targetPropertyName );
+        String desiredName = Nouns.singularize( adderIteratorName );
         rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
         adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
     }

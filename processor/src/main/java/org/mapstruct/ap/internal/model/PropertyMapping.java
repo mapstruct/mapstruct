@@ -105,6 +105,7 @@ public class PropertyMapping extends ModelElement {
         protected Type targetType;
         protected Accessor targetReadAccessor;
         protected String targetPropertyName;
+        protected String sourcePropertyName;
 
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
@@ -168,6 +169,11 @@ public class PropertyMapping extends ModelElement {
 
         public T targetPropertyName(String targetPropertyName) {
             this.targetPropertyName = targetPropertyName;
+            return (T) this;
+        }
+
+        public T sourcePropertyName(String sourcePropertyName) {
+            this.sourcePropertyName = sourcePropertyName;
             return (T) this;
         }
 
@@ -468,12 +474,13 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result = rightHandSide;
 
+            String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
             if ( result.getSourceType().isCollectionType() ) {
-                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
+                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
             else if ( result.getSourceType().isStreamType() ) {
                 result = new StreamAdderWrapper(
-                    result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
+                    result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
