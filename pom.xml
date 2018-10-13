@@ -26,6 +26,7 @@
         <module>build-config</module>
         <module>core-common</module>
         <module>core</module>
+        <module>core-jdk8</module>
         <module>processor</module>
         <module>integrationtest</module>
     </modules>
