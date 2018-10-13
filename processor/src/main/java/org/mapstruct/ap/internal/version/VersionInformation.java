@@ -19,6 +19,8 @@ public interface VersionInformation {
 
     String getCompiler();
 
+    boolean isSourceVersionAtLeast9();
+
     boolean isEclipseJDTCompiler();
 
     boolean isJavacCompiler();
