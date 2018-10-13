@@ -13,12 +13,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.date;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.localDateTime;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneId;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneOffset;
-import static org.mapstruct.ap.internal.util.JavaTimeConstants.LOCAL_DATE_TIME_FQN;
 import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_ID_FQN;
-import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_OFFSET_FQN;
 
 /**
  * SimpleConversion for mapping {@link java.time.LocalDateTime} to
@@ -29,31 +25,28 @@ public class JavaLocalDateTimeToDateConversion extends SimpleConversion {
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
         return date( conversionContext )
-            + ".from( <SOURCE>.toInstant( "
-            + zoneOffset( conversionContext )
-            + ".UTC ) )";
+            + ".from( <SOURCE>.atZone( " +
+            zoneId( conversionContext ) +
+            ".systemDefault() ).toInstant() )";
     }
 
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-            conversionContext.getTypeFactory().getType( Date.class ),
-            conversionContext.getTypeFactory().getType( ZONE_OFFSET_FQN )
+            conversionContext.getTypeFactory().getType( Date.class )
         );
     }
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return localDateTime( conversionContext )
-            + ".ofInstant( <SOURCE>.toInstant(), "
+        return "<SOURCE>.toInstant().atZone( "
             + zoneId( conversionContext )
-            + ".of( \"UTC\" ) )";
+            + ".systemDefault() ).toLocalDateTime()";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-            conversionContext.getTypeFactory().getType( LOCAL_DATE_TIME_FQN ),
             conversionContext.getTypeFactory().getType( ZONE_ID_FQN )
         );
     }
