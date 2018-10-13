@@ -156,8 +156,8 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
-        if ( methodName.startsWith( "is" ) || methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
-            return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+        if ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
+            return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
         }
         else if ( isFluentSetter( getterOrSetterMethod ) ) {
             return methodName;
