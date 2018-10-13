@@ -283,8 +283,8 @@ If the `@Generated` annotation is not available, MapStruct will detect this situ
 
 [NOTE]
 =====
-In Java 9 `java.annotation.processing.Generated` was added, which is considered as a general purpose annotation for any code generators
-and is part of the `java.compiler` module. Support for it is planned within https://github.com/mapstruct/mapstruct/issues/1551[#1551]
+In Java 9 `java.annotation.processing.Generated` was added (part of the `java.compiler` module),
+if this annotation is available then it will be used.
 =====
 
 [[defining-mapper]]
