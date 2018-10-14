@@ -49,7 +49,7 @@ At compile time MapStruct will generate an implementation of this interface. The
 
 ## Requirements
 
-MapStruct requires Java 1.8 or later.
+MapStruct requires Java 1.6 or later.
 
 ## Using MapStruct
 
@@ -64,13 +64,13 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId>
+        <artifactId>mapstruct</artifactId> <!-- OR use this with Java 8 and beyond: <artifactId>mapstruct-jdk8</artifactId> -->
         <version>${org.mapstruct.version}</version>
     </dependency>
 </dependencies>
@@ -82,8 +82,8 @@ For Maven-based projects, add the following to your POM file in order to use Map
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.5.1</version>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <source>1.6</source> <!-- or 1.7 or 1.8, .. -->
+                <target>1.6</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -115,10 +115,10 @@ apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.3.0.Final'
+    compile 'org.mapstruct:mapstruct:1.2.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final' // if you are using mapstruct in test code
 }
 ...
 ```
