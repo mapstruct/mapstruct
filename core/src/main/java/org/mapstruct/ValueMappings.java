@@ -14,9 +14,11 @@ import java.lang.annotation.Target;
  * Constructs a set of value (constant) mappings.
  *
  * @author Sjaak Derksen
+ * @deprecated Not needed with Java 8 as {@link ValueMapping} is defined as a repeatable annotation
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
+@Deprecated
 public @interface ValueMappings {
 
     ValueMapping[] value();
