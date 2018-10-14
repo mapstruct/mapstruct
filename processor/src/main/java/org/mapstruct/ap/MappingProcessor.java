@@ -5,17 +5,16 @@
  */
 package org.mapstruct.ap;
 
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
-import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
-import org.mapstruct.ap.internal.processor.ModelElementProcessor;
-import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
-import org.mapstruct.ap.internal.util.AnnotationProcessingException;
-import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
-import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -29,16 +28,18 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
+
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.prism.MapperPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
+import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
