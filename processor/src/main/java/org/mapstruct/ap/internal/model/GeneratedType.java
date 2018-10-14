@@ -74,12 +74,18 @@ public abstract class GeneratedType extends ModelElement {
         this.versionInformation = versionInformation;
         this.accessibility = accessibility;
 
-        this.generatedTypeAvailable = typeFactory.isTypeAvailable( "javax.annotation.Generated" );
-        if ( generatedTypeAvailable ) {
+        if ( versionInformation.isSourceVersionAtLeast9() &&
+            typeFactory.isTypeAvailable( "javax.annotation.processing.Generated" ) ) {
+            this.generatedType = typeFactory.getType( "javax.annotation.processing.Generated" );
+            this.generatedTypeAvailable = true;
+        }
+        else if ( typeFactory.isTypeAvailable( "javax.annotation.Generated" ) ) {
             this.generatedType = typeFactory.getType( "javax.annotation.Generated" );
+            this.generatedTypeAvailable = true;
         }
         else {
             this.generatedType = null;
+            this.generatedTypeAvailable = false;
         }
 
         this.constructor = constructor;
