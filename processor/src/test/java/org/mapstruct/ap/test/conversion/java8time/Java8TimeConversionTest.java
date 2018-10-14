@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for conversions to/from Java 8 date and time types.
@@ -258,7 +258,7 @@ public class Java8TimeConversionTest {
 
         assertThat( target.getForDateConversionWithLocalDateTime() ).isNotNull();
 
-        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "Australia/Melbourne" ) );
+        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
         instance.setTimeInMillis( target.getForDateConversionWithLocalDateTime().getTime() );
 
         assertThat( instance.get( Calendar.YEAR ) ).isEqualTo( dateTime.getYear() );
@@ -284,7 +284,7 @@ public class Java8TimeConversionTest {
 
         assertThat( target.getForDateConversionWithLocalDate() ).isNotNull();
 
-        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "Australia/Melbourne" ) );
+        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
         instance.setTimeInMillis( target.getForDateConversionWithLocalDate().getTime() );
 
         assertThat( instance.get( Calendar.YEAR ) ).isEqualTo( localDate.getYear() );
