@@ -222,7 +222,7 @@ public class Conversions {
         register( JavaTimeConstants.ZONED_DATE_TIME_FQN, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_FQN, Date.class, new JavaLocalDateToDateConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_FQN, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
+        register( java.sql.Date.class, JavaTimeConstants.LOCAL_DATE_FQN, new JavaSqlDateToLocalDateConversion() );
         register( JavaTimeConstants.INSTANT, Date.class, new JavaInstantToDateConversion() );
 
     }
@@ -288,6 +288,14 @@ public class Conversions {
     private void register(String sourceTypeName, Class<?> targetClass, ConversionProvider conversion) {
         Type sourceType = typeFactory.getType( sourceTypeName );
         Type targetType = typeFactory.getType( targetClass );
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
+        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+    }
+
+    private void register(Class sourceTypeName, String targetTypeName, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceTypeName );
+        Type targetType = typeFactory.getType( targetTypeName );
 
         conversions.put( new Key( sourceType, targetType ), conversion );
         conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
