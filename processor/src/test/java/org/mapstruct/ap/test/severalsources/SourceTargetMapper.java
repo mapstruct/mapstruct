@@ -16,16 +16,12 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(source = "address.houseNo", target = "houseNumber"),
-        @Mapping(source = "person.description", target = "description")
-    })
+    @Mapping(source = "address.houseNo", target = "houseNumber")
+    @Mapping(source = "person.description", target = "description")
     DeliveryAddress personAndAddressToDeliveryAddress(Person person, Address address);
 
-    @Mappings({
-        @Mapping(source = "address.houseNo", target = "houseNumber"),
-        @Mapping(source = "person.description", target = "description")
-    })
+    @Mapping(source = "address.houseNo", target = "houseNumber")
+    @Mapping(source = "person.description", target = "description")
     void personAndAddressToDeliveryAddress(Person person, Address address,
                                            @MappingTarget DeliveryAddress deliveryAddress);
 

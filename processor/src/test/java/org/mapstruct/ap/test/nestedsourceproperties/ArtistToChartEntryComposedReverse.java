@@ -24,20 +24,16 @@ public abstract class ArtistToChartEntryComposedReverse {
     public static final ArtistToChartEntryComposedReverse MAPPER =
         Mappers.getMapper( ArtistToChartEntryComposedReverse.class );
 
-    @Mappings({
-        @Mapping(target = "songTitle", source = "title"),
-        @Mapping(target = "artistName", source = "artist.name"),
-        @Mapping(target = "label", source = "artist.label"),
-        @Mapping(target = "position", ignore = true),
-        @Mapping(target = "chartName", ignore = true )
-    })
+    @Mapping(target = "songTitle", source = "title")
+    @Mapping(target = "artistName", source = "artist.name")
+    @Mapping(target = "label", source = "artist.label")
+    @Mapping(target = "position", ignore = true)
+    @Mapping(target = "chartName", ignore = true )
     abstract ChartEntryComposed mapForward(Song song);
 
-    @Mappings({
-        @Mapping(target = "name", source = "name"),
-        @Mapping(target = "recordedAt", source = "studio.name"),
-        @Mapping(target = "city", source = "studio.city")
-    })
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "recordedAt", source = "studio.name")
+    @Mapping(target = "city", source = "studio.city")
     abstract ChartEntryLabel mapForward(Label label);
 
     @InheritInverseConfiguration

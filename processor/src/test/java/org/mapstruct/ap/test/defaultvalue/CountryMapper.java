@@ -15,31 +15,25 @@ import org.mapstruct.factory.Mappers;
 public abstract class CountryMapper {
     public static final CountryMapper INSTANCE = Mappers.getMapper( CountryMapper.class );
 
-    @Mappings( {
-            @Mapping( target = "code", defaultValue = "DE" ),
-            @Mapping( target = "id", defaultValue = "42" ),
-            @Mapping( target = "zipcode", defaultValue = "1337" ),
-            @Mapping( target = "region", defaultValue = "someRegion" ),
-            @Mapping( target = "continent", defaultValue = "EUROPE" )
-    } )
+    @Mapping( target = "code", defaultValue = "DE" )
+    @Mapping( target = "id", defaultValue = "42" )
+    @Mapping( target = "zipcode", defaultValue = "1337" )
+    @Mapping( target = "region", defaultValue = "someRegion" )
+    @Mapping( target = "continent", defaultValue = "EUROPE" )
     public abstract CountryDts mapToCountryDts(CountryEntity country);
 
-    @Mappings( {
-            @Mapping( target = "code", defaultValue = "DE" ),
-            @Mapping( target = "id", defaultValue = "42" ),
-            @Mapping( target = "zipcode", defaultValue = "1337" ),
-            @Mapping( target = "region", ignore = true ),
-            @Mapping( target = "continent", defaultValue = "EUROPE" )
-    } )
+    @Mapping( target = "code", defaultValue = "DE" )
+    @Mapping( target = "id", defaultValue = "42" )
+    @Mapping( target = "zipcode", defaultValue = "1337" )
+    @Mapping( target = "region", ignore = true )
+    @Mapping( target = "continent", defaultValue = "EUROPE" )
     public abstract void mapToCountryEntity(CountryDts countryDts, @MappingTarget CountryEntity country);
 
-    @Mappings( {
-            @Mapping( target = "code", defaultValue = "DE" ),
-            @Mapping( target = "id", defaultValue = "42" ),
-            @Mapping( target = "zipcode", defaultValue = "1337" ),
-            @Mapping( target = "region", ignore = true ),
-            @Mapping( target = "continent", defaultValue = "EUROPE" )
-    } )
+    @Mapping( target = "code", defaultValue = "DE" )
+    @Mapping( target = "id", defaultValue = "42" )
+    @Mapping( target = "zipcode", defaultValue = "1337" )
+    @Mapping( target = "region", ignore = true )
+    @Mapping( target = "continent", defaultValue = "EUROPE" )
     public abstract void mapToCountryEntity(CountryEntity source, @MappingTarget CountryEntity target);
 
     protected String mapToString(Region region) {

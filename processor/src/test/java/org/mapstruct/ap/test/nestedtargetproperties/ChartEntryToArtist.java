@@ -25,26 +25,22 @@ public abstract class ChartEntryToArtist {
 
     public static final ChartEntryToArtist MAPPER = Mappers.getMapper( ChartEntryToArtist.class );
 
-    @Mappings({
-        @Mapping(target = "type", ignore = true),
-        @Mapping(target = "name", source = "chartName"),
-        @Mapping(target = "song.title", source = "songTitle" ),
-        @Mapping(target = "song.artist.name", source = "artistName" ),
-        @Mapping(target = "song.artist.label.studio.name", source = "recordedAt"),
-        @Mapping(target = "song.artist.label.studio.city", source = "city" ),
-        @Mapping(target = "song.positions", source = "position" )
-    })
+    @Mapping(target = "type", ignore = true)
+    @Mapping(target = "name", source = "chartName")
+    @Mapping(target = "song.title", source = "songTitle" )
+    @Mapping(target = "song.artist.name", source = "artistName" )
+    @Mapping(target = "song.artist.label.studio.name", source = "recordedAt")
+    @Mapping(target = "song.artist.label.studio.city", source = "city" )
+    @Mapping(target = "song.positions", source = "position" )
     public abstract Chart map(ChartEntry chartEntry);
 
-    @Mappings({
-        @Mapping(target = "type", ignore = true),
-        @Mapping(target = "name", source = "chartEntry2.chartName"),
-        @Mapping(target = "song.title", source = "chartEntry1.songTitle" ),
-        @Mapping(target = "song.artist.name", source = "chartEntry1.artistName" ),
-        @Mapping(target = "song.artist.label.studio.name", source = "chartEntry1.recordedAt"),
-        @Mapping(target = "song.artist.label.studio.city", source = "chartEntry1.city" ),
-        @Mapping(target = "song.positions", source = "chartEntry2.position" )
-    })
+    @Mapping(target = "type", ignore = true)
+    @Mapping(target = "name", source = "chartEntry2.chartName")
+    @Mapping(target = "song.title", source = "chartEntry1.songTitle" )
+    @Mapping(target = "song.artist.name", source = "chartEntry1.artistName" )
+    @Mapping(target = "song.artist.label.studio.name", source = "chartEntry1.recordedAt")
+    @Mapping(target = "song.artist.label.studio.city", source = "chartEntry1.city" )
+    @Mapping(target = "song.positions", source = "chartEntry2.position" )
     public abstract Chart map(ChartEntry chartEntry1, ChartEntry chartEntry2);
 
     @InheritInverseConfiguration

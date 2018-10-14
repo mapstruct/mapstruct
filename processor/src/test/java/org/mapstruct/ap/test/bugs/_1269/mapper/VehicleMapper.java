@@ -19,9 +19,7 @@ import org.mapstruct.factory.Mappers;
 public interface VehicleMapper {
     VehicleMapper INSTANCE = Mappers.getMapper( VehicleMapper.class );
 
-    @Mappings({
-        @Mapping(target = "vehicleInfo", source = "vehicleTypeInfo"),
-        @Mapping(target = "vehicleInfo.images", source = "images")
-    })
+    @Mapping(target = "vehicleInfo", source = "vehicleTypeInfo")
+    @Mapping(target = "vehicleInfo.images", source = "images")
     VehicleDto map(Vehicle in);
 }

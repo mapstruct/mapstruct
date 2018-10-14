@@ -28,10 +28,8 @@ public interface ErroneousOrganizationMapper2 {
     @Mapping(source = "type", target = "type")
     void toName(String type, @MappingTarget OrganizationTypeEntity entity);
 
-    @Mappings({
-        @Mapping( target = "employees", ignore = true ),
-        @Mapping( target = "secretaryToEmployee", ignore = true )
-    })
+    @Mapping( target = "employees", ignore = true )
+    @Mapping( target = "secretaryToEmployee", ignore = true )
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
 }

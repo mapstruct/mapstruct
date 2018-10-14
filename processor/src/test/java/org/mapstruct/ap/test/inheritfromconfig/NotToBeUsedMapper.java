@@ -16,10 +16,8 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface NotToBeUsedMapper {
 
-    @Mappings({
-        @Mapping(target = "primaryKey", ignore = true),
-        @Mapping(target = "auditTrail", ignore = true),
-        @Mapping(target = "color", ignore = true)
-    })
+    @Mapping(target = "primaryKey", ignore = true)
+    @Mapping(target = "auditTrail", ignore = true)
+    @Mapping(target = "color", ignore = true)
     CarEntity toCarEntity(CarDto carDto);
 }

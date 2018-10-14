@@ -22,24 +22,18 @@ public interface SourceTargetMapperAmbiguous3 {
 
     SourceTargetMapperAmbiguous3 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous3.class );
 
-    @Mappings({
-        @Mapping(source = "stringPropX", target = "stringPropY"),
-        @Mapping(source = "integerPropX", target = "integerPropY"),
-        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
-    })
+    @Mapping(source = "stringPropX", target = "stringPropY")
+    @Mapping(source = "integerPropX", target = "integerPropY")
+    @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
     Target forward(Source source);
 
-    @Mappings({
-        @Mapping(source = "stringPropX", target = "stringPropY"),
-        @Mapping(source = "integerPropX", target = "integerPropY"),
-        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
-    })
+    @Mapping(source = "stringPropX", target = "stringPropY")
+    @Mapping(source = "integerPropX", target = "integerPropY")
+    @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
     Target forward(Source source, @MappingTarget Target target);
 
     @InheritInverseConfiguration(name = "forward")
-    @Mappings({
-        @Mapping(target = "someConstantDownstream", constant = "test"),
-        @Mapping(target = "propertyToIgnoreDownstream", ignore = true)
-    })
+    @Mapping(target = "someConstantDownstream", constant = "test")
+    @Mapping(target = "propertyToIgnoreDownstream", ignore = true)
     Source reverse(Target target);
 }

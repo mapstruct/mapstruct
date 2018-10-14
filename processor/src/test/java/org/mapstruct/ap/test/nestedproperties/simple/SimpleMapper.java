@@ -18,17 +18,17 @@ public interface SimpleMapper {
 
     SimpleMapper MAPPER = Mappers.getMapper( SimpleMapper.class );
 
-    @Mappings( { @Mapping( target = "longValue", source = "props.longValue" ),
-        @Mapping( target = "publicLongValue", source = "props.publicLongValue" ),
-        @Mapping( target = "intValue", source = "props.intValue" ),
-        @Mapping( target = "doubleValue", source = "props.doubleValue" ),
-        @Mapping( target = "floatValue", source = "props.floatValue" ),
-        @Mapping( target = "shortValue", source = "props.shortValue" ),
-        @Mapping( target = "charValue", source = "props.charValue" ),
-        @Mapping( target = "byteValue", source = "props.byteValue" ),
-        @Mapping( target = "booleanValue", source = "props.booleanValue" ),
-        @Mapping( target = "byteArray", source = "props.byteArray" ),
-        @Mapping( target = "stringValue", source = "props.stringValue" ) } )
+    @Mapping( target = "longValue", source = "props.longValue" )
+    @Mapping( target = "publicLongValue", source = "props.publicLongValue" )
+    @Mapping( target = "intValue", source = "props.intValue" )
+    @Mapping( target = "doubleValue", source = "props.doubleValue" )
+    @Mapping( target = "floatValue", source = "props.floatValue" )
+    @Mapping( target = "shortValue", source = "props.shortValue" )
+    @Mapping( target = "charValue", source = "props.charValue" )
+    @Mapping( target = "byteValue", source = "props.byteValue" )
+    @Mapping( target = "booleanValue", source = "props.booleanValue" )
+    @Mapping( target = "byteArray", source = "props.byteArray" )
+    @Mapping( target = "stringValue", source = "props.stringValue" )
     TargetObject toTargetObject(SourceRoot sourceRoot);
 
     @InheritInverseConfiguration

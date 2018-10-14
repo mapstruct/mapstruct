@@ -15,9 +15,8 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper MAPPER = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(target = "id", source = "nested.id"),
-        @Mapping(target = "idStr", source = "nested.id")})
+    @Mapping(target = "id", source = "nested.id")
+    @Mapping(target = "idStr", source = "nested.id")
     Target toTarget(Source s);
 
 }

@@ -28,10 +28,8 @@ public interface CarMapperWithAutoInheritance {
     @InheritInverseConfiguration(name = "toCarEntity")
     CarDto toCarDto(CarEntity entity);
 
-    @Mappings({
-        @Mapping(target = "color", source = "colour"),
-        @Mapping(target = "auditTrail", constant = "fixed")
-    })
+    @Mapping(target = "color", source = "colour")
+    @Mapping(target = "auditTrail", constant = "fixed")
     CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 
     @Mapping(target = "color", source = "colour")

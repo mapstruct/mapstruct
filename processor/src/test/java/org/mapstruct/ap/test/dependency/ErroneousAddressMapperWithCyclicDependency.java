@@ -16,10 +16,8 @@ public interface ErroneousAddressMapperWithCyclicDependency {
     ErroneousAddressMapperWithCyclicDependency INSTANCE =
         Mappers.getMapper( ErroneousAddressMapperWithCyclicDependency.class );
 
-    @Mappings({
-        @Mapping(target = "lastName", dependsOn = "middleName"),
-        @Mapping(target = "middleName", dependsOn = "firstName"),
-        @Mapping(target = "firstName", dependsOn = "lastName")
-    })
+    @Mapping(target = "lastName", dependsOn = "middleName")
+    @Mapping(target = "middleName", dependsOn = "firstName")
+    @Mapping(target = "firstName", dependsOn = "lastName")
     PersonDto personToDto(Person person);
 }

@@ -22,10 +22,8 @@ public interface ExternalMapper {
 
     ExternalMapper INSTANCE = Mappers.getMapper( ExternalMapper.class );
 
-    @Mappings({
-        @Mapping( target = "employees", ignore = true ),
-        @Mapping( target = "secretaryToEmployee", ignore = true )
-    })
+    @Mapping( target = "employees", ignore = true )
+    @Mapping( target = "secretaryToEmployee", ignore = true )
     void toDepartmentEntity(DepartmentDto dto, @MappingTarget DepartmentEntity entity);
 
 }

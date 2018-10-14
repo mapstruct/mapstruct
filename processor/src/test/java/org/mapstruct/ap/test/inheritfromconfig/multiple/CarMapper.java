@@ -18,10 +18,8 @@ public abstract class CarMapper {
 
     public static final CarMapper MAPPER = Mappers.getMapper( CarMapper.class );
 
-    @Mappings({
-        @Mapping(target = "maker", source = "manufacturer"),
-        @Mapping(target = "seatCount", source = "numberOfSeats")
-    })
+    @Mapping(target = "maker", source = "manufacturer")
+    @Mapping(target = "seatCount", source = "numberOfSeats")
     // additional mapping inherited from EntityToDtoMappingConfig.entityToDto method :
     //  @Mapping(target = "dbId", source = "id")
     //  @Mapping(target = "links", ignore = true)

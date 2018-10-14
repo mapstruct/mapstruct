@@ -14,8 +14,6 @@ import org.mapstruct.factory.Mappers;
 public abstract class ErroneousMapper2 {
     public static final ErroneousMapper2 INSTANCE = Mappers.getMapper( ErroneousMapper2.class );
 
-    @Mappings( {
-            @Mapping( target = "code", defaultValue = "DE", expression = "java(;)" ),
-    } )
+    @Mapping( target = "code", defaultValue = "DE", expression = "java(;)" )
     public abstract CountryDts mapToCountryDts(CountryEntity country);
 }

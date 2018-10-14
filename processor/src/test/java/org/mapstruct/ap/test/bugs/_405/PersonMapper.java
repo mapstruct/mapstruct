@@ -18,9 +18,7 @@ public abstract class PersonMapper {
 
     public static final PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
 
-    @Mappings( {
-        @Mapping( source = "id", target = "name" ) }
-    )
+    @Mapping( source = "id", target = "name" )
     abstract People personToPeople(Person person);
 
     abstract List<People> personListToPeopleList(List<Person> children);

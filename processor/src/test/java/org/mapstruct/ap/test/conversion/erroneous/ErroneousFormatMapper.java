@@ -21,17 +21,15 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface ErroneousFormatMapper {
 
-    @Mappings( {
-        @Mapping(target = "date", dateFormat = "qwertz"),
-        @Mapping(target = "zonedDateTime", dateFormat = "qwertz"),
-        @Mapping(target = "localDateTime", dateFormat = "qwertz"),
-        @Mapping(target = "localDate", dateFormat = "qwertz"),
-        @Mapping(target = "localTime", dateFormat = "qwertz"),
-        @Mapping(target = "dateTime", dateFormat = "qwertz"),
-        @Mapping(target = "jodaLocalDateTime", dateFormat = "qwertz"),
-        @Mapping(target = "jodaLocalDate", dateFormat = "qwertz"),
-        @Mapping(target = "jodaLocalTime", dateFormat = "qwertz")
-    } )
+    @Mapping(target = "date", dateFormat = "qwertz")
+    @Mapping(target = "zonedDateTime", dateFormat = "qwertz")
+    @Mapping(target = "localDateTime", dateFormat = "qwertz")
+    @Mapping(target = "localDate", dateFormat = "qwertz")
+    @Mapping(target = "localTime", dateFormat = "qwertz")
+    @Mapping(target = "dateTime", dateFormat = "qwertz")
+    @Mapping(target = "jodaLocalDateTime", dateFormat = "qwertz")
+    @Mapping(target = "jodaLocalDate", dateFormat = "qwertz")
+    @Mapping(target = "jodaLocalTime", dateFormat = "qwertz")
     Target sourceToTarget(Source source);
 
     @IterableMapping(dateFormat = "qwertz")

@@ -21,11 +21,9 @@ public interface OrderMapper {
 
     OrderDto orderEntityToDto(OrderEntity order);
 
-    @ValueMappings({
-        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
-        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
-        @ValueMapping(source = "NORMAL", target = "DEFAULT")
-    })
+    @ValueMapping(source = "EXTRA", target = "SPECIAL")
+    @ValueMapping(source = "STANDARD", target = "DEFAULT")
+    @ValueMapping(source = "NORMAL", target = "DEFAULT")
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
     @InheritInverseConfiguration

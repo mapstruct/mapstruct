@@ -23,9 +23,7 @@ public interface MovieMapper {
 
     MovieMapper INSTANCE = Mappers.getMapper( MovieMapper.class );
 
-    @Mappings( {
-        @Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
-    } )
+    @Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
     GermanRelease toGerman( OriginalRelease movies );
 
 }

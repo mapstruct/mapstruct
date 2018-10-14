@@ -12,10 +12,8 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface ErroneousMapper2 {
 
-    @Mappings( {
-        @Mapping( target = "foo", ignore = true ),
-        @Mapping( target = "foo", constant = "5" )
-    } )
+    @Mapping( target = "foo", ignore = true )
+    @Mapping( target = "foo", constant = "5" )
     Target sourceToTarget( Source source );
 
 }

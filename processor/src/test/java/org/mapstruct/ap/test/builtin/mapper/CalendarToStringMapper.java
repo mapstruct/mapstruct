@@ -17,9 +17,7 @@ public interface CalendarToStringMapper {
 
     CalendarToStringMapper INSTANCE = Mappers.getMapper( CalendarToStringMapper.class );
 
-    @Mappings( {
-        @Mapping( target = "prop", dateFormat = "dd.MM.yyyy" ),
-        @Mapping( target = "publicProp", dateFormat = "dd.MM.yyyy" )
-    } )
+    @Mapping( target = "prop", dateFormat = "dd.MM.yyyy" )
+    @Mapping( target = "publicProp", dateFormat = "dd.MM.yyyy" )
     StringProperty map( CalendarProperty source );
 }

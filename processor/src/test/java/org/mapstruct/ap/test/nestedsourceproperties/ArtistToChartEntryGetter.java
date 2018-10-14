@@ -20,8 +20,6 @@ public interface ArtistToChartEntryGetter {
 
     ArtistToChartEntryGetter MAPPER = Mappers.getMapper( ArtistToChartEntryGetter.class );
 
-    @Mappings({
-        @Mapping(target = "positions", source = "chart.song.positions"),
-    })
+    @Mapping(target = "positions", source = "chart.song.positions")
     ChartPositions map(Chart chart);
 }

@@ -15,10 +15,8 @@ public interface FlatteningMapper {
 
     FlatteningMapper INSTANCE = Mappers.getMapper( FlatteningMapper.class );
 
-    @Mappings({
-        @Mapping(target = "articleCount", source = "count"),
-        @Mapping(target = "article1", source = "first.description"),
-        @Mapping(target = "article2", ignore = true)
-    })
+    @Mapping(target = "articleCount", source = "count")
+    @Mapping(target = "article1", source = "first.description")
+    @Mapping(target = "article2", ignore = true)
     ImmutableFlattenedStock writeToFlatProperty(Stock source);
 }

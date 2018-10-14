@@ -18,14 +18,12 @@ public interface ErroneousMapper4 {
 
     ErroneousMapper4 INSTANCE = Mappers.getMapper( ErroneousMapper4.class );
 
-    @Mappings({
-        @Mapping(target = "stringConstant", constant = "stringConstant"),
-        @Mapping(target = "emptyStringConstant", constant = ""),
-        @Mapping(source = "test", target = "integerConstant", expression = "java('test')"),
-        @Mapping(target = "longWrapperConstant", constant = "3001L"),
-        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping(target = "nameConstants", constant = "jack-jill-tom"),
-        @Mapping(target = "country", constant = "THE_NETHERLANDS")
-    })
+    @Mapping(target = "stringConstant", constant = "stringConstant")
+    @Mapping(target = "emptyStringConstant", constant = "")
+    @Mapping(source = "test", target = "integerConstant", expression = "java('test')")
+    @Mapping(target = "longWrapperConstant", constant = "3001L")
+    @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014")
+    @Mapping(target = "nameConstants", constant = "jack-jill-tom")
+    @Mapping(target = "country", constant = "THE_NETHERLANDS")
     Target sourceToTarget(Source s);
 }

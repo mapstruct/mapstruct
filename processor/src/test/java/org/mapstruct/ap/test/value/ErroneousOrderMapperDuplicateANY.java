@@ -18,12 +18,10 @@ public interface ErroneousOrderMapperDuplicateANY {
 
     ErroneousOrderMapperDuplicateANY INSTANCE = Mappers.getMapper( ErroneousOrderMapperDuplicateANY.class );
 
-    @ValueMappings( {
-        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
-        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
-        @ValueMapping(source = "NORMAL", target = "DEFAULT"),
-        @ValueMapping( source = "<ANY_REMAINING>", target = "DEFAULT" ),
-        @ValueMapping( source = "<ANY_UNMAPPED>", target = "DEFAULT" )
-    } )
+    @ValueMapping(source = "EXTRA", target = "SPECIAL")
+    @ValueMapping(source = "STANDARD", target = "DEFAULT")
+    @ValueMapping(source = "NORMAL", target = "DEFAULT")
+    @ValueMapping( source = "<ANY_REMAINING>", target = "DEFAULT" )
+    @ValueMapping( source = "<ANY_UNMAPPED>", target = "DEFAULT" )
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

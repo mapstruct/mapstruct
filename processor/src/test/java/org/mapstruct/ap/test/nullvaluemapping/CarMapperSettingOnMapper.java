@@ -24,11 +24,9 @@ public interface CarMapperSettingOnMapper {
 
     CarMapperSettingOnMapper INSTANCE = Mappers.getMapper( CarMapperSettingOnMapper.class );
 
-    @Mappings({
-        @Mapping(target = "seatCount", source = "numberOfSeats"),
-        @Mapping(target = "model", constant = "ModelT"),
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "numberOfSeats")
+    @Mapping(target = "model", constant = "ModelT")
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car);
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)

@@ -20,11 +20,9 @@ public interface SourceTargetMapperSeveralArgs {
 
     SourceTargetMapperSeveralArgs INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralArgs.class );
 
-    @Mappings({
-        @Mapping( target = "stringPropY", source = "s1.stringPropX" ),
-        @Mapping( target = "integerPropY", source = "s1.integerPropX" ),
-        @Mapping( target = "nestedResultProp", source = "s1.nestedSourceProp.nested" )
-    })
+    @Mapping( target = "stringPropY", source = "s1.stringPropX" )
+    @Mapping( target = "integerPropY", source = "s1.integerPropX" )
+    @Mapping( target = "nestedResultProp", source = "s1.nestedSourceProp.nested" )
     Target forwardCreate(Source s1, String constantProp, String expressionProp);
 
     @InheritConfiguration

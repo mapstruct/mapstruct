@@ -23,15 +23,12 @@ public abstract class ArtistToChartEntryUpdateReverse {
     public static final ArtistToChartEntryUpdateReverse MAPPER =
         Mappers.getMapper( ArtistToChartEntryUpdateReverse.class );
 
-    @Mappings({
-
-        @Mapping(target = "songTitle", source = "title"),
-        @Mapping(target = "artistName", source = "artist.name"),
-        @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
-        @Mapping(target = "city", source = "artist.label.studio.city"),
-        @Mapping(target = "position", ignore = true),
-        @Mapping(target = "chartName", ignore = true )
-    })
+    @Mapping(target = "songTitle", source = "title")
+    @Mapping(target = "artistName", source = "artist.name")
+    @Mapping(target = "recordedAt", source = "artist.label.studio.name")
+    @Mapping(target = "city", source = "artist.label.studio.city")
+    @Mapping(target = "position", ignore = true)
+    @Mapping(target = "chartName", ignore = true )
     abstract ChartEntry mapForward(Song song);
 
     @InheritInverseConfiguration

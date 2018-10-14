@@ -22,13 +22,11 @@ public interface DomainDtoWithNcvsAlwaysMapper {
 
     DomainDtoWithNcvsAlwaysMapper INSTANCE = Mappers.getMapper( DomainDtoWithNcvsAlwaysMapper.class );
 
-    @Mappings({
-        @Mapping(target = "strings", source = "strings"),
-        @Mapping(target = "longs", source = "strings"),
-        @Mapping(target = "stringsInitialized", source = "stringsInitialized"),
-        @Mapping(target = "longsInitialized", source = "stringsInitialized"),
-        @Mapping(target = "stringsWithDefault", source = "stringsWithDefault", defaultValue = "3")
-    })
+    @Mapping(target = "strings", source = "strings")
+    @Mapping(target = "longs", source = "strings")
+    @Mapping(target = "stringsInitialized", source = "stringsInitialized")
+    @Mapping(target = "longsInitialized", source = "stringsInitialized")
+    @Mapping(target = "stringsWithDefault", source = "stringsWithDefault", defaultValue = "3")
     Domain create(DtoWithPresenceCheck source);
 
     @InheritConfiguration( name = "create" )

@@ -20,10 +20,8 @@ public interface OrderMapper {
 
     OrderDto orderEntityToDto(OrderEntity order);
 
-    @Mappings({
-        @Mapping(source = "EXTRA", target = "SPECIAL"),
-        @Mapping(source = "STANDARD", target = "DEFAULT"),
-        @Mapping(source = "NORMAL", target = "DEFAULT")
-    })
+    @Mapping(source = "EXTRA", target = "SPECIAL")
+    @Mapping(source = "STANDARD", target = "DEFAULT")
+    @Mapping(source = "NORMAL", target = "DEFAULT")
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

@@ -29,19 +29,15 @@ public interface CarMapper {
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
     @BeanMapping(nullValueMappingStrategy = RETURN_DEFAULT)
-    @Mappings({
-        @Mapping(target = "seatCount", source = "numberOfSeats"),
-        @Mapping(target = "model", constant = "ModelT"),
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "numberOfSeats")
+    @Mapping(target = "model", constant = "ModelT")
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car);
 
     @BeanMapping(nullValueMappingStrategy = RETURN_DEFAULT)
-    @Mappings({
-        @Mapping(target = "seatCount", source = "car.numberOfSeats"),
-        @Mapping(target = "model", source = "model"), // TODO,  should not be needed, must be made based on name only
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "car.numberOfSeats")
+    @Mapping(target = "model", source = "model") // TODO,  should not be needed, must be made based on name only
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car, String model);
 
     @IterableMapping(nullValueMappingStrategy = RETURN_DEFAULT)

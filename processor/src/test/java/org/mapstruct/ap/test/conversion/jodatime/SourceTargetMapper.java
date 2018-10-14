@@ -23,12 +23,10 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(target = "dateTime", dateFormat = DATE_TIME_FORMAT),
-        @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT),
-        @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT),
-        @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
-    })
+    @Mapping(target = "dateTime", dateFormat = DATE_TIME_FORMAT)
+    @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
+    @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT)
+    @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Target sourceToTarget(Source source);
 
     Target sourceToTargetDefaultMapping(Source source);
@@ -45,12 +43,10 @@ public interface SourceTargetMapper {
     @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Target sourceToTargetLocalTimeMapped(Source source);
 
-    @Mappings({
-        @Mapping(target = "dateTime", dateFormat = DATE_TIME_FORMAT),
-        @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT),
-        @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT),
-        @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
-    })
+    @Mapping(target = "dateTime", dateFormat = DATE_TIME_FORMAT)
+    @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
+    @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT)
+    @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Source targetToSource(Target target);
 
     @Mapping(target = "dateTime", dateFormat = DATE_TIME_FORMAT)

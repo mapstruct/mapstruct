@@ -21,15 +21,13 @@ public interface FishTankMapperWithDocument {
 
     FishTankMapperWithDocument INSTANCE = Mappers.getMapper( FishTankMapperWithDocument.class );
 
-    @Mappings({
-        @Mapping(target = "fish.kind", source = "fish.type"),
-        @Mapping(target = "fish.name", expression = "java(\"Jaws\")"),
-        @Mapping(target = "plant", ignore = true ),
-        @Mapping(target = "ornament", ignore = true ),
-        @Mapping(target = "material", ignore = true),
-        @Mapping(target = "quality.document", source = "quality.report"),
-        @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
-    })
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", expression = "java(\"Jaws\")")
+    @Mapping(target = "plant", ignore = true )
+    @Mapping(target = "ornament", ignore = true )
+    @Mapping(target = "material", ignore = true)
+    @Mapping(target = "quality.document", source = "quality.report")
+    @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
     FishTankWithNestedDocumentDto map( FishTank source  );
 
 }

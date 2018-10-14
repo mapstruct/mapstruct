@@ -19,8 +19,6 @@ import org.mapstruct.Mappings;
 )
 public interface SomeMapperConfig {
 
-    @Mappings({
-        @Mapping(target = "field1", ignore = true)
-    })
+    @Mapping(target = "field1", ignore = true)
     AbstractA toAbstractA(SomeB source);
 }

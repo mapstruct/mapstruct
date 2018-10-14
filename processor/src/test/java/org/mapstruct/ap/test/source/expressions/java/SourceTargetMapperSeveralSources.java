@@ -19,9 +19,7 @@ public interface SourceTargetMapperSeveralSources {
 
     SourceTargetMapperSeveralSources INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralSources.class );
 
-    @Mappings( {
-        @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" ),
-        @Mapping( source = "s1.anotherProp", target = "anotherProp" )
-    } )
+    @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" )
+    @Mapping( source = "s1.anotherProp", target = "anotherProp" )
     Target sourceToTarget( Source s, Source2 s1 );
 }

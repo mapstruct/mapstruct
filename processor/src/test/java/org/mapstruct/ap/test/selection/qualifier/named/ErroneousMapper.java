@@ -23,9 +23,7 @@ public interface ErroneousMapper {
 
     ErroneousMapper INSTANCE = Mappers.getMapper( ErroneousMapper.class );
 
-    @Mappings( {
-        @Mapping( target = "title", qualifiedByName = "NonQualifierAnnotated" )
-    } )
+    @Mapping( target = "title", qualifiedByName = "NonQualifierAnnotated" )
     GermanRelease toGerman( OriginalRelease movies );
 
 }

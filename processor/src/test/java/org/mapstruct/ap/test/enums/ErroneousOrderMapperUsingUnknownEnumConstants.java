@@ -20,9 +20,7 @@ public interface ErroneousOrderMapperUsingUnknownEnumConstants {
         ErroneousOrderMapperUsingUnknownEnumConstants.class
     );
 
-    @Mappings({
-        @Mapping(source = "FOO", target = "SPECIAL"),
-        @Mapping(source = "EXTRA", target = "BAR")
-    })
+    @Mapping(source = "FOO", target = "SPECIAL")
+    @Mapping(source = "EXTRA", target = "BAR")
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

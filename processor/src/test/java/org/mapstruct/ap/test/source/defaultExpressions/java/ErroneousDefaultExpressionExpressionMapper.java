@@ -18,10 +18,8 @@ import org.mapstruct.Mappings;
 @Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionExpressionMapper {
 
-    @Mappings({
-        @Mapping(target = "sourceId", expression = "java( UUID.randomUUID().toString() )",
-            defaultExpression = "java( UUID.randomUUID().toString() )"),
-        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
-    })
+    @Mapping(target = "sourceId", expression = "java( UUID.randomUUID().toString() )",
+            defaultExpression = "java( UUID.randomUUID().toString() )")
+    @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
     Target sourceToTarget(Source s);
 }

@@ -19,15 +19,11 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface Erroneous3Config {
-    @Mappings({
-        @Mapping(target = "primaryKey", source = "id"),
-        @Mapping(target = "auditTrail", ignore = true)
-    })
+    @Mapping(target = "primaryKey", source = "id")
+    @Mapping(target = "auditTrail", ignore = true)
     BaseVehicleEntity baseDtoToEntity(BaseVehicleDto dto);
 
-    @Mappings({
-        @Mapping(target = "primaryKey", source = "id"),
-        @Mapping(target = "auditTrail", ignore = true)
-    })
+    @Mapping(target = "primaryKey", source = "id")
+    @Mapping(target = "auditTrail", ignore = true)
     BaseVehicleEntity baseDtoToEntity2(BaseVehicleDto dto);
 }

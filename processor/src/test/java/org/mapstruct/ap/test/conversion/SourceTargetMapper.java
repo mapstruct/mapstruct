@@ -16,10 +16,8 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(source = "qax", target = "baz"),
-        @Mapping(source = "baz", target = "qax")
-    })
+    @Mapping(source = "qax", target = "baz")
+    @Mapping(source = "baz", target = "qax")
     Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration

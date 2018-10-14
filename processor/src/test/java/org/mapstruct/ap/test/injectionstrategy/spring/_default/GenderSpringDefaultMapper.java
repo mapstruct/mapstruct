@@ -17,9 +17,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 @Mapper(componentModel = "spring")
 public interface GenderSpringDefaultMapper {
 
-    @ValueMappings({
-        @ValueMapping(source = "MALE", target = "M"),
-        @ValueMapping(source = "FEMALE", target = "F")
-    })
+    @ValueMapping(source = "MALE", target = "M")
+    @ValueMapping(source = "FEMALE", target = "F")
     GenderDto mapToDto(Gender gender);
 }

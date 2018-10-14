@@ -24,11 +24,9 @@ public abstract class ArtistToChartEntryWithConfigReverse {
         Mappers.getMapper( ArtistToChartEntryWithConfigReverse.class );
 
     @InheritConfiguration
-    @Mappings({
-        @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
-        @Mapping(target = "city", source = "artist.label.studio.city"),
-        @Mapping(target = "position", ignore = true)
-    })
+    @Mapping(target = "recordedAt", source = "artist.label.studio.name")
+    @Mapping(target = "city", source = "artist.label.studio.city")
+    @Mapping(target = "position", ignore = true)
     abstract ChartEntryWithBase mapForward(Song song);
 
     @InheritInverseConfiguration( name = "mapForward" )

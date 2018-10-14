@@ -26,21 +26,17 @@ public interface SpecialOrderMapper {
     OrderDto orderEntityToDto(OrderEntity order);
 
     @Named("orderTypeToExternalOrderType")
-    @ValueMappings({
-        @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
-        @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
-        @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
-    })
+    @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" )
+    @ValueMapping( source = "STANDARD", target = MappingConstants.NULL )
+    @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
     @InheritInverseConfiguration(name = "orderTypeToExternalOrderType")
     @ValueMapping( target = "EXTRA", source = "SPECIAL" )
     OrderType externalOrderTypeToOrderType(ExternalOrderType orderType);
 
-    @ValueMappings({
-        @ValueMapping(source = MappingConstants.NULL, target = "DEFAULT"),
-        @ValueMapping(source = "STANDARD", target = MappingConstants.NULL),
-        @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
-    })
+    @ValueMapping(source = MappingConstants.NULL, target = "DEFAULT")
+    @ValueMapping(source = "STANDARD", target = MappingConstants.NULL)
+    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     ExternalOrderType anyRemainingToNull(OrderType orderType);
 }

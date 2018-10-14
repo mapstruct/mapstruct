@@ -29,11 +29,9 @@ public interface ErroneousIssue1029Mapper {
      * reports unmapped property 'lastUpdated'. Property 'outdated' is read-only anyway, but can still be ignored
      * explicitly without raising any errors.
      */
-    @Mappings({
-        @Mapping(target = "outdated", ignore = true),
-        @Mapping(target = "computedMapping", ignore = true),
-        @Mapping(target = "knownProp", ignore = true)
-    })
+    @Mapping(target = "outdated", ignore = true)
+    @Mapping(target = "computedMapping", ignore = true)
+    @Mapping(target = "knownProp", ignore = true)
     Deck toDeckWithSomeIgnores(DeckForm form);
 
     /**

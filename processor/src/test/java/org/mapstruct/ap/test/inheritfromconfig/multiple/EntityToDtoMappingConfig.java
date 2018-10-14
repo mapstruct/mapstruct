@@ -15,19 +15,15 @@ import org.mapstruct.Mappings;
 @MapperConfig
 public interface EntityToDtoMappingConfig {
 
-    @Mappings({
-        @Mapping(target = "dbId", source = "id"),
-        @Mapping(target = "links", ignore = true)
-    })
+    @Mapping(target = "dbId", source = "id")
+    @Mapping(target = "links", ignore = true)
     BaseDto entityToDto(BaseEntity entity);
 
-    @Mappings({
-        @Mapping(target = "id", source = "dbId"),
-        @Mapping(target = "createdBy", ignore = true),
-        @Mapping(target = "creationDate", ignore = true),
-        @Mapping(target = "lastModifiedBy", constant = "restApiUser"), // force modifiedBy with restApiUser constant
-        @Mapping(target = "lastModifiedDate", ignore = true)
-    })
+    @Mapping(target = "id", source = "dbId")
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "lastModifiedBy", constant = "restApiUser") // force modifiedBy with restApiUser constant
+    @Mapping(target = "lastModifiedDate", ignore = true)
     BaseEntity dtoToEntity(BaseDto dto);
 
 }

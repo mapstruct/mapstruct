@@ -28,12 +28,10 @@ public abstract class SourceTargetMapper {
 
     abstract void sourceToTarget(Source source, @MappingTarget Target target);
 
-    @Mappings( {
-        @Mapping(target = "somePrimitiveDouble", defaultValue = "111.1"),
-        @Mapping(target = "someInteger", defaultValue = "222"),
-        @Mapping(target = "someList", defaultValue = "a,b"),
-        @Mapping(target = "someArray", defaultValue = "u,v")
-    } )
+    @Mapping(target = "somePrimitiveDouble", defaultValue = "111.1")
+    @Mapping(target = "someInteger", defaultValue = "222")
+    @Mapping(target = "someList", defaultValue = "a,b")
+    @Mapping(target = "someArray", defaultValue = "u,v")
     abstract Target sourceToTargetWitDefaults(Source source);
 
     protected List<String> toList( String in ) {

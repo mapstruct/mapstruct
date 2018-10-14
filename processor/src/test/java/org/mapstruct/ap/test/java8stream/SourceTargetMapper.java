@@ -21,15 +21,13 @@ public abstract class SourceTargetMapper {
 
     static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(source = "stringStream", target = "stringList"),
-        @Mapping(source = "stringArrayStream", target = "stringArrayList"),
-        @Mapping(source = "stringStreamToSet", target = "stringSet"),
-        @Mapping(source = "integerStream", target = "integerCollection"),
-        @Mapping(source = "anotherIntegerStream", target = "anotherStringSet"),
-        @Mapping(source = "stringStream2", target = "stringListNoSetter"),
-        @Mapping(source = "stringStream3", target = "nonGenericStringList")
-    })
+    @Mapping(source = "stringStream", target = "stringList")
+    @Mapping(source = "stringArrayStream", target = "stringArrayList")
+    @Mapping(source = "stringStreamToSet", target = "stringSet")
+    @Mapping(source = "integerStream", target = "integerCollection")
+    @Mapping(source = "anotherIntegerStream", target = "anotherStringSet")
+    @Mapping(source = "stringStream2", target = "stringListNoSetter")
+    @Mapping(source = "stringStream3", target = "nonGenericStringList")
     public abstract Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration( name = "sourceToTarget" )

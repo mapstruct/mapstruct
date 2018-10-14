@@ -17,11 +17,9 @@ import org.mapstruct.factory.Mappers;
 public interface SoccerTeamMapperNestedObjects {
     SoccerTeamMapperNestedObjects INSTANCE = Mappers.getMapper( SoccerTeamMapperNestedObjects.class );
 
-    @Mappings({
-        @Mapping(target = "players", ignore = true),
-        @Mapping(target = "goalKeeperName", source = "goalKeeper.name"),
-        @Mapping(target = "referee.name", source = "refereeName")
-    })
+    @Mapping(target = "players", ignore = true)
+    @Mapping(target = "goalKeeperName", source = "goalKeeper.name")
+    @Mapping(target = "referee.name", source = "refereeName")
     SoccerTeamTargetWithPresenceCheck mapNested( SoccerTeamSource in );
 
 }

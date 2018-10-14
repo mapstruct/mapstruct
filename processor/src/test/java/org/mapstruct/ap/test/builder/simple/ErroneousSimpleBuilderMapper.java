@@ -13,10 +13,8 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ErroneousSimpleBuilderMapper {
 
-    @Mappings({
-        @Mapping(target = "address", ignore = true ),
-        @Mapping(target = "job", ignore = true ),
-        @Mapping(target = "city", ignore = true )
-    })
+    @Mapping(target = "address", ignore = true )
+    @Mapping(target = "job", ignore = true )
+    @Mapping(target = "city", ignore = true )
     SimpleImmutablePerson toImmutable(SimpleMutablePerson source);
 }

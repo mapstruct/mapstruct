@@ -14,10 +14,8 @@ import org.mapstruct.factory.Mappers;
 public interface SourceTargetMapper extends SourceTargetBaseMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(source = "idFoo", target = "foo"),
-        @Mapping(source = "idBar", target = "bar")
-    })
+    @Mapping(source = "idFoo", target = "foo")
+    @Mapping(source = "idBar", target = "bar")
     Target mapSourceToTarget(Source source);
 
     default Foo fooFromId(long id) {

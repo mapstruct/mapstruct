@@ -33,9 +33,7 @@ public abstract class Issue1541Mapper {
 
     public abstract Target mapWithArrayAndVarArgs(String code, String[] parameters, String... parameters2);
 
-    @Mappings({
-        @Mapping(target = "parameters", ignore = true)
-    })
+    @Mapping(target = "parameters", ignore = true)
     @BeanMapping(qualifiedByName = "afterMappingParametersAsArray")
     public abstract Target mapParametersAsArrayInAfterMapping(String code, String... parameters);
 
@@ -46,9 +44,7 @@ public abstract class Issue1541Mapper {
         target.setParameters( parameters );
     }
 
-    @Mappings({
-        @Mapping(target = "parameters", ignore = true)
-    })
+    @Mapping(target = "parameters", ignore = true)
     @BeanMapping(qualifiedByName = "afterMappingParametersAsVarArgs")
     public abstract Target mapParametersAsVarArgsInAfterMapping(String code, String... parameters);
 

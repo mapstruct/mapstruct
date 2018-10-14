@@ -18,10 +18,8 @@ public interface Issue1594Mapper {
 
     Issue1594Mapper INSTANCE = Mappers.getMapper( Issue1594Mapper.class );
 
-    @Mappings({
-        @Mapping(target = "address.country.oid", expression = "java(dto.getFullAddress().split( \"-\" )[0])"),
-        @Mapping(target = "address.city.oid", expression = "java(dto.getFullAddress().split( \"-\" )[1])"),
-    })
+    @Mapping(target = "address.country.oid", expression = "java(dto.getFullAddress().split( \"-\" )[0])")
+    @Mapping(target = "address.city.oid", expression = "java(dto.getFullAddress().split( \"-\" )[1])")
     Client toClient(Dto dto);
 
     class Client {
