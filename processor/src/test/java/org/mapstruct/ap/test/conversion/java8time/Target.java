@@ -29,6 +29,8 @@ public class Target {
 
     private Date forDateConversionWithLocalDate;
 
+    private java.sql.Date forSqlDateConversionWithLocalDate;
+
     private Date forDateConversionWithInstant;
 
     public String getZonedDateTime() {
@@ -93,6 +95,14 @@ public class Target {
 
     public void setForDateConversionWithLocalDate(Date forDateConversionWithLocalDate) {
         this.forDateConversionWithLocalDate = forDateConversionWithLocalDate;
+    }
+
+    public java.sql.Date getForSqlDateConversionWithLocalDate() {
+        return forSqlDateConversionWithLocalDate;
+    }
+
+    public void setForSqlDateConversionWithLocalDate(java.sql.Date forSqlDateConversionWithLocalDate) {
+        this.forSqlDateConversionWithLocalDate = forSqlDateConversionWithLocalDate;
     }
 
     public Date getForDateConversionWithInstant() {

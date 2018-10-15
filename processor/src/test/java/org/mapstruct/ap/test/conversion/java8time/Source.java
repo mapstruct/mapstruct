@@ -32,6 +32,8 @@ public class Source {
 
     private LocalDate forDateConversionWithLocalDate;
 
+    private LocalDate forSqlDateConversionWithLocalDate;
+
     private Instant forDateConversionWithInstant;
 
     public ZonedDateTime getZonedDateTime() {
@@ -96,6 +98,14 @@ public class Source {
 
     public void setForDateConversionWithLocalDate(LocalDate forDateConversionWithLocalDate) {
         this.forDateConversionWithLocalDate = forDateConversionWithLocalDate;
+    }
+
+    public LocalDate getForSqlDateConversionWithLocalDate() {
+        return forSqlDateConversionWithLocalDate;
+    }
+
+    public void setForSqlDateConversionWithLocalDate(LocalDate forSqlDateConversionWithLocalDate) {
+        this.forSqlDateConversionWithLocalDate = forSqlDateConversionWithLocalDate;
     }
 
     public Instant getForDateConversionWithInstant() {

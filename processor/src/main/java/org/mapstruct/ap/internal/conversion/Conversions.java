@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -16,13 +14,14 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
+
+import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
@@ -222,6 +221,7 @@ public class Conversions {
         register( JavaTimeConstants.ZONED_DATE_TIME_FQN, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( JavaTimeConstants.LOCAL_DATE_FQN, Date.class, new JavaLocalDateToDateConversion() );
+        register( JavaTimeConstants.LOCAL_DATE_FQN, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
         register( JavaTimeConstants.INSTANT, Date.class, new JavaInstantToDateConversion() );
 
     }
