@@ -3,28 +3,6 @@
     <toolchain>
         <type>jdk</type>
         <provides>
-            <version>1.6.0_45</version>
-            <vendor>oracle</vendor>
-            <id>jdk1.6</id>
-        </provides>
-        <configuration>
-            <jdkHome>C:\Program Files\Java\jdk1.6.0_45</jdkHome>
-        </configuration>
-    </toolchain>
-    <toolchain>
-        <type>jdk</type>
-        <provides>
-            <version>1.7.0_51</version>
-            <vendor>oracle</vendor>
-            <id>jdk1.7</id>
-        </provides>
-        <configuration>
-            <jdkHome>C:\Program Files\Java\jdk1.7.0_51</jdkHome>
-        </configuration>
-    </toolchain>
-    <toolchain>
-        <type>jdk</type>
-        <provides>
             <version>1.8.0_11</version>
             <vendor>oracle</vendor>
             <id>jdk1.8</id>

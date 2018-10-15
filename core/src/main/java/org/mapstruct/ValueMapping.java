@@ -6,6 +6,7 @@
 package org.mapstruct;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -26,11 +27,9 @@ import java.lang.annotation.Target;
  *
  * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
  *
- * &#64;ValueMappings({
- *    &#64;ValueMapping(source = "EXTRA", target = "SPECIAL"),
- *    &#64;ValueMapping(source = "STANDARD", target = "DEFAULT"),
- *    &#64;ValueMapping(source = "NORMAL", target = "DEFAULT")
- * })
+ * &#64;ValueMapping(source = "EXTRA", target = "SPECIAL"),
+ * &#64;ValueMapping(source = "STANDARD", target = "DEFAULT"),
+ * &#64;ValueMapping(source = "NORMAL", target = "DEFAULT")
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
  * Mapping result:
@@ -53,11 +52,9 @@ import java.lang.annotation.Target;
  *
  * <pre>
  * <code>
- * &#64;ValueMappings({
- *    &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
- *    &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
- *    &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
- * })
+ * &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
+ * &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
+ * &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
  * Mapping result:
@@ -75,10 +72,10 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
+@Repeatable(ValueMappings.class)
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface ValueMapping {
-
     /**
      * The source value constant to use for this mapping.
      *

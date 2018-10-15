@@ -3,28 +3,6 @@
     <toolchain>
         <type>jdk</type>
         <provides>
-            <version>1.6</version>
-            <vendor>oracle</vendor>
-            <id>jdk1.6</id>
-        </provides>
-        <configuration>
-            <jdkHome>/opt/jdk/jdk1.6.latest</jdkHome>
-        </configuration>
-    </toolchain>
-    <toolchain>
-        <type>jdk</type>
-        <provides>
-            <version>1.7</version>
-            <vendor>oracle</vendor>
-            <id>jdk1.7</id>
-        </provides>
-        <configuration>
-            <jdkHome>/opt/jdk/jdk1.7.latest</jdkHome>
-        </configuration>
-    </toolchain>
-    <toolchain>
-        <type>jdk</type>
-        <provides>
             <version>1.8</version>
             <vendor>oracle</vendor>
             <id>jdk1.8</id>
@@ -33,5 +11,4 @@
             <jdkHome>/opt/jdk/jdk8.latest</jdkHome>
         </configuration>
     </toolchain>
-    
 </toolchains>

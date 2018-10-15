@@ -34,12 +34,8 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
     baseDir = "fullFeatureTest",
     commandLineEnhancer = CompilationExclusionCliEnhancer.class,
     processorTypes = {
-        ProcessorType.ORACLE_JAVA_6,
-        ProcessorType.ORACLE_JAVA_7,
         ProcessorType.ORACLE_JAVA_8,
         ProcessorType.ORACLE_JAVA_9,
-        ProcessorType.ECLIPSE_JDT_JAVA_6,
-        ProcessorType.ECLIPSE_JDT_JAVA_7,
         ProcessorType.ECLIPSE_JDT_JAVA_8
 })
 public class FullFeatureCompilationTest {
@@ -57,15 +53,6 @@ public class FullFeatureCompilationTest {
             additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1596/*.java" );
 
             switch ( processorType ) {
-                case ORACLE_JAVA_6:
-                    additionalExcludes.add( "org/mapstruct/ap/test/abstractclass/generics/*.java" );
-                    additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1170/*.java" );
-                case ECLIPSE_JDT_JAVA_6:
-                case ORACLE_JAVA_7:
-                case ECLIPSE_JDT_JAVA_7:
-                    additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1425/*.java" );
-                    additionalExcludes.add( "**/java8*/**/*.java" );
-                    break;
                 case ORACLE_JAVA_9:
                     // TODO find out why this fails:
                     additionalExcludes.add( "org/mapstruct/ap/test/collection/wildcard/BeanMapper.java" );

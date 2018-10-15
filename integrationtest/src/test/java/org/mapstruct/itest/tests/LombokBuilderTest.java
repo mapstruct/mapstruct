@@ -15,8 +15,6 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
 @RunWith( ProcessorSuiteRunner.class )
 @ProcessorSuite( baseDir = "lombokBuilderTest",
     processorTypes = {
-        ProcessorSuite.ProcessorType.ORACLE_JAVA_6,
-        ProcessorSuite.ProcessorType.ORACLE_JAVA_7,
         ProcessorSuite.ProcessorType.ORACLE_JAVA_8,
         ProcessorSuite.ProcessorType.ORACLE_JAVA_9,
     }
