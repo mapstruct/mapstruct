@@ -955,7 +955,7 @@ public interface CarMapper {
 
 * Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where timezone UTC is used as the timezone.
 
-* Between `java.time.LocalDate` from Java 8 Date-Time package and `java.util.Date` where timezone UTC is used as the timezone.
+* Between `java.time.LocalDate` from Java 8 Date-Time package and `java.util.Date` / `java.sql.Date` where timezone UTC is used as the timezone.
 
 * Between `java.time.Instant` from Java 8 Date-Time package and `java.util.Date`.
 
