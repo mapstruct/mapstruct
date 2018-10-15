@@ -18,11 +18,15 @@ public interface Issue1552Mapper {
 
     Issue1552Mapper INSTANCE = Mappers.getMapper( Issue1552Mapper.class );
 
-    @Mapping(target = "first.value", constant = "constant")
-    @Mapping(target = "second.value", source = "sourceTwo")
+    @Mappings({
+        @Mapping(target = "first.value", constant = "constant"),
+        @Mapping(target = "second.value", source = "sourceTwo")
+    })
     Target twoArgsWithConstant(String sourceOne, String sourceTwo);
 
-    @Mapping(target = "first.value", expression = "java(\"expression\")")
-    @Mapping(target = "second.value", source = "sourceTwo")
+    @Mappings({
+        @Mapping(target = "first.value", expression = "java(\"expression\")"),
+        @Mapping(target = "second.value", source = "sourceTwo")
+    })
     Target twoArgsWithExpression(String sourceOne, String sourceTwo);
 }

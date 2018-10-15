@@ -21,13 +21,17 @@ public interface SourceTargetMapperNonMatchingName {
 
     SourceTargetMapperNonMatchingName INSTANCE = Mappers.getMapper( SourceTargetMapperNonMatchingName.class );
 
-    @Mapping(source = "stringPropX", target = "stringPropY")
-    @Mapping(source = "integerPropX", target = "integerPropY")
-    @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
     Target forward(Source source);
 
     @InheritInverseConfiguration(name = "blah")
-    @Mapping(target = "someConstantDownstream", constant = "test")
-    @Mapping(target = "propertyToIgnoreDownstream", ignore = true)
+    @Mappings({
+        @Mapping(target = "someConstantDownstream", constant = "test"),
+        @Mapping(target = "propertyToIgnoreDownstream", ignore = true)
+    })
     Source reverse(Target target);
 }

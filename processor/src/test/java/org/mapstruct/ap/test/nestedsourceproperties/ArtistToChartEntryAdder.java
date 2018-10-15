@@ -21,6 +21,8 @@ public interface ArtistToChartEntryAdder {
 
     ArtistToChartEntryAdder MAPPER = Mappers.getMapper( ArtistToChartEntryAdder.class );
 
-    @Mapping(target = "positions", source = "chart.song.positions")
+    @Mappings({
+        @Mapping(target = "positions", source = "chart.song.positions"),
+    })
     ChartPositions map(Chart chart);
 }

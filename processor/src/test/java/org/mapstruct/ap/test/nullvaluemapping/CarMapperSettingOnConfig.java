@@ -24,9 +24,11 @@ public interface CarMapperSettingOnConfig {
 
     CarMapperSettingOnConfig INSTANCE = Mappers.getMapper( CarMapperSettingOnConfig.class );
 
-    @Mapping(target = "seatCount", source = "numberOfSeats")
-    @Mapping(target = "model", constant = "ModelT")
-    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
+    @Mappings({
+        @Mapping(target = "seatCount", source = "numberOfSeats"),
+        @Mapping(target = "model", constant = "ModelT"),
+        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
+    })
     CarDto carToCarDto(Car car);
 
     @IterableMapping(dateFormat = "dummy")

@@ -18,7 +18,9 @@ public interface Issue1320Mapper {
 
     Issue1320Mapper INSTANCE = Mappers.getMapper( Issue1320Mapper.class );
 
-    @Mapping(target = "address.city.cityName", constant = "myCity")
-    @Mapping(target = "address.city.stateName", constant = "myState")
+    @Mappings({
+        @Mapping(target = "address.city.cityName", constant = "myCity"),
+        @Mapping(target = "address.city.stateName", constant = "myState")
+    })
     Target map(Integer dummy);
 }

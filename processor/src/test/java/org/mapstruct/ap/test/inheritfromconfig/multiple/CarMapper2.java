@@ -16,12 +16,16 @@ import org.mapstruct.factory.Mappers;
 public abstract class CarMapper2 {
     public static final CarMapper2 MAPPER = Mappers.getMapper( CarMapper2.class );
 
-    @Mapping(target = "maker", source = "manufacturer")
-    @Mapping(target = "seatCount", source = "numberOfSeats")
+    @Mappings({
+        @Mapping(target = "maker", source = "manufacturer"),
+        @Mapping(target = "seatCount", source = "numberOfSeats")
+    })
     public abstract Car2Dto mapToBase(Car2Entity car);
 
-    @Mapping(target = "manufacturer", constant = "ford")
-    @Mapping(target = "numberOfSeats", ignore = true)
+    @Mappings({
+        @Mapping(target = "manufacturer", constant = "ford"),
+        @Mapping(target = "numberOfSeats", ignore = true)
+    })
     public abstract Car2Entity mapFromBase(Car2Dto carDto);
 
     @InheritConfiguration(name = "mapToBase")

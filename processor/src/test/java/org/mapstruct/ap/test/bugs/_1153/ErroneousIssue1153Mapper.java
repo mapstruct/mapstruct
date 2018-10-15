@@ -15,11 +15,13 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface ErroneousIssue1153Mapper {
 
-    @Mapping( target = "readOnly", source = "nonNested")
-    @Mapping( target = "nestedTarget.readOnly", source = "nestedSource.nested")
-    @Mapping( target = "nestedTarget.writable", source = "nestedSource.writable")
-    @Mapping( target = "nestedTarget2.readOnly", ignore = true)
-    @Mapping( target = "nestedTarget2.writable2", source = "nestedSource.writable")
+    @Mappings( {
+        @Mapping( target = "readOnly", source = "nonNested"),
+        @Mapping( target = "nestedTarget.readOnly", source = "nestedSource.nested"),
+        @Mapping( target = "nestedTarget.writable", source = "nestedSource.writable"),
+        @Mapping( target = "nestedTarget2.readOnly", ignore = true),
+        @Mapping( target = "nestedTarget2.writable2", source = "nestedSource.writable"),
+    } )
     Target map(Source source);
 
     class Source {

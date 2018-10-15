@@ -20,7 +20,9 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(target = "sourceId", source = "id", defaultExpression = "java( String.valueOf( \"test\" ) )")
-    @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date( 30L ))")
+    @Mappings({
+        @Mapping(target = "sourceId", source = "id", defaultExpression = "java( String.valueOf( \"test\" ) )"),
+        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date( 30L ))")
+    })
     Target sourceToTarget(Source s);
 }

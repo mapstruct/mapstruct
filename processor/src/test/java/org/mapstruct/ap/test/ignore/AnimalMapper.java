@@ -17,10 +17,12 @@ public interface AnimalMapper {
 
     AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
 
-    @Mapping(target = "publicAge", ignore = true)
-    @Mapping(target = "age", ignore = true)
-    @Mapping(target = "publicColor", source = "publicColour", ignore = true)
-    @Mapping(target = "color", source = "colour", ignore = true)
+    @Mappings({
+        @Mapping(target = "publicAge", ignore = true),
+        @Mapping(target = "age", ignore = true),
+        @Mapping(target = "publicColor", source = "publicColour", ignore = true),
+        @Mapping(target = "color", source = "colour", ignore = true)
+    })
     AnimalDto animalToDto(Animal animal);
 
     @BeanMapping( ignoreByDefault = true )

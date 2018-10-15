@@ -16,8 +16,10 @@ import org.mapstruct.factory.Mappers;
 public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(target = "value1", expression = "java( SourceTargetMapper.mapA() )")
-    @Mapping(target = "value2", expression = "java( this.mapB() )")
+    @Mappings({
+        @Mapping(target = "value1", expression = "java( SourceTargetMapper.mapA() )"),
+        @Mapping(target = "value2", expression = "java( this.mapB() )")
+    })
     Target mapSourceToTarget(Source source);
 
     static String mapA() {

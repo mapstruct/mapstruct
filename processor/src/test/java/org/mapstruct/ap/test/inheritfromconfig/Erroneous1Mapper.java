@@ -22,7 +22,9 @@ public interface Erroneous1Mapper {
     @Mapping(target = "color", source = "colour")
     CarEntity toCarEntity(CarDto carDto);
 
-    @Mapping(target = "color", source = "colour")
-    @Mapping(target = "auditTrail", constant = "fixed")
+    @Mappings({
+        @Mapping(target = "color", source = "colour"),
+        @Mapping(target = "auditTrail", constant = "fixed")
+    })
     CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 }

@@ -14,8 +14,10 @@ import org.mapstruct.factory.Mappers;
 public interface OrderDemoMapper {
     OrderDemoMapper INSTANCE = Mappers.getMapper( OrderDemoMapper.class );
 
-    @Mapping(target = "field0", dependsOn = "field2")
-    @Mapping(target = "order", ignore = true)
+    @Mappings({
+        @Mapping(target = "field0", dependsOn = "field2"),
+        @Mapping(target = "order", ignore = true)
+    })
     OrderedTarget orderedWithDependsOn(OrderedSource source);
 
     @Mapping(target = "order", ignore = true)

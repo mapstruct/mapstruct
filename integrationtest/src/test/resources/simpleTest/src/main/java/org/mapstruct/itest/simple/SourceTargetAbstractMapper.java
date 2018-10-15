@@ -15,13 +15,17 @@ public abstract class SourceTargetAbstractMapper {
 
     public static SourceTargetAbstractMapper INSTANCE = Mappers.getMapper( SourceTargetAbstractMapper.class );
 
-    @Mapping(source = "qax", target = "baz")
-    @Mapping(source = "baz", target = "qax")
-    @Mapping(source = "forNested.value", target = "fromNested")
+    @Mappings({
+        @Mapping(source = "qax", target = "baz"),
+        @Mapping(source = "baz", target = "qax"),
+        @Mapping(source = "forNested.value", target = "fromNested")
+    })
     public abstract Target sourceToTarget(Source source);
 
-    @Mapping(target = "forNested", ignore = true)
-    @Mapping(target = "extendsBound", ignore = true)
+    @Mappings({
+        @Mapping(target = "forNested", ignore = true),
+        @Mapping(target = "extendsBound", ignore = true)
+    })
     public abstract Source targetToSource(Target target);
 
     protected void isNeverCalled(Source source) {

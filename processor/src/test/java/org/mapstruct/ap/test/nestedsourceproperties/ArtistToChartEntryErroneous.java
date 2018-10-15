@@ -20,12 +20,14 @@ public interface ArtistToChartEntryErroneous {
 
     ArtistToChartEntryErroneous MAPPER = Mappers.getMapper( ArtistToChartEntryErroneous.class );
 
-    @Mapping(target = "chartName", ignore = true)
-    @Mapping(target = "songTitle", ignore = true)
-    @Mapping(target = "artistName", ignore = true)
-    @Mapping(target = "recordedAt", ignore = true)
-    @Mapping(target = "city", ignore = true)
-    @Mapping(target = "position", source = "position")
+    @Mappings({
+        @Mapping(target = "chartName", ignore = true),
+        @Mapping(target = "songTitle", ignore = true),
+        @Mapping(target = "artistName", ignore = true),
+        @Mapping(target = "recordedAt", ignore = true),
+        @Mapping(target = "city", ignore = true),
+        @Mapping(target = "position", source = "position")
+    } )
     ChartEntry forward(Integer position);
 
     @InheritInverseConfiguration

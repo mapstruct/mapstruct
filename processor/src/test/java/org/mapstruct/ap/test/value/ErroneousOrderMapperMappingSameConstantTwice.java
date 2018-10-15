@@ -20,9 +20,11 @@ public interface ErroneousOrderMapperMappingSameConstantTwice {
         ErroneousOrderMapperMappingSameConstantTwice.class
     );
 
-    @ValueMapping(source = "EXTRA", target = "SPECIAL")
-    @ValueMapping(source = "EXTRA", target = "DEFAULT")
-    @ValueMapping(source = "STANDARD", target = "DEFAULT")
-    @ValueMapping(source = "NORMAL", target = "DEFAULT")
+    @ValueMappings({
+        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
+        @ValueMapping(source = "EXTRA", target = "DEFAULT"),
+        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
+        @ValueMapping(source = "NORMAL", target = "DEFAULT")
+    })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

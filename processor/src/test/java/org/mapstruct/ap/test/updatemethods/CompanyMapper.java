@@ -24,8 +24,10 @@ public interface CompanyMapper {
 
     DepartmentInBetween toInBetween(DepartmentDto dto);
 
-    @Mapping( target = "employees", ignore = true )
-    @Mapping( target = "secretaryToEmployee", ignore = true )
+    @Mappings({
+        @Mapping( target = "employees", ignore = true ),
+        @Mapping( target = "secretaryToEmployee", ignore = true )
+    })
     void toDepartmentEntity(DepartmentInBetween dto, @MappingTarget DepartmentEntity entity);
 
 }

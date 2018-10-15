@@ -20,11 +20,13 @@ public interface SourceTargetMapperSingle {
 
     SourceTargetMapperSingle INSTANCE = Mappers.getMapper( SourceTargetMapperSingle.class );
 
-    @Mapping(target = "stringPropY", source = "stringPropX" )
-    @Mapping(target = "integerPropY", source = "integerPropX" )
-    @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested")
-    @Mapping(target = "constantProp", constant = "constant")
-    @Mapping(target = "expressionProp", expression = "java(\"expression\")")
+    @Mappings({
+        @Mapping(target = "stringPropY", source = "stringPropX" ),
+        @Mapping(target = "integerPropY", source = "integerPropX" ),
+        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
+        @Mapping(target = "constantProp", constant = "constant"),
+        @Mapping(target = "expressionProp", expression = "java(\"expression\")"),
+    })
     Target forwardCreate(Source s1);
 
     @InheritConfiguration

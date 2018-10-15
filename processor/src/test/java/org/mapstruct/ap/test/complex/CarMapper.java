@@ -23,8 +23,10 @@ public interface CarMapper {
 
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
-    @Mapping(source = "numberOfSeats", target = "seatCount")
-    @Mapping(source = "manufacturingDate", target = "manufacturingYear")
+    @Mappings({
+        @Mapping(source = "numberOfSeats", target = "seatCount"),
+        @Mapping(source = "manufacturingDate", target = "manufacturingYear")
+    })
     CarDto carToCarDto(Car car);
 
     @InheritInverseConfiguration

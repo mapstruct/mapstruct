@@ -17,9 +17,12 @@ import org.mapstruct.factory.Mappers;
 public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "name", target = "name1")
-    @Mapping(source = "name", target = "name2")
-    @Mapping(source = "timeAndFormat", target = "time")
-    @Mapping(source = "timeAndFormat", target = "format")
+    @Mappings(
+        {
+            @Mapping(source = "name", target = "name1"),
+            @Mapping(source = "name", target = "name2"),
+            @Mapping(source = "timeAndFormat", target = "time"),
+            @Mapping(source = "timeAndFormat", target = "format")
+        })
     Target sourceToTarget(Source s);
 }

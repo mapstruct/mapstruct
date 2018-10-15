@@ -22,18 +22,22 @@ public interface SourceTargetMapperAmbiguous3 {
 
     SourceTargetMapperAmbiguous3 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous3.class );
 
-    @Mapping(target = "stringPropY", source = "stringPropX" )
-    @Mapping(target = "integerPropY", source = "integerPropX" )
-    @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested")
-    @Mapping(target = "constantProp", constant = "constant")
-    @Mapping(target = "expressionProp", expression = "java(\"expression\")")
+    @Mappings({
+        @Mapping(target = "stringPropY", source = "stringPropX" ),
+        @Mapping(target = "integerPropY", source = "integerPropX" ),
+        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
+        @Mapping(target = "constantProp", constant = "constant"),
+        @Mapping(target = "expressionProp", expression = "java(\"expression\")"),
+    })
     Target forwardCreate(Source source);
 
-    @Mapping(target = "stringPropY", source = "stringPropX" )
-    @Mapping(target = "integerPropY", source = "integerPropX" )
-    @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested")
-    @Mapping(target = "constantProp", constant = "constant")
-    @Mapping(target = "expressionProp", expression = "java(\"expression\")")
+    @Mappings({
+        @Mapping(target = "stringPropY", source = "stringPropX" ),
+        @Mapping(target = "integerPropY", source = "integerPropX" ),
+        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
+        @Mapping(target = "constantProp", constant = "constant"),
+        @Mapping(target = "expressionProp", expression = "java(\"expression\")"),
+    })
     void forwardCreate(Source source, @MappingTarget Target target);
 
     @InheritConfiguration(name = "forwardCreate")

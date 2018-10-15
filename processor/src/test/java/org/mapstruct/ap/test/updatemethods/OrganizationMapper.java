@@ -20,14 +20,18 @@ public interface OrganizationMapper {
 
     OrganizationMapper INSTANCE = Mappers.getMapper( OrganizationMapper.class );
 
-    @Mapping(target = "type", constant = "commercial")
-    @Mapping(target = "typeNr", constant = "5")
+    @Mappings({
+        @Mapping(target = "type", constant = "commercial"),
+        @Mapping(target = "typeNr", constant = "5")
+    })
     void toOrganizationEntity(OrganizationDto dto, @MappingTarget OrganizationEntity entity);
 
     void toCompanyEntity(CompanyDto dto, @MappingTarget CompanyEntity entity);
 
-    @Mapping( target = "employees", ignore = true )
-    @Mapping( target = "secretaryToEmployee", ignore = true )
+    @Mappings({
+        @Mapping( target = "employees", ignore = true ),
+        @Mapping( target = "secretaryToEmployee", ignore = true )
+    })
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
     @Mapping(source = "type", target = "type")

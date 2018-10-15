@@ -17,7 +17,9 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 @Mapper(config = FieldSpringConfig.class)
 public interface GenderSpringFieldMapper {
 
-    @ValueMapping(source = "MALE", target = "M")
-    @ValueMapping(source = "FEMALE", target = "F")
+    @ValueMappings({
+        @ValueMapping(source = "MALE", target = "M"),
+        @ValueMapping(source = "FEMALE", target = "F")
+    })
     GenderDto mapToDto(Gender gender);
 }

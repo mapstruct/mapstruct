@@ -15,8 +15,10 @@ public interface ExpandingMapper {
 
     ExpandingMapper INSTANCE = Mappers.getMapper( ExpandingMapper.class );
 
-    @Mapping(target = "articleCount", source = "count")
-    @Mapping(target = "first.description", source = "article1")
-    @Mapping(target = "second", ignore = true)
+    @Mappings({
+        @Mapping(target = "articleCount", source = "count"),
+        @Mapping(target = "first.description", source = "article1"),
+        @Mapping(target = "second", ignore = true)
+    })
     ImmutableExpandedStock writeToNestedProperty(FlattenedStock source);
 }

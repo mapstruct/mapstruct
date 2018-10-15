@@ -22,6 +22,8 @@ public interface ReleaseMapper {
 
     ReleaseMapper INSTANCE = Mappers.getMapper( ReleaseMapper.class );
 
-    @Mapping( target = "title", qualifiedBy = { TitleTranslator.class }, qualifiedByName = { "EnglishToGerman" } )
+    @Mappings( {
+        @Mapping( target = "title", qualifiedBy = { TitleTranslator.class }, qualifiedByName = { "EnglishToGerman" } )
+    } )
     TargetRelease toGerman( SourceRelease movies );
 }

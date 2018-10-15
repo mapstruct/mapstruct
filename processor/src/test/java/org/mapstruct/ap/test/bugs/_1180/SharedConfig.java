@@ -16,7 +16,9 @@ import org.mapstruct.Mappings;
 @MapperConfig
 public interface SharedConfig {
 
-    @Mapping(target = "targetProperty", source = "sourceProperty.nonExistant")
+    @Mappings({
+        @Mapping(target = "targetProperty", source = "sourceProperty.nonExistant")
+    })
     Target map(Source source);
 
 }

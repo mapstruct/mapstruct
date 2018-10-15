@@ -13,8 +13,10 @@ import org.mapstruct.Mappings;
 @Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface SimpleBuilderMapper {
 
-    @Mapping(target = "name", source = "fullName")
-    @Mapping(target = "job", constant = "programmer")
-    @Mapping(target = "city", expression = "java(\"Bengalore\")")
+    @Mappings({
+        @Mapping(target = "name", source = "fullName"),
+        @Mapping(target = "job", constant = "programmer"),
+        @Mapping(target = "city", expression = "java(\"Bengalore\")")
+    })
     SimpleImmutablePerson toImmutable(SimpleMutablePerson source);
 }

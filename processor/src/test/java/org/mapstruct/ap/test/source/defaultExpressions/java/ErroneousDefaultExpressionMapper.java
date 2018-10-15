@@ -18,7 +18,9 @@ import java.util.UUID;
 @Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionMapper {
 
-    @Mapping(target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()")
-    @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+    @Mappings({
+        @Mapping(target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()"),
+        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+    })
     Target sourceToTarget(Source s);
 }

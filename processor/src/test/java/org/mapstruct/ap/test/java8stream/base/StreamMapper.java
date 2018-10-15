@@ -20,8 +20,10 @@ public interface StreamMapper {
 
     StreamMapper INSTANCE = Mappers.getMapper( StreamMapper.class );
 
-    @Mapping( source = "stream", target = "targetStream")
-    @Mapping( source = "sourceElements", target = "targetElements")
+    @Mappings( {
+        @Mapping( source = "stream", target = "targetStream"),
+        @Mapping( source = "sourceElements", target = "targetElements")
+    } )
     Target map(Source source);
 
     @InheritInverseConfiguration

@@ -22,11 +22,13 @@ public interface SourceTargetMapperNonMatchingName {
 
     SourceTargetMapperNonMatchingName INSTANCE = Mappers.getMapper( SourceTargetMapperNonMatchingName.class );
 
-    @Mapping(target = "stringPropY", source = "stringPropX" )
-    @Mapping(target = "integerPropY", source = "integerPropX" )
-    @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested")
-    @Mapping(target = "constantProp", constant = "constant")
-    @Mapping(target = "expressionProp", expression = "java(\"expression\")")
+   @Mappings({
+        @Mapping(target = "stringPropY", source = "stringPropX" ),
+        @Mapping(target = "integerPropY", source = "integerPropX" ),
+        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
+        @Mapping(target = "constantProp", constant = "constant"),
+        @Mapping(target = "expressionProp", expression = "java(\"expression\")")
+    })
     Target forwardCreate(Source source);
 
     @InheritConfiguration( name = "blah" )

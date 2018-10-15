@@ -18,13 +18,15 @@ public interface ErroneousMapper5 {
 
     ErroneousMapper5 INSTANCE = Mappers.getMapper( ErroneousMapper5.class );
 
-    @Mapping(target = "stringConstant", constant = "stringConstant")
-    @Mapping(target = "emptyStringConstant", constant = "")
-    @Mapping(target = "integerConstant", constant = "14")
-    @Mapping(target = "longWrapperConstant", constant = "3001L")
-    @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014")
-    @Mapping(target = "nameConstants", constant = "jack-jill-tom")
-    @Mapping(target = "country", constant = "DENMARK")
+    @Mappings({
+        @Mapping(target = "stringConstant", constant = "stringConstant"),
+        @Mapping(target = "emptyStringConstant", constant = ""),
+        @Mapping(target = "integerConstant", constant = "14"),
+        @Mapping(target = "longWrapperConstant", constant = "3001L"),
+        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping(target = "nameConstants", constant = "jack-jill-tom"),
+        @Mapping(target = "country", constant = "DENMARK")
+    })
     Target sourceToTarget(Source s);
 
     Source targetToSource(Target t);

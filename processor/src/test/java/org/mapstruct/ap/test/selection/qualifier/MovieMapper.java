@@ -25,7 +25,9 @@ public interface MovieMapper {
 
     MovieMapper INSTANCE = Mappers.getMapper( MovieMapper.class );
 
-    @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
+    @Mappings( {
+        @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
+    } )
     GermanRelease toGerman( OriginalRelease movies );
 
 }

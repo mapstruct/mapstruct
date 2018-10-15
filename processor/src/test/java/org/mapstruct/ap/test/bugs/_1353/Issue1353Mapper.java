@@ -18,6 +18,8 @@ public interface Issue1353Mapper {
 
     Issue1353Mapper INSTANCE = Mappers.getMapper( Issue1353Mapper.class );
 
-    @Mapping (target = "string2 ", source = " source.string1")
+    @Mappings ({
+        @Mapping (target = "string2 ", source = " source.string1")
+    })
     Target sourceToTarget(Source source);
 }

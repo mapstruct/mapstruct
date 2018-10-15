@@ -23,9 +23,11 @@ public interface MapperWithoutQualifiedBy {
 
     MapperWithoutQualifiedBy INSTANCE = Mappers.getMapper( MapperWithoutQualifiedBy.class );
 
-    @Mapping( target = "title", source = "title" )
-    @Mapping( target = "keyWords", ignore = true )
-    @Mapping( target = "facts", ignore = true )
+    @Mappings( {
+        @Mapping( target = "title", source = "title" ),
+        @Mapping( target = "keyWords", ignore = true ),
+        @Mapping( target = "facts", ignore = true )
+    } )
     GermanRelease map( OriginalRelease movies );
 
 }

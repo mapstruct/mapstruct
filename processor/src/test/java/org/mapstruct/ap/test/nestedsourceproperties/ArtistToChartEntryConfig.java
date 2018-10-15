@@ -19,8 +19,10 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 @MapperConfig( unmappedTargetPolicy = ReportingPolicy.ERROR )
 public interface ArtistToChartEntryConfig {
 
-    @Mapping(target = "songTitle", source = "title")
-    @Mapping(target = "artistName", source = "artist.name")
-    @Mapping(target = "chartName", ignore = true )
+    @Mappings({
+        @Mapping(target = "songTitle", source = "title"),
+        @Mapping(target = "artistName", source = "artist.name"),
+        @Mapping(target = "chartName", ignore = true )
+    })
     BaseChartEntry mapForwardConfig( Song song );
 }

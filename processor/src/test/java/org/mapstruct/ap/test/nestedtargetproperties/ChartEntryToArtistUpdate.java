@@ -26,13 +26,15 @@ public abstract class ChartEntryToArtistUpdate {
 
     public static final ChartEntryToArtistUpdate MAPPER = Mappers.getMapper( ChartEntryToArtistUpdate.class );
 
-    @Mapping(target = "type", ignore = true)
-    @Mapping(target = "name", source = "chartName")
-    @Mapping(target = "song.title", source = "songTitle" )
-    @Mapping(target = "song.artist.name", source = "artistName" )
-    @Mapping(target = "song.artist.label.studio.name", source = "recordedAt")
-    @Mapping(target = "song.artist.label.studio.city", source = "city" )
-    @Mapping(target = "song.positions", source = "position" )
+    @Mappings({
+        @Mapping(target = "type", ignore = true),
+        @Mapping(target = "name", source = "chartName"),
+        @Mapping(target = "song.title", source = "songTitle" ),
+        @Mapping(target = "song.artist.name", source = "artistName" ),
+        @Mapping(target = "song.artist.label.studio.name", source = "recordedAt"),
+        @Mapping(target = "song.artist.label.studio.city", source = "city" ),
+        @Mapping(target = "song.positions", source = "position" )
+    })
     public abstract void map(ChartEntry chartEntry, @MappingTarget Chart chart );
 
     protected List<Integer> mapPosition(Integer in) {

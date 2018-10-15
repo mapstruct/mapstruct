@@ -22,20 +22,23 @@ public interface SourceTargetMapper {
 
     String NUMBER_FORMAT = "##.00";
 
-    @Mapping( target = "i", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "ii", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "d", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "dd", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "f", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "ff", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "l", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "ll", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "b", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "bb", numberFormat = NUMBER_FORMAT )
-    @Mapping( target = "complex1", numberFormat = "##0.##E0" )
-    @Mapping( target = "complex2", numberFormat = "$#.00" )
-    @Mapping( target = "bigDecimal1", numberFormat = "#0.#E0" )
-    @Mapping( target = "bigInteger1", numberFormat = "0.#############E0" )
+    @Mappings( {
+            @Mapping( target = "i", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "ii", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "d", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "dd", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "f", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "ff", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "l", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "ll", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "b", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "bb", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "complex1", numberFormat = "##0.##E0" ),
+            @Mapping( target = "complex2", numberFormat = "$#.00" ),
+            @Mapping( target = "bigDecimal1", numberFormat = "#0.#E0" ),
+            @Mapping( target = "bigInteger1", numberFormat = "0.#############E0" )
+
+    } )
     Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration

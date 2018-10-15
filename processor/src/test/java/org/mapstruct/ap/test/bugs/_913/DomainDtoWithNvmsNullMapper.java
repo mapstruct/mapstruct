@@ -22,11 +22,13 @@ public interface DomainDtoWithNvmsNullMapper {
 
     DomainDtoWithNvmsNullMapper INSTANCE = Mappers.getMapper( DomainDtoWithNvmsNullMapper.class );
 
-    @Mapping(target = "strings", source = "strings")
-    @Mapping(target = "longs", source = "strings")
-    @Mapping(target = "stringsInitialized", source = "stringsInitialized")
-    @Mapping(target = "longsInitialized", source = "stringsInitialized")
-    @Mapping(target = "stringsWithDefault", source = "stringsWithDefault", defaultValue = "3")
+    @Mappings({
+        @Mapping(target = "strings", source = "strings"),
+        @Mapping(target = "longs", source = "strings"),
+        @Mapping(target = "stringsInitialized", source = "stringsInitialized"),
+        @Mapping(target = "longsInitialized", source = "stringsInitialized"),
+        @Mapping(target = "stringsWithDefault", source = "stringsWithDefault", defaultValue = "3")
+    })
     Domain create(Dto source);
 
     @InheritConfiguration( name = "create" )

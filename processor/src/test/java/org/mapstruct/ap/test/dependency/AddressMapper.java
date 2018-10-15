@@ -15,11 +15,15 @@ public interface AddressMapper {
 
     AddressMapper INSTANCE = Mappers.getMapper( AddressMapper.class );
 
-    @Mapping(target = "surName", source = "lastName", dependsOn = "middleName")
-    @Mapping(target = "middleName", dependsOn = "givenName")
-    @Mapping(target = "givenName", source = "firstName")
+    @Mappings({
+        @Mapping(target = "surName", source = "lastName", dependsOn = "middleName"),
+        @Mapping(target = "middleName", dependsOn = "givenName"),
+        @Mapping(target = "givenName", source = "firstName")
+    })
     AddressDto addressToDto(Address address);
 
-    @Mapping(target = "lastName", dependsOn = { "firstName", "middleName" })
+    @Mappings({
+        @Mapping(target = "lastName", dependsOn = { "firstName", "middleName" })
+    })
     PersonDto personToDto(Person person);
 }

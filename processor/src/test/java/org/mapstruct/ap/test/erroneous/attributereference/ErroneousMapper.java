@@ -12,9 +12,11 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface ErroneousMapper {
 
-    @Mapping(source = "bar", target = "foo")
-    @Mapping(source = "source1.foo", target = "foo")
-    @Mapping(source = "foo", target = "bar")
+    @Mappings({
+        @Mapping(source = "bar", target = "foo"),
+        @Mapping(source = "source1.foo", target = "foo"),
+        @Mapping(source = "foo", target = "bar")
+    })
     Target sourceToTarget(Source source);
 
     AnotherTarget sourceToAnotherTarget(Source source);

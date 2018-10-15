@@ -22,16 +22,20 @@ public abstract class ArtistToChartEntryWithIgnoresReverse {
     public static final ArtistToChartEntryWithIgnoresReverse MAPPER =
         Mappers.getMapper( ArtistToChartEntryWithIgnoresReverse.class );
 
-    @Mapping(target = "songTitle", source = "title")
-    @Mapping(target = "artistName", source = "artist.name")
-    @Mapping(target = "recordedAt", source = "artist.label.studio.name")
-    @Mapping(target = "city", source = "artist.label.studio.city")
-    @Mapping(target = "position", ignore = true)
-    @Mapping(target = "chartName", ignore = true )
+    @Mappings({
+        @Mapping(target = "songTitle", source = "title"),
+        @Mapping(target = "artistName", source = "artist.name"),
+        @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
+        @Mapping(target = "city", source = "artist.label.studio.city"),
+        @Mapping(target = "position", ignore = true),
+        @Mapping(target = "chartName", ignore = true )
+    })
     abstract ChartEntry mapForward(Song song);
 
     @InheritInverseConfiguration
-    @Mapping(target = "positions", ignore = true)
-    @Mapping(target = "artist", ignore = true)
+    @Mappings({
+        @Mapping(target = "positions", ignore = true),
+        @Mapping(target = "artist", ignore = true)
+    })
     abstract Song mapReverse(ChartEntry ce);
 }

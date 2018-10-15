@@ -21,28 +21,34 @@ public interface ArtistToChartEntry {
 
     ArtistToChartEntry MAPPER = Mappers.getMapper( ArtistToChartEntry.class );
 
-    @Mapping(target = "chartName", source = "chart.name")
-    @Mapping(target = "songTitle", source = "song.title")
-    @Mapping(target = "artistName", source = "song.artist.name")
-    @Mapping(target = "recordedAt", source = "song.artist.label.studio.name")
-    @Mapping(target = "city", source = "song.artist.label.studio.city")
-    @Mapping(target = "position", source = "position")
+    @Mappings({
+        @Mapping(target = "chartName", source = "chart.name"),
+        @Mapping(target = "songTitle", source = "song.title"),
+        @Mapping(target = "artistName", source = "song.artist.name"),
+        @Mapping(target = "recordedAt", source = "song.artist.label.studio.name"),
+        @Mapping(target = "city", source = "song.artist.label.studio.city"),
+        @Mapping(target = "position", source = "position")
+    })
     ChartEntry map(Chart chart, Song song, Integer position);
 
-    @Mapping(target = "chartName", ignore = true)
-    @Mapping(target = "songTitle", source = "title")
-    @Mapping(target = "artistName", source = "artist.name")
-    @Mapping(target = "recordedAt", source = "artist.label.studio.name")
-    @Mapping(target = "city", source = "artist.label.studio.city")
-    @Mapping(target = "position", ignore = true)
+    @Mappings({
+        @Mapping(target = "chartName", ignore = true),
+        @Mapping(target = "songTitle", source = "title"),
+        @Mapping(target = "artistName", source = "artist.name"),
+        @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
+        @Mapping(target = "city", source = "artist.label.studio.city"),
+        @Mapping(target = "position", ignore = true)
+    })
     ChartEntry map(Song song);
 
-    @Mapping(target = "chartName", source = "name")
-    @Mapping(target = "songTitle", ignore = true)
-    @Mapping(target = "artistName", ignore = true)
-    @Mapping(target = "recordedAt", ignore = true)
-    @Mapping(target = "city", ignore = true)
-    @Mapping(target = "position", ignore = true)
+    @Mappings({
+        @Mapping(target = "chartName", source = "name"),
+        @Mapping(target = "songTitle", ignore = true),
+        @Mapping(target = "artistName", ignore = true),
+        @Mapping(target = "recordedAt", ignore = true),
+        @Mapping(target = "city", ignore = true),
+        @Mapping(target = "position", ignore = true)
+    })
     ChartEntry map(Chart name);
 
 }

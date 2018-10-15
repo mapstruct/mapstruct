@@ -19,8 +19,10 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface AutoInheritedDriverConfig {
-    @Mapping(target = "primaryKey", source = "dto.id")
-    @Mapping(target = "auditTrail", ignore = true)
-    @Mapping(target = "driverName", source = "drv.name")
+    @Mappings({
+        @Mapping(target = "primaryKey", source = "dto.id"),
+        @Mapping(target = "auditTrail", ignore = true),
+        @Mapping(target = "driverName", source = "drv.name")
+    })
     CarWithDriverEntity baseDtoToEntity(DriverDto drv, BaseVehicleDto dto);
 }

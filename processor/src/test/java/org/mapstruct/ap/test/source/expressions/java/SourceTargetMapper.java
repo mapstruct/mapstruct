@@ -21,11 +21,15 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" )
-    @Mapping( target = "anotherProp", ignore = true )
+    @Mappings( {
+        @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" ),
+        @Mapping( target = "anotherProp", ignore = true )
+    } )
     Target sourceToTarget( Source s );
 
-    @Mapping( target = "timeAndFormat",  expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))")
-    @Mapping( target = "anotherProp", ignore = true )
+    @Mappings( {
+        @Mapping( target = "timeAndFormat",  expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))"),
+        @Mapping( target = "anotherProp", ignore = true )
+    } )
     Target sourceToTargetWithMappingTarget(Source s, @MappingTarget Target t);
 }

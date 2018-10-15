@@ -17,7 +17,9 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 @Mapper(config = FieldJsr330Config.class)
 public interface GenderJsr330FieldMapper {
 
-    @ValueMapping(source = "MALE", target = "M")
-    @ValueMapping(source = "FEMALE", target = "F")
+    @ValueMappings({
+        @ValueMapping(source = "MALE", target = "M"),
+        @ValueMapping(source = "FEMALE", target = "F")
+    })
     GenderDto mapToDto(Gender gender);
 }

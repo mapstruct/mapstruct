@@ -28,8 +28,10 @@ public interface Erroneous2Mapper {
     CarEntity toCarEntity2(CarDto carDto);
 
     @InheritConfiguration(name = "toCarEntity1")
-    @Mapping(target = "color", ignore = true)
-    @Mapping(target = "auditTrail", ignore = true)
-    @Mapping(target = "primaryKey", ignore = true)
+    @Mappings({
+        @Mapping(target = "color", ignore = true),
+        @Mapping(target = "auditTrail", ignore = true),
+        @Mapping(target = "primaryKey", ignore = true)
+    })
     void toCarEntity3(CarDto carDto, @MappingTarget CarEntity entity);
 }

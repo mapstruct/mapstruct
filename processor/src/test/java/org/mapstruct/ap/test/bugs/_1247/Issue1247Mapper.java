@@ -20,15 +20,19 @@ public interface Issue1247Mapper {
 
     Issue1247Mapper INSTANCE = Mappers.getMapper( Issue1247Mapper.class );
 
-    @Mapping(target = "internal", source = "in")
-    @Mapping(target = "internal.internalData.list", source = "list")
+    @Mappings( {
+        @Mapping(target = "internal", source = "in"),
+        @Mapping(target = "internal.internalData.list", source = "list")
+    } )
     DtoOut map(DtoIn in, List<String> list);
 
-    @Mapping(target = "internal", source = "in")
-    @Mapping(target = "internal.expression", expression = "java(\"testingExpression\")")
-    @Mapping(target = "internal.internalData.list", source = "list")
-    @Mapping(target = "internal.internalData.defaultValue", source = "in.data2", defaultValue = "missing")
-    @Mapping(target = "constant", constant = "someConstant")
+    @Mappings( {
+        @Mapping(target = "internal", source = "in"),
+        @Mapping(target = "internal.expression", expression = "java(\"testingExpression\")"),
+        @Mapping(target = "internal.internalData.list", source = "list"),
+        @Mapping(target = "internal.internalData.defaultValue", source = "in.data2", defaultValue = "missing"),
+        @Mapping(target = "constant", constant = "someConstant")
+    } )
     OtherDtoOut mapWithConstantExpressionAndDefault(DtoIn in, List<String> list);
 
 }
