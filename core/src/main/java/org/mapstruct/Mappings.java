@@ -14,11 +14,9 @@ import java.lang.annotation.Target;
  * Configures the mappings of several bean attributes.
  *
  * @author Gunnar Morling
- * @deprecated Not needed with Java 8 as {@link Mapping} is defined as a repeatable annotation
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
-@Deprecated
 public @interface Mappings {
 
     /**
