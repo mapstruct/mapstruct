@@ -89,7 +89,7 @@ public class ForgedMethod implements Method {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
 
-        this.parameters = new ArrayList<Parameter>( 1 + additionalParameters.size() );
+        this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
         Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
         this.parameters.add( sourceParameter );
         this.parameters.addAll( additionalParameters );
@@ -99,7 +99,7 @@ public class ForgedMethod implements Method {
         this.contextProvidedMethods = parameterProvidedMethods;
 
         this.returnType = returnType;
-        this.thrownTypes = new ArrayList<Type>();
+        this.thrownTypes = new ArrayList<>();
         this.name = Strings.sanitizeIdentifierName( name );
         this.mapperConfiguration = mapperConfiguration;
         this.positionHintElement = positionHintElement;
@@ -117,7 +117,7 @@ public class ForgedMethod implements Method {
     public ForgedMethod(String name, ForgedMethod forgedMethod) {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
-        this.thrownTypes = new ArrayList<Type>();
+        this.thrownTypes = new ArrayList<>();
         this.mapperConfiguration = forgedMethod.mapperConfiguration;
         this.positionHintElement = forgedMethod.positionHintElement;
         this.history = forgedMethod.history;
@@ -236,7 +236,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public List<String> getParameterNames() {
-        List<String> parameterNames = new ArrayList<String>();
+        List<String> parameterNames = new ArrayList<>();
         for ( Parameter parameter : getParameters() ) {
             parameterNames.add( parameter.getName() );
         }

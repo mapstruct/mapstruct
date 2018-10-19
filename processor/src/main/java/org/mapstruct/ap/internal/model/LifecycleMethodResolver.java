@@ -76,7 +76,7 @@ public final class LifecycleMethodResolver {
             .getAllProvidedMethodsInParameterOrder( method.getContextParameters() );
 
         List<SourceMethod> availableMethods =
-            new ArrayList<SourceMethod>( methodsProvidedByParams.size() + sourceModelMethods.size() );
+            new ArrayList<>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
         for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
             availableMethods.add( methodProvidedByParams );
@@ -118,7 +118,7 @@ public final class LifecycleMethodResolver {
             MappingBuilderContext ctx,
             Set<String> existingVariableNames) {
 
-        List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
+        List<LifecycleCallbackMethodReference> result = new ArrayList<>();
         for ( SelectedMethod<SourceMethod> candidate : candidates ) {
             Parameter providingParameter =
                 method.getContextProvidedMethods().getParameterForProvidedMethod( candidate.getMethod() );
@@ -146,7 +146,7 @@ public final class LifecycleMethodResolver {
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<SourceMethod>();
+        List<SourceMethod> result = new ArrayList<>();
         for ( SourceMethod method : methods ) {
             if ( method.isBeforeMappingMethod() ) {
                 result.add( method );
@@ -157,7 +157,7 @@ public final class LifecycleMethodResolver {
     }
 
     private static List<SourceMethod> filterAfterMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<SourceMethod>();
+        List<SourceMethod> result = new ArrayList<>();
         for ( SourceMethod method : methods ) {
             if ( method.isAfterMappingMethod() ) {
                 result.add( method );

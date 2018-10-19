@@ -78,7 +78,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         SourceRHS sourceRHS = new SourceRHS(
             loopVariableName,
             sourceElementType,
-            new HashSet<String>(),
+            new HashSet<>(),
             errorMessagePart
         );
         Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
@@ -128,7 +128,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, method.getResultType(), null, ctx );
         }
 
-        Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+        Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
         existingVariables.add( loopVariableName );
 
         List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(

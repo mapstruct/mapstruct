@@ -47,7 +47,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isDirectAssignment() ) {
             if ( targetType.getImplementationType() != null ) {
                 imported.addAll( targetType.getImplementationType().getImportTypes() );

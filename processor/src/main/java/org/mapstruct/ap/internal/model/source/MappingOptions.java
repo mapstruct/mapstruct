@@ -129,7 +129,7 @@ public class MappingOptions {
      */
     public List<String> collectNestedDependsOn() {
 
-        List<String> nestedDependsOn = new ArrayList<String>();
+        List<String> nestedDependsOn = new ArrayList<>();
         for ( List<Mapping> mappingList : mappings.values() ) {
             for ( Mapping mapping : mappingList ) {
                 nestedDependsOn.addAll( mapping.getDependsOn() );
@@ -255,7 +255,7 @@ public class MappingOptions {
 
             }
 
-            Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
+            Map<String, List<Mapping>> newMappings = new HashMap<>();
 
             for ( List<Mapping> lmappings : inherited.getMappings().values() ) {
                 for ( Mapping mapping : lmappings ) {
@@ -266,7 +266,7 @@ public class MappingOptions {
                     if ( mapping != null ) {
                         List<Mapping> mappingsOfProperty = newMappings.get( mapping.getTargetName() );
                         if ( mappingsOfProperty == null ) {
-                            mappingsOfProperty = new ArrayList<Mapping>();
+                            mappingsOfProperty = new ArrayList<>();
                             newMappings.put( mapping.getTargetName(), mappingsOfProperty );
                         }
 
@@ -294,7 +294,7 @@ public class MappingOptions {
             writeType = writeType.getEffectiveType();
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
-        List<String> mappedPropertyNames = new ArrayList<String>();
+        List<String> mappedPropertyNames = new ArrayList<>();
         for ( String targetMappingName : mappings.keySet() ) {
             mappedPropertyNames.add( targetMappingName.split( "\\." )[0] );
         }
@@ -310,7 +310,7 @@ public class MappingOptions {
     private void filterNestedTargetIgnores( Map<String, List<Mapping>> mappings) {
 
         // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
-        Set<String> ignored = new HashSet<String>();
+        Set<String> ignored = new HashSet<>();
         for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
             Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
             if ( mapping.isIgnored() && mapping.getTargetReference().isValid() ) {
@@ -319,7 +319,7 @@ public class MappingOptions {
         }
 
         // collect all entries to remove (avoid concurrent modification)
-        Set<String> toBeRemoved = new HashSet<String>();
+        Set<String> toBeRemoved = new HashSet<>();
         for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
             Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
             TargetReference targetReference = mapping.getTargetReference();

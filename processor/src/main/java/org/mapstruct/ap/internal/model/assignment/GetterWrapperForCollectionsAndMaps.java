@@ -48,7 +48,7 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( getSourcePresenceCheckerReference() == null ) {
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }

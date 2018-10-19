@@ -34,7 +34,7 @@ public class InheritanceSelector implements MethodSelector {
 
         Type singleSourceType = first( sourceTypes );
 
-        List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
 
         // find the methods with the minimum distance regarding getParameter getParameter type

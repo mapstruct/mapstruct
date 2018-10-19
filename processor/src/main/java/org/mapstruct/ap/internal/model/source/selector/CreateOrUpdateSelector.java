@@ -38,8 +38,8 @@ public class CreateOrUpdateSelector implements MethodSelector {
             return methods;
         }
 
-        List<SelectedMethod<T>> createCandidates = new ArrayList<SelectedMethod<T>>();
-        List<SelectedMethod<T>> updateCandidates = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> createCandidates = new ArrayList<>();
+        List<SelectedMethod<T>> updateCandidates = new ArrayList<>();
         for ( SelectedMethod<T> method : methods ) {
             boolean isCreateCandidate = method.getMethod().getMappingTargetParameter() == null;
             if ( isCreateCandidate ) {

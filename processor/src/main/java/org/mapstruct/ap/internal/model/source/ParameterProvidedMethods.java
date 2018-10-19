@@ -30,7 +30,7 @@ public class ParameterProvidedMethods {
 
     private ParameterProvidedMethods(Map<Parameter, List<SourceMethod>> parameterToProvidedMethods) {
         this.parameterToProvidedMethods = parameterToProvidedMethods;
-        this.methodToProvidingParameter = new IdentityHashMap<SourceMethod, Parameter>();
+        this.methodToProvidingParameter = new IdentityHashMap<>();
         for ( Entry<Parameter, List<SourceMethod>> entry : parameterToProvidedMethods.entrySet() ) {
             for ( SourceMethod method : entry.getValue() ) {
                 methodToProvidingParameter.put( method, entry.getKey() );
@@ -44,7 +44,7 @@ public class ParameterProvidedMethods {
      *         methods of each parameter ordered based on their definition in that parameter's type.
      */
     public List<SourceMethod> getAllProvidedMethodsInParameterOrder(List<Parameter> orderedParameters) {
-        List<SourceMethod> result = new ArrayList<SourceMethod>();
+        List<SourceMethod> result = new ArrayList<>();
 
         for ( Parameter parameter : orderedParameters ) {
             List<SourceMethod> methods = parameterToProvidedMethods.get( parameter );
@@ -82,7 +82,7 @@ public class ParameterProvidedMethods {
 
     public static class Builder {
         private Map<Parameter, List<SourceMethod>> contextProvidedMethods =
-            new HashMap<Parameter, List<SourceMethod>>();
+            new HashMap<>();
 
         private Builder() {
         }

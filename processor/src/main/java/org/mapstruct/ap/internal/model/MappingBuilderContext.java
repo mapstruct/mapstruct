@@ -107,9 +107,9 @@ public class MappingBuilderContext {
     private final List<SourceMethod> sourceModel;
     private final List<MapperReference> mapperReferences;
     private final MappingResolver mappingResolver;
-    private final List<MappingMethod> mappingsToGenerate = new ArrayList<MappingMethod>();
+    private final List<MappingMethod> mappingsToGenerate = new ArrayList<>();
     private final Map<ForgedMethod, ForgedMethod> forgedMethodsUnderCreation =
-        new HashMap<ForgedMethod, ForgedMethod>(  );
+        new HashMap<>();
 
     public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
@@ -191,7 +191,7 @@ public class MappingBuilderContext {
     }
 
     public List<String> getNamesOfMappingsToGenerate() {
-        List<String> nameList = new ArrayList<String>();
+        List<String> nameList = new ArrayList<>();
         for ( MappingMethod method : mappingsToGenerate ) {
             nameList.add( method.getName() );
         }

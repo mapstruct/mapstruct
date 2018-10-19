@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,36 +21,23 @@ public class Collections {
     private Collections() {
     }
 
+    @SafeVarargs
     public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<T>();
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
+        Set<T> set = new HashSet<>( elements.length );
+        java.util.Collections.addAll( set, elements );
         return set;
     }
 
-    public static <T> List<T> newArrayList(T... elements) {
-        List<T> list = new ArrayList<T>();
-
-        list.addAll( Arrays.asList( elements ) );
-
-        return list;
-    }
-
+    @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<T>( collection );
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
+        Set<T> set = new HashSet<>( collection.size() + elements.length );
+        java.util.Collections.addAll( set, elements );
         return set;
     }
 
+    @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, Collection<T>... elements) {
-        Set<T> set = new HashSet<T>( collection );
+        Set<T> set = new HashSet<>( collection );
 
         for ( Collection<T> element : elements ) {
             set.addAll( element );
@@ -69,7 +55,7 @@ public class Collections {
     }
 
     public static <T> List<T> join(List<T> a, List<T> b) {
-        List<T> result = new ArrayList<T>( a.size() + b.size() );
+        List<T> result = new ArrayList<>( a.size() + b.size() );
 
         result.addAll( a );
         result.addAll( b );
@@ -77,14 +63,4 @@ public class Collections {
         return result;
     }
 
-    public static <E> boolean hasNonNullElements(Iterable<E> elements) {
-        if ( elements != null ) {
-            for ( E e : elements ) {
-                if ( e != null ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

@@ -42,7 +42,7 @@ public class AnnotationMapperReference extends MapperReference {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = new HashSet<Type>();
+        Set<Type> types = new HashSet<>();
         types.add( getType() );
 
         for ( Annotation annotation : annotations ) {

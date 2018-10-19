@@ -73,7 +73,7 @@ public class MethodMatcher {
     boolean matches(List<Type> sourceTypes, Type resultType) {
 
         // check & collect generic types.
-        Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
+        Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<>();
 
         if ( candidateMethod.getParameters().size() == sourceTypes.size() ) {
             int i = 0;

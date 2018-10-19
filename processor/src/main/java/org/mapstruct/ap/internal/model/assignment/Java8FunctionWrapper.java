@@ -31,7 +31,7 @@ public class Java8FunctionWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isDirectAssignment() && functionType != null ) {
             imported.add( functionType );
         }

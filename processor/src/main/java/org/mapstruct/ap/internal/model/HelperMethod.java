@@ -205,7 +205,7 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public List<String> getParameterNames() {
-        List<String> parameterNames = new ArrayList<String>( getParameters().size() );
+        List<String> parameterNames = new ArrayList<>( getParameters().size() );
         for ( Parameter parameter : getParameters() ) {
             parameterNames.add( parameter.getName() );
         }

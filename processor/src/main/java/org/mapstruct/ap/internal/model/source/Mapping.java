@@ -64,14 +64,14 @@ public class Mapping {
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
         ExecutableElement method, FormattingMessager messager, Types typeUtils) {
-        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
+        Map<String, List<Mapping>> mappings = new HashMap<>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
                 List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
                 if ( mappingsOfProperty == null ) {
-                    mappingsOfProperty = new ArrayList<Mapping>();
+                    mappingsOfProperty = new ArrayList<>();
                     mappings.put( mappingPrism.target(), mappingsOfProperty );
                 }
 

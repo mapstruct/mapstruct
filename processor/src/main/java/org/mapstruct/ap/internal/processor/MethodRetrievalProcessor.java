@@ -97,7 +97,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         TypeElement typeElement = asTypeElement( mapperConfig.config() );
-        List<SourceMethod> methods = new ArrayList<SourceMethod>();
+        List<SourceMethod> methods = new ArrayList<>();
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
 
             ExecutableType methodType = typeFactory.getMethodType( mapperConfig.config(), executable );
@@ -137,7 +137,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      */
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
                                                MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
-        List<SourceMethod> methods = new ArrayList<SourceMethod>();
+        List<SourceMethod> methods = new ArrayList<>();
 
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
             SourceMethod method = getMethod(
@@ -275,7 +275,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mapperConfig,
                 Collections.<SourceMethod> emptyList() );
 
-            List<SourceMethod> contextProvidedMethods = new ArrayList<SourceMethod>( contextParamMethods.size() );
+            List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
                 if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory() ) {
                     contextProvidedMethods.add( sourceMethod );
@@ -413,7 +413,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
 
-        Set<Type> contextParameterTypes = new HashSet<Type>();
+        Set<Type> contextParameterTypes = new HashSet<>();
         for ( Parameter contextParameter : contextParameters ) {
             if ( !contextParameterTypes.add( contextParameter.getType() ) ) {
                 messager.printMessage( method, Message.RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE );
@@ -498,14 +498,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
-        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
+        Map<String, List<Mapping>> mappings = new HashMap<>();
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
             if ( !mappings.containsKey( mappingAnnotation.target() ) ) {
-                mappings.put( mappingAnnotation.target(), new ArrayList<Mapping>() );
+                mappings.put( mappingAnnotation.target(), new ArrayList<>() );
             }
             Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
             if ( mapping != null ) {
@@ -529,7 +529,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private List<ValueMapping> getValueMappings(ExecutableElement method) {
-        List<ValueMapping> valueMappings = new ArrayList<ValueMapping>();
+        List<ValueMapping> valueMappings = new ArrayList<>();
 
         ValueMappingPrism mappingAnnotation = ValueMappingPrism.getInstanceOn( method );
         ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );

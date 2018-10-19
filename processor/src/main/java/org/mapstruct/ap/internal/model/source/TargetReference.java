@@ -178,7 +178,7 @@ public class TargetReference {
 
             // initialize
             CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-            List<PropertyEntry> targetEntries = new ArrayList<PropertyEntry>();
+            List<PropertyEntry> targetEntries = new ArrayList<>();
             Type nextType = type;
 
             // iterate, establish for each entry the target write accessors. Other than setter is only allowed for
@@ -349,7 +349,7 @@ public class TargetReference {
     }
 
     public List<String> getElementNames() {
-        List<String> elementNames = new ArrayList<String>();
+        List<String> elementNames = new ArrayList<>();
         if ( parameter != null ) {
             // only relevant for source properties
             elementNames.add( parameter.getName() );
@@ -362,7 +362,7 @@ public class TargetReference {
 
     public TargetReference pop() {
         if ( propertyEntries.size() > 1 ) {
-            List<PropertyEntry> newPropertyEntries = new ArrayList<PropertyEntry>( propertyEntries.size() - 1 );
+            List<PropertyEntry> newPropertyEntries = new ArrayList<>( propertyEntries.size() - 1 );
             for ( PropertyEntry propertyEntry : propertyEntries ) {
                 PropertyEntry newPropertyEntry = propertyEntry.pop();
                 if ( newPropertyEntry != null ) {
@@ -433,7 +433,7 @@ public class TargetReference {
             Set<String> readAccessors = nextType.getPropertyReadAccessors().keySet();
             String mostSimilarProperty = Strings.getMostSimilarWord( entryNames[index], readAccessors );
 
-            List<String> elements = new ArrayList<String>( Arrays.asList( entryNames ).subList( 0, index ) );
+            List<String> elements = new ArrayList<>( Arrays.asList( entryNames ).subList( 0, index ) );
             elements.add( mostSimilarProperty );
 
             printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, Strings.join( elements, "." ) );

@@ -20,8 +20,8 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
  */
 public class SelectionCriteria {
 
-    private final List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
-    private final List<String> qualifiedByNames = new ArrayList<String>();
+    private final List<TypeMirror> qualifiers = new ArrayList<>();
+    private final List<String> qualifiedByNames = new ArrayList<>();
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private final SourceRHS sourceRHS;

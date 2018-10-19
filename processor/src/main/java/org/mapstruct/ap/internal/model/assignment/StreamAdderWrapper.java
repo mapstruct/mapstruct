@@ -41,7 +41,7 @@ public class StreamAdderWrapper extends AssignmentWrapper {
     @Override
     public List<Type> getThrownTypes() {
         List<Type> parentThrownTypes = super.getThrownTypes();
-        List<Type> result = new ArrayList<Type>( parentThrownTypes );
+        List<Type> result = new ArrayList<>( parentThrownTypes );
         for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
             for ( Type parentExceptionType : parentThrownTypes ) {
                 if ( parentExceptionType.isAssignableTo( thrownTypeToExclude ) ) {
@@ -58,7 +58,7 @@ public class StreamAdderWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
+        Set<Type> imported = new HashSet<>();
         imported.addAll( super.getImportTypes() );
         imported.add( adderType.getTypeBound() );
         return imported;

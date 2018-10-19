@@ -57,7 +57,7 @@ public class EnumMappingMethod extends MappingMethod {
                 return null;
             }
 
-            List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
+            List<EnumMapping> enumMappings = new ArrayList<>();
 
             List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
 
@@ -75,7 +75,7 @@ public class EnumMappingMethod extends MappingMethod {
                     );
                 }
                 else {
-                    List<String> targetConstants = new ArrayList<String>( mappedConstants.size() );
+                    List<String> targetConstants = new ArrayList<>( mappedConstants.size() );
                     for ( Mapping mapping : mappedConstants ) {
                         targetConstants.add( mapping.getTargetName() );
                     }
@@ -89,7 +89,7 @@ public class EnumMappingMethod extends MappingMethod {
 
             SelectionParameters selectionParameters = getSelecionParameters( method, ctx.getTypeUtils() );
 
-            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+            Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
@@ -163,7 +163,7 @@ public class EnumMappingMethod extends MappingMethod {
 
             List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
-            List<String> unmappedSourceEnumConstants = new ArrayList<String>();
+            List<String> unmappedSourceEnumConstants = new ArrayList<>();
 
             for ( String sourceEnumConstant : sourceEnumConstants ) {
                 if ( !targetEnumConstants.contains( sourceEnumConstant )

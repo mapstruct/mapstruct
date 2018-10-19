@@ -73,16 +73,16 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
-        this( method, parameters, new ArrayList<String>( method.getParameterNames() ), null, null );
+        this( method, parameters, new ArrayList<>( method.getParameterNames() ), null, null );
     }
 
     protected MappingMethod(Method method) {
-        this( method, new ArrayList<String>( method.getParameterNames() ), null, null );
+        this( method, new ArrayList<>( method.getParameterNames() ), null, null );
     }
 
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        this( method, new ArrayList<String>( method.getParameterNames() ), beforeMappingReferences,
+        this( method, new ArrayList<>( method.getParameterNames() ), beforeMappingReferences,
             afterMappingReferences );
     }
 
@@ -140,7 +140,7 @@ public abstract class MappingMethod extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = new HashSet<Type>();
+        Set<Type> types = new HashSet<>();
 
         for ( Parameter param : parameters ) {
             types.addAll( param.getType().getImportTypes() );
@@ -156,7 +156,7 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     protected List<String> getParameterNames() {
-        List<String> parameterNames = new ArrayList<String>( parameters.size() );
+        List<String> parameterNames = new ArrayList<>( parameters.size() );
 
         for ( Parameter parameter : parameters ) {
             parameterNames.add( parameter.getName() );
@@ -181,7 +181,7 @@ public abstract class MappingMethod extends ModelElement {
         }
 
         List<LifecycleCallbackMethodReference> result =
-            new ArrayList<LifecycleCallbackMethodReference>( methods.size() );
+            new ArrayList<>( methods.size() );
 
         for ( LifecycleCallbackMethodReference method : methods ) {
             if ( mustHaveMappingTargetParameter == method.hasMappingTargetParameter() ) {

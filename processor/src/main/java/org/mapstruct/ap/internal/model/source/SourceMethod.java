@@ -274,7 +274,7 @@ public class SourceMethod implements Method {
     @Override
     public List<String> getParameterNames() {
         if ( parameterNames == null ) {
-            List<String> names = new ArrayList<String>( parameters.size() );
+            List<String> names = new ArrayList<>( parameters.size() );
 
             for ( Parameter parameter : parameters ) {
                 names.add( parameter.getName() );
@@ -419,7 +419,7 @@ public class SourceMethod implements Method {
      * @return list of mappings
      */
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
-        List<Mapping> mappingsOfSourceProperty = new ArrayList<Mapping>();
+        List<Mapping> mappingsOfSourceProperty = new ArrayList<>();
 
         for ( List<Mapping> mappingOfProperty : mappingOptions.getMappings().values() ) {
             for ( Mapping mapping : mappingOfProperty ) {
@@ -456,7 +456,7 @@ public class SourceMethod implements Method {
 
     public List<SourceMethod> getApplicablePrototypeMethods() {
         if ( applicablePrototypeMethods == null ) {
-            applicablePrototypeMethods = new ArrayList<SourceMethod>();
+            applicablePrototypeMethods = new ArrayList<>();
 
             for ( SourceMethod prototype : prototypeMethods ) {
                 if ( canInheritFrom( prototype ) ) {
@@ -470,7 +470,7 @@ public class SourceMethod implements Method {
 
     public List<SourceMethod> getApplicableReversePrototypeMethods() {
         if ( applicableReversePrototypeMethods == null ) {
-            applicableReversePrototypeMethods = new ArrayList<SourceMethod>();
+            applicableReversePrototypeMethods = new ArrayList<>();
 
             for ( SourceMethod prototype : prototypeMethods ) {
                 if ( reverses( prototype ) ) {
@@ -484,7 +484,7 @@ public class SourceMethod implements Method {
 
     private static boolean allParametersAreAssignable(List<Parameter> fromParams, List<Parameter> toParams) {
         if ( fromParams.size() == toParams.size() ) {
-            Set<Parameter> unaccountedToParams = new HashSet<Parameter>( toParams );
+            Set<Parameter> unaccountedToParams = new HashSet<>( toParams );
 
             for ( Parameter fromParam : fromParams ) {
                 // each fromParam needs at least one match, and all toParam need to be accounted for at the end

@@ -91,7 +91,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         decorator.removeConstructor();
 
         List<Annotation> annotations = getDelegatorReferenceAnnotations( mapper );
-        List<Field> replacement = new ArrayList<Field>();
+        List<Field> replacement = new ArrayList<>();
         if ( !decorator.getMethods().isEmpty() ) {
             for ( Field field : decorator.getFields() ) {
                 replacement.add( replacementMapperReference( field, annotations, injectionStrategy ) );
@@ -101,7 +101,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     }
 
     private List<MapperReference> toMapperReferences(List<Field> fields) {
-        List<MapperReference> mapperReferences = new ArrayList<MapperReference>(  );
+        List<MapperReference> mapperReferences = new ArrayList<>();
         for ( Field field : fields ) {
             if ( field instanceof  MapperReference ) {
                 mapperReferences.add( (MapperReference) field );
@@ -132,7 +132,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     private AnnotatedConstructor buildAnnotatedConstructorForMapper(Mapper mapper) {
         List<MapperReference> mapperReferences = toMapperReferences( mapper.getFields() );
         List<AnnotationMapperReference> mapperReferencesForConstructor =
-            new ArrayList<AnnotationMapperReference>( mapperReferences.size() );
+            new ArrayList<>( mapperReferences.size() );
 
         for ( MapperReference mapperReference : mapperReferences ) {
             if ( mapperReference.isUsed() ) {
@@ -155,7 +155,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
     private AnnotatedConstructor buildAnnotatedConstructorForDecorator(Decorator decorator) {
         List<AnnotationMapperReference> mapperReferencesForConstructor =
-            new ArrayList<AnnotationMapperReference>( decorator.getFields().size() );
+            new ArrayList<>( decorator.getFields().size() );
 
         for ( Field field : decorator.getFields() ) {
             if ( field instanceof AnnotationMapperReference ) {
@@ -189,7 +189,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
                                             List<Annotation> mapperReferenceAnnotations) {
         ListIterator<AnnotationMapperReference> mapperReferenceIterator = annotationMapperReferences.listIterator();
 
-        Set<Type> mapperReferenceAnnotationsTypes = new HashSet<Type>();
+        Set<Type> mapperReferenceAnnotationsTypes = new HashSet<>();
         for ( Annotation annotation : mapperReferenceAnnotations ) {
             mapperReferenceAnnotationsTypes.add( annotation.getType() );
         }
@@ -198,7 +198,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             AnnotationMapperReference annotationMapperReference = mapperReferenceIterator.next();
             mapperReferenceIterator.remove();
 
-            List<Annotation> qualifiers = new ArrayList<Annotation>();
+            List<Annotation> qualifiers = new ArrayList<>();
             for ( Annotation annotation : annotationMapperReference.getAnnotations() ) {
                 if ( !mapperReferenceAnnotationsTypes.contains( annotation.getType() ) ) {
                     qualifiers.add( annotation );

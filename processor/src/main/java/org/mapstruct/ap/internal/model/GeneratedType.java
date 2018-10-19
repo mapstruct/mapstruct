@@ -65,7 +65,7 @@ public abstract class GeneratedType extends ModelElement {
         this.interfaceName = interfaceName;
         this.extraImportedTypes = extraImportedTypes;
 
-        this.annotations = new ArrayList<Annotation>();
+        this.annotations = new ArrayList<>();
         this.methods = methods;
         this.fields = fields;
 
@@ -163,7 +163,7 @@ public abstract class GeneratedType extends ModelElement {
 
     @Override
     public SortedSet<Type> getImportTypes() {
-        SortedSet<Type> importedTypes = new TreeSet<Type>();
+        SortedSet<Type> importedTypes = new TreeSet<>();
         addIfImportRequired( importedTypes, generatedType );
 
         for ( MappingMethod mappingMethod : methods ) {
@@ -198,7 +198,7 @@ public abstract class GeneratedType extends ModelElement {
     }
 
     public SortedSet<String> getImportTypeNames() {
-        SortedSet<String> importTypeNames = new TreeSet<String>();
+        SortedSet<String> importTypeNames = new TreeSet<>();
         for ( Type type : getImportTypes() ) {
             importTypeNames.add( type.getImportName() );
         }

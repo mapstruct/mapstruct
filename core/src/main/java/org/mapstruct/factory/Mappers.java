@@ -53,7 +53,7 @@ public class Mappers {
      */
     public static <T> T getMapper(Class<T> clazz) {
         try {
-            List<ClassLoader> classLoaders = new ArrayList<ClassLoader>( 3 );
+            List<ClassLoader> classLoaders = new ArrayList<>( 3 );
             classLoaders.add( clazz.getClassLoader() );
 
             if ( Thread.currentThread().getContextClassLoader() != null ) {
@@ -64,10 +64,7 @@ public class Mappers {
 
             return getMapper( clazz, classLoaders );
         }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( e );
-        }
-        catch ( NoSuchMethodException e) {
+        catch ( ClassNotFoundException | NoSuchMethodException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -106,13 +103,7 @@ public class Mappers {
 
             return null;
         }
-        catch (InstantiationException e) {
-            throw new RuntimeException( e );
-        }
-        catch (IllegalAccessException e) {
-            throw new RuntimeException( e );
-        }
-        catch (InvocationTargetException e) {
+        catch ( InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException( e );
         }
     }

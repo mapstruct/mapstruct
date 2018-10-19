@@ -70,7 +70,7 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = new HashSet<Type>();
+        Set<Type> types = new HashSet<>();
 
         for ( MapperReference mapperReference : mapperReferences ) {
             types.addAll( mapperReference.getImportTypes() );

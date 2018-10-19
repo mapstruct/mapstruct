@@ -30,7 +30,7 @@ public class FactoryParameterSelector implements MethodSelector {
             return methods;
         }
 
-        List<SelectedMethod<T>> sourceParamFactoryMethods = new ArrayList<SelectedMethod<T>>( methods.size() );
+        List<SelectedMethod<T>> sourceParamFactoryMethods = new ArrayList<>( methods.size() );
 
         for ( SelectedMethod<T> candidate : methods ) {
             if ( !candidate.getMethod().getSourceParameters().isEmpty() ) {

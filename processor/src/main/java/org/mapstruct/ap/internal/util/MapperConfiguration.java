@@ -78,7 +78,7 @@ public class MapperConfiguration {
     }
 
     public Set<DeclaredType> uses() {
-        Set<DeclaredType> uses = new LinkedHashSet<DeclaredType>();
+        Set<DeclaredType> uses = new LinkedHashSet<>();
 
         for ( TypeMirror usedMapperType : mapperPrism.uses() ) {
             // TODO #737 Only declared type make sense here; Validate and raise graceful error;

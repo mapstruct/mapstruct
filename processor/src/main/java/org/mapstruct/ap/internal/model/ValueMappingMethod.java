@@ -44,7 +44,7 @@ public class ValueMappingMethod extends MappingMethod {
 
         private Method method;
         private MappingBuilderContext ctx;
-        private final List<ValueMapping> trueValueMappings = new ArrayList<ValueMapping>();
+        private final List<ValueMapping> trueValueMappings = new ArrayList<>();
         private ValueMapping defaultTargetValue = null;
         private ValueMapping nullTargetValue = null;
         private boolean applyNamebasedMappings = true;
@@ -81,7 +81,7 @@ public class ValueMappingMethod extends MappingMethod {
         public ValueMappingMethod build( ) {
 
             // initialize all relevant parameters
-            List<MappingEntry> mappingEntries = new ArrayList<MappingEntry>();
+            List<MappingEntry> mappingEntries = new ArrayList<>();
             String nullTarget = null;
             String defaultTarget = null;
             boolean throwIllegalArgumentException = false;
@@ -107,7 +107,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             // do before / after lifecycle mappings
             SelectionParameters selectionParameters = getSelectionParameters( method, ctx.getTypeUtils() );
-            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+            Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
@@ -120,9 +120,9 @@ public class ValueMappingMethod extends MappingMethod {
 
         private List<MappingEntry> enumToEnumMapping(Method method) {
 
-            List<MappingEntry> mappings = new ArrayList<MappingEntry>();
+            List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants
-                = new ArrayList<String>( first( method.getSourceParameters() ).getType().getEnumConstants() );
+                = new ArrayList<>( first( method.getSourceParameters() ).getType().getEnumConstants() );
 
 
             if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ) {
@@ -143,7 +143,7 @@ public class ValueMappingMethod extends MappingMethod {
 
                 // get all target constants
                 List<String> targetConstants = method.getReturnType().getEnumConstants();
-                for ( String sourceConstant : new ArrayList<String>( unmappedSourceConstants ) ) {
+                for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
                     if ( targetConstants.contains( sourceConstant ) ) {
                         mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
                         unmappedSourceConstants.remove( sourceConstant );

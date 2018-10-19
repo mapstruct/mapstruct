@@ -139,7 +139,7 @@ public class Parameter extends ModelElement {
      * @return the parameters from the given list that are considered 'source parameters'
      */
     public static List<Parameter> getSourceParameters(List<Parameter> parameters) {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>( parameters.size() );
+        List<Parameter> sourceParameters = new ArrayList<>( parameters.size() );
 
         for ( Parameter parameter : parameters ) {
             if ( !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isMappingContext() ) {
@@ -155,7 +155,7 @@ public class Parameter extends ModelElement {
      * @return the parameters from the given list that are marked as 'mapping context parameters'
      */
     public static List<Parameter> getContextParameters(List<Parameter> parameters) {
-        List<Parameter> contextParameters = new ArrayList<Parameter>( parameters.size() );
+        List<Parameter> contextParameters = new ArrayList<>( parameters.size() );
 
         for ( Parameter parameter : parameters ) {
             if ( parameter.isMappingContext() ) {

@@ -29,7 +29,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
-        List<Annotation> typeAnnotations = new ArrayList<Annotation>();
+        List<Annotation> typeAnnotations = new ArrayList<>();
         typeAnnotations.add( component() );
 
         if ( mapper.getDecorator() != null ) {

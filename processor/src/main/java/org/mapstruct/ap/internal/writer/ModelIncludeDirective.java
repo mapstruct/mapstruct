@@ -48,14 +48,8 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
                 modelElement.write( context, env.getOut() );
             }
         }
-        catch ( TemplateException te ) {
+        catch ( TemplateException | RuntimeException | IOException te ) {
             throw te;
-        }
-        catch ( IOException ioe ) {
-            throw ioe;
-        }
-        catch ( RuntimeException re ) {
-            throw re;
         }
         catch ( Exception e ) {
             throw new RuntimeException( e );
@@ -97,7 +91,7 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
         Map<String, Object> ext = new HashMap<String, Object>( params );
         ext.remove( "object" );
 
-        Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> values = new HashMap<>();
         values.put( Configuration.class, configuration );
         values.put( Map.class, ext );
 

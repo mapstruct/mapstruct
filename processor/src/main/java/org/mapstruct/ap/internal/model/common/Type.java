@@ -133,7 +133,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isLiteral = isLiteral;
 
         if ( isEnumType ) {
-            enumConstants = new ArrayList<String>();
+            enumConstants = new ArrayList<>();
 
             for ( Element element : typeElement.getEnclosedElements() ) {
                 // #162: The check for visibility shouldn't be required, but the Eclipse compiler implementation
@@ -319,7 +319,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> result = new HashSet<Type>();
+        Set<Type> result = new HashSet<>();
 
         if ( getTypeMirror().getKind() == TypeKind.DECLARED ) {
             result.add( this );
@@ -400,8 +400,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             return this;
         }
 
-        List<Type> bounds = new ArrayList<Type>( typeParameters.size() );
-        List<TypeMirror> mirrors = new ArrayList<TypeMirror>( typeParameters.size() );
+        List<Type> bounds = new ArrayList<>( typeParameters.size() );
+        List<TypeMirror> mirrors = new ArrayList<>( typeParameters.size() );
         for ( Type typeParameter : typeParameters ) {
             bounds.add( typeParameter.getTypeBound() );
             mirrors.add( typeParameter.getTypeBound().getTypeMirror() );
@@ -463,7 +463,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Map<String, Accessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
             List<Accessor> getterList = Filters.getterMethodsIn( accessorNaming, getAllAccessors() );
-            Map<String, Accessor> modifiableGetters = new LinkedHashMap<String, Accessor>();
+            Map<String, Accessor> modifiableGetters = new LinkedHashMap<>();
             for ( Accessor getter : getterList ) {
                 String propertyName = accessorNaming.getPropertyName( getter );
                 if ( modifiableGetters.containsKey( propertyName ) ) {
@@ -504,8 +504,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 accessorNaming,
                 getAllAccessors()
             );
-            Map<String, ExecutableElementAccessor> modifiableCheckers = new LinkedHashMap<String,
-                ExecutableElementAccessor>();
+            Map<String, ExecutableElementAccessor> modifiableCheckers = new LinkedHashMap<>();
             for ( ExecutableElementAccessor checker : checkerList ) {
                 modifiableCheckers.put( accessorNaming.getPropertyName( checker ), checker );
             }
@@ -529,10 +528,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
         // collect all candidate target accessors
-        List<Accessor> candidates = new ArrayList<Accessor>( getSetters() );
+        List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
 
-        Map<String, Accessor> result = new LinkedHashMap<String, Accessor>();
+        Map<String, Accessor> result = new LinkedHashMap<>();
 
         for ( Accessor candidate : candidates ) {
             String targetPropertyName = accessorNaming.getPropertyName( candidate );
@@ -673,7 +672,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         // 1) starts with add,
         // 2) and has typeArg as one and only arg
         List<Accessor> adderList = getAdders();
-        List<Accessor> candidateList = new ArrayList<Accessor>();
+        List<Accessor> candidateList = new ArrayList<>();
         for ( Accessor adder : adderList ) {
             ExecutableElement executable = adder.getExecutable();
             if ( executable == null ) {
@@ -728,10 +727,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         if ( alternativeTargetAccessors == null ) {
 
-            List<Accessor> result = new ArrayList<Accessor>();
+            List<Accessor> result = new ArrayList<>();
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors =
-                new ArrayList<Accessor>( getPropertyReadAccessors().values() );
+                new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
             readAccessors.addAll( Filters.fieldsIn( getAllAccessors() ) );
 
