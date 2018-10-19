@@ -34,15 +34,6 @@ public class Collections {
     }
 
     @SafeVarargs
-    public static <T> List<T> newArrayList(T... elements) {
-        List<T> list = new ArrayList<>();
-
-        list.addAll( Arrays.asList( elements ) );
-
-        return list;
-    }
-
-    @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
         Set<T> set = new HashSet<>( collection );
 
