@@ -33,7 +33,7 @@ public class LocalVarWrapper extends AssignmentWrapper {
     @Override
     public List<Type> getThrownTypes() {
         List<Type> parentThrownTypes = super.getThrownTypes();
-        List<Type> result = new ArrayList<Type>( parentThrownTypes );
+        List<Type> result = new ArrayList<>( parentThrownTypes );
         for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
             for ( Type parentThrownType : parentThrownTypes ) {
                 if ( parentThrownType.isAssignableTo( thrownTypeToExclude ) ) {
@@ -46,7 +46,7 @@ public class LocalVarWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( getAssignment().getImportTypes() );
+        Set<Type> imported = new HashSet<>( getAssignment().getImportTypes() );
         imported.add( targetType );
         imported.addAll( targetType.getTypeParameters() );
         return imported;

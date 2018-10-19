@@ -26,7 +26,7 @@ class Node {
 
     Node(String name) {
         this.name = name;
-        descendants = new ArrayList<Node>();
+        descendants = new ArrayList<>();
     }
 
     public String getName() {

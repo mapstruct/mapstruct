@@ -104,7 +104,7 @@ public class ParameterBinding {
     }
 
     public static List<ParameterBinding> fromParameters(List<Parameter> parameters) {
-        List<ParameterBinding> result = new ArrayList<ParameterBinding>( parameters.size() );
+        List<ParameterBinding> result = new ArrayList<>( parameters.size() );
         for ( Parameter param : parameters ) {
             result.add( fromParameter( param ) );
         }

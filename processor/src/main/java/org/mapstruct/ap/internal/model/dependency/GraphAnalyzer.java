@@ -28,8 +28,8 @@ public class GraphAnalyzer {
 
     private GraphAnalyzer(Map<String, Node> nodes) {
         this.nodes = nodes;
-        cycles = new HashSet<List<String>>();
-        currentPath = new Stack<Node>();
+        cycles = new HashSet<>();
+        currentPath = new Stack<>();
     }
 
     public static GraphAnalyzerBuilder builder() {
@@ -94,7 +94,7 @@ public class GraphAnalyzer {
     }
 
     private List<String> getCurrentCycle(Node start) {
-        List<String> cycle = new ArrayList<String>();
+        List<String> cycle = new ArrayList<>();
         boolean inCycle = false;
 
         for ( Node n : currentPath ) {
@@ -112,7 +112,7 @@ public class GraphAnalyzer {
 
     public static class GraphAnalyzerBuilder {
 
-        private final Map<String, Node> nodes = new LinkedHashMap<String, Node>();
+        private final Map<String, Node> nodes = new LinkedHashMap<>();
 
         public GraphAnalyzerBuilder withNode(String name, List<String> descendants) {
             Node node = getNode( name );

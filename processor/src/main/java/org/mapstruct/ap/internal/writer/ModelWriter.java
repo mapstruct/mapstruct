@@ -65,7 +65,7 @@ public class ModelWriter {
         try {
             BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
 
-            Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+            Map<Class<?>, Object> values = new HashMap<>();
             values.put( Configuration.class, CONFIGURATION );
 
             model.write( new DefaultModelElementWriterContext( values ), writer );
@@ -128,7 +128,7 @@ public class ModelWriter {
         private final Map<Class<?>, Object> values;
 
         DefaultModelElementWriterContext(Map<Class<?>, Object> values) {
-            this.values = new HashMap<Class<?>, Object>( values );
+            this.values = new HashMap<>( values );
         }
 
         @Override

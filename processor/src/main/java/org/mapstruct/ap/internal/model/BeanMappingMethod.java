@@ -73,12 +73,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Map<String, Accessor> unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> targetProperties;
-        private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
-        private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
-        private final Set<String> existingVariableNames = new HashSet<String>();
+        private final List<PropertyMapping> propertyMappings = new ArrayList<>();
+        private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
+        private final Set<String> existingVariableNames = new HashSet<>();
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
-        private final Map<String, List<Mapping>> unprocessedDefinedTargets = new HashMap<String, List<Mapping>>();
+        private final Map<String, List<Mapping>> unprocessedDefinedTargets = new HashMap<>();
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -108,8 +108,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 .getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
 
-            this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
-            this.unprocessedSourceProperties = new LinkedHashMap<String, Accessor>();
+            this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
+            this.unprocessedSourceProperties = new LinkedHashMap<>();
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
 
@@ -335,7 +335,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             final GraphAnalyzer graphAnalyzer = graphAnalyzerBuilder.build();
 
             if ( !graphAnalyzer.getCycles().isEmpty() ) {
-                Set<String> cycles = new HashSet<String>();
+                Set<String> cycles = new HashSet<>();
                 for ( List<String> cycle : graphAnalyzer.getCycles() ) {
                     cycles.add( Strings.join( cycle, " -> " ) );
                 }
@@ -371,7 +371,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private boolean handleDefinedMappings() {
 
             boolean errorOccurred = false;
-            Set<String> handledTargets = new HashSet<String>();
+            Set<String> handledTargets = new HashSet<>();
 
             // first we have to handle nested target mappings
             if ( method.getMappingOptions().hasNestedTargetReferences() ) {
@@ -676,7 +676,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             MappingOptions additionalOptions = null;
             if ( unprocessedDefinedTargets.containsKey( targetProperty ) ) {
 
-                Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
+                Map<String, List<Mapping>> mappings = new HashMap<>();
                 for ( Mapping mapping : unprocessedDefinedTargets.get( targetProperty ) ) {
                     mappings.put( mapping.getTargetName(), Collections.singletonList( mapping ) );
                 }
@@ -828,10 +828,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
-        this.mappingsByParameter = new HashMap<String, List<PropertyMapping>>();
-        this.constantMappings = new ArrayList<PropertyMapping>( propertyMappings );
+        this.mappingsByParameter = new HashMap<>();
+        this.constantMappings = new ArrayList<>( propertyMappings );
         for ( Parameter sourceParameter : getSourceParameters() ) {
-            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<PropertyMapping>();
+            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<>();
             mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
             for ( PropertyMapping mapping : propertyMappings ) {
                 if ( sourceParameter.getName().equals( mapping.getSourceBeanName() ) ) {
@@ -890,7 +890,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public List<Parameter> getSourceParametersExcludingPrimitives() {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>();
+        List<Parameter> sourceParameters = new ArrayList<>();
         for ( Parameter sourceParam : getSourceParameters() ) {
             if ( !sourceParam.getType().isPrimitive() ) {
                 sourceParameters.add( sourceParam );
@@ -901,7 +901,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public List<Parameter> getSourcePrimitiveParameters() {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>();
+        List<Parameter> sourceParameters = new ArrayList<>();
         for ( Parameter sourceParam : getSourceParameters() ) {
             if ( sourceParam.getType().isPrimitive() ) {
                 sourceParameters.add( sourceParam );

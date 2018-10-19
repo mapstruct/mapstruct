@@ -25,7 +25,7 @@ public class MethodFamilySelector implements MethodSelector {
                                                                           List<Type> sourceTypes,
                                                                           Type targetType, SelectionCriteria criteria) {
 
-        List<SelectedMethod<T>> result = new ArrayList<SelectedMethod<T>>( methods.size() );
+        List<SelectedMethod<T>> result = new ArrayList<>( methods.size() );
         for ( SelectedMethod<T> method : methods ) {
             if ( method.getMethod().isObjectFactory() == criteria.isObjectFactoryRequired()
                 && method.getMethod().isLifecycleCallbackMethod() == criteria.isLifecycleCallbackRequired() ) {

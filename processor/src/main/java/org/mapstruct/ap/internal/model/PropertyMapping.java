@@ -681,7 +681,7 @@ public class PropertyMapping extends ModelElement {
             String name = getName( sourceType, targetType );
             name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
-            List<Parameter> parameters = new ArrayList<Parameter>( method.getContextParameters() );
+            List<Parameter> parameters = new ArrayList<>( method.getContextParameters() );
             Type returnType;
             // there's only one case for forging a method with mapping options: nested target properties.
             // They should forge an update method only if we set the forceUpdateMethod. This is set to true,

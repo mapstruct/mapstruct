@@ -24,7 +24,7 @@ public class RoundContext {
 
     public RoundContext(AnnotationProcessorContext annotationProcessorContext) {
         this.annotationProcessorContext = annotationProcessorContext;
-        this.clearedTypes = new HashSet<TypeMirror>();
+        this.clearedTypes = new HashSet<>();
     }
 
     public AnnotationProcessorContext getAnnotationProcessorContext() {

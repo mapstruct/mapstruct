@@ -44,7 +44,7 @@ public class SetterWrapper extends AssignmentWrapper {
     @Override
     public List<Type> getThrownTypes() {
         List<Type> parentThrownTypes = super.getThrownTypes();
-        List<Type> result = new ArrayList<Type>( parentThrownTypes );
+        List<Type> result = new ArrayList<>( parentThrownTypes );
         for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
             for ( Type parentThrownType : parentThrownTypes ) {
                 if ( parentThrownType.isAssignableTo( thrownTypeToExclude ) ) {

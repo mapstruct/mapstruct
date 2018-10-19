@@ -30,7 +30,7 @@ import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
  */
 public class Conversions {
 
-    private final Map<Key, ConversionProvider> conversions = new HashMap<Conversions.Key, ConversionProvider>();
+    private final Map<Key, ConversionProvider> conversions = new HashMap<>();
     private final Type enumType;
     private final Type stringType;
     private final TypeFactory typeFactory;

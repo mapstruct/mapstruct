@@ -58,12 +58,12 @@ public class QualifierSelector implements MethodSelector {
         int numberOfQualifiersToMatch = 0;
 
         // Define some local collections and make sure that they are defined.
-        List<TypeMirror> qualifierTypes = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifierTypes = new ArrayList<>();
         if ( criteria.getQualifiers() != null ) {
             qualifierTypes.addAll( criteria.getQualifiers() );
             numberOfQualifiersToMatch += criteria.getQualifiers().size();
         }
-        List<String> qualfiedByNames = new ArrayList<String>();
+        List<String> qualfiedByNames = new ArrayList<>();
         if ( criteria.getQualifiedByNames() != null ) {
             qualfiedByNames.addAll( criteria.getQualifiedByNames() );
             numberOfQualifiersToMatch += criteria.getQualifiedByNames().size();
@@ -77,7 +77,7 @@ public class QualifierSelector implements MethodSelector {
         // Check there are qualfiers for this mapping: Mapping#qualifier or Mapping#qualfiedByName
         if ( qualifierTypes.isEmpty() ) {
             // When no qualifiers, disqualify all methods marked with a qualifier by removing them from the candidates
-            List<SelectedMethod<T>> nonQualiferAnnotatedMethods = new ArrayList<SelectedMethod<T>>( methods.size() );
+            List<SelectedMethod<T>> nonQualiferAnnotatedMethods = new ArrayList<>( methods.size() );
             for ( SelectedMethod<T> candidate : methods ) {
 
                 if ( candidate.getMethod() instanceof SourceMethod ) {
@@ -95,7 +95,7 @@ public class QualifierSelector implements MethodSelector {
         }
         else {
             // Check all methods marked with qualfier (or methods in Mappers marked wiht a qualfier) for matches.
-            List<SelectedMethod<T>> matches = new ArrayList<SelectedMethod<T>>( methods.size() );
+            List<SelectedMethod<T>> matches = new ArrayList<>( methods.size() );
             for ( SelectedMethod<T> candidate : methods ) {
 
                 if ( !( candidate.getMethod() instanceof SourceMethod ) ) {
@@ -150,7 +150,7 @@ public class QualifierSelector implements MethodSelector {
     private Set<AnnotationMirror> getQualifierAnnotationMirrors( Method candidate ) {
 
         // retrieve annotations
-        Set<AnnotationMirror> qualiferAnnotations = new HashSet<AnnotationMirror>();
+        Set<AnnotationMirror> qualiferAnnotations = new HashSet<>();
 
         // first from the method itself
         SourceMethod candidateSM = (SourceMethod) candidate;

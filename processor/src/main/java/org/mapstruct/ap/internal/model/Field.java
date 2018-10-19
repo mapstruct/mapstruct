@@ -118,7 +118,7 @@ public class Field extends ModelElement {
     }
 
     public static List<String> getFieldNames(Set<Field> fields) {
-        List<String> names = new ArrayList<String>( fields.size() );
+        List<String> names = new ArrayList<>( fields.size() );
         for ( Field field : fields ) {
             names.add( field.getVariableName() );
         }

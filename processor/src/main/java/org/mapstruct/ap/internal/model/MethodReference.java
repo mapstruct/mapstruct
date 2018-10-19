@@ -72,7 +72,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.providingParameter = providingParameter;
         this.parameterBindings = parameterBindings;
         this.contextParam = null;
-        Set<Type> imported = new HashSet<Type>();
+        Set<Type> imported = new HashSet<>();
 
         for ( Type type : method.getThrownTypes() ) {
             imported.addAll( type.getImportTypes() );
@@ -211,7 +211,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( importTypes );
+        Set<Type> imported = new HashSet<>( importTypes );
         if ( assignment != null ) {
             imported.addAll( assignment.getImportTypes() );
         }
@@ -223,7 +223,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public List<Type> getThrownTypes() {
-        List<Type> exceptions = new ArrayList<Type>();
+        List<Type> exceptions = new ArrayList<>();
         exceptions.addAll( thrownTypes );
         if ( assignment != null ) {
             exceptions.addAll( assignment.getThrownTypes() );

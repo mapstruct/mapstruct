@@ -51,12 +51,12 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         }
 
         public NestedPropertyMappingMethod build() {
-            List<String> existingVariableNames = new ArrayList<String>();
+            List<String> existingVariableNames = new ArrayList<>();
             for ( Parameter parameter : method.getSourceParameters() ) {
                 existingVariableNames.add( parameter.getName() );
             }
-            final List<Type> thrownTypes = new ArrayList<Type>();
-            List<SafePropertyEntry> safePropertyEntries = new ArrayList<SafePropertyEntry>();
+            final List<Type> thrownTypes = new ArrayList<>();
+            List<SafePropertyEntry> safePropertyEntries = new ArrayList<>();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
                 String safeName = Strings.getSafeVariableName( propertyEntry.getName(), existingVariableNames );
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );

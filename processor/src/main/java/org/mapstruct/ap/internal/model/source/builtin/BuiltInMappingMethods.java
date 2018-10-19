@@ -25,7 +25,7 @@ public class BuiltInMappingMethods {
 
     public BuiltInMappingMethods(TypeFactory typeFactory) {
         boolean isXmlGregorianCalendarPresent = isXmlGregorianCalendarAvailable( typeFactory );
-        builtInMethods = new ArrayList<BuiltInMethod>( 20 );
+        builtInMethods = new ArrayList<>( 20 );
         if ( isXmlGregorianCalendarPresent ) {
             builtInMethods.add( new DateToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToDate( typeFactory ) );

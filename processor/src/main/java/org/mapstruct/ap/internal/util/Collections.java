@@ -23,7 +23,7 @@ public class Collections {
     }
 
     public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<T>();
+        Set<T> set = new HashSet<>();
 
         for ( T element : elements ) {
             set.add( element );
@@ -33,7 +33,7 @@ public class Collections {
     }
 
     public static <T> List<T> newArrayList(T... elements) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
 
         list.addAll( Arrays.asList( elements ) );
 
@@ -41,7 +41,7 @@ public class Collections {
     }
 
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<T>( collection );
+        Set<T> set = new HashSet<>( collection );
 
         for ( T element : elements ) {
             set.add( element );
@@ -51,7 +51,7 @@ public class Collections {
     }
 
     public static <T> Set<T> asSet(Collection<T> collection, Collection<T>... elements) {
-        Set<T> set = new HashSet<T>( collection );
+        Set<T> set = new HashSet<>( collection );
 
         for ( Collection<T> element : elements ) {
             set.addAll( element );
@@ -69,7 +69,7 @@ public class Collections {
     }
 
     public static <T> List<T> join(List<T> a, List<T> b) {
-        List<T> result = new ArrayList<T>( a.size() + b.size() );
+        List<T> result = new ArrayList<>( a.size() + b.size() );
 
         result.addAll( a );
         result.addAll( b );

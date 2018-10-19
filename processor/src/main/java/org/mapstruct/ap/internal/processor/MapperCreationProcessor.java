@@ -107,7 +107,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 elementUtils,
                 typeUtils,
                 typeFactory,
-                new ArrayList<Method>( sourceModel ),
+                new ArrayList<>( sourceModel ),
                 mapperReferences
             ),
             mapperTypeElement,
@@ -126,8 +126,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfiguration mapperConfig) {
-        List<MapperReference> result = new LinkedList<MapperReference>();
-        List<String> variableNames = new LinkedList<String>();
+        List<MapperReference> result = new LinkedList<>();
+        List<String> variableNames = new LinkedList<>();
 
         for ( TypeMirror usedMapper : mapperConfig.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
@@ -151,13 +151,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
 
         // handle fields
-        List<Field> fields = new ArrayList<Field>( mappingContext.getMapperReferences() );
-        Set<Field> supportingFieldSet = new LinkedHashSet<Field>(  );
+        List<Field> fields = new ArrayList<>( mappingContext.getMapperReferences() );
+        Set<Field> supportingFieldSet = new LinkedHashSet<>();
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 
         // handle constructorfragments
-        Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<SupportingConstructorFragment>();
+        Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
         Mapper mapper = new Mapper.Builder()
@@ -198,7 +198,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_NO_SUBTYPE );
         }
 
-        List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
+        List<MappingMethod> mappingMethods = new ArrayList<>( methods.size() );
 
         for ( SourceMethod mappingMethod : methods ) {
             boolean implementationRequired = true;
@@ -254,7 +254,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private SortedSet<Type> getExtraImports(TypeElement element) {
-        SortedSet<Type> extraImports = new TreeSet<Type>();
+        SortedSet<Type> extraImports = new TreeSet<>();
 
         MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element );
 
@@ -272,14 +272,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private List<MappingMethod> getMappingMethods(MapperConfiguration mapperConfig, List<SourceMethod> methods) {
-        List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
+        List<MappingMethod> mappingMethods = new ArrayList<>();
 
         for ( SourceMethod method : methods ) {
             if ( !method.overridesMethod() ) {
                 continue;
             }
 
-            mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<SourceMethod>() );
+            mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<>() );
 
             MappingOptions mappingOptions = method.getMappingOptions();
 
@@ -551,7 +551,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( reversePrism != null ) {
 
             // method is configured as being reverse method, collect candidates
-            List<SourceMethod> candidates = new ArrayList<SourceMethod>();
+            List<SourceMethod> candidates = new ArrayList<>();
             for ( SourceMethod oneMethod : rawMethods ) {
                 if ( method.reverses( oneMethod ) ) {
                     candidates.add( oneMethod );
@@ -574,7 +574,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( candidates.size() > 1 ) {
                 // ambiguity: find a matching method that matches configuredBy
 
-                List<SourceMethod> nameFilteredcandidates = new ArrayList<SourceMethod>();
+                List<SourceMethod> nameFilteredcandidates = new ArrayList<>();
                 for ( SourceMethod candidate : candidates ) {
                     if ( candidate.getName().equals( name ) ) {
                         nameFilteredcandidates.add( candidate );
@@ -627,7 +627,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         if ( forwardPrism != null ) {
 
-            List<SourceMethod> candidates = new ArrayList<SourceMethod>();
+            List<SourceMethod> candidates = new ArrayList<>();
             for ( SourceMethod oneMethod : rawMethods ) {
                 // method must be similar but not equal
                 if ( method.canInheritFrom( oneMethod ) && !( oneMethod.equals( method ) ) ) {
@@ -652,7 +652,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( candidates.size() > 1 ) {
                 // ambiguity: find a matching method that matches configuredBy
 
-                List<SourceMethod> nameFilteredcandidates = new ArrayList<SourceMethod>();
+                List<SourceMethod> nameFilteredcandidates = new ArrayList<>();
                 for ( SourceMethod candidate : candidates ) {
                     if ( candidate.getName().equals( name ) ) {
                         nameFilteredcandidates.add( candidate );
@@ -677,7 +677,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
                                                        InheritInverseConfigurationPrism reversePrism) {
 
-        List<String> candidateNames = new ArrayList<String>();
+        List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }
@@ -728,7 +728,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
                                                 InheritConfigurationPrism prism) {
 
-        List<String> candidateNames = new ArrayList<String>();
+        List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }

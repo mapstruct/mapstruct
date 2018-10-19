@@ -97,7 +97,7 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
         Map<String, Object> ext = new HashMap<String, Object>( params );
         ext.remove( "object" );
 
-        Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> values = new HashMap<>();
         values.put( Configuration.class, configuration );
         values.put( Map.class, ext );
 

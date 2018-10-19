@@ -24,7 +24,7 @@ public class Filters {
     }
 
     public static List<Accessor> getterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> getterMethods = new LinkedList<Accessor>();
+        List<Accessor> getterMethods = new LinkedList<>();
 
         for ( Accessor method : elements ) {
             if ( accessorNaming.isGetterMethod( method ) ) {
@@ -36,7 +36,7 @@ public class Filters {
     }
 
     public static List<Accessor> fieldsIn(List<Accessor> accessors) {
-        List<Accessor> fieldAccessors = new LinkedList<Accessor>();
+        List<Accessor> fieldAccessors = new LinkedList<>();
 
         for ( Accessor accessor : accessors ) {
             if ( Executables.isFieldAccessor( accessor ) ) {
@@ -49,7 +49,7 @@ public class Filters {
 
     public static List<ExecutableElementAccessor> presenceCheckMethodsIn(AccessorNamingUtils accessorNaming,
                                                                          List<Accessor> elements) {
-        List<ExecutableElementAccessor> presenceCheckMethods = new LinkedList<ExecutableElementAccessor>();
+        List<ExecutableElementAccessor> presenceCheckMethods = new LinkedList<>();
 
         for ( Accessor method : elements ) {
             if ( accessorNaming.isPresenceCheckMethod( method ) ) {
@@ -61,7 +61,7 @@ public class Filters {
     }
 
     public static List<Accessor> setterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> setterMethods = new LinkedList<Accessor>();
+        List<Accessor> setterMethods = new LinkedList<>();
 
         for ( Accessor method : elements ) {
             if ( accessorNaming.isSetterMethod( method ) ) {
@@ -72,7 +72,7 @@ public class Filters {
     }
 
     public static List<Accessor> adderMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> adderMethods = new LinkedList<Accessor>();
+        List<Accessor> adderMethods = new LinkedList<>();
 
         for ( Accessor method : elements ) {
             if ( accessorNaming.isAdderMethod( method ) ) {

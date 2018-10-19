@@ -53,7 +53,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
 
-            Set<Type> helperImports = new HashSet<Type>();
+            Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collectors.class ) );
             }

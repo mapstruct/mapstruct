@@ -65,7 +65,7 @@ public class IterableCreation extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = new HashSet<Type>();
+        Set<Type> types = new HashSet<>();
         if ( factoryMethod == null && resultType.getImplementationType() != null ) {
             types.addAll( resultType.getImplementationType().getImportTypes() );
         }

@@ -75,7 +75,7 @@ public class MappingResolverImpl implements MappingResolver {
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
      */
-    private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<SupportingMappingMethod>();
+    private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -149,13 +149,13 @@ public class MappingResolverImpl implements MappingResolver {
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
-            this.supportingMethodCandidates = new HashSet<SupportingMappingMethod>();
+            this.supportingMethodCandidates = new HashSet<>();
             this.selectionCriteria = criteria;
             this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
-            List<T> result = new ArrayList<T>( candidateMethods.size() );
+            List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
                 if ( isCandidateForMapping( candidate ) ) {
                     result.add( candidate );
@@ -285,7 +285,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             if ( matchingBuiltInMethod != null ) {
 
-                Set<Field> allUsedFields = new HashSet<Field>( mapperReferences );
+                Set<Field> allUsedFields = new HashSet<>( mapperReferences );
                 SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
                 SupportingMappingMethod supportingMappingMethod =
                     new SupportingMappingMethod( matchingBuiltInMethod.getMethod(), allUsedFields );
@@ -317,7 +317,7 @@ public class MappingResolverImpl implements MappingResolver {
          */
         private Assignment resolveViaMethodAndMethod(Type sourceType, Type targetType) {
 
-            List<Method> methodYCandidates = new ArrayList<Method>( methods );
+            List<Method> methodYCandidates = new ArrayList<>( methods );
             methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
 
             Assignment methodRefY = null;
@@ -362,7 +362,7 @@ public class MappingResolverImpl implements MappingResolver {
          */
         private Assignment resolveViaConversionAndMethod(Type sourceType, Type targetType) {
 
-            List<Method> methodYCandidates = new ArrayList<Method>( methods );
+            List<Method> methodYCandidates = new ArrayList<>( methods );
             methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
 
             Assignment methodRefY = null;
@@ -399,7 +399,7 @@ public class MappingResolverImpl implements MappingResolver {
          */
         private Assignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
 
-            List<Method> methodXCandidates = new ArrayList<Method>( methods );
+            List<Method> methodXCandidates = new ArrayList<>( methods );
             methodXCandidates.addAll( builtInMethods.getBuiltInMethods() );
 
             Assignment conversionYRef = null;
@@ -557,7 +557,7 @@ public class MappingResolverImpl implements MappingResolver {
                     // handled in SpecificCompilerWorkarounds...
 
                     DeclaredType p = (DeclaredType) parameterType;
-                    List<TypeMirror> typeArguments = new ArrayList<TypeMirror>( p.getTypeArguments().size() );
+                    List<TypeMirror> typeArguments = new ArrayList<>( p.getTypeArguments().size() );
 
                     for ( TypeMirror tArg : p.getTypeArguments() ) {
                         typeArguments.add( typeFactory.getTypeBound( tArg ) );

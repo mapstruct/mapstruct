@@ -111,7 +111,7 @@ public class Executables {
      * @return the executable elements usable in the type
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
-        List<ExecutableElement> executables = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> executables = new ArrayList<>();
         for ( Accessor accessor : getAllEnclosedAccessors( elementUtils, element ) ) {
             if ( accessor.getExecutable() != null ) {
                 executables.add( accessor.getExecutable() );
@@ -131,7 +131,7 @@ public class Executables {
      * @return the executable elements usable in the type
      */
     public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element) {
-        List<Accessor> enclosedElements = new ArrayList<Accessor>();
+        List<Accessor> enclosedElements = new ArrayList<>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
 
@@ -179,7 +179,7 @@ public class Executables {
      */
     private static void addNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
-        List<Accessor> safeToAdd = new ArrayList<Accessor>( methodsToAdd.size() );
+        List<Accessor> safeToAdd = new ArrayList<>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
@@ -191,7 +191,7 @@ public class Executables {
     }
 
     private static void addFields(List<Accessor> alreadyCollected, List<VariableElement> variablesToAdd) {
-        List<Accessor> safeToAdd = new ArrayList<Accessor>( variablesToAdd.size() );
+        List<Accessor> safeToAdd = new ArrayList<>( variablesToAdd.size() );
         for ( VariableElement toAdd : variablesToAdd ) {
             safeToAdd.add( new VariableElementAccessor( toAdd ) );
         }

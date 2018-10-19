@@ -84,7 +84,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
             Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
-            SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<String>(), "map key" );
+            SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key" );
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 keyTargetType,
@@ -124,7 +124,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
-            SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>(),
+            SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
                     "map value" );
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -185,7 +185,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
-            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+            Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
                 LifecycleMethodResolver.beforeMappingMethods( method, null, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =

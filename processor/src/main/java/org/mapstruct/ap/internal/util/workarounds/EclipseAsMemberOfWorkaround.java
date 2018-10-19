@@ -64,12 +64,12 @@ final class EclipseAsMemberOfWorkaround {
         }
 
         // if nothing was found, traverse the interfaces and collect all candidate methods that match
-        List<MethodBinding> candidatesFromInterfaces = new ArrayList<MethodBinding>();
+        List<MethodBinding> candidatesFromInterfaces = new ArrayList<>();
 
         collectFromInterfaces(
             methodBinding,
             referenceBinding,
-            new HashSet<ReferenceBinding>(),
+            new HashSet<>(),
             candidatesFromInterfaces );
 
         // there can be multiple matches for the same method name from adjacent interface hierarchies.

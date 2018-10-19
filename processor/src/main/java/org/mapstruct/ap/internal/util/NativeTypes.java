@@ -25,8 +25,8 @@ public class NativeTypes {
 
     private static final Map<Class<?>, Class<?>> WRAPPER_TO_PRIMITIVE_TYPES;
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_TYPES;
-    private static final Set<Class<?>> NUMBER_TYPES = new HashSet<Class<?>>();
-    private static final Map<TypeKind, String> TYPE_KIND_NAME = new EnumMap<TypeKind, String>( TypeKind.class );
+    private static final Set<Class<?>> NUMBER_TYPES = new HashSet<>();
+    private static final Map<TypeKind, String> TYPE_KIND_NAME = new EnumMap<>( TypeKind.class );
     private static final Map<String, LiteralAnalyzer> ANALYZERS;
 
     private static final Pattern PTRN_HEX = Pattern.compile( "^0[x|X].*" );
@@ -390,7 +390,7 @@ public class NativeTypes {
     }
 
     static {
-        Map<Class<?>, Class<?>> tmp = new HashMap<Class<?>, Class<?>>();
+        Map<Class<?>, Class<?>> tmp = new HashMap<>();
         tmp.put( Byte.class, byte.class );
         tmp.put( Short.class, short.class );
         tmp.put( Integer.class, int.class );
@@ -402,7 +402,7 @@ public class NativeTypes {
 
         WRAPPER_TO_PRIMITIVE_TYPES = Collections.unmodifiableMap( tmp );
 
-        tmp = new HashMap<Class<?>, Class<?>>();
+        tmp = new HashMap<>();
         tmp.put( byte.class, Byte.class );
         tmp.put( short.class, Short.class );
         tmp.put( int.class, Integer.class );
@@ -429,7 +429,7 @@ public class NativeTypes {
         NUMBER_TYPES.add( BigInteger.class );
         NUMBER_TYPES.add( BigDecimal.class );
 
-        Map<String, LiteralAnalyzer> tmp2 = new HashMap<String, LiteralAnalyzer>();
+        Map<String, LiteralAnalyzer> tmp2 = new HashMap<>();
         tmp2.put( boolean.class.getCanonicalName(), new BooleanAnalyzer() );
         tmp2.put( Boolean.class.getCanonicalName(), new BooleanAnalyzer() );
         tmp2.put( char.class.getCanonicalName(), new CharAnalyzer() );

@@ -42,7 +42,7 @@ public class TypeSelector implements MethodSelector {
             return methods;
         }
 
-        List<SelectedMethod<T>> result = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> result = new ArrayList<>();
 
         List<ParameterBinding> availableBindings;
         if ( sourceTypes.isEmpty() ) {
@@ -75,7 +75,7 @@ public class TypeSelector implements MethodSelector {
 
     private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
         SourceRHS sourceRHS) {
-        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 3 );
+        List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
 
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
         if ( sourceRHS != null ) {
@@ -92,7 +92,7 @@ public class TypeSelector implements MethodSelector {
     private List<ParameterBinding> getAvailableParameterBindingsFromSourceTypes(List<Type> sourceTypes,
             Type targetType, Method mappingMethod) {
 
-        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( sourceTypes.size() + 2 );
+        List<ParameterBinding> availableParams = new ArrayList<>( sourceTypes.size() + 2 );
 
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
 
@@ -139,8 +139,8 @@ public class TypeSelector implements MethodSelector {
             return null;
         }
 
-        List<List<ParameterBinding>> bindingPermutations = new ArrayList<List<ParameterBinding>>( 1 );
-        bindingPermutations.add( new ArrayList<ParameterBinding>( methodParameters.size() ) );
+        List<List<ParameterBinding>> bindingPermutations = new ArrayList<>( 1 );
+        bindingPermutations.add( new ArrayList<>( methodParameters.size() ) );
 
         for ( Parameter methodParam : methodParameters ) {
             List<ParameterBinding> candidateBindings =
@@ -159,12 +159,12 @@ public class TypeSelector implements MethodSelector {
             }
             else {
                 List<List<ParameterBinding>> newVariants =
-                    new ArrayList<List<ParameterBinding>>( bindingPermutations.size() * candidateBindings.size() );
+                    new ArrayList<>( bindingPermutations.size() * candidateBindings.size() );
                 for ( List<ParameterBinding> variant : bindingPermutations ) {
                     // create a copy of each variant for each binding
                     for ( ParameterBinding binding : candidateBindings ) {
                         List<ParameterBinding> extendedVariant =
-                            new ArrayList<ParameterBinding>( methodParameters.size() );
+                            new ArrayList<>( methodParameters.size() );
                         extendedVariant.addAll( variant );
                         extendedVariant.add( binding );
 
@@ -186,7 +186,7 @@ public class TypeSelector implements MethodSelector {
      */
     private static List<ParameterBinding> findCandidateBindingsForParameter(List<ParameterBinding> candidateParameters,
             Parameter parameter) {
-        List<ParameterBinding> result = new ArrayList<ParameterBinding>( candidateParameters.size() );
+        List<ParameterBinding> result = new ArrayList<>( candidateParameters.size() );
 
         for ( ParameterBinding candidate : candidateParameters ) {
             if ( parameter.isTargetType() == candidate.isTargetType()
@@ -200,7 +200,7 @@ public class TypeSelector implements MethodSelector {
     }
 
     private static List<Type> extractTypes(List<ParameterBinding> parameters) {
-        List<Type> result = new ArrayList<Type>( parameters.size() );
+        List<Type> result = new ArrayList<>( parameters.size() );
 
         for ( ParameterBinding param : parameters ) {
             result.add( param.getType() );

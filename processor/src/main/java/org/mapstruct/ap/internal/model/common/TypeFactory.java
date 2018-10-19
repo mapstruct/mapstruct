@@ -83,8 +83,8 @@ public class TypeFactory {
     private final TypeMirror mapType;
     private final TypeMirror streamType;
 
-    private final Map<String, ImplementationType> implementationTypes = new HashMap<String, ImplementationType>();
-    private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
+    private final Map<String, ImplementationType> implementationTypes = new HashMap<>();
+    private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<>();
 
     public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext) {
         this.elementUtils = elementUtils;
@@ -369,7 +369,7 @@ public class TypeFactory {
         ExecutableElement method = accessor.getExecutable();
         TypeMirror methodType = getMethodType( includingType, accessor.getElement() );
         if ( method == null || methodType.getKind() != TypeKind.EXECUTABLE ) {
-            return new ArrayList<Parameter>();
+            return new ArrayList<>();
         }
         return getParameters( (ExecutableType) methodType, method );
     }
@@ -377,7 +377,7 @@ public class TypeFactory {
     public List<Parameter> getParameters(ExecutableType methodType, ExecutableElement method) {
         List<? extends TypeMirror> parameterTypes = methodType.getParameterTypes();
         List<? extends VariableElement> parameters = method.getParameters();
-        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
+        List<Parameter> result = new ArrayList<>( parameters.size() );
 
         Iterator<? extends VariableElement> varIt = parameters.iterator();
         Iterator<? extends TypeMirror> typesIt = parameterTypes.iterator();
@@ -425,19 +425,19 @@ public class TypeFactory {
 
     public List<Type> getThrownTypes(Accessor accessor) {
         if (accessor.getExecutable() == null) {
-            return new ArrayList<Type>();
+            return new ArrayList<>();
         }
         return extractTypes( accessor.getExecutable().getThrownTypes() );
     }
 
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {
-        Set<Type> types = new HashSet<Type>( typeMirrors.size() );
+        Set<Type> types = new HashSet<>( typeMirrors.size() );
 
         for ( TypeMirror typeMirror : typeMirrors ) {
             types.add( getType( typeMirror ) );
         }
 
-        return new ArrayList<Type>( types );
+        return new ArrayList<>( types );
     }
 
     private List<Type> getTypeParameters(TypeMirror mirror, boolean isImplementationType) {
@@ -446,7 +446,7 @@ public class TypeFactory {
         }
 
         DeclaredType declaredType = (DeclaredType) mirror;
-        List<Type> typeParameters = new ArrayList<Type>( declaredType.getTypeArguments().size() );
+        List<Type> typeParameters = new ArrayList<>( declaredType.getTypeArguments().size() );
 
         for ( TypeMirror typeParameter : declaredType.getTypeArguments() ) {
             if ( isImplementationType ) {

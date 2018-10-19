@@ -41,7 +41,7 @@ public class TargetTypeSelector implements MethodSelector {
         if ( qualifyingTypeMirror != null && !criteria.isLifecycleCallbackRequired() ) {
 
             List<SelectedMethod<T>> candidatesWithQualifyingTargetType =
-                new ArrayList<SelectedMethod<T>>( methods.size() );
+                new ArrayList<>( methods.size() );
 
             for ( SelectedMethod<T> method : methods ) {
                 TypeMirror resultTypeMirror = method.getMethod().getResultType().getTypeElement().asType();

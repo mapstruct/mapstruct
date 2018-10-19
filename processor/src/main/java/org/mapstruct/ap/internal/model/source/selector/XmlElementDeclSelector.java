@@ -50,9 +50,9 @@ public class XmlElementDeclSelector implements MethodSelector {
                                                                           List<Type> sourceTypes, Type targetType,
                                                                           SelectionCriteria criteria) {
 
-        List<SelectedMethod<T>> nameMatches = new ArrayList<SelectedMethod<T>>();
-        List<SelectedMethod<T>> scopeMatches = new ArrayList<SelectedMethod<T>>();
-        List<SelectedMethod<T>> nameAndScopeMatches = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> nameMatches = new ArrayList<>();
+        List<SelectedMethod<T>> scopeMatches = new ArrayList<>();
+        List<SelectedMethod<T>> nameAndScopeMatches = new ArrayList<>();
         XmlElementRefInfo xmlElementRefInfo =
             findXmlElementRef( mappingMethod.getResultType(), criteria.getTargetPropertyName() );
 

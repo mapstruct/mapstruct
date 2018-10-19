@@ -73,7 +73,7 @@ public class AnnotationProcessorContext {
     }
 
     private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
-        List<AstModifyingAnnotationProcessor> processors = new ArrayList<AstModifyingAnnotationProcessor>();
+        List<AstModifyingAnnotationProcessor> processors = new ArrayList<>();
 
         ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
                 AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()

@@ -26,7 +26,7 @@ public class EnumConstantWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( getAssignment().getImportTypes() );
+        Set<Type> imported = new HashSet<>( getAssignment().getImportTypes() );
         imported.add( enumType );
         return imported;
     }

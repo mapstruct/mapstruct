@@ -154,7 +154,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
         }
 
         List<ExecutableElement> methods = ElementFilter.methodsIn( typeElement.getEnclosedElements() );
-        List<BuilderInfo> builderInfo = new ArrayList<BuilderInfo>();
+        List<BuilderInfo> builderInfo = new ArrayList<>();
         for ( ExecutableElement method : methods ) {
             if ( isPossibleBuilderCreationMethod( method, typeElement, types ) ) {
                 TypeElement builderElement = getTypeElement( method.getReturnType() );
@@ -230,7 +230,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
         }
 
         List<ExecutableElement> builderMethods = ElementFilter.methodsIn( builderElement.getEnclosedElements() );
-        List<ExecutableElement> buildMethods = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> buildMethods = new ArrayList<>();
         for ( ExecutableElement buildMethod : builderMethods ) {
             if ( isBuildMethod( buildMethod, typeElement, types ) ) {
                 buildMethods.add( buildMethod );

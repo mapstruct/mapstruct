@@ -53,7 +53,7 @@ public class Mappers {
      */
     public static <T> T getMapper(Class<T> clazz) {
         try {
-            List<ClassLoader> classLoaders = new ArrayList<ClassLoader>( 3 );
+            List<ClassLoader> classLoaders = new ArrayList<>( 3 );
             classLoaders.add( clazz.getClassLoader() );
 
             if ( Thread.currentThread().getContextClassLoader() != null ) {

@@ -145,7 +145,7 @@ public class Strings {
         name = decapitalize( sanitizeIdentifierName( name ) );
         name = joinAndCamelize( extractParts( name ) );
 
-        Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
+        Set<String> conflictingNames = new HashSet<>( KEYWORDS );
         conflictingNames.addAll( existingVariableNames );
 
         if ( !conflictingNames.contains( name ) ) {

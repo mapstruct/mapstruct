@@ -111,7 +111,7 @@ public class SourceReference {
             String[] segments = sourceNameTrimmed.split( "\\." );
             Parameter parameter = null;
 
-            List<PropertyEntry> entries = new ArrayList<PropertyEntry>();
+            List<PropertyEntry> entries = new ArrayList<>();
 
             if ( method.getSourceParameters().size() > 1 ) {
 
@@ -188,7 +188,7 @@ public class SourceReference {
                         sourcePropertyNames[notFoundPropertyIndex],
                         sourceType.getPropertyReadAccessors().keySet()
                     );
-                    List<String> elements = new ArrayList<String>(
+                    List<String> elements = new ArrayList<>(
                         Arrays.asList( sourcePropertyNames ).subList( 0, notFoundPropertyIndex )
                     );
                     elements.add( mostSimilarWord );
@@ -204,7 +204,7 @@ public class SourceReference {
         }
 
         private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
-            List<PropertyEntry> sourceEntries = new ArrayList<PropertyEntry>();
+            List<PropertyEntry> sourceEntries = new ArrayList<>();
             Type newType = type;
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
@@ -275,7 +275,7 @@ public class SourceReference {
         }
 
         public SourceReference build() {
-            List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
+            List<PropertyEntry> sourcePropertyEntries = new ArrayList<>();
             if ( readAccessor != null ) {
                 sourcePropertyEntries.add( forSourceReference( name, readAccessor, presenceChecker, type ) );
             }
@@ -325,7 +325,7 @@ public class SourceReference {
     }
 
     public List<String> getElementNames() {
-        List<String> sourceName = new ArrayList<String>();
+        List<String> sourceName = new ArrayList<>();
         sourceName.add( parameter.getName() );
         for ( PropertyEntry propertyEntry : propertyEntries ) {
             sourceName.add( propertyEntry.getName() );
@@ -340,7 +340,7 @@ public class SourceReference {
      * @return the copy
      */
     public SourceReference copyForInheritanceTo(SourceMethod method) {
-        List<Parameter> replacementParamCandidates = new ArrayList<Parameter>();
+        List<Parameter> replacementParamCandidates = new ArrayList<>();
         for ( Parameter sourceParam : method.getSourceParameters() ) {
             if ( parameter != null && sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
                 replacementParamCandidates.add( sourceParam );
@@ -358,7 +358,7 @@ public class SourceReference {
     public SourceReference pop() {
         if ( propertyEntries.size() > 1 ) {
             List<PropertyEntry> newPropertyEntries =
-                new ArrayList<PropertyEntry>( propertyEntries.subList( 1, propertyEntries.size() ) );
+                new ArrayList<>( propertyEntries.subList( 1, propertyEntries.size() ) );
             return new SourceReference( parameter, newPropertyEntries, isValid );
         }
         else {

@@ -52,9 +52,9 @@ public class MethodSelectors {
                                                                           List<Type> sourceTypes, Type targetType,
                                                                           SelectionCriteria criteria) {
 
-        List<SelectedMethod<T>> candidates = new ArrayList<SelectedMethod<T>>( methods.size() );
+        List<SelectedMethod<T>> candidates = new ArrayList<>( methods.size() );
         for ( T method : methods ) {
-            candidates.add( new SelectedMethod<T>( method ) );
+            candidates.add( new SelectedMethod<>( method ) );
         }
 
         for ( MethodSelector selector : selectors ) {

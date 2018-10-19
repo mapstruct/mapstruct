@@ -132,7 +132,7 @@ public class ObjectFactoryMethodResolver {
             .getAllProvidedMethodsInParameterOrder( method.getContextParameters() );
 
         List<SourceMethod> availableMethods =
-            new ArrayList<SourceMethod>( methodsProvidedByParams.size() + sourceModelMethods.size() );
+            new ArrayList<>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
         for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
             // add only methods from context that do have the @ObjectFactory annotation
