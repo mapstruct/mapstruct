@@ -22,6 +22,7 @@ public class Collections {
     private Collections() {
     }
 
+    @SafeVarargs
     public static <T> Set<T> asSet(T... elements) {
         Set<T> set = new HashSet<>();
 
@@ -32,6 +33,7 @@ public class Collections {
         return set;
     }
 
+    @SafeVarargs
     public static <T> List<T> newArrayList(T... elements) {
         List<T> list = new ArrayList<>();
 
@@ -40,6 +42,7 @@ public class Collections {
         return list;
     }
 
+    @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
         Set<T> set = new HashSet<>( collection );
 
@@ -50,6 +53,7 @@ public class Collections {
         return set;
     }
 
+    @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, Collection<T>... elements) {
         Set<T> set = new HashSet<>( collection );
 
