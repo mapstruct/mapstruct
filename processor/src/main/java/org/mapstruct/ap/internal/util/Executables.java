@@ -83,10 +83,7 @@ public class Executables {
         try {
             return DEFAULT_METHOD != null && Boolean.TRUE.equals( DEFAULT_METHOD.invoke( method ) );
         }
-        catch ( IllegalAccessException e ) {
-            return false;
-        }
-        catch ( InvocationTargetException e ) {
+        catch ( IllegalAccessException | InvocationTargetException e ) {
             return false;
         }
     }

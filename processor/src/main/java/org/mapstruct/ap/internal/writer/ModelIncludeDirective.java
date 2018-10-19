@@ -48,14 +48,8 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
                 modelElement.write( context, env.getOut() );
             }
         }
-        catch ( TemplateException te ) {
+        catch ( TemplateException | RuntimeException | IOException te ) {
             throw te;
-        }
-        catch ( IOException ioe ) {
-            throw ioe;
-        }
-        catch ( RuntimeException re ) {
-            throw re;
         }
         catch ( Exception e ) {
             throw new RuntimeException( e );
