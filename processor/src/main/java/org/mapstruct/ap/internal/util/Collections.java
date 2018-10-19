@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -24,23 +23,15 @@ public class Collections {
 
     @SafeVarargs
     public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<>();
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
+        Set<T> set = new HashSet<>( elements.length );
+        java.util.Collections.addAll( set, elements );
         return set;
     }
 
     @SafeVarargs
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<>( collection );
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
+        Set<T> set = new HashSet<>( collection.size() + elements.length );
+        java.util.Collections.addAll( set, elements );
         return set;
     }
 
