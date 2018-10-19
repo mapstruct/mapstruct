@@ -63,14 +63,4 @@ public class Collections {
         return result;
     }
 
-    public static <E> boolean hasNonNullElements(Iterable<E> elements) {
-        if ( elements != null ) {
-            for ( E e : elements ) {
-                if ( e != null ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }
