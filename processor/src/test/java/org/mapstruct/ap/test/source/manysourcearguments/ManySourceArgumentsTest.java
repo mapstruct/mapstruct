@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.severalsources;
+package org.mapstruct.ap.test.source.manysourcearguments;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("31")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class SeveralSourceParametersTest {
+public class ManySourceArgumentsTest {
 
     @Before
     public void reset() {

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.severaltargets;
+package org.mapstruct.ap.test.source.manytargetproperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     TimeAndFormatMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class SourcePropertyMapSeveralTimesTest {
+public class SourceToManyTargetPropertiesTest {
 
     @Test
     @IssueKey("94")
