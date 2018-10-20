@@ -134,6 +134,29 @@ public class ManySourceArgumentsTest {
         assertThat( deliveryAddress.getStreet() ).isEqualTo( "Main street" );
     }
 
+    @IssueKey( "1593" )
+    @Test
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapperWithConfig.class,
+        SourceTargetConfig.class } )
+    public void shouldUseConfig() {
+        Person person = new Person( "Bob", "Garner", 181, "An actor" );
+        Address address = new Address( "Main street", 12345, 42, "His address" );
+
+        DeliveryAddress deliveryAddress = SourceTargetMapperWithConfig.INSTANCE
+            .personAndAddressToDeliveryAddress( person, address );
+
+        assertThat( deliveryAddress ).isNotNull();
+        assertThat( deliveryAddress.getLastName() ).isEqualTo( "Garner" );
+        assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
+        assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
+        assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
+
+    }
+
     @Test
     @WithClasses({ ErroneousSourceTargetMapper.class, Address.class, DeliveryAddress.class })
     @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "IGNORE")
