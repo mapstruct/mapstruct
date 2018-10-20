@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.severalsources;
+package org.mapstruct.ap.test.source.manysourcearguments;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("31")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class SeveralSourceParametersTest {
+public class ManySourceArgumentsTest {
 
     @Before
     public void reset() {
@@ -132,6 +132,29 @@ public class SeveralSourceParametersTest {
         assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
         assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
         assertThat( deliveryAddress.getStreet() ).isEqualTo( "Main street" );
+    }
+
+    @IssueKey( "1593" )
+    @Test
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapperWithConfig.class,
+        SourceTargetConfig.class } )
+    public void shouldUseConfig() {
+        Person person = new Person( "Bob", "Garner", 181, "An actor" );
+        Address address = new Address( "Main street", 12345, 42, "His address" );
+
+        DeliveryAddress deliveryAddress = SourceTargetMapperWithConfig.INSTANCE
+            .personAndAddressToDeliveryAddress( person, address );
+
+        assertThat( deliveryAddress ).isNotNull();
+        assertThat( deliveryAddress.getLastName() ).isEqualTo( "Garner" );
+        assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
+        assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
+        assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
+
     }
 
     @Test
