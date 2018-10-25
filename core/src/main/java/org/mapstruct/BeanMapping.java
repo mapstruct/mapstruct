@@ -64,12 +64,13 @@ public @interface BeanMapping {
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
-     * The strategy to be applied when a source bean property is {@code null}. If no strategy is configured, the
-     * strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()} or
+     * The strategy to be applied when a source bean property is {@code null} or not present. If no strategy is
+     * configured, the strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()} or
      * {@link Mapper#nullValuePropertyMappingStrategy()} will be applied,
      * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
      *
-     * @return The strategy to be applied when {@code null} is passed as source property value.
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source property
+     * is not present.
      */
     NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy()
         default NullValuePropertyMappingStrategy.SET_TO_NULL;

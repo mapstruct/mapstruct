@@ -13,11 +13,11 @@ import org.mapstruct.factory.Mappers;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper
-public interface ErroneousCustomerMapper {
+public interface ErroneousCustomerMapper5 {
 
-    ErroneousCustomerMapper INSTANCE = Mappers.getMapper( ErroneousCustomerMapper.class );
+    ErroneousCustomerMapper5 INSTANCE = Mappers.getMapper( ErroneousCustomerMapper5.class );
 
-    @Mapping(target = "details", defaultValue = "test", nullValuePropertyMappingStrategy = IGNORE)
+    @Mapping(target = "details", ignore = true, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "address", nullValuePropertyMappingStrategy = IGNORE)
     void map(Customer customer, @MappingTarget CustomerDTO mappingTarget);
 

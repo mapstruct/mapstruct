@@ -2110,7 +2110,7 @@ The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy`
 [[mapping-result-for-null-properties]]
 === Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).
 
-MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null`.
+MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method yields absent.
 
 By default the source property will be set to null. However:
 

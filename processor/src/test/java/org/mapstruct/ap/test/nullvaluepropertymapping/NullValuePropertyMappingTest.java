@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.nullvaluepropertymapping;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Sjaak Derksen
  */
+@IssueKey("1306")
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Address.class,
@@ -35,7 +37,6 @@ public class NullValuePropertyMappingTest {
 
     @Test
     @WithClasses(CustomerMapper.class)
-    @IssueKey("1306")
     public void testStrategyAppliedOnForgedMethod() {
 
         Customer customer = new Customer();
@@ -104,26 +105,85 @@ public class NullValuePropertyMappingTest {
 
     @Test
     @Ignore // test gives different results for JDK and JDT
-    @WithClasses(ErroneousCustomerMapper.class)
+    @WithClasses(ErroneousCustomerMapper1.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousCustomerMapper.class,
+            @Diagnostic(type = ErroneousCustomerMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 21,
+                line = 20,
                 messageRegExp = "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define a defaultValue or an nullValuePropertyMappingStrategy.")
         }
     )
-    public void testBothDefaultValueANdNullValuePropertyMappingStrategyDefined() {
+    public void testBothDefaultValueAndNvpmsDefined() {
     }
 
-    @FunctionalInterface
-    interface CustomerFI {
-        void apply(Customer source, CustomerDTO target);
+    @Test
+    @Ignore // test gives different results for JDK and JDT
+    @WithClasses(ErroneousCustomerMapper2.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCustomerMapper2.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                messageRegExp = "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                    "either define an expression or an nullValuePropertyMappingStrategy.")
+        }
+    )
+    public void testBothExpressionAndNvpmsDefined() {
     }
 
-    private void testConfig(CustomerFI customerMapper) {
+    @Test
+    @Ignore // test gives different results for JDK and JDT
+    @WithClasses(ErroneousCustomerMapper3.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCustomerMapper3.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                messageRegExp = "DefaultExpression and nullValuePropertyMappingStrategy are both defined in " +
+                    "@Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy.")
+        }
+    )
+    public void testBothDefaultExpressionAndNvpmsDefined() {
+    }
+
+    @Test
+    @Ignore // test gives different results for JDK and JDT
+    @WithClasses(ErroneousCustomerMapper4.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCustomerMapper4.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                messageRegExp = "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                    "either define a constant or an nullValuePropertyMappingStrategy.")
+        }
+    )
+    public void testBothConstantAndNvpmsDefined() {
+    }
+
+    @Test
+    @Ignore // test gives different results for JDK and JDT
+    @WithClasses(ErroneousCustomerMapper5.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCustomerMapper5.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                messageRegExp = "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                    "either define ignore or an nullValuePropertyMappingStrategy.")
+        }
+    )
+    public void testBothIgnoreAndNvpmsDefined() {
+    }
+
+    private void testConfig(BiConsumer<Customer, CustomerDTO> customerMapper) {
 
         Customer customer = new Customer();
         customer.setAddress( null );
@@ -133,7 +193,7 @@ public class NullValuePropertyMappingTest {
         customerDto.getAddress().setHouseNo( 5 );
         customerDto.setDetails( Arrays.asList( "green hair" ) );
 
-        customerMapper.apply( customer, customerDto );
+        customerMapper.accept( customer, customerDto );
 
         assertThat( customerDto.getAddress() ).isNotNull();
         assertThat( customerDto.getAddress().getHouseNo() ).isEqualTo( 5 );

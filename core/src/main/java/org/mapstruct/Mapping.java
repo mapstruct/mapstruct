@@ -269,14 +269,15 @@ public @interface Mapping {
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
 
     /**
-     * The strategy to be applied when the source property is {@code null}. If no strategy is configured, the
-     * strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()},
+     * The strategy to be applied when the source property is {@code null} or not present. If no strategy is configured,
+     * the strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()},
      * {@link BeanMapping#nullValuePropertyMappingStrategy()} or
      * {@link Mapper#nullValuePropertyMappingStrategy()} will be applied.
      *
      * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
      *
-     * @return The strategy to be applied when {@code null} is passed as source property value.
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source property
+     * is not present.
      */
     NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy()
         default NullValuePropertyMappingStrategy.SET_TO_NULL;

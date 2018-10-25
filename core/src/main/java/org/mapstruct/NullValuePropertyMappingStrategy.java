@@ -6,8 +6,9 @@
 package org.mapstruct;
 
 /**
- * Strategy for dealing with {@code null} properties in the source bean. The {@link NullValuePropertyMappingStrategy}
- * can be defined on {@link MapperConfig}, {@link Mapper}, {@link BeanMapping} and {@link Mapping}.
+ * Strategy for dealing with {@code null} or not present properties in the source bean. The
+ * {@link NullValuePropertyMappingStrategy} can be defined on {@link MapperConfig}, {@link Mapper}, {@link BeanMapping}
+ * and {@link Mapping}.
  * Precedence is arranged  in the reverse order. So {@link Mapping} will override {@link BeanMapping}, will
  * overide {@link Mapper}
  *
