@@ -27,6 +27,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -58,6 +59,7 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
     private final AnnotationValue dependsOnAnnotationValue;
     private final NullValueCheckStrategyPrism nullValueCheckStrategy;
+    private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
 
     private SourceReference sourceReference;
     private TargetReference targetReference;
@@ -89,70 +91,7 @@ public class Mapping {
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
         FormattingMessager messager, Types typeUtils) {
 
-        if ( mappingPrism.target().isEmpty() ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                mappingPrism.values.target(),
-                Message.PROPERTYMAPPING_EMPTY_TARGET
-            );
-            return null;
-        }
-
-        if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED );
-            return null;
-        }
-        else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
-            return null;
-        }
-        else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage(
-                    element,
-                    mappingPrism.mirror,
-                    Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+        if (!isConsistent( mappingPrism, element, messager  ) ) {
             return null;
         }
 
@@ -167,7 +106,6 @@ public class Mapping {
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
-
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
@@ -188,6 +126,11 @@ public class Mapping {
                 ? null
                 : NullValueCheckStrategyPrism.valueOf( mappingPrism.nullValueCheckStrategy() );
 
+        NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy =
+            null == mappingPrism.values.nullValuePropertyMappingStrategy()
+                ? null
+                : NullValuePropertyMappingStrategyPrism.valueOf( mappingPrism.nullValuePropertyMappingStrategy() );
+
         return new Mapping(
             source,
             constant,
@@ -203,7 +146,8 @@ public class Mapping {
             selectionParams,
             mappingPrism.values.dependsOn(),
             dependsOn,
-            nullValueCheckStrategy
+            nullValueCheckStrategy,
+            nullValuePropertyMappingStrategy
         );
     }
 
@@ -223,8 +167,134 @@ public class Mapping {
             null,
             null,
             new ArrayList(),
+            null,
             null
         );
+    }
+
+    private static boolean isConsistent(MappingPrism mappingPrism, ExecutableElement element,
+                                        FormattingMessager messager) {
+
+        if ( mappingPrism.target().isEmpty() ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                mappingPrism.values.target(),
+                Message.PROPERTYMAPPING_EMPTY_TARGET
+            );
+            return false;
+        }
+
+        if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
+            && mappingPrism.values.defaultValue() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
+            && mappingPrism.values.constant() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
+            && mappingPrism.values.expression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
+            && mappingPrism.values.defaultExpression() != null ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS
+            );
+            return false;
+        }
+        else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
+            && mappingPrism.ignore() != null && mappingPrism.ignore() ) {
+            messager.printMessage(
+                element,
+                mappingPrism.mirror,
+                Message.PROPERTYMAPPING_IGNORE_AND_NVPMS
+            );
+            return false;
+        }
+        return true;
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
@@ -233,7 +303,8 @@ public class Mapping {
                      AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
                      FormattingParameters formattingParameters, SelectionParameters selectionParameters,
                      AnnotationValue dependsOnAnnotationValue, List<String> dependsOn,
-                     NullValueCheckStrategyPrism nullValueCheckStrategy ) {
+                     NullValueCheckStrategyPrism nullValueCheckStrategy,
+                     NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy ) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -249,6 +320,7 @@ public class Mapping {
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.dependsOn = dependsOn;
         this.nullValueCheckStrategy = nullValueCheckStrategy;
+        this.nullValuePropertyMappingStrategy = nullValuePropertyMappingStrategy;
     }
 
     private Mapping( Mapping mapping, TargetReference targetReference ) {
@@ -269,6 +341,7 @@ public class Mapping {
         this.sourceReference = mapping.sourceReference;
         this.targetReference = targetReference;
         this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
+        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
     }
 
     private Mapping( Mapping mapping, SourceReference sourceReference ) {
@@ -289,6 +362,7 @@ public class Mapping {
         this.sourceReference = sourceReference;
         this.targetReference = mapping.targetReference;
         this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
+        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -458,6 +532,10 @@ public class Mapping {
         return nullValueCheckStrategy;
     }
 
+    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
+        return nullValuePropertyMappingStrategy;
+    }
+
     public Mapping popTargetReference() {
         if ( targetReference != null ) {
             TargetReference newTargetReference = targetReference.pop();
@@ -506,7 +584,8 @@ public class Mapping {
             selectionParameters,
             dependsOnAnnotationValue,
             Collections.<String>emptyList(),
-            nullValueCheckStrategy
+            nullValueCheckStrategy,
+            nullValuePropertyMappingStrategy
         );
 
         reverse.init(
@@ -548,7 +627,8 @@ public class Mapping {
             selectionParameters,
             dependsOnAnnotationValue,
             dependsOn,
-            nullValueCheckStrategy
+            nullValueCheckStrategy,
+            nullValuePropertyMappingStrategy
         );
 
         if ( sourceReference != null ) {
@@ -568,5 +648,6 @@ public class Mapping {
             "\n    targetName='" + targetName + "\'," +
             "\n}";
     }
+
 }
 

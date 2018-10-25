@@ -26,16 +26,13 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             return null;
         }
 
-        Domain domain = new Domain();
+        Domain domain = createNullDomain();
 
         domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
         domain.setLongs( stringListToLongSet( source.getStrings() ) );
         List<String> list = source.getStrings();
         if ( list != null ) {
             domain.setStrings( new HashSet<String>( list ) );
-        }
-        else {
-            domain.setStrings( null );
         }
         List<String> list1 = source.getStringsWithDefault();
         if ( list1 != null ) {
@@ -47,9 +44,6 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
         List<String> list2 = source.getStringsInitialized();
         if ( list2 != null ) {
             domain.setStringsInitialized( new HashSet<String>( list2 ) );
-        }
-        else {
-            domain.setStringsInitialized( null );
         }
 
         return domain;

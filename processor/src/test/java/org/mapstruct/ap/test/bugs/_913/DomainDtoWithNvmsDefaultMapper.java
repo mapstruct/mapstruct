@@ -11,13 +11,17 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT, uses = Helper.class )
+@Mapper(
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT,
+    uses = Helper.class )
 public interface DomainDtoWithNvmsDefaultMapper {
 
     DomainDtoWithNvmsDefaultMapper INSTANCE = Mappers.getMapper( DomainDtoWithNvmsDefaultMapper.class );

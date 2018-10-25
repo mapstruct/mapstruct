@@ -13,9 +13,11 @@
       <@assignToExistingTarget/>
       <@lib.handleAssignment/>;
     }
+    <#if mapNullToDefault || includeExplicitNullWhenSourceIsNull>
     else {
       ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
     }
+    </#if>
   <#else>
     <@assignToExistingTarget/>
     <@lib.handleAssignment/>;

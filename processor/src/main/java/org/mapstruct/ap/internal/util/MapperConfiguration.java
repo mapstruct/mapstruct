@@ -22,6 +22,7 @@ import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
@@ -160,6 +161,25 @@ public class MapperConfiguration {
         }
         else {
             return NullValueCheckStrategyPrism.valueOf( mapperPrism.nullValueCheckStrategy() );
+        }
+    }
+
+    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy(
+        NullValuePropertyMappingStrategyPrism beanPrism,
+        NullValuePropertyMappingStrategyPrism mappingPrism) {
+        if ( mappingPrism != null ) {
+            return mappingPrism;
+        }
+        else if ( beanPrism != null ) {
+            return beanPrism;
+        }
+        else if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
+            return NullValuePropertyMappingStrategyPrism.valueOf(
+                mapperConfigPrism.nullValuePropertyMappingStrategy()
+            );
+        }
+        else {
+            return NullValuePropertyMappingStrategyPrism.valueOf( mapperPrism.nullValuePropertyMappingStrategy() );
         }
     }
 

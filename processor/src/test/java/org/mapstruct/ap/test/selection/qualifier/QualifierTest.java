@@ -174,8 +174,8 @@ public class QualifierTest {
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in " +
-                    "@BeanMapping, define at least one of them."),
+                messageRegExp = "'nullValueMappingStrategy', 'nullValuePropertyMappingStrategy', 'resultType' and " +
+                    "'qualifiedBy' are undefined in @BeanMapping, define at least one of them."),
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
                 line = 24,

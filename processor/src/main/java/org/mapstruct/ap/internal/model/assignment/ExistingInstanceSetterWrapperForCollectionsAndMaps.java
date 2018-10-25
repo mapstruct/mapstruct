@@ -6,13 +6,18 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.IGNORE;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
@@ -29,28 +34,45 @@ import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     extends SetterWrapperForCollectionsAndMapsWithNullCheck {
 
-    private final boolean includeSourceNullCheck;
+    private final boolean includeElseBranch;
+    private final boolean mapNullToDefault;
+    private final Type targetType;
 
     public ExistingInstanceSetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
         Type targetType,
-        NullValueCheckStrategyPrism nvms,
+        NullValueCheckStrategyPrism nvcs,
+        NullValuePropertyMappingStrategyPrism nvpms,
         TypeFactory typeFactory,
-        boolean fieldAssignment,
-        boolean mapNullToDefault) {
+        boolean fieldAssignment) {
 
         super(
             decoratedAssignment,
             thrownTypesToExclude,
             targetType,
             typeFactory,
-            fieldAssignment,
-            mapNullToDefault
+            fieldAssignment
         );
-        this.includeSourceNullCheck = ALWAYS == nvms;
+        this.mapNullToDefault = SET_TO_DEFAULT == nvpms;
+        this.targetType = targetType;
+        this.includeElseBranch = ALWAYS != nvcs && IGNORE != nvpms;
     }
 
-    public boolean isIncludeSourceNullCheck() {
-        return includeSourceNullCheck;
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        if ( isMapNullToDefault() && ( targetType.getImplementationType() != null ) ) {
+            imported.add( targetType.getImplementationType() );
+        }
+        return imported;
     }
+
+    public boolean isIncludeElseBranch() {
+        return includeElseBranch;
+    }
+
+    public boolean isMapNullToDefault() {
+        return mapNullToDefault;
+    }
+
 }

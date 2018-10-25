@@ -17,7 +17,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
@@ -57,7 +57,8 @@ public class CollectionAssignmentBuilder {
     private PropertyMapping.TargetWriteAccessorType targetAccessorType;
     private Assignment assignment;
     private SourceRHS sourceRHS;
-    private NullValueCheckStrategyPrism nullValueCheckStrategy;
+    private NullValueCheckStrategyPrism nvcs;
+    private NullValuePropertyMappingStrategyPrism nvpms;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -109,8 +110,13 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
-    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyPrism nullValueCheckStrategy ) {
-        this.nullValueCheckStrategy = nullValueCheckStrategy;
+    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyPrism nvcs ) {
+        this.nvcs = nvcs;
+        return this;
+    }
+
+    public CollectionAssignmentBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyPrism nvpms ) {
+        this.nvpms = nvpms;
         return this;
     }
 
@@ -143,7 +149,7 @@ public class CollectionAssignmentBuilder {
                     PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
                     targetType,
                     true,
-                    mapNullToDefault()
+                    nvpms
                 );
             }
             else if ( method.isUpdateMethod() && !targetImmutable ) {
@@ -152,22 +158,21 @@ public class CollectionAssignmentBuilder {
                     result,
                     method.getThrownTypes(),
                     targetType,
-                    nullValueCheckStrategy,
+                    nvcs,
+                    nvpms,
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
-                    mapNullToDefault()
+                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
-                nullValueCheckStrategy == NullValueCheckStrategyPrism.ALWAYS ) {
+                nvcs == NullValueCheckStrategyPrism.ALWAYS ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
-                    mapNullToDefault()
+                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
                 );
             }
             else {
@@ -199,11 +204,6 @@ public class CollectionAssignmentBuilder {
         }
 
         return result;
-    }
-
-    private boolean mapNullToDefault() {
-        return method.getMapperConfiguration().getNullValueMappingStrategy()
-            == NullValueMappingStrategyPrism.RETURN_DEFAULT;
     }
 
 }

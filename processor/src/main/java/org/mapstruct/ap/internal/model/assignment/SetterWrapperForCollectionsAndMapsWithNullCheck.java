@@ -26,14 +26,12 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     private final Type targetType;
     private final TypeFactory typeFactory;
-    private final boolean mapNullToDefault;
 
     public SetterWrapperForCollectionsAndMapsWithNullCheck(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
         Type targetType,
         TypeFactory typeFactory,
-        boolean fieldAssignment,
-        boolean mapNullToDefault) {
+        boolean fieldAssignment) {
         super(
             decoratedAssignment,
             thrownTypesToExclude,
@@ -42,7 +40,6 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         );
         this.targetType = targetType;
         this.typeFactory = typeFactory;
-        this.mapNullToDefault = mapNullToDefault;
     }
 
     @Override
@@ -63,9 +60,6 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         if (isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
-        if ( isMapNullToDefault() && ( targetType.getImplementationType() != null ) ) {
-            imported.add( targetType.getImplementationType() );
-        }
         return imported;
     }
 
@@ -75,10 +69,6 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
-    }
-
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
     }
 
 }
