@@ -583,7 +583,7 @@ public class CustomerDto {
 @Mapper
 public interface CustomerMapper {
 
-    CustomerMapper MAPPER = Mappers.getMapper( CustomerMapper.class );
+    CustomerMapper INSTANCE = Mappers.getMapper( CustomerMapper.class );
 
     @Mapping(source = "customerName", target = "name")
     Customer toCustomer(CustomerDto customerDto);
