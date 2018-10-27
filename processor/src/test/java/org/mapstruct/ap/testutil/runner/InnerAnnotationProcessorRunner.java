@@ -66,6 +66,15 @@ class InnerAnnotationProcessorRunner extends BlockJUnit4ClassRunner {
         return replacableTestClass;
     }
 
+    @Override
+    protected boolean isIgnored(FrameworkMethod child) {
+        if ( super.isIgnored( child ) ) {
+            return true;
+        }
+        IgnoreCompiler ignoreCompiler = child.getAnnotation( IgnoreCompiler.class );
+        return ignoreCompiler != null && compiler == ignoreCompiler.value();
+    }
+
     private FrameworkMethod replaceFrameworkMethod(FrameworkMethod m) {
         try {
             return new FrameworkMethod(

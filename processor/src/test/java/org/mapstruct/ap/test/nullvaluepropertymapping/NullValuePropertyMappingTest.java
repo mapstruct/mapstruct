@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.nullvaluepropertymapping;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -17,6 +16,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.Compiler;
+import org.mapstruct.ap.testutil.runner.IgnoreCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,7 +105,7 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @Ignore // test gives different results for JDK and JDT
+    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper1.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -120,7 +121,7 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @Ignore // test gives different results for JDK and JDT
+    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper2.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -136,7 +137,7 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @Ignore // test gives different results for JDK and JDT
+    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper3.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -152,7 +153,7 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @Ignore // test gives different results for JDK and JDT
+    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper4.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -168,7 +169,7 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @Ignore // test gives different results for JDK and JDT
+    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper5.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
