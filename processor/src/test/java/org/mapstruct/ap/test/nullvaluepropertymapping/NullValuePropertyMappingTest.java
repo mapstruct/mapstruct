@@ -16,8 +16,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.IgnoreCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -105,7 +103,6 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper1.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -113,6 +110,7 @@ public class NullValuePropertyMappingTest {
             @Diagnostic(type = ErroneousCustomerMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
+                alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
                 messageRegExp = "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define a defaultValue or an nullValuePropertyMappingStrategy.")
         }
@@ -121,7 +119,6 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper2.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -129,6 +126,7 @@ public class NullValuePropertyMappingTest {
             @Diagnostic(type = ErroneousCustomerMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
+                alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
                 messageRegExp = "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define an expression or an nullValuePropertyMappingStrategy.")
         }
@@ -137,7 +135,6 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper3.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -145,6 +142,7 @@ public class NullValuePropertyMappingTest {
             @Diagnostic(type = ErroneousCustomerMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
+                alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
                 messageRegExp = "DefaultExpression and nullValuePropertyMappingStrategy are both defined in " +
                     "@Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy.")
         }
@@ -153,7 +151,6 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper4.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -161,6 +158,7 @@ public class NullValuePropertyMappingTest {
             @Diagnostic(type = ErroneousCustomerMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
+                alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
                 messageRegExp = "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define a constant or an nullValuePropertyMappingStrategy.")
         }
@@ -169,7 +167,6 @@ public class NullValuePropertyMappingTest {
     }
 
     @Test
-    @IgnoreCompiler(value = Compiler.JDK, reason = "Javac wrong error reporting on repeatable annotations JDK-8042710")
     @WithClasses(ErroneousCustomerMapper5.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -177,6 +174,7 @@ public class NullValuePropertyMappingTest {
             @Diagnostic(type = ErroneousCustomerMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
+                alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
                 messageRegExp = "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define ignore or an nullValuePropertyMappingStrategy.")
         }
