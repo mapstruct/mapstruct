@@ -9,6 +9,7 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import java.util.List;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.FileAssert;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.assertj.core.error.ShouldHaveSameContent;
 import org.assertj.core.internal.Diff;
 import org.assertj.core.internal.Failures;
@@ -111,7 +111,7 @@ public class JavaFileAssert extends FileAssert {
             }
         }
         catch ( IOException e ) {
-            throw new RuntimeIOException( format(
+            throw new UncheckedIOException( format(
                 "Unable to compare contents of files:<%s> and:<%s>",
                 actual,
                 expected

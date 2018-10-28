@@ -22,15 +22,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
-        <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>2.19.1</org.apache.maven.plugins.surefire.version>
-        <org.apache.maven.plugins.javadoc.version>3.0.0-M1</org.apache.maven.plugins.javadoc.version>
+        <org.apache.maven.plugins.enforcer.version>3.0.0-M2</org.apache.maven.plugins.enforcer.version>
+        <org.apache.maven.plugins.surefire.version>2.22.1</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.javadoc.version>3.0.1</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.26.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>7.2</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>8.14</com.puppycrawl.tools.checkstyle.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
-        <assertj.version>3.7.0</assertj.version>
+        <assertj.version>3.11.1</assertj.version>
+        <!-- automatically run annotation processors within the incremental compilation -->
+        <!-- Needed for the hickory processor-->
+        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
     </properties>
 
     <licenses>
@@ -268,12 +271,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.17</version>
+                    <version>3.0.0</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>
@@ -305,7 +308,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -314,18 +317,17 @@
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
-                        <compilerArgument>-proc:none</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.8</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
+                    <version>3.0.0-M1</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
                     </configuration>
@@ -343,14 +345,14 @@
                         <dependency>
                             <groupId>de.andrena.tools.nopackagecycles</groupId>
                             <artifactId>no-package-cycles-enforcer-rule</artifactId>
-                            <version>1.0.5</version>
+                            <version>1.0.9</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>4.0.0</version>
                     <executions>
                         <execution>
                             <id>bundle-manifest</id>
@@ -364,12 +366,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>3.0.0-M1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -398,7 +400,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -408,7 +410,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -419,13 +421,6 @@
                         <!-- Travis build workaround -->
                         <argLine>-Xms1024m -Xmx3072m</argLine>
                     </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
-                            <version>${org.apache.maven.plugins.surefire.version}</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -438,24 +433,14 @@
                     <version>1.10.b1</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.bsc.maven</groupId>
-                    <artifactId>maven-processor-plugin</artifactId>
-                    <version>2.2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.8</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
-                    <version>1.16</version>
+                    <version>1.17</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.ow2.asm</groupId>
-                            <artifactId>asm-all</artifactId>
-                            <version>5.2</version>
+                            <artifactId>asm</artifactId>
+                            <version>6.2.1</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -513,12 +498,12 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.9</version>
+                    <version>0.8.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
                     <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.9.0</version>
+                    <version>0.14.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -528,7 +513,7 @@
                 <plugin>
                     <groupId>de.thetaphi</groupId>
                     <artifactId>forbiddenapis</artifactId>
-                    <version>2.3</version>
+                    <version>2.6</version>
                     <configuration>
                         <signaturesFiles>
                             <signaturesFile>${project.basedir}/../etc/forbidden-apis.txt</signaturesFile>
@@ -538,7 +523,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.10.0</version>
+                    <version>0.13.0</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -660,7 +645,9 @@
                         <phase>test-compile</phase>
                         <configuration>
                             <rules>
-                                <NoPackageCyclesRule implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule" />
+                                <NoPackageCyclesRule implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule">
+                                    <includeTests>false</includeTests>
+                                </NoPackageCyclesRule>
                             </rules>
                         </configuration>
                     </execution>

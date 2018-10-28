@@ -138,6 +138,20 @@ MapStruct uses Maven for its build. Java 8 is required for building MapStruct fr
 from the root of the project directory. To skip the distribution module, run 
 
     mvn clean install -DskipDistribution=true
+    
+## Importing into IDE
+
+MapStruct uses the hickory annotation processor to generate mapping prisms for it's own annotations.
+Therefore for seamless integration within an IDE annotation processing needs to be enabled.
+
+### IntelliJ 
+
+Make sure that you have at least IntelliJ 2018.2.x (needed since support for `annotationProcessors` from the `maven-compiler-plugin` is from that version).
+Enable annotation processing in IntelliJ (Build, Execution, Deployment -> Compiler -> Annotation Processors)
+
+### Eclipse
+
+Make sure that you have the [m2e_apt](https://marketplace.eclipse.org/content/m2e-apt) plugin installed.
 
 ## Links
 

@@ -62,8 +62,6 @@
 
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
-        <!-- Required for SuppressionCommentFilter -->
-        <module name="FileContentsHolder"/>
         <module name="SuppressWarningsHolder"/>
 
         <!-- Checks for Javadoc comments.                     -->
@@ -202,9 +200,9 @@
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>
 
+        <module name="SuppressionCommentFilter"/>
     </module>
 
-    <module name="SuppressionCommentFilter"/>
     <module name="SuppressWarningsFilter"/>
 
 </module>
