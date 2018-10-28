@@ -21,7 +21,6 @@
     <name>MapStruct Processor</name>
 
     <properties>
-        <prism.directory>${project.build.directory}/generated-sources/prims</prism.directory>
         <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
             Therefore we set this empty property here-->
         <jacocoArgLine />
@@ -221,54 +220,13 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <defaultOutputDirectory>${prism.directory}</defaultOutputDirectory>
-                    <processors>
-                        <processor>net.java.dev.hickory.prism.internal.PrismGenerator
-                        </processor>
-                    </processors>
+                    <annotationProcessors>
+                        <annotationProcessor>net.java.dev.hickory.prism.internal.PrismGenerator</annotationProcessor>
+                    </annotationProcessors>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.jolira</groupId>
-                        <artifactId>hickory</artifactId>
-                        <version>${com.jolira.hickory.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-compiler-jdt</artifactId>
-                        <version>${org.eclipse.tycho.compiler-jdt.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${prism.directory}</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
