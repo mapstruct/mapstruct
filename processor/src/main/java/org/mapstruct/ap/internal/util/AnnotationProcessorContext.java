@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -19,6 +18,7 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
+import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 import org.mapstruct.ap.spi.MapStructProcessingEnvironment;
@@ -61,14 +61,17 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
         AccessorNamingStrategy defaultAccessorNamingStrategy;
         BuilderProvider defaultBuilderProvider;
-        TypeElement immutableElement = elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN );
-        if ( immutableElement == null ) {
-            defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
+        if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
+            defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
+            defaultBuilderProvider = new ImmutablesBuilderProvider();
+        }
+        else if ( elementUtils.getTypeElement( FreeBuilderConstants.FREE_BUILDER_FQN ) != null ) {
+            defaultAccessorNamingStrategy = new FreeBuilderAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
         }
         else {
-            defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
-            defaultBuilderProvider = new ImmutablesBuilderProvider();
+            defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
+            defaultBuilderProvider = new DefaultBuilderProvider();
         }
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.accessorNamingStrategy.init( this );
