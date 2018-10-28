@@ -12,6 +12,7 @@ import java.util.ServiceLoader;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
@@ -20,13 +21,14 @@ import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
+import org.mapstruct.ap.spi.MapStructProcessingEnvironment;
 
 /**
  * Keeps contextual data in the scope of the entire annotation processor ("application scope").
  *
  * @author Gunnar Morling
  */
-public class AnnotationProcessorContext {
+public class AnnotationProcessorContext implements MapStructProcessingEnvironment {
 
     private List<AstModifyingAnnotationProcessor> astModifyingAnnotationProcessors;
 
@@ -36,11 +38,13 @@ public class AnnotationProcessorContext {
 
     private AccessorNamingUtils accessorNaming;
     private Elements elementUtils;
+    private Types typeUtils;
 
-    public AnnotationProcessorContext(Elements elementUtils) {
+    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
         this.elementUtils = elementUtils;
+        this.typeUtils = typeUtils;
     }
 
     /**
@@ -67,6 +71,7 @@ public class AnnotationProcessorContext {
             defaultBuilderProvider = new ImmutablesBuilderProvider();
         }
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
+        this.accessorNamingStrategy.init( this );
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
         this.initialized = true;
@@ -84,6 +89,16 @@ public class AnnotationProcessorContext {
         }
 
         return processors;
+    }
+
+    @Override
+    public Elements getElementUtils() {
+        return elementUtils;
+    }
+
+    @Override
+    public Types getTypeUtils() {
+        return typeUtils;
     }
 
     public List<AstModifyingAnnotationProcessor> getAstModifyingAnnotationProcessors() {
