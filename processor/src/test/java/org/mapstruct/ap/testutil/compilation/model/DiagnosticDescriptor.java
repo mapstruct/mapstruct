@@ -26,12 +26,18 @@ public class DiagnosticDescriptor {
     private final String sourceFileName;
     private final Kind kind;
     private final Long line;
+    private final Long alternativeLine;
     private final String message;
 
     private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, String message) {
+        this( sourceFileName, kind, line, null, message );
+    }
+
+    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, Long alternativeLine, String message) {
         this.sourceFileName = sourceFileName;
         this.kind = kind;
         this.line = line;
+        this.alternativeLine = alternativeLine;
         this.message = message;
     }
 
@@ -43,6 +49,7 @@ public class DiagnosticDescriptor {
             soureFileName,
             diagnostic.kind(),
             diagnostic.line() != -1 ? diagnostic.line() : null,
+            diagnostic.alternativeLine() != -1 ? diagnostic.alternativeLine() : null,
             diagnostic.messageRegExp()
         );
     }
@@ -133,6 +140,10 @@ public class DiagnosticDescriptor {
 
     public Long getLine() {
         return line;
+    }
+
+    public Long getAlternativeLine() {
+        return alternativeLine;
     }
 
     public String getMessage() {

@@ -269,7 +269,10 @@ abstract class CompilingStatement extends Statement {
             if ( expected.getSourceFileName() != null ) {
                 assertThat( actual.getSourceFileName() ).isEqualTo( expected.getSourceFileName() );
             }
-            if ( expected.getLine() != null ) {
+            if ( expected.getLine() != null && expected.getAlternativeLine() != null ) {
+                assertThat( actual.getLine() ).isIn( expected.getLine(), expected.getAlternativeLine() );
+            }
+            else if ( expected.getLine() != null ) {
                 assertThat( actual.getLine() ).isEqualTo( expected.getLine() );
             }
             assertThat( actual.getKind() ).isEqualTo( expected.getKind() );

@@ -36,6 +36,16 @@ public @interface Diagnostic {
     long line() default -1;
 
     /**
+     * In case compilers report diagnostics on different lines this can be used as the alternative expected line number
+     * of the diagnostic.
+     * <p>
+     * This should be used as a last resort when the compilers report the diagnostic on a wrong line.
+     *
+     * @return The alternative line number of the diagnostic.
+     */
+    long alternativeLine() default -1;
+
+    /**
      * A regular expression matching the expected message of the diagnostic.
      * Wild-cards matching any character (".*") will be added to the beginning
      * and end of the given expression when applying it.
