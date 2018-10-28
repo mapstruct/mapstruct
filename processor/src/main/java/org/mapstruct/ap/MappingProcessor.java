@@ -114,7 +114,10 @@ public class MappingProcessor extends AbstractProcessor {
         super.init( processingEnv );
 
         options = createOptions();
-        annotationProcessorContext = new AnnotationProcessorContext( processingEnv.getElementUtils() );
+        annotationProcessorContext = new AnnotationProcessorContext(
+            processingEnv.getElementUtils(),
+            processingEnv.getTypeUtils()
+        );
     }
 
     private Options createOptions() {

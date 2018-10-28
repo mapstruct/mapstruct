@@ -16,6 +16,15 @@ import javax.lang.model.element.ExecutableElement;
 public interface AccessorNamingStrategy {
 
     /**
+     * Initializes the accessor naming strategy with the MapStruct processing environment.
+     *
+     * @param processingEnvironment environment for facilities
+     */
+    default void init(MapStructProcessingEnvironment processingEnvironment) {
+
+    }
+
+    /**
      * Returns the type of the given method.
      *
      * @param method to be analyzed.

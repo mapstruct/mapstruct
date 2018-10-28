@@ -12,8 +12,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
@@ -25,6 +27,15 @@ import org.mapstruct.ap.spi.util.IntrospectorUtils;
 public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
+
+    protected Elements elementUtils;
+    protected Types typeUtils;
+
+    @Override
+    public void init(MapStructProcessingEnvironment processingEnvironment) {
+        this.elementUtils = processingEnvironment.getElementUtils();
+        this.typeUtils = processingEnvironment.getTypeUtils();
+    }
 
     @Override
     public MethodType getMethodType(ExecutableElement method) {
@@ -90,8 +101,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return method.getParameters().size() == 1 &&
             !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
             !isAdderWithUpperCase4thCharacter( method ) &&
-            //TODO The Types need to be compared with Types#isSameType(TypeMirror, TypeMirror)
-            method.getReturnType().toString().equals( method.getEnclosingElement().asType().toString() );
+            typeUtils.isAssignable( method.getReturnType(), method.getEnclosingElement().asType() );
     }
 
     /**
