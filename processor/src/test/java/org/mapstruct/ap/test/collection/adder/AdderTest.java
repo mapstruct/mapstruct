@@ -25,12 +25,14 @@ import org.mapstruct.ap.test.collection.adder._target.TargetDali;
 import org.mapstruct.ap.test.collection.adder._target.TargetHuman;
 import org.mapstruct.ap.test.collection.adder._target.TargetOnlyGetter;
 import org.mapstruct.ap.test.collection.adder._target.TargetViaTargetType;
+import org.mapstruct.ap.test.collection.adder._target.TargetWithAnimals;
 import org.mapstruct.ap.test.collection.adder._target.TargetWithoutSetter;
 import org.mapstruct.ap.test.collection.adder.source.Foo;
 import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.Source2;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
+import org.mapstruct.ap.test.collection.adder.source.SourceWithPets;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -42,15 +44,18 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 @WithClasses({
     Source.class,
     SourceTeeth.class,
+    SourceWithPets.class,
     Target.class,
     TargetDali.class,
     TargetHuman.class,
     TargetOnlyGetter.class,
     TargetViaTargetType.class,
     TargetWithoutSetter.class,
+    TargetWithAnimals.class,
     SourceTargetMapper.class,
     SourceTargetMapperStrategyDefault.class,
     SourceTargetMapperStrategySetterPreferred.class,
+    SourceTargetMapperWithDifferentProperties.class,
     SingleElementSource.class,
     PetMapper.class,
     TeethMapper.class,
@@ -254,5 +259,18 @@ public class AdderTest {
         Target2 target = Source2Target2Mapper.INSTANCE.toTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getAttributes().size() ).isEqualTo( 1 );
+    }
+
+    @IssueKey("1478")
+    @Test
+    public void useIterationNameFromSource() {
+        generatedSource.addComparisonToFixtureFor( SourceTargetMapperWithDifferentProperties.class );
+
+        SourceWithPets source = new SourceWithPets();
+        source.setPets( Arrays.asList( "dog", "cat" ) );
+
+        TargetWithAnimals target = SourceTargetMapperWithDifferentProperties.INSTANCE.map( source );
+
+        assertThat( target.getAnimals() ).containsExactly( "dog", "cat" );
     }
 }
