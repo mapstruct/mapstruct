@@ -14,6 +14,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.withinPercentage;
+
 /**
  * Tests the conversion between Joda-Time types and String/Date/Calendar.
  *
@@ -24,9 +27,29 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     OversizedKitchenDrawerDto.class,
     RegularKitchenDrawerEntity.class,
     VerySpecialNumber.class,
-    VerySpecialNumberMapper.class})
+    VerySpecialNumberMapper.class,
+    CutleryInventoryMapper.class,
+    CutleryInventoryDto.class,
+    CutleryInventoryEntity.class
+})
 @IssueKey("5")
 public class LossyConversionTest {
+
+    @Test
+    public void testNoErrorCase() {
+
+        CutleryInventoryDto dto = new CutleryInventoryDto();
+        dto.setNumberOfForks( 5 );
+        dto.setNumberOfKnifes( (short) 7 );
+        dto.setNumberOfSpoons( (byte) 3 );
+        dto.setApproximateKnifeLength( 3.7f );
+
+        CutleryInventoryEntity entity = CutleryInventoryMapper.INSTANCE.map( dto );
+        assertThat( entity.getNumberOfForks() ).isEqualTo( 5L );
+        assertThat( entity.getNumberOfKnifes() ).isEqualTo( 7 );
+        assertThat( entity.getNumberOfSpoons() ).isEqualTo( (short) 3 );
+        assertThat( entity.getApproximateKnifeLength() ).isCloseTo( 3.7d, withinPercentage( 0.0001d ) );
+    }
 
     @Test
     @WithClasses(ErroneousKitchenDrawerMapper1.class)
@@ -112,8 +135,8 @@ public class LossyConversionTest {
             @Diagnostic(type = ListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 21,
-                messageRegExp = "collection element has a possibly lossy conversion from java.math.BigInteger to "
-                    + "java.math.BigDecimal")
+                messageRegExp = "collection element has a possibly lossy conversion from java.math.BigDecimal to "
+                    + "java.math.BigInteger")
         })
     public void testListElementConversion() {
     }

@@ -26,7 +26,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     private final List<Type> thrownTypes;
     private final String openExpression;
     private final String closeExpression;
-    private final AssignmentMessage errorMessage;
+
     /**
      * A reference to mapping method in case this is a two-step mapping, e.g. from
      * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
@@ -35,17 +35,15 @@ public class TypeConversion extends ModelElement implements Assignment {
     private Assignment assignment;
 
     public TypeConversion( Set<Type> importTypes,
-            List<Type> exceptionTypes,
-            String expression,
-            AssignmentMessage errorMessage ) {
-        this.importTypes = new HashSet<Type>( importTypes );
+                           List<Type> exceptionTypes,
+                           String expression ) {
+        this.importTypes = new HashSet<>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.thrownTypes = exceptionTypes;
 
         int patternIndex = expression.indexOf( SOURCE_REFERENCE_PATTERN );
         this.openExpression = expression.substring( 0, patternIndex );
         this.closeExpression = expression.substring( patternIndex + 8 );
-        this.errorMessage = errorMessage;
     }
 
     @Override
@@ -130,12 +128,6 @@ public class TypeConversion extends ModelElement implements Assignment {
 
     @Override
     public boolean isCallingUpdateMethod() {
-       return false;
+        return false;
     }
-
-    @Override
-    public AssignmentMessage getErrorMessage() {
-        return errorMessage;
-    }
-
 }

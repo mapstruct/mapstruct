@@ -9,18 +9,17 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
- * Conversion between primitive types such as {@code byte} and wrapper types
- * such as {@link Integer}.
+ * Conversion between wrapper types such as {@link Integer} or {@link Long}.
  *
  * @author Gunnar Morling
  */
-public class PrimitiveToWrapperWideningConversion extends SimpleConversion {
+public class WrapperToWrapperConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> targetType;
 
-    public PrimitiveToWrapperWideningConversion(Class<?> sourceType, Class<?> targetType) {
-        this.sourceType = sourceType;
+    public WrapperToWrapperConversion(Class<?> sourceType, Class<?> targetType) {
+        this.sourceType = NativeTypes.getPrimitiveType( sourceType );
         this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
 
@@ -30,12 +29,18 @@ public class PrimitiveToWrapperWideningConversion extends SimpleConversion {
             return "<SOURCE>";
         }
         else {
-            return "(" + targetType.getName() + ") <SOURCE>";
+            return "<SOURCE>." + targetType.getName() + "Value()";
         }
     }
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
+        if ( sourceType == targetType ) {
+            return "<SOURCE>";
+        }
+        else {
+            return "<SOURCE>." + sourceType.getName() + "Value()";
+        }
     }
+
 }

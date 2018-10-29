@@ -6,9 +6,14 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and wrappers of native number types.
@@ -30,12 +35,17 @@ public class BigIntegerToWrapperConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
+        String toLongValueStr = "";
+        if ( targetType == float.class || targetType == double.class ) {
+            toLongValueStr = ".longValue()";
+        }
+
+        return bigInteger( conversionContext ) + ".valueOf( <SOURCE>" + toLongValueStr + " )";
     }
 
     @Override
-    public boolean isNarrowing() {
-        return true;
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
     }
 
 }

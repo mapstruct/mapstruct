@@ -111,7 +111,7 @@ public class QualifierSelector implements MethodSelector {
                     for ( AnnotationMirror qualifierAnnotationMirror : qualifierAnnotationMirrors ) {
                 for ( TypeMirror qualifierType : qualifierTypes ) {
 
-                        // get the type of the annotation mirror.
+                        // get the type of the annotation positionHint.
                         DeclaredType qualifierAnnotationType = qualifierAnnotationMirror.getAnnotationType();
                         if ( typeUtils.isSameType( qualifierType, qualifierAnnotationType ) ) {
                             // Match! we have an annotation which has the @Qualifer marker ( could be @Named as well )

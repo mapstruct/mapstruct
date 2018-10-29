@@ -44,9 +44,4 @@ public class ReverseConversion implements ConversionProvider {
         return Collections.emptyList();
     }
 
-    @Override
-    public boolean isNarrowing() {
-        return true;
-    }
-
 }

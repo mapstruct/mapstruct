@@ -43,7 +43,7 @@ final class DateFormatValidationResult {
      *
      * @param messager the messager to print the error message to
      * @param element the element that had the error
-     * @param annotation the mirror of the annotation that had an error
+     * @param annotation the positionHint of the annotation that had an error
      * @param value the value of the annotation that had an error
      */
     public void printErrorMessage(FormattingMessager messager, Element element, AnnotationMirror annotation,

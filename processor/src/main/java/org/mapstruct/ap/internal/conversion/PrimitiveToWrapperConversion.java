@@ -14,26 +14,29 @@ import org.mapstruct.ap.internal.util.NativeTypes;
  *
  * @author Gunnar Morling
  */
-public class PrimitiveToWrapperNarrowingConversion extends SimpleConversion {
+public class PrimitiveToWrapperConversion extends SimpleConversion {
 
+    private final Class<?> sourceType;
     private final Class<?> targetType;
 
-    public PrimitiveToWrapperNarrowingConversion( Class<?> targetType ) {
+    public PrimitiveToWrapperConversion(Class<?> sourceType, Class<?> targetType) {
+        this.sourceType = sourceType;
         this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
 
     @Override
     public String getToExpression(ConversionContext conversionContext) {
-        return "(" + targetType.getName() + ") <SOURCE>";
+        if ( sourceType == targetType ) {
+            return "<SOURCE>";
+        }
+        else {
+            return "(" + targetType.getName() + ") <SOURCE>";
+        }
     }
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
+        return "<SOURCE>." + sourceType.getName() + "Value()";
     }
 
-    @Override
-    public boolean isNarrowing() {
-        return true;
-    }
 }

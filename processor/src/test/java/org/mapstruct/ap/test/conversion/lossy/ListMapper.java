@@ -18,5 +18,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper( typeConversionPolicy = ReportingPolicy.WARN )
 public interface ListMapper {
 
-    List<BigDecimal> map(List<BigInteger> in);
+    List<BigInteger> map(List<BigDecimal> in);
 }

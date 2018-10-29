@@ -150,8 +150,4 @@ public class SourceRHS extends ModelElement implements Assignment {
         return sourceParameterName;
     }
 
-    @Override
-    public AssignmentMessage getErrorMessage() {
-        return null;
-    }
 }

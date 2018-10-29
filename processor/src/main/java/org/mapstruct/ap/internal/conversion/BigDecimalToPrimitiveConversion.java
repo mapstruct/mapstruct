@@ -6,7 +6,13 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigDecimal;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigDecimal} and native number types.
@@ -28,11 +34,12 @@ public class BigDecimalToPrimitiveConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
+        return bigDecimal( conversionContext ) + ".valueOf( <SOURCE> )";
     }
 
     @Override
-    public boolean isNarrowing() {
-        return true;
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
     }
+
 }

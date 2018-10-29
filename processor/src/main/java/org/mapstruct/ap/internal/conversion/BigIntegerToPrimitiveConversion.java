@@ -6,8 +6,13 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and native number types.
@@ -29,12 +34,16 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
+        String castString = "";
+        if ( targetType == float.class || targetType == double.class ) {
+            castString = "(long) ";
+        }
+        return bigInteger( conversionContext ) + ".valueOf( " + castString + "<SOURCE> )";
     }
 
     @Override
-    public boolean isNarrowing() {
-        return true;
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
     }
 
 }

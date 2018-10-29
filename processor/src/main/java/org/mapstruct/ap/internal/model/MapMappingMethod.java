@@ -92,7 +92,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyFormattingParameters,
                 keySelectionParameters,
                 keySourceRHS,
-                false
+                false,
+                null
             );
 
             if ( keyAssignment == null ) {
@@ -119,9 +120,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
             }
-            else {
-                checkForTypeConversionError( method, keyAssignment );
-            }
 
             // find mapping method or conversion for value
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
@@ -136,7 +134,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 valueFormattingParameters,
                 valueSelectionParameters,
                 valueSourceRHS,
-                false
+                false,
+                null
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -171,9 +170,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                         ""
                     );
                 }
-            }
-            else {
-                checkForTypeConversionError( method, valueAssignment );
             }
 
             // mapNullToDefault

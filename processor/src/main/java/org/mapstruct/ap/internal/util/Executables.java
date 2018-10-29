@@ -89,7 +89,7 @@ public class Executables {
     }
 
     /**
-     * @param mirror the type mirror
+     * @param mirror the type positionHint
      *
      * @return the corresponding type element
      */

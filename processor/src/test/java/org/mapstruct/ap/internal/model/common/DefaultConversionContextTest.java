@@ -69,9 +69,7 @@ public class DefaultConversionContextTest {
             statefulMessagerMock,
             type,
             type,
-            new FormattingParameters( "qwertz", null, null, null, null ),
-            null,
-            null
+            new FormattingParameters( "qwertz", null, null, null, null )
         );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isEqualTo( Diagnostic.Kind.ERROR );
     }
@@ -85,9 +83,7 @@ public class DefaultConversionContextTest {
             statefulMessagerMock,
             type,
             type,
-            new FormattingParameters( null, null, null, null, null ),
-            null,
-            null
+            new FormattingParameters( null, null, null, null, null )
         );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }
@@ -100,9 +96,7 @@ public class DefaultConversionContextTest {
             statefulMessagerMock,
             type,
             type,
-            new FormattingParameters( "qwertz", null, null, null, null ),
-            null,
-            null
+            new FormattingParameters( "qwertz", null, null, null, null )
         );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }

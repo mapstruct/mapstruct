@@ -104,9 +104,4 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
         return fieldAssignment;
     }
 
-    @Override
-    public AssignmentMessage getErrorMessage() {
-        return decoratedAssignment.getErrorMessage();
-    }
-
 }

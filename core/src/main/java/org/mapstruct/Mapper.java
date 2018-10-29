@@ -64,7 +64,7 @@ public @interface Mapper {
 
     /**
      * How lossy (narrowing) conversion, for instance long to integer should be
-     * reported. The method overrides an unmappedTargetPolicy set in a central
+     * reported. The method overrides an typeConversionPolicy set in a central
      * configuration set by {@link #config() }
      *
      * @since 1.3

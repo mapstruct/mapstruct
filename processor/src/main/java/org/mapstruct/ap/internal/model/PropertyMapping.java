@@ -109,7 +109,7 @@ public class PropertyMapping extends ModelElement {
 
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
-        protected AnnotationMirror mirror;
+        protected AnnotationMirror positionHint;
 
         MappingBuilderBase(Class<T> selfType) {
             super( selfType );
@@ -141,7 +141,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         T mirror(AnnotationMirror mirror) {
-            this.mirror = mirror;
+            this.positionHint = mirror;
             return (T) this;
         }
 
@@ -314,7 +314,8 @@ public class PropertyMapping extends ModelElement {
                     formattingParameters,
                     selectionParameters,
                     rightHandSide,
-                    preferUpdateMethods
+                    preferUpdateMethods,
+                    positionHint
                 );
             }
 
@@ -347,7 +348,6 @@ public class PropertyMapping extends ModelElement {
                 else {
                     assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
                 }
-                checkForTypeConversionError( method, mirror, assignment );
             }
             else {
                 reportCannotCreateMapping();
@@ -375,7 +375,7 @@ public class PropertyMapping extends ModelElement {
                 ForgedMethodHistory history = getForgedMethodHistory( rightHandSide );
                 reportCannotCreateMapping(
                     method,
-                    mirror,
+                    positionHint,
                     history.createSourcePropertyErrorMessage(),
                     history.getSourceType(),
                     history.getTargetType(),
@@ -385,7 +385,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 reportCannotCreateMapping(
                     method,
-                    mirror,
+                    positionHint,
                     rightHandSide.getSourceErrorMessagePart(),
                     rightHandSide.getSourceType(),
                     targetType,
@@ -452,7 +452,7 @@ public class PropertyMapping extends ModelElement {
                 if ( targetReadAccessor == null ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
-                        mirror,
+                        positionHint,
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                         targetPropertyName
                     );
@@ -841,7 +841,8 @@ public class PropertyMapping extends ModelElement {
                     formattingParameters,
                     selectionParameters,
                     new SourceRHS( constantExpression, sourceType, existingVariableNames, sourceErrorMessagePart ),
-                    method.getMappingTargetParameter() != null
+                    method.getMappingTargetParameter() != null,
+                    positionHint
                 );
             }
             else {
@@ -858,7 +859,7 @@ public class PropertyMapping extends ModelElement {
                         if ( targetReadAccessor == null ) {
                             ctx.getMessager().printMessage(
                                 method.getExecutable(),
-                                mirror,
+                                positionHint,
                                 Message.CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                                 targetPropertyName
                             );
@@ -893,7 +894,7 @@ public class PropertyMapping extends ModelElement {
             else if ( errorMessageDetails == null ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    mirror,
+                    positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
                     sourceType,
                     constantExpression,
@@ -904,7 +905,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    mirror,
+                    positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS,
                     sourceType,
                     constantExpression,
@@ -937,7 +938,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    mirror,
+                    positionHint,
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,
                     targetType,

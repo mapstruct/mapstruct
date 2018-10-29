@@ -39,10 +39,10 @@ public interface FormattingMessager {
 
     /**
      * Prints a message of the specified kind at the location of the
-     * annotation mirror of the annotated element.
+     * annotation positionHint of the annotated element.
      *
      * @param e    the annotated element
-     * @param a    the annotation to use as a position hint
+     * @param a    the annotation to use as a position hint (can be null)
      * @param msg  the message
      * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments
      * than format specifiers, the extra arguments are ignored
@@ -52,7 +52,7 @@ public interface FormattingMessager {
 
     /**
      * Prints a message of the specified kind at the location of the
-     * annotation value inside the annotation mirror of the annotated
+     * annotation value inside the annotation positionHint of the annotated
      * element.
      *
      * @param e    the annotated element

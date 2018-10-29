@@ -5,14 +5,11 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static java.util.Collections.singletonList;
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -46,10 +43,15 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static java.util.Collections.singletonList;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -95,7 +97,7 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
         FormattingParameters formattingParameters, SelectionParameters selectionParameters, SourceRHS sourceRHS,
-        boolean preferUpdateMapping) {
+        boolean preferUpdateMapping, AnnotationMirror positionHint) {
 
         SelectionCriteria criteria =
             SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
@@ -105,7 +107,8 @@ public class MappingResolverImpl implements MappingResolver {
             mappingMethod,
             formattingParameters,
             sourceRHS,
-            criteria
+            criteria,
+            positionHint
         );
 
         return attempt.getTargetAssignment( sourceRHS.getSourceTypeForMatching(), targetType );
@@ -135,6 +138,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final SourceRHS sourceRHS;
         private final boolean savedPreferUpdateMapping;
         private final FormattingParameters formattingParameters;
+        private final AnnotationMirror positionHint;
 
         // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a supported method
@@ -142,7 +146,9 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<SupportingMappingMethod> supportingMethodCandidates;
 
         private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod,
-            FormattingParameters formattingParameters, SourceRHS sourceRHS, SelectionCriteria criteria) {
+                                 FormattingParameters formattingParameters, SourceRHS sourceRHS,
+                                 SelectionCriteria criteria,
+                                 AnnotationMirror positionHint) {
 
             this.mappingMethod = mappingMethod;
             this.methods = filterPossibleCandidateMethods( sourceModel );
@@ -152,6 +158,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.supportingMethodCandidates = new HashSet<>();
             this.selectionCriteria = criteria;
             this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
+            this.positionHint = positionHint;
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
@@ -196,10 +203,11 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then type conversion
-            Assignment conversion = resolveViaConversion( sourceType, targetType );
+            ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                conversion.setAssignment( sourceRHS );
-                return conversion;
+                conversion.reportMessageWhenNarrowing( messager, this );
+                conversion.getAssignment().setAssignment( sourceRHS );
+                return conversion.getAssignment();
             }
 
             // check for a built-in method
@@ -231,16 +239,16 @@ public class MappingResolverImpl implements MappingResolver {
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
                 usedSupportedMappings.addAll( supportingMethodCandidates );
-                return conversion;
+                return conversion.getAssignment();
             }
 
             // if nothing works, alas, the result is null
             return null;
         }
 
-        private Assignment resolveViaConversion(Type sourceType, Type targetType) {
-            ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
+        private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {
 
+            ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
             if ( conversionProvider == null ) {
                 return null;
@@ -250,17 +258,22 @@ public class MappingResolverImpl implements MappingResolver {
                 messager,
                 sourceType,
                 targetType,
-                formattingParameters,
-                mappingMethod.getMapperConfiguration().typeConversionPolicy(),
-                sourceRHS.getSourceErrorMessagePart()
+                formattingParameters
             );
 
             // add helper methods required in conversion
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
                 usedSupportedMappings.add( new SupportingMappingMethod( helperMethod ) );
             }
-            return conversionProvider.to( ctx );
+
+            Assignment conversion = conversionProvider.to( ctx );
+            if ( conversion != null ) {
+                return new ConversionAssignment( sourceType, targetType, conversionProvider.to( ctx ) );
+            }
+            return null;
         }
+
+
 
         /**
          * Returns a reference to a method mapping the given source type to the given target type, if such a method
@@ -298,9 +311,7 @@ public class MappingResolverImpl implements MappingResolver {
                     messager,
                     sourceType,
                     targetType,
-                    formattingParameters,
-                    mappingMethod.getMapperConfiguration().typeConversionPolicy(),
-                    sourceRHS.getSourceErrorMessagePart()
+                    formattingParameters
                 );
                 Assignment methodReference = MethodReference.forBuiltInMethod( matchingBuiltInMethod.getMethod(), ctx );
                 methodReference.setAssignment( sourceRHS );
@@ -377,11 +388,12 @@ public class MappingResolverImpl implements MappingResolver {
                     resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
 
                 if ( methodRefY != null ) {
-                    Assignment conversionXRef =
-                        resolveViaConversion( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType() );
+                    Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                    ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
                     if ( conversionXRef != null ) {
-                        methodRefY.setAssignment( conversionXRef );
-                        conversionXRef.setAssignment( sourceRHS );
+                        methodRefY.setAssignment( conversionXRef.getAssignment() );
+                        conversionXRef.getAssignment().setAssignment( sourceRHS );
+                        conversionXRef.reportMessageWhenNarrowing( messager, this );
                         break;
                     }
                     else {
@@ -402,12 +414,12 @@ public class MappingResolverImpl implements MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          */
-        private Assignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
+        private ConversionAssignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
 
             List<Method> methodXCandidates = new ArrayList<>( methods );
             methodXCandidates.addAll( builtInMethods.getBuiltInMethods() );
 
-            Assignment conversionYRef = null;
+            ConversionAssignment conversionYRef = null;
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
@@ -423,8 +435,9 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( methodRefX != null ) {
                     conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                     if ( conversionYRef != null ) {
-                        conversionYRef.setAssignment( methodRefX );
+                        conversionYRef.getAssignment().setAssignment( methodRefX );
                         methodRefX.setAssignment( sourceRHS );
+                        conversionYRef.reportMessageWhenNarrowing( messager, this );
                         break;
                     }
                     else {
@@ -579,5 +592,48 @@ public class MappingResolverImpl implements MappingResolver {
 
             return false;
         }
+    }
+
+    private static class ConversionAssignment {
+
+        private final Type sourceType;
+        private final Type targetType;
+        private final Assignment assignment;
+
+        ConversionAssignment(Type sourceType, Type targetType, Assignment assignment) {
+            this.sourceType = sourceType;
+            this.targetType = targetType;
+            this.assignment = assignment;
+        }
+
+        Assignment getAssignment() {
+            return assignment;
+        }
+
+        void reportMessageWhenNarrowing(FormattingMessager messager, ResolvingAttempt attempt) {
+
+            if ( NativeTypes.isNarrowing( sourceType.getFullyQualifiedName(), targetType.getFullyQualifiedName() ) ) {
+                ReportingPolicyPrism policy = attempt.mappingMethod.getMapperConfiguration().typeConversionPolicy();
+                if ( policy == ReportingPolicyPrism.WARN ) {
+                    report( messager, attempt, Message.CONVERSION_LOSSY_WARNING );
+                }
+                else if ( policy == ReportingPolicyPrism.ERROR ) {
+                    report( messager, attempt, Message.CONVERSION_LOSSY_ERROR );
+                }
+            }
+        }
+
+        private void report(FormattingMessager messager, ResolvingAttempt attempt, Message message) {
+
+            messager.printMessage(
+                attempt.mappingMethod.getExecutable(),
+                attempt.positionHint,
+                message,
+                attempt.sourceRHS.getSourceErrorMessagePart(),
+                sourceType.toString(),
+                targetType.toString()
+            );
+        }
+
     }
 }

@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model.common;
 
 import java.util.Date;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
  * Context object passed to conversion providers and built-in methods.
@@ -23,14 +22,6 @@ public interface ConversionContext {
     Type getTargetType();
 
     /**
-     * Returns the source type of this conversion.
-     *
-     * @return The source type of this conversion.
-     */
-    Type getSourceType();
-
-
-    /**
      * Returns the date format if this conversion or built-in method is from String to a date type (e.g. {@link Date})
      * or vice versa.
      *
@@ -43,15 +34,4 @@ public interface ConversionContext {
 
     TypeFactory getTypeFactory();
 
-    /**
-     *
-     * @return typeConversionPolicy
-     */
-    ReportingPolicyPrism getTypeConversionPolicy();
-
-    /**
-     *
-     * @return reference to the what is being mapped
-     */
-    String getSourceErrorMessagePart();
 }

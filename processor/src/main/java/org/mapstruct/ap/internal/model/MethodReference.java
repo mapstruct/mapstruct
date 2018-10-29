@@ -338,10 +338,4 @@ public class MethodReference extends ModelElement implements Assignment {
         return new MethodReference( methodName, null, false );
     }
 
-    @Override
-    public AssignmentMessage getErrorMessage() {
-        // the assignment could be a conversion
-        return assignment != null ? assignment.getErrorMessage() : null;
-    }
-
 }
