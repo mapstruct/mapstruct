@@ -53,8 +53,6 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
  * configured by one or more {@link PropertyMapping}s.

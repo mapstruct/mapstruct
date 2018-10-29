@@ -170,7 +170,7 @@ public class UpdateMethodsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 24,
+                line = 23,
                 messageRegExp = "No read accessor found for property \"type\" in target type."),
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,

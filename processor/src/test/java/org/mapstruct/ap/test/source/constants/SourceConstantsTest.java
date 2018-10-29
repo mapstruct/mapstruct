@@ -191,7 +191,7 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
-                line = 30,
+                line = 28,
                 messageRegExp = "^Constant \"DENMARK\" doesn't exist in enum type org.mapstruct.ap.test.source."
                     + "constants.CountryEnum for property \"country\".$"),
             @Diagnostic(type = ErroneousMapper5.class,

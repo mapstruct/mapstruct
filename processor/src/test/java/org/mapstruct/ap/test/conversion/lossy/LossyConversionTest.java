@@ -1,20 +1,7 @@
-/**
- *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
- *  and/or other contributors as indicated by the @authors tag. See the
- *  copyright.txt file in the distribution for a full listing of all
- *  contributors.
+/*
+ * Copyright MapStruct Authors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.mapstruct.ap.test.conversion.lossy;
 
@@ -47,7 +34,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousKitchenDrawerMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "Can't map property \"long numberOfForks\". It has a possibly lossy conversion from "
                     + "long to int.")
         })
@@ -60,7 +47,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = KitchenDrawerMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 37,
+                line = 24,
                 messageRegExp = "property \"java.math.BigInteger numberOfKnifes\" has a possibly lossy conversion "
                     + "from java.math.BigInteger to java.lang.Integer.")
         })
@@ -73,7 +60,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousKitchenDrawerMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "org.mapstruct.ap.test.conversion.lossy.VerySpecialNumber numberOfSpoons\". It has "
                     + "a possibly lossy conversion from java.math.BigInteger to java.lang.Long")
         })
@@ -86,7 +73,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousKitchenDrawerMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "Can't map property \"java.lang.Double depth\". It has a possibly lossy conversion "
                     + "from java.lang.Double to float.")
         })
@@ -99,7 +86,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousKitchenDrawerMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "\"java.math.BigDecimal length\". It has a possibly lossy conversion from "
                     + "java.math.BigDecimal to java.lang.Float.")
         })
@@ -112,7 +99,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = KitchenDrawerMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 37,
+                line = 24,
                 messageRegExp = "property \"double height\" has a possibly lossy conversion from double to float.")
         })
     public void test2StepConversionFromdoubleTofloat() {
@@ -124,7 +111,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 34,
+                line = 21,
                 messageRegExp = "collection element has a possibly lossy conversion from java.math.BigInteger to "
                     + "java.math.BigDecimal")
         })
@@ -137,11 +124,11 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 32,
+                line = 19,
                 messageRegExp = "map key has a possibly lossy conversion from java.lang.Long to java.lang.Integer."),
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 32,
+                line = 19,
                 messageRegExp = "map value has a possibly lossy conversion from java.lang.Double to java.lang.Float.")
     })
     public void testMapElementConversion() {
