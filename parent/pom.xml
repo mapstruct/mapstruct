@@ -541,6 +541,14 @@
                         <parameter>
                             <oldVersionPattern>\d+\.\d+\.\d+\.Final</oldVersionPattern>
                             <breakBuildBasedOnSemanticVersioning>true</breakBuildBasedOnSemanticVersioning>
+                            <overrideCompatibilityChangeParameters>
+                                <overrideCompatibilityChangeParameter>
+                                    <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                                    <binaryCompatible>true</binaryCompatible>
+                                    <sourceCompatible>false</sourceCompatible>
+                                    <semanticVersionLevel>MINOR</semanticVersionLevel>
+                                </overrideCompatibilityChangeParameter>
+                            </overrideCompatibilityChangeParameters>
                         </parameter>
                     </configuration>
                 </plugin>
