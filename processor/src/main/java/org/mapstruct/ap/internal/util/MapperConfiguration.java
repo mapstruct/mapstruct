@@ -130,6 +130,19 @@ public class MapperConfiguration {
         return ReportingPolicyPrism.valueOf( mapperPrism.unmappedSourcePolicy() );
     }
 
+    public ReportingPolicyPrism typeConversionPolicy() {
+        if ( mapperPrism.values.typeConversionPolicy() != null ) {
+            return ReportingPolicyPrism.valueOf( mapperPrism.typeConversionPolicy() );
+        }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.typeConversionPolicy() != null ) {
+            return ReportingPolicyPrism.valueOf( mapperConfigPrism.typeConversionPolicy() );
+        }
+
+        // fall back to default defined in the annotation
+        return ReportingPolicyPrism.valueOf( mapperPrism.typeConversionPolicy() );
+    }
+
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
         if ( mapperConfigPrism != null && mapperPrism.values.collectionMappingStrategy() == null ) {
             return CollectionMappingStrategyPrism.valueOf( mapperConfigPrism.collectionMappingStrategy() );

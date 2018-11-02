@@ -17,10 +17,6 @@ public class PrimitiveToPrimitiveConversion extends SimpleConversion {
     private final Class<?> sourceType;
 
     public PrimitiveToPrimitiveConversion(Class<?> sourceType) {
-        if ( !sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no primitive type." );
-        }
-
         this.sourceType = sourceType;
     }
 
@@ -33,4 +29,5 @@ public class PrimitiveToPrimitiveConversion extends SimpleConversion {
     public String getFromExpression(ConversionContext conversionContext) {
         return "(" + sourceType + ") <SOURCE>";
     }
+
 }

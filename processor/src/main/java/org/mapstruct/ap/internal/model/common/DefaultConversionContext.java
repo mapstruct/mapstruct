@@ -24,7 +24,7 @@ public class DefaultConversionContext implements ConversionContext {
     private final TypeFactory typeFactory;
 
     public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
-        Type targetType, FormattingParameters formattingParameters) {
+                                    Type targetType, FormattingParameters formattingParameters) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;

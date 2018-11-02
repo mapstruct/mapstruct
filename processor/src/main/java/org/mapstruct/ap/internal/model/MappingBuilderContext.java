@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -92,7 +93,7 @@ public class MappingBuilderContext {
         Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
                                        FormattingParameters formattingParameters,
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
-                                       boolean preferUpdateMethods);
+                                       boolean preferUpdateMethods, AnnotationMirror mirror);
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
     }

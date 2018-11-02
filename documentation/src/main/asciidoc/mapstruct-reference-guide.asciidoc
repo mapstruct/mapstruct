@@ -875,7 +875,7 @@ Currently the following conversions are applied automatically:
 
 [WARNING]
 ====
-Converting from larger data types to smaller ones (e.g. from `long` to `int`) can cause a value or precision loss. There https://github.com/mapstruct/mapstruct/issues/5[will be] an option for raising a warning in such cases in a future MapStruct version.
+Converting from larger data types to smaller ones (e.g. from `long` to `int`) can cause a value or precision loss. The `Mapper` and `MapperConfig` annotations have a method `typeConversionPolicy` to control warnings / errors. Due to backward compatibility reasons the default value is 'ReportingPolicy.IGNORE`.
 ====
 
 * Between all Java primitive types (including their wrappers) and `String`, e.g. between `int` and `String` or `Boolean` and `String`. A format string as understood by `java.text.DecimalFormat` can be specified.

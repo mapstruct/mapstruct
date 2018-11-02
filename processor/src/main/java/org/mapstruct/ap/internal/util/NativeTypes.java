@@ -29,6 +29,8 @@ public class NativeTypes {
     private static final Map<TypeKind, String> TYPE_KIND_NAME = new EnumMap<>( TypeKind.class );
     private static final Map<String, LiteralAnalyzer> ANALYZERS;
 
+    private static final Map<String, Integer> NARROWING_LUT;
+
     private static final Pattern PTRN_HEX = Pattern.compile( "^0[x|X].*" );
     private static final Pattern PTRN_OCT = Pattern.compile( "^0_*[0-7].*" );
     private static final Pattern PTRN_BIN = Pattern.compile( "^0[b|B].*" );
@@ -165,7 +167,6 @@ public class NativeTypes {
         /**
          * Double suffix forbidden for float.
          *
-         * @param isFloat
          */
         void removeAndValidateFloatingPointLiteralSuffix() {
             boolean endsWithLSuffix = PTRN_LONG.matcher( val ).find();
@@ -458,6 +459,22 @@ public class NativeTypes {
         TYPE_KIND_NAME.put( TypeKind.FLOAT, "float" );
         TYPE_KIND_NAME.put( TypeKind.DOUBLE, "double" );
 
+        Map<String, Integer> tmp3 = new HashMap<>(  );
+        tmp3.put( byte.class.getName(), 1 );
+        tmp3.put( Byte.class.getName(), 1 );
+        tmp3.put( short.class.getName(), 2 );
+        tmp3.put( Short.class.getName(), 2 );
+        tmp3.put( int.class.getName(), 3 );
+        tmp3.put( Integer.class.getName(), 3 );
+        tmp3.put( long.class.getName(), 4 );
+        tmp3.put( Long.class.getName(), 4 );
+        tmp3.put( float.class.getName(), 5 );
+        tmp3.put( Float.class.getName(), 5 );
+        tmp3.put( double.class.getName(), 6 );
+        tmp3.put( Double.class.getName(), 6 );
+        tmp3.put( BigInteger.class.getName(), 50 );
+        tmp3.put( BigDecimal.class.getName(), 51 );
+        NARROWING_LUT = Collections.unmodifiableMap( tmp3 );
     }
 
     public static Class<?> getWrapperType(Class<?> clazz) {
@@ -516,5 +533,18 @@ public class NativeTypes {
      */
     public static String getName(TypeKind typeKind) {
         return TYPE_KIND_NAME.get( typeKind );
+    }
+
+    public static boolean isNarrowing( String sourceFQN, String targetFQN ) {
+
+        boolean isNarrowing = false;
+
+        Integer sourcePosition = NARROWING_LUT.get( sourceFQN );
+        Integer targetPosition = NARROWING_LUT.get( targetFQN );
+
+        if ( sourcePosition != null && targetPosition != null ) {
+            isNarrowing = ( targetPosition - sourcePosition < 0 );
+        }
+        return isNarrowing;
     }
 }

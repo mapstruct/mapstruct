@@ -11,8 +11,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and native number types.
@@ -24,10 +24,6 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
     private final Class<?> targetType;
 
     public BigIntegerToPrimitiveConversion(Class<?> targetType) {
-        if ( !targetType.isPrimitive() ) {
-            throw new IllegalArgumentException( targetType + " is no primitive type." );
-        }
-
         this.targetType = targetType;
     }
 
@@ -49,4 +45,5 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
     }
+
 }

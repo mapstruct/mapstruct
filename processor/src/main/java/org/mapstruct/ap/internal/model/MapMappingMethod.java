@@ -92,7 +92,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyFormattingParameters,
                 keySelectionParameters,
                 keySourceRHS,
-                false
+                false,
+                null
             );
 
             if ( keyAssignment == null ) {
@@ -133,7 +134,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 valueFormattingParameters,
                 valueSelectionParameters,
                 valueSourceRHS,
-                false
+                false,
+                null
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -181,6 +183,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, method.getResultType(), null, ctx );
             }
+
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );

@@ -48,4 +48,5 @@ public interface ConversionProvider {
      * @return any helper methods when required.
      */
     List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext);
+
 }

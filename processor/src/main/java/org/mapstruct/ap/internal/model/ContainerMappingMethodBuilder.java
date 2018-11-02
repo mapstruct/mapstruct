@@ -88,7 +88,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             formattingParameters,
             selectionParameters,
             sourceRHS,
-            false
+            false,
+            null
         );
 
         if ( assignment == null ) {
@@ -110,11 +111,12 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 );
             }
         }
-        else if ( method instanceof ForgedMethod ) {
-            ForgedMethod forgedMethod = (ForgedMethod) method;
-            forgedMethod.addThrownTypes( assignment.getThrownTypes() );
+        else {
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                forgedMethod.addThrownTypes( assignment.getThrownTypes() );
+            }
         }
-
         assignment = getWrapper( assignment, method );
 
         // mapNullToDefault

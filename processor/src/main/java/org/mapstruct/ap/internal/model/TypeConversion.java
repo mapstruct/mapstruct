@@ -35,8 +35,8 @@ public class TypeConversion extends ModelElement implements Assignment {
     private Assignment assignment;
 
     public TypeConversion( Set<Type> importTypes,
-            List<Type> exceptionTypes,
-            String expression ) {
+                           List<Type> exceptionTypes,
+                           String expression ) {
         this.importTypes = new HashSet<>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.thrownTypes = exceptionTypes;
@@ -128,6 +128,6 @@ public class TypeConversion extends ModelElement implements Assignment {
 
     @Override
     public boolean isCallingUpdateMethod() {
-       return false;
+        return false;
     }
 }

@@ -19,13 +19,6 @@ public class WrapperToWrapperConversion extends SimpleConversion {
     private final Class<?> targetType;
 
     public WrapperToWrapperConversion(Class<?> sourceType, Class<?> targetType) {
-        if ( sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no wrapper type." );
-        }
-        if ( targetType.isPrimitive() ) {
-            throw new IllegalArgumentException( targetType + " is no wrapper type." );
-        }
-
         this.sourceType = NativeTypes.getPrimitiveType( sourceType );
         this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
@@ -49,4 +42,5 @@ public class WrapperToWrapperConversion extends SimpleConversion {
             return "<SOURCE>." + sourceType.getName() + "Value()";
         }
     }
+
 }

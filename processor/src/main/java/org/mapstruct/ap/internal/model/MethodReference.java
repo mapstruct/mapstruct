@@ -337,4 +337,5 @@ public class MethodReference extends ModelElement implements Assignment {
     public static MethodReference forMethodCall(String methodName) {
         return new MethodReference( methodName, null, false );
     }
+
 }

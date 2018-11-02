@@ -103,4 +103,5 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     public boolean isFieldAssignment() {
         return fieldAssignment;
     }
+
 }

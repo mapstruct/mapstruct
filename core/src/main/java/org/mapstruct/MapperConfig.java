@@ -63,6 +63,16 @@ public @interface MapperConfig {
     ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
 
     /**
+     * How lossy (narrowing) conversion, for instance: long to integer should be
+     * reported.
+     *
+     * @since 1.3
+     *
+     * @return The reporting policy for type conversion.
+     */
+    ReportingPolicy typeConversionPolicy() default ReportingPolicy.IGNORE;
+
+    /**
      * Specifies the component model to which the generated mapper should
      * adhere. Supported values are
      * <ul>

@@ -97,4 +97,5 @@ public abstract class SimpleConversion implements ConversionProvider {
     protected List<Type> getFromConversionExceptionTypes(ConversionContext conversionContext) {
         return Collections.emptyList();
     }
+
 }
