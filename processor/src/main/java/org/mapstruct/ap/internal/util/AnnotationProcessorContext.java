@@ -76,6 +76,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.accessorNamingStrategy.init( this );
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
+        this.builderProvider.init( this );
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
         this.initialized = true;
     }

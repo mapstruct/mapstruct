@@ -522,7 +522,7 @@ public class TypeFactory {
         try {
             return roundContext.getAnnotationProcessorContext()
                 .getBuilderProvider()
-                .findBuilderInfo( type, elementUtils, typeUtils );
+                .findBuilderInfo( type );
         }
         catch ( MoreThanOneBuilderCreationMethodException ex ) {
             messager.printMessage(

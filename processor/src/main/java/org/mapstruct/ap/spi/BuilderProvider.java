@@ -6,8 +6,6 @@
 package org.mapstruct.ap.spi;
 
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 /**
  * A service provider interface that is used to detect types that require a builder for mapping.  This interface could
@@ -17,12 +15,18 @@ import javax.lang.model.util.Types;
 public interface BuilderProvider {
 
     /**
+     * Initializes the builder provider with the MapStruct processing environment.
+     *
+     * @param processingEnvironment environment for facilities
+     */
+    default void init(MapStructProcessingEnvironment processingEnvironment) {
+
+    }
+
+    /**
      * Find the builder information, if any, for the {@code type}.
      *
      * @param type the type for which a builder should be found
-     * @param elements the util elements that can be used for operations on program elements
-     * @param types the util types that can be used for operations on {@link TypeMirror}(s)
-     *
      * @return the builder info for the {@code type} if it exists, or {@code null} if there is no builder
      *
      * @throws TypeHierarchyErroneousException if the type that needs to be visited is not ready yet, this signals the
@@ -30,5 +34,5 @@ public interface BuilderProvider {
      * @throws MoreThanOneBuilderCreationMethodException if {@code type} has more than one method that can create the
      * builder
      */
-    BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types);
+    BuilderInfo findBuilderInfo(TypeMirror type);
 }

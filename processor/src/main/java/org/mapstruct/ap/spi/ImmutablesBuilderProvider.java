@@ -12,8 +12,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 /**
  * Builder provider for Immutables. A custom provider is needed because Immutables creates an implementation of an
@@ -29,34 +27,32 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
     private static final String IMMUTABLE_FQN = "org.immutables.value.Value.Immutable";
 
     @Override
-    protected BuilderInfo findBuilderInfo(TypeElement typeElement, Elements elements, Types types) {
+    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
         Name name = typeElement.getQualifiedName();
         if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
             return null;
         }
-        TypeElement immutableAnnotation = elements.getTypeElement( IMMUTABLE_FQN );
+        TypeElement immutableAnnotation = elementUtils.getTypeElement( IMMUTABLE_FQN );
         if ( immutableAnnotation != null ) {
             BuilderInfo info = findBuilderInfoForImmutables(
                 typeElement,
-                immutableAnnotation,
-                elements,
-                types
+                immutableAnnotation
             );
             if ( info != null ) {
                 return info;
             }
         }
 
-        return super.findBuilderInfo( typeElement, elements, types );
+        return super.findBuilderInfo( typeElement );
     }
 
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement,
-        TypeElement immutableAnnotation, Elements elements, Types types) {
-        for ( AnnotationMirror annotationMirror : elements.getAllAnnotationMirrors( typeElement ) ) {
-            if ( types.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
-                TypeElement immutableElement = asImmutableElement( typeElement, elements );
+                                                       TypeElement immutableAnnotation) {
+        for ( AnnotationMirror annotationMirror : elementUtils.getAllAnnotationMirrors( typeElement ) ) {
+            if ( typeUtils.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
+                TypeElement immutableElement = asImmutableElement( typeElement );
                 if ( immutableElement != null ) {
-                    return super.findBuilderInfo( immutableElement, elements, types );
+                    return super.findBuilderInfo( immutableElement );
                 }
                 else {
                     // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
@@ -67,7 +63,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return null;
     }
 
-    protected TypeElement asImmutableElement(TypeElement typeElement, Elements elements) {
+    protected TypeElement asImmutableElement(TypeElement typeElement) {
         Element enclosingElement = typeElement.getEnclosingElement();
         StringBuilder builderQualifiedName = new StringBuilder( typeElement.getQualifiedName().length() + 17 );
         if ( enclosingElement.getKind() == ElementKind.PACKAGE ) {
@@ -82,6 +78,6 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         }
 
         builderQualifiedName.append( "Immutable" ).append( typeElement.getSimpleName() );
-        return elements.getTypeElement( builderQualifiedName );
+        return elementUtils.getTypeElement( builderQualifiedName );
     }
 }
