@@ -41,7 +41,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     private static String typeReferenceName(ConversionContext conversionContext, String canonicalName) {
-        return conversionContext.getTypeFactory().getType( canonicalName ).getReferenceName();
+        return conversionContext.getTypeFactory().getType( canonicalName ).createReferenceName();
     }
 
     /**
@@ -53,7 +53,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     private static String typeReferenceName(ConversionContext conversionContext, Class<?> type) {
-        return conversionContext.getTypeFactory().getType( type ).getReferenceName();
+        return conversionContext.getTypeFactory().getType( type ).createReferenceName();
     }
 
     /**

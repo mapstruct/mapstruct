@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -174,6 +175,8 @@ public class DateFormatValidatorFactoryTest {
                         false,
                         false,
                         false,
+            new HashMap<>(  ),
+            new HashMap<>(  ),
                         false,
                         false);
     }

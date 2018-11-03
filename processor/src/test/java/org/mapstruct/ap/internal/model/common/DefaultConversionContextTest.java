@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Annotation;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -122,6 +123,8 @@ public class DefaultConversionContextTest {
                         false,
                         false,
                         false,
+            new HashMap<>(  ),
+            new HashMap<>(  ),
                         false,
                         false);
     }

@@ -53,7 +53,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to parse Dates
-        return new StringBuilder().append( conversionContext.getTargetType().getReferenceName() )
+        return new StringBuilder().append( conversionContext.getTargetType().createReferenceName() )
                                   .append( ".parse( " )
                                   .append( parametersListForParsing( conversionContext ) )
                                   .append( " )" ).toString();

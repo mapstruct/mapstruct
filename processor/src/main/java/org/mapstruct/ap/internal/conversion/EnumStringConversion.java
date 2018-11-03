@@ -26,7 +26,7 @@ public class EnumStringConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "Enum.valueOf( " + conversionContext.getTargetType().getReferenceName()
+        return "Enum.valueOf( " + conversionContext.getTargetType().createReferenceName()
             + ".class, <SOURCE> )";
     }
 

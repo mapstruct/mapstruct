@@ -32,7 +32,7 @@ public class JodaTimeToDateConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return "new " + conversionContext.getTargetType().getReferenceName() + "( <SOURCE> )";
+        return "new " + conversionContext.getTargetType().createReferenceName() + "( <SOURCE> )";
     }
 
     @Override

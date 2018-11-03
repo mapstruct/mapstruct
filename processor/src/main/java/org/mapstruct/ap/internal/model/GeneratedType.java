@@ -224,7 +224,7 @@ public abstract class GeneratedType extends ModelElement {
     }
 
     private boolean needsImportDeclaration(Type typeToAdd) {
-        if ( !typeToAdd.isImported() ) {
+        if ( !typeToAdd.isToBeImported() ) {
             return false;
         }
 
