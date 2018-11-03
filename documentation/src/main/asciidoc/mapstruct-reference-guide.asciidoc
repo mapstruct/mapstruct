@@ -731,7 +731,8 @@ Supported builder frameworks:
 * https://projectlombok.org/[Lombok] - requires having the Lombok classes in a separate module. See for more information https://github.com/rzwitserloot/lombok/issues/1538[rzwitserloot/lombok#1538]
 * https://github.com/google/auto/blob/master/value/userguide/index.md[AutoValue]
 * https://immutables.github.io/[Immutables] - When Immutables are present on the annotation processor path then the `ImmutablesAccessorNamingStrategy` and `ImmutablesBuilderProvider` would be used by default
-* https://github.com/google/FreeBuilder[FreeBuilder]
+* https://github.com/google/FreeBuilder[FreeBuilder] - When FreeBuilder is present on the annotation processor path then the `FreeBuilderAccessorNamingStrategy` would be used by default.
+When using FreeBuilder then the JavaBean convention should be followed, otherwise MapStruct won't recognize the fluent getters.
 * It also works for custom builders (handwritten ones) if the implementation supports the defined rules for the default `BuilderProvider`.
 Otherwise, you would need to write a custom `BuilderProvider`
 
