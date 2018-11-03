@@ -100,7 +100,7 @@ public class QualifierTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousMapper.class,
                         kind = Kind.ERROR,
-                        line = 29,
+                        line = 28,
                         messageRegExp = "Ambiguous mapping methods found for mapping property "
                                 + "\"java.lang.String title\" to java.lang.String.*" )
             }

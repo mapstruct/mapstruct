@@ -198,7 +198,6 @@ public class MappingResolverImpl implements MappingResolver {
             if ( sourceType.isLiteral()
                 && "java.lang.String".equals( sourceType.getFullyQualifiedName( ) )
                 && targetType.isNative() ) {
-                // TODO: convey some error message
                 return null;
             }
 
@@ -272,8 +271,6 @@ public class MappingResolverImpl implements MappingResolver {
             }
             return null;
         }
-
-
 
         /**
          * Returns a reference to a method mapping the given source type to the given target type, if such a method
@@ -485,6 +482,7 @@ public class MappingResolverImpl implements MappingResolver {
 
                 if ( sourceRHS.getSourceErrorMessagePart() != null ) {
                     messager.printMessage( mappingMethod.getExecutable(),
+                        positionHint,
                         Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
                         sourceRHS.getSourceErrorMessagePart(),
                         returnType,
@@ -493,6 +491,7 @@ public class MappingResolverImpl implements MappingResolver {
                 }
                 else {
                     messager.printMessage( mappingMethod.getExecutable(),
+                        positionHint,
                         Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
                         returnType,
                         Strings.join( candidates, ", " )
