@@ -11,11 +11,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.Locale;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
 /**
@@ -170,7 +174,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     public static String zoneOffset(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, JavaTimeConstants.ZONE_OFFSET_FQN );
+        return typeReferenceName( conversionContext, ZoneOffset.class );
     }
 
     /**
@@ -181,7 +185,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     public static String zoneId(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, JavaTimeConstants.ZONE_ID_FQN );
+        return typeReferenceName( conversionContext, ZoneId.class );
     }
 
     /**
@@ -192,7 +196,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     public static String localDateTime(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, JavaTimeConstants.LOCAL_DATE_TIME_FQN );
+        return typeReferenceName( conversionContext, LocalDateTime.class );
     }
 
     /**
@@ -203,7 +207,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     public static String zonedDateTime(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, JavaTimeConstants.ZONED_DATE_TIME_FQN );
+        return typeReferenceName( conversionContext, ZonedDateTime.class );
     }
 
     /**
@@ -214,7 +218,7 @@ public final class ConversionUtils {
      * @return Name or fully-qualified name.
      */
     public static String dateTimeFormatter(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, JavaTimeConstants.DATE_TIME_FORMATTER_FQN );
+        return typeReferenceName( conversionContext, DateTimeFormatter.class );
     }
 
     /**

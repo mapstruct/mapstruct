@@ -8,6 +8,10 @@ package org.mapstruct.ap.internal.model.common;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Annotation;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -16,7 +20,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 
 import org.junit.Test;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.testutil.IssueKey;
 
@@ -113,25 +116,25 @@ public class DateFormatValidatorFactoryTest {
 
         Type targetType = typeWithFQN( JAVA_LANG_STRING );
 
-        Type sourceType = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+        Type sourceType = typeWithFQN( ZonedDateTime.class.getCanonicalName() );
         assertInvalidDateFormat( sourceType, targetType );
         assertInvalidDateFormat( targetType, sourceType );
         assertValidDateFormat( sourceType, targetType );
         assertValidDateFormat( targetType, sourceType );
 
-        sourceType = typeWithFQN( JavaTimeConstants.LOCAL_DATE_FQN );
+        sourceType = typeWithFQN( LocalDate.class.getCanonicalName() );
         assertInvalidDateFormat( sourceType, targetType );
         assertInvalidDateFormat( targetType, sourceType );
         assertValidDateFormat( sourceType, targetType );
         assertValidDateFormat( targetType, sourceType );
 
-        sourceType = typeWithFQN( JavaTimeConstants.LOCAL_DATE_TIME_FQN );
+        sourceType = typeWithFQN( LocalDateTime.class.getCanonicalName() );
         assertInvalidDateFormat( sourceType, targetType );
         assertInvalidDateFormat( targetType, sourceType );
         assertValidDateFormat( sourceType, targetType );
         assertValidDateFormat( targetType, sourceType );
 
-        sourceType = typeWithFQN( JavaTimeConstants.LOCAL_TIME_FQN );
+        sourceType = typeWithFQN( LocalTime.class.getCanonicalName() );
         assertInvalidDateFormat( sourceType, targetType );
         assertInvalidDateFormat( targetType, sourceType );
         assertValidDateFormat( sourceType, targetType );

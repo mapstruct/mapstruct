@@ -9,6 +9,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
@@ -18,7 +23,6 @@ import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
 import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
@@ -207,31 +211,24 @@ public class Conversions {
     }
 
     private void registerJava8TimeConversions() {
-        if ( !isJava8TimeAvailable() ) {
-            return;
-        }
 
         // Java 8 time to String
-        register( JavaTimeConstants.ZONED_DATE_TIME_FQN, String.class, new JavaZonedDateTimeToStringConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_FQN, String.class, new JavaLocalDateToStringConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, String.class, new JavaLocalDateTimeToStringConversion() );
-        register( JavaTimeConstants.LOCAL_TIME_FQN, String.class, new JavaLocalTimeToStringConversion() );
+        register( ZonedDateTime.class, String.class, new JavaZonedDateTimeToStringConversion() );
+        register( LocalDate.class, String.class, new JavaLocalDateToStringConversion() );
+        register( LocalDateTime.class, String.class, new JavaLocalDateTimeToStringConversion() );
+        register( LocalTime.class, String.class, new JavaLocalTimeToStringConversion() );
 
         // Java 8 to Date
-        register( JavaTimeConstants.ZONED_DATE_TIME_FQN, Date.class, new JavaZonedDateTimeToDateConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JavaLocalDateTimeToDateConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_FQN, Date.class, new JavaLocalDateToDateConversion() );
-        register( JavaTimeConstants.LOCAL_DATE_FQN, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
-        register( JavaTimeConstants.INSTANT, Date.class, new JavaInstantToDateConversion() );
+        register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
+        register( LocalDateTime.class, Date.class, new JavaLocalDateTimeToDateConversion() );
+        register( LocalDate.class, Date.class, new JavaLocalDateToDateConversion() );
+        register( LocalDate.class, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
+        register( Instant.class, Date.class, new JavaInstantToDateConversion() );
 
     }
 
     private boolean isJodaTimeAvailable() {
         return typeFactory.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
-    }
-
-    private boolean isJava8TimeAvailable() {
-        return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {

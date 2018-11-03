@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.common;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Annotation;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -20,7 +21,6 @@ import javax.tools.Diagnostic;
 
 import org.junit.Test;
 import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.testutil.IssueKey;
 
@@ -62,7 +62,7 @@ public class DefaultConversionContextTest {
 
     @Test
     public void testInvalidDateFormatValidation() {
-        Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+        Type type = typeWithFQN( ZonedDateTime.class.getCanonicalName() );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
             null,
@@ -76,7 +76,7 @@ public class DefaultConversionContextTest {
 
     @Test
     public void testNullDateFormatValidation() {
-        Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+        Type type = typeWithFQN( ZonedDateTime.class.getCanonicalName() );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
             null,

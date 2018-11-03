@@ -8,8 +8,11 @@ package org.mapstruct.ap.internal.model.common;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.XmlConstants;
@@ -89,10 +92,11 @@ final class DateFormatValidatorFactory {
         return typesEqualsOneOf(
                         sourceType,
                         targetType,
-                        JavaTimeConstants.LOCAL_DATE_FQN,
-                        JavaTimeConstants.LOCAL_TIME_FQN,
-                        JavaTimeConstants.LOCAL_DATE_TIME_FQN,
-                        JavaTimeConstants.ZONED_DATE_TIME_FQN );
+                        LocalDate.class.getCanonicalName(),
+                        LocalTime.class.getCanonicalName(),
+                        LocalDateTime.class.getCanonicalName(),
+                        ZonedDateTime.class.getCanonicalName()
+        );
     }
 
     private static boolean isJavaUtilDateSupposed(Type sourceType, Type targetType) {
