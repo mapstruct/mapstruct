@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1576.java8;
 
-import java.util.Date;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
