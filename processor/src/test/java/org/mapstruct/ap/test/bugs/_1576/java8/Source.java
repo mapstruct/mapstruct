@@ -9,13 +9,49 @@ import java.util.Date;
 
 public class Source {
 
-    private Date ldate;
+    private Date localDateTime;
+    private Date localDate;
+    private String localTime;
+    private Date zonedDateTime;
+    private Date instant;
 
-    public Date getLdate() {
-        return ldate;
+    public Date getLocalDateTime() {
+        return localDateTime;
     }
 
-    public void setLdate(Date ldate) {
-        this.ldate = ldate;
+    public void setLocalDateTime(Date localDateTime) {
+        this.localDateTime = localDateTime;
+    }
+
+    public Date getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(Date localDate) {
+        this.localDate = localDate;
+    }
+
+    public String getLocalTime() {
+        return localTime;
+    }
+
+    public void setLocalTime(String localTime) {
+        this.localTime = localTime;
+    }
+
+    public Date getZonedDateTime() {
+        return zonedDateTime;
+    }
+
+    public void setZonedDateTime(Date zonedDateTime) {
+        this.zonedDateTime = zonedDateTime;
+    }
+
+    public Date getInstant() {
+        return instant;
+    }
+
+    public void setInstant(Date instant) {
+        this.instant = instant;
     }
 }

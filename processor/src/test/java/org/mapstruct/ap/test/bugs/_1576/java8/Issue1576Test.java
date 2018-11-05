@@ -28,10 +28,7 @@ public class Issue1576Test {
     @Test
     public void testLocalDateTimeIsImported() {
 
-        Source source = new Source();
-        source.setLdate( new Date() );
-
-        Issue1576Mapper.INSTANCE.map( source );
+        Issue1576Mapper.INSTANCE.map( new Source() );
     }
 
 }

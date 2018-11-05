@@ -177,10 +177,13 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * String that could be used in generated code to reference to this {@link Type}. The first time a name
-     * is used (e.g. LocalDateTime has java.time.LocalDate and the org.joda.LocalDateTime) it will be marked to be
-     * imported. So if the java.time variant is used first, this name will be used and java.time.LocalDateTime
-     * will be imported, and the org.joda variant will use the FQN (and will not be imported).
+     * Returns a String that could be used in generated code to reference to this {@link Type}.<br>
+     *  <p>
+     * The first time a name is referred-to it will be marked as to be imported. For instance
+     * {@code LocalDateTime} can be one of {@code java.time.LocalDateTime} and {@code org.joda.LocalDateTime})
+     * <p>
+     * If the {@code java.time} variant is referred to first, the {@code java.time.LocalDateTime} will be imported
+     * and the {@code org.joda} variant will be referred to with its FQN.
      *
      * @return Just the name if this {@link Type} will be imported, otherwise the fully-qualified name.
      */
@@ -1043,7 +1046,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * It strips the all the {@code []} from the {@code className}.
+     * It strips all the {@code []} from the {@code className}.
      *
      * E.g.
      * <pre>
