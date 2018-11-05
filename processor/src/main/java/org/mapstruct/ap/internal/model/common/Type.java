@@ -364,7 +364,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( isToBeImported == null ) {
             String trimmedName = trimSimpleClassName( name );
             if ( notToBeImportedTypes.containsKey( trimmedName ) ) {
-                return false;
+                isToBeImported = false;
+                return isToBeImported;
             }
             String trimmedQualifiedName = trimSimpleClassName( qualifiedName );
             String importedType = toBeImportedTypes.get( trimmedName );
