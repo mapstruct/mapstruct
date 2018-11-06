@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -53,7 +53,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to parse Dates
-        return new StringBuilder().append( conversionContext.getTargetType().getReferenceName() )
+        return new StringBuilder().append( conversionContext.getTargetType().createReferenceName() )
                                   .append( ".parse( " )
                                   .append( parametersListForParsing( conversionContext ) )
                                   .append( " )" ).toString();
@@ -72,7 +72,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-            conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
+            conversionContext.getTypeFactory().getType( DateTimeFormatter.class )
         );
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
             return Collections.asSet(
                 conversionContext.getTargetType(),
-                conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
+                conversionContext.getTypeFactory().getType( DateTimeFormatter.class )
             );
         }
 

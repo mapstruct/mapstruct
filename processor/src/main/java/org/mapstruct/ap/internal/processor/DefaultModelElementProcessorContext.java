@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.Map;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -41,7 +42,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final AccessorNamingUtils accessorNaming;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
-            RoundContext roundContext) {
+            RoundContext roundContext, Map<String, String> notToBeImported) {
 
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
@@ -52,7 +53,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             processingEnvironment.getElementUtils(),
             delegatingTypes,
             messager,
-            roundContext
+            roundContext,
+            notToBeImported
         );
         this.options = options;
     }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JaxbConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.internal.util.XmlConstants;
@@ -33,21 +32,18 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new XmlGregorianCalendarToString( typeFactory ) );
             builtInMethods.add( new CalendarToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToCalendar( typeFactory ) );
+            builtInMethods.add( new ZonedDateTimeToXmlGregorianCalendar( typeFactory ) );
         }
 
         if ( isJaxbAvailable( typeFactory ) ) {
             builtInMethods.add( new JaxbElemToValue( typeFactory ) );
         }
 
-
-        if ( isJava8TimeAvailable( typeFactory ) ) {
-            builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
-            builtInMethods.add( new ZonedDateTimeToXmlGregorianCalendar( typeFactory ) );
-            builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
-            if ( isXmlGregorianCalendarPresent ) {
-                builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
-                builtInMethods.add( new LocalDateToXmlGregorianCalendar( typeFactory ) );
-            }
+        builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
+        builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
+        if ( isXmlGregorianCalendarPresent ) {
+            builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
+            builtInMethods.add( new LocalDateToXmlGregorianCalendar( typeFactory ) );
         }
 
         if ( isJodaTimeAvailable( typeFactory ) && isXmlGregorianCalendarPresent ) {
@@ -64,10 +60,6 @@ public class BuiltInMappingMethods {
 
     private static boolean isJaxbAvailable(TypeFactory typeFactory) {
         return JaxbConstants.isJaxbElementPresent() && typeFactory.isTypeAvailable( JaxbConstants.JAXB_ELEMENT_FQN );
-    }
-
-    private static boolean isJava8TimeAvailable(TypeFactory typeFactory) {
-        return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
     private static boolean isXmlGregorianCalendarAvailable(TypeFactory typeFactory) {

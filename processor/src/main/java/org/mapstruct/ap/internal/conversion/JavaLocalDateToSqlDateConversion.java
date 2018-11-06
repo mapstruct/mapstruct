@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.sql.Date;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
@@ -14,7 +15,6 @@ import org.mapstruct.ap.internal.util.Collections;
 
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.sqlDate;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneOffset;
-import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_OFFSET_FQN;
 
 /**
  * SimpleConversion for mapping {@link java.time.LocalDate} to
@@ -34,7 +34,7 @@ public class JavaLocalDateToSqlDateConversion extends SimpleConversion {
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
             conversionContext.getTypeFactory().getType( Date.class ),
-            conversionContext.getTypeFactory().getType( ZONE_OFFSET_FQN )
+            conversionContext.getTypeFactory().getType( ZoneOffset.class )
         );
     }
 
@@ -46,7 +46,7 @@ public class JavaLocalDateToSqlDateConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-            conversionContext.getTypeFactory().getType( ZONE_OFFSET_FQN )
+            conversionContext.getTypeFactory().getType( ZoneOffset.class )
         );
     }
 

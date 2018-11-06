@@ -84,13 +84,16 @@ public class TypeFactory {
     private final TypeMirror streamType;
 
     private final Map<String, ImplementationType> implementationTypes = new HashMap<>();
-    private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<>();
+    private final Map<String, String> toBeImportedTypes = new HashMap<>();
+    private final Map<String, String> notToBeImportedTypes;
 
-    public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext) {
+    public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext,
+                       Map<String, String> notToBeImportedTypes) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.roundContext = roundContext;
+        this.notToBeImportedTypes = notToBeImportedTypes;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
         collectionType =
@@ -197,7 +200,7 @@ public class TypeFactory {
         String qualifiedName;
         TypeElement typeElement;
         Type componentType;
-        boolean isImported;
+        Boolean toBeImported = null;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
@@ -218,7 +221,6 @@ public class TypeFactory {
             }
 
             componentType = null;
-            isImported = isImported( name, qualifiedName );
         }
         else if ( mirror.getKind() == TypeKind.ARRAY ) {
             TypeMirror componentTypeMirror = getComponentType( mirror );
@@ -237,7 +239,6 @@ public class TypeFactory {
                 name = componentTypeElement.getSimpleName().toString() + arraySuffix;
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
                 qualifiedName = componentTypeElement.getQualifiedName().toString() + arraySuffix;
-                isImported = isImported( name, qualifiedName );
             }
             else if (componentTypeMirror.getKind().isPrimitive()) {
                 // When the component type is primitive and is annotated with ElementType.TYPE_USE then
@@ -246,13 +247,13 @@ public class TypeFactory {
                 packageName = null;
                 // for primitive types only name (e.g. byte, short..) required as qualified name
                 qualifiedName = name;
-                isImported = false;
+                toBeImported = false;
             }
             else {
                 name = mirror.toString();
                 packageName = null;
                 qualifiedName = name;
-                isImported = false;
+                toBeImported = false;
             }
 
             isEnumType = false;
@@ -268,7 +269,7 @@ public class TypeFactory {
             qualifiedName = name;
             typeElement = null;
             componentType = null;
-            isImported = false;
+            toBeImported = false;
         }
 
         return new Type(
@@ -289,7 +290,9 @@ public class TypeFactory {
             isCollectionType,
             isMapType,
             isStreamType,
-            isImported,
+            toBeImportedTypes,
+            notToBeImportedTypes,
+            toBeImported,
             isLiteral
         );
     }
@@ -509,7 +512,9 @@ public class TypeFactory {
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
-                isImported( implementationType.getName(), implementationType.getFullyQualifiedName() ),
+                toBeImportedTypes,
+                notToBeImportedTypes,
+                null,
                 implementationType.isLiteral()
             );
             return implementation.createNew( replacement );
@@ -543,24 +548,6 @@ public class TypeFactory {
 
         ArrayType arrayType = (ArrayType) mirror;
         return arrayType.getComponentType();
-    }
-
-    private boolean isImported(String name, String qualifiedName) {
-        String trimmedName = TypeFactory.trimSimpleClassName( name );
-        String trimmedQualifiedName = TypeFactory.trimSimpleClassName( qualifiedName );
-        String importedType = importedQualifiedTypesBySimpleName.get( trimmedName );
-
-        boolean imported = false;
-        if ( importedType != null ) {
-            if ( importedType.equals( trimmedQualifiedName ) ) {
-                imported = true;
-            }
-        }
-        else {
-            importedQualifiedTypesBySimpleName.put( trimmedName, trimmedQualifiedName );
-            imported = true;
-        }
-        return imported;
     }
 
     /**
@@ -643,29 +630,6 @@ public class TypeFactory {
         return typeMirror;
     }
 
-    /**
-     * It strips the all the {@code []} from the {@code className}.
-     *
-     * E.g.
-     * <pre>
-     *     trimSimpleClassName("String[][][]") -> "String"
-     *     trimSimpleClassName("String[]") -> "String"
-     * </pre>
-     *
-     * @param className that needs to be trimmed
-     *
-     * @return the trimmed {@code className}, or {@code null} if the {@code className} was {@code null}
-     */
-    static String trimSimpleClassName(String className) {
-        if ( className == null ) {
-            return null;
-        }
-        String trimmedClassName = className;
-        while ( trimmedClassName.endsWith( "[]" ) ) {
-            trimmedClassName = trimmedClassName.substring( 0, trimmedClassName.length() - 2 );
-        }
-        return trimmedClassName;
-    }
 
     /**
      * Whether the given type is ready to be processed or not. It can be processed if it is not of kind

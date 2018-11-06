@@ -12,7 +12,6 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -28,7 +27,7 @@ public class CalendarToZonedDateTime extends BuiltInMethod {
     private final Set<Type> importedTypes;
 
     CalendarToZonedDateTime(TypeFactory typeFactory) {
-        this.returnType = typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+        this.returnType = typeFactory.getType( ZonedDateTime.class );
         this.parameter = new Parameter( "cal", typeFactory.getType( Calendar.class ) );
         this.importedTypes = asSet( returnType, parameter.getType() );
     }

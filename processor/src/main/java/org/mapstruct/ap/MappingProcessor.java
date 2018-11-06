@@ -13,9 +13,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -25,6 +26,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
@@ -40,6 +42,8 @@ import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
+
+import static javax.lang.model.element.ElementKind.CLASS;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
@@ -209,8 +213,9 @@ public class MappingProcessor extends AbstractProcessor {
                 // note that this assumes that a new source file is created for each mapper which must not
                 // necessarily be the case, e.g. in case of several mapper interfaces declared as inner types
                 // of one outer interface
+                List<? extends Element> tst = mapperElement.getEnclosedElements();
                 ProcessorContext context = new DefaultModelElementProcessorContext(
-                        processingEnv, options, roundContext
+                        processingEnv, options, roundContext, getDeclaredTypesNotToBeImported( mapperElement )
                 );
 
                 processMapperTypeElement( context, mapperElement );
@@ -223,6 +228,14 @@ public class MappingProcessor extends AbstractProcessor {
                 break;
             }
         }
+    }
+
+    private Map<String, String> getDeclaredTypesNotToBeImported(TypeElement element) {
+        return element.getEnclosedElements().stream()
+            .filter( e -> CLASS.equals( e.getKind() ) )
+            .map( Element::getSimpleName )
+            .map( Name::toString )
+            .collect( Collectors.toMap( k -> k, v -> element.getQualifiedName().toString() + "." + v ) );
     }
 
     private void handleUncaughtError(Element element, Throwable thrown) {

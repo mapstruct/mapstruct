@@ -77,12 +77,15 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isIterableType;
     private final boolean isCollectionType;
     private final boolean isMapType;
-    private final boolean isImported;
     private final boolean isVoid;
     private final boolean isStream;
     private final boolean isLiteral;
 
     private final List<String> enumConstants;
+
+    private final Map<String, String> toBeImportedTypes;
+    private final Map<String, String> notToBeImportedTypes;
+    private Boolean isToBeImported;
 
     private Map<String, Accessor> readAccessors = null;
     private Map<String, ExecutableElementAccessor> presenceCheckers = null;
@@ -104,7 +107,10 @@ public class Type extends ModelElement implements Comparable<Type> {
                 BuilderInfo builderInfo,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported,
+                boolean isCollectionType, boolean isMapType, boolean isStreamType,
+                Map<String, String> toBeImportedTypes,
+                Map<String, String> notToBeImportedTypes,
+                Boolean isToBeImported,
                 boolean isLiteral ) {
 
         this.typeUtils = typeUtils;
@@ -128,7 +134,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
         this.isStream = isStreamType;
-        this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
         this.isLiteral = isLiteral;
 
@@ -148,6 +153,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             enumConstants = Collections.emptyList();
         }
 
+        this.isToBeImported = isToBeImported;
+        this.toBeImportedTypes = toBeImportedTypes;
+        this.notToBeImportedTypes = notToBeImportedTypes;
         this.builderType = BuilderType.create( builderInfo, this, this.typeFactory, this.typeUtils );
     }
     //CHECKSTYLE:ON
@@ -169,12 +177,18 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * String that could be used in generated code to reference to this {@link Type}.
+     * Returns a String that could be used in generated code to reference to this {@link Type}.<br>
+     *  <p>
+     * The first time a name is referred-to it will be marked as to be imported. For instance
+     * {@code LocalDateTime} can be one of {@code java.time.LocalDateTime} and {@code org.joda.LocalDateTime})
+     * <p>
+     * If the {@code java.time} variant is referred to first, the {@code java.time.LocalDateTime} will be imported
+     * and the {@code org.joda} variant will be referred to with its FQN.
      *
      * @return Just the name if this {@link Type} will be imported, otherwise the fully-qualified name.
      */
-    public String getReferenceName() {
-        return isImported ? name : qualifiedName;
+    public String createReferenceName() {
+        return isToBeImported() ? name :  ( shouldUseSimpleName() ? name : qualifiedName );
     }
 
     public List<Type> getTypeParameters() {
@@ -314,7 +328,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return The name of this type as to be used within import statements.
      */
     public String getImportName() {
-        return isArrayType() ? TypeFactory.trimSimpleClassName( qualifiedName ) : qualifiedName;
+        return isArrayType() ? trimSimpleClassName( qualifiedName ) : qualifiedName;
     }
 
     @Override
@@ -341,14 +355,38 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Whether this type is imported by means of an import statement in the currently generated source file (meaning it
-     * can be referenced in the generated source using its simple name) or not (meaning it has to be referenced using
-     * the fully-qualified name).
+     * Whether this type is to be imported by means of an import statement in the currently generated source file
+     * (it can be referenced in the generated source using its simple name) or not (referenced using the FQN).
      *
      * @return {@code true} if the type is imported, {@code false} otherwise.
      */
-    public boolean isImported() {
-        return isImported;
+    public boolean isToBeImported() {
+        if ( isToBeImported == null ) {
+            String trimmedName = trimSimpleClassName( name );
+            if ( notToBeImportedTypes.containsKey( trimmedName ) ) {
+                isToBeImported = false;
+                return isToBeImported;
+            }
+            String trimmedQualifiedName = trimSimpleClassName( qualifiedName );
+            String importedType = toBeImportedTypes.get( trimmedName );
+
+            isToBeImported = false;
+            if ( importedType != null ) {
+                if ( importedType.equals( trimmedQualifiedName ) ) {
+                    isToBeImported = true;
+                }
+            }
+            else {
+                toBeImportedTypes.put( trimmedName, trimmedQualifiedName );
+                isToBeImported = true;
+            }
+        }
+        return isToBeImported;
+    }
+
+    private boolean shouldUseSimpleName() {
+        String fqn = notToBeImportedTypes.get( name );
+        return this.qualifiedName.equals( fqn );
     }
 
     /**
@@ -390,7 +428,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             isCollectionType,
             isMapType,
             isStream,
-            isImported,
+            toBeImportedTypes,
+            notToBeImportedTypes,
+            isToBeImported,
             isLiteral
         );
     }
@@ -431,7 +471,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             isCollectionType,
             isMapType,
             isStream,
-            isImported,
+            toBeImportedTypes,
+            notToBeImportedTypes,
+            isToBeImported,
             isLiteral
         );
     }
@@ -1002,6 +1044,30 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isLiteral() {
         return isLiteral;
+    }
+
+    /**
+     * It strips all the {@code []} from the {@code className}.
+     *
+     * E.g.
+     * <pre>
+     *     trimSimpleClassName("String[][][]") -> "String"
+     *     trimSimpleClassName("String[]") -> "String"
+     * </pre>
+     *
+     * @param className that needs to be trimmed
+     *
+     * @return the trimmed {@code className}, or {@code null} if the {@code className} was {@code null}
+     */
+    private String trimSimpleClassName(String className) {
+        if ( className == null ) {
+            return null;
+        }
+        String trimmedClassName = className;
+        while ( trimmedClassName.endsWith( "[]" ) ) {
+            trimmedClassName = trimmedClassName.substring( 0, trimmedClassName.length() - 2 );
+        }
+        return trimmedClassName;
     }
 
 }
