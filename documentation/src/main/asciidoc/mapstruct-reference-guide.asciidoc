@@ -305,10 +305,8 @@ To create a mapper simply define a Java interface with the required mapping meth
 @Mapper
 public interface CarMapper {
 
-    @Mappings({
-        @Mapping(source = "make", target = "manufacturer"),
-        @Mapping(source = "numberOfSeats", target = "seatCount")
-    })
+    @Mapping(source = "make", target = "manufacturer")
+    @Mapping(source = "numberOfSeats", target = "seatCount")
     CarDto carToCarDto(Car car);
 
     @Mapping(source = "name", target = "fullName")
@@ -432,7 +430,8 @@ As an example let's assume the mapping from `Person` to `PersonDto` requires som
 @Mapper
 public interface CarMapper {
 
-    @Mappings({...})
+    @Mapping(...)
+    ...
     CarDto carToCarDto(Car car);
 
     default PersonDto personToPersonDto(Person person) {
@@ -456,7 +455,8 @@ The previous example where the mapping from `Person` to `PersonDto` requires som
 @Mapper
 public abstract class CarMapper {
 
-    @Mappings(...)
+    @Mapping(...)
+    ...
     public abstract CarDto carToCarDto(Car car);
 
     public PersonDto personToPersonDto(Person person) {
@@ -481,10 +481,8 @@ MapStruct also supports mapping methods with several source parameters. This is 
 @Mapper
 public interface AddressMapper {
 
-    @Mappings({
-        @Mapping(source = "person.description", target = "description"),
-        @Mapping(source = "address.houseNo", target = "houseNumber")
-    })
+    @Mapping(source = "person.description", target = "description")
+    @Mapping(source = "address.houseNo", target = "houseNumber")
     DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Address address);
 }
 ----
@@ -514,10 +512,8 @@ MapStruct also offers the possibility to directly refer to a source parameter.
 @Mapper
 public interface AddressMapper {
 
-    @Mappings({
-        @Mapping(source = "person.description", target = "description"),
-        @Mapping(source = "hn", target = "houseNumber")
-    })
+    @Mapping(source = "person.description", target = "description")
+    @Mapping(source = "hn", target = "houseNumber")
     DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn);
 }
 ----
@@ -1954,15 +1950,13 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings( {
-        @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined"),
-        @Mapping(target = "longProperty", source = "longProp", defaultValue = "-1"),
-        @Mapping(target = "stringConstant", constant = "Constant Value"),
-        @Mapping(target = "integerConstant", constant = "14"),
-        @Mapping(target = "longWrapperConstant", constant = "3001"),
-        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
-    } )
+    @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined")
+    @Mapping(target = "longProperty", source = "longProp", defaultValue = "-1")
+    @Mapping(target = "stringConstant", constant = "Constant Value")
+    @Mapping(target = "integerConstant", constant = "14")
+    @Mapping(target = "longWrapperConstant", constant = "3001")
+    @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014")
+    @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
     Target sourceToTarget(Source s);
 }
 ----
