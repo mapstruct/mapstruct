@@ -21,13 +21,11 @@ This tells MapStruct to deviate from looking for a name `kind` at this level and
 @Mapper
 public interface FishTankMapper {
 
-    @Mappings({
-        @Mapping(target = "fish.kind", source = "fish.type"),
-        @Mapping(target = "fish.name", ignore = true),
-        @Mapping(target = "ornament", source = "interior.ornament"),
-        @Mapping(target = "material.materialType", source = "material"),
-        @Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")
-    })
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", ignore = true)
+    @Mapping(target = "ornament", source = "interior.ornament")
+    @Mapping(target = "material.materialType", source = "material")
+    @Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")
     FishTankDto map( FishTank source );
 }
 ----
@@ -57,15 +55,13 @@ Such is demonstrated in the next example:
 @Mapper
 public interface FishTankMapperWithDocument {
 
-    @Mappings({
-        @Mapping(target = "fish.kind", source = "fish.type"),
-        @Mapping(target = "fish.name", expression = "java(\"Jaws\")"),
-        @Mapping(target = "plant", ignore = true ),
-        @Mapping(target = "ornament", ignore = true ),
-        @Mapping(target = "material", ignore = true),
-        @Mapping(target = "quality.document", source = "quality.report"),
-        @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
-    })
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", expression = "java(\"Jaws\")")
+    @Mapping(target = "plant", ignore = true )
+    @Mapping(target = "ornament", ignore = true )
+    @Mapping(target = "material", ignore = true)
+    @Mapping(target = "quality.document", source = "quality.report")
+    @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
     FishTankWithNestedDocumentDto map( FishTank source );
 
 }
