@@ -11,7 +11,6 @@ import java.util.SortedSet;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -27,28 +26,17 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Decorator extends GeneratedType {
 
-    public static class Builder {
+    public static class Builder extends GeneratedTypeBuilder<Builder> {
 
-        private Elements elementUtils;
-        private TypeFactory typeFactory;
         private TypeElement mapperElement;
         private DecoratedWithPrism decoratorPrism;
-        private List<MappingMethod> methods;
-        private Options options;
-        private VersionInformation versionInformation;
+
         private boolean hasDelegateConstructor;
         private String implName;
         private String implPackage;
-        private SortedSet<Type> extraImportedTypes;
 
-        public Builder elementUtils(Elements elementUtils) {
-            this.elementUtils = elementUtils;
-            return this;
-        }
-
-        public Builder typeFactory(TypeFactory typeFactory) {
-            this.typeFactory = typeFactory;
-            return this;
+        public Builder() {
+            super( Builder.class );
         }
 
         public Builder mapperElement(TypeElement mapperElement) {
@@ -58,21 +46,6 @@ public class Decorator extends GeneratedType {
 
         public Builder decoratorPrism(DecoratedWithPrism decoratorPrism) {
             this.decoratorPrism = decoratorPrism;
-            return this;
-        }
-
-        public Builder methods(List<MappingMethod> methods) {
-            this.methods = methods;
-            return this;
-        }
-
-        public Builder options(Options options) {
-            this.options = options;
-            return this;
-        }
-
-        public Builder versionInformation(VersionInformation versionInformation) {
-            this.versionInformation = versionInformation;
             return this;
         }
 
@@ -91,20 +64,15 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
-        public Builder extraImports(SortedSet<Type> extraImportedTypes) {
-            this.extraImportedTypes = extraImportedTypes;
-            return this;
-        }
-
         public Decorator build() {
             String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
-                                                          Mapper.getFlatName( mapperElement ) );
+                Mapper.getFlatName( mapperElement ) );
 
             Type decoratorType = typeFactory.getType( decoratorPrism.value() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
-                        implementationName,
-                        implementationName + "_",
-                        hasDelegateConstructor );
+                implementationName,
+                implementationName + "_",
+                hasDelegateConstructor );
 
 
             String elementPackage = elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString();

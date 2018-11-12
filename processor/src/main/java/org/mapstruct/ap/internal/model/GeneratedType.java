@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -29,6 +30,53 @@ import org.mapstruct.ap.internal.version.VersionInformation;
 public abstract class GeneratedType extends ModelElement {
 
     private static final String JAVA_LANG_PACKAGE = "java.lang";
+
+    protected abstract static class GeneratedTypeBuilder<T extends GeneratedTypeBuilder> {
+
+        private T myself;
+        protected TypeFactory typeFactory;
+        protected Elements elementUtils;
+        protected Options options;
+        protected VersionInformation versionInformation;
+        protected SortedSet<Type> extraImportedTypes;
+
+        protected List<MappingMethod> methods;
+
+        GeneratedTypeBuilder(Class<T> selfType) {
+            myself = selfType.cast( this );
+        }
+
+        public T elementUtils(Elements elementUtils) {
+            this.elementUtils = elementUtils;
+            return myself;
+        }
+
+        public T typeFactory(TypeFactory typeFactory) {
+            this.typeFactory = typeFactory;
+            return myself;
+        }
+
+        public T options(Options options) {
+            this.options = options;
+            return myself;
+        }
+
+        public T versionInformation(VersionInformation versionInformation) {
+            this.versionInformation = versionInformation;
+            return myself;
+        }
+
+        public T extraImports(SortedSet<Type> extraImportedTypes) {
+            this.extraImportedTypes = extraImportedTypes;
+            return myself;
+        }
+
+        public T methods(List<MappingMethod> methods) {
+            this.methods = methods;
+            return myself;
+        }
+
+    }
 
     private final String packageName;
     private final String name;
