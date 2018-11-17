@@ -486,6 +486,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .nullValuePropertyMappingStrategy( mapping.getNullValuePropertyMappingStrategy() )
                         .build();
                     handledTargets.add( propertyName );
+                    unprocessedSourceProperties.remove( mapping.getSourceName() );
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
                 }
                 else {
