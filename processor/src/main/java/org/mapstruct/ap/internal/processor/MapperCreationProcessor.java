@@ -162,7 +162,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
-            .mappingMethods( mappingMethods )
+            .methods( mappingMethods )
             .fields( fields )
             .constructorFragments(  constructorFragments )
             .options( options )
