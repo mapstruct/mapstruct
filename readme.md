@@ -7,6 +7,8 @@
 [![Build Status](https://img.shields.io/travis/mapstruct/mapstruct.svg)](https://travis-ci.org/mapstruct/mapstruct)
 [![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct)
 [![Gitter](https://img.shields.io/gitter/room/mapstruct/mapstruct.svg)](https://gitter.im/mapstruct/mapstruct-users)
+[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/context:java)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/alerts)
 
 * [What is MapStruct?](#what-is-mapstruct)
 * [Requirements](#requirements)
