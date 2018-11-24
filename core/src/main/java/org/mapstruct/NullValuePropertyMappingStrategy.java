@@ -16,6 +16,7 @@ package org.mapstruct;
  * {@code @}{@link MappingTarget}).
  *
  * @author Sjaak Derksen
+ * @since 1.3
  */
 public enum NullValuePropertyMappingStrategy {
 

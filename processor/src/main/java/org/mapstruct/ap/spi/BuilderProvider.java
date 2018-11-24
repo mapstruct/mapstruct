@@ -11,6 +11,8 @@ import javax.lang.model.type.TypeMirror;
  * A service provider interface that is used to detect types that require a builder for mapping.  This interface could
  * support automatic detection of builders for projects like Lombok, Immutables, AutoValue, etc.
  * @author Filip Hrisafov
+ *
+ * @since 1.3
  */
 public interface BuilderProvider {
 

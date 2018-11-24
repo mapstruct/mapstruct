@@ -264,6 +264,8 @@ public @interface Mapping {
      *
      * Can be overridden by the one on {@link MapperConfig}, {@link Mapper} or {@link BeanMapping}.
      *
+     * @since 1.3
+     *
      * @return strategy how to do null checking
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
@@ -275,6 +277,8 @@ public @interface Mapping {
      * {@link Mapper#nullValuePropertyMappingStrategy()} will be applied.
      *
      * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.3
      *
      * @return The strategy to be applied when {@code null} is passed as source property value or the source property
      * is not present.

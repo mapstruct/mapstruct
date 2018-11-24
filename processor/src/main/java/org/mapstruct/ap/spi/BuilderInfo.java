@@ -12,6 +12,8 @@ import javax.lang.model.element.ExecutableElement;
  * Holder for the builder information.
  *
  * @author Filip Hrisafov
+ *
+ * @since 1.3
  */
 public class BuilderInfo {
 

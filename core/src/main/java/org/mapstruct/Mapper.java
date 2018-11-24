@@ -153,6 +153,8 @@ public @interface Mapper {
      * configured, the strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()} will be applied,
      * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
      *
+     * @since 1.3
+     *
      * @return The strategy to be applied when {@code null} is passed as source property value or the source property
      * is not present.
      */

@@ -19,6 +19,8 @@ public interface AccessorNamingStrategy {
      * Initializes the accessor naming strategy with the MapStruct processing environment.
      *
      * @param processingEnvironment environment for facilities
+     *
+     * @since 1.3
      */
     default void init(MapStructProcessingEnvironment processingEnvironment) {
 

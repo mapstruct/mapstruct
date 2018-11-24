@@ -15,6 +15,8 @@ import javax.lang.model.util.Types;
  *
  * @author Filip Hrisafov
  * @see javax.annotation.processing.ProcessingEnvironment
+ *
+ * @since 1.3
  */
 public interface MapStructProcessingEnvironment {
 
