@@ -18,7 +18,7 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
 
-import static org.mapstruct.ap.internal.util.Executables.isPublic;
+import static org.mapstruct.ap.internal.util.Executables.isPublicNotStatic;
 
 /**
  * Utils for working with the {@link AccessorNamingStrategy}.
@@ -35,7 +35,7 @@ public final class AccessorNamingUtils {
 
     public boolean isGetterMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
-        return executable != null && isPublic( method ) &&
+        return executable != null && isPublicNotStatic( method ) &&
             executable.getParameters().isEmpty() &&
             accessorNamingStrategy.getMethodType( executable ) == MethodType.GETTER;
     }
@@ -46,7 +46,7 @@ public final class AccessorNamingUtils {
         }
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isPublicNotStatic( method )
             && executable.getParameters().isEmpty()
             && ( executable.getReturnType().getKind() == TypeKind.BOOLEAN ||
             "java.lang.Boolean".equals( getQualifiedName( executable.getReturnType() ) ) )
@@ -56,7 +56,7 @@ public final class AccessorNamingUtils {
     public boolean isSetterMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isPublicNotStatic( method )
             && executable.getParameters().size() == 1
             && accessorNamingStrategy.getMethodType( executable ) == MethodType.SETTER;
     }
@@ -64,7 +64,7 @@ public final class AccessorNamingUtils {
     public boolean isAdderMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isPublicNotStatic( method )
             && executable.getParameters().size() == 1
             && accessorNamingStrategy.getMethodType( executable ) == MethodType.ADDER;
     }
