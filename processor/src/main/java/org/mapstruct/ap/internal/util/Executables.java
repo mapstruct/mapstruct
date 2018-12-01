@@ -67,6 +67,10 @@ public class Executables {
         return executable == null && isPublic( accessor ) && isNotStatic( accessor );
     }
 
+    static boolean isPublicNotStatic(Accessor accessor) {
+        return isPublic( accessor ) && isNotStatic( accessor );
+    }
+
     static boolean isPublic(Accessor method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
