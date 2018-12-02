@@ -5,10 +5,12 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.ZonedDateTime;
 
 /**
@@ -35,6 +37,12 @@ public class Source {
     private LocalDate forSqlDateConversionWithLocalDate;
 
     private Instant forDateConversionWithInstant;
+
+    private Instant forInstantConversionWithString;
+
+    private Period forPeriodConversionWithString;
+
+    private Duration forDurationConversionWithString;
 
     public ZonedDateTime getZonedDateTime() {
         return zonedDateTime;
@@ -114,5 +122,29 @@ public class Source {
 
     public void setForDateConversionWithInstant(Instant forDateConversionWithInstant) {
         this.forDateConversionWithInstant = forDateConversionWithInstant;
+    }
+
+    public Instant getForInstantConversionWithString() {
+        return forInstantConversionWithString;
+    }
+
+    public void setForInstantConversionWithString(Instant forInstantConversionWithString) {
+        this.forInstantConversionWithString = forInstantConversionWithString;
+    }
+
+    public Period getForPeriodConversionWithString() {
+        return forPeriodConversionWithString;
+    }
+
+    public void setForPeriodConversionWithString(Period forPeriodConversionWithString) {
+        this.forPeriodConversionWithString = forPeriodConversionWithString;
+    }
+
+    public Duration getForDurationConversionWithString() {
+        return forDurationConversionWithString;
+    }
+
+    public void setForDurationConversionWithString(Duration forDurationConversionWithString) {
+        this.forDurationConversionWithString = forDurationConversionWithString;
     }
 }

@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for conversions to/from Java 8 date and time types.
@@ -99,7 +101,7 @@ public class Java8TimeConversionTest {
         Target target = new Target();
         target.setZonedDateTime( dateTimeAsString );
         ZonedDateTime sourceDateTime =
-                        ZonedDateTime.of( java.time.LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
+            ZonedDateTime.of( java.time.LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceDateTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -112,7 +114,7 @@ public class Java8TimeConversionTest {
         Target target = new Target();
         target.setLocalDateTime( dateTimeAsString );
         LocalDateTime sourceDateTime =
-                        LocalDateTime.of( 2014, 1, 1, 0, 0, 0 );
+            LocalDateTime.of( 2014, 1, 1, 0, 0, 0 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalDateTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -125,7 +127,7 @@ public class Java8TimeConversionTest {
         Target target = new Target();
         target.setLocalDate( dateTimeAsString );
         LocalDate sourceDate =
-                        LocalDate.of( 2014, 1, 1 );
+            LocalDate.of( 2014, 1, 1 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalDateMapped( target );
         assertThat( src ).isNotNull();
@@ -138,7 +140,7 @@ public class Java8TimeConversionTest {
         Target target = new Target();
         target.setLocalTime( dateTimeAsString );
         LocalTime sourceTime =
-                        LocalTime.of( 0, 0 );
+            LocalTime.of( 0, 0 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -169,13 +171,14 @@ public class Java8TimeConversionTest {
         Source src = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( src.getZonedDateTime() ).isEqualTo(
-                        ZonedDateTime.of(
-                                        java.time.LocalDateTime.of(
-                                                        2014,
-                                                        1,
-                                                        1,
-                                                        0,
-                                                        0 ), ZoneId.of( "UTC" ) ) );
+            ZonedDateTime.of(
+                java.time.LocalDateTime.of(
+                    2014,
+                    1,
+                    1,
+                    0,
+                    0
+                ), ZoneId.of( "UTC" ) ) );
         assertThat( src.getLocalDateTime() ).isEqualTo( LocalDateTime.of( 2014, 1, 1, 0, 0 ) );
         assertThat( src.getLocalDate() ).isEqualTo( LocalDate.of( 2014, 1, 1 ) );
         assertThat( src.getLocalTime() ).isEqualTo( LocalTime.of( 0, 0 ) );
@@ -186,17 +189,17 @@ public class Java8TimeConversionTest {
         Source source = new Source();
         ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
         source.setForCalendarConversion(
-                        dateTime );
+            dateTime );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getForCalendarConversion() ).isNotNull();
         assertThat( target.getForCalendarConversion().getTimeZone() ).isEqualTo(
-                        TimeZone.getTimeZone(
-                                        "UTC" ) );
+            TimeZone.getTimeZone(
+                "UTC" ) );
         assertThat( target.getForCalendarConversion().get( Calendar.YEAR ) ).isEqualTo( dateTime.getYear() );
         assertThat( target.getForCalendarConversion().get( Calendar.MONTH ) ).isEqualTo(
-                        dateTime.getMonthValue() - 1 );
+            dateTime.getMonthValue() - 1 );
         assertThat( target.getForCalendarConversion().get( Calendar.DATE ) ).isEqualTo( dateTime.getDayOfMonth() );
         assertThat( target.getForCalendarConversion().get( Calendar.MINUTE ) ).isEqualTo( dateTime.getMinute() );
         assertThat( target.getForCalendarConversion().get( Calendar.HOUR ) ).isEqualTo( dateTime.getHour() );
@@ -212,7 +215,7 @@ public class Java8TimeConversionTest {
         Source source = new Source();
         ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
         source.setForDateConversionWithZonedDateTime(
-                        dateTime );
+            dateTime );
         Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
 
         assertThat( target.getForDateConversionWithZonedDateTime() ).isNotNull();
@@ -318,5 +321,125 @@ public class Java8TimeConversionTest {
         source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source.getForSqlDateConversionWithLocalDate() ).isEqualTo( localDate );
+    }
+
+    @Test
+    public void testInstantToStringMapping() {
+        Source source = new Source();
+        source.setForInstantConversionWithString( Instant.ofEpochSecond( 42L ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String periodString = target.getForInstantConversionWithString();
+        assertThat( periodString ).isEqualTo( "1970-01-01T00:00:42Z" );
+    }
+
+    @Test
+    public void testInstantToStringNullMapping() {
+        Source source = new Source();
+        source.setForInstantConversionWithString( null );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String periodString = target.getForInstantConversionWithString();
+        assertThat( periodString ).isNull();
+    }
+
+    @Test
+    public void testStringToInstantMapping() {
+        Target target = new Target();
+        target.setForInstantConversionWithString( "1970-01-01T00:00:00.000Z" );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Instant instant = source.getForInstantConversionWithString();
+        assertThat( instant ).isEqualTo( Instant.EPOCH );
+    }
+
+    @Test
+    public void testStringToInstantNullMapping() {
+        Target target = new Target();
+        target.setForInstantConversionWithString( null );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Instant instant = source.getForInstantConversionWithString();
+        assertThat( instant ).isNull();
+    }
+
+    @Test
+    public void testPeriodToStringMapping() {
+        Source source = new Source();
+        source.setForPeriodConversionWithString( Period.ofDays( 42 ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String periodString = target.getForPeriodConversionWithString();
+        assertThat( periodString ).isEqualTo( "P42D" );
+    }
+
+    @Test
+    public void testPeriodToStringNullMapping() {
+        Source source = new Source();
+        source.setForPeriodConversionWithString( null );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String periodString = target.getForPeriodConversionWithString();
+        assertThat( periodString ).isNull();
+    }
+
+    @Test
+    public void testStringToPeriodMapping() {
+        Target target = new Target();
+        target.setForPeriodConversionWithString( "P1Y2M3D" );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Period period = source.getForPeriodConversionWithString();
+        assertThat( period ).isEqualTo( Period.of( 1, 2, 3 ) );
+    }
+
+    @Test
+    public void testStringToPeriodNullMapping() {
+        Target target = new Target();
+        target.setForPeriodConversionWithString( null );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Period period = source.getForPeriodConversionWithString();
+        assertThat( period ).isNull();
+    }
+
+    @Test
+    public void testDurationToStringMapping() {
+        Source source = new Source();
+        source.setForDurationConversionWithString( Duration.ofMinutes( 42L ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String durationString = target.getForDurationConversionWithString();
+        assertThat( durationString ).isEqualTo( "PT42M" );
+    }
+
+    @Test
+    public void testDurationToStringNullMapping() {
+        Source source = new Source();
+        source.setForDurationConversionWithString( null );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        String durationString = target.getForDurationConversionWithString();
+        assertThat( durationString ).isNull();
+    }
+
+    @Test
+    public void testStringToDurationMapping() {
+        Target target = new Target();
+        target.setForDurationConversionWithString( "PT20.345S" );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Duration duration = source.getForDurationConversionWithString();
+        assertThat( duration ).isEqualTo( Duration.ofSeconds( 20L, 345000000L ) );
+    }
+
+    @Test
+    public void testStringToDurationNullMapping() {
+        Target target = new Target();
+        target.setForDurationConversionWithString( null );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        Duration duration = source.getForDurationConversionWithString();
+        assertThat( duration ).isNull();
     }
 }
