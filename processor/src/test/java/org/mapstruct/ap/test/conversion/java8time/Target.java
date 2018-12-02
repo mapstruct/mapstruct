@@ -33,6 +33,12 @@ public class Target {
 
     private Date forDateConversionWithInstant;
 
+    private String forInstantConversionWithString;
+
+    private String forPeriodConversionWithString;
+
+    private String forDurationConversionWithString;
+
     public String getZonedDateTime() {
         return zonedDateTime;
     }
@@ -111,5 +117,29 @@ public class Target {
 
     public void setForDateConversionWithInstant(Date forDateConversionWithInstant) {
         this.forDateConversionWithInstant = forDateConversionWithInstant;
+    }
+
+    public String getForInstantConversionWithString() {
+        return forInstantConversionWithString;
+    }
+
+    public void setForInstantConversionWithString(String forInstantConversionWithString) {
+        this.forInstantConversionWithString = forInstantConversionWithString;
+    }
+
+    public String getForPeriodConversionWithString() {
+        return forPeriodConversionWithString;
+    }
+
+    public void setForPeriodConversionWithString(String forPeriodConversionWithString) {
+        this.forPeriodConversionWithString = forPeriodConversionWithString;
+    }
+
+    public String getForDurationConversionWithString() {
+        return forDurationConversionWithString;
+    }
+
+    public void setForDurationConversionWithString(String forDurationConversionWithString) {
+        this.forDurationConversionWithString = forDurationConversionWithString;
     }
 }

@@ -9,10 +9,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Currency;
@@ -171,8 +173,8 @@ public class Conversions {
         registerToStringConversion( Boolean.class );
         register( char.class, String.class, new CharToStringConversion() );
         register( Character.class, String.class, new CharWrapperToStringConversion() );
-        register( BigInteger.class, String.class, new BigIntegerToStringConversion( ) );
-        register( BigDecimal.class, String.class, new BigDecimalToStringConversion( ) );
+        register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
+        register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
 
         registerJodaConversions();
 
@@ -217,6 +219,9 @@ public class Conversions {
         register( LocalDate.class, String.class, new JavaLocalDateToStringConversion() );
         register( LocalDateTime.class, String.class, new JavaLocalDateTimeToStringConversion() );
         register( LocalTime.class, String.class, new JavaLocalTimeToStringConversion() );
+        register( Instant.class, String.class, new JavaInstantToStringConversion() );
+        register( Period.class, String.class, new JavaPeriodToStringConversion() );
+        register( Duration.class, String.class, new JavaDurationToStringConversion() );
 
         // Java 8 to Date
         register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
