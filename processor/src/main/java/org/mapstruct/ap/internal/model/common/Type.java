@@ -23,6 +23,7 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -722,11 +723,20 @@ public class Type extends ModelElement implements Comparable<Type> {
                 continue;
             }
             VariableElement arg = executable.getParameters().get( 0 );
-            if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
+            if ( typeUtils.isSameType( boxed( arg.asType() ), boxed( typeArg ) ) ) {
                 candidateList.add( adder );
             }
         }
         return candidateList;
+    }
+
+    private TypeMirror boxed(TypeMirror possiblePrimitive) {
+        if ( possiblePrimitive.getKind().isPrimitive() ) {
+            return typeUtils.boxedClass( (PrimitiveType) possiblePrimitive ).asType();
+        }
+        else {
+            return possiblePrimitive;
+        }
     }
 
     /**
