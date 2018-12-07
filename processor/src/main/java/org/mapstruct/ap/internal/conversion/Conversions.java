@@ -219,9 +219,9 @@ public class Conversions {
         register( LocalDate.class, String.class, new JavaLocalDateToStringConversion() );
         register( LocalDateTime.class, String.class, new JavaLocalDateTimeToStringConversion() );
         register( LocalTime.class, String.class, new JavaLocalTimeToStringConversion() );
-        register( Instant.class, String.class, new JavaInstantToStringConversion() );
-        register( Period.class, String.class, new JavaPeriodToStringConversion() );
-        register( Duration.class, String.class, new JavaDurationToStringConversion() );
+        register( Instant.class, String.class, new StaticParseToStringConversion() );
+        register( Period.class, String.class, new StaticParseToStringConversion() );
+        register( Duration.class, String.class, new StaticParseToStringConversion() );
 
         // Java 8 to Date
         register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
