@@ -12,7 +12,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
 /**
- * Base class for a conversion between a target type <tt>T</tt> and {@link String},
+ * Handles conversion between a target type <tt>T</tt> and {@link String},
  * where {@code T#parse(String)} and {@code T#toString} are inverse operations.
  * The {@link ConversionContext#getTargetType()} is used as the from target type <tt>T</tt>.
  */
