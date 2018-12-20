@@ -19,4 +19,9 @@ public interface AMapper {
     APrime toAPrime(A a, @MappingTarget APrime mappingTarget);
 
     CPrime toCPrime(C c, @MappingTarget CPrime mappingTarget);
+
+    @Mapping(source = "b.c", target = "cPrime")
+    APrime toAPrime(A a);
+
+    CPrime toCPrime(C c);
 }
