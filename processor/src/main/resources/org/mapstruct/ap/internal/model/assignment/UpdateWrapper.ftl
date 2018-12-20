@@ -9,7 +9,8 @@
 <#import '../macro/CommonMacros.ftl' as lib >
 <@lib.handleExceptions>
   <#if includeSourceNullCheck>
-    if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else>${sourceReference} != null</#if> ) {
+    <@lib.sourceLocalVarAssignment/>
+    if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null</#if> ) {
       <@assignToExistingTarget/>
       <@lib.handleAssignment/>;
     }
