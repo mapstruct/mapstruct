@@ -53,14 +53,7 @@ public class Mappers {
      */
     public static <T> T getMapper(Class<T> clazz) {
         try {
-            List<ClassLoader> classLoaders = new ArrayList<>( 3 );
-            classLoaders.add( clazz.getClassLoader() );
-
-            if ( Thread.currentThread().getContextClassLoader() != null ) {
-                classLoaders.add( Thread.currentThread().getContextClassLoader() );
-            }
-
-            classLoaders.add( Mappers.class.getClassLoader() );
+            List<ClassLoader> classLoaders = collectClassLoaders( clazz.getClassLoader() );
 
             return getMapper( clazz, classLoaders );
         }
@@ -88,23 +81,88 @@ public class Mappers {
             Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
             Constructor<T> constructor = implementation.getDeclaredConstructor();
             constructor.setAccessible( true );
+
             return constructor.newInstance();
         }
         catch (ClassNotFoundException e) {
-            ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
-
-            if ( loader != null ) {
-                for ( T mapper : loader ) {
-                    if ( mapper != null ) {
-                        return mapper;
-                    }
-                }
-            }
-
-            return null;
+            return getMapperFromServiceLoader( clazz, classLoader );
         }
         catch ( InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException( e );
         }
+    }
+
+    /**
+     * Returns the class of the implementation for the given mapper type.
+     *
+     * @param clazz The type of the mapper to return.
+     * @param <T> The type of the mapper to create.
+     *
+     * @return A class of the implementation for the given mapper type.
+     *
+     * @since 1.3
+     */
+    public static <T> Class<? extends T> getMapperClass(Class<T> clazz) {
+        try {
+            List<ClassLoader> classLoaders = collectClassLoaders( clazz.getClassLoader() );
+
+            return getMapperClass( clazz, classLoaders );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private static <T> Class<? extends T> getMapperClass(Class<T> mapperType, Iterable<ClassLoader> classLoaders)
+        throws ClassNotFoundException {
+
+        for ( ClassLoader classLoader : classLoaders ) {
+            Class<? extends T> mapperClass = doGetMapperClass( mapperType, classLoader );
+            if ( mapperClass != null ) {
+                return mapperClass;
+            }
+        }
+
+        throw new ClassNotFoundException( "Cannot find implementation for " + mapperType.getName() );
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<? extends T> doGetMapperClass(Class<T> clazz, ClassLoader classLoader) {
+        try {
+            return (Class<? extends T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
+        }
+        catch ( ClassNotFoundException e ) {
+            T mapper = getMapperFromServiceLoader( clazz, classLoader );
+            if ( mapper != null ) {
+                return (Class<? extends T>) mapper.getClass();
+            }
+
+            return null;
+        }
+    }
+
+    private static <T> T getMapperFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
+        ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+
+        for ( T mapper : loader ) {
+            if ( mapper != null ) {
+                return mapper;
+            }
+        }
+
+        return null;
+    }
+
+    private static List<ClassLoader> collectClassLoaders(ClassLoader classLoader) {
+        List<ClassLoader> classLoaders = new ArrayList<>( 3 );
+        classLoaders.add( classLoader );
+
+        if ( Thread.currentThread().getContextClassLoader() != null ) {
+            classLoaders.add( Thread.currentThread().getContextClassLoader() );
+        }
+
+        classLoaders.add( Mappers.class.getClassLoader() );
+
+        return classLoaders;
     }
 }
