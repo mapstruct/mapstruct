@@ -12,9 +12,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
 /**
- * Handles conversion between a target type <tt>T</tt> and {@link String},
+ * Handles conversion between a target type {@code T} and {@link String},
  * where {@code T#parse(String)} and {@code T#toString} are inverse operations.
- * The {@link ConversionContext#getTargetType()} is used as the from target type <tt>T</tt>.
+ * The {@link ConversionContext#getTargetType()} is used as the from target type {@code T}.
  */
 public class StaticParseToStringConversion extends SimpleConversion {
 
