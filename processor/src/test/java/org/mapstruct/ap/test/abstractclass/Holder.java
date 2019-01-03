@@ -6,9 +6,10 @@
 package org.mapstruct.ap.test.abstractclass;
 
 /**
- * @author Andreas Gudian
+ * @author Gunnar Morling
  */
-public interface ReferencedMapperInterface {
+public class Holder<T> {
 
-    int holderToInt(Holder<String> holder);
+    public Holder(String string) {
+   }
 }

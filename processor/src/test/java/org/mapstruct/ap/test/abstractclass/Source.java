@@ -7,8 +7,6 @@ package org.mapstruct.ap.test.abstractclass;
 
 import java.util.Calendar;
 
-import javax.xml.ws.Holder;
-
 public class Source extends AbstractDto implements HasId, AlsoHasId {
 
     //CHECKSTYLE:OFF

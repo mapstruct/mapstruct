@@ -28,7 +28,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Identifiable.class,
     HasId.class,
     AlsoHasId.class,
-    Measurable.class
+    Measurable.class,
+    Holder.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractClassTest {

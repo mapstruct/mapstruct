@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -42,7 +43,8 @@ public class IterableWithBoundedElementTypeTest {
         source.setValues( Arrays.asList( "42", "47" ) );
         IterableContainer result = MapperWithForgedIterableMapping.INSTANCE.toContainerWithIterable( source );
 
-        assertThat( result.getValues() ).contains( Integer.valueOf( 42 ), Integer.valueOf( 47 ) );
+        ( (IterableAssert<Integer>) assertThat( result.getValues() ) )
+                .contains( Integer.valueOf( 42 ), Integer.valueOf( 47 ) );
     }
 
     @Test
@@ -52,6 +54,7 @@ public class IterableWithBoundedElementTypeTest {
         source.setValues( Arrays.asList( "42", "47" ) );
         IterableContainer result = MapperWithCustomListMapping.INSTANCE.toContainerWithIterable( source );
 
-        assertThat( result.getValues() ).contains( Integer.valueOf( 66 ), Integer.valueOf( 71 ) );
+        ( (IterableAssert<Integer>) assertThat( result.getValues() ) )
+                .contains( Integer.valueOf( 66 ), Integer.valueOf( 71 ) );
     }
 }
