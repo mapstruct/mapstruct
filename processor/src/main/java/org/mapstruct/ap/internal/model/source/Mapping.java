@@ -74,7 +74,15 @@ public class Mapping {
                 List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
                 if ( mappingsOfProperty == null ) {
                     mappingsOfProperty = new ArrayList<>();
-                    mappings.put( mappingPrism.target(), mappingsOfProperty );
+
+                    String targetValue = mappingPrism.target();
+                    if ( ".".equals( mappingPrism.target() ) ) {
+                        targetValue = mapping.targetName; // '.' is used as replacement for property in 'this object'
+                    }
+                    if ( "*".equals( targetValue ) ) {
+                        continue; // skipping as there is no such actual field to map
+                    }
+                    mappings.put( targetValue, mappingsOfProperty );
                 }
 
                 mappingsOfProperty.add( mapping );
@@ -88,10 +96,51 @@ public class Mapping {
         return mappings;
     }
 
+    public static Mapping artificialMapping(String source, String target) {
+        String constant = null;
+        String expression = null;
+        String defaultExpression = null;
+        String dateFormat = null;
+        String numberFormat = null;
+        String defaultValue = null;
+
+        FormattingParameters formattingParam = new FormattingParameters(
+                dateFormat,
+                numberFormat,
+                null,
+                null,
+                null
+        );
+
+        SelectionParameters selectionParams = null;
+
+        AnnotationValue sourceAnnotation = null;
+        AnnotationValue targetAnnotation = null;
+
+        return new Mapping(
+                source,
+                constant,
+                expression,
+                defaultExpression,
+                target,
+                defaultValue,
+                false,
+                null,
+                sourceAnnotation,
+                targetAnnotation,
+                formattingParam,
+                selectionParams,
+                null,
+                Collections.<String>emptyList(),
+                null,
+                null
+        );
+    }
+
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
         FormattingMessager messager, Types typeUtils) {
 
-        if (!isConsistent( mappingPrism, element, messager  ) ) {
+        if ( !isConsistent( mappingPrism, element, messager  ) ) {
             return null;
         }
 
@@ -297,6 +346,14 @@ public class Mapping {
         return true;
     }
 
+    private static String generateTargetName( String targetName, String sourceName ) {
+        if ( ".".equals( targetName ) ) {
+            String[] sourceNameParts = sourceName.split( "\\." );
+            return sourceNameParts[ sourceNameParts.length - 1 ];
+        }
+        return targetName;
+    }
+
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping( String sourceName, String constant, String javaExpression, String defaultJavaExpression,
                      String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
@@ -309,7 +366,7 @@ public class Mapping {
         this.constant = constant;
         this.javaExpression = javaExpression;
         this.defaultJavaExpression = defaultJavaExpression;
-        this.targetName = targetName;
+        this.targetName = Mapping.generateTargetName( targetName, sourceName );
         this.defaultValue = defaultValue;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
