@@ -11,7 +11,7 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.3.0.entur-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
