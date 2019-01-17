@@ -638,7 +638,7 @@
                                     <version>[1.8,)</version>
                                 </requireJavaVersion>
                                 <DependencyConvergence />
-                                <!--<requirePluginVersions />-->
+                                <requirePluginVersions />
                                 <requireMavenVersion>
                                     <version>[3.0.3,)</version>
                                 </requireMavenVersion>
