@@ -6,8 +6,10 @@
 package org.mapstruct.ap.test.targetthis;
 
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -22,12 +24,19 @@ public interface CustomerEntityMapper1 {
     @Mapping(target = ".", source = "entity.*")
     CustomerEntity map(CustomerDTO customer);
 
+    @InheritInverseConfiguration(name = "map")
+    // @Mapping(target = "entity", source = ".")
+    CustomerDTO inverseMap(CustomerEntity customer);
+
+    @Mapping(target = "entity", source = ".")
+    void update(CustomerEntity customer, @MappingTarget CustomerDTO dto);
+
+    @Mapping(target = ".", source = "entity.*")
+    void update(CustomerDTO dto, @MappingTarget CustomerEntity customer);
+
     @Mapping(target = ".", source = "customer.entity.*")
     @Mapping(target = "name", source = "customer.name")
     CustomerEntity map(OrderDTO order);
-
-    @Mapping(target = "entity", source = ".")
-    CustomerDTO map(CustomerEntity customer);
 
     @Mapping(target = "entity", source = ".")
     OrderDTO map( OrderEntity order );

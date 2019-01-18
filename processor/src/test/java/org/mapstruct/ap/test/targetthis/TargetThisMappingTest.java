@@ -97,7 +97,7 @@ public class TargetThisMappingTest {
         ce.setId( "entity id" );
         ce.setStatus( 1 );
 
-        CustomerDTO c = CustomerEntityMapper1.INSTANCE.map( ce );
+        CustomerDTO c = CustomerEntityMapper1.INSTANCE.inverseMap( ce );
 
         assertThat( c ).isNotNull();
         assertThat( ce.getName() ).isEqualTo( c.getName() );
@@ -139,5 +139,66 @@ public class TargetThisMappingTest {
         assertThat( o.getEntity().getId() ).isEqualTo( "order id" );
         assertThat( o.getCustomer().getName() ).isEqualTo( ce.getName() );
         assertThat( o.getCustomer().getEntity().getId() ).isEqualTo( ce.getId() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper1.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testUpdateDto() {
+        CustomerEntity ce = new CustomerEntity();
+        ce.setName( "customer entity name" );
+        ce.setId( "entity id" );
+        ce.setStatus( 1 );
+
+        CustomerDTO c = new CustomerDTO();
+
+        CustomerEntityMapper1.INSTANCE.update( ce, c );
+
+        assertThat( c ).isNotNull();
+        assertThat( ce.getName() ).isEqualTo( c.getName() );
+        assertThat( ce.getId() ).isEqualTo( c.getEntity().getId() );
+        assertThat( ce.getStatus() ).isEqualTo( c.getEntity().getStatus() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper1.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testUpdateEntity() {
+        CustomerDTO dto = new CustomerDTO();
+        dto.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        dto.setEntity( e );
+
+        CustomerEntity c = new CustomerEntity();
+
+        CustomerEntityMapper1.INSTANCE.update( dto, c );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( dto.getName() );
+        assertThat( c.getId() ).isEqualTo( dto.getEntity().getId() );
+        assertThat( c.getStatus() ).isEqualTo( dto.getEntity().getStatus() );
     }
 }
