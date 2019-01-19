@@ -246,7 +246,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             MethodReference finalizeMethod = getFinalizerMethod(
-                resultType == null ? method.getReturnType() : resultType );
+                resultType == null ? method.getResultType() : resultType );
 
             return new BeanMappingMethod(
                 method,
@@ -262,13 +262,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private MethodReference getFinalizerMethod(Type resultType) {
-            if ( method.getReturnType().isVoid() ||
-                resultType.getEffectiveType().isAssignableTo( resultType ) ) {
+            Type returnType = method.getReturnType();
+            if ( returnType.isVoid()) {
                 return null;
             }
-            BuilderType builderType = resultType.getBuilderType();
+            Type mappingType = method.isUpdateMethod() ? resultType : resultType.getEffectiveType();
+            if ( mappingType.isAssignableTo( returnType ) ) {
+                // If the mapping type can be assigned to the return type then we
+                // don't need a finalizer method
+                return null;
+            }
+            // If the mapping type is not assignable, then the mapping type
+            // is the builder. Get the BuilderType from the returnType
+            BuilderType builderType = returnType.getBuilderType();
             if ( builderType == null ) {
-                // If the mapping type is assignable to the result type this should never happen
                 return null;
             }
 
