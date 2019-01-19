@@ -7,6 +7,8 @@ package org.mapstruct.ap.spi;
 
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.util.Experimental;
+
 /**
  * Accesor naming strategy for Immutables.
  * The generated Immutables also have a from that works as a copy. Our default strategy considers this method
@@ -14,6 +16,7 @@ import javax.lang.model.element.ExecutableElement;
  *
  * @author Filip Hrisafov
  */
+@Experimental("The Immutables accessor naming strategy might change in a subsequent release")
 public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
 
     @Override

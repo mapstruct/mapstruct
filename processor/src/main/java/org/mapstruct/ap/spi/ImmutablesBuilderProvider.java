@@ -13,6 +13,8 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 
+import org.mapstruct.util.Experimental;
+
 /**
  * Builder provider for Immutables. A custom provider is needed because Immutables creates an implementation of an
  * interface and that implementation has the builder. This implementation would try to find the type created by
@@ -21,6 +23,7 @@ import javax.lang.model.element.TypeElement;
  *
  * @author Filip Hrisafov
  */
+@Experimental("The Immutables builder provider might change in a subsequent release")
 public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
 
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
