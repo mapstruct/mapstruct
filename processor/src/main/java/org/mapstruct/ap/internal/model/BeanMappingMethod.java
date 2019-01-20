@@ -27,7 +27,6 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
@@ -245,8 +244,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
             }
 
-            MethodReference finalizeMethod = getFinalizerMethod(
-                resultType == null ? method.getReturnType() : resultType );
+            MethodReference finalizeMethod = null;
+
+            if ( shouldCallFinalizerMethod( resultType == null ? method.getResultType() : resultType ) ) {
+                finalizeMethod = getFinalizerMethod();
+            }
 
             return new BeanMappingMethod(
                 method,
@@ -261,18 +263,27 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
         }
 
-        private MethodReference getFinalizerMethod(Type resultType) {
-            if ( method.getReturnType().isVoid() ||
-                resultType.getEffectiveType().isAssignableTo( resultType ) ) {
-                return null;
+        private boolean shouldCallFinalizerMethod(Type resultType) {
+            Type returnType = method.getReturnType();
+            if ( returnType.isVoid() ) {
+                return false;
             }
-            BuilderType builderType = resultType.getBuilderType();
-            if ( builderType == null ) {
-                // If the mapping type is assignable to the result type this should never happen
-                return null;
+            Type mappingType = method.isUpdateMethod() ? resultType : resultType.getEffectiveType();
+            if ( mappingType.isAssignableTo( returnType ) ) {
+                // If the mapping type can be assigned to the return type then we
+                // don't need a finalizer method
+                return false;
             }
 
-            return BuilderFinisherMethodResolver.getBuilderFinisherMethod( method, builderType, ctx );
+            return returnType.getBuilderType() != null;
+        }
+
+        private MethodReference getFinalizerMethod() {
+            return BuilderFinisherMethodResolver.getBuilderFinisherMethod(
+                method,
+                method.getReturnType().getBuilderType(),
+                ctx
+            );
         }
 
         /**
