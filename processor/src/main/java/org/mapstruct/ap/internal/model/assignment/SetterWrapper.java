@@ -26,13 +26,12 @@ public class SetterWrapper extends AssignmentWrapper {
 
     public SetterWrapper(Assignment rhs,
                          List<Type> thrownTypesToExclude,
-                         NullValueCheckStrategyPrism nvms,
                          boolean fieldAssignment,
-                         Type targetType) {
+                         boolean includeSourceNullCheck ) {
 
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        this.includeSourceNullCheck = includeSourceNullCheck( rhs, nvms, targetType );
+        this.includeSourceNullCheck = includeSourceNullCheck;
     }
 
     public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment  ) {
@@ -59,26 +58,24 @@ public class SetterWrapper extends AssignmentWrapper {
         return includeSourceNullCheck;
     }
 
-   /**
-    * Wraps the assignment in a target setter. include a null check when
-    *
-    * - Not if source is the parameter iso property, because the null check is than handled by the bean mapping
-    * - Not when source is primitive, you can't null check a primitive
-    * - The source property is fed to a conversion somehow before its assigned to the target
-    * - The user decided to ALLWAYS include a null check
-    * - When there's a source local variable name defined (e.g. nested source properties)
-    * - TODO: The last one I forgot..?
-    *
-    * @param rhs the source righthand side
-    * @param nvms null value check strategy
-    * @param targetType the target type
-    *
-    * @return include a null check
-    */
-    private boolean includeSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvms, Type targetType) {
+    /**
+     * Wraps the assignment in a target setter. include a null check when
+     *
+     * - Not if source is the parameter iso property, because the null check is than handled by the bean mapping
+     * - Not when source is primitive, you can't null check a primitive
+     * - The source property is fed to a conversion somehow before its assigned to the target
+     * - The user decided to ALLWAYS include a null check
+     *
+     * @param rhs the source righthand side
+     * @param nvcs null value check strategy
+     * @param targetType the target type
+     *
+     * @return include a null check
+     */
+    public static boolean doSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvcs, Type targetType) {
         return !rhs.isSourceReferenceParameter()
             && !rhs.getSourceType().isPrimitive()
-            && (ALWAYS == nvms || rhs.getType().isConverted() || rhs.getSourceLocalVarName() != null
+            && (ALWAYS == nvcs || rhs.getType().isConverted()
             || (rhs.getType().isDirect() && targetType.isPrimitive()));
     }
 }

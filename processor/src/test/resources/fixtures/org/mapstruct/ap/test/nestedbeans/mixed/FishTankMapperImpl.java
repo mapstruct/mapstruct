@@ -42,10 +42,7 @@ public class FishTankMapperImpl implements FishTankMapper {
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
         fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
-        Ornament ornament = sourceInteriorOrnament( source );
-        if ( ornament != null ) {
-            fishTankDto.setOrnament( ornamentToOrnamentDto( ornament ) );
-        }
+        fishTankDto.setOrnament( ornamentToOrnamentDto( sourceInteriorOrnament( source ) ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
         fishTankDto.setName( source.getName() );
 
@@ -63,10 +60,7 @@ public class FishTankMapperImpl implements FishTankMapper {
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
         fishTankDto.setMaterial( fishTankToMaterialDto1( source ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
-        Ornament ornament = sourceInteriorOrnament( source );
-        if ( ornament != null ) {
-            fishTankDto.setOrnament( ornamentToOrnamentDto( ornament ) );
-        }
+        fishTankDto.setOrnament( ornamentToOrnamentDto( sourceInteriorOrnament( source ) ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
         fishTankDto.setName( source.getName() );
 
@@ -84,10 +78,7 @@ public class FishTankMapperImpl implements FishTankMapper {
         fishTank.setFish( fishDtoToFish( source.getFish() ) );
         fishTank.setQuality( waterQualityDtoToWaterQuality( source.getQuality() ) );
         fishTank.setInterior( fishTankDtoToInterior( source ) );
-        MaterialTypeDto materialType = sourceMaterialMaterialType( source );
-        if ( materialType != null ) {
-            fishTank.setMaterial( materialTypeDtoToMaterialType( materialType ) );
-        }
+        fishTank.setMaterial( materialTypeDtoToMaterialType( sourceMaterialMaterialType( source ) ) );
         fishTank.setPlant( waterPlantDtoToWaterPlant( source.getPlant() ) );
         fishTank.setName( source.getName() );
 
@@ -264,10 +255,7 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         WaterQualityReport waterQualityReport = new WaterQualityReport();
 
-        String name = waterQualityReportDtoOrganisationName( waterQualityReportDto );
-        if ( name != null ) {
-            waterQualityReport.setOrganisationName( name );
-        }
+        waterQualityReport.setOrganisationName( waterQualityReportDtoOrganisationName( waterQualityReportDto ) );
         waterQualityReport.setVerdict( waterQualityReportDto.getVerdict() );
 
         return waterQualityReport;

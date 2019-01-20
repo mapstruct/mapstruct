@@ -33,18 +33,9 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         }
         if ( song != null ) {
             chartEntry.setSongTitle( song.getTitle() );
-            String city = songArtistLabelStudioCity( song );
-            if ( city != null ) {
-                chartEntry.setCity( city );
-            }
-            String name = songArtistLabelStudioName( song );
-            if ( name != null ) {
-                chartEntry.setRecordedAt( name );
-            }
-            String name1 = songArtistName( song );
-            if ( name1 != null ) {
-                chartEntry.setArtistName( name1 );
-            }
+            chartEntry.setCity( songArtistLabelStudioCity( song ) );
+            chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
+            chartEntry.setArtistName( songArtistName( song ) );
         }
         if ( position != null ) {
             chartEntry.setPosition( position );
@@ -62,18 +53,9 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         ChartEntry chartEntry = new ChartEntry();
 
         chartEntry.setSongTitle( song.getTitle() );
-        String city = songArtistLabelStudioCity( song );
-        if ( city != null ) {
-            chartEntry.setCity( city );
-        }
-        String name = songArtistLabelStudioName( song );
-        if ( name != null ) {
-            chartEntry.setRecordedAt( name );
-        }
-        String name1 = songArtistName( song );
-        if ( name1 != null ) {
-            chartEntry.setArtistName( name1 );
-        }
+        chartEntry.setCity( songArtistLabelStudioCity( song ) );
+        chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
+        chartEntry.setArtistName( songArtistName( song ) );
 
         return chartEntry;
     }

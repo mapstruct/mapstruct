@@ -49,7 +49,6 @@ import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
@@ -472,7 +471,13 @@ public class PropertyMapping extends ModelElement {
                 );
             }
             else {
-                   return new SetterWrapper( rhs, method.getThrownTypes(), nvcs, isFieldAssignment(), targetType );
+                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, targetType );
+                if ( !includeSourceNullCheck ) {
+                    // solution for #834 introduced a local var and null check for nested properties always.
+                    // however, a local var is not needed if there's no need to check for null.
+                    rhs.setSourceLocalVarName( null );
+                }
+                return new SetterWrapper( rhs, method.getThrownTypes(), isFieldAssignment(), includeSourceNullCheck );
             }
         }
 
@@ -490,7 +495,7 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
-                result = new SetterWrapper( result, method.getThrownTypes(), ALWAYS, isFieldAssignment(), targetType );
+                result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment(), true );
             }
             return result;
         }
