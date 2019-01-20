@@ -285,10 +285,12 @@ public class PropertyMapping extends ModelElement {
             // null value mapping strategy
             this.nvms = mapperConfiguration.getNullValueMappingStrategy();
 
-            // null value property mapping strategy (determine true value based on hierarchy)
-            NullValuePropertyMappingStrategyPrism nvpmsBean =
-                beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
-            this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
+            // for update methods: determine null value property mapping strategy (determine value based on hierarchy)
+            if ( method.isUpdateMethod() ) {
+                NullValuePropertyMappingStrategyPrism nvpmsBean =
+                    beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
+                this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
+            }
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
