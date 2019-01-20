@@ -32,6 +32,10 @@ public class Target {
 
         private String builderValue;
 
+        public String getBuilderValue() {
+            return builderValue;
+        }
+
         public Builder builderValue(String builderValue) {
             this.builderValue = builderValue;
             return this;

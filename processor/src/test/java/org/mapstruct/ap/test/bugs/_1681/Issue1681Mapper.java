@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.bugs._1681;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
@@ -18,4 +19,7 @@ public interface Issue1681Mapper {
     Issue1681Mapper INSTANCE = Mappers.getMapper( Issue1681Mapper.class );
 
     Target update(@MappingTarget Target target, Source source);
+
+    @Mapping(target = "builderValue", source = "value")
+    Target update(@MappingTarget Target.Builder targetBuilder, Source source);
 }

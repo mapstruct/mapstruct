@@ -33,8 +33,21 @@ public class Issue1681Test {
 
         Target updatedTarget = Issue1681Mapper.INSTANCE.update( target, source );
 
-
         assertThat( updatedTarget ).isSameAs( target );
         assertThat( updatedTarget.getValue() ).isEqualTo( "after" );
+    }
+
+    @Test
+    public void shouldCompileWithBuilder() {
+        Target.Builder targetBuilder = Target.builder();
+        targetBuilder.builderValue( "before" );
+        Source source = new Source();
+        source.setValue( "after" );
+
+        Target updatedTarget = Issue1681Mapper.INSTANCE.update( targetBuilder, source );
+
+        assertThat( updatedTarget ).isNotNull();
+        assertThat( updatedTarget.getValue() ).isEqualTo( "after" );
+        assertThat( targetBuilder.getBuilderValue() ).isEqualTo( "after" );
     }
 }

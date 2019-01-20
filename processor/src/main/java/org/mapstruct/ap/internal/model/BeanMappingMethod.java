@@ -245,8 +245,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
             }
 
-            MethodReference finalizeMethod = getFinalizerMethod(
-                resultType == null ? method.getResultType() : resultType );
+            MethodReference finalizeMethod = null;
+
+            if ( shouldCallFinalizerMethod( resultType == null ? method.getResultType() : resultType ) ) {
+                finalizeMethod = getFinalizerMethod();
+            }
 
             return new BeanMappingMethod(
                 method,
@@ -261,25 +264,27 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
         }
 
-        private MethodReference getFinalizerMethod(Type resultType) {
+        private boolean shouldCallFinalizerMethod(Type resultType) {
             Type returnType = method.getReturnType();
-            if ( returnType.isVoid()) {
-                return null;
+            if ( returnType.isVoid() ) {
+                return false;
             }
             Type mappingType = method.isUpdateMethod() ? resultType : resultType.getEffectiveType();
             if ( mappingType.isAssignableTo( returnType ) ) {
                 // If the mapping type can be assigned to the return type then we
                 // don't need a finalizer method
-                return null;
-            }
-            // If the mapping type is not assignable, then the mapping type
-            // is the builder. Get the BuilderType from the returnType
-            BuilderType builderType = returnType.getBuilderType();
-            if ( builderType == null ) {
-                return null;
+                return false;
             }
 
-            return BuilderFinisherMethodResolver.getBuilderFinisherMethod( method, builderType, ctx );
+            return returnType.getBuilderType() != null;
+        }
+
+        private MethodReference getFinalizerMethod() {
+            return BuilderFinisherMethodResolver.getBuilderFinisherMethod(
+                method,
+                method.getReturnType().getBuilderType(),
+                ctx
+            );
         }
 
         /**
