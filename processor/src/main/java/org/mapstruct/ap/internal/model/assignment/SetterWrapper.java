@@ -16,8 +16,6 @@ import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.IGNORE;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
-
 
 /**
  * Wraps the assignment in a target setter.

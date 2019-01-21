@@ -27,6 +27,8 @@ public enum NullValuePropertyMappingStrategy {
 
     /**
      * If a source bean property equals {@code null} the target bean property will be set to its default value.
+     * Make sure that a {@link Mapping#defaultValue()} is defined if no empty constructor is available on
+     * the default value.
      */
     SET_TO_DEFAULT,
 

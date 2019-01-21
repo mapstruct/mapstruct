@@ -19,7 +19,7 @@ public interface CustomerDefaultMapper {
     @Mapping(source = "address", target = "homeDTO.addressDTO")
     void mapCustomer(Customer customer, @MappingTarget UserDTO userDTO);
 
-    @Mapping(source = "houseNumber", target = "houseNo")
+    @Mapping(source = "houseNumber", target = "houseNo", defaultValue = "0")
     void mapCustomerHouse(Address address, @MappingTarget AddressDTO addrDTO);
 
 }

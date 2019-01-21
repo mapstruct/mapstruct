@@ -14,6 +14,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.factory.Mappers;
@@ -21,7 +22,10 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sjaak Derksen
  */
-@Mapper( nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
+@Mapper(
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
 public abstract class ChartEntryToArtistUpdate {
 
     public static final ChartEntryToArtistUpdate MAPPER = Mappers.getMapper( ChartEntryToArtistUpdate.class );
