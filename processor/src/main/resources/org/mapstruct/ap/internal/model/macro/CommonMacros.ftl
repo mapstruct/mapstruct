@@ -30,11 +30,17 @@
 </#macro>
 <#--
     local macro related to handleSourceReferenceNullCheck
+    note: the <#elseif setExplicitlyToDefault || setExplicitlyToNull> is only relevant for update mappings
+          the default value takes precedence
 -->
 <#macro elseDefaultAssignment>
     <#if ext.defaultValueAssignment?? >
       else {
         <@handeDefaultAssigment/>
+      }
+    <#elseif setExplicitlyToDefault || setExplicitlyToNull>
+      else {
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
       }
     </#if>
 </#macro>

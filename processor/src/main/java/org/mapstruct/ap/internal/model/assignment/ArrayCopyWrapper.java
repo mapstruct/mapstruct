@@ -44,4 +44,14 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
     public boolean isIncludeSourceNullCheck() {
         return true;
     }
+
+    // TODO check
+    public boolean isSetExplicitlyToNull() {
+        return false;
+    }
+
+    // TODO check
+    public boolean isSetExplicitlyToDefault() {
+        return false;
+    }
 }

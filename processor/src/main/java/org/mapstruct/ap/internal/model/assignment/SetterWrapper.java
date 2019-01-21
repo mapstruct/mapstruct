@@ -11,8 +11,13 @@ import java.util.List;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 
 import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.IGNORE;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
+
 
 /**
  * Wraps the assignment in a target setter.
@@ -23,21 +28,29 @@ public class SetterWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
     private final boolean includeSourceNullCheck;
+    private final boolean setExplicitlyToNull;
+    private final boolean setExplicitlyToDefault;
 
     public SetterWrapper(Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
-                         boolean includeSourceNullCheck ) {
+                         boolean includeSourceNullCheck,
+                         boolean setExplicitlyToNull,
+                         boolean setExplicitlyToDefault) {
 
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.includeSourceNullCheck = includeSourceNullCheck;
+        this.setExplicitlyToDefault = setExplicitlyToDefault;
+        this.setExplicitlyToNull = setExplicitlyToNull;
     }
 
     public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment  ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.includeSourceNullCheck = false;
+        this.setExplicitlyToNull = false;
+        this.setExplicitlyToDefault = false;
     }
 
     @Override
@@ -54,6 +67,14 @@ public class SetterWrapper extends AssignmentWrapper {
         return result;
     }
 
+    public boolean isSetExplicitlyToNull() {
+        return setExplicitlyToNull;
+    }
+
+    public boolean isSetExplicitlyToDefault() {
+        return setExplicitlyToDefault;
+    }
+
     public boolean isIncludeSourceNullCheck() {
         return includeSourceNullCheck;
     }
@@ -68,14 +89,18 @@ public class SetterWrapper extends AssignmentWrapper {
      *
      * @param rhs the source righthand side
      * @param nvcs null value check strategy
+     * @param nvpms null value property mapping strategy
      * @param targetType the target type
      *
      * @return include a null check
      */
-    public static boolean doSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvcs, Type targetType) {
+    public static boolean doSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvcs,
+                                            NullValuePropertyMappingStrategyPrism nvpms, Type targetType) {
         return !rhs.isSourceReferenceParameter()
             && !rhs.getSourceType().isPrimitive()
-            && (ALWAYS == nvcs || rhs.getType().isConverted()
+            && (ALWAYS == nvcs
+            || SET_TO_DEFAULT == nvpms || IGNORE == nvpms
+            || rhs.getType().isConverted()
             || (rhs.getType().isDirect() && targetType.isPrimitive()));
     }
 }

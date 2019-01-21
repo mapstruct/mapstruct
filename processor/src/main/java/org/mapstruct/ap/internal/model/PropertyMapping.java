@@ -49,6 +49,8 @@ import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
@@ -464,20 +466,28 @@ public class PropertyMapping extends ModelElement {
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
-                    factory, isFieldAssignment(),
+                    factory,
+                    isFieldAssignment(),
                     targetType,
                     !rhs.isSourceReferenceParameter(),
-                    nvpms
+                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT
                 );
             }
             else {
-                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, targetType );
+                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, nvpms, targetType );
                 if ( !includeSourceNullCheck ) {
                     // solution for #834 introduced a local var and null check for nested properties always.
                     // however, a local var is not needed if there's no need to check for null.
                     rhs.setSourceLocalVarName( null );
                 }
-                return new SetterWrapper( rhs, method.getThrownTypes(), isFieldAssignment(), includeSourceNullCheck );
+                return new SetterWrapper(
+                    rhs,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    includeSourceNullCheck,
+                    includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT );
             }
         }
 
@@ -495,7 +505,8 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
-                result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment(), true );
+                // TODO: investigate adders
+                result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment(), true, false, false );
             }
             return result;
         }
@@ -882,7 +893,8 @@ public class PropertyMapping extends ModelElement {
                             isFieldAssignment(),
                             targetType,
                             false,
-                            null );
+                            false,
+                            false );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
