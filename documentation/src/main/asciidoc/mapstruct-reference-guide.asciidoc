@@ -115,8 +115,7 @@ It will not work with older versions.
 
 Add the following to your Gradle build file in order to enable MapStruct:
 
-.Gradle configuration
-Gradle (3.4 and later)
+.Gradle configuration (3.4 and later)
 ====
 [source, groovy, linenums]
 [subs="verbatim,attributes"]
