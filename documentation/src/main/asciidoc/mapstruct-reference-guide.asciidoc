@@ -113,7 +113,7 @@ It will not work with older versions.
 
 === Gradle
 
-Add the following to your Gradle build file in order to enable MapStruct:
+Add the following to your Gradle (5.1.1) build file in order to enable MapStruct:
 
 .Gradle configuration
 ====
@@ -123,7 +123,7 @@ Add the following to your Gradle build file in order to enable MapStruct:
 ...
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.15'
+    id 'net.ltgt.apt' version '0.20'
 }
 
 // You can integrate with your IDEs.
@@ -133,7 +133,7 @@ apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
-    compile "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     // If you are using mapstruct in test code
