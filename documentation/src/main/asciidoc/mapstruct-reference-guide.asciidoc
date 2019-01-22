@@ -142,7 +142,7 @@ dependencies {
 ...
 ----
 ====
-Gradle (3.3 and older)
+.Gradle (3.3 and older)
 ====
 [source, groovy, linenums]
 [subs="verbatim,attributes"]
