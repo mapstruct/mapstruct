@@ -510,7 +510,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mappings.put( mappingAnnotation.target(), new ArrayList<>() );
             }
 
-            if (mappingAnnotation.source().endsWith( ".*" )) {
+            if (!mappingAnnotation.source().isEmpty() && mappingAnnotation.source().endsWith( ".*" )) {
                 Type parameterType = typeFactory.getType( method.getParameters().get( 0 ).asType() );
                 mappings.putAll(
                         getAllMethodsFromClass(
@@ -520,7 +520,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         )
                 );
             }
-            else {
+            else if (!mappingAnnotation.target().equals( "." )) {
                 Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
                 if ( mapping != null ) {
                     mappings.get( mappingAnnotation.target() ).add( mapping );
@@ -530,7 +530,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         if ( mappingsAnnotation != null ) {
             for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
-                if (mappingPrism.source().endsWith( ".*" )) {
+                if (mappingPrism.source() != null && mappingPrism.source().endsWith( ".*" )) {
                     Type parameterType = typeFactory.getType( method.getParameters().get( 0 ).asType() );
                     mappings.putAll(
                         getAllMethodsFromClass(

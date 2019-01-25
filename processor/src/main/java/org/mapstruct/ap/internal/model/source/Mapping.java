@@ -69,6 +69,11 @@ public class Mapping {
         Map<String, List<Mapping>> mappings = new HashMap<>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
+
+            if (mappingPrism.source().isEmpty() && mappingPrism.target().equals( "." )) {
+                continue;
+            }
+
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
                 List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
