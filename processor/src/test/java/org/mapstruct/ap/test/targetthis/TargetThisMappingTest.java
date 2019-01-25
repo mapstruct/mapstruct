@@ -15,6 +15,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class TargetThisMappingTest {
 
+//    @Test
+//    @WithClasses( {
+//        CustomerEntityMapper3.class,
+//        OrderDTO.class,
+//        CustomerDTO.class,
+//        CustomerEntity.class,
+//        Entity.class,
+//        EntityDTO.class,
+//        OrderLine.class,
+//        OrderLineDTO.class,
+//        OrderEntity.class,
+//        OrderDTO.class
+//    } )
+//    public void testSingleProperty() {
+//        CustomerDTO ce = new CustomerDTO();
+//        ce.setName( "customer entity name" );
+//
+//        EntityDTO e = new EntityDTO();
+//        e.setId( "entity id" );
+//        e.setStatus( 1 );
+//        ce.setEntity( e );
+//
+//        CustomerEntity c = CustomerEntityMapper3.INSTANCE.map( ce );
+//
+//        assertThat( c ).isNotNull();
+//        assertThat( c.getName() ).isEqualTo( ce.getName() );
+//        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
+//        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+//    }
+
     @Test
     @WithClasses( {
             CustomerEntityMapper1.class,
@@ -200,5 +230,85 @@ public class TargetThisMappingTest {
         assertThat( c.getName() ).isEqualTo( dto.getName() );
         assertThat( c.getId() ).isEqualTo( dto.getEntity().getId() );
         assertThat( c.getStatus() ).isEqualTo( dto.getEntity().getStatus() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper2.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testWithoutSourceWithMappingWithNoSource() {
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+
+        Entity ee = CustomerEntityMapper2.INSTANCE.map( e );
+
+        assertThat( ee ).isNotNull();
+        assertThat( ee.getId() ).isEqualTo( e.getId() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper2.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testWithoutSourceWithMultipappingWithNoSource() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        ce.setEntity( e );
+
+        CustomerEntity c = CustomerEntityMapper2.INSTANCE.map( ce );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( ce.getName() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper2.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testMapNameOnlyWithNoSource() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        ce.setEntity( e );
+
+        CustomerEntity c = CustomerEntityMapper2.INSTANCE.mapNameOnly( ce );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( ce.getName() );
     }
 }
