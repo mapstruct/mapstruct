@@ -27,6 +27,9 @@ public interface CustomerEntityMapper2 {
     @Mapping( target = "." )
     CustomerEntity map( CustomerDTO customer );
 
+    @Mapping( target = "name" )
+    CustomerEntity mapNameOnly( CustomerDTO customer );
+
     @InheritInverseConfiguration( name = "map" )
     CustomerDTO inverseMap( CustomerEntity customer );
 

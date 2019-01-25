@@ -66,4 +66,32 @@ public class TargetThisMappingTest2 {
         assertThat( c ).isNotNull();
         assertThat( c.getName() ).isEqualTo( ce.getName() );
     }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper2.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testMapNameOnly() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        ce.setEntity( e );
+
+        CustomerEntity c = CustomerEntityMapper2.INSTANCE.mapNameOnly( ce );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( ce.getName() );
+    }
 }
