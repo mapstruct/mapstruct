@@ -5,11 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1685;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -23,6 +25,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 })
 public class Issue1685Test {
 
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        UserMapper.class
+    );
+
     @Test
     public void testSetToNullWhenNVPMSSetToNull() {
 
@@ -30,7 +37,7 @@ public class Issue1685Test {
         target.setAddress( "address" );
         target.setEmail( "email" );
         target.setName( "name" );
-        target.setPhone( "phone" );
+        target.setPhone( 12345 );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -54,7 +61,7 @@ public class Issue1685Test {
         target.setAddress( "address" );
         target.setEmail( "email" );
         target.setName( "name" );
-        target.setPhone( "phone" );
+        target.setPhone( 12345 );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -67,7 +74,7 @@ public class Issue1685Test {
 
         assertThat( target.getAddress() ).isEqualTo( "newAddress" );
         assertThat( target.getEmail() ).isEqualTo( "email" );
-        assertThat( target.getPhone() ).isEqualTo( "phone" );
+        assertThat( target.getPhone() ).isEqualTo( 12345 );
         assertThat( target.getName() ).isEqualTo( "name" );
     }
 
@@ -78,7 +85,7 @@ public class Issue1685Test {
         target.setAddress( "address" );
         target.setEmail( "email" );
         target.setName( "name" );
-        target.setPhone( "phone" );
+        target.setPhone( 12345 );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -91,7 +98,7 @@ public class Issue1685Test {
 
         assertThat( target.getAddress() ).isEqualTo( "newAddress" );
         assertThat( target.getEmail() ).isEqualTo( "" );
-        assertThat( target.getPhone() ).isEqualTo( "" );
+        assertThat( target.getPhone() ).isEqualTo( 0 );
         assertThat( target.getName() ).isEqualTo( "" );
     }
 

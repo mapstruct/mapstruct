@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.bugs._1685;
 public class User {
     private String name;
     private String email;
-    private String phone;
+    private Integer phone;
     private String address;
 
     public String getName() {
@@ -27,11 +27,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPhone() {
+    public Integer getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(Integer phone) {
         this.phone = phone;
     }
 
