@@ -2111,12 +2111,22 @@ MapStruct offers control over the property to set in an `@MappingTarget` annotat
 
 By default the source property will be set to null. However:
 
-1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values (`Object`, `ArrayList`, `HashMap`).
+1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`. For `List` MapStruct generates an `ArrayList`, for `Map` mapstruct generates a `HashMap`.
 
 2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
 
 The strategy works in a hierarchical fashion. Setting `Mapping#nullValuePropertyMappingStrategy` on mapping level will override `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MappingConfig#nullValuePropertyMappingStrategy`.
 
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValuePropertyMappingStrategy` to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
+====
+
+[TIP]
+====
+`NullValuePropertyMappingStrategy` also applies when the prescense checker returns `not present`.
+====
 
 [[checking-source-property-for-null-arguments]]
 === Controlling checking result for 'null' properties in bean mapping
@@ -2144,6 +2154,11 @@ Some frameworks generate bean properties that have a source presence checker. Of
 The source presence checker name can be changed in the MapStruct service provider interface (SPI). It can also be deactivated in this way.
 ====
 
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValueheckStrategy` to avoid addition of `null` to the target collection or map.
+====
 [[exceptions]]
 === Exceptions
 

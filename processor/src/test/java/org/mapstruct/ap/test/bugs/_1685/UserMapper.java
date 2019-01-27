@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.bugs._1685;
 
 import org.mapstruct.BeanMapping;
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +15,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper()
+@Mapper( collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED )
 public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
@@ -22,7 +23,8 @@ public interface UserMapper {
     @Mappings({
         @Mapping(source = "email", target = "contactDataDTO.email"),
         @Mapping(source = "phone", target = "contactDataDTO.phone"),
-        @Mapping(source = "address", target = "contactDataDTO.address")
+        @Mapping(source = "address", target = "contactDataDTO.address"),
+        @Mapping(source = "preferences", target = "contactDataDTO.preferences")
     })
     UserDTO userToUserDTO(User user);
 

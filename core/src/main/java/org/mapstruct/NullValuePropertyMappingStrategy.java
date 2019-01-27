@@ -12,8 +12,14 @@ package org.mapstruct;
  * Precedence is arranged  in the reverse order. So {@link Mapping} will override {@link BeanMapping}, will
  * overide {@link Mapper}
  *
- * The enum only applies to update method: methods that update a pre-existing target (annotated with
+ * The enum <b>only applies to update methods</b>: methods that update a pre-existing target (annotated with
  * {@code @}{@link MappingTarget}).
+ *
+ *  <p>
+ *  <b>Note</b>: some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder
+ *  as target accessor see {@link CollectionMappingStrategy}, MapStruct will always generate a source property
+ *  null check, regardless the value of the {@link NullValuePropertyMappingStrategy} to avoid addition of {@code null}
+ *  to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
  *
  * @author Sjaak Derksen
  * @since 1.3

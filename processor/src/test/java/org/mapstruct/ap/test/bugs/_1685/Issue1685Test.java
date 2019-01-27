@@ -13,7 +13,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1685")
@@ -52,6 +52,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isNull();
         assertThat( target.getPhone() ).isNull();
         assertThat( target.getName() ).isNull();
+        assertThat( target.getPreferences() ).isEmpty();
     }
 
     @Test
@@ -76,6 +77,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isEqualTo( "email" );
         assertThat( target.getPhone() ).isEqualTo( 12345 );
         assertThat( target.getName() ).isEqualTo( "name" );
+        assertThat( target.getPreferences() ).isEmpty();
     }
 
     @Test
@@ -100,7 +102,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isEqualTo( "" );
         assertThat( target.getPhone() ).isEqualTo( 0 );
         assertThat( target.getName() ).isEqualTo( "" );
+        assertThat( target.getPreferences() ).isEmpty();
     }
 
-    // TODO set to null explicitly when target is object and type conversion
 }

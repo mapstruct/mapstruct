@@ -5,10 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1685;
 
+import java.util.List;
+
 public class ContactDataDTO {
     private String email;
     private String phone;
     private String address;
+    private List<String> preferences;
 
     public String getEmail() {
         return email;
@@ -32,5 +35,13 @@ public class ContactDataDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public List<String> getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(List<String> preferences) {
+        this.preferences = preferences;
     }
 }

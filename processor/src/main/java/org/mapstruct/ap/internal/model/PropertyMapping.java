@@ -505,8 +505,14 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
-                // TODO: investigate adders
-                result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment(), true, false, false );
+                // TODO: what triggers this else branch? Should nvcs, nvpms be applied?
+                result = new SetterWrapper( result,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    true,
+                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT
+                );
             }
             return result;
         }
@@ -534,9 +540,7 @@ public class PropertyMapping extends ModelElement {
                 rightHandSide,
                 targetPropertyName,
                 arrayType,
-                targetType,
-                isFieldAssignment()
-            );
+                targetType );
             return assignment;
         }
 

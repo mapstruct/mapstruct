@@ -1,10 +1,17 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.bugs._1685;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-26T11:42:00+0100",
+    date = "2019-01-27T10:32:39+0100",
     comments = "version: , compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 public class UserMapperImpl implements UserMapper {
@@ -29,6 +36,11 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+                user.addPreference( contactDataDTOPreference );
+            }
+        }
         user.setAddress( userDTOContactDataDTOAddress( userDTO ) );
         String phone = userDTOContactDataDTOPhone( userDTO );
         if ( phone != null ) {
@@ -47,6 +59,11 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+                user.addPreference( contactDataDTOPreference );
+            }
+        }
         String address = userDTOContactDataDTOAddress( userDTO );
         if ( address != null ) {
             user.setAddress( address );
@@ -70,6 +87,11 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+                user.addPreference( contactDataDTOPreference );
+            }
+        }
         String address = userDTOContactDataDTOAddress( userDTO );
         if ( address != null ) {
             user.setAddress( address );
@@ -109,10 +131,29 @@ public class UserMapperImpl implements UserMapper {
         if ( user.getPhone() != null ) {
             contactDataDTO.setPhone( String.valueOf( user.getPhone() ) );
         }
+        List<String> list = user.getPreferences();
+        if ( list != null ) {
+            contactDataDTO.setPreferences( new ArrayList<String>( list ) );
+        }
         contactDataDTO.setAddress( user.getAddress() );
         contactDataDTO.setEmail( user.getEmail() );
 
         return contactDataDTO;
+    }
+
+    private List<String> userDTOContactDataDTOPreferences(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
+        if ( contactDataDTO == null ) {
+            return null;
+        }
+        List<String> preferences = contactDataDTO.getPreferences();
+        if ( preferences == null ) {
+            return null;
+        }
+        return preferences;
     }
 
     private String userDTOContactDataDTOAddress(UserDTO userDTO) {

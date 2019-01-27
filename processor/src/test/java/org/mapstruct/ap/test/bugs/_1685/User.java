@@ -5,11 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1685;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String name;
     private String email;
     private Integer phone;
     private String address;
+    private List<String> preferences = new ArrayList<>(  );
 
     public String getName() {
         return name;
@@ -41,6 +45,14 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void addPreference(String preference) {
+        preferences.add( preference );
+    }
+
+    public List<String> getPreferences() {
+        return preferences;
     }
 }
 

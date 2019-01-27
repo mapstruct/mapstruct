@@ -10,6 +10,11 @@ package org.mapstruct;
  *
  * <b>Note:</b> This strategy is not in effect when the a specific source presence check method is defined
  * in the service provider interface (SPI).
+ *  <p>
+ *  <b>Note</b>: some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder
+ *  as target accessor see {@link CollectionMappingStrategy}, MapStruct will always generate a source property null
+ *  check, regardless the value of the {@link NullValueCheckStrategy} to avoid addition of {@code null} to the target
+ *  collection or map.
  *
  * @author Sean Huang
  */
