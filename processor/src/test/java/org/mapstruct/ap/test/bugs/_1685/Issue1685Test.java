@@ -38,6 +38,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.addPreference( "preference" );
         target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
@@ -53,7 +54,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isNull();
         assertThat( target.getPhone() ).isNull();
         assertThat( target.getName() ).isNull();
-        assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getPreferences() ).containsOnly( "preference" );
         assertThat( target.getSettings() ).isNull();
     }
 
@@ -65,6 +66,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.addPreference( "preference" );
         target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
@@ -80,7 +82,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isEqualTo( "email" );
         assertThat( target.getPhone() ).isEqualTo( 12345 );
         assertThat( target.getName() ).isEqualTo( "name" );
-        assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getPreferences() ).containsOnly( "preference" );
         assertThat( target.getSettings() ).containsExactly( "test" );
     }
 
@@ -92,6 +94,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.addPreference( "preference" );
         target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
@@ -107,7 +110,7 @@ public class Issue1685Test {
         assertThat( target.getEmail() ).isEqualTo( "" );
         assertThat( target.getPhone() ).isEqualTo( 0 );
         assertThat( target.getName() ).isEqualTo( "" );
-        assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getPreferences() ).containsOnly( "preference" );
         assertThat( target.getSettings() ).isEmpty();
     }
 

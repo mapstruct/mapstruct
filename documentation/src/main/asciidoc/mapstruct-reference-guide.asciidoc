@@ -2125,7 +2125,7 @@ null check, regardless the value of the `NullValuePropertyMappingStrategy` to av
 
 [TIP]
 ====
-`NullValuePropertyMappingStrategy` also applies when the prescense checker returns `not present`.
+`NullValuePropertyMappingStrategy` also applies when the presense checker returns `not present`.
 ====
 
 [[checking-source-property-for-null-arguments]]
