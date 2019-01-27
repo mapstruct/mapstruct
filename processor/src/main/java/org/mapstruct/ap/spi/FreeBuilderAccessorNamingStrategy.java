@@ -7,6 +7,8 @@ package org.mapstruct.ap.spi;
 
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.util.Experimental;
+
 /**
  * Accessor naming strategy for FreeBuilder.
  * FreeBuilder adds a lot of other methods that can be considered as fluent setters. Such as:
@@ -24,6 +26,7 @@ import javax.lang.model.element.ExecutableElement;
  *
  * @author Filip Hrisafov
  */
+@Experimental("The FreeBuilder accessor naming strategy might change in a subsequent release")
 public class FreeBuilderAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
 
     @Override
