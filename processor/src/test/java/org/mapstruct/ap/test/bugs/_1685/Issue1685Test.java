@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._1685;
 
+import java.util.Arrays;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -53,6 +56,7 @@ public class Issue1685Test {
         assertThat( target.getPhone() ).isNull();
         assertThat( target.getName() ).isNull();
         assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getSettings() ).isNull();
     }
 
     @Test
@@ -63,6 +67,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -78,6 +83,7 @@ public class Issue1685Test {
         assertThat( target.getPhone() ).isEqualTo( 12345 );
         assertThat( target.getName() ).isEqualTo( "name" );
         assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getSettings() ).containsExactly( "test" );
     }
 
     @Test
@@ -88,6 +94,7 @@ public class Issue1685Test {
         target.setEmail( "email" );
         target.setName( "name" );
         target.setPhone( 12345 );
+        target.setSettings( new String[]{ "test" } );
 
         UserDTO source = new UserDTO();
         source.setContactDataDTO( new ContactDataDTO() );
@@ -103,6 +110,7 @@ public class Issue1685Test {
         assertThat( target.getPhone() ).isEqualTo( 0 );
         assertThat( target.getName() ).isEqualTo( "" );
         assertThat( target.getPreferences() ).isEmpty();
+        assertThat( target.getSettings() ).isEmpty();
     }
 
 }

@@ -540,7 +540,10 @@ public class PropertyMapping extends ModelElement {
                 rightHandSide,
                 targetPropertyName,
                 arrayType,
-                targetType );
+                targetType,
+                isFieldAssignment(),
+                nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                nvpms == SET_TO_DEFAULT );
             return assignment;
         }
 

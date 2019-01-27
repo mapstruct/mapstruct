@@ -148,7 +148,7 @@ Performs a default assignment with a default value.
     <#if factoryMethod??>
         <@includeModel object=factoryMethod targetType=ext.targetType/>
     <#else>
-         new <@constructTargetObject/>()
+        <@constructTargetObject/>
     </#if>
 </@compress></#macro>
 <#--
@@ -158,9 +158,11 @@ Performs a default assignment with a default value.
 -->
 <#macro constructTargetObject><@compress single_line=true>
     <#if ext.targetType.implementationType??>
-        <@includeModel object=ext.targetType.implementationType/>
+        new <@includeModel object=ext.targetType.implementationType/>()
+    <#elseif ext.targetType.arrayType>
+        new <@includeModel object=ext.targetType.componentType/>[0]
     <#else>
-        <@includeModel object=ext.targetType/>
+        new <@includeModel object=ext.targetType/>()
     </#if>
 </@compress></#macro>
 <#--

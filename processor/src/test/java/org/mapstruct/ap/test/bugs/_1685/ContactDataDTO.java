@@ -12,6 +12,7 @@ public class ContactDataDTO {
     private String phone;
     private String address;
     private List<String> preferences;
+    private String[] settings;
 
     public String getEmail() {
         return email;
@@ -43,5 +44,13 @@ public class ContactDataDTO {
 
     public void setPreferences(List<String> preferences) {
         this.preferences = preferences;
+    }
+
+    public String[] getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String[] settings) {
+        this.settings = settings;
     }
 }

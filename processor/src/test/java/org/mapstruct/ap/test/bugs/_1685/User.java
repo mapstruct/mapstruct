@@ -14,6 +14,7 @@ public class User {
     private Integer phone;
     private String address;
     private List<String> preferences = new ArrayList<>(  );
+    private String[] settings;
 
     public String getName() {
         return name;
@@ -53,6 +54,14 @@ public class User {
 
     public List<String> getPreferences() {
         return preferences;
+    }
+
+    public String[] getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String[] settings) {
+        this.settings = settings;
     }
 }
 

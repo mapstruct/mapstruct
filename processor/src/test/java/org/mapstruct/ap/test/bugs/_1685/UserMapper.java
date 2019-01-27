@@ -24,7 +24,8 @@ public interface UserMapper {
         @Mapping(source = "email", target = "contactDataDTO.email"),
         @Mapping(source = "phone", target = "contactDataDTO.phone"),
         @Mapping(source = "address", target = "contactDataDTO.address"),
-        @Mapping(source = "preferences", target = "contactDataDTO.preferences")
+        @Mapping(source = "preferences", target = "contactDataDTO.preferences"),
+        @Mapping(source = "settings", target = "contactDataDTO.settings")
     })
     UserDTO userToUserDTO(User user);
 

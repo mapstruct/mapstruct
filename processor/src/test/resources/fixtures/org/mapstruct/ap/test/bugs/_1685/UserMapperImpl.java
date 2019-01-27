@@ -6,13 +6,14 @@
 package org.mapstruct.ap.test.bugs._1685;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-27T10:32:39+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
+    date = "2019-01-27T12:40:32+0100",
+    comments = "version: , compiler: Eclipse JDT (Batch) 1.2.100.v20160418-1457, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 public class UserMapperImpl implements UserMapper {
 
@@ -36,6 +37,13 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        }
+        else {
+            user.setSettings( null );
+        }
         if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
@@ -59,6 +67,10 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        }
         if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
@@ -87,6 +99,13 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        }
+        else {
+            user.setSettings( new String[0] );
+        }
         if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
@@ -131,6 +150,10 @@ public class UserMapperImpl implements UserMapper {
         if ( user.getPhone() != null ) {
             contactDataDTO.setPhone( String.valueOf( user.getPhone() ) );
         }
+        String[] settings = user.getSettings();
+        if ( settings != null ) {
+            contactDataDTO.setSettings( Arrays.copyOf( settings, settings.length ) );
+        }
         List<String> list = user.getPreferences();
         if ( list != null ) {
             contactDataDTO.setPreferences( new ArrayList<String>( list ) );
@@ -139,6 +162,21 @@ public class UserMapperImpl implements UserMapper {
         contactDataDTO.setEmail( user.getEmail() );
 
         return contactDataDTO;
+    }
+
+    private String[] userDTOContactDataDTOSettings(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
+        if ( contactDataDTO == null ) {
+            return null;
+        }
+        String[] settings = contactDataDTO.getSettings();
+        if ( settings == null ) {
+            return null;
+        }
+        return settings;
     }
 
     private List<String> userDTOContactDataDTOPreferences(UserDTO userDTO) {
