@@ -25,6 +25,9 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
         if ( user.getName() != null ) {
             userDto.setName( user.getName() );
         }
+        else {
+            userDto.setName( null );
+        }
         if ( user.getCar() != null ) {
             if ( userDto.getCar() == null ) {
                 userDto.setCar( new CarDto() );
@@ -88,6 +91,9 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
         if ( car.getName() != null ) {
             mappingTarget.setName( car.getName() );
         }
+        else {
+            mappingTarget.setName( null );
+        }
         mappingTarget.setYear( car.getYear() );
         if ( mappingTarget.getWheels() != null ) {
             List<WheelDto> list = wheelListToWheelDtoList( car.getWheels() );
@@ -133,6 +139,9 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
         if ( roof.getType() != null ) {
             mappingTarget.setType( roofTypeToExternalRoofType( roof.getType() ) );
         }
+        else {
+            mappingTarget.setType( null );
+        }
     }
 
     protected void houseToHouseDto(House house, HouseDto mappingTarget) {
@@ -142,6 +151,9 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
 
         if ( house.getName() != null ) {
             mappingTarget.setName( house.getName() );
+        }
+        else {
+            mappingTarget.setName( null );
         }
         mappingTarget.setYear( house.getYear() );
         if ( house.getRoof() != null ) {

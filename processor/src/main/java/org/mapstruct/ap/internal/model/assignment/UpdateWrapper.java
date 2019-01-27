@@ -12,10 +12,6 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 
 /**
  * Wraps the assignment in a target setter.
@@ -28,8 +24,8 @@ public class UpdateWrapper extends AssignmentWrapper {
     private final Assignment factoryMethod;
     private final Type targetImplementationType;
     private final boolean includeSourceNullCheck;
-    private final boolean includeExplicitNullWhenSourceIsNull;
-    private final boolean mapNullToDefault;
+    private final boolean setExplicitlyToNull;
+    private final boolean setExplicitlyToDefault;
 
     public UpdateWrapper( Assignment decoratedAssignment,
                           List<Type> thrownTypesToExclude,
@@ -37,14 +33,15 @@ public class UpdateWrapper extends AssignmentWrapper {
                           boolean fieldAssignment,
                           Type targetType,
                           boolean includeSourceNullCheck,
-                          NullValuePropertyMappingStrategyPrism nvpms) {
+                          boolean setExplicitlyToNull,
+                          boolean setExplicitlyToDefault ) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
         this.targetImplementationType = determineImplType( factoryMethod, targetType );
         this.includeSourceNullCheck = includeSourceNullCheck;
-        this.mapNullToDefault = nvpms == SET_TO_DEFAULT;
-        this.includeExplicitNullWhenSourceIsNull = nvpms == SET_TO_NULL;
+        this.setExplicitlyToDefault = setExplicitlyToDefault;
+        this.setExplicitlyToNull = setExplicitlyToNull;
     }
 
     private static Type determineImplType(Assignment factoryMethod, Type targetType) {
@@ -97,11 +94,11 @@ public class UpdateWrapper extends AssignmentWrapper {
         return includeSourceNullCheck;
     }
 
-    public boolean isIncludeExplicitNullWhenSourceIsNull() {
-        return includeExplicitNullWhenSourceIsNull;
+    public boolean isSetExplicitlyToNull() {
+        return setExplicitlyToNull;
     }
 
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
+    public boolean isSetExplicitlyToDefault() {
+        return setExplicitlyToDefault;
     }
 }

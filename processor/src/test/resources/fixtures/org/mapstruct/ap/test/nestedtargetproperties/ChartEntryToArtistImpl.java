@@ -68,27 +68,12 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
 
         ChartEntry chartEntry = new ChartEntry();
 
-        String title = chartSongTitle( chart );
-        if ( title != null ) {
-            chartEntry.setSongTitle( title );
-        }
+        chartEntry.setSongTitle( chartSongTitle( chart ) );
         chartEntry.setChartName( chart.getName() );
-        String city = chartSongArtistLabelStudioCity( chart );
-        if ( city != null ) {
-            chartEntry.setCity( city );
-        }
-        String name = chartSongArtistLabelStudioName( chart );
-        if ( name != null ) {
-            chartEntry.setRecordedAt( name );
-        }
-        String name1 = chartSongArtistName( chart );
-        if ( name1 != null ) {
-            chartEntry.setArtistName( name1 );
-        }
-        List<Integer> positions = chartSongPositions( chart );
-        if ( positions != null ) {
-            chartEntry.setPosition( mapPosition( positions ) );
-        }
+        chartEntry.setCity( chartSongArtistLabelStudioCity( chart ) );
+        chartEntry.setRecordedAt( chartSongArtistLabelStudioName( chart ) );
+        chartEntry.setArtistName( chartSongArtistName( chart ) );
+        chartEntry.setPosition( mapPosition( chartSongPositions( chart ) ) );
 
         return chartEntry;
     }

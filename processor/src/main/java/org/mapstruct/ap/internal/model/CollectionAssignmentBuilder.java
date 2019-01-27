@@ -21,6 +21,9 @@ import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
+
 /**
  * A builder that is used for creating an assignment to a collection.
  *
@@ -149,7 +152,8 @@ public class CollectionAssignmentBuilder {
                     PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
                     targetType,
                     true,
-                    nvpms
+                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT
                 );
             }
             else if ( method.isUpdateMethod() && !targetImmutable ) {

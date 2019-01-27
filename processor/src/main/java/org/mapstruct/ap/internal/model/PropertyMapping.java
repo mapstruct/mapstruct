@@ -49,7 +49,8 @@ import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
@@ -285,10 +286,12 @@ public class PropertyMapping extends ModelElement {
             // null value mapping strategy
             this.nvms = mapperConfiguration.getNullValueMappingStrategy();
 
-            // null value property mapping strategy (determine true value based on hierarchy)
-            NullValuePropertyMappingStrategyPrism nvpmsBean =
-                beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
-            this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
+            // for update methods: determine null value property mapping strategy (determine value based on hierarchy)
+            if ( method.isUpdateMethod() ) {
+                NullValuePropertyMappingStrategyPrism nvpmsBean =
+                    beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
+                this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
+            }
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
@@ -463,14 +466,28 @@ public class PropertyMapping extends ModelElement {
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
-                    factory, isFieldAssignment(),
+                    factory,
+                    isFieldAssignment(),
                     targetType,
                     !rhs.isSourceReferenceParameter(),
-                    nvpms
+                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT
                 );
             }
             else {
-                   return new SetterWrapper( rhs, method.getThrownTypes(), nvcs, isFieldAssignment(), targetType );
+                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, nvpms, targetType );
+                if ( !includeSourceNullCheck ) {
+                    // solution for #834 introduced a local var and null check for nested properties always.
+                    // however, a local var is not needed if there's no need to check for null.
+                    rhs.setSourceLocalVarName( null );
+                }
+                return new SetterWrapper(
+                    rhs,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    includeSourceNullCheck,
+                    includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT );
             }
         }
 
@@ -488,7 +505,14 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
-                result = new SetterWrapper( result, method.getThrownTypes(), ALWAYS, isFieldAssignment(), targetType );
+                // TODO: what triggers this else branch? Should nvcs, nvpms be applied?
+                result = new SetterWrapper( result,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    true,
+                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                    nvpms == SET_TO_DEFAULT
+                );
             }
             return result;
         }
@@ -517,8 +541,9 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 arrayType,
                 targetType,
-                isFieldAssignment()
-            );
+                isFieldAssignment(),
+                nvpms == SET_TO_NULL && !targetType.isPrimitive(),
+                nvpms == SET_TO_DEFAULT );
             return assignment;
         }
 
@@ -875,7 +900,8 @@ public class PropertyMapping extends ModelElement {
                             isFieldAssignment(),
                             targetType,
                             false,
-                            null );
+                            false,
+                            false );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
