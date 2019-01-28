@@ -33,6 +33,17 @@ public enum NullValuePropertyMappingStrategy {
 
     /**
      * If a source bean property equals {@code null} the target bean property will be set to its default value.
+     * <p>
+     * This means:
+     * <ol>
+     * <li>For {@code List} MapStruct generates an {@code ArrayList}</li>
+     * <li>For {@code Map} a {@code HashMap}</li>
+     * <li>For arrays an empty array</li>
+     * <li>For {@code String} {@code ""}</li>
+     * <li>for primitive / boxed types a representation of {@code 0} or {@code false}</li>
+     * <li>For all other objects an new instance is created, requiring an empty constructor.</li>
+     * </ol>
+     * <p>
      * Make sure that a {@link Mapping#defaultValue()} is defined if no empty constructor is available on
      * the default value.
      */

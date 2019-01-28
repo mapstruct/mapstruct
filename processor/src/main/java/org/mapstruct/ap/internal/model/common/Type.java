@@ -934,6 +934,22 @@ public class Type extends ModelElement implements Comparable<Type> {
         throw new UnsupportedOperationException( getName() );
     }
 
+    public String getSensibleDefault() {
+        if ( isPrimitive() ) {
+            return getNull();
+        }
+        else if ( "String".equals( getName() ) ) {
+            return "\"\"";
+        }
+        else {
+            if ( isNative() ) {
+                // must be boxed, since primitive is already checked
+                return typeFactory.getType( typeUtils.unboxedType( typeMirror ) ).getNull();
+            }
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         // javadoc typemirror: "Types should be compared using the utility methods in Types. There is no guarantee
