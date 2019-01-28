@@ -161,6 +161,8 @@ Performs a default assignment with a default value.
         new <@includeModel object=ext.targetType.implementationType/>()
     <#elseif ext.targetType.arrayType>
         new <@includeModel object=ext.targetType.componentType/>[0]
+    <#elseif ext.targetType.sensibleDefault??>
+        ${ext.targetType.sensibleDefault}
     <#else>
         new <@includeModel object=ext.targetType/>()
     </#if>

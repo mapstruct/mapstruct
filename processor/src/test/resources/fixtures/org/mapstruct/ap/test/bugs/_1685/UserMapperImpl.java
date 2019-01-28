@@ -12,8 +12,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-27T12:40:32+0100",
-    comments = "version: , compiler: Eclipse JDT (Batch) 1.2.100.v20160418-1457, environment: Java 1.8.0_181 (Oracle Corporation)"
+    date = "2019-01-28T21:17:39+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 public class UserMapperImpl implements UserMapper {
 
@@ -116,7 +116,7 @@ public class UserMapperImpl implements UserMapper {
             user.setAddress( address );
         }
         else {
-            user.setAddress( new String() );
+            user.setAddress( "" );
         }
         String phone = userDTOContactDataDTOPhone( userDTO );
         if ( phone != null ) {
@@ -130,13 +130,13 @@ public class UserMapperImpl implements UserMapper {
             user.setEmail( email );
         }
         else {
-            user.setEmail( new String() );
+            user.setEmail( "" );
         }
         if ( userDTO.getName() != null ) {
             user.setName( userDTO.getName() );
         }
         else {
-            user.setName( new String() );
+            user.setName( "" );
         }
     }
 
