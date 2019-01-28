@@ -33,7 +33,7 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
         super( rhs, fieldAssignment );
         this.arraysType = arraysType;
         this.targetType = targetType;
-        rhs.setSourceLocalVarName( rhs.createLocalVarName( targetPropertyName ) );
+        rhs.setSourceLocalVarName( rhs.createUniqueVarName( targetPropertyName ) );
         this.setExplicitlyToDefault = setExplicitlyToDefault;
         this.setExplicitlyToNull = setExplicitlyToNull;
     }

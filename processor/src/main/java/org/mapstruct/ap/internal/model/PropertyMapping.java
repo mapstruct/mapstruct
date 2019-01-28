@@ -621,7 +621,7 @@ public class PropertyMapping extends ModelElement {
 
                 // create a local variable to which forged method can be assigned.
                 String desiredName = last( sourceReference.getPropertyEntries() ).getName();
-                sourceRhs.setSourceLocalVarName( sourceRhs.createLocalVarName( desiredName ) );
+                sourceRhs.setSourceLocalVarName( sourceRhs.createUniqueVarName( desiredName ) );
 
                 return sourceRhs;
 

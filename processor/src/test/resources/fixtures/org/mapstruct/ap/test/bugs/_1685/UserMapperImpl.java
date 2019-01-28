@@ -44,7 +44,8 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setSettings( null );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
             }
@@ -71,7 +72,8 @@ public class UserMapperImpl implements UserMapper {
         if ( settings1 != null ) {
             user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
             }
@@ -106,7 +108,8 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setSettings( new String[0] );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
             for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
                 user.addPreference( contactDataDTOPreference );
             }
