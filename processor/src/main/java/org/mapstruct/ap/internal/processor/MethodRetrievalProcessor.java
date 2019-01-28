@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
 

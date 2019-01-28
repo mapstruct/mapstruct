@@ -472,8 +472,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     if ( sourceReadAccessor != null ) {
                         Mapping mapping = singleMapping.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
 
-                        // create source reference for top level parameter that holds sub-entities
-
                         Parameter topParameter = this.method.getParameters().get( 0 );
 
                         CollectionMappingStrategyPrism cms = method.getMapperConfiguration()
@@ -488,18 +486,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .name( topParameter.getName() )
                             .build();
 
-                        // create list of Properties for every member down to lowest property that should be mapped
-                        // @Mapping(target = "." source = "entity")
-                        // CustomerEntity map(CustomerDTO customer)
-                        // highest is (topParameter) customer (parameter for method, where all other will be retrieved
-                        // from, lowest is entity.id, entity.status - but because there should be setter in target
-                        // object, for lowest we can use targetPropertyName
-                        // (if it is checked correctly, that readAccessors is actually proper type).
-                        // there might be intermedia properties
-                        // for example Mapping( target = "." source = "order.customer.entity" )
-                        // so need to find all intermediat properties if these exists
-
-                        Type resultType = topParameter.getType(); //method.getResultType();
+                        Type resultType = topParameter.getType();
                         String[] segments = (methodMapping.getSourceName() + "." + targetPropertyName).split( "\\." );
                         List<PropertyEntry> entries = getPropertyEntries( resultType, segments );
 
@@ -562,8 +549,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<PropertyEntry> targetEntries = new ArrayList<>();
             Type nextType = type;
 
-            // iterate, establish for each entry the target write accessors. Other than setter is only allowed for
-            // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
                 Type mappingType = method.isUpdateMethod() ? nextType : nextType.getEffectiveType();
