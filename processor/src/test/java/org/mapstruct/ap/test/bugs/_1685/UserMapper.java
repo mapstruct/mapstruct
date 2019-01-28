@@ -38,7 +38,6 @@ public interface UserMapper {
 
     @InheritInverseConfiguration
     @BeanMapping( nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT )
-    @Mapping( target = "phone", source = "contactDataDTO.phone", defaultValue = "0" )
     void updateUserFromUserAndDefaultDTO(UserDTO userDTO, @MappingTarget User user);
 
 }
