@@ -9,6 +9,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,6 +48,7 @@ import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -361,6 +363,27 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
+        private Type getPropertyType(List<String> nameDetails, Type currentType, String parentName) {
+            Map<String, List<Mapping>> mappings = new HashMap<>();
+
+            if ( nameDetails.size() > 0 ) {
+                // actual object is nested and need to find right property to access it fe - order.customer.entity
+                Map<String, Accessor> currentProperties = currentType.getPropertyReadAccessors();
+                String currentPropertyName = nameDetails.get( 0 );
+                Accessor nextAccessor = currentProperties.get( currentPropertyName );
+
+                if ( null == nextAccessor ) {
+                    return null; // current object doesn't have mapped property
+                }
+
+                Type currentPropertyType = this.ctx.getTypeFactory().getType( nextAccessor.getAccessedType() );
+                nameDetails.remove( 0 );
+                return getPropertyType( nameDetails, currentPropertyType, parentName + currentPropertyName + "." );
+            }
+
+            return currentType;
+        }
+
         /**
          * Iterates over all defined mapping methods ({@code @Mapping(s)}), either directly given or inherited from the
          * inverse mapping method.
@@ -384,12 +407,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
                 for ( Mapping mapping : entry.getValue() ) {
                     TargetReference targetReference = mapping.getTargetReference();
-                    if ( targetReference.isValid() ) {
+                    if ( !mapping.getTargetName().equals( "." ) && targetReference.isValid() ) {
                         if ( !handledTargets.contains( first( targetReference.getPropertyEntries() ).getFullName() ) ) {
                             if ( handleDefinedMapping( mapping, handledTargets ) ) {
                                 errorOccurred = true;
                             }
                         }
+                    }
+                    else if ( mapping.getTargetName().equals( "." ) && !mapping.getSourceName().isEmpty() ) {
+                        // multi mapping -> every property from source should be mapped to target
+                        applySourcePropertiesToCurrentTarget( mapping );
                     }
                     else {
                         errorOccurred = true;
@@ -405,6 +432,166 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             return errorOccurred;
+        }
+
+        /**
+         * Iterates over all source parameter properties and maps them to current target.
+         * <p>
+         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
+         * the set of remaining target properties.
+         */
+        private void applySourcePropertiesToCurrentTarget( Mapping methodMapping ) {
+
+            String mappingSourceName = methodMapping.getSourceName();
+
+            Type sourceMappingPropertyType = getPropertyType(
+                new ArrayList<>( Arrays.asList( mappingSourceName.split( "\\." ) ) ),
+                methodMapping.getSourceReference().getParameter().getType(),
+                ""
+            );
+
+            Map<String, Accessor> readAccessors = sourceMappingPropertyType.getPropertyReadAccessors();
+
+            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
+                unprocessedTargetProperties.entrySet().iterator();
+
+            while ( targetPropertyEntriesIterator.hasNext() ) {
+
+                Entry<String, Accessor> targetProperty = targetPropertyEntriesIterator.next();
+                String targetPropertyName = targetProperty.getKey();
+
+                PropertyMapping propertyMapping = null;
+
+                if (readAccessors.containsKey( targetPropertyName ) ) {
+                    Type sourceType = this.ctx.getTypeFactory()
+                        .getType( readAccessors.get( targetPropertyName ).getExecutable().getReturnType() );
+                    Parameter sourceParameter = new Parameter( mappingSourceName, sourceType );
+
+                    Accessor sourceReadAccessor = readAccessors.get( targetPropertyName );
+
+                    if ( sourceReadAccessor != null ) {
+                        Mapping mapping = singleMapping.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
+
+                        // create source reference for top level parameter that holds sub-entities
+
+                        Parameter topParameter = this.method.getParameters().get( 0 );
+
+                        CollectionMappingStrategyPrism cms = method.getMapperConfiguration()
+                            .getCollectionMappingStrategy();
+
+                        Accessor targetReadAccessor = readAccessors.get( targetPropertyName );
+
+                        SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                            .sourceParameter( topParameter )
+                            .type( topParameter.getType() )
+                            .readAccessor( targetReadAccessor )
+                            .name( topParameter.getName() )
+                            .build();
+
+                        // create list of Properties for every member down to lowest property that should be mapped
+                        // @Mapping(target = "." source = "entity")
+                        // CustomerEntity map(CustomerDTO customer)
+                        // highest is (topParameter) customer (parameter for method, where all other will be retrieved
+                        // from, lowest is entity.id, entity.status - but because there should be setter in target
+                        // object, for lowest we can use targetPropertyName
+                        // (if it is checked correctly, that readAccessors is actually proper type).
+                        // there might be intermedia properties
+                        // for example Mapping( target = "." source = "order.customer.entity" )
+                        // so need to find all intermediat properties if these exists
+
+                        Type resultType = topParameter.getType(); //method.getResultType();
+                        String[] segments = (methodMapping.getSourceName() + "." + targetPropertyName).split( "\\." );
+                        List<PropertyEntry> entries = getPropertyEntries( resultType, segments );
+
+                        sourceRef.getPropertyEntries().clear();
+                        sourceRef.getPropertyEntries().addAll(  entries );
+
+                        propertyMapping = new PropertyMappingBuilder()
+                            .mappingContext( ctx )
+                            .sourceMethod( method )
+                            .targetWriteAccessor( targetProperty.getValue() )
+                            .targetReadAccessor( getTargetPropertyReadAccessor( targetPropertyName ) )
+                            .targetPropertyName( targetPropertyName )
+                            .sourceReference( sourceRef )
+                            .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
+                            .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
+                            .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
+                            .existingVariableNames( existingVariableNames )
+                            .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                            .forgeMethodWithMappingOptions( extractAdditionalOptions( targetPropertyName, false ) )
+                            .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
+                            .nullValuePropertyMappingStrategy( mapping != null ?
+                                mapping.getNullValuePropertyMappingStrategy() : null )
+                            .mirror( mapping != null ? mapping.getMirror() : null )
+                            .build();
+
+                        unprocessedSourceParameters.remove( sourceParameter );
+                    }
+                }
+
+                if ( propertyMapping != null ) {
+                    propertyMappings.add( propertyMapping );
+                    targetPropertyEntriesIterator.remove();
+                    unprocessedDefinedTargets.remove( targetPropertyName );
+                    unprocessedSourceProperties.remove( targetPropertyName );
+                }
+            }
+        }
+
+        private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
+            Type nextType;
+            Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
+            if ( ctx.getAccessorNaming().isGetterMethod( toUse ) ||
+                Executables.isFieldAccessor( toUse ) ) {
+                nextType = ctx.getTypeFactory().getReturnType(
+                    (DeclaredType) ( method.isUpdateMethod() ? initial : initial.getEffectiveType() ).getTypeMirror(),
+                    toUse
+                );
+            }
+            else {
+                nextType = ctx.getTypeFactory().getSingleParameter(
+                    (DeclaredType) ( method.isUpdateMethod() ? initial : initial.getEffectiveType() ).getTypeMirror(),
+                    toUse
+                ).getType();
+            }
+            return nextType;
+        }
+
+        private List<PropertyEntry> getPropertyEntries(Type type, String[] entryNames) {
+            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+            List<PropertyEntry> targetEntries = new ArrayList<>();
+            Type nextType = type;
+
+            // iterate, establish for each entry the target write accessors. Other than setter is only allowed for
+            // last entry
+            for ( int i = 0; i < entryNames.length; i++ ) {
+
+                Type mappingType = method.isUpdateMethod() ? nextType : nextType.getEffectiveType();
+
+                Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
+                Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
+                boolean isLast = i == entryNames.length - 1;
+                boolean isNotLast = i < entryNames.length - 1;
+
+                if ( ( targetWriteAccessor == null && isNotLast ) ||
+                    ( targetWriteAccessor == null && isLast && ( targetReadAccessor == null ) ) ) {
+                    break;
+                }
+
+                if ( isLast || ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor )
+                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
+
+                    nextType = findNextType( nextType, targetWriteAccessor, targetReadAccessor );
+
+                    String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
+                    PropertyEntry propertyEntry = PropertyEntry.forTargetReference( fullName, targetReadAccessor,
+                        targetWriteAccessor, nextType );
+                    targetEntries.add( propertyEntry );
+                }
+
+            }
+
+            return targetEntries;
         }
 
         private boolean handleDefinedNestedTargetMapping(Set<String> handledTargets) {

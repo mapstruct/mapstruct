@@ -21,7 +21,7 @@ import org.mapstruct.factory.Mappers;
 public interface CustomerEntityMapper1 {
     CustomerEntityMapper1 INSTANCE = Mappers.getMapper( CustomerEntityMapper1.class );
 
-    @Mapping(target = ".", source = "entity.*")
+    @Mapping(target = ".", source = "entity")
     CustomerEntity map(CustomerDTO customer);
 
     @InheritInverseConfiguration(name = "map")
@@ -31,10 +31,10 @@ public interface CustomerEntityMapper1 {
     @Mapping(target = "entity", source = ".")
     void update(CustomerEntity customer, @MappingTarget CustomerDTO dto);
 
-    @Mapping(target = ".", source = "entity.*")
+    @Mapping(target = ".", source = "entity")
     void update(CustomerDTO dto, @MappingTarget CustomerEntity customer);
 
-    @Mapping(target = ".", source = "customer.entity.*")
+    @Mapping(target = ".", source = "customer.entity")
     @Mapping(target = "name", source = "customer.name")
     CustomerEntity map(OrderDTO order);
 

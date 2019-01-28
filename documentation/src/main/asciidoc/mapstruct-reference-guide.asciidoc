@@ -524,7 +524,8 @@ In this case the source parameter is directly mapped into the target as the exam
 [[mapping-nested-bean-properties-to-current-target]]
 === Mapping nested bean properties to current target
 
-If you don't want explicitly name all properties from nested source bean, you can use `.*` notation in source property. This will tell MapStruct to map every property from source bean to same property on target object. The following shows an example:
+If you don't want explicitly name all properties from nested source bean, you can use `.` as target.
+This will tell MapStruct to map every property from source bean to target object. The following shows an example:
 
 .Nested multi mapping method
 ====
@@ -534,7 +535,7 @@ If you don't want explicitly name all properties from nested source bean, you ca
 @Mapper
 public interface CustomerMapper {
 
-    @Mapping(source = "record.*", target = ".")
+    @Mapping(source = "record", target = ".")
     Customer customerDtoToCustomer(CustomerDto customerDto);
 }
 ----

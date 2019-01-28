@@ -510,85 +510,19 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mappings.put( mappingAnnotation.target(), new ArrayList<>() );
             }
 
-            if (!mappingAnnotation.source().isEmpty() && mappingAnnotation.source().endsWith( ".*" )) {
-                Type parameterType = typeFactory.getType( method.getParameters().get( 0 ).asType() );
-                mappings.putAll(
-                        getAllMethodsFromClass(
-                                new ArrayList<>( Arrays.asList( mappingAnnotation.source().split( "\\." ) ) ),
-                                parameterType,
-                                ""
-                        )
-                );
+            if ( mappingAnnotation.target().equals( "." ) && mappingAnnotation.source().isEmpty() ) {
+                // because it should map all properties from source to target and that's default behaviour
+                return mappings;
             }
-            else if (!mappingAnnotation.target().equals( "." )) {
-                Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
-                if ( mapping != null ) {
-                    mappings.get( mappingAnnotation.target() ).add( mapping );
-                }
+
+            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
+            if ( mapping != null ) {
+                mappings.get( mappingAnnotation.target() ).add( mapping );
             }
         }
 
         if ( mappingsAnnotation != null ) {
-            for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
-                if (mappingPrism.source() != null && mappingPrism.source().endsWith( ".*" )) {
-                    Type parameterType = typeFactory.getType( method.getParameters().get( 0 ).asType() );
-                    mappings.putAll(
-                        getAllMethodsFromClass(
-                                new ArrayList<>( Arrays.asList( mappingPrism.source().split( "\\." ) ) ),
-                                parameterType,
-                                ""
-                        )
-                    );
-                }
-            }
-
             mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
-        }
-
-        return mappings;
-    }
-
-    /**
-     * Retrieves the mappings configured via {@code @Mapping} from the given
-     * property and type.
-     *
-     * @param nameDetails The property name of interest, including parent properties if such exists
-     *
-     * @param type Type of object that might hold property \a propertyName
-     *
-     * @return The mappings for the given property on given type, keyed by target property name
-     */
-    private Map<String, List<Mapping>> getAllMethodsFromClass(List<String> nameDetails, Type type, String parentName) {
-        Map<String, List<Mapping>> mappings = new HashMap<>();
-
-        if ( nameDetails.size() > 2 ) {
-            // actual object is nested and need to find right property to access it fe - order.customer.entity.*
-            Map<String, Accessor> currentProperties = type.getPropertyReadAccessors();
-            String currentPropertyName = nameDetails.get( 0 );
-            Accessor nextAccessor = currentProperties.get( currentPropertyName );
-            if ( null == nextAccessor ) {
-                return mappings; // current object doesn't have mapped property
-            }
-            Type currentPropertyType = typeFactory.getType( nextAccessor.getAccessedType() );
-            nameDetails.remove( 0 );
-            return getAllMethodsFromClass( nameDetails, currentPropertyType, parentName + currentPropertyName + "." );
-        }
-        String propertyName = nameDetails.get( 0 );
-
-        Map<String, Accessor> accessors = type.getPropertyReadAccessors();
-
-        for ( String key : accessors.keySet() ) {
-            if ( key.equals( propertyName )) {
-                Type accessorType = typeFactory.getType( accessors.get( key ).getAccessedType() );
-
-                for ( Map.Entry<String, Accessor> entry : accessorType.getPropertyReadAccessors().entrySet() ) {
-                    String target = entry.getKey();
-                    String source = parentName + key + "." + entry.getKey();
-
-                    Mapping mapping = Mapping.artificialMapping( source, target );
-                    mappings.put( target, Arrays.asList( mapping ) );
-                }
-            }
         }
 
         return mappings;

@@ -15,35 +15,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class TargetThisMappingTest {
 
-//    @Test
-//    @WithClasses( {
-//        CustomerEntityMapper3.class,
-//        OrderDTO.class,
-//        CustomerDTO.class,
-//        CustomerEntity.class,
-//        Entity.class,
-//        EntityDTO.class,
-//        OrderLine.class,
-//        OrderLineDTO.class,
-//        OrderEntity.class,
-//        OrderDTO.class
-//    } )
-//    public void testSingleProperty() {
-//        CustomerDTO ce = new CustomerDTO();
-//        ce.setName( "customer entity name" );
-//
-//        EntityDTO e = new EntityDTO();
-//        e.setId( "entity id" );
-//        e.setStatus( 1 );
-//        ce.setEntity( e );
-//
-//        CustomerEntity c = CustomerEntityMapper3.INSTANCE.map( ce );
-//
-//        assertThat( c ).isNotNull();
-//        assertThat( c.getName() ).isEqualTo( ce.getName() );
-//        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
-//        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
-//    }
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper3.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class
+    } )
+    public void testSingleProperty() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        ce.setEntity( e );
+
+        CustomerEntity c = CustomerEntityMapper3.INSTANCE.map( ce );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( ce.getName() );
+        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
+        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+    }
 
     @Test
     @WithClasses( {
@@ -161,7 +161,7 @@ public class TargetThisMappingTest {
         OrderLine ol = new OrderLine();
         ol.setLine( 1 );
 
-        order.addOrderLine( ol );
+//        order.addOrderLine( ol );
 
         OrderDTO o = CustomerEntityMapper1.INSTANCE.map( order );
 
