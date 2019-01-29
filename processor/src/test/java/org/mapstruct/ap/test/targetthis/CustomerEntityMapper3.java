@@ -6,19 +6,24 @@
 package org.mapstruct.ap.test.targetthis;
 
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(
-    unmappedSourcePolicy = ReportingPolicy.IGNORE,
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    unmappedSourcePolicy = ReportingPolicy.WARN,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
 )
 public interface CustomerEntityMapper3 {
     CustomerEntityMapper3 INSTANCE = Mappers.getMapper( CustomerEntityMapper3.class );
 
-    @Mapping(target = ".", source = "entity")
-    CustomerEntity map(CustomerDTO customer);
+    @Mapping( target = ".", source = "animal" )
+    @Mapping( target = "color", ignore = true )
+    Dog map( DogDTO dog );
+
+    @InheritInverseConfiguration( name = "map" )
+    DogDTO map( Dog dog );
 }

@@ -5,9 +5,14 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
+import javax.tools.Diagnostic.Kind;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,23 +31,45 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        DogDTO.class,
+        Dog.class,
+        AnimalDTO.class,
+        Animal.class
     } )
-    public void testSingleProperty() {
-        CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = CustomerEntityMapper3.class,
+                kind = Kind.WARNING,
+                line = 28,
+                messageRegExp = "Unmapped source properties: \"type, color\""),
+            @Diagnostic(type = CustomerEntityMapper3.class,
+                kind = Kind.WARNING,
+                line = 28,
+                messageRegExp = "Unmapped source properties: \"weight, color\"")
+        }
+    )
+    public void testDog() {
+        DogDTO dto = new DogDTO();
+        dto.setType( "dog type" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
-        e.setStatus( 1 );
-        ce.setEntity( e );
+        AnimalDTO e = new AnimalDTO();
+        e.setWeight( 123 );
 
-        CustomerEntity c = CustomerEntityMapper3.INSTANCE.map( ce );
+        dto.setAnimal( e );
 
-        assertThat( c ).isNotNull();
-        assertThat( c.getName() ).isEqualTo( ce.getName() );
-        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
-        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+        Dog domain = CustomerEntityMapper3.INSTANCE.map( dto );
+
+        assertThat( domain ).isNotNull();
+        assertThat( domain.getType() ).isEqualTo( dto.getType() );
+        assertThat( domain.getWeight() ).isEqualTo( e.getWeight() );
+
+        DogDTO back = CustomerEntityMapper3.INSTANCE.map( domain );
+
+        assertThat( back ).isNotNull();
+        assertThat( back.getType() ).isEqualTo( domain.getType() );
+        assertThat( back.getAnimal().getWeight() ).isEqualTo( domain.getWeight() );
     }
 
     @Test

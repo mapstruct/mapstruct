@@ -364,10 +364,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private Type getPropertyType(List<String> nameDetails, Type currentType, String parentName) {
-            Map<String, List<Mapping>> mappings = new HashMap<>();
-
             if ( nameDetails.size() > 0 ) {
-                // actual object is nested and need to find right property to access it fe - order.customer.entity
                 Map<String, Accessor> currentProperties = currentType.getPropertyReadAccessors();
                 String currentPropertyName = nameDetails.get( 0 );
                 Accessor nextAccessor = currentProperties.get( currentPropertyName );
@@ -443,6 +440,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private void applySourcePropertiesToCurrentTarget( Mapping methodMapping ) {
 
             String mappingSourceName = methodMapping.getSourceName();
+
+            // source entity from unprocessed list as it will never be mapped directly, only sub-properties
+            unprocessedSourceProperties.remove( mappingSourceName );
 
             Type sourceMappingPropertyType = getPropertyType(
                 new ArrayList<>( Arrays.asList( mappingSourceName.split( "\\." ) ) ),
