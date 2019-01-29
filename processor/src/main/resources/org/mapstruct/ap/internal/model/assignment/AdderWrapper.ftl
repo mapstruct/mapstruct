@@ -8,9 +8,10 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.AdderWrapper" -->
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
-  if ( ${sourceReference} != null ) {
-      for ( <@includeModel object=adderType.typeBound/> ${sourceLocalVarName} : ${sourceReference} ) {
+    <@lib.sourceLocalVarAssignment/>
+    <@lib.handleSourceReferenceNullCheck>
+        for ( <@includeModel object=adderType.typeBound/> ${sourceLoopVarName} : <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> ) {
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
       }
-  }
+    </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>

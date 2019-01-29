@@ -34,7 +34,7 @@ public class StreamAdderWrapper extends AssignmentWrapper {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         String desiredName = Nouns.singularize( targetPropertyName );
-        rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
+        rhs.setSourceLocalVarName( rhs.createUniqueVarName( desiredName ) );
         adderType = first( getSourceType().determineTypeArguments( Stream.class ) );
     }
 
@@ -54,6 +54,18 @@ public class StreamAdderWrapper extends AssignmentWrapper {
 
     public Type getAdderType() {
         return adderType;
+    }
+
+    public boolean isIncludeSourceNullCheck() {
+        return true;
+    }
+
+    public boolean isSetExplicitlyToNull() {
+        return false;
+    }
+
+    public boolean isSetExplicitlyToDefault() {
+        return false;
     }
 
     @Override

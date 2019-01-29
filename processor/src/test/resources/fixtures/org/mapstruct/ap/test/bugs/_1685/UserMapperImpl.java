@@ -12,8 +12,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-28T21:17:39+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
+    date = "2019-01-27T12:40:32+0100",
+    comments = "version: , compiler: Eclipse JDT (Batch) 1.2.100.v20160418-1457, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 public class UserMapperImpl implements UserMapper {
 
@@ -44,8 +44,9 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setSettings( null );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
-            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
+            for ( String contactDataDTOPreference : preferences ) {
                 user.addPreference( contactDataDTOPreference );
             }
         }
@@ -71,8 +72,9 @@ public class UserMapperImpl implements UserMapper {
         if ( settings1 != null ) {
             user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
-            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
+            for ( String contactDataDTOPreference : preferences ) {
                 user.addPreference( contactDataDTOPreference );
             }
         }
@@ -106,8 +108,9 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setSettings( new String[0] );
         }
-        if ( userDTOContactDataDTOPreferences( userDTO ) != null ) {
-            for ( String contactDataDTOPreference : userDTOContactDataDTOPreferences( userDTO ) ) {
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
+            for ( String contactDataDTOPreference : preferences ) {
                 user.addPreference( contactDataDTOPreference );
             }
         }

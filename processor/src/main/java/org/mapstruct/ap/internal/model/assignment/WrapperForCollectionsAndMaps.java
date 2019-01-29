@@ -37,7 +37,7 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
         else {
             this.nullCheckLocalVarType = targetType;
         }
-        this.nullCheckLocalVarName =  rhs.createLocalVarName( nullCheckLocalVarType.getName() );
+        this.nullCheckLocalVarName =  rhs.createUniqueVarName( nullCheckLocalVarType.getName() );
     }
 
     @Override

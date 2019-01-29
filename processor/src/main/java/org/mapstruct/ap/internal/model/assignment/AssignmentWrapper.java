@@ -77,6 +77,16 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
+    public String getSourceLoopVarName() {
+        return decoratedAssignment.getSourceLoopVarName();
+    }
+
+    @Override
+    public void setSourceLoopVarName(String sourceLoopVarName) {
+        decoratedAssignment.setSourceLoopVarName( sourceLoopVarName );
+    }
+
+    @Override
     public String getSourceParameterName() {
         return decoratedAssignment.getSourceParameterName();
     }
@@ -92,8 +102,8 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
-    public String createLocalVarName( String desiredName ) {
-        return decoratedAssignment.createLocalVarName( desiredName );
+    public String createUniqueVarName(String desiredName ) {
+        return decoratedAssignment.createUniqueVarName( desiredName );
     }
 
     /**
