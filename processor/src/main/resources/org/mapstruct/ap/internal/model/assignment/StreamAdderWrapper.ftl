@@ -10,6 +10,6 @@
 <@lib.handleExceptions>
     <@lib.sourceLocalVarAssignment/>
     <@lib.handleSourceReferenceNullCheck>
-        ${sourceReference}.forEach( ${ext.targetBeanName}::${ext.targetWriteAccessorName} );
+        <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>.forEach( ${ext.targetBeanName}::${ext.targetWriteAccessorName} );
     </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>

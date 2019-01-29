@@ -10,7 +10,7 @@
 <@lib.handleExceptions>
     <@lib.sourceLocalVarAssignment/>
     <@lib.handleSourceReferenceNullCheck>
-        for ( <@includeModel object=adderType.typeBound/> ${sourceLoopVarName} : ${sourceReference} ) {
+        for ( <@includeModel object=adderType.typeBound/> ${sourceLoopVarName} : <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> ) {
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
       }
     </@lib.handleSourceReferenceNullCheck>

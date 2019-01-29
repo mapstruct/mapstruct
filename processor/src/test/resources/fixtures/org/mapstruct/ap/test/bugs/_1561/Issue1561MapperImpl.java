@@ -10,8 +10,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-28T20:09:22+0100",
-    comments = "version: , compiler: Eclipse JDT (Batch) 1.2.100.v20160418-1457, environment: Java 1.8.0_181 (Oracle Corporation)"
+    date = "2019-01-29T19:40:52+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 public class Issue1561MapperImpl implements Issue1561Mapper {
 
@@ -38,7 +38,7 @@ public class Issue1561MapperImpl implements Issue1561Mapper {
 
         Stream<String> nestedTargetProperty = targetNestedTargetProperties( target );
         if ( nestedTargetProperty != null ) {
-            targetNestedTargetProperties( target ).forEach( source::addProperty );
+            nestedTargetProperty.forEach( source::addProperty );
         }
 
         return source;
