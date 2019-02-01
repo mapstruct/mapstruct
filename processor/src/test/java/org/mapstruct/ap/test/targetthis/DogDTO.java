@@ -24,4 +24,23 @@ public class DogDTO {
     public void setAnimal( AnimalDTO animal ) {
         this.animal = animal;
     }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    private Integer age;
+    private Integer number;
 }

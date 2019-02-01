@@ -9,12 +9,10 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(
-    unmappedSourcePolicy = ReportingPolicy.WARN,
-    unmappedTargetPolicy = ReportingPolicy.ERROR,
+    config = MapConfig.class,
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
 )
 public interface CustomerEntityMapper3 {

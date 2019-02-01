@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,7 +48,6 @@ import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -363,24 +362,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Type getPropertyType(List<String> nameDetails, Type currentType, String parentName) {
-            if ( nameDetails.size() > 0 ) {
-                Map<String, Accessor> currentProperties = currentType.getPropertyReadAccessors();
-                String currentPropertyName = nameDetails.get( 0 );
-                Accessor nextAccessor = currentProperties.get( currentPropertyName );
-
-                if ( null == nextAccessor ) {
-                    return null; // current object doesn't have mapped property
-                }
-
-                Type currentPropertyType = this.ctx.getTypeFactory().getType( nextAccessor.getAccessedType() );
-                nameDetails.remove( 0 );
-                return getPropertyType( nameDetails, currentPropertyType, parentName + currentPropertyName + "." );
-            }
-
-            return currentType;
-        }
-
         /**
          * Iterates over all defined mapping methods ({@code @Mapping(s)}), either directly given or inherited from the
          * inverse mapping method.
@@ -433,22 +414,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         /**
          * Iterates over all source parameter properties and maps them to current target.
-         * <p>
          * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
          * the set of remaining target properties.
          */
-        private void applySourcePropertiesToCurrentTarget( Mapping methodMapping ) {
+        private void applySourcePropertiesToCurrentTarget( Mapping mapping ) {
 
-            String mappingSourceName = methodMapping.getSourceName();
+            String mappingSourceName = mapping.getSourceName();
 
             // source entity from unprocessed list as it will never be mapped directly, only sub-properties
             unprocessedSourceProperties.remove( mappingSourceName );
 
-            Type sourceMappingPropertyType = getPropertyType(
-                new ArrayList<>( Arrays.asList( mappingSourceName.split( "\\." ) ) ),
-                methodMapping.getSourceReference().getParameter().getType(),
-                ""
-            );
+            Type sourceMappingPropertyType = mapping.getSourceReference()
+                .getPropertyEntries()
+                .get( mapping.getSourceReference().getPropertyEntries().size() - 1 )
+                .getType();
 
             Map<String, Accessor> readAccessors = sourceMappingPropertyType.getPropertyReadAccessors();
 
@@ -470,12 +449,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Accessor sourceReadAccessor = readAccessors.get( targetPropertyName );
 
                     if ( sourceReadAccessor != null ) {
-                        Mapping mapping = singleMapping.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
-
                         Parameter topParameter = this.method.getParameters().get( 0 );
-
-                        CollectionMappingStrategyPrism cms = method.getMapperConfiguration()
-                            .getCollectionMappingStrategy();
 
                         Accessor targetReadAccessor = readAccessors.get( targetPropertyName );
 
@@ -487,8 +461,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .build();
 
                         Type resultType = topParameter.getType();
-                        String[] segments = (methodMapping.getSourceName() + "." + targetPropertyName).split( "\\." );
-                        List<PropertyEntry> entries = getPropertyEntries( resultType, segments );
+                        String[] segments = (mapping.getSourceName() + "." + targetPropertyName).split( "\\." );
+                        List<PropertyEntry> entries = getSourceEntries( resultType, segments );
 
                         sourceRef.getPropertyEntries().clear();
                         sourceRef.getPropertyEntries().addAll(  entries );
@@ -500,16 +474,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .targetReadAccessor( getTargetPropertyReadAccessor( targetPropertyName ) )
                             .targetPropertyName( targetPropertyName )
                             .sourceReference( sourceRef )
-                            .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
-                            .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
-                            .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
+                            .formattingParameters( mapping.getFormattingParameters() )
+                            .selectionParameters( mapping.getSelectionParameters() )
+                            .defaultValue( mapping.getDefaultValue() )
                             .existingVariableNames( existingVariableNames )
-                            .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                            .dependsOn( mapping.getDependsOn() )
                             .forgeMethodWithMappingOptions( extractAdditionalOptions( targetPropertyName, false ) )
-                            .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
-                            .nullValuePropertyMappingStrategy( mapping != null ?
-                                mapping.getNullValuePropertyMappingStrategy() : null )
-                            .mirror( mapping != null ? mapping.getMirror() : null )
+                            .nullValueCheckStrategy( mapping.getNullValueCheckStrategy() )
+                            .nullValuePropertyMappingStrategy( mapping.getNullValuePropertyMappingStrategy() )
+                            .mirror( mapping.getMirror() )
                             .build();
 
                         unprocessedSourceParameters.remove( sourceParameter );
@@ -525,58 +498,32 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
-            Type nextType;
-            Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
-            if ( ctx.getAccessorNaming().isGetterMethod( toUse ) ||
-                Executables.isFieldAccessor( toUse ) ) {
-                nextType = ctx.getTypeFactory().getReturnType(
-                    (DeclaredType) ( method.isUpdateMethod() ? initial : initial.getEffectiveType() ).getTypeMirror(),
-                    toUse
-                );
-            }
-            else {
-                nextType = ctx.getTypeFactory().getSingleParameter(
-                    (DeclaredType) ( method.isUpdateMethod() ? initial : initial.getEffectiveType() ).getTypeMirror(),
-                    toUse
-                ).getType();
-            }
-            return nextType;
-        }
+        private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
+            List<PropertyEntry> sourceEntries = new ArrayList<>();
+            Type newType = type;
+            for ( String entryName : entryNames ) {
+                boolean matchFound = false;
+                Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
+                Map<String, ExecutableElementAccessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
-        private List<PropertyEntry> getPropertyEntries(Type type, String[] entryNames) {
-            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-            List<PropertyEntry> targetEntries = new ArrayList<>();
-            Type nextType = type;
-
-            for ( int i = 0; i < entryNames.length; i++ ) {
-
-                Type mappingType = method.isUpdateMethod() ? nextType : nextType.getEffectiveType();
-
-                Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
-                Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
-                boolean isLast = i == entryNames.length - 1;
-                boolean isNotLast = i < entryNames.length - 1;
-
-                if ( ( targetWriteAccessor == null && isNotLast ) ||
-                    ( targetWriteAccessor == null && isLast && ( targetReadAccessor == null ) ) ) {
+                for ( Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
+                    if ( getter.getKey().equals( entryName ) ) {
+                        newType = ctx.getTypeFactory().getReturnType(
+                            (DeclaredType) newType.getTypeMirror(),
+                            getter.getValue()
+                        );
+                        sourceEntries.add( forSourceReference( entryName, getter.getValue(),
+                            sourcePresenceCheckers.get( entryName ), newType
+                        ) );
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if ( !matchFound ) {
                     break;
                 }
-
-                if ( isLast || ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor )
-                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
-
-                    nextType = findNextType( nextType, targetWriteAccessor, targetReadAccessor );
-
-                    String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
-                    PropertyEntry propertyEntry = PropertyEntry.forTargetReference( fullName, targetReadAccessor,
-                        targetWriteAccessor, nextType );
-                    targetEntries.add( propertyEntry );
-                }
-
             }
-
-            return targetEntries;
+            return sourceEntries;
         }
 
         private boolean handleDefinedNestedTargetMapping(Set<String> handledTargets) {
@@ -714,7 +661,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         /**
          * Iterates over all target properties and all source parameters.
-         * <p>
          * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
          * the set of remaining target properties.
          */

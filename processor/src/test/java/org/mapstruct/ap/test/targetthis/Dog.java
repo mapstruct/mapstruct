@@ -25,4 +25,23 @@ public class Dog extends Animal {
     }
 
     private String color;
+
+    public Long getAge() {
+        return age;
+    }
+
+    public void setAge(Long age) {
+        this.age = age;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    private Long age;
+    private Long number;
 }

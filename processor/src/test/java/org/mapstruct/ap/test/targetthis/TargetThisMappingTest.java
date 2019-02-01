@@ -35,18 +35,21 @@ public class TargetThisMappingTest {
         DogDTO.class,
         Dog.class,
         AnimalDTO.class,
-        Animal.class
+        Animal.class,
+        MapConfig.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = {
             @Diagnostic(type = CustomerEntityMapper3.class,
                 kind = Kind.WARNING,
-                line = 28,
-                messageRegExp = "Unmapped source properties: \"type, color\""),
+                line = 26,
+                messageRegExp = "Unmapped source properties: \"type, color, age, number\""),
             @Diagnostic(type = CustomerEntityMapper3.class,
                 kind = Kind.WARNING,
-                line = 28,
+                line = 26,
                 messageRegExp = "Unmapped source properties: \"weight, color\"")
         }
     )
@@ -83,7 +86,9 @@ public class TargetThisMappingTest {
             OrderLine.class,
             OrderLineDTO.class,
             OrderEntity.class,
-            OrderDTO.class
+            OrderDTO.class,
+            SaleOrder.class,
+            SaleOrderDTO.class
     } )
     public void testTargetingThis() {
         CustomerDTO ce = new CustomerDTO();
@@ -113,7 +118,9 @@ public class TargetThisMappingTest {
             OrderLine.class,
             OrderLineDTO.class,
             OrderEntity.class,
-            OrderDTO.class
+            OrderDTO.class,
+            SaleOrder.class,
+            SaleOrderDTO.class
     } )
     public void testTargetingThisWithNestedLevels() {
         CustomerDTO ce = new CustomerDTO();
@@ -127,12 +134,54 @@ public class TargetThisMappingTest {
         OrderDTO order = new OrderDTO();
         order.setCustomer( ce );
 
-        CustomerEntity c = CustomerEntityMapper1.INSTANCE.map( order );
+        OrderEntity c = CustomerEntityMapper1.INSTANCE.map( order );
 
         assertThat( c ).isNotNull();
-        assertThat( c.getName() ).isEqualTo( ce.getName() );
+        assertThat( c.getCustomer() ).isNotNull();
+        assertThat( c.getCustomer().getName() ).isEqualTo( ce.getName() );
         assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
         assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+    }
+
+    @Test
+    @WithClasses( {
+        CustomerEntityMapper1.class,
+        OrderDTO.class,
+        CustomerDTO.class,
+        CustomerEntity.class,
+        Entity.class,
+        EntityDTO.class,
+        OrderLine.class,
+        OrderLineDTO.class,
+        OrderEntity.class,
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
+    } )
+    public void testMapDoubleTarget() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer entity name" );
+
+        EntityDTO e = new EntityDTO();
+        e.setId( "entity id" );
+        e.setStatus( 1 );
+        ce.setEntity( e );
+
+        OrderDTO order = new OrderDTO();
+        order.setCustomer( ce );
+        order.setEntity( e );
+
+        SaleOrderDTO saleOrder = new SaleOrderDTO();
+        saleOrder.setEntity( e );
+        saleOrder.setOrder( order );
+        saleOrder.setNumber( "double mapping test" );
+
+        SaleOrder c = CustomerEntityMapper1.INSTANCE.mapDoubleTarget( saleOrder );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getNumber() ).isEqualTo( saleOrder.getNumber() );
+        assertThat( c.getId() ).isEqualTo( e.getId() );
+        assertThat( c.getStatus() ).isEqualTo( e.getStatus() );
     }
 
     @Test
@@ -146,7 +195,9 @@ public class TargetThisMappingTest {
             OrderLine.class,
             OrderLineDTO.class,
             OrderEntity.class,
-            OrderDTO.class
+            OrderDTO.class,
+            SaleOrder.class,
+            SaleOrderDTO.class
     } )
     public void testFromThis() {
         CustomerEntity ce = new CustomerEntity();
@@ -173,7 +224,9 @@ public class TargetThisMappingTest {
             OrderLine.class,
             OrderLineDTO.class,
             OrderEntity.class,
-            OrderDTO.class
+            OrderDTO.class,
+            SaleOrder.class,
+            SaleOrderDTO.class
     } )
     public void testWithCollection() {
         CustomerEntity ce = new CustomerEntity();
@@ -209,7 +262,9 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     public void testUpdateDto() {
         CustomerEntity ce = new CustomerEntity();
@@ -238,7 +293,9 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     public void testUpdateEntity() {
         CustomerDTO dto = new CustomerDTO();
@@ -270,7 +327,9 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     public void testWithoutSourceWithMappingWithNoSource() {
         EntityDTO e = new EntityDTO();
@@ -294,7 +353,9 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     public void testWithoutSourceWithMultipappingWithNoSource() {
         CustomerDTO ce = new CustomerDTO();
@@ -322,7 +383,9 @@ public class TargetThisMappingTest {
         OrderLine.class,
         OrderLineDTO.class,
         OrderEntity.class,
-        OrderDTO.class
+        OrderDTO.class,
+        SaleOrder.class,
+        SaleOrderDTO.class
     } )
     public void testMapNameOnlyWithNoSource() {
         CustomerDTO ce = new CustomerDTO();

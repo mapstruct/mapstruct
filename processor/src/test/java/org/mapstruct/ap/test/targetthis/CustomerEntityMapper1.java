@@ -21,25 +21,30 @@ import org.mapstruct.factory.Mappers;
 public interface CustomerEntityMapper1 {
     CustomerEntityMapper1 INSTANCE = Mappers.getMapper( CustomerEntityMapper1.class );
 
-    @Mapping(target = ".", source = "entity")
-    CustomerEntity map(CustomerDTO customer);
+    @Mapping( target = ".", source = "entity" )
+    CustomerEntity map( CustomerDTO customer );
 
-    @InheritInverseConfiguration(name = "map")
+    @InheritInverseConfiguration( name = "map" )
     // @Mapping(target = "entity", source = ".")
-    CustomerDTO inverseMap(CustomerEntity customer);
+    CustomerDTO inverseMap( CustomerEntity customer );
 
-    @Mapping(target = "entity", source = ".")
-    void update(CustomerEntity customer, @MappingTarget CustomerDTO dto);
+    @Mapping( target = "entity", source = "." )
+    void update( CustomerEntity customer, @MappingTarget CustomerDTO dto );
 
+    @Mapping( target = ".", source = "entity" )
+    void update( CustomerDTO dto, @MappingTarget CustomerEntity customer );
+
+    @Mapping( target = ".", source = "customer.entity" )
+    OrderEntity map( OrderDTO order );
+
+    @Mapping(target = ".", source = "order")
     @Mapping(target = ".", source = "entity")
-    void update(CustomerDTO dto, @MappingTarget CustomerEntity customer);
-
-    @Mapping(target = ".", source = "customer.entity")
-    @Mapping(target = "name", source = "customer.name")
-    CustomerEntity map(OrderDTO order);
+    SaleOrder mapDoubleTarget(SaleOrderDTO order);
 
     @Mapping(target = "entity", source = ".")
     OrderDTO map( OrderEntity order );
 
     OrderLineDTO map( OrderLine line);
+
+    OrderLine map( OrderLineDTO line);
 }

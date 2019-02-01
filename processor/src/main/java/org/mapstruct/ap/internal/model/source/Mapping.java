@@ -86,7 +86,8 @@ public class Mapping {
 
                 mappingsOfProperty.add( mapping );
 
-                if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
+                if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) &&
+                    !mappingPrism.target().equals( "." ) ) {
                     messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
                 }
             }
