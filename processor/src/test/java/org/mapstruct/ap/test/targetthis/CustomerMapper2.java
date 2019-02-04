@@ -17,20 +17,20 @@ import org.mapstruct.factory.Mappers;
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
 )
-public interface CustomerEntityMapper2 {
-    CustomerEntityMapper2 INSTANCE = Mappers.getMapper( CustomerEntityMapper2.class );
+public interface CustomerMapper2 {
+    CustomerMapper2 INSTANCE = Mappers.getMapper( CustomerMapper2.class );
 
     @Mapping( target = "." )
-    Entity map( EntityDTO entity );
+    Item map(ItemDTO item );
 
     @Mapping( target = "." )
     @Mapping( target = "." )
-    CustomerEntity map( CustomerDTO customer );
+    CustomerItem map(CustomerDTO customer );
 
     @Mapping( target = "name" )
-    CustomerEntity mapNameOnly( CustomerDTO customer );
+    CustomerItem mapNameOnly(CustomerDTO customer );
 
     @InheritInverseConfiguration( name = "map" )
-    CustomerDTO inverseMap( CustomerEntity customer );
+    CustomerDTO inverseMap( CustomerItem customer );
 
 }

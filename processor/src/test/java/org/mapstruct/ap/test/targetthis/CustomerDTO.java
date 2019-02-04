@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.targetthis;
 public class CustomerDTO {
     private String name;
     private int level;
-    private EntityDTO entity;
+    private ItemDTO item;
 
     public String getName() {
         return name;
@@ -18,12 +18,12 @@ public class CustomerDTO {
         this.name = name;
     }
 
-    public EntityDTO getEntity() {
-        return entity;
+    public ItemDTO getItem() {
+        return item;
     }
 
-    public void setEntity(EntityDTO entity) {
-        this.entity = entity;
+    public void setItem(ItemDTO item) {
+        this.item = item;
     }
 
     public int getLevel() {

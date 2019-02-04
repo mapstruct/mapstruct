@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-public class EntityDTO {
+public class ItemDTO {
     private String id;
     private int status;
 

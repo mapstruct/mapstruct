@@ -18,31 +18,31 @@ import org.mapstruct.factory.Mappers;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
 )
-public interface CustomerEntityMapper1 {
-    CustomerEntityMapper1 INSTANCE = Mappers.getMapper( CustomerEntityMapper1.class );
+public interface CustomerMapper1 {
+    CustomerMapper1 INSTANCE = Mappers.getMapper( CustomerMapper1.class );
 
-    @Mapping( target = ".", source = "entity" )
-    CustomerEntity map( CustomerDTO customer );
+    @Mapping( target = ".", source = "item" )
+    CustomerItem map(CustomerDTO customer );
 
     @InheritInverseConfiguration( name = "map" )
-    // @Mapping(target = "entity", source = ".")
-    CustomerDTO inverseMap( CustomerEntity customer );
+    // @Mapping(target = "item", source = ".")
+    CustomerDTO inverseMap( CustomerItem customer );
 
-    @Mapping( target = "entity", source = "." )
-    void update( CustomerEntity customer, @MappingTarget CustomerDTO dto );
+    @Mapping( target = "item", source = "." )
+    void update(CustomerItem customer, @MappingTarget CustomerDTO dto );
 
-    @Mapping( target = ".", source = "entity" )
-    void update( CustomerDTO dto, @MappingTarget CustomerEntity customer );
+    @Mapping( target = ".", source = "item" )
+    void update( CustomerDTO dto, @MappingTarget CustomerItem customer );
 
-    @Mapping( target = ".", source = "customer.entity" )
-    OrderEntity map( OrderDTO order );
+    @Mapping( target = ".", source = "customer.item" )
+    OrderItem map(OrderDTO order );
 
     @Mapping(target = ".", source = "order")
-    @Mapping(target = ".", source = "entity")
+    @Mapping(target = ".", source = "item")
     SaleOrder mapDoubleTarget(SaleOrderDTO order);
 
-    @Mapping(target = "entity", source = ".")
-    OrderDTO map( OrderEntity order );
+    @Mapping(target = "item", source = ".")
+    OrderDTO map( OrderItem order );
 
     OrderLineDTO map( OrderLine line);
 

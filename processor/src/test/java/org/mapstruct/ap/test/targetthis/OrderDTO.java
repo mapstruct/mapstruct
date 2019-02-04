@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDTO {
-    private EntityDTO entity;
+    private ItemDTO item;
 
-    public EntityDTO getEntity() {
-        return entity;
+    public ItemDTO getItem() {
+        return item;
     }
 
-    public void setEntity(EntityDTO entity) {
-        this.entity = entity;
+    public void setItem(ItemDTO item) {
+        this.item = item;
     }
 
     private List<OrderLineDTO> orderLines;

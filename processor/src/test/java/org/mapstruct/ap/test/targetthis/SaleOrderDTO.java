@@ -6,14 +6,14 @@
 package org.mapstruct.ap.test.targetthis;
 
 public class SaleOrderDTO {
-    private EntityDTO entity;
+    private ItemDTO item;
 
-    public EntityDTO getEntity() {
-        return entity;
+    public ItemDTO getItem() {
+        return item;
     }
 
-    public void setEntity(EntityDTO entity) {
-        this.entity = entity;
+    public void setItem(ItemDTO item) {
+        this.item = item;
     }
 
     private OrderDTO order;

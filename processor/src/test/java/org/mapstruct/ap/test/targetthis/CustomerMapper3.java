@@ -15,8 +15,8 @@ import org.mapstruct.factory.Mappers;
     config = MapConfig.class,
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
 )
-public interface CustomerEntityMapper3 {
-    CustomerEntityMapper3 INSTANCE = Mappers.getMapper( CustomerEntityMapper3.class );
+public interface CustomerMapper3 {
+    CustomerMapper3 INSTANCE = Mappers.getMapper( CustomerMapper3.class );
 
     @Mapping( target = ".", source = "animal" )
     @Mapping( target = "color", ignore = true )

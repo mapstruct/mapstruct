@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-public class SaleOrder extends OrderEntity {
+public class SaleOrder extends OrderItem {
     public String getNumber() {
         return number;
     }

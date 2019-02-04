@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-public class CustomerEntity extends Entity {
+public class CustomerItem extends Item {
     private String name;
     private int level;
 

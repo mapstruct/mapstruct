@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.targetthis;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderEntity extends Entity {
+public class OrderItem extends Item {
 
     public void addOrderLine( OrderLine orderLine ) {
         if ( null == this.orderLines ) {
@@ -28,13 +28,13 @@ public class OrderEntity extends Entity {
 
     private List<OrderLine> orderLines;
 
-    private CustomerEntity customer;
+    private CustomerItem customer;
 
-    public void setCustomer( CustomerEntity customer ) {
+    public void setCustomer( CustomerItem customer ) {
         this.customer = customer;
     }
 
-    public CustomerEntity getCustomer() {
+    public CustomerItem getCustomer() {
         return this.customer;
     }
 }

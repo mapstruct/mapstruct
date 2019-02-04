@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-public class Entity {
+public class Item {
     private String id;
     private int status;
 

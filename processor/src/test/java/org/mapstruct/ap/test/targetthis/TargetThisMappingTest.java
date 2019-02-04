@@ -22,15 +22,15 @@ public class TargetThisMappingTest {
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper3.class,
+        CustomerMapper3.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         DogDTO.class,
         Dog.class,
@@ -43,11 +43,11 @@ public class TargetThisMappingTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = {
-            @Diagnostic(type = CustomerEntityMapper3.class,
+            @Diagnostic(type = CustomerMapper3.class,
                 kind = Kind.WARNING,
                 line = 26,
                 messageRegExp = "Unmapped source properties: \"type, color, age, number\""),
-            @Diagnostic(type = CustomerEntityMapper3.class,
+            @Diagnostic(type = CustomerMapper3.class,
                 kind = Kind.WARNING,
                 line = 26,
                 messageRegExp = "Unmapped source properties: \"weight, color\"")
@@ -62,13 +62,13 @@ public class TargetThisMappingTest {
 
         dto.setAnimal( e );
 
-        Dog domain = CustomerEntityMapper3.INSTANCE.map( dto );
+        Dog domain = CustomerMapper3.INSTANCE.map( dto );
 
         assertThat( domain ).isNotNull();
         assertThat( domain.getType() ).isEqualTo( dto.getType() );
         assertThat( domain.getWeight() ).isEqualTo( e.getWeight() );
 
-        DogDTO back = CustomerEntityMapper3.INSTANCE.map( domain );
+        DogDTO back = CustomerMapper3.INSTANCE.map( domain );
 
         assertThat( back ).isNotNull();
         assertThat( back.getType() ).isEqualTo( domain.getType() );
@@ -77,106 +77,106 @@ public class TargetThisMappingTest {
 
     @Test
     @WithClasses( {
-            CustomerEntityMapper1.class,
+            CustomerMapper1.class,
             OrderDTO.class,
             CustomerDTO.class,
-            CustomerEntity.class,
-            Entity.class,
-            EntityDTO.class,
+            CustomerItem.class,
+            Item.class,
+            ItemDTO.class,
             OrderLine.class,
             OrderLineDTO.class,
-            OrderEntity.class,
+            OrderItem.class,
             OrderDTO.class,
             SaleOrder.class,
             SaleOrderDTO.class
     } )
     public void testTargetingThis() {
         CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+        ce.setName( "customer name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        ce.setEntity( e );
+        ce.setItem( e );
 
-        CustomerEntity c = CustomerEntityMapper1.INSTANCE.map( ce );
+        CustomerItem c = CustomerMapper1.INSTANCE.map( ce );
 
         assertThat( c ).isNotNull();
         assertThat( c.getName() ).isEqualTo( ce.getName() );
-        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
-        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+        assertThat( c.getId() ).isEqualTo( ce.getItem().getId() );
+        assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
     }
 
     @Test
     @WithClasses( {
-            CustomerEntityMapper1.class,
+            CustomerMapper1.class,
             OrderDTO.class,
             CustomerDTO.class,
-            CustomerEntity.class,
-            Entity.class,
-            EntityDTO.class,
+            CustomerItem.class,
+            Item.class,
+            ItemDTO.class,
             OrderLine.class,
             OrderLineDTO.class,
-            OrderEntity.class,
+            OrderItem.class,
             OrderDTO.class,
             SaleOrder.class,
             SaleOrderDTO.class
     } )
     public void testTargetingThisWithNestedLevels() {
         CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+        ce.setName( "customer name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        ce.setEntity( e );
+        ce.setItem( e );
 
         OrderDTO order = new OrderDTO();
         order.setCustomer( ce );
 
-        OrderEntity c = CustomerEntityMapper1.INSTANCE.map( order );
+        OrderItem c = CustomerMapper1.INSTANCE.map( order );
 
         assertThat( c ).isNotNull();
         assertThat( c.getCustomer() ).isNotNull();
         assertThat( c.getCustomer().getName() ).isEqualTo( ce.getName() );
-        assertThat( c.getId() ).isEqualTo( ce.getEntity().getId() );
-        assertThat( c.getStatus() ).isEqualTo( ce.getEntity().getStatus() );
+        assertThat( c.getId() ).isEqualTo( ce.getItem().getId() );
+        assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
     }
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper1.class,
+        CustomerMapper1.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
     public void testMapDoubleTarget() {
         CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+        ce.setName( "customer name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        ce.setEntity( e );
+        ce.setItem( e );
 
         OrderDTO order = new OrderDTO();
         order.setCustomer( ce );
-        order.setEntity( e );
+        order.setItem( e );
 
         SaleOrderDTO saleOrder = new SaleOrderDTO();
-        saleOrder.setEntity( e );
+        saleOrder.setItem( e );
         saleOrder.setOrder( order );
         saleOrder.setNumber( "double mapping test" );
 
-        SaleOrder c = CustomerEntityMapper1.INSTANCE.mapDoubleTarget( saleOrder );
+        SaleOrder c = CustomerMapper1.INSTANCE.mapDoubleTarget( saleOrder );
 
         assertThat( c ).isNotNull();
         assertThat( c.getNumber() ).isEqualTo( saleOrder.getNumber() );
@@ -186,55 +186,55 @@ public class TargetThisMappingTest {
 
     @Test
     @WithClasses( {
-            CustomerEntityMapper1.class,
+            CustomerMapper1.class,
             OrderDTO.class,
             CustomerDTO.class,
-            CustomerEntity.class,
-            Entity.class,
-            EntityDTO.class,
+            CustomerItem.class,
+            Item.class,
+            ItemDTO.class,
             OrderLine.class,
             OrderLineDTO.class,
-            OrderEntity.class,
+            OrderItem.class,
             OrderDTO.class,
             SaleOrder.class,
             SaleOrderDTO.class
     } )
     public void testFromThis() {
-        CustomerEntity ce = new CustomerEntity();
-        ce.setName( "customer entity name" );
-        ce.setId( "entity id" );
+        CustomerItem ce = new CustomerItem();
+        ce.setName( "customer name" );
+        ce.setId( "item id" );
         ce.setStatus( 1 );
 
-        CustomerDTO c = CustomerEntityMapper1.INSTANCE.inverseMap( ce );
+        CustomerDTO c = CustomerMapper1.INSTANCE.inverseMap( ce );
 
         assertThat( c ).isNotNull();
         assertThat( ce.getName() ).isEqualTo( c.getName() );
-        assertThat( ce.getId() ).isEqualTo( c.getEntity().getId() );
-        assertThat( ce.getStatus() ).isEqualTo( c.getEntity().getStatus() );
+        assertThat( ce.getId() ).isEqualTo( c.getItem().getId() );
+        assertThat( ce.getStatus() ).isEqualTo( c.getItem().getStatus() );
     }
 
     @Test
     @WithClasses( {
-            CustomerEntityMapper1.class,
+            CustomerMapper1.class,
             OrderDTO.class,
             CustomerDTO.class,
-            CustomerEntity.class,
-            Entity.class,
-            EntityDTO.class,
+            CustomerItem.class,
+            Item.class,
+            ItemDTO.class,
             OrderLine.class,
             OrderLineDTO.class,
-            OrderEntity.class,
+            OrderItem.class,
             OrderDTO.class,
             SaleOrder.class,
             SaleOrderDTO.class
     } )
     public void testWithCollection() {
-        CustomerEntity ce = new CustomerEntity();
-        ce.setName( "customer entity name" );
-        ce.setId( "customer entity id" );
+        CustomerItem ce = new CustomerItem();
+        ce.setName( "customer name" );
+        ce.setId( "customer id" );
         ce.setStatus( 1 );
 
-        OrderEntity order = new OrderEntity();
+        OrderItem order = new OrderItem();
         order.setCustomer( ce );
         order.setId( "order id" );
 
@@ -243,100 +243,100 @@ public class TargetThisMappingTest {
 
 //        order.addOrderLine( ol );
 
-        OrderDTO o = CustomerEntityMapper1.INSTANCE.map( order );
+        OrderDTO o = CustomerMapper1.INSTANCE.map( order );
 
         assertThat( o ).isNotNull();
-        assertThat( o.getEntity().getId() ).isEqualTo( "order id" );
+        assertThat( o.getItem().getId() ).isEqualTo( "order id" );
         assertThat( o.getCustomer().getName() ).isEqualTo( ce.getName() );
-        assertThat( o.getCustomer().getEntity().getId() ).isEqualTo( ce.getId() );
+        assertThat( o.getCustomer().getItem().getId() ).isEqualTo( ce.getId() );
     }
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper1.class,
+        CustomerMapper1.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
     public void testUpdateDto() {
-        CustomerEntity ce = new CustomerEntity();
-        ce.setName( "customer entity name" );
-        ce.setId( "entity id" );
+        CustomerItem ce = new CustomerItem();
+        ce.setName( "customer name" );
+        ce.setId( "item id" );
         ce.setStatus( 1 );
 
         CustomerDTO c = new CustomerDTO();
 
-        CustomerEntityMapper1.INSTANCE.update( ce, c );
+        CustomerMapper1.INSTANCE.update( ce, c );
 
         assertThat( c ).isNotNull();
         assertThat( ce.getName() ).isEqualTo( c.getName() );
-        assertThat( ce.getId() ).isEqualTo( c.getEntity().getId() );
-        assertThat( ce.getStatus() ).isEqualTo( c.getEntity().getStatus() );
+        assertThat( ce.getId() ).isEqualTo( c.getItem().getId() );
+        assertThat( ce.getStatus() ).isEqualTo( c.getItem().getStatus() );
     }
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper1.class,
+        CustomerMapper1.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
-    public void testUpdateEntity() {
+    public void testUpdateItem() {
         CustomerDTO dto = new CustomerDTO();
-        dto.setName( "customer entity name" );
+        dto.setName( "customer name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        dto.setEntity( e );
+        dto.setItem( e );
 
-        CustomerEntity c = new CustomerEntity();
+        CustomerItem c = new CustomerItem();
 
-        CustomerEntityMapper1.INSTANCE.update( dto, c );
+        CustomerMapper1.INSTANCE.update( dto, c );
 
         assertThat( c ).isNotNull();
         assertThat( c.getName() ).isEqualTo( dto.getName() );
-        assertThat( c.getId() ).isEqualTo( dto.getEntity().getId() );
-        assertThat( c.getStatus() ).isEqualTo( dto.getEntity().getStatus() );
+        assertThat( c.getId() ).isEqualTo( dto.getItem().getId() );
+        assertThat( c.getStatus() ).isEqualTo( dto.getItem().getStatus() );
     }
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper2.class,
+        CustomerMapper2.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
     public void testWithoutSourceWithMappingWithNoSource() {
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
 
-        Entity ee = CustomerEntityMapper2.INSTANCE.map( e );
+        Item ee = CustomerMapper2.INSTANCE.map( e );
 
         assertThat( ee ).isNotNull();
         assertThat( ee.getId() ).isEqualTo( e.getId() );
@@ -344,29 +344,29 @@ public class TargetThisMappingTest {
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper2.class,
+        CustomerMapper2.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
     public void testWithoutSourceWithMultipappingWithNoSource() {
         CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+        ce.setName( "customer name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        ce.setEntity( e );
+        ce.setItem( e );
 
-        CustomerEntity c = CustomerEntityMapper2.INSTANCE.map( ce );
+        CustomerItem c = CustomerMapper2.INSTANCE.map( ce );
 
         assertThat( c ).isNotNull();
         assertThat( c.getName() ).isEqualTo( ce.getName() );
@@ -374,29 +374,29 @@ public class TargetThisMappingTest {
 
     @Test
     @WithClasses( {
-        CustomerEntityMapper2.class,
+        CustomerMapper2.class,
         OrderDTO.class,
         CustomerDTO.class,
-        CustomerEntity.class,
-        Entity.class,
-        EntityDTO.class,
+        CustomerItem.class,
+        Item.class,
+        ItemDTO.class,
         OrderLine.class,
         OrderLineDTO.class,
-        OrderEntity.class,
+        OrderItem.class,
         OrderDTO.class,
         SaleOrder.class,
         SaleOrderDTO.class
     } )
     public void testMapNameOnlyWithNoSource() {
         CustomerDTO ce = new CustomerDTO();
-        ce.setName( "customer entity name" );
+        ce.setName( "customer item name" );
 
-        EntityDTO e = new EntityDTO();
-        e.setId( "entity id" );
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
         e.setStatus( 1 );
-        ce.setEntity( e );
+        ce.setItem( e );
 
-        CustomerEntity c = CustomerEntityMapper2.INSTANCE.mapNameOnly( ce );
+        CustomerItem c = CustomerMapper2.INSTANCE.mapNameOnly( ce );
 
         assertThat( c ).isNotNull();
         assertThat( c.getName() ).isEqualTo( ce.getName() );
