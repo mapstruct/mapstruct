@@ -48,8 +48,8 @@
         </#if>
     }
 
-    <#-- A variable needs to be defined if there are before mappings and this is not exisitingInstanceMapping -->
-    <#assign needVarDefine = beforeMappingReferencesWithMappingTarget?has_content && !existingInstanceMapping />
+    <#-- A variable needs to be defined if there are before or after mappings and this is not exisitingInstanceMapping -->
+    <#assign needVarDefine = (beforeMappingReferencesWithMappingTarget?has_content || afterMappingReferences?has_content) && !existingInstanceMapping />
 
     <#if resultType.arrayType>
         <#if needVarDefine>
@@ -60,7 +60,7 @@
     <#elseif resultType.iterableType>
         <#if existingInstanceMapping>
             ${resultName}.clear();
-        <#elseif needVarDefine || afterMappingReferences?has_content>
+        <#elseif needVarDefine>
             <#assign needVarDefine = false />
             <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
             <@iterableLocalVarDef/> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
@@ -180,5 +180,5 @@
     </@compress>
 </#macro>
 <#macro returnLocalVarDefOrUpdate>
-    <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif !needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
+    <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
 </#macro>

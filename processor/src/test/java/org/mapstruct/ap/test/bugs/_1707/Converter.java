@@ -18,12 +18,21 @@ public abstract class Converter {
 
     public abstract Set<Target> convert(Stream<Source> source);
 
+    public abstract Target[] convertArray(Stream<Source> source);
+
     @Mapping( target = "custom", ignore = true )
     public abstract Target convert(Source source);
 
     @AfterMapping
     public void addCustomValue(@MappingTarget Set<Target> targetList) {
         targetList.forEach( t -> t.custom = true );
+    }
+
+    @AfterMapping
+    public void addCustomValue(@MappingTarget Target[] targetArray) {
+        for ( Target target : targetArray ) {
+            target.custom = true;
+        }
     }
 
     public static final class Source {
