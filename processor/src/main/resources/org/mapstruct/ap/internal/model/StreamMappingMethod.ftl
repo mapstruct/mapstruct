@@ -52,7 +52,7 @@
     <#assign needVarDefine = beforeMappingReferencesWithMappingTarget?has_content && !existingInstanceMapping />
 
     <#if resultType.arrayType>
-        <#if !existingInstanceMapping && needVarDefine>
+        <#if needVarDefine>
             <#assign needVarDefine = false />
             <#-- We create a null array which later will be directly assigned from the stream-->
             ${resultElementType}[] ${resultName} = null;
@@ -67,7 +67,7 @@
         </#if>
     <#else>
         <#-- Streams are immutable so we can't update them -->
-        <#if !existingInstanceMapping && needVarDefine>
+        <#if needVarDefine>
             <#assign needVarDefine = false />
             <@iterableLocalVarDef/> ${resultName} = Stream.empty();
         </#if>
