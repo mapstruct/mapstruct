@@ -82,7 +82,7 @@
                         ${basedir}/../processor/src/main/java
                     </sourcepath>
                     <links>
-                        <link>http://docs.oracle.com/javase/7/docs/api/</link>
+                        <link>https://docs.oracle.com/javase/8/docs/api/</link>
                     </links>
                     <packagesheader>MapStruct Packages</packagesheader>
                     <doctitle>MapStruct ${project.version}</doctitle>
