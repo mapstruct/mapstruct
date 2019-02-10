@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 
-import org.mapstruct.ap.internal.conversion.SimpleConversion;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -27,7 +26,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a "built-in" mapping method which will be added as private method to the generated mapper. Built-in
- * methods are used in cases where a {@link SimpleConversion} doesn't suffice, e.g. as several lines of source code or a
+ * methods are used in cases where a simple conversation doesn't suffice, e.g. as several lines of source code or a
  * try/catch block are required.
  *
  * @author Sjaak Derksen
