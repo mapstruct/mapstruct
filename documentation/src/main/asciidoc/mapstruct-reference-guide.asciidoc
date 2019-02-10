@@ -568,7 +568,7 @@ public interface CarMapper {
 
 The generated code of the `updateCarFromDto()` method will update the passed `Car` instance with the properties from the given `CarDto` object. There may be only one parameter marked as mapping target. Instead of `void` you may also set the method's return type to the type of the target parameter, which will cause the generated implementation to update the passed mapping target and return it as well. This allows for fluent invocations of mapping methods.
 
-For `CollectionMappingStrategy.ACCESSOR_ONLY` Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map. Otherwise, For `CollectionMappingStrategy.ADDER_PREFERRED` or `CollectionMappingStrategy.ADDER_PREFERRED` the target will not be cleared and the values will be populated immediately.
+For `CollectionMappingStrategy.ACCESSOR_ONLY` Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map. Otherwise, For `CollectionMappingStrategy.ADDER_PREFERRED` or `CollectionMappingStrategy.TARGET_IMMUTABLE` the target will not be cleared and the values will be populated immediately.
 
 [[direct-field-mappings]]
 === Mappings with direct field access
