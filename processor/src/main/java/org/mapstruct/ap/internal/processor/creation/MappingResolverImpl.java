@@ -342,6 +342,12 @@ public class MappingResolverImpl implements MappingResolver {
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
+                if ( Object.class.getName()
+                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                    //  java.lang.Object as intermediate result
+                    continue;
+                }
+
                 methodRefY =
                     resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
 
@@ -381,6 +387,12 @@ public class MappingResolverImpl implements MappingResolver {
             Assignment methodRefY = null;
 
             for ( Method methodYCandidate : methodYCandidates ) {
+                if ( Object.class.getName()
+                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                    //  java.lang.Object as intermediate result
+                    continue;
+                }
+
                 methodRefY =
                     resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
 
@@ -420,7 +432,9 @@ public class MappingResolverImpl implements MappingResolver {
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
-                if ( methodXCandidate.getMappingTargetParameter() != null ) {
+                if ( methodXCandidate.isUpdateMethod() ||
+                    Object.class.getName().equals( methodXCandidate.getReturnType().getFullyQualifiedName() ) ) {
+                    // skip update methods || java.lang.Object as intermediate result
                     continue;
                 }
 
