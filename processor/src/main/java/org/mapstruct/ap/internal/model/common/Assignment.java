@@ -106,7 +106,7 @@ public interface Assignment {
      *
      * @return the desired name, made unique in the scope of the bean mapping.
      */
-    String createLocalVarName( String desiredName );
+    String createUniqueVarName(String desiredName );
 
     /**
      * See {@link #setSourceLocalVarName(java.lang.String) }
@@ -130,6 +130,23 @@ public interface Assignment {
      * @param sourceLocalVarName source local variable name
      */
     void setSourceLocalVarName(String sourceLocalVarName);
+
+    /**
+     * See {@link #getSourceLoopVarName()} (java.lang.String) }
+     *
+     * @return loop variable (can be null if not set)
+     */
+    String getSourceLoopVarName();
+
+    /**
+     * Replaces the sourceLocalVar or sourceReference at the call site in the assignment in the template with this
+     * sourceLoopVarName.
+     * The sourceLocalVar can subsequently be used for e.g. null checking.
+     *
+     * @param sourceLoopVarName loop variable
+     */
+    void setSourceLoopVarName(String sourceLoopVarName);
+
 
     /**
      * Returns whether the type of assignment

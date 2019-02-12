@@ -33,8 +33,12 @@ public class AdderWrapper extends AssignmentWrapper {
                          String adderIteratorName ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
+        // a method local var has been added earlier.
+
+
+        // localVar is iteratorVariable
         String desiredName = Nouns.singularize( adderIteratorName );
-        rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
+        rhs.setSourceLoopVarName( rhs.createUniqueVarName( desiredName ) );
         adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
     }
 
@@ -54,6 +58,18 @@ public class AdderWrapper extends AssignmentWrapper {
 
     public Type getAdderType() {
         return adderType;
+    }
+
+    public boolean isIncludeSourceNullCheck() {
+        return true;
+    }
+
+    public boolean isSetExplicitlyToNull() {
+        return false;
+    }
+
+    public boolean isSetExplicitlyToDefault() {
+        return false;
     }
 
     @Override

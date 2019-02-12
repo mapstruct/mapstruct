@@ -48,11 +48,11 @@
         </#if>
     }
 
-    <#-- A variable needs to be defined if there are before mappings and this is not exisitingInstanceMapping -->
-    <#assign needVarDefine = beforeMappingReferencesWithMappingTarget?has_content && !existingInstanceMapping />
+    <#-- A variable needs to be defined if there are before or after mappings and this is not exisitingInstanceMapping -->
+    <#assign needVarDefine = (beforeMappingReferencesWithMappingTarget?has_content || afterMappingReferences?has_content) && !existingInstanceMapping />
 
     <#if resultType.arrayType>
-        <#if !existingInstanceMapping && needVarDefine>
+        <#if needVarDefine>
             <#assign needVarDefine = false />
             <#-- We create a null array which later will be directly assigned from the stream-->
             ${resultElementType}[] ${resultName} = null;
@@ -67,7 +67,7 @@
         </#if>
     <#else>
         <#-- Streams are immutable so we can't update them -->
-        <#if !existingInstanceMapping && needVarDefine>
+        <#if needVarDefine>
             <#assign needVarDefine = false />
             <@iterableLocalVarDef/> ${resultName} = Stream.empty();
         </#if>
@@ -180,5 +180,5 @@
     </@compress>
 </#macro>
 <#macro returnLocalVarDefOrUpdate>
-    <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif !needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
+    <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
 </#macro>

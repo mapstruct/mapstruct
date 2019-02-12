@@ -89,8 +89,8 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public String createLocalVarName( String desiredName ) {
-        return assignment.createLocalVarName( desiredName );
+    public String createUniqueVarName(String desiredName ) {
+        return assignment.createUniqueVarName( desiredName );
     }
 
     @Override
@@ -101,6 +101,16 @@ public class TypeConversion extends ModelElement implements Assignment {
     @Override
     public void setSourceLocalVarName(String sourceLocalVarName) {
         assignment.setSourceLocalVarName( sourceLocalVarName );
+    }
+
+    @Override
+    public String getSourceLoopVarName() {
+        return assignment.getSourceLoopVarName();
+    }
+
+    @Override
+    public void setSourceLoopVarName(String sourceLoopVarName) {
+        assignment.setSourceLoopVarName( sourceLoopVarName );
     }
 
     @Override

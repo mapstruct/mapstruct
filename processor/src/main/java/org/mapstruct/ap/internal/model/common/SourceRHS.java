@@ -27,6 +27,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourceReference;
     private final Type sourceType;
     private String sourceLocalVarName;
+    private String sourceLoopVarName;
     private final Set<String> existingVariableNames;
     private final String sourceErrorMessagePart;
     private final String sourcePresenceCheckerReference;
@@ -69,7 +70,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public String createLocalVarName(String desiredName) {
+    public String createUniqueVarName(String desiredName) {
         String result = Strings.getSafeVariableName( desiredName, existingVariableNames );
         existingVariableNames.add( result );
         return result;
@@ -83,6 +84,14 @@ public class SourceRHS extends ModelElement implements Assignment {
     @Override
     public void setSourceLocalVarName(String sourceLocalVarName) {
         this.sourceLocalVarName = sourceLocalVarName;
+    }
+
+    public String getSourceLoopVarName() {
+        return sourceLoopVarName;
+    }
+
+    public void setSourceLoopVarName(String sourceLoopVarName) {
+        this.sourceLoopVarName = sourceLoopVarName;
     }
 
     @Override

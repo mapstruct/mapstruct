@@ -8,7 +8,8 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper" -->
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
-  if ( ${sourceReference} != null ) {
-      ${sourceReference}.forEach( ${ext.targetBeanName}::${ext.targetWriteAccessorName} );
-  }
+    <@lib.sourceLocalVarAssignment/>
+    <@lib.handleSourceReferenceNullCheck>
+        <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>.forEach( ${ext.targetBeanName}::${ext.targetWriteAccessorName} );
+    </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>

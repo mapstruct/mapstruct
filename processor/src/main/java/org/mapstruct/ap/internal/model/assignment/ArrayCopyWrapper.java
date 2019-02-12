@@ -20,16 +20,22 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
 
     private final Type arraysType;
     private final Type targetType;
+    private final boolean setExplicitlyToNull;
+    private final boolean setExplicitlyToDefault;
 
     public ArrayCopyWrapper(Assignment rhs,
                             String targetPropertyName,
                             Type arraysType,
                             Type targetType,
-                            boolean fieldAssignment) {
+                            boolean fieldAssignment,
+                            boolean setExplicitlyToNull,
+                            boolean setExplicitlyToDefault) {
         super( rhs, fieldAssignment );
         this.arraysType = arraysType;
         this.targetType = targetType;
-        rhs.setSourceLocalVarName( rhs.createLocalVarName( targetPropertyName ) );
+        rhs.setSourceLocalVarName( rhs.createUniqueVarName( targetPropertyName ) );
+        this.setExplicitlyToDefault = setExplicitlyToDefault;
+        this.setExplicitlyToNull = setExplicitlyToNull;
     }
 
     @Override
@@ -43,5 +49,13 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
 
     public boolean isIncludeSourceNullCheck() {
         return true;
+    }
+
+    public boolean isSetExplicitlyToNull() {
+        return setExplicitlyToNull;
+    }
+
+    public boolean isSetExplicitlyToDefault() {
+        return setExplicitlyToDefault;
     }
 }

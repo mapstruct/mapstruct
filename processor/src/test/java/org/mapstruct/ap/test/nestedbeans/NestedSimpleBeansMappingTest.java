@@ -98,7 +98,7 @@ public class NestedSimpleBeansMappingTest {
         // result
         assertThat( smartMapping.getName() ).isEqualTo( user.getName() );
         assertThat( smartMapping.getCar().getYear() ).isEqualTo( user.getCar().getYear() );
-        assertThat( smartMapping.getCar().getName() ).isEqualTo( "Toyota" );
+        assertThat( smartMapping.getCar().getName() ).isNull();
         assertThat( user.getCar().getName() ).isNull();
         assertWheels( smartMapping.getCar().getWheels(), user.getCar().getWheels() );
         assertCar( smartMapping.getSecondCar(), user.getSecondCar() );

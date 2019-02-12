@@ -30,11 +30,17 @@
 </#macro>
 <#--
     local macro related to handleSourceReferenceNullCheck
+    note: the <#elseif setExplicitlyToDefault || setExplicitlyToNull> is only relevant for update mappings
+          the default value takes precedence
 -->
 <#macro elseDefaultAssignment>
     <#if ext.defaultValueAssignment?? >
       else {
         <@handeDefaultAssigment/>
+      }
+    <#elseif setExplicitlyToDefault || setExplicitlyToNull>
+      else {
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
       }
     </#if>
 </#macro>
@@ -142,7 +148,7 @@ Performs a default assignment with a default value.
     <#if factoryMethod??>
         <@includeModel object=factoryMethod targetType=ext.targetType/>
     <#else>
-         new <@constructTargetObject/>()
+        <@constructTargetObject/>
     </#if>
 </@compress></#macro>
 <#--
@@ -152,9 +158,13 @@ Performs a default assignment with a default value.
 -->
 <#macro constructTargetObject><@compress single_line=true>
     <#if ext.targetType.implementationType??>
-        <@includeModel object=ext.targetType.implementationType/>
+        new <@includeModel object=ext.targetType.implementationType/>()
+    <#elseif ext.targetType.arrayType>
+        new <@includeModel object=ext.targetType.componentType/>[0]
+    <#elseif ext.targetType.sensibleDefault??>
+        ${ext.targetType.sensibleDefault}
     <#else>
-        <@includeModel object=ext.targetType/>
+        new <@includeModel object=ext.targetType/>()
     </#if>
 </@compress></#macro>
 <#--

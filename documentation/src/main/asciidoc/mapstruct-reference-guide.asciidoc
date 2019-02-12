@@ -115,7 +115,7 @@ It will not work with older versions.
 
 Add the following to your Gradle build file in order to enable MapStruct:
 
-.Gradle configuration
+.Gradle configuration (3.4 and later)
 ====
 [source, groovy, linenums]
 [subs="verbatim,attributes"]
@@ -123,7 +123,34 @@ Add the following to your Gradle build file in order to enable MapStruct:
 ...
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.15'
+    id 'net.ltgt.apt' version '0.20'
+}
+
+// You can integrate with your IDEs.
+// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
+apply plugin: 'net.ltgt.apt-idea'
+apply plugin: 'net.ltgt.apt-eclipse'
+
+dependencies {
+    ...
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+...
+----
+====
+.Gradle (3.3 and older)
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+plugins {
+    ...
+    id 'net.ltgt.apt' version '0.20'
 }
 
 // You can integrate with your IDEs.
@@ -134,8 +161,8 @@ apply plugin: 'net.ltgt.apt-eclipse'
 dependencies {
     ...
     compile "org.mapstruct:mapstruct:${mapstructVersion}"
-
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
     // If you are using mapstruct in test code
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }
@@ -571,7 +598,7 @@ public interface CarMapper {
 
 The generated code of the `updateCarFromDto()` method will update the passed `Car` instance with the properties from the given `CarDto` object. There may be only one parameter marked as mapping target. Instead of `void` you may also set the method's return type to the type of the target parameter, which will cause the generated implementation to update the passed mapping target and return it as well. This allows for fluent invocations of mapping methods.
 
-Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map.
+For `CollectionMappingStrategy.ACCESSOR_ONLY` Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map. Otherwise, For `CollectionMappingStrategy.ADDER_PREFERRED` or `CollectionMappingStrategy.TARGET_IMMUTABLE` the target will not be cleared and the values will be populated immediately.
 
 [[direct-field-mappings]]
 === Mappings with direct field access
@@ -2137,16 +2164,30 @@ The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy`
 [[mapping-result-for-null-properties]]
 === Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).
 
-MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method yields absent.
+MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method results in 'absent'.
 
-By default the source property will be set to null. However:
+By default the target property will be set to null.
 
-1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values (`Object`, `ArrayList`, `HashMap`).
+However:
+
+1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values.
+For `List` MapStruct generates an `ArrayList`, for `Map` a `HashMap`, for arrays an empty array, for `String` `""` and for primitive / boxed types a representation of `false` or `0`.
+For all other objects an new instance is created. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`.
 
 2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
 
 The strategy works in a hierarchical fashion. Setting `Mapping#nullValuePropertyMappingStrategy` on mapping level will override `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MappingConfig#nullValuePropertyMappingStrategy`.
 
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValuePropertyMappingStrategy` to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
+====
+
+[TIP]
+====
+`NullValuePropertyMappingStrategy` also applies when the presense checker returns `not present`.
+====
 
 [[checking-source-property-for-null-arguments]]
 === Controlling checking result for 'null' properties in bean mapping
@@ -2174,6 +2215,11 @@ Some frameworks generate bean properties that have a source presence checker. Of
 The source presence checker name can be changed in the MapStruct service provider interface (SPI). It can also be deactivated in this way.
 ====
 
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValueheckStrategy` to avoid addition of `null` to the target collection or map.
+====
 [[exceptions]]
 === Exceptions
 

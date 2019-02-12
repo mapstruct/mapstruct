@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.2.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.3.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
@@ -64,13 +64,13 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId> <!-- OR use this with Java 8 and beyond: <artifactId>mapstruct-jdk8</artifactId> -->
+        <artifactId>mapstruct</artifactId>
         <version>${org.mapstruct.version}</version>
     </dependency>
 </dependencies>
@@ -82,8 +82,8 @@ For Maven-based projects, add the following to your POM file in order to use Map
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.5.1</version>
             <configuration>
-                <source>1.6</source> <!-- or 1.7 or 1.8, .. -->
-                <target>1.6</target>
+                <source>1.8</source>
+                <target>1.8</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -115,10 +115,10 @@ apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.2.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
+    compile 'org.mapstruct:mapstruct:1.3.0.Final'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final' // if you are using mapstruct in test code
 }
 ...
 ```
