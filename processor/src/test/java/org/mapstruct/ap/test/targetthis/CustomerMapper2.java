@@ -9,13 +9,15 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(
     unmappedSourcePolicy = ReportingPolicy.IGNORE,
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
+    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
 )
 public interface CustomerMapper2 {
     CustomerMapper2 INSTANCE = Mappers.getMapper( CustomerMapper2.class );

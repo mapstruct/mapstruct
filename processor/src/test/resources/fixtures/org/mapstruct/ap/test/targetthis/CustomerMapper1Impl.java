@@ -10,7 +10,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-02-12T10:29:29+0100",
+    date = "2019-02-12T11:25:08+0100",
     comments = "version: , compiler: javac, environment: Java 1.8.0_192 (Azul Systems, Inc.)"
 )
 public class CustomerMapper1Impl implements CustomerMapper1 {
@@ -27,9 +27,10 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         if ( id != null ) {
             customerItem.setId( id );
         }
-        int status = customerItemStatus( customer );
-        customerItem.setStatus( status );
-        customerItem.setName( customer.getName() );
+        customerItem.setStatus( customerItemStatus( customer ) );
+        if ( customer.getName() != null ) {
+            customerItem.setName( customer.getName() );
+        }
         customerItem.setLevel( customer.getLevel() );
 
         return customerItem;
@@ -44,7 +45,9 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         CustomerDTO customerDTO = new CustomerDTO();
 
         customerDTO.setItem( customerItemToItemDTO( customer ) );
-        customerDTO.setName( customer.getName() );
+        if ( customer.getName() != null ) {
+            customerDTO.setName( customer.getName() );
+        }
         customerDTO.setLevel( customer.getLevel() );
 
         return customerDTO;
@@ -60,7 +63,12 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
             dto.setItem( new ItemDTO() );
         }
         customerItemToItemDTO1( customer, dto.getItem() );
-        dto.setName( customer.getName() );
+        if ( customer.getName() != null ) {
+            dto.setName( customer.getName() );
+        }
+        else {
+            dto.setName( null );
+        }
         dto.setLevel( customer.getLevel() );
     }
 
@@ -74,9 +82,16 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         if ( id != null ) {
             customer.setId( id );
         }
-        int status = customerItemStatus( dto );
-        customer.setStatus( status );
-        customer.setName( dto.getName() );
+        else {
+            customer.setId( null );
+        }
+        customer.setStatus( customerItemStatus( dto ) );
+        if ( dto.getName() != null ) {
+            customer.setName( dto.getName() );
+        }
+        else {
+            customer.setName( null );
+        }
         customer.setLevel( dto.getLevel() );
     }
 
@@ -92,14 +107,15 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         if ( id != null ) {
             orderItem.setId( id );
         }
-        int status = orderCustomerItemStatus( order );
-        orderItem.setStatus( status );
+        orderItem.setStatus( orderCustomerItemStatus( order ) );
         if ( order.getOrderLines() != null ) {
             for ( OrderLineDTO orderLine : order.getOrderLines() ) {
                 orderItem.addOrderLine( map( orderLine ) );
             }
         }
-        orderItem.setCustomer( map( order.getCustomer() ) );
+        if ( order.getCustomer() != null ) {
+            orderItem.setCustomer( map( order.getCustomer() ) );
+        }
 
         return orderItem;
     }
@@ -112,8 +128,9 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
 
         SaleOrder saleOrder = new SaleOrder();
 
-        if ( orderOrderOrderLines( order ) != null ) {
-            for ( OrderLineDTO orderLine : orderOrderOrderLines( order ) ) {
+        List<OrderLineDTO> orderLines = orderOrderOrderLines( order );
+        if ( orderLines != null ) {
+            for ( OrderLineDTO orderLine : orderLines ) {
                 saleOrder.addOrderLine( map( orderLine ) );
             }
         }
@@ -125,9 +142,10 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         if ( id != null ) {
             saleOrder.setId( id );
         }
-        int status = orderItemStatus( order );
-        saleOrder.setStatus( status );
-        saleOrder.setNumber( order.getNumber() );
+        saleOrder.setStatus( orderItemStatus( order ) );
+        if ( order.getNumber() != null ) {
+            saleOrder.setNumber( order.getNumber() );
+        }
 
         return saleOrder;
     }
@@ -141,7 +159,9 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
         OrderDTO orderDTO = new OrderDTO();
 
         orderDTO.setItem( orderItemToItemDTO( order ) );
-        orderDTO.setCustomer( inverseMap( order.getCustomer() ) );
+        if ( order.getCustomer() != null ) {
+            orderDTO.setCustomer( inverseMap( order.getCustomer() ) );
+        }
         if ( order.getOrderLines() != null ) {
             for ( OrderLine orderLine : order.getOrderLines() ) {
                 orderDTO.addOrderLine( map( orderLine ) );
@@ -211,7 +231,9 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
 
         ItemDTO itemDTO = new ItemDTO();
 
-        itemDTO.setId( customerItem.getId() );
+        if ( customerItem.getId() != null ) {
+            itemDTO.setId( customerItem.getId() );
+        }
         itemDTO.setStatus( customerItem.getStatus() );
 
         return itemDTO;
@@ -222,7 +244,12 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
             return;
         }
 
-        mappingTarget.setId( customerItem.getId() );
+        if ( customerItem.getId() != null ) {
+            mappingTarget.setId( customerItem.getId() );
+        }
+        else {
+            mappingTarget.setId( null );
+        }
         mappingTarget.setStatus( customerItem.getStatus() );
     }
 
@@ -325,7 +352,9 @@ public class CustomerMapper1Impl implements CustomerMapper1 {
 
         ItemDTO itemDTO = new ItemDTO();
 
-        itemDTO.setId( orderItem.getId() );
+        if ( orderItem.getId() != null ) {
+            itemDTO.setId( orderItem.getId() );
+        }
         itemDTO.setStatus( orderItem.getStatus() );
 
         return itemDTO;

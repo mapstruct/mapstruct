@@ -9,7 +9,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-02-12T10:29:29+0100",
+    date = "2019-02-12T11:25:08+0100",
     comments = "version: , compiler: javac, environment: Java 1.8.0_192 (Azul Systems, Inc.)"
 )
 public class CustomerMapper2Impl implements CustomerMapper2 {
@@ -22,7 +22,9 @@ public class CustomerMapper2Impl implements CustomerMapper2 {
 
         Item item1 = new Item();
 
-        item1.setId( item.getId() );
+        if ( item.getId() != null ) {
+            item1.setId( item.getId() );
+        }
         item1.setStatus( item.getStatus() );
 
         return item1;
@@ -36,7 +38,9 @@ public class CustomerMapper2Impl implements CustomerMapper2 {
 
         CustomerItem customerItem = new CustomerItem();
 
-        customerItem.setName( customer.getName() );
+        if ( customer.getName() != null ) {
+            customerItem.setName( customer.getName() );
+        }
         customerItem.setLevel( customer.getLevel() );
 
         return customerItem;
@@ -50,7 +54,9 @@ public class CustomerMapper2Impl implements CustomerMapper2 {
 
         CustomerItem customerItem = new CustomerItem();
 
-        customerItem.setName( customer.getName() );
+        if ( customer.getName() != null ) {
+            customerItem.setName( customer.getName() );
+        }
         customerItem.setLevel( customer.getLevel() );
 
         return customerItem;
@@ -64,7 +70,9 @@ public class CustomerMapper2Impl implements CustomerMapper2 {
 
         CustomerDTO customerDTO = new CustomerDTO();
 
-        customerDTO.setName( customer.getName() );
+        if ( customer.getName() != null ) {
+            customerDTO.setName( customer.getName() );
+        }
         customerDTO.setLevel( customer.getLevel() );
 
         return customerDTO;
