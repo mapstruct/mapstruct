@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.targetthis;
 
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -14,31 +15,42 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses( {
+    CustomerMapper1.class,
+    CustomerMapper2.class,
+    OrderDTO.class,
+    CustomerDTO.class,
+    CustomerItem.class,
+    Item.class,
+    ItemDTO.class,
+    OrderLine.class,
+    OrderLineDTO.class,
+    OrderItem.class,
+    OrderDTO.class,
+    DogDTO.class,
+    Dog.class,
+    AnimalDTO.class,
+    Animal.class,
+    MapConfig.class,
+    SaleOrder.class,
+    SaleOrderDTO.class
+} )
 public class TargetThisMappingTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        CustomerMapper1.class,
+        CustomerMapper2.class
+    );
 
     @Test
     @WithClasses( {
-        CustomerMapper3.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        DogDTO.class,
-        Dog.class,
-        AnimalDTO.class,
-        Animal.class,
-        MapConfig.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
+        CustomerMapper3.class
     } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
@@ -76,20 +88,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-            CustomerMapper1.class,
-            OrderDTO.class,
-            CustomerDTO.class,
-            CustomerItem.class,
-            Item.class,
-            ItemDTO.class,
-            OrderLine.class,
-            OrderLineDTO.class,
-            OrderItem.class,
-            OrderDTO.class,
-            SaleOrder.class,
-            SaleOrderDTO.class
-    } )
     public void testTargetingThis() {
         CustomerDTO ce = new CustomerDTO();
         ce.setName( "customer name" );
@@ -108,20 +106,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-            CustomerMapper1.class,
-            OrderDTO.class,
-            CustomerDTO.class,
-            CustomerItem.class,
-            Item.class,
-            ItemDTO.class,
-            OrderLine.class,
-            OrderLineDTO.class,
-            OrderItem.class,
-            OrderDTO.class,
-            SaleOrder.class,
-            SaleOrderDTO.class
-    } )
     public void testTargetingThisWithNestedLevels() {
         CustomerDTO ce = new CustomerDTO();
         ce.setName( "customer name" );
@@ -144,20 +128,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper1.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testMapDoubleTarget() {
         CustomerDTO ce = new CustomerDTO();
         ce.setName( "customer name" );
@@ -185,20 +155,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-            CustomerMapper1.class,
-            OrderDTO.class,
-            CustomerDTO.class,
-            CustomerItem.class,
-            Item.class,
-            ItemDTO.class,
-            OrderLine.class,
-            OrderLineDTO.class,
-            OrderItem.class,
-            OrderDTO.class,
-            SaleOrder.class,
-            SaleOrderDTO.class
-    } )
     public void testFromThis() {
         CustomerItem ce = new CustomerItem();
         ce.setName( "customer name" );
@@ -214,20 +170,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-            CustomerMapper1.class,
-            OrderDTO.class,
-            CustomerDTO.class,
-            CustomerItem.class,
-            Item.class,
-            ItemDTO.class,
-            OrderLine.class,
-            OrderLineDTO.class,
-            OrderItem.class,
-            OrderDTO.class,
-            SaleOrder.class,
-            SaleOrderDTO.class
-    } )
     public void testWithCollection() {
         CustomerItem ce = new CustomerItem();
         ce.setName( "customer name" );
@@ -252,20 +194,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper1.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testUpdateDto() {
         CustomerItem ce = new CustomerItem();
         ce.setName( "customer name" );
@@ -283,20 +211,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper1.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testUpdateItem() {
         CustomerDTO dto = new CustomerDTO();
         dto.setName( "customer name" );
@@ -317,20 +231,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper2.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testWithoutSourceWithMappingWithNoSource() {
         ItemDTO e = new ItemDTO();
         e.setId( "item id" );
@@ -343,20 +243,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper2.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testWithoutSourceWithMultipappingWithNoSource() {
         CustomerDTO ce = new CustomerDTO();
         ce.setName( "customer name" );
@@ -373,20 +259,6 @@ public class TargetThisMappingTest {
     }
 
     @Test
-    @WithClasses( {
-        CustomerMapper2.class,
-        OrderDTO.class,
-        CustomerDTO.class,
-        CustomerItem.class,
-        Item.class,
-        ItemDTO.class,
-        OrderLine.class,
-        OrderLineDTO.class,
-        OrderItem.class,
-        OrderDTO.class,
-        SaleOrder.class,
-        SaleOrderDTO.class
-    } )
     public void testMapNameOnlyWithNoSource() {
         CustomerDTO ce = new CustomerDTO();
         ce.setName( "customer item name" );
