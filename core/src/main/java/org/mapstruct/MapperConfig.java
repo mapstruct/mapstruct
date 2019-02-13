@@ -45,6 +45,16 @@ public @interface MapperConfig {
     Class<?>[] uses() default { };
 
     /**
+     * Additional types for which an import statement is to be added to the generated mapper implementation class.
+     * This allows to refer to those types from within mapping expressions given via {@link Mapping#expression()},
+     * {@link Mapping#defaultExpression()} or using
+     * their simple name rather than their fully-qualified name.
+     *
+     * @return classes to add in the imports of the generated implementation.
+     */
+    Class<?>[] imports() default { };
+
+    /**
      * How unmapped properties of the source type of a mapping should be
      * reported.
      *
