@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -97,7 +98,12 @@ public class MapperConfiguration {
     }
 
     public List<TypeMirror> imports() {
-        return mapperPrism.imports();
+        List<TypeMirror> imports = new ArrayList<>();
+        imports.addAll( mapperPrism.imports() );
+        if ( mapperConfigPrism != null ) {
+            imports.addAll( mapperConfigPrism.imports() );
+        }
+        return imports;
     }
 
     public ReportingPolicyPrism unmappedTargetPolicy(Options options) {
