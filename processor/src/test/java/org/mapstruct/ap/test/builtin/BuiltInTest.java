@@ -5,8 +5,7 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -19,7 +18,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -34,10 +32,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mapstruct.ap.test.builtin._target.IterableTarget;
 import org.mapstruct.ap.test.builtin._target.MapTarget;
+import org.mapstruct.ap.test.builtin.bean.BigDecimalProperty;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
+import org.mapstruct.ap.test.builtin.bean.SomeType;
+import org.mapstruct.ap.test.builtin.bean.SomeTypeProperty;
 import org.mapstruct.ap.test.builtin.bean.StringListProperty;
 import org.mapstruct.ap.test.builtin.bean.StringProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarProperty;
@@ -64,6 +65,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Test for the generation of built-in mapping methods.
  *
@@ -78,24 +81,11 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     JaxbElementProperty.class,
     StringListProperty.class,
     StringProperty.class,
+    BigDecimalProperty.class,
+    SomeTypeProperty.class,
+    SomeType.class,
     XmlGregorianCalendarProperty.class,
     ZonedDateTimeProperty.class,
-    CalendarToZonedDateTimeMapper.class,
-    ZonedDateTimeToCalendarMapper.class,
-    CalendarToDateMapper.class,
-    CalendarToStringMapper.class,
-    CalendarToXmlGregCalMapper.class,
-    DateToCalendarMapper.class,
-    DateToXmlGregCalMapper.class,
-    IterableSourceTargetMapper.class,
-    JaxbListMapper.class,
-    JaxbMapper.class,
-    MapSourceTargetMapper.class,
-    StringToCalendarMapper.class,
-    StringToXmlGregCalMapper.class,
-    XmlGregCalToCalendarMapper.class,
-    XmlGregCalToDateMapper.class,
-    XmlGregCalToStringMapper.class,
     IterableSource.class,
     MapSource.class
 })
@@ -117,8 +107,8 @@ public class BuiltInTest {
     }
 
     @Test
-    public void shouldApplyBuiltInOnJAXBElement() throws ParseException, DatatypeConfigurationException {
-
+    @WithClasses( JaxbMapper.class )
+    public void shouldApplyBuiltInOnJAXBElement()  {
         JaxbElementProperty source = new JaxbElementProperty();
         source.setProp( createJaxb( "TEST" ) );
         source.publicProp = createJaxb( "PUBLIC TEST" );
@@ -130,6 +120,30 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( JaxbMapper.class )
+    @IssueKey( "1698" )
+    public void shouldApplyBuiltInOnJAXBElementExtra()  {
+        JaxbElementProperty source = new JaxbElementProperty();
+        source.setProp( createJaxb( "5" ) );
+        source.publicProp = createJaxb( "5" );
+
+        BigDecimalProperty target = JaxbMapper.INSTANCE.mapBD( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isEqualTo( new BigDecimal( "5" ) );
+        assertThat( target.publicProp ).isEqualTo( new BigDecimal( "5" ) );
+
+        JaxbElementProperty source2 = new JaxbElementProperty();
+        source2.setProp( createJaxb( "5" ) );
+        source2.publicProp = createJaxb( "5" );
+
+        SomeTypeProperty target2 = JaxbMapper.INSTANCE.mapSomeType( source2 );
+        assertThat( target2 ).isNotNull();
+        assertThat( target2.publicProp ).isNotNull();
+        assertThat( target2.getProp() ).isNotNull();
+    }
+
+    @Test
+    @WithClasses( JaxbListMapper.class )
     @IssueKey( "141" )
     public void shouldApplyBuiltInOnJAXBElementList() throws ParseException, DatatypeConfigurationException {
 
@@ -144,6 +158,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( DateToXmlGregCalMapper.class )
     public void shouldApplyBuiltInOnDateToXmlGregCal() throws ParseException, DatatypeConfigurationException {
 
         DateProperty source = new DateProperty();
@@ -159,6 +174,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( XmlGregCalToDateMapper.class )
     public void shouldApplyBuiltInOnXmlGregCalToDate() throws ParseException, DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
@@ -175,6 +191,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( StringToXmlGregCalMapper.class )
     public void shouldApplyBuiltInStringToXmlGregCal() throws ParseException, DatatypeConfigurationException {
 
         StringProperty source = new StringProperty();
@@ -209,6 +226,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( XmlGregCalToStringMapper.class )
     public void shouldApplyBuiltInXmlGregCalToString() throws ParseException, DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
@@ -235,6 +253,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( CalendarToXmlGregCalMapper.class )
     public void shouldApplyBuiltInOnCalendarToXmlGregCal() throws ParseException, DatatypeConfigurationException {
 
         CalendarProperty source = new CalendarProperty();
@@ -250,6 +269,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( XmlGregCalToCalendarMapper.class )
     public void shouldApplyBuiltInOnXmlGregCalToCalendar() throws ParseException, DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
@@ -267,6 +287,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( CalendarToDateMapper.class )
     public void shouldApplyBuiltInOnCalendarToDate() throws ParseException, DatatypeConfigurationException {
 
         CalendarProperty source = new CalendarProperty();
@@ -282,6 +303,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( DateToCalendarMapper.class )
     public void shouldApplyBuiltInOnDateToCalendar() throws ParseException, DatatypeConfigurationException {
 
         DateProperty source = new DateProperty();
@@ -298,6 +320,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( CalendarToStringMapper.class )
     public void shouldApplyBuiltInOnCalendarToString() throws ParseException, DatatypeConfigurationException {
 
         CalendarProperty source = new CalendarProperty();
@@ -313,6 +336,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( StringToCalendarMapper.class )
     public void shouldApplyBuiltInOnStringToCalendar() throws ParseException, DatatypeConfigurationException {
 
         StringProperty source = new StringProperty();
@@ -329,6 +353,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( IterableSourceTargetMapper.class )
     public void shouldApplyBuiltInOnIterable() throws ParseException, DatatypeConfigurationException {
 
         IterableSource source = new IterableSource();
@@ -342,6 +367,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( MapSourceTargetMapper.class )
     public void shouldApplyBuiltInOnMap() throws ParseException, DatatypeConfigurationException {
 
         MapSource source = new MapSource();
@@ -357,6 +383,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( CalendarToZonedDateTimeMapper.class )
     public void shouldApplyBuiltInOnCalendarToZonedDateTime() throws ParseException {
         assertThat( CalendarToZonedDateTimeMapper.INSTANCE.map( null ) ).isNull();
 
@@ -373,6 +400,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @WithClasses( ZonedDateTimeToCalendarMapper.class )
     public void shouldApplyBuiltInOnZonedDateTimeToCalendar() throws ParseException {
         assertThat( ZonedDateTimeToCalendarMapper.INSTANCE.map( null ) ).isNull();
 
