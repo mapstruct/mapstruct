@@ -378,6 +378,10 @@ public class MappingResolverImpl implements MappingResolver {
          * <li>there is a method from B to C, methodY</li>
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+         *
+         *  In stead of directly using a built in method candidate all the return types as 'B' of all available built-in
+         *  methods are used to resolve a mapping (assignment) from result type to 'B'. If  a match is found, an attempt
+         *  is done to find a matching type conversion.
          */
         private Assignment resolveViaConversionAndMethod(Type sourceType, Type targetType) {
 
@@ -421,7 +425,11 @@ public class MappingResolverImpl implements MappingResolver {
          * <li>there is a conversion from A to B, conversionX</li>
          * <li>there is a method from B to C, methodY</li>
          * </ul>
-         * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+         * then this method tries to resolve this combination and make a mapping conversionY( methodX ( parameter ) )
+         *
+         * In stead of directly using a built in method candidate all the return types as 'B' of all available built-in
+         * methods are used to resolve a mapping (assignment) from source type to 'B'. If  a match is found, an attempt
+         * is done to find a matching type conversion.
          */
         private ConversionAssignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
 
