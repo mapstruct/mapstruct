@@ -12,6 +12,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1719")
@@ -44,11 +45,13 @@ public class Issue1719Test {
         Issue1719Mapper.INSTANCE.map( source, target );
 
         assertThat( target.getTargetElements() ).hasSize( 3 );
-        assertThat( target.getTargetElements() ).containsOnly(
-            new TargetElement( 1, "bob" ),
-            new TargetElement( 2, "alice" ),
-            new TargetElement( 3, "louise" )
-        ).usingFieldByFieldElementComparator();
+        assertThat( target.getTargetElements() )
+            .extracting( TargetElement::getId, TargetElement::getName )
+            .containsOnly(
+                tuple( 1, "bob" ),
+                tuple( 2, "alice" ),
+                tuple( 3, "louise" )
+            );
     }
 
 }
