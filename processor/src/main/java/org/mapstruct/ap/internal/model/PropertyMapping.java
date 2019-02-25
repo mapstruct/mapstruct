@@ -724,7 +724,13 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
-            Type sourceType = sourceRHS.getSourceType();
+            Type sourceType;
+            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER ) {
+                sourceType = sourceRHS.getSourceTypeForMatching();
+            }
+            else {
+                 sourceType = sourceRHS.getSourceType();
+            }
             if ( forgedNamedBased && !canGenerateAutoSubMappingBetween( sourceType, targetType ) ) {
                 return null;
             }
@@ -744,7 +750,8 @@ public class PropertyMapping extends ModelElement {
             // They should forge an update method only if we set the forceUpdateMethod. This is set to true,
             // because we are forging a Mapping for a method with multiple source parameters.
             // If the target type is enum, then we can't create an update method
-            if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod ) ) {
+            if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod )
+                && targetWriteAccessorType != TargetWriteAccessorType.ADDER) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }
