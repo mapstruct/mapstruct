@@ -93,7 +93,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             null
         );
 
-        if ( assignment == null ) {
+        if ( assignment == null && !hasQualfiers() ) {
             assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
             if ( assignment != null ) {
                 ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
@@ -164,6 +164,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             afterMappingMethods,
             selectionParameters
         );
+    }
+
+    private boolean hasQualfiers() {
+        return selectionParameters != null && selectionParameters.hasQualfiers();
     }
 
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
