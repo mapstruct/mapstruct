@@ -96,14 +96,13 @@ public class QualifierTest {
         ErroneousMapper.class
     } )
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = ErroneousMapper.class,
-                        kind = Kind.ERROR,
-                        line = 28,
-                        messageRegExp = "Ambiguous mapping methods found for mapping property "
-                                + "\"java.lang.String title\" to java.lang.String.*" )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 28,
+                messageRegExp = "Can't map property \"java.lang.String title\" to \"java.lang.String title\".*")
+        }
     )
     public void shouldNotProduceMatchingMethod() {
     }

@@ -327,7 +327,7 @@ public class PropertyMapping extends ModelElement {
 
             Type sourceType = rightHandSide.getSourceType();
             // No mapping found. Try to forge a mapping
-            if ( assignment == null ) {
+            if ( assignment == null && !hasQualifiers() ) {
                 if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
                     assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
@@ -375,6 +375,10 @@ public class PropertyMapping extends ModelElement {
                 dependsOn,
                 getDefaultValueAssignment( assignment )
             );
+        }
+
+        private boolean hasQualifiers() {
+            return selectionParameters != null && selectionParameters.hasQualfiers();
         }
 
         /**
@@ -595,7 +599,7 @@ public class PropertyMapping extends ModelElement {
 
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
-                forgedName = Strings.getSafeVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
+                forgedName = Strings.getSafeVariableName( forgedName, ctx.getReservedNames() );
                 ForgedMethod methodRef = new ForgedMethod(
                     forgedName,
                     sourceReference.getParameter().getType(),
@@ -699,7 +703,7 @@ public class PropertyMapping extends ModelElement {
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
                                                  ExecutableElement element, String suffix) {
             String name = getName( sourceType, targetType );
-            name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+            name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
@@ -751,7 +755,7 @@ public class PropertyMapping extends ModelElement {
             }
 
             String name = getName( sourceType, targetType );
-            name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+            name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             List<Parameter> parameters = new ArrayList<>( method.getContextParameters() );
             Type returnType;

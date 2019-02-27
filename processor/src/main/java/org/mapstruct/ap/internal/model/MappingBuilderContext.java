@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -191,12 +192,18 @@ public class MappingBuilderContext {
         return mappingsToGenerate;
     }
 
-    public List<String> getNamesOfMappingsToGenerate() {
-        List<String> nameList = new ArrayList<>();
+    public List<String> getReservedNames() {
+        Set<String> nameSet = new HashSet<>();
         for ( MappingMethod method : mappingsToGenerate ) {
-            nameList.add( method.getName() );
+            nameSet.add( method.getName() );
         }
-        return nameList;
+        // add existing names
+        for ( SourceMethod method : sourceModel) {
+            if ( method.isAbstract() ) {
+                nameSet.add( method.getName() );
+            }
+        }
+        return new ArrayList<>( nameSet );
     }
 
     public MappingMethod getExistingMappingMethod(MappingMethod newMappingMethod) {

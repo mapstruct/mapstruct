@@ -9,6 +9,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
+
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Qualifier;
@@ -28,6 +31,14 @@ public abstract class TopologyMapper {
 
     @Mapping( target = "topologyFeatures", qualifiedBy = Cities.class )
     public abstract TopologyEntity mapTopologyAsCity(TopologyDto dto);
+
+    @Rivers
+    @IterableMapping( qualifiedBy = Rivers.class )
+    public abstract List<TopologyFeatureEntity> mapTopologiesAsRiver(List<TopologyFeatureDto> in);
+
+    @Cities
+    @IterableMapping( qualifiedBy = Cities.class )
+    public abstract List<TopologyFeatureEntity> mapTopologiesAsCities(List<TopologyFeatureDto> in);
 
     @Rivers
     protected TopologyFeatureEntity mapRiver( TopologyFeatureDto dto ) {

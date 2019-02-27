@@ -97,7 +97,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 null
             );
 
-            if ( keyAssignment == null ) {
+            if ( keyAssignment == null && !hasQualfiers( keySelectionParameters ) ) {
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
                 if ( keyAssignment != null ) {
                     ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_KEY_NOTE, keyAssignment );
@@ -154,7 +154,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
-            if ( valueAssignment == null ) {
+            if ( valueAssignment == null && !hasQualfiers( valueSelectionParameters ) ) {
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
                 if ( valueAssignment != null ) {
                     ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_VALUE_NOTE, valueAssignment );
@@ -221,6 +221,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         @Override
         protected boolean shouldUsePropertyNamesInHistory() {
             return true;
+        }
+
+        private boolean hasQualfiers( SelectionParameters selectionParameters ){
+            return selectionParameters != null && selectionParameters.hasQualfiers();
         }
     }
 

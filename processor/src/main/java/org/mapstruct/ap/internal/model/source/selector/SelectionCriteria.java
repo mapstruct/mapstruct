@@ -90,6 +90,15 @@ public class SelectionCriteria {
         this.preferUpdateMapping = preferUpdateMapping;
     }
 
+    public boolean hasQualfiers() {
+        return isNotEmpty( getQualifiedByNames() )
+            || isNotEmpty( getQualifiers() );
+    }
+
+    private boolean isNotEmpty(List in) {
+        return in != null && !in.isEmpty();
+    }
+
     public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
                                                       String targetPropertyName, boolean preferUpdateMapping) {
 

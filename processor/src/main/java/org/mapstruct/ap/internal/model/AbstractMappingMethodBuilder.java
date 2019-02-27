@@ -37,7 +37,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         }
 
         String name = getName( sourceType, targetType );
-        name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+        name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
         ForgedMethodHistory history = null;
         if ( method instanceof ForgedMethod ) {
             history = ( (ForgedMethod) method ).getHistory();
