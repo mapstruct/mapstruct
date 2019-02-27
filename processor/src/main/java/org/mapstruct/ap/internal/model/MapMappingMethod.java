@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +23,8 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -223,7 +223,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             return true;
         }
 
-        private boolean hasQualfiers( SelectionParameters selectionParameters ){
+        private boolean hasQualfiers(SelectionParameters selectionParameters) {
             return selectionParameters != null && selectionParameters.hasQualfiers();
         }
     }
