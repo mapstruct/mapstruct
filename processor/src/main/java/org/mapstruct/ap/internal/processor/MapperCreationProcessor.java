@@ -314,6 +314,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
+                this.messager.log( 1, "creating map mapping method implementation for: " + method );
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
@@ -326,17 +327,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
-                this.messager.log( 1, "creating map mapping method implementation for: " + method );
             }
             else if ( method.isValueMapping() ) {
                 // prefer value mappings over enum mapping
+                this.messager.log( 1, "creating value mapping method implementation for: " + method );
                 ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
                     .mappingContext( mappingContext )
                     .method( method )
                     .valueMappings( mappingOptions.getValueMappings() )
                     .build();
                 mappingMethods.add( valueMappingMethod );
-                this.messager.log( 1, "creating value mapping method implementation for: " + method );
             }
             else if ( method.isEnumMapping() ) {
 
@@ -355,6 +355,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
             else if ( method.isStreamMapping() ) {
+                this.messager.log( 1, "creating stream mapping method implementation for: " + method );
                 StreamMappingMethod streamMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -365,11 +366,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 hasFactoryMethod =
                     streamMappingMethod.getFactoryMethod() != null || method.getResultType().isStreamType();
                 mappingMethods.add( streamMappingMethod );
-                this.messager.log( 1, "creating stream mapping method implementation for: " + method );
             }
             else {
-
-
+                this.messager.log( 1, "creating bean mapping method implementation for: " + method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
@@ -382,7 +381,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     hasFactoryMethod = true;
                     mappingMethods.add( beanMappingMethod );
                 }
-                this.messager.log( 1, "creating bean mapping method implementation for: " + method );
             }
 
             if ( !hasFactoryMethod ) {
