@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.Map;
+import java.util.stream.IntStream;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -153,6 +154,13 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }
+        }
+
+        public void log( int level, String message ) {
+            StringBuilder builder = new StringBuilder(  );
+            IntStream.range( 0, level ).mapToObj( i -> "-" ).forEach( builder::append );
+            builder.append( " MapStruct: " ).append( message );
+            delegate.printMessage( Kind.NOTE, builder.toString() );
         }
 
         public boolean isErroneous() {

@@ -94,6 +94,12 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
         if ( assignment == null ) {
             assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
+            if ( assignment != null ) {
+                ctx.getMessager().log( 2, "creating element mapping: " + assignment );
+            }
+        }
+        else {
+            ctx.getMessager().log( 2, "selecting element mapping: " + assignment );
         }
 
         if ( assignment == null ) {

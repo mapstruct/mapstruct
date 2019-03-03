@@ -28,4 +28,9 @@ public class ExecutableElementAccessor extends AbstractAccessor<ExecutableElemen
     public ExecutableElement getExecutable() {
         return element;
     }
+
+    @Override
+    public String toString() {
+        return element.getSimpleName().toString() + "( . )";
+    }
 }

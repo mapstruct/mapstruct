@@ -120,7 +120,8 @@ public class MappingProcessor extends AbstractProcessor {
         options = createOptions();
         annotationProcessorContext = new AnnotationProcessorContext(
             processingEnv.getElementUtils(),
-            processingEnv.getTypeUtils()
+            processingEnv.getTypeUtils(),
+            processingEnv.getMessager()
         );
     }
 

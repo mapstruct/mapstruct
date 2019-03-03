@@ -72,7 +72,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
 
+        this.messager.log( 0, "processing: " + mapperTypeElement );
+
         MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+
+        if ( mapperConfig != null ) {
+            this.messager.log( 0, "applying MapperConfiguration" );
+        }
 
         if ( !mapperConfig.isValid() ) {
             throw new AnnotationProcessingException(

@@ -10,8 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
@@ -39,12 +41,15 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private AccessorNamingUtils accessorNaming;
     private Elements elementUtils;
     private Types typeUtils;
+    private Messager messager;
 
-    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils) {
+    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
+        this.messager = messager;
+
     }
 
     /**
@@ -64,19 +69,32 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
             defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
             defaultBuilderProvider = new ImmutablesBuilderProvider();
+            messager.printMessage( Diagnostic.Kind.NOTE,
+                "MapStruct: Immutables found on classpath, using Immutable builder pattern" );
         }
         else if ( elementUtils.getTypeElement( FreeBuilderConstants.FREE_BUILDER_FQN ) != null ) {
             defaultAccessorNamingStrategy = new FreeBuilderAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
+            messager.printMessage( Diagnostic.Kind.NOTE,
+                "MapStruct: Freebuilder found on classpath, using Freebuilder builder pattern" );
         }
         else {
             defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
+            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: using default builder pattern." );
         }
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.accessorNamingStrategy.init( this );
+        if ( this.accessorNamingStrategy != defaultAccessorNamingStrategy ) {
+            messager.printMessage( Diagnostic.Kind.NOTE,
+                "MapStruct: Overriding found accessor naming strategy with user SPI defined strategy" );
+        }
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.builderProvider.init( this );
+        if ( this.accessorNamingStrategy != defaultAccessorNamingStrategy ) {
+            messager.printMessage( Diagnostic.Kind.NOTE,
+                "MapStruct: Overriding found builder strategy with user SPI defined strategy" );
+        }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
         this.initialized = true;
     }

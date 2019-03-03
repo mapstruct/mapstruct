@@ -295,6 +295,9 @@ public class PropertyMapping extends ModelElement {
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
+
+            ctx.getMessager().log( 2, "mapping: " + rightHandSide + " to: " + targetWriteAccessor );
+
             rightHandSide.setUseElementAsSourceTypeForMatching(
                 targetWriteAccessorType == TargetWriteAccessorType.ADDER );
 
@@ -339,6 +342,12 @@ public class PropertyMapping extends ModelElement {
                 else {
                     assignment = forgeMapping( rightHandSide );
                 }
+                if ( assignment != null ) {
+                    ctx.getMessager().log( 2, "creating property mapping: " + assignment );
+                }
+            }
+            else {
+                ctx.getMessager().log( 2, "selecting property mapping: " + assignment );
             }
 
             if ( assignment != null ) {

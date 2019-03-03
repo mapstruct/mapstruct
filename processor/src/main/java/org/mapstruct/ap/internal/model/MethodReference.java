@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
@@ -19,6 +20,7 @@ import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Represents a reference to another method, e.g. used to map a bean property from source to target type or to
@@ -348,4 +350,14 @@ public class MethodReference extends ModelElement implements Assignment {
         return new MethodReference( methodName, null, false );
     }
 
+    @Override
+    public String toString() {
+        String mapper = declaringMapper != null ? declaringMapper.getType().getName().toString() : "";
+        String argument = getAssignment() != null ? getAssignment().toString() : getSourceReference();
+        List<String> arguments = sourceParameters.stream()
+            .map( p -> p.isMappingContext() || p.isMappingTarget() || p.isTargetType() ? p.getName() : argument )
+            .collect( Collectors.toList() );
+
+        return returnType.getName() + " " + mapper + "#" + name + "(" + Strings.join( arguments, "," ) + ")";
+    }
 }
