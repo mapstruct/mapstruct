@@ -23,5 +23,11 @@ public class NoOpBuilderProvider implements BuilderProvider {
     public BuilderInfo findBuilderInfo(TypeMirror type) {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getCanonicalName();
+    }
+
 }
 // end::documentation[]

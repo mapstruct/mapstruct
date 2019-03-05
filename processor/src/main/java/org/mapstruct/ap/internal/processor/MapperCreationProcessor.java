@@ -294,7 +294,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
-                this.messager.log( 1, "creating iterable mapping method implementation for: " + method );
+                this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
             }
             else if ( method.isMapMapping() ) {
 
@@ -314,7 +314,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
-                this.messager.log( 1, "creating map mapping method implementation for: " + method );
+                this.messager.note( 1, Message.MAPMAPPING_CREATE_KEY_NOTE, method );
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
@@ -330,7 +330,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else if ( method.isValueMapping() ) {
                 // prefer value mappings over enum mapping
-                this.messager.log( 1, "creating value mapping method implementation for: " + method );
+                this.messager.note( 1, Message.VALUEMAPPING_CREATE_NOTE, method );
                 ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
                     .mappingContext( mappingContext )
                     .method( method )
@@ -355,7 +355,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
             else if ( method.isStreamMapping() ) {
-                this.messager.log( 1, "creating stream mapping method implementation for: " + method );
+                this.messager.note( 1, Message.STREAMMAPPING_CREATE_NOTE, method );
                 StreamMappingMethod streamMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -368,7 +368,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 mappingMethods.add( streamMappingMethod );
             }
             else {
-                this.messager.log( 1, "creating bean mapping method implementation for: " + method );
+                this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )

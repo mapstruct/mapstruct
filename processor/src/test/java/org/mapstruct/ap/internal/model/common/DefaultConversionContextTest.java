@@ -154,7 +154,7 @@ public class DefaultConversionContextTest {
         }
 
         @Override
-        public void log(int level, String log) {
+        public void note(int level, Message msg, Object... args) {
             throw new UnsupportedOperationException( "Should not be called" );
         }
 

@@ -156,10 +156,10 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             }
         }
 
-        public void log( int level, String message ) {
+        public void note( int level, Message msg, Object... args ) {
             StringBuilder builder = new StringBuilder(  );
             IntStream.range( 0, level ).mapToObj( i -> "-" ).forEach( builder::append );
-            builder.append( " MapStruct: " ).append( message );
+            builder.append( " MapStruct: " ).append( String.format( msg.getDescription(), args ) );
             delegate.printMessage( Kind.NOTE, builder.toString() );
         }
 

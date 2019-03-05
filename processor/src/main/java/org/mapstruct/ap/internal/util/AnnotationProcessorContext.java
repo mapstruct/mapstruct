@@ -69,32 +69,29 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
             defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
             defaultBuilderProvider = new ImmutablesBuilderProvider();
-            messager.printMessage( Diagnostic.Kind.NOTE,
-                "MapStruct: Immutables found on classpath, using Immutable builder pattern" );
+            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Immutables found on classpath" );
         }
         else if ( elementUtils.getTypeElement( FreeBuilderConstants.FREE_BUILDER_FQN ) != null ) {
             defaultAccessorNamingStrategy = new FreeBuilderAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
-            messager.printMessage( Diagnostic.Kind.NOTE,
-                "MapStruct: Freebuilder found on classpath, using Freebuilder builder pattern" );
+            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Freebuilder found on classpath" );
         }
         else {
             defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
-            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: using default builder pattern." );
         }
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.accessorNamingStrategy.init( this );
-        if ( this.accessorNamingStrategy != defaultAccessorNamingStrategy ) {
-            messager.printMessage( Diagnostic.Kind.NOTE,
-                "MapStruct: Overriding found accessor naming strategy with user SPI defined strategy" );
-        }
+        messager.printMessage(
+            Diagnostic.Kind.NOTE,
+            "MapStruct: Using accessor naming strategy: " + this.accessorNamingStrategy
+        );
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.builderProvider.init( this );
-        if ( this.accessorNamingStrategy != defaultAccessorNamingStrategy ) {
-            messager.printMessage( Diagnostic.Kind.NOTE,
-                "MapStruct: Overriding found builder strategy with user SPI defined strategy" );
-        }
+        messager.printMessage(
+            Diagnostic.Kind.NOTE,
+            "MapStruct: Using builder provider: " + this.builderProvider
+        );
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
         this.initialized = true;
     }

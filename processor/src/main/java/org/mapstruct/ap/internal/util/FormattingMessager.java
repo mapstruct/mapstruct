@@ -70,7 +70,9 @@ public interface FormattingMessager {
 
     /**
      * Just log as plain note
-     * @param log
+     * @param level nesting level
+     * @param log the log message
+     * @param args the arguments
      */
-    void log(int level, String log);
+    void note(int level, Message log, Object... args);
 }

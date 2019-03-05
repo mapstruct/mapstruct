@@ -231,4 +231,8 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
             + "future versions." );
     }
 
+    @Override
+    public String toString() {
+        return getClass().getCanonicalName();
+    }
 }
