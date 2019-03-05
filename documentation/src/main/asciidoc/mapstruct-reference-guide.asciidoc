@@ -85,6 +85,7 @@ For Maven based projects add the following to your POM file in order to use MapS
                         <version>${org.mapstruct.version}</version>
                     </path>
                 </annotationProcessorPaths>
+                <!-- for enabling verbose mode, uncommment: showWarnings>true</showWarnings -->
             </configuration>
         </plugin>
     </plugins>
@@ -92,6 +93,7 @@ For Maven based projects add the following to your POM file in order to use MapS
 ...
 ----
 ====
+To enable verbose mode, in which MapStruct logs its major decisions, add `showWarnings` to the maven configuration.
 
 [TIP]
 ====
