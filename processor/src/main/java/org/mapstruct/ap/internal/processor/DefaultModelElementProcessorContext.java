@@ -46,7 +46,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             RoundContext roundContext, Map<String, String> notToBeImported) {
 
         this.processingEnvironment = processingEnvironment;
-        this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
+        this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
@@ -109,9 +109,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
 
         private final Messager delegate;
         private boolean isErroneous = false;
+        private final boolean verbose;
 
-        DelegatingMessager(Messager delegate) {
+        DelegatingMessager(Messager delegate, boolean verbose) {
             this.delegate = delegate;
+            this.verbose = verbose;
         }
 
         @Override
@@ -157,10 +159,12 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         }
 
         public void note( int level, Message msg, Object... args ) {
-            StringBuilder builder = new StringBuilder(  );
-            IntStream.range( 0, level ).mapToObj( i -> "-" ).forEach( builder::append );
-            builder.append( " MapStruct: " ).append( String.format( msg.getDescription(), args ) );
-            delegate.printMessage( Kind.NOTE, builder.toString() );
+            if ( verbose ) {
+                StringBuilder builder = new StringBuilder();
+                IntStream.range( 0, level ).mapToObj( i -> "-" ).forEach( builder::append );
+                builder.append( " MapStruct: " ).append( String.format( msg.getDescription(), args ) );
+                delegate.printMessage( Kind.NOTE, builder.toString() );
+            }
         }
 
         public boolean isErroneous() {

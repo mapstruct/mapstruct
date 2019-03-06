@@ -42,14 +42,15 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
+    private boolean verbose;
 
-    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager) {
+    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean verbose) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
-
+        this.verbose = verbose;
     }
 
     /**
@@ -69,12 +70,16 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
             defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
             defaultBuilderProvider = new ImmutablesBuilderProvider();
-            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Immutables found on classpath" );
+            if ( verbose ) {
+                messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Immutables found on classpath" );
+            }
         }
         else if ( elementUtils.getTypeElement( FreeBuilderConstants.FREE_BUILDER_FQN ) != null ) {
             defaultAccessorNamingStrategy = new FreeBuilderAccessorNamingStrategy();
             defaultBuilderProvider = new DefaultBuilderProvider();
-            messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Freebuilder found on classpath" );
+            if ( verbose ) {
+                messager.printMessage( Diagnostic.Kind.NOTE, "MapStruct: Freebuilder found on classpath" );
+            }
         }
         else {
             defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
@@ -82,16 +87,20 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         }
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.accessorNamingStrategy.init( this );
-        messager.printMessage(
-            Diagnostic.Kind.NOTE,
-            "MapStruct: Using accessor naming strategy: " + this.accessorNamingStrategy
-        );
+        if ( verbose ) {
+            messager.printMessage(
+                Diagnostic.Kind.NOTE,
+                "MapStruct: Using accessor naming strategy: " + this.accessorNamingStrategy
+            );
+        }
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.builderProvider.init( this );
-        messager.printMessage(
-            Diagnostic.Kind.NOTE,
-            "MapStruct: Using builder provider: " + this.builderProvider
-        );
+        if ( verbose ) {
+            messager.printMessage(
+                Diagnostic.Kind.NOTE,
+                "MapStruct: Using builder provider: " + this.builderProvider
+            );
+        }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
         this.initialized = true;
     }
