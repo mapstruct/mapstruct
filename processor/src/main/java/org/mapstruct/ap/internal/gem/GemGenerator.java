@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.AfterMapping;
+import org.mapstruct.AsBean;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Builder;
@@ -61,6 +62,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(ValueMappings.class)
 @GemDefinition(Context.class)
 @GemDefinition(Builder.class)
+@GemDefinition(AsBean.class)
 
 @GemDefinition(MappingControl.class)
 @GemDefinition(MappingControls.class)

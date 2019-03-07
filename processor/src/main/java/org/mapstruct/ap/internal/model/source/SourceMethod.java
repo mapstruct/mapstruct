@@ -65,6 +65,7 @@ public class SourceMethod implements Method {
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
     private Boolean isStreamMapping;
+    private Boolean isMapAsBeanMapping;
     private final boolean hasObjectFactoryAnnotation;
 
     public static class Builder {
@@ -349,6 +350,14 @@ public class SourceMethod implements Method {
                 && getResultType().isMapType();
         }
         return isMapMapping;
+    }
+
+    public boolean isMapAsBeanMapping() {
+        if ( isMapAsBeanMapping != null ) {
+            isMapAsBeanMapping = getSourceParameters().stream().filter( Parameter::isAsBean ).findFirst().isPresent();
+            // TODO return type
+        }
+        return isMapAsBeanMapping;
     }
 
     /**

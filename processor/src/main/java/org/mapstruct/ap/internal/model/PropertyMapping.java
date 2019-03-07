@@ -212,6 +212,31 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
+            if ( sourceReference.getParameter().isAsBean() ) {
+                return buildAsBean();
+            }
+            else {
+                return buildStandard();
+            }
+        }
+
+        public PropertyMapping buildAsBean() {
+
+            Assignment assignment = getSourceRHS( sourceReference );
+
+            return new PropertyMapping(
+                targetPropertyName,
+                rightHandSide.getSourceParameterName(),
+                ValueProvider.of( targetReadAccessor ),
+                targetType,
+                assignment,
+                dependsOn,
+                getDefaultValueAssignment( assignment ),
+                targetWriteAccessorType == AccessorType.GETTER
+            );
+        }
+
+        public PropertyMapping buildStandard() {
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );

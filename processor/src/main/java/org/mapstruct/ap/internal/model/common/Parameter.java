@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 
+import org.mapstruct.ap.internal.gem.AsBeanGem;
 import org.mapstruct.ap.internal.gem.ContextGem;
 import org.mapstruct.ap.internal.gem.MappingTargetGem;
 import org.mapstruct.ap.internal.gem.TargetTypeGem;
@@ -31,6 +32,7 @@ public class Parameter extends ModelElement {
     private final boolean mappingTarget;
     private final boolean targetType;
     private final boolean mappingContext;
+    private final boolean asBean;
 
     private final boolean varArgs;
 
@@ -42,11 +44,12 @@ public class Parameter extends ModelElement {
         this.mappingTarget = MappingTargetGem.instanceOn( element ) != null;
         this.targetType = TargetTypeGem.instanceOn( element ) != null;
         this.mappingContext = ContextGem.instanceOn( element ) != null;
+        this.asBean = AsBeanGem.instanceOn( element ) != null;
         this.varArgs = varArgs;
     }
 
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
-                      boolean varArgs) {
+                      boolean asBean, boolean varArgs) {
         this.element = null;
         this.name = name;
         this.originalName = name;
@@ -54,11 +57,12 @@ public class Parameter extends ModelElement {
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
         this.mappingContext = mappingContext;
+        this.asBean = asBean;
         this.varArgs = varArgs;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false, false );
+        this( name, type, false, false, false, false, false );
     }
 
     public Element getElement() {
@@ -86,6 +90,7 @@ public class Parameter extends ModelElement {
         return ( mappingTarget ? "@MappingTarget " : "" )
             + ( targetType ? "@TargetType " : "" )
             + ( mappingContext ? "@Context " : "" )
+            + ( asBean ? "@AsBean " : "" )
             + type.toString() + " " + name;
     }
 
@@ -104,6 +109,10 @@ public class Parameter extends ModelElement {
 
     public boolean isVarArgs() {
         return varArgs;
+    }
+
+    public boolean isAsBean() {
+        return asBean;
     }
 
     @Override
@@ -144,6 +153,7 @@ public class Parameter extends ModelElement {
             "mappingTarget",
             parameterType,
             true,
+            false,
             false,
             false,
             false

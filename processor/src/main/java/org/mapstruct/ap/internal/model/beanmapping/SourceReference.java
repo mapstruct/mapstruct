@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -121,16 +122,24 @@ public class SourceReference extends AbstractReference {
             String[] segments = sourceNameTrimmed.split( "\\." );
 
             // start with an invalid source reference
-            SourceReference result = new SourceReference( null, new ArrayList<>(  ), false );
+            SourceReference result = new SourceReference( null, new ArrayList<>(), false );
             if ( method.getSourceParameters().size() > 1 ) {
                 Parameter parameter = fetchMatchingParameterFromFirstSegment( segments );
                 if ( parameter != null ) {
-                    result = buildFromMultipleSourceParameters( segments, parameter );
+                    if ( parameter.isAsBean() ) {
+                    }
+                    else {
+                        result = buildFromMultipleSourceParameters( segments, parameter );
+                    }
                 }
             }
             else {
                 Parameter parameter = method.getSourceParameters().get( 0 );
-                result = buildFromSingleSourceParameters( segments, parameter );
+                if ( parameter.isAsBean() ) {
+                }
+                else {
+                    result = buildFromSingleSourceParameters( segments, parameter );
+                }
             }
             return result;
 
@@ -205,6 +214,33 @@ public class SourceReference extends AbstractReference {
             }
 
             return new SourceReference( parameter, entries, foundEntryMatch );
+        }
+
+        /**
+         * When there is only one source parameters, the first segment name of the property may, or may not match
+         * the parameter name to avoid ambiguity
+         *
+         * consider: {@code Target map( Source1 source1 )}
+         * entries in an @Mapping#source can be "source1.propx" or just "propx" to be valid
+         *
+         * @param segments the segments of @Mapping#source
+         * @param parameter the one and only  parameter
+         * @return the source reference
+         */
+        private SourceReference buildFromAsBean(String[] segments, Parameter parameter) {
+
+            SourceReference result = new SourceReference( null, new ArrayList<>(), false );
+            if ( segments.length == 0 ) {
+                // TODO error cannot directly map from parameter
+            }
+            else if ( segments.length > 1 ) {
+                // TODO error cannot do nested parameter
+            }
+            else {
+                // TODO.. need to fix property entry
+                result = new SourceReference( parameter, new ArrayList<>( Collections.singleton( null ) ), true );
+            }
+            return result;
         }
 
         /**
