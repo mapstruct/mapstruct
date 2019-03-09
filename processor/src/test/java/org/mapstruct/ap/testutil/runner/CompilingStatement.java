@@ -128,6 +128,7 @@ abstract class CompilingStatement extends Statement {
                 "javax.inject",
                 "spring-beans",
                 "spring-context",
+                "jaxb-api",
                 "joda-time" };
 
         return filterBootClassPath( whitelist );

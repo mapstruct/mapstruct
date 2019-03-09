@@ -37,6 +37,19 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
  * @author Andreas Gudian
  */
 public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
+
+    private static final boolean IS_AT_LEAST_JAVA_9 = isIsAtLeastJava9();
+
+    private static boolean isIsAtLeastJava9() {
+        try {
+            Runtime.class.getMethod( "version" );
+            return true;
+        }
+        catch ( NoSuchMethodException e ) {
+            return false;
+        }
+    }
+
     private final List<Runner> runners;
 
     /**
@@ -56,6 +69,12 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
 
         if (singleCompiler != null) {
             return Arrays.<Runner> asList( new InnerAnnotationProcessorRunner( klass, singleCompiler.value() ) );
+        }
+        else if ( IS_AT_LEAST_JAVA_9 ) {
+            // Current tycho-compiler-jdt (0.26.0) is not compatible with Java 11
+            // Updating to latest version 1.3.0 fails some tests
+            // Once https://github.com/mapstruct/mapstruct/pull/1587 is resolved we can remove this line
+            return Arrays.asList( new InnerAnnotationProcessorRunner( klass, Compiler.JDK11 ) );
         }
 
         return Arrays.<Runner> asList(

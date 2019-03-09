@@ -38,6 +38,8 @@ public class JavaFileAssert extends FileAssert {
         "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}\",";
     private static final String GENERATED_COMMENTS_REGEX = "\\s+comments = \"version: , compiler: .*, environment: " +
         ".*\"";
+    private static final String IMPORT_GENERATED_ANNOTATION_REGEX = "import javax\\.annotation\\.(processing\\.)?" +
+        "Generated;";
 
     private Diff diff = new Diff();
 
@@ -135,7 +137,8 @@ public class JavaFileAssert extends FileAssert {
         else if ( delta.getType() == Delta.TYPE.CHANGE ) {
             List<String> lines = delta.getOriginal().getLines();
             if ( lines.size() == 1 ) {
-                return lines.get( 0 ).matches( GENERATED_DATE_REGEX );
+                return lines.get( 0 ).matches( GENERATED_DATE_REGEX ) ||
+                    lines.get( 0 ).matches( IMPORT_GENERATED_ANNOTATION_REGEX );
             }
             else if ( lines.size() == 2 ) {
                 return lines.get( 0 ).matches( GENERATED_DATE_REGEX ) &&
