@@ -90,7 +90,8 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         if ( verbose ) {
             messager.printMessage(
                 Diagnostic.Kind.NOTE,
-                "MapStruct: Using accessor naming strategy: " + this.accessorNamingStrategy
+                "MapStruct: Using accessor naming strategy: "
+                    + this.accessorNamingStrategy.getClass().getCanonicalName()
             );
         }
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
@@ -98,7 +99,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         if ( verbose ) {
             messager.printMessage(
                 Diagnostic.Kind.NOTE,
-                "MapStruct: Using builder provider: " + this.builderProvider
+                "MapStruct: Using builder provider: " + this.builderProvider.getClass().getCanonicalName()
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );

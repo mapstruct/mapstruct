@@ -31,6 +31,6 @@ public class ExecutableElementAccessor extends AbstractAccessor<ExecutableElemen
 
     @Override
     public String toString() {
-        return element.getSimpleName().toString() + "( . )";
+        return element.toString();
     }
 }

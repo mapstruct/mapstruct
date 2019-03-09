@@ -354,10 +354,11 @@ public class MethodReference extends ModelElement implements Assignment {
     public String toString() {
         String mapper = declaringMapper != null ? declaringMapper.getType().getName().toString() : "";
         String argument = getAssignment() != null ? getAssignment().toString() : getSourceReference();
+        String returnTypeAsString = returnType != null ? returnType.toString() : "";
         List<String> arguments = sourceParameters.stream()
             .map( p -> p.isMappingContext() || p.isMappingTarget() || p.isTargetType() ? p.getName() : argument )
             .collect( Collectors.toList() );
 
-        return returnType.getName() + " " + mapper + "#" + name + "(" + Strings.join( arguments, "," ) + ")";
+        return returnTypeAsString + " " + mapper + "#" + name + "(" + Strings.join( arguments, "," ) + ")";
     }
 }

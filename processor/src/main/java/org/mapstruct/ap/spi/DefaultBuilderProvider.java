@@ -281,9 +281,4 @@ public class DefaultBuilderProvider implements BuilderProvider {
         return typeElement == null || JAVA_JAVAX_PACKAGE.matcher( typeElement.getQualifiedName() ).matches();
     }
 
-    @Override
-    public String toString() {
-        return getClass().getCanonicalName();
-    }
-
 }

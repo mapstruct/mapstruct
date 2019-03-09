@@ -32,6 +32,6 @@ public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
 
     @Override
     public String toString() {
-        return element.getSimpleName().toString();
+        return element.toString();
     }
 }

@@ -24,9 +24,4 @@ public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrat
         return super.isFluentSetter( method ) && !method.getSimpleName().toString().equals( "from" );
     }
 
-    @Override
-    public String toString() {
-        return getClass().getCanonicalName();
-    }
-
 }

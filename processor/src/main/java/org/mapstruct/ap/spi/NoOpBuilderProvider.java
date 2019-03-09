@@ -24,10 +24,5 @@ public class NoOpBuilderProvider implements BuilderProvider {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return getClass().getCanonicalName();
-    }
-
 }
 // end::documentation[]

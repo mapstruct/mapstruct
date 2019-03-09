@@ -272,7 +272,7 @@ suppressGeneratorTimestamp`
 |`false`
 
 |`mapstruct.verbose`
-|If set to `true`, MapStruct in which MapStruct logs its major decisions. Note: also `showWarnings` need to be added due to a problem in the maven-compiler-plugin configuration.
+|If set to `true`, MapStruct in which MapStruct logs its major decisions. Note, at the moment of writing in Maven, also `showWarnings` needs to be added due to a problem in the maven-compiler-plugin configuration.
 |`false`
 
 |`mapstruct.

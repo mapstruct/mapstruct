@@ -84,9 +84,4 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return elementUtils.getTypeElement( builderQualifiedName );
     }
 
-    @Override
-    public String toString() {
-        return getClass().getCanonicalName();
-    }
-
 }

@@ -36,9 +36,4 @@ public class FreeBuilderAccessorNamingStrategy extends DefaultAccessorNamingStra
         return false;
     }
 
-    @Override
-    public String toString() {
-        return getClass().getCanonicalName();
-    }
-
 }
