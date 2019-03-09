@@ -86,15 +86,10 @@ public class SourceReference {
 
         public SourceReference build() {
 
-
             String sourceName = mapping.getSourceName();
-
             if ( sourceName == null ) {
                 return null;
             }
-
-            boolean isValid = true;
-            boolean foundEntryMatch;
 
             String sourceNameTrimmed = sourceName.trim();
             if ( !sourceName.equals( sourceNameTrimmed ) ) {
@@ -107,103 +102,160 @@ public class SourceReference {
                     sourceNameTrimmed
                 );
             }
-            String[] sourcePropertyNames = new String[0];
+
             String[] segments = sourceNameTrimmed.split( "\\." );
-            Parameter parameter = null;
 
-            List<PropertyEntry> entries = new ArrayList<>();
-
+            // start with an invalid source reference
+            SourceReference result = new SourceReference( null, new ArrayList<>(  ), false );
             if ( method.getSourceParameters().size() > 1 ) {
-
-                // parameterName is mandatory for multiple source parameters
-                if ( segments.length > 0 ) {
-                    String sourceParameterName = segments[0];
-                    parameter = method.getSourceParameter( sourceParameterName );
-                    if ( parameter == null ) {
-                        reportMappingError(
-                            Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
-                            sourceParameterName,
-                            Strings.join(
-                                method.getSourceParameters(),
-                                ", ",
-                                new Extractor<Parameter, String>() {
-                                    @Override
-                                    public String apply(Parameter parameter) {
-                                        return parameter.getName();
-                                    }
-                                }
-                            )
-                        );
-                        isValid = false;
-                    }
+                Parameter parameter = fetchMatchingParameterFromFirstSegment( segments );
+                if ( parameter != null ) {
+                    result = buildFromMultipleSourceParameters( segments, parameter );
                 }
-                if ( segments.length > 1 && parameter != null ) {
-                    sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                    entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                    foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
-                }
-                else {
-                    // its only a parameter, no property
-                    foundEntryMatch = true;
-                }
-
             }
             else {
+                Parameter parameter = method.getSourceParameters().get( 0 );
+                result = buildFromSingleSourceParameters( segments, parameter );
+            }
+            return result;
 
-                // parameter name is not mandatory for single source parameter
-                sourcePropertyNames = segments;
-                parameter = method.getSourceParameters().get( 0 );
-                entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+        }
 
-                if ( !foundEntryMatch ) {
-                    //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
-                    if ( parameter.getName().equals( segments[0] ) ) {
-                        sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                        entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                        foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
-                    }
-                    else {
-                        // segment[0] cannot be attributed to the parameter name.
-                        parameter = null;
-                    }
+        /**
+         * When there is only one source parameters, the first segment name of the property may, or may not match
+         * the parameter name to avoid ambiguity
+         *
+         * consider: {@code Target map( Source1 source1 )}
+         * entries in an @Mapping#source can be "source1.propx" or just "propx" to be valid
+         *
+         * @param segments the segments of @Mapping#source
+         * @param parameter the one and only  parameter
+         * @return the source reference
+         */
+        private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
+
+            boolean foundEntryMatch;
+
+            String[] propertyNames = segments;
+            List<PropertyEntry> entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+            foundEntryMatch = ( entries.size() == propertyNames.length );
+
+            if ( !foundEntryMatch ) {
+                //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
+                if ( parameter.getName().equals( segments[0] ) ) {
+                    propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+                    entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+                    foundEntryMatch = ( entries.size() == propertyNames.length );
+                }
+                else {
+                    // segment[0] cannot be attributed to the parameter name.
+                    parameter = null;
                 }
             }
 
             if ( !foundEntryMatch ) {
-
-                if ( parameter != null ) {
-                    reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
-                        Strings.join( Arrays.asList( sourcePropertyNames ), "." )
-                    );
-                }
-                else {
-                    int notFoundPropertyIndex = 0;
-                    Type sourceType = method.getParameters().get( 0 ).getType();
-                    if ( !entries.isEmpty() ) {
-                        notFoundPropertyIndex = entries.size();
-                        sourceType = last( entries ).getType();
-                    }
-                    String mostSimilarWord = Strings.getMostSimilarWord(
-                        sourcePropertyNames[notFoundPropertyIndex],
-                        sourceType.getPropertyReadAccessors().keySet()
-                    );
-                    List<String> elements = new ArrayList<>(
-                        Arrays.asList( sourcePropertyNames ).subList( 0, notFoundPropertyIndex )
-                    );
-                    elements.add( mostSimilarWord );
-                    reportMappingError(
-                        Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
-                        Strings.join( elements, "." )
-                    );
-                }
-                isValid = false;
+                reportErrorOnNoMatch( parameter, propertyNames, entries );
             }
 
-            return new SourceReference( parameter, entries, isValid );
+            return new SourceReference( parameter, entries, foundEntryMatch );
         }
 
-        private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
+        /**
+         * When there are more than one source parameters, the first segment name of the property
+         * needs to match the parameter name to avoid ambiguity
+         *
+         * @param segments the segments of @Mapping#source
+         * @param parameter the relevant source parameter
+         * @return the source reference
+         */
+        private SourceReference buildFromMultipleSourceParameters(String[] segments, Parameter parameter) {
+
+            boolean foundEntryMatch;
+
+            String[] propertyNames = new String[0];
+            List<PropertyEntry> entries = new ArrayList<>();
+
+            if ( segments.length > 1 && parameter != null ) {
+                propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+                entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+                foundEntryMatch = ( entries.size() == propertyNames.length );
+            }
+            else {
+                // its only a parameter, no property
+                foundEntryMatch = true;
+            }
+
+            if ( !foundEntryMatch ) {
+                reportErrorOnNoMatch( parameter, propertyNames, entries );
+            }
+
+            return new SourceReference( parameter, entries, foundEntryMatch );
+        }
+
+        /**
+         * When there are more than one source parameters, the first segment name of the propery
+         * needs to match the parameter name to avoid ambiguity
+         *
+         * consider: {@code Target map( Source1 source1, Source2 source2 )}
+         * entries in an @Mapping#source need to be "source1.propx" or "source2.propy.propz" to be valid
+         *
+         * @param segments the segments of @Mapping#source
+         * @return parameter that matches with first segment of @Mapping#source
+        */
+        private Parameter fetchMatchingParameterFromFirstSegment(String[] segments ) {
+            Parameter parameter = null;
+            if ( segments.length > 0 ) {
+                String parameterName = segments[0];
+                parameter = method.getSourceParameter( parameterName );
+                if ( parameter == null ) {
+                    reportMappingError(
+                        Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
+                        parameterName,
+                        Strings.join(
+                            method.getSourceParameters(),
+                            ", ",
+                            new Extractor<Parameter, String>() {
+                                @Override
+                                public String apply(Parameter parameter) {
+                                    return parameter.getName();
+                                }
+                            }
+                        )
+                    );
+                }
+            }
+            return parameter;
+        }
+
+        private void reportErrorOnNoMatch( Parameter parameter, String[] propertyNames, List<PropertyEntry> entries) {
+            if ( parameter != null ) {
+                reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
+                    Strings.join( Arrays.asList( propertyNames ), "." )
+                );
+            }
+            else {
+                int notFoundPropertyIndex = 0;
+                Type sourceType = method.getParameters().get( 0 ).getType();
+                if ( !entries.isEmpty() ) {
+                    notFoundPropertyIndex = entries.size();
+                    sourceType = last( entries ).getType();
+                }
+                String mostSimilarWord = Strings.getMostSimilarWord(
+                    propertyNames[notFoundPropertyIndex],
+                    sourceType.getPropertyReadAccessors().keySet()
+                );
+                List<String> elements = new ArrayList<>(
+                    Arrays.asList( propertyNames ).subList( 0, notFoundPropertyIndex )
+                );
+                elements.add( mostSimilarWord );
+                reportMappingError(
+                    Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
+                    Strings.join( elements, "." )
+                );
+            }
+        }
+
+        private List<PropertyEntry> matchWithSourceAccessorTypes(Type type, String[] entryNames) {
             List<PropertyEntry> sourceEntries = new ArrayList<>();
             Type newType = type;
             for ( String entryName : entryNames ) {
