@@ -22,6 +22,9 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.Compiler;
+import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
+import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
 
 /**
  * Tests application of format strings for conversions between strings and dates.
@@ -43,6 +46,8 @@ public class DateConversionTest {
     }
 
     @Test
+    @DisabledOnCompiler(Compiler.JDK11)
+    // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversions() {
         Source source = new Source();
         source.setDate( new GregorianCalendar( 2013, 6, 6 ).getTime() );
@@ -56,10 +61,42 @@ public class DateConversionTest {
     }
 
     @Test
+    @EnabledOnCompiler(Compiler.JDK11)
+    // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
+    public void shouldApplyDateFormatForConversionsJdk11() {
+        Source source = new Source();
+        source.setDate( new GregorianCalendar( 2013, 6, 6 ).getTime() );
+        source.setAnotherDate( new GregorianCalendar( 2013, 1, 14 ).getTime() );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getDate() ).isEqualTo( "06.07.2013" );
+        assertThat( target.getAnotherDate() ).isEqualTo( "14.02.13, 00:00" );
+    }
+
+    @Test
+    @DisabledOnCompiler(Compiler.JDK11)
+    // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionInReverseMapping() {
         Target target = new Target();
         target.setDate( "06.07.2013" );
         target.setAnotherDate( "14.02.13 8:30" );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
+        assertThat( source.getAnotherDate() ).isEqualTo( new GregorianCalendar( 2013, 1, 14, 8, 30 ).getTime() );
+    }
+
+    @Test
+    @EnabledOnCompiler(Compiler.JDK11)
+    // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
+    public void shouldApplyDateFormatForConversionInReverseMappingJdk11() {
+        Target target = new Target();
+        target.setDate( "06.07.2013" );
+        target.setAnotherDate( "14.02.13, 8:30" );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 

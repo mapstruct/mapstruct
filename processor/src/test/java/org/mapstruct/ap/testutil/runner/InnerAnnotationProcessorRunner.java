@@ -61,6 +61,25 @@ class InnerAnnotationProcessorRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
+    protected boolean isIgnored(FrameworkMethod child) {
+        return super.isIgnored( child ) || isIgnoredForCompiler( child );
+    }
+
+    protected boolean isIgnoredForCompiler(FrameworkMethod child) {
+        EnabledOnCompiler enabledOnCompiler = child.getAnnotation( EnabledOnCompiler.class );
+        if ( enabledOnCompiler != null ) {
+            return enabledOnCompiler.value() != compiler;
+        }
+
+        DisabledOnCompiler disabledOnCompiler = child.getAnnotation( DisabledOnCompiler.class );
+        if ( disabledOnCompiler != null ) {
+            return disabledOnCompiler.value() == compiler;
+        }
+
+        return false;
+    }
+
+    @Override
     protected TestClass createTestClass(final Class<?> testClass) {
         replacableTestClass = new ReplacableTestClass( testClass );
         return replacableTestClass;
@@ -97,6 +116,9 @@ class InnerAnnotationProcessorRunner extends BlockJUnit4ClassRunner {
     private CompilingStatement createCompilingStatement(FrameworkMethod method) {
         if ( compiler == Compiler.JDK ) {
             return new JdkCompilingStatement( method, compilationCache );
+        }
+        else if ( compiler == Compiler.JDK11 ) {
+            return new Jdk11CompilingStatement( method, compilationCache );
         }
         else {
             return new EclipseCompilingStatement( method, compilationCache );
