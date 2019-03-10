@@ -6,7 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.NestedPropertyMappingMethod" -->
-<#lt>private <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>private <@includeModel object=returnType.typeBound/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     if ( ${sourceParameter.name} == null ) {
         return ${returnType.null};
     }
@@ -16,7 +16,7 @@
         return ${returnType.null};
     }
     </#if>
-    <@includeModel object=entry.type/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName};
+    <@includeModel object=entry.type.typeBound/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName};
     <#if !entry.presenceCheckerName?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
