@@ -82,7 +82,8 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
     MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
     MappingProcessor.UNMAPPED_TARGET_POLICY,
-    MappingProcessor.DEFAULT_COMPONENT_MODEL
+    MappingProcessor.DEFAULT_COMPONENT_MODEL,
+    MappingProcessor.VERBOSE
 })
 public class MappingProcessor extends AbstractProcessor {
 

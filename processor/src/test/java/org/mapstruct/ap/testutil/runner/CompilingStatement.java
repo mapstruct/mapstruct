@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -32,6 +33,7 @@ import org.mapstruct.ap.testutil.WithServiceImplementations;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
@@ -175,7 +177,9 @@ abstract class CompilingStatement extends Statement {
 
         CompilationOutcomeDescriptor expectedResult =
             CompilationOutcomeDescriptor.forExpectedCompilationResult(
-                method.getAnnotation( ExpectedCompilationOutcome.class )
+                method.getAnnotation( ExpectedCompilationOutcome.class ),
+                method.getAnnotation( ExpectedNote.ExpectedNotes.class ),
+                method.getAnnotation( ExpectedNote.class )
             );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
@@ -192,6 +196,7 @@ abstract class CompilingStatement extends Statement {
         }
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
+        assertNotes( actualResult.getNotes(), expectedResult.getNotes() );
 
         if ( runCheckstyle ) {
             assertCheckstyleRules();
@@ -237,6 +242,30 @@ abstract class CompilingStatement extends Statement {
             }
         }
         return files;
+    }
+
+    private void assertNotes(List<String> actualNotes, List<String> expectedNotes) {
+        List<String> expectedNotesRemaining = new ArrayList<>( expectedNotes );
+        Iterator<String> expectedNotesIterator = expectedNotesRemaining.iterator();
+        if ( expectedNotesIterator.hasNext() ) {
+            String expectedNoteRegexp = expectedNotesIterator.next();
+            for ( String actualNote : actualNotes ) {
+                if ( actualNote.matches( expectedNoteRegexp ) ) {
+                    expectedNotesIterator.remove();
+                    if ( expectedNotesIterator.hasNext() ) {
+                        expectedNoteRegexp = expectedNotesIterator.next();
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        assertThat( expectedNotesRemaining )
+            .describedAs( "There are unmatched notes: " +
+                expectedNotesRemaining.stream().collect( Collectors.joining( LINE_SEPARATOR ) ).toString() )
+            .isEmpty();
     }
 
     private void assertDiagnostics(List<DiagnosticDescriptor> actualDiagnostics,

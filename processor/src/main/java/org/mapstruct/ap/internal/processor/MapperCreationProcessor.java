@@ -286,6 +286,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             boolean hasFactoryMethod = false;
 
             if ( method.isIterableMapping() ) {
+                this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
                 IterableMappingMethod iterableMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -294,7 +295,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
-                this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
             }
             else if ( method.isMapMapping() ) {
 
@@ -314,7 +314,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
-                this.messager.note( 1, Message.MAPMAPPING_CREATE_KEY_NOTE, method );
+                this.messager.note( 1, Message.MAPMAPPING_CREATE_NOTE, method );
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
