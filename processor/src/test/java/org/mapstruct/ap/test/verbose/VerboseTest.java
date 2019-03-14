@@ -27,10 +27,10 @@ public class VerboseTest {
 
     @Test
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(EmptyMapper.class)
+    @WithClasses(CreateBeanMapping.class)
     @ExpectedNote("^MapStruct: Using accessor naming strategy:.*DefaultAccessorNamingStrategy.*$")
     @ExpectedNote("^MapStruct: Using builder provider:.*DefaultBuilderProvider.*$")
-    @ExpectedNote("^ MapStruct: processing:.*.EmptyMapper.*$")
+    @ExpectedNote("^ MapStruct: processing:.*.CreateBeanMapping.*$")
     @ExpectedNote("^ MapStruct: applying mapper configuration:.*MapperConfiguration.*$")
     public void testGeneralMessages() {
     }
@@ -39,10 +39,10 @@ public class VerboseTest {
     @WithServiceImplementation(provides = BuilderProvider.class, value = ImmutablesBuilderProvider.class)
     @WithServiceImplementation(provides = AccessorNamingStrategy.class, value = ImmutablesAccessorNamingStrategy.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(EmptyMapper.class)
+    @WithClasses(CreateBeanMapping.class)
     @ExpectedNote("^MapStruct: Using accessor naming strategy:.*ImmutablesAccessorNamingStrategy.*$")
     @ExpectedNote("^MapStruct: Using builder provider:.*ImmutablesBuilderProvider.*$")
-    @ExpectedNote("^ MapStruct: processing:.*.EmptyMapper.*$")
+    @ExpectedNote("^ MapStruct: processing:.*.CreateBeanMapping.*$")
     @ExpectedNote("^ MapStruct: applying mapper configuration:.*MapperConfiguration.*$")
     public void testGeneralWithOtherSPI() {
     }
