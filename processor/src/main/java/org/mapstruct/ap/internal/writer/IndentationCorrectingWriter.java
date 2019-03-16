@@ -37,7 +37,7 @@ class IndentationCorrectingWriter extends Writer {
      * Set to true to enable output of written characters on the console.
      */
     private static final boolean DEBUG = false;
-    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+    private static final String LINE_SEPARATOR = System.lineSeparator( );
     private static final boolean IS_WINDOWS = System.getProperty( "os.name" ).startsWith( "Windows" );
 
     private State currentState = State.START_OF_LINE;

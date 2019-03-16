@@ -247,7 +247,7 @@ public class MappingProcessor extends AbstractProcessor {
         StringWriter sw = new StringWriter();
         thrown.printStackTrace( new PrintWriter( sw ) );
 
-        String reportableStacktrace = sw.toString().replace( System.getProperty( "line.separator" ), "  " );
+        String reportableStacktrace = sw.toString().replace( System.lineSeparator( ), "  " );
 
         processingEnv.getMessager().printMessage(
             Kind.ERROR, "Internal error in the mapping processor: " + reportableStacktrace, element );

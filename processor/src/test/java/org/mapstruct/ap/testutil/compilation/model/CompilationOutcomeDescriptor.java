@@ -28,7 +28,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
  */
 public class CompilationOutcomeDescriptor {
 
-    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+    private static final String LINE_SEPARATOR = System.lineSeparator( );
 
     private CompilationResult compilationResult;
     private List<DiagnosticDescriptor> diagnostics;

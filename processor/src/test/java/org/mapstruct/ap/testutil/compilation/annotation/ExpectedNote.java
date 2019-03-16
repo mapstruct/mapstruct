@@ -32,7 +32,7 @@ public @interface ExpectedNote {
     public @interface ExpectedNotes {
 
         /**
-         *  Regexp voor the value.
+         *  Regexp for the note to match.
          *
          * @return
          */
