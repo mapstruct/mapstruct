@@ -226,6 +226,10 @@ public class MappingProcessor extends AbstractProcessor {
                 processMapperTypeElement( context, mapperElement );
             }
             catch ( TypeHierarchyErroneousException thie ) {
+                if ( options.isVerbose() ) {
+                    processingEnv.getMessager().printMessage(
+                        Kind.NOTE, "Adding deferred mapper: " + mapperElement );
+                }
                 deferredMappers.add( mapperElement );
             }
             catch ( Throwable t ) {
