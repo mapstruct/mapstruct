@@ -8,6 +8,8 @@ package org.mapstruct.ap.testutil.compilation.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
@@ -17,6 +19,7 @@ import org.codehaus.plexus.compiler.CompilerMessage;
 import org.codehaus.plexus.compiler.CompilerResult;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
 
 /**
  * Represents the outcome of a compilation.
@@ -25,21 +28,37 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
  */
 public class CompilationOutcomeDescriptor {
 
+    private static final String LINE_SEPARATOR = System.lineSeparator( );
+
     private CompilationResult compilationResult;
     private List<DiagnosticDescriptor> diagnostics;
+    private List<String> notes;
 
     private CompilationOutcomeDescriptor(CompilationResult compilationResult,
-                                         List<DiagnosticDescriptor> diagnostics) {
+                                         List<DiagnosticDescriptor> diagnostics,
+                                         List<String> notes) {
         this.compilationResult = compilationResult;
         this.diagnostics = diagnostics;
+        this.notes = notes;
     }
 
     public static CompilationOutcomeDescriptor forExpectedCompilationResult(
-        ExpectedCompilationOutcome expectedCompilationResult) {
+        ExpectedCompilationOutcome expectedCompilationResult, ExpectedNote.ExpectedNotes expectedNotes,
+        ExpectedNote expectedNote) {
+        List<String> notes = new ArrayList<>();
+        if ( expectedNotes != null ) {
+            notes.addAll( Stream.of( expectedNotes.value() )
+                .map( ExpectedNote::value )
+                .collect( Collectors.toList() ) );
+        }
+        if ( expectedNote != null ) {
+            notes.add( expectedNote.value() );
+        }
         if ( expectedCompilationResult == null ) {
             return new CompilationOutcomeDescriptor(
                 CompilationResult.SUCCEEDED,
-                Collections.<DiagnosticDescriptor>emptyList()
+                Collections.<DiagnosticDescriptor>emptyList(),
+                notes
             );
         }
         else {
@@ -48,8 +67,7 @@ public class CompilationOutcomeDescriptor {
                 expectedCompilationResult.diagnostics() ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
             }
-
-            return new CompilationOutcomeDescriptor( expectedCompilationResult.value(), diagnosticDescriptors );
+            return new CompilationOutcomeDescriptor( expectedCompilationResult.value(), diagnosticDescriptors, notes );
         }
     }
 
@@ -57,31 +75,34 @@ public class CompilationOutcomeDescriptor {
                                                          List<Diagnostic<? extends JavaFileObject>> diagnostics) {
         CompilationResult compilationResult =
             compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
-
+        List<String> notes = new ArrayList<>();
         List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
         for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( sourceDir, diagnostic ) );
             }
+            else {
+                notes.add( diagnostic.getMessage( null ) );
+            }
         }
 
-        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors );
+        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors, notes );
     }
 
     public static CompilationOutcomeDescriptor forResult(String sourceDir, CompilerResult compilerResult) {
         CompilationResult compilationResult =
             compilerResult.isSuccess() ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
-
         List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
 
         for ( CompilerMessage message : compilerResult.getCompilerMessages() ) {
             if ( message.getKind() != CompilerMessage.Kind.NOTE ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forCompilerMessage( sourceDir, message ) );
             }
+            // the eclipse compiler does not support NOTE (it is never actually set).
         }
 
-        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors );
+        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors, Collections.emptyList() );
     }
 
     public CompilationResult getCompilationResult() {
@@ -90,6 +111,10 @@ public class CompilationOutcomeDescriptor {
 
     public List<DiagnosticDescriptor> getDiagnostics() {
         return diagnostics;
+    }
+
+    public List<String> getNotes() {
+        return notes;
     }
 
     @Override

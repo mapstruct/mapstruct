@@ -23,4 +23,5 @@ public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrat
     protected boolean isFluentSetter(ExecutableElement method) {
         return super.isFluentSetter( method ) && !method.getSimpleName().toString().equals( "from" );
     }
+
 }

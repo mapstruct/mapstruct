@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -98,8 +99,13 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             if ( keyAssignment == null ) {
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
+                if ( keyAssignment != null ) {
+                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_KEY_NOTE, keyAssignment );
+                }
             }
-
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_KEY_NOTE, keyAssignment );
+            }
 
             if ( keyAssignment == null ) {
                 if ( method instanceof ForgedMethod ) {
@@ -150,6 +156,12 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             if ( valueAssignment == null ) {
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
+                if ( valueAssignment != null ) {
+                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_VALUE_NOTE, valueAssignment );
+                }
+            }
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
             }
 
             if ( valueAssignment == null ) {

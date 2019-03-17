@@ -29,4 +29,9 @@ public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
     public ExecutableElement getExecutable() {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
 }

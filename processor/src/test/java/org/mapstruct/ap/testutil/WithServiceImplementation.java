@@ -6,6 +6,7 @@
 package org.mapstruct.ap.testutil;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -17,6 +18,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
+@Repeatable( WithServiceImplementations.class )
 public @interface WithServiceImplementation {
     /**
      * @return The service implementation class that is to be made available during the annotation processing.

@@ -223,12 +223,17 @@ When invoking javac directly, these options are passed to the compiler in the fo
                 <version>${org.mapstruct.version}</version>
             </path>
         </annotationProcessorPaths>
+        <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
+        <showWarnings>true</showWarnings>
         <compilerArgs>
             <compilerArg>
                 -Amapstruct.suppressGeneratorTimestamp=true
             </compilerArg>
             <compilerArg>
                 -Amapstruct.suppressGeneratorVersionInfoComment=true
+            </compilerArg>
+            <compilerArg>
+                -Amapstruct.verbose=true
             </compilerArg>
         </compilerArgs>
     </configuration>
@@ -246,7 +251,8 @@ When invoking javac directly, these options are passed to the compiler in the fo
 compileJava {
     options.compilerArgs = [
         '-Amapstruct.suppressGeneratorTimestamp=true',
-        '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+        '-Amapstruct.verbose=true'
     ]
 }
 ...
@@ -263,6 +269,10 @@ The following options exist:
 |`mapstruct.
 suppressGeneratorTimestamp`
 |If set to `true`, the creation of a time stamp in the `@Generated` annotation in the generated mapper classes is suppressed.
+|`false`
+
+|`mapstruct.verbose`
+|If set to `true`, MapStruct in which MapStruct logs its major decisions. Note, at the moment of writing in Maven, also `showWarnings` needs to be added due to a problem in the maven-compiler-plugin configuration.
 |`false`
 
 |`mapstruct.

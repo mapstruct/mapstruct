@@ -67,4 +67,12 @@ public interface FormattingMessager {
                       AnnotationValue v,
                       Message msg,
                       Object... args);
+
+    /**
+     * Just log as plain note
+     * @param level nesting level
+     * @param log the log message
+     * @param args the arguments
+     */
+    void note(int level, Message log, Object... args);
 }

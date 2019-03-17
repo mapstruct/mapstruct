@@ -38,9 +38,9 @@ import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -286,6 +286,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             boolean hasFactoryMethod = false;
 
             if ( method.isIterableMapping() ) {
+                this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
                 IterableMappingMethod iterableMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -313,6 +314,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
+                this.messager.note( 1, Message.MAPMAPPING_CREATE_NOTE, method );
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
@@ -328,6 +330,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else if ( method.isValueMapping() ) {
                 // prefer value mappings over enum mapping
+                this.messager.note( 1, Message.VALUEMAPPING_CREATE_NOTE, method );
                 ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
                     .mappingContext( mappingContext )
                     .method( method )
@@ -352,6 +355,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
             else if ( method.isStreamMapping() ) {
+                this.messager.note( 1, Message.STREAMMAPPING_CREATE_NOTE, method );
                 StreamMappingMethod streamMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -364,8 +368,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 mappingMethods.add( streamMappingMethod );
             }
             else {
-
-
+                this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )

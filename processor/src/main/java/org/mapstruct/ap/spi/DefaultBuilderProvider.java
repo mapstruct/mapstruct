@@ -280,4 +280,5 @@ public class DefaultBuilderProvider implements BuilderProvider {
     protected boolean shouldIgnore(TypeElement typeElement) {
         return typeElement == null || JAVA_JAVAX_PACKAGE.matcher( typeElement.getQualifiedName() ).matches();
     }
+
 }

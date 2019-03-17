@@ -20,6 +20,7 @@ import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -94,6 +95,12 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
         if ( assignment == null ) {
             assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
+            if ( assignment != null ) {
+                ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
+            }
+        }
+        else {
+            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_SELECT_ELEMENT_NOTE, assignment );
         }
 
         if ( assignment == null ) {
