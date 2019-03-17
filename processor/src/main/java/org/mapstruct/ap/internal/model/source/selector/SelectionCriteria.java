@@ -91,12 +91,7 @@ public class SelectionCriteria {
     }
 
     public boolean hasQualfiers() {
-        return isNotEmpty( getQualifiedByNames() )
-            || isNotEmpty( getQualifiers() );
-    }
-
-    private boolean isNotEmpty(List in) {
-        return in != null && !in.isEmpty();
+        return !qualifiedByNames.isEmpty() || !qualifiers.isEmpty();
     }
 
     public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,

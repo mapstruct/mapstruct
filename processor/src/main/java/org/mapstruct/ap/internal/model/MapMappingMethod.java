@@ -20,6 +20,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -86,18 +87,20 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
             SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key" );
+
+            SelectionCriteria keyCriteria =
+                            SelectionCriteria.forMappingMethods( keySelectionParameters, null, false );
+
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 keyTargetType,
-                null, // there is no targetPropertyName
                 keyFormattingParameters,
-                keySelectionParameters,
+                keyCriteria,
                 keySourceRHS,
-                false,
                 null
             );
 
-            if ( keyAssignment == null && !hasQualfiers( keySelectionParameters ) ) {
+            if ( keyAssignment == null && !keyCriteria.hasQualfiers( ) ) {
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
                 if ( keyAssignment != null ) {
                     ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_KEY_NOTE, keyAssignment );
@@ -133,14 +136,16 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
                     "map value" );
+
+            SelectionCriteria valueCriteria =
+                            SelectionCriteria.forMappingMethods( valueSelectionParameters, null, false );
+
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 valueTargetType,
-                null, // there is no targetPropertyName
                 valueFormattingParameters,
-                valueSelectionParameters,
+                valueCriteria,
                 valueSourceRHS,
-                false,
                 null
             );
 
@@ -154,7 +159,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
-            if ( valueAssignment == null && !hasQualfiers( valueSelectionParameters ) ) {
+            if ( valueAssignment == null && !valueCriteria.hasQualfiers( ) ) {
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
                 if ( valueAssignment != null ) {
                     ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_VALUE_NOTE, valueAssignment );
@@ -223,9 +228,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             return true;
         }
 
-        private boolean hasQualfiers(SelectionParameters selectionParameters) {
-            return selectionParameters != null && selectionParameters.hasQualfiers();
-        }
     }
 
     private MapMappingMethod(Method method, Collection<String> existingVariableNames, Assignment keyAssignment,

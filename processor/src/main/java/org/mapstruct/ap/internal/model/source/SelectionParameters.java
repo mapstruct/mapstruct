@@ -72,15 +72,6 @@ public class SelectionParameters {
         return sourceRHS;
     }
 
-    public boolean hasQualfiers() {
-        return isNotEmpty( getQualifyingNames() )
-            || isNotEmpty( getQualifiers() );
-    }
-
-    private boolean isNotEmpty(List in) {
-        return in != null && !in.isEmpty();
-    }
-
     @Override
     public int hashCode() {
         int hash = 3;

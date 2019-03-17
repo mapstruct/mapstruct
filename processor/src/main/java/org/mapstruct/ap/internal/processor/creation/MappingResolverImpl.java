@@ -37,7 +37,6 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
@@ -95,13 +94,10 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+    public Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                           FormattingParameters formattingParameters,
-                                          SelectionParameters selectionParameters, SourceRHS sourceRHS,
-                                          boolean preferUpdateMapping, AnnotationMirror positionHint) {
-
-        SelectionCriteria criteria =
-            SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
+                                          SelectionCriteria criteria, SourceRHS sourceRHS,
+                                          AnnotationMirror positionHint) {
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,

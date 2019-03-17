@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -82,18 +83,22 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             new HashSet<>(),
             errorMessagePart
         );
+
+        SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
+                        callingContextTargetPropertyName,
+                        false
+        );
+
         Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
             method,
             targetElementType,
-            callingContextTargetPropertyName,
             formattingParameters,
-            selectionParameters,
+            criteria,
             sourceRHS,
-            false,
             null
         );
 
-        if ( assignment == null && !hasQualfiers() ) {
+        if ( assignment == null && !criteria.hasQualfiers() ) {
             assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
             if ( assignment != null ) {
                 ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
@@ -164,10 +169,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             afterMappingMethods,
             selectionParameters
         );
-    }
-
-    private boolean hasQualfiers() {
-        return selectionParameters != null && selectionParameters.hasQualfiers();
     }
 
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,

@@ -36,6 +36,7 @@ import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
@@ -310,24 +311,27 @@ public class PropertyMapping extends ModelElement {
                 preferUpdateMethods = method.getMappingTargetParameter() != null;
             }
 
+            SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
+                            targetPropertyName,
+                            preferUpdateMethods
+            );
+
             // forge a method instead of resolving one when there are mapping options.
             Assignment assignment = null;
             if ( forgeMethodWithMappingOptions == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
                     targetType,
-                    targetPropertyName,
                     formattingParameters,
-                    selectionParameters,
+                    criteria,
                     rightHandSide,
-                    preferUpdateMethods,
                     positionHint
                 );
             }
 
             Type sourceType = rightHandSide.getSourceType();
             // No mapping found. Try to forge a mapping
-            if ( assignment == null && !hasQualifiers() ) {
+            if ( assignment == null && !criteria.hasQualfiers() ) {
                 if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
                     assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
@@ -375,10 +379,6 @@ public class PropertyMapping extends ModelElement {
                 dependsOn,
                 getDefaultValueAssignment( assignment )
             );
-        }
-
-        private boolean hasQualifiers() {
-            return selectionParameters != null && selectionParameters.hasQualfiers();
         }
 
         /**
@@ -877,16 +877,19 @@ public class PropertyMapping extends ModelElement {
             }
             Type sourceType = ctx.getTypeFactory().getTypeForLiteral( baseForLiteral );
 
+            SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
+                            targetPropertyName,
+                            method.getMappingTargetParameter() != null
+            );
+
             Assignment assignment = null;
             if ( !targetType.isEnumType() ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
                     targetType,
-                    targetPropertyName,
                     formattingParameters,
-                    selectionParameters,
+                    criteria,
                     new SourceRHS( constantExpression, sourceType, existingVariableNames, sourceErrorMessagePart ),
-                    method.getMappingTargetParameter() != null,
                     positionHint
                 );
             }
