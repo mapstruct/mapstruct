@@ -228,7 +228,8 @@ public class MappingProcessor extends AbstractProcessor {
             catch ( TypeHierarchyErroneousException thie ) {
                 if ( options.isVerbose() ) {
                     processingEnv.getMessager().printMessage(
-                        Kind.NOTE, "Adding deferred mapper: " + mapperElement );
+                        Kind.NOTE, "MapStruct: referred types not available (yet), deferring mapper: "
+                            + mapperElement );
                 }
                 deferredMappers.add( mapperElement );
             }

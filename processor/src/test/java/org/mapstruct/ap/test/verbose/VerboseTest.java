@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.verbose;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
@@ -45,6 +46,15 @@ public class VerboseTest {
     @ExpectedNote("^ MapStruct: processing:.*.CreateBeanMapping.*$")
     @ExpectedNote("^ MapStruct: applying mapper configuration:.*MapperConfiguration.*$")
     public void testGeneralWithOtherSPI() {
+    }
+
+    @Test
+    @WithServiceImplementation(provides = AstModifyingAnnotationProcessor.class,
+        value = AstModifyingAnnotationProcessorSaysNo.class)
+    @ProcessorOption(name = "mapstruct.verbose", value = "true")
+    @WithClasses(CreateBeanMapping.class)
+    @ExpectedNote("^MapStruct: referred types not available \\(yet\\), deferring mapper:.*CreateBeanMapping.*$")
+    public void testDeferred() {
     }
 
     @Test
