@@ -87,8 +87,8 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableSetMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "Can't map Collection element \".* nonMappableSet\" to \".* nonMappableSet\". "
-                    + "Consider to declare/implement a mapping method: .*."),
+                messageRegExp = "No target bean properties found: can't map Collection element \".* nonMappableSet\" "
+                                + "to \".* nonMappableSet\". Consider to declare/implement a mapping method: .*." ),
         }
     )
     public void shouldGenerateNonMappleMethodForSetMapping() {
@@ -107,13 +107,15 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "Can't map Map key \".* nonMappableMap\\{:key\\}\" to \".* nonMappableMap\\{:key\\}\". "
-                    + "Consider to declare/implement a mapping method: .*."),
+                messageRegExp = "No target bean properties found: can't map Map key \".* nonMappableMap\\{:key\\}\" "
+                                + "to \".* "
+                                + "nonMappableMap\\{:key\\}\". Consider to declare/implement a mapping method: .*." ),
             @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "Can't map Map value \".* nonMappableMap\\{:value\\}\" to \".* " +
-                    "nonMappableMap\\{:value\\}\". Consider to declare/implement a mapping method: .*."),
+                messageRegExp = "No target bean properties found: can't map Map value \".* "
+                                + "nonMappableMap\\{:value\\}\" to "
+                                + "\".* nonMappableMap\\{:value\\}\". Consider to declare/implement a mapping method: .*." ),
         }
     )
     public void shouldGenerateNonMappleMethodForMapMapping() {

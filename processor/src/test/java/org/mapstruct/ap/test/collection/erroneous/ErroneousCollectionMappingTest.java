@@ -104,9 +104,9 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp = "Can't map Collection element \".*WithProperties withProperties\" to \".*NoProperties" +
-                    " noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
-                    ".*WithProperties value\\)")
+                messageRegExp = "No target bean properties found: can't map Collection element \".*WithProperties "
+                                + "withProperties\" to \".*NoProperties noProperties\". Consider to declare/implement "
+                                + "a mapping method: \".*NoProperties map\\(.*WithProperties value\\)")
         }
     )
     public void shouldFailOnNoElementMappingFound() {
@@ -138,9 +138,10 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp = "Can't map Map key \".*WithProperties withProperties\" to \".*NoProperties " +
-                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
-                    ".*WithProperties value\\)")
+                messageRegExp = "No target bean properties found: can't map Map key \".*WithProperties "
+                                + "withProperties\" to "
+                                + "\".*NoProperties noProperties\". Consider to declare/implement a mapping method: "
+                                + "\".*NoProperties map\\(.*WithProperties value\\)" )
         }
     )
     public void shouldFailOnNoKeyMappingFound() {
@@ -171,9 +172,10 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp = "Can't map Map value \".*WithProperties withProperties\" to \".*NoProperties " +
-                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
-                    ".*WithProperties value\\)")
+                messageRegExp = "No target bean properties found: can't map Map value \".*WithProperties "
+                                + "withProperties\" to "
+                                + "\".*NoProperties noProperties\". Consider to declare/implement a mapping method: "
+                                + "\".*NoProperties map\\(.*WithProperties value\\)" )
         }
     )
     public void shouldFailOnNoValueMappingFound() {
