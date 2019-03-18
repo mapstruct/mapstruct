@@ -114,8 +114,8 @@ public class CollectionMappingTest {
                 kind = Kind.ERROR,
                 line = 17,
                 messageRegExp = "No target bean properties found: can't map Map value \".* "
-                                + "nonMappableMap\\{:value\\}\" to "
-                                + "\".* nonMappableMap\\{:value\\}\". Consider to declare/implement a mapping method: .*." ),
+                                + "nonMappableMap\\{:value\\}\" to \".* nonMappableMap\\{:value\\}\". "
+                                + "Consider to declare/implement a mapping method: .*." ),
         }
     )
     public void shouldGenerateNonMappleMethodForMapMapping() {
