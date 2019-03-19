@@ -17,7 +17,6 @@ public interface CreateMapMapping {
 
     Map<TargetKey, TargetValue> map(Map<SourceKey, SourceValue> source);
 
-    // empty beans fail.. TODO check
     class SourceKey {
         private String name;
 

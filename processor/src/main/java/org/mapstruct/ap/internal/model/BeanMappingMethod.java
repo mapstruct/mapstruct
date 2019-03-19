@@ -749,7 +749,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ForgedMethodHistory history = forgedMethod.getHistory();
                     ctx.getMessager().printMessage(
                         this.method.getExecutable(),
-                        Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
+                        Message.PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND,
                         history.createSourcePropertyErrorMessage(),
                         history.getTargetType(),
                         history.createTargetPropertyName(),

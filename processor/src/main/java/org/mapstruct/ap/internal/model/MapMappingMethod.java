@@ -196,7 +196,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     .getFactoryMethod( method, method.getResultType(), null, ctx );
             }
 
-
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
