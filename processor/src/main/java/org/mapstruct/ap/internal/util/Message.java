@@ -32,7 +32,8 @@ public enum Message {
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
 
     PROPERTYMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
-    PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND( "Can't map %s to %s. Consider to implement a mapping method: \"%s map(%s value)\"." ),
+    PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND( "No target bean properties found: can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
+    PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND( "No target bean properties found: can't map %s to %s. Consider to implement a mapping method: \"%s map(%s value)\"." ),
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),
     PROPERTYMAPPING_EMPTY_TARGET( "Target must not be empty in @Mapping." ),
     PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED( "Source and constant are both defined in @Mapping, either define a source or a constant." ),
