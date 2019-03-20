@@ -687,7 +687,7 @@ To finish the mapping MapStruct generates code that will invoke the build method
 [NOTE]
 ======
 The <<object-factories>> are also considered for the builder type.
-E.g. If an object factory exists for our `PersonBuilder` than this factory would be used instead of the builder creation method.
+E.g. If an object factory exists for our `PersonBuilder` then this factory would be used instead of the builder creation method.
 ======
 
 .Person with Builder example
