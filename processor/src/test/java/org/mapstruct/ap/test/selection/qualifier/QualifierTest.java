@@ -101,7 +101,9 @@ public class QualifierTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = "Can't map property \"java.lang.String title\" to \"java.lang.String title\".*")
+                messageRegExp =
+                    "Can't map property \"java.lang.String title\" to \"java.lang.String title\". "
+                    + "Consider to declare/implement a mapping method: \"java.lang.String map(java.lang.String value)*")
         }
     )
     public void shouldNotProduceMatchingMethod() {
