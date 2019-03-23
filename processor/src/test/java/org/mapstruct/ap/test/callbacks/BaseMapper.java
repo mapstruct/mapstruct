@@ -21,6 +21,9 @@ public abstract class BaseMapper {
 
     public abstract Target sourceToTarget(Source source);
 
+    @Qualified
+    public abstract Target sourceToTargetQualified(Source source);
+
     private static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
 
     @BeforeMapping

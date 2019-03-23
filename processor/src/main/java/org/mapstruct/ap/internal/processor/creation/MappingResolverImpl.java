@@ -37,7 +37,6 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
@@ -95,12 +94,10 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
-        FormattingParameters formattingParameters, SelectionParameters selectionParameters, SourceRHS sourceRHS,
-        boolean preferUpdateMapping, AnnotationMirror positionHint) {
-
-        SelectionCriteria criteria =
-            SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
+    public Assignment getTargetAssignment(Method mappingMethod, Type targetType,
+                                          FormattingParameters formattingParameters,
+                                          SelectionCriteria criteria, SourceRHS sourceRHS,
+                                          AnnotationMirror positionHint) {
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -182,12 +179,13 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then direct assignable
-            if ( sourceType.isAssignableTo( targetType ) ||
+            if ( !hasQualfiers() ) {
+                if (  sourceType.isAssignableTo( targetType ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
-                Assignment simpleAssignment = sourceRHS;
-                return simpleAssignment;
+                    Assignment simpleAssignment = sourceRHS;
+                    return simpleAssignment;
+                }
             }
-
             // At this point the SourceType will either
             // 1. be a String
             // 2. or when its a primitive / wrapped type and analysis successful equal to its TargetType. But in that
@@ -196,25 +194,29 @@ public class MappingResolverImpl implements MappingResolver {
             // in NativeType is not successful. We don't want to go through type conversion, double mappings etc.
             // with something that we already know to be wrong.
             if ( sourceType.isLiteral()
-                && "java.lang.String".equals( sourceType.getFullyQualifiedName( ) )
+                && "java.lang.String".equals( sourceType.getFullyQualifiedName() )
                 && targetType.isNative() ) {
                 return null;
             }
 
             // then type conversion
-            ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
-            if ( conversion != null ) {
-                conversion.reportMessageWhenNarrowing( messager, this );
-                conversion.getAssignment().setAssignment( sourceRHS );
-                return conversion.getAssignment();
+            if ( !hasQualfiers() ) {
+                ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
+                if ( conversion != null ) {
+                    conversion.reportMessageWhenNarrowing( messager, this );
+                    conversion.getAssignment().setAssignment( sourceRHS );
+                    return conversion.getAssignment();
+                }
             }
 
             // check for a built-in method
-            Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
-            if ( builtInMethod != null ) {
-                builtInMethod.setAssignment( sourceRHS );
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return builtInMethod;
+            if (!hasQualfiers() ) {
+                Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
+                if ( builtInMethod != null ) {
+                    builtInMethod.setAssignment( sourceRHS );
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return builtInMethod;
+                }
             }
 
             // 2 step method, first: method(method(source))
@@ -235,7 +237,7 @@ public class MappingResolverImpl implements MappingResolver {
             selectionCriteria.setPreferUpdateMapping( false );
 
             // 2 step method, finally: conversion(method(source))
-            conversion = resolveViaMethodAndConversion( sourceType, targetType );
+            ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
                 usedSupportedMappings.addAll( supportingMethodCandidates );
                 return conversion.getAssignment();
@@ -243,6 +245,10 @@ public class MappingResolverImpl implements MappingResolver {
 
             // if nothing works, alas, the result is null
             return null;
+        }
+
+        private boolean hasQualfiers() {
+            return selectionCriteria != null && selectionCriteria.hasQualfiers();
         }
 
         private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {
@@ -379,9 +385,9 @@ public class MappingResolverImpl implements MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          *
-         *  In stead of directly using a built in method candidate all the return types as 'B' of all available built-in
-         *  methods are used to resolve a mapping (assignment) from result type to 'B'. If  a match is found, an attempt
-         *  is done to find a matching type conversion.
+         * In stead of directly using a built in method candidate all the return types as 'B' of all available built-in
+         * methods are used to resolve a mapping (assignment) from result type to 'B'. If  a match is found, an attempt
+         * is done to find a matching type conversion.
          */
         private Assignment resolveViaConversionAndMethod(Type sourceType, Type targetType) {
 
@@ -503,7 +509,8 @@ public class MappingResolverImpl implements MappingResolver {
             if ( candidates.size() > 1 ) {
 
                 if ( sourceRHS.getSourceErrorMessagePart() != null ) {
-                    messager.printMessage( mappingMethod.getExecutable(),
+                    messager.printMessage(
+                        mappingMethod.getExecutable(),
                         positionHint,
                         Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
                         sourceRHS.getSourceErrorMessagePart(),
@@ -512,7 +519,8 @@ public class MappingResolverImpl implements MappingResolver {
                     );
                 }
                 else {
-                    messager.printMessage( mappingMethod.getExecutable(),
+                    messager.printMessage(
+                        mappingMethod.getExecutable(),
                         positionHint,
                         Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
                         returnType,
@@ -535,7 +543,8 @@ public class MappingResolverImpl implements MappingResolver {
             return MethodReference.forMapperReference(
                 method.getMethod(),
                 mapperReference,
-                method.getParameterBindings() );
+                method.getParameterBindings()
+            );
         }
 
         /**
@@ -546,14 +555,14 @@ public class MappingResolverImpl implements MappingResolver {
             boolean bothCollectionOrMap = false;
 
             if ( ( sourceType.isCollectionType() && targetType.isCollectionType() ) ||
-                    ( sourceType.isMapType() && targetType.isMapType() ) ) {
+                ( sourceType.isMapType() && targetType.isMapType() ) ) {
                 bothCollectionOrMap = true;
             }
 
             if ( bothCollectionOrMap ) {
                 return hasCompatibleCopyConstructor(
-                        sourceType,
-                        targetType.getImplementationType() != null ? targetType.getImplementationType() : targetType
+                    sourceType,
+                    targetType.getImplementationType() != null ? targetType.getImplementationType() : targetType
                 );
             }
 
@@ -565,8 +574,9 @@ public class MappingResolverImpl implements MappingResolver {
          *
          * @param sourceType the source type
          * @param targetType the target type
+         *
          * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
-         *         otherwise.
+         * otherwise.
          */
         private boolean hasCompatibleCopyConstructor(Type sourceType, Type targetType) {
             if ( targetType.isPrimitive() ) {
@@ -584,7 +594,8 @@ public class MappingResolverImpl implements MappingResolver {
                 // get the constructor resolved against the type arguments of specific target type
                 ExecutableType typedConstructor = (ExecutableType) typeUtils.asMemberOf(
                     (DeclaredType) targetType.getTypeMirror(),
-                    constructor );
+                    constructor
+                );
 
                 TypeMirror parameterType = Collections.first( typedConstructor.getParameterTypes() );
                 if ( parameterType.getKind() == TypeKind.DECLARED ) {
@@ -603,7 +614,8 @@ public class MappingResolverImpl implements MappingResolver {
                     }
                     parameterType = typeUtils.getDeclaredType(
                         (TypeElement) p.asElement(),
-                        typeArguments.toArray( new TypeMirror[typeArguments.size()] ) );
+                        typeArguments.toArray( new TypeMirror[typeArguments.size()] )
+                    );
                 }
 
                 if ( typeUtils.isAssignable( sourceType.getTypeMirror(), parameterType ) ) {

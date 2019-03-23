@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,8 +24,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -76,11 +77,10 @@ public class MappingBuilderContext {
          *
          * @param mappingMethod target mapping method
          * @param targetType return type to match
-         * @param targetPropertyName name of the target property
          * @param formattingParameters used for formatting dates and numbers
-         * @param selectionParameters parameters used in the selection process
+         * @param criteria parameters criteria in the selection process
          * @param sourceRHS source information
-         * @param preferUpdateMethods selection should prefer update methods when present.
+         * @param positionHint the mirror for reporting problems
          *
          * @return an assignment to a method parameter, which can either be:
          * <ol>
@@ -90,10 +90,10 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+        Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                        FormattingParameters formattingParameters,
-                                       SelectionParameters selectionParameters, SourceRHS sourceRHS,
-                                       boolean preferUpdateMethods, AnnotationMirror mirror);
+                                       SelectionCriteria criteria, SourceRHS sourceRHS,
+                                       AnnotationMirror positionHint);
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
     }
@@ -191,12 +191,18 @@ public class MappingBuilderContext {
         return mappingsToGenerate;
     }
 
-    public List<String> getNamesOfMappingsToGenerate() {
-        List<String> nameList = new ArrayList<>();
+    public List<String> getReservedNames() {
+        Set<String> nameSet = new HashSet<>();
         for ( MappingMethod method : mappingsToGenerate ) {
-            nameList.add( method.getName() );
+            nameSet.add( method.getName() );
         }
-        return nameList;
+        // add existing names
+        for ( SourceMethod method : sourceModel) {
+            if ( method.isAbstract() ) {
+                nameSet.add( method.getName() );
+            }
+        }
+        return new ArrayList<>( nameSet );
     }
 
     public MappingMethod getExistingMappingMethod(MappingMethod newMappingMethod) {
