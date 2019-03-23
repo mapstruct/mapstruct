@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -214,10 +215,18 @@ abstract class CompilingStatement extends Statement {
                 new InputSource( getClass().getClassLoader().getResourceAsStream(
                     "checkstyle-for-generated-sources.xml" ) ),
                 new PropertiesExpander( properties ),
-                true ) );
+                ConfigurationLoader.IgnoredModulesOptions.OMIT
+            ) );
 
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-            checker.addListener( new DefaultLogger( ByteStreams.nullOutputStream(), true, errorStream, true ) );
+            checker.addListener(
+                new DefaultLogger(
+                    ByteStreams.nullOutputStream(),
+                    AutomaticBean.OutputStreamOptions.CLOSE,
+                    errorStream,
+                    AutomaticBean.OutputStreamOptions.CLOSE
+                )
+            );
 
             int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
             if ( errors > 0 ) {
