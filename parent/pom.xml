@@ -91,10 +91,6 @@
         </mailingList>
     </mailingLists>
 
-    <prerequisites>
-        <maven>3.0.3</maven>
-    </prerequisites>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
