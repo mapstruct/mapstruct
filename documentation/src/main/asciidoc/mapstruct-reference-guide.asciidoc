@@ -660,13 +660,22 @@ You can find the complete example in the
 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
 project on GitHub.
 
+[[fluent-access-mappings]]
+=== Mappings with fluent vs JavaBean access
+
+* MapStruct does not support fluent getters, like `String name()`. Getters of classes which are read by MapStruct mapping must be named with 'String getName()'.
+* MapStruct does support fluent setters in both builders and non-immutable objects, like `Builder name(String value)` and `Person name(String value)`.
+
+See https://github.com/arberg/mapstruct-examples/blob/master/mapstruct-on-android-with-autovalue-builders/app/src/main/java/com/example/mapstructtest/model/CarFluentSetter.java[example with and without builder] and Person example in the `Using buildesrs` section.
+
 [[mapping-with-builders]]
 === Using builders
 
 MapStruct also supports mapping of immutable types via builders.
 When performing a mapping MapStruct checks if there is a builder for the type being mapped.
 This is done via the `BuilderProvider` SPI.
-If a Builder exists for a certain type, than that builder will be used for the mappings.
+If a Builder exists for a certain type, than that builder will be used for the mappings. It is not necesarry to supply a `BuilderProvider`,
+a default is provided.
 
 The default implementation of the `BuilderProvider` assumes the following:
 
@@ -698,6 +707,11 @@ E.g. If an object factory exists for our `PersonBuilder` then this factory would
 public class Person {
 
     private final String name;
+
+    // The getter of style getX is required only if mapping from this object, not if mapping to this object
+    public String getName() {
+        return name;
+    }
 
     protected Person(Person.Builder builder) {
         this.name = builder.name;
@@ -765,13 +779,20 @@ Supported builder frameworks:
 * https://github.com/google/auto/blob/master/value/userguide/index.md[AutoValue]
 * https://immutables.github.io/[Immutables] - When Immutables are present on the annotation processor path then the `ImmutablesAccessorNamingStrategy` and `ImmutablesBuilderProvider` would be used by default
 * https://github.com/google/FreeBuilder[FreeBuilder] - When FreeBuilder is present on the annotation processor path then the `FreeBuilderAccessorNamingStrategy` would be used by default.
-When using FreeBuilder then the JavaBean convention should be followed, otherwise MapStruct won't recognize the fluent getters.
+When using FreeBuilder then the JavaBean convention should be followed with `setName/getName`, as MapStruct does not support fluent getter access `String name()`.
 * It also works for custom builders (handwritten ones) if the implementation supports the defined rules for the default `BuilderProvider`.
 Otherwise, you would need to write a custom `BuilderProvider`
+
+Note MapStruct 1.3 does NOT support immutable objects that are created via Constructor. It may arrive in future versions.
+
+See our https://github.com/mapstruct/mapstruct-examples/mapstruct-on-android-with-autovalue-builders[MapStruct Examples] for a complete example with builders.
+
+====
 
 [TIP]
 ====
 In case you want to disable using builders then you can use the `NoOpBuilderProvider` by creating a `org.mapstruct.ap.spi.BuilderProvider` file in the `META-INF/services` directory with `org.mapstruct.ap.spi.NoOpBuilderProvider` as it's content.
+
 ====
 
 [[retrieving-mapper]]
