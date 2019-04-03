@@ -6,10 +6,8 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;

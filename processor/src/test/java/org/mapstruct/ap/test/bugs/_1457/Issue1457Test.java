@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.bugs._1457;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -40,7 +39,6 @@ public class Issue1457Test {
         authorLastName = "Adams";
     }
 
-
     @Test
     @WithClasses({
         BookMapper.class
@@ -48,7 +46,7 @@ public class Issue1457Test {
     public void testMapperWithMatchingParameterNames() {
         TargetBook targetBook = BookMapper.INSTANCE.mapBook( sourceBook, authorFirstName, authorLastName );
 
-        assertTargetBookMatchesSourceBook(targetBook);
+        assertTargetBookMatchesSourceBook( targetBook );
     }
 
     @Test
@@ -56,9 +54,13 @@ public class Issue1457Test {
         DifferentOrderingBookMapper.class
     })
     public void testMapperWithMatchingParameterNamesAndDifferentOrdering() {
-        TargetBook targetBook = DifferentOrderingBookMapper.INSTANCE.mapBook( sourceBook, authorFirstName, authorLastName );
+        TargetBook targetBook = DifferentOrderingBookMapper.INSTANCE.mapBook(
+            sourceBook,
+            authorFirstName,
+            authorLastName
+        );
 
-        assertTargetBookMatchesSourceBook(targetBook);
+        assertTargetBookMatchesSourceBook( targetBook );
     }
 
     private void assertTargetBookMatchesSourceBook(TargetBook targetBook) {
