@@ -41,7 +41,7 @@ public Set<String> integerStreamToStringSet(Stream<Integer> integers) {
         return null;
     }
 
-    return integers.stream().map( integer -> String.valueOf( integer ) )
+    return integers.map( integer -> String.valueOf( integer ) )
         .collect( Collectors.toCollection( HashSet<String>::new ) );
 }
 
@@ -51,7 +51,7 @@ public List<CarDto> carsToCarDtos(Stream<Car> cars) {
         return null;
     }
 
-    return integers.stream().map( car -> carToCarDto( car ) )
+    return cars.map( car -> carToCarDto( car ) )
         .collect( Collectors.toCollection( ArrayList<CarDto>::new ) );
 }
 ----
