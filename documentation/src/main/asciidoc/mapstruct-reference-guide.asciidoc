@@ -656,7 +656,7 @@ project on GitHub.
 MapStruct also supports mapping of immutable types via builders.
 When performing a mapping MapStruct checks if there is a builder for the type being mapped.
 This is done via the `BuilderProvider` SPI.
-If a Builder exists for a certain type, than that builder will be used for the mappings.
+If a Builder exists for a certain type, then that builder will be used for the mappings.
 
 The default implementation of the `BuilderProvider` assumes the following:
 
