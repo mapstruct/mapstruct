@@ -51,13 +51,15 @@ At compile time MapStruct will generate an implementation of this interface. The
 
 ## Requirements
 
-MapStruct requires Java 1.6 or later.
+MapStruct requires Java 1.8 or later.
 
 ## Using MapStruct
 
-MapStruct works in command line builds (plain javac, via Maven, Gradle, Ant etc.) and IDEs.
+MapStruct works in command line builds (plain javac, via Maven, Gradle, Ant, etc.) and IDEs.
 
 For Eclipse, a dedicated plug-in is in development (see https://github.com/mapstruct/mapstruct-eclipse). It goes beyond what's possible with an annotation processor, providing content assist for annotation attributes, quick fixes and more.
+
+For IntelliJ the plug-in is available within the IntelliJ marketplace (see https://plugins.jetbrains.com/plugin/10036-mapstruct-support).
 
 ### Maven
 
@@ -82,7 +84,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.5.1</version>
+            <version>3.8.0</version>
             <configuration>
                 <source>1.8</source>
                 <target>1.8</target>
