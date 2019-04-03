@@ -393,12 +393,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
-                String target = null;
                 for ( Mapping mapping : entry.getValue() ) {
                     TargetReference targetReference = mapping.getTargetReference();
                     if ( targetReference.isValid() ) {
-                        target = first( targetReference.getPropertyEntries() ).getFullName();
-
+                        String target = first( targetReference.getPropertyEntries() ).getFullName();
                         if ( !handledTargets.contains( target ) ) {
                             if ( handleDefinedMapping( mapping, handledTargets ) ) {
                                 errorOccurred = true;
