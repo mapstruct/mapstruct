@@ -5,10 +5,12 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
@@ -17,6 +19,10 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.MethodMatcher;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Message;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Selects those methods from the given input set which match the given source and target types (via
@@ -27,9 +33,11 @@ import org.mapstruct.ap.internal.model.source.MethodMatcher;
 public class TypeSelector implements MethodSelector {
 
     private TypeFactory typeFactory;
+    private FormattingMessager messager;
 
-    public TypeSelector(TypeFactory typeFactory) {
+    public TypeSelector(TypeFactory typeFactory, FormattingMessager messager) {
         this.typeFactory = typeFactory;
+        this.messager = messager;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class TypeSelector implements MethodSelector {
 
             if ( parameterBindingPermutations != null ) {
                 SelectedMethod<T> matchingMethod =
-                    getFirstMatchingParameterBinding( targetType, method, parameterBindingPermutations );
+                    getMatchingParameterBinding( targetType, mappingMethod, method, parameterBindingPermutations );
 
                 if ( matchingMethod != null ) {
                     result.add( matchingMethod );
@@ -77,7 +85,6 @@ public class TypeSelector implements MethodSelector {
         SourceRHS sourceRHS) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
 
-        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
         if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getContextParameters() ) );
             availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
@@ -86,6 +93,8 @@ public class TypeSelector implements MethodSelector {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
+        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+
         return availableParams;
     }
 
@@ -93,8 +102,6 @@ public class TypeSelector implements MethodSelector {
             Type targetType, Method mappingMethod) {
 
         List<ParameterBinding> availableParams = new ArrayList<>( sourceTypes.size() + 2 );
-
-        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
 
         for ( Type sourceType : sourceTypes ) {
             availableParams.add( ParameterBinding.forSourceTypeBinding( sourceType ) );
@@ -106,24 +113,101 @@ public class TypeSelector implements MethodSelector {
             }
         }
 
+        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+
         return availableParams;
     }
 
+    /**
+     * Adds default parameter bindings for the mapping-target and target-type if not already available.
+     *
+     * @param availableParams Already available params, new entries will be added to this list
+     * @param targetType Target type
+     */
     private void addMappingTargetAndTargetTypeBindings(List<ParameterBinding> availableParams, Type targetType) {
-        availableParams.add( ParameterBinding.forMappingTargetBinding( targetType ) );
-        availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );
-    }
+        boolean mappingTargetAvailable = false;
+        boolean targetTypeAvailable = false;
 
-    private <T extends Method> SelectedMethod<T> getFirstMatchingParameterBinding(Type targetType,
-            SelectedMethod<T> method, List<List<ParameterBinding>> parameterAssignmentVariants) {
-
-        for ( List<ParameterBinding> parameterAssignments : parameterAssignmentVariants ) {
-            if ( method.getMethod().matches( extractTypes( parameterAssignments ), targetType ) ) {
-                method.setParameterBindings( parameterAssignments );
-                return method;
+        // search available parameter bindings if mapping-target and/or target-type is available
+        for ( ParameterBinding pb : availableParams ) {
+            if ( pb.isMappingTarget() ) {
+                mappingTargetAvailable = true;
+            }
+            else if ( pb.isTargetType() ) {
+                targetTypeAvailable = true;
             }
         }
-        return null;
+
+        if ( !mappingTargetAvailable ) {
+            availableParams.add( ParameterBinding.forMappingTargetBinding( targetType ) );
+        }
+        if ( !targetTypeAvailable ) {
+            availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );
+        }
+    }
+
+    private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type targetType,
+            Method mappingMethod, SelectedMethod<T> method, List<List<ParameterBinding>> parameterAssignmentVariants) {
+
+        List<List<ParameterBinding>> matchingParameterAssignmentVariants = new ArrayList<>(
+            parameterAssignmentVariants
+        );
+
+        Method realMethod = method.getMethod();
+
+        // remove all assignment variants that doesn't match the types from the method
+        matchingParameterAssignmentVariants.removeIf(
+            parameterAssignments ->
+                !realMethod.matches( extractTypes( parameterAssignments ), targetType )
+        );
+
+        if ( matchingParameterAssignmentVariants.isEmpty() ) {
+            // no matching variants found
+            return null;
+        }
+        else if ( matchingParameterAssignmentVariants.size() == 1 ) {
+            // we found exactly one set of variants, use this
+            method.setParameterBindings( first( matchingParameterAssignmentVariants ) );
+            return method;
+        }
+
+        // more than one variant matches, try to find one where even the parameter names are matching
+        for ( Iterator<List<ParameterBinding>> it = matchingParameterAssignmentVariants.iterator(); it.hasNext(); ) {
+            List<ParameterBinding> parameterAssignments = it.next();
+
+            int i = 0;
+            for ( ParameterBinding parameterBinding : parameterAssignments ) {
+                Parameter parameter = realMethod.getParameters().get( i++ );
+
+                // if the parameterBinding contains a parameter name we must ensure that this matches the name from the
+                // method parameter -> remove all variants where this is not the case
+                if ( parameterBinding.getVariableName() != null &&
+                    !parameter.getName().contentEquals( parameterBinding.getVariableName() ) ) {
+                    it.remove();
+
+                    break;
+                }
+            }
+        }
+
+        if ( matchingParameterAssignmentVariants.isEmpty() ) {
+            // we had some matching assignments before, but when checking the parameter names we can't find an
+            // appropriate one, in this case the user must chose identical parameter names for the mapping and lifecycle
+            // method
+            messager.printMessage(
+                realMethod.getExecutable(),
+                Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
+                mappingMethod
+            );
+
+            return null;
+        }
+
+        // there should never be more then one assignment left after checking the parameter names as it is not possible
+        // to use the same parameter name more then once
+        // -> we can use the first variant that is left (that should also be the only one)
+        method.setParameterBindings( first( matchingParameterAssignmentVariants ) );
+        return method;
     }
 
     /**
@@ -200,12 +284,8 @@ public class TypeSelector implements MethodSelector {
     }
 
     private static List<Type> extractTypes(List<ParameterBinding> parameters) {
-        List<Type> result = new ArrayList<>( parameters.size() );
-
-        for ( ParameterBinding param : parameters ) {
-            result.add( param.getType() );
-        }
-
-        return result;
+        return parameters.stream()
+            .map( ParameterBinding::getType )
+            .collect( Collectors.toList() );
     }
 }

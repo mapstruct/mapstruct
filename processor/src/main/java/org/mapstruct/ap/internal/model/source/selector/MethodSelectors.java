@@ -8,13 +8,13 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.FormattingMessager;
 
 /**
  * Applies all known {@link MethodSelector}s in order.
@@ -25,10 +25,11 @@ public class MethodSelectors {
 
     private final List<MethodSelector> selectors;
 
-    public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory) {
+    public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+                           FormattingMessager messager) {
         selectors = Arrays.asList(
             new MethodFamilySelector(),
-            new TypeSelector( typeFactory ),
+            new TypeSelector( typeFactory, messager ),
             new QualifierSelector( typeUtils, elementUtils ),
             new TargetTypeSelector( typeUtils, elementUtils ),
             new XmlElementDeclSelector( typeUtils ),
