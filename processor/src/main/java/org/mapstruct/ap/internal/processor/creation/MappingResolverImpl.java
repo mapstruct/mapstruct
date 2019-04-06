@@ -97,7 +97,8 @@ public class MappingResolverImpl implements MappingResolver {
     public Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                           FormattingParameters formattingParameters,
                                           SelectionCriteria criteria, SourceRHS sourceRHS,
-                                          AnnotationMirror positionHint) {
+                                          AnnotationMirror positionHint,
+                                          Forger forger) {
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -105,7 +106,8 @@ public class MappingResolverImpl implements MappingResolver {
             formattingParameters,
             sourceRHS,
             criteria,
-            positionHint
+            positionHint,
+            forger
         );
 
         return attempt.getTargetAssignment( sourceRHS.getSourceTypeForMatching(), targetType );
@@ -136,6 +138,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final boolean savedPreferUpdateMapping;
         private final FormattingParameters formattingParameters;
         private final AnnotationMirror positionHint;
+        private final Forger forger;
 
         // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a supported method
@@ -145,7 +148,8 @@ public class MappingResolverImpl implements MappingResolver {
         private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod,
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
-                                 AnnotationMirror positionHint) {
+                                 AnnotationMirror positionHint,
+                                 Forger forger) {
 
             this.mappingMethod = mappingMethod;
             this.methods = filterPossibleCandidateMethods( sourceModel );
@@ -156,6 +160,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.selectionCriteria = criteria;
             this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
             this.positionHint = positionHint;
+            this.forger = forger;
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
@@ -241,6 +246,19 @@ public class MappingResolverImpl implements MappingResolver {
             if ( conversion != null ) {
                 usedSupportedMappings.addAll( supportingMethodCandidates );
                 return conversion.getAssignment();
+            }
+
+            if ( hasQualfiers() ) {
+                messager.printMessage(
+                        mappingMethod.getExecutable(),
+                        positionHint,
+                        Message.GENERAL_NO_QUALIFYING_METHOD,
+                        Strings.join( selectionCriteria.getQualifiers(), ", " ),
+                        Strings.join( selectionCriteria.getQualifiedByNames(), ", " )
+                );
+            }
+            else {
+                return forger.forge();
             }
 
             // if nothing works, alas, the result is null

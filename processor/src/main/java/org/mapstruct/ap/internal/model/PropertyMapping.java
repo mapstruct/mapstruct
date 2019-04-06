@@ -325,36 +325,17 @@ public class PropertyMapping extends ModelElement {
                     formattingParameters,
                     criteria,
                     rightHandSide,
-                    positionHint
+                    positionHint,
+                    () -> forge(  )
                 );
+            }
+            else {
+                assignment = forge();
             }
 
             Type sourceType = rightHandSide.getSourceType();
-            // No mapping found. Try to forge a mapping
-            if ( assignment == null && !criteria.hasQualfiers() ) {
-                if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
-                    assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
-                }
-                else if ( sourceType.isMapType() && targetType.isMapType() ) {
-                    assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
-                }
-                else if ( ( sourceType.isIterableType() && targetType.isStreamType() ) ||
-                    ( sourceType.isStreamType() && targetType.isStreamType() ) ||
-                    ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
-                    assignment = forgeStreamMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
-                }
-                else {
-                    assignment = forgeMapping( rightHandSide );
-                }
-                if ( assignment != null ) {
-                    ctx.getMessager().note( 2, Message.PROPERTYMAPPING_CREATE_NOTE, assignment );
-                }
-            }
-            else {
-                ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
-            }
-
             if ( assignment != null ) {
+                ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
                 if ( targetType.isCollectionOrMapType() ) {
                     assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
                 }
@@ -379,6 +360,29 @@ public class PropertyMapping extends ModelElement {
                 dependsOn,
                 getDefaultValueAssignment( assignment )
             );
+        }
+
+        private Assignment forge( ) {
+            Assignment assignment;
+            Type sourceType = rightHandSide.getSourceType();
+            if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+                assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+            }
+            else if ( sourceType.isMapType() && targetType.isMapType() ) {
+                assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+            }
+            else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
+                        || ( sourceType.isStreamType() && targetType.isStreamType() )
+                        || ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
+                assignment = forgeStreamMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+            }
+            else {
+                assignment = forgeMapping( rightHandSide );
+            }
+            if ( assignment != null ) {
+                ctx.getMessager().note( 2, Message.PROPERTYMAPPING_CREATE_NOTE, assignment );
+            }
+            return assignment;
         }
 
         /**
@@ -890,7 +894,8 @@ public class PropertyMapping extends ModelElement {
                     formattingParameters,
                     criteria,
                     new SourceRHS( constantExpression, sourceType, existingVariableNames, sourceErrorMessagePart ),
-                    positionHint
+                    positionHint,
+                    () -> null
                 );
             }
             else {

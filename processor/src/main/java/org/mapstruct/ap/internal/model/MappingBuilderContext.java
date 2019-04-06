@@ -93,7 +93,13 @@ public class MappingBuilderContext {
         Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
-                                       AnnotationMirror positionHint);
+                                       AnnotationMirror positionHint,
+                                       Forger forger);
+
+        @FunctionalInterface
+        interface Forger {
+            Assignment forge();
+        }
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
     }

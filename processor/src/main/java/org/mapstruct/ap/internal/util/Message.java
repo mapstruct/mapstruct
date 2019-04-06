@@ -111,6 +111,7 @@ public enum Message {
     GENERAL_JODA_NOT_ON_CLASSPATH( "Cannot validate Joda dateformat, no Joda on classpath. Consider adding Joda to the annotation processorpath.", Diagnostic.Kind.WARNING ),
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
     GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible parameterless constructor." ),
+    GENERAL_NO_QUALIFYING_METHOD( "No qualifying method found for qualifiers: %s and / or qualifying names: %s" ),
 
     BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
     BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),

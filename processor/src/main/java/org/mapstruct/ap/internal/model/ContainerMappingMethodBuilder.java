@@ -89,24 +89,14 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                         false
         );
 
-        Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
-            method,
+        Assignment assignment = ctx.getMappingResolver().getTargetAssignment( method,
             targetElementType,
             formattingParameters,
             criteria,
             sourceRHS,
-            null
+            null,
+            () -> forge( sourceRHS, sourceElementType, targetElementType )
         );
-
-        if ( assignment == null && !criteria.hasQualfiers() ) {
-            assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
-            if ( assignment != null ) {
-                ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
-            }
-        }
-        else {
-            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_SELECT_ELEMENT_NOTE, assignment );
-        }
 
         if ( assignment == null ) {
             if ( method instanceof ForgedMethod ) {
@@ -124,6 +114,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             }
         }
         else {
+            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_SELECT_ELEMENT_NOTE, assignment );
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod forgedMethod = (ForgedMethod) method;
                 forgedMethod.addThrownTypes( assignment.getThrownTypes() );
@@ -169,6 +160,14 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             afterMappingMethods,
             selectionParameters
         );
+    }
+
+    private Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType) {
+        Assignment assignment = super.forgeMapping( sourceRHS, sourceType, targetType );
+        if ( assignment != null ) {
+            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
+        }
+        return assignment;
     }
 
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
