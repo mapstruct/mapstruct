@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,18 +144,18 @@ public class TypeSelector implements MethodSelector {
     }
 
     private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type targetType,
-            Method mappingMethod, SelectedMethod<T> method, List<List<ParameterBinding>> parameterAssignmentVariants) {
+            Method mappingMethod, SelectedMethod<T> selectedMethodInfo,
+            List<List<ParameterBinding>> parameterAssignmentVariants) {
 
         List<List<ParameterBinding>> matchingParameterAssignmentVariants = new ArrayList<>(
             parameterAssignmentVariants
         );
 
-        Method realMethod = method.getMethod();
+        Method selectedMethod = selectedMethodInfo.getMethod();
 
         // remove all assignment variants that doesn't match the types from the method
-        matchingParameterAssignmentVariants.removeIf(
-            parameterAssignments ->
-                !realMethod.matches( extractTypes( parameterAssignments ), targetType )
+        matchingParameterAssignmentVariants.removeIf( parameterAssignments ->
+            !selectedMethod.matches( extractTypes( parameterAssignments ), targetType )
         );
 
         if ( matchingParameterAssignmentVariants.isEmpty() ) {
@@ -165,35 +164,28 @@ public class TypeSelector implements MethodSelector {
         }
         else if ( matchingParameterAssignmentVariants.size() == 1 ) {
             // we found exactly one set of variants, use this
-            method.setParameterBindings( first( matchingParameterAssignmentVariants ) );
-            return method;
+            selectedMethodInfo.setParameterBindings( first( matchingParameterAssignmentVariants ) );
+            return selectedMethodInfo;
         }
 
-        // more than one variant matches, try to find one where even the parameter names are matching
-        for ( Iterator<List<ParameterBinding>> it = matchingParameterAssignmentVariants.iterator(); it.hasNext(); ) {
-            List<ParameterBinding> parameterAssignments = it.next();
+        // more than one variant matches, try to find one where also the parameter names are matching
+        // -> remove all variants where the binding var-name doesn't match the var-name of the parameter
+        List<Parameter> methodParameters = selectedMethod.getParameters();
 
-            int i = 0;
-            for ( ParameterBinding parameterBinding : parameterAssignments ) {
-                Parameter parameter = realMethod.getParameters().get( i++ );
+        matchingParameterAssignmentVariants.removeIf( parameterBindings ->
+            parameterBindingNotMatchesParameterVariableNames(
+                parameterBindings,
+                methodParameters
+            )
+        );
 
-                // if the parameterBinding contains a parameter name we must ensure that this matches the name from the
-                // method parameter -> remove all variants where this is not the case
-                if ( parameterBinding.getVariableName() != null &&
-                    !parameter.getName().contentEquals( parameterBinding.getVariableName() ) ) {
-                    it.remove();
-
-                    break;
-                }
-            }
-        }
 
         if ( matchingParameterAssignmentVariants.isEmpty() ) {
             // we had some matching assignments before, but when checking the parameter names we can't find an
             // appropriate one, in this case the user must chose identical parameter names for the mapping and lifecycle
             // method
             messager.printMessage(
-                realMethod.getExecutable(),
+                selectedMethod.getExecutable(),
                 Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
                 mappingMethod
             );
@@ -204,8 +196,38 @@ public class TypeSelector implements MethodSelector {
         // there should never be more then one assignment left after checking the parameter names as it is not possible
         // to use the same parameter name more then once
         // -> we can use the first variant that is left (that should also be the only one)
-        method.setParameterBindings( first( matchingParameterAssignmentVariants ) );
-        return method;
+        selectedMethodInfo.setParameterBindings( first( matchingParameterAssignmentVariants ) );
+        return selectedMethodInfo;
+    }
+
+    /**
+     * Checks if the given parameter-bindings have the same variable name than the given parameters.<br>
+     * The first entry in the parameter-bindings belongs to the first entry in the parameters and so on.<br>
+     *
+     * @param parameterBindings List of parameter bindings
+     * @param parameters List of parameters, must have the same size than the {@code parameterBindings} list
+     *
+     * @return {@code true} as soon as there is a parameter with a different variable name than the binding
+     */
+    private boolean parameterBindingNotMatchesParameterVariableNames(List<ParameterBinding> parameterBindings,
+                                                                     List<Parameter> parameters) {
+        if ( parameterBindings.size() != parameters.size() ) {
+            return true;
+        }
+
+        int i = 0;
+        for ( ParameterBinding parameterBinding : parameterBindings ) {
+            Parameter parameter = parameters.get( i++ );
+
+            // if the parameterBinding contains a parameter name we must ensure that this matches the name from the
+            // method parameter -> remove all variants where this is not the case
+            if ( parameterBinding.getVariableName() != null &&
+                !parameter.getName().equals( parameterBinding.getVariableName() ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
