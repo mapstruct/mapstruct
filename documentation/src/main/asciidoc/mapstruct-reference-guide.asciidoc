@@ -2124,7 +2124,6 @@ MapStruct offers control over the object to create when the source argument of t
 However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
 
 * *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
-* *Primitives*: the default values for primitives will be returned, e.g. `false` for `boolean` or `0` for `int`.
 * *Iterables / Arrays*: an empty iterable will be returned.
 * *Maps*: an empty map will be returned.
 
