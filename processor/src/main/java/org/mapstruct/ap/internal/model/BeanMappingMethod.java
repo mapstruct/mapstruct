@@ -396,9 +396,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 for ( Mapping mapping : entry.getValue() ) {
                     TargetReference targetReference = mapping.getTargetReference();
                     if ( targetReference.isValid() ) {
-                        if ( !handledTargets.contains( first( targetReference.getPropertyEntries() ).getFullName() ) ) {
+                        String target = first( targetReference.getPropertyEntries() ).getFullName();
+                        if ( !handledTargets.contains( target ) ) {
                             if ( handleDefinedMapping( mapping, handledTargets ) ) {
                                 errorOccurred = true;
+                            }
+                        }
+                        if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
+                            List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
+                            if ( !sourceEntries.isEmpty() ) {
+                                String source = first( sourceEntries ).getFullName();
+                                unprocessedSourceProperties.remove( source );
                             }
                         }
                     }
@@ -407,12 +415,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
+
+            // remove the remaining name based properties
             for ( String handledTarget : handledTargets ) {
-                // In order to avoid: "Unknown property foo in return type" in case of duplicate
-                // target mappings
                 unprocessedTargetProperties.remove( handledTarget );
                 unprocessedDefinedTargets.remove( handledTarget );
-                unprocessedSourceProperties.remove( handledTarget );
             }
 
             return errorOccurred;
@@ -497,7 +504,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .nullValuePropertyMappingStrategy( mapping.getNullValuePropertyMappingStrategy() )
                         .build();
                     handledTargets.add( propertyName );
-                    unprocessedSourceProperties.remove( mapping.getSourceName() );
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
                 }
                 else {
