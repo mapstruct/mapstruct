@@ -8,9 +8,10 @@ package org.mapstruct.ap.test.bugs._1457;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class BookMapper {
 
     public static final BookMapper INSTANCE = Mappers.getMapper( BookMapper.class );
@@ -21,6 +22,26 @@ public abstract class BookMapper {
     protected void fillAuthor(@MappingTarget TargetBook targetBook, String authorFirstName, String authorLastName) {
         targetBook.setAuthorFirstName( authorFirstName );
         targetBook.setAuthorLastName( authorLastName );
+    }
+
+    @AfterMapping
+    protected void withoutAuthorNames(@MappingTarget TargetBook targetBook) {
+        targetBook.setAfterMappingWithoutAuthorName( true );
+    }
+
+    @AfterMapping
+    protected void withOnlyFirstName(@MappingTarget TargetBook targetBook, String authorFirstName) {
+        targetBook.setAfterMappingWithOnlyFirstName( authorFirstName );
+    }
+
+    @AfterMapping
+    protected void withOnlyLastName(@MappingTarget TargetBook targetBook, String authorLastName) {
+        targetBook.setAfterMappingWithOnlyLastName( authorLastName );
+    }
+
+    @AfterMapping
+    protected void withDifferentVariableName(@MappingTarget TargetBook targetBook, String author) {
+        targetBook.setAfterMappingWithDifferentVariableName( true );
     }
 
 }

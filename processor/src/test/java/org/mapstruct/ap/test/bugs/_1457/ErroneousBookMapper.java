@@ -8,9 +8,10 @@ package org.mapstruct.ap.test.bugs._1457;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class ErroneousBookMapper {
 
     public static final ErroneousBookMapper INSTANCE = Mappers.getMapper( ErroneousBookMapper.class );

@@ -43,10 +43,27 @@ public class Issue1457Test {
     @WithClasses({
         BookMapper.class
     })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = @Diagnostic(
+            messageRegExp =
+                "Lifecycle method has multiple matching parameters \\(e\\. g\\. same type\\), in this case " +
+                    "please ensure to name the parameters in the lifecycle and mapping method identical\\. This " +
+                    "lifecycle method will not be used for the mapping method '.*\\.TargetBook mapBook\\(" +
+                    ".*\\.SourceBook sourceBook, .*\\.String authorFirstName, .*\\.String authorLastName\\)'\\.",
+            kind = javax.tools.Diagnostic.Kind.WARNING,
+            line = 43
+        )
+    )
     public void testMapperWithMatchingParameterNames() {
         TargetBook targetBook = BookMapper.INSTANCE.mapBook( sourceBook, authorFirstName, authorLastName );
 
         assertTargetBookMatchesSourceBook( targetBook );
+
+        assertThat( targetBook.isAfterMappingWithoutAuthorName() ).isTrue();
+        assertThat( targetBook.getAfterMappingWithOnlyFirstName() ).isEqualTo( authorFirstName );
+        assertThat( targetBook.getAfterMappingWithOnlyLastName() ).isEqualTo( authorLastName );
+        assertThat( targetBook.isAfterMappingWithDifferentVariableName() ).isFalse();
     }
 
     @Test
@@ -55,6 +72,20 @@ public class Issue1457Test {
     })
     public void testMapperWithMatchingParameterNamesAndDifferentOrdering() {
         TargetBook targetBook = DifferentOrderingBookMapper.INSTANCE.mapBook(
+            sourceBook,
+            authorFirstName,
+            authorLastName
+        );
+
+        assertTargetBookMatchesSourceBook( targetBook );
+    }
+
+    @Test
+    @WithClasses({
+        ObjectFactoryBookMapper.class
+    })
+    public void testMapperWithObjectFactory() {
+        TargetBook targetBook = ObjectFactoryBookMapper.INSTANCE.mapBook(
             sourceBook,
             authorFirstName,
             authorLastName
@@ -83,7 +114,7 @@ public class Issue1457Test {
                     "lifecycle method will not be used for the mapping method '.*\\.TargetBook mapBook\\(" +
                     ".*\\.SourceBook sourceBook, .*\\.String authorFirstName, .*\\.String authorLastName\\)'\\.",
             kind = javax.tools.Diagnostic.Kind.WARNING,
-            line = 21
+            line = 22
         )
     )
     public void testMapperWithoutMatchingParameterNames() {

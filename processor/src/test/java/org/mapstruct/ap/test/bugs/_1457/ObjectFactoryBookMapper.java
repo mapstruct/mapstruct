@@ -5,23 +5,25 @@
  */
 package org.mapstruct.ap.test.bugs._1457;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.ObjectFactory;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public abstract class DifferentOrderingBookMapper {
+public abstract class ObjectFactoryBookMapper {
 
-    public static final DifferentOrderingBookMapper INSTANCE = Mappers.getMapper( DifferentOrderingBookMapper.class );
+    public static final ObjectFactoryBookMapper INSTANCE = Mappers.getMapper( ObjectFactoryBookMapper.class );
 
     public abstract TargetBook mapBook(SourceBook sourceBook, String authorFirstName, String authorLastName);
 
-    @AfterMapping
-    protected void fillAuthor(String authorLastName, String authorFirstName, @MappingTarget TargetBook targetBook) {
-        targetBook.setAuthorLastName( authorLastName );
+    @ObjectFactory
+    protected TargetBook createTargetBook(String authorFirstName, String authorLastName) {
+        TargetBook targetBook = new TargetBook();
         targetBook.setAuthorFirstName( authorFirstName );
+        targetBook.setAuthorLastName( authorLastName );
+
+        return targetBook;
     }
 
 }

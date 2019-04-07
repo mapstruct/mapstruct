@@ -12,6 +12,11 @@ public class TargetBook {
     private String authorFirstName;
     private String authorLastName;
 
+    private boolean afterMappingWithoutAuthorName;
+    private String afterMappingWithOnlyFirstName;
+    private String afterMappingWithOnlyLastName;
+    private boolean afterMappingWithDifferentVariableName;
+
     public String getIsbn() {
         return isbn;
     }
@@ -42,5 +47,37 @@ public class TargetBook {
 
     public void setAuthorLastName(String authorLastName) {
         this.authorLastName = authorLastName;
+    }
+
+    public boolean isAfterMappingWithoutAuthorName() {
+        return afterMappingWithoutAuthorName;
+    }
+
+    public void setAfterMappingWithoutAuthorName(boolean afterMappingWithoutAuthorName) {
+        this.afterMappingWithoutAuthorName = afterMappingWithoutAuthorName;
+    }
+
+    public String getAfterMappingWithOnlyFirstName() {
+        return afterMappingWithOnlyFirstName;
+    }
+
+    public void setAfterMappingWithOnlyFirstName(String afterMappingWithOnlyFirstName) {
+        this.afterMappingWithOnlyFirstName = afterMappingWithOnlyFirstName;
+    }
+
+    public String getAfterMappingWithOnlyLastName() {
+        return afterMappingWithOnlyLastName;
+    }
+
+    public void setAfterMappingWithOnlyLastName(String afterMappingWithOnlyLastName) {
+        this.afterMappingWithOnlyLastName = afterMappingWithOnlyLastName;
+    }
+
+    public boolean isAfterMappingWithDifferentVariableName() {
+        return afterMappingWithDifferentVariableName;
+    }
+
+    public void setAfterMappingWithDifferentVariableName(boolean afterMappingWithDifferentVariableName) {
+        this.afterMappingWithDifferentVariableName = afterMappingWithDifferentVariableName;
     }
 }
