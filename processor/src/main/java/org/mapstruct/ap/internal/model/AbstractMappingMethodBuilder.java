@@ -63,7 +63,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             true
         );
 
-        return createForgedAssignment( sourceRHS, forgedMethod );
+        return createForgedAssignment( sourceRHS, ctx.getTypeFactory().builderTypeFor( targetType ), forgedMethod );
     }
 
     private String getName(Type sourceType, Type targetType) {

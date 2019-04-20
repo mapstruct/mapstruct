@@ -10,7 +10,7 @@
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
-        <#assign targetType = resultType.effectiveType />
+        <#assign targetType = returnTypeToConstruct />
     </#if>
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=targetType/>
@@ -25,7 +25,7 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <@includeModel object=resultType.effectiveType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType.effectiveType/><#else>new <@includeModel object=resultType.effectiveType/>()</#if>;
+        <@includeModel object=returnTypeToConstruct/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=returnTypeToConstruct/><#else>new <@includeModel object=returnTypeToConstruct/>()</#if>;
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>

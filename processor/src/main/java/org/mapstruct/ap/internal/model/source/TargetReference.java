@@ -13,12 +13,12 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -147,8 +147,7 @@ public class TargetReference {
             Parameter parameter = method.getMappingTargetParameter();
 
             boolean foundEntryMatch;
-            Type resultType = method.getResultType();
-            resultType = typeBasedOnMethod( resultType );
+            Type resultType = typeBasedOnMethod( method.getResultType() );
 
             // there can be 4 situations
             // 1. Return type
@@ -208,8 +207,9 @@ public class TargetReference {
 
                     // check if an entry alread exists, otherwise create
                     String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
+                    BuilderType builderType = method.isUpdateMethod() ? null : typeFactory.builderTypeFor( nextType );
                     PropertyEntry propertyEntry = PropertyEntry.forTargetReference( fullName, targetReadAccessor,
-                        targetWriteAccessor, nextType );
+                        targetWriteAccessor, nextType, builderType );
                     targetEntries.add( propertyEntry );
                 }
 
@@ -264,11 +264,11 @@ public class TargetReference {
          * search for setters and getters within the updating type.
          */
         private Type typeBasedOnMethod(Type type) {
-            if ( method.isUpdateMethod() ) {
+            if ( method.isUpdateMethod()   ) {
                 return type;
             }
             else {
-                return type.getEffectiveType();
+                return typeFactory.effectiveResultTypeFor( type );
             }
         }
 

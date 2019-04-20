@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
@@ -41,8 +40,6 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
@@ -74,7 +71,6 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
-
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> extends AbstractBaseBuilder<T> {
@@ -115,19 +111,15 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
+            this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
+            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
-            this.targetType = determineTargetType();
-
             return (T) this;
         }
 
         T mirror(AnnotationMirror mirror) {
             this.positionHint = mirror;
             return (T) this;
-        }
-
-        private Type determineTargetType() {
-            return ctx.getTypeFactory().getType(  targetWriteAccessor.getAccessedType()  );
         }
 
         public T targetPropertyName(String targetPropertyName) {

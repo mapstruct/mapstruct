@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -93,6 +92,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> allMethods = null;
     private List<VariableElement> allFields = null;
+
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
     private List<Accessor> alternativeTargetAccessors = null;
@@ -501,7 +501,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
                     if ( !getter.getSimpleName().toString().startsWith( "is" ) ) {
-                        modifiableGetters.put( getPropertyName( getter ),getter );
+                        modifiableGetters.put( getPropertyName( getter ), getter );
                     }
 
                 }

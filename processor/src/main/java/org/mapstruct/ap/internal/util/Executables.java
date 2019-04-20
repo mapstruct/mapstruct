@@ -160,8 +160,8 @@ public class Executables {
      */
     private static boolean isNotObjectEquals(ExecutableElement executable) {
         if ( executable.getSimpleName().contentEquals( "equals" ) && executable.getParameters().size() == 1
-                        && asTypeElement( executable.getParameters().get( 0 ).asType() ).getQualifiedName().contentEquals(
-                        "java.lang.Object"
+                && asTypeElement( executable.getParameters().get( 0 ).asType() ).getQualifiedName().contentEquals(
+                "java.lang.Object"
         ) ) {
             return false;
         }

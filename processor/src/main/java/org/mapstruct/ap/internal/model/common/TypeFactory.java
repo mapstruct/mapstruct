@@ -187,7 +187,6 @@ public class TypeFactory {
         }
 
         ImplementationType implementationType = getImplementationType( mirror );
-        BuilderInfo builderInfo = findBuilder( mirror );
 
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
@@ -281,7 +280,6 @@ public class TypeFactory {
             getTypeParameters( mirror, false ),
             implementationType,
             componentType,
-            builderInfo,
             packageName,
             name,
             qualifiedName,
@@ -503,7 +501,6 @@ public class TypeFactory {
                 getTypeParameters( mirror, true ),
                 null,
                 null,
-                null,
                 implementationType.getPackageName(),
                 implementationType.getName(),
                 implementationType.getFullyQualifiedName(),
@@ -524,19 +521,21 @@ public class TypeFactory {
         return null;
     }
 
-    private BuilderInfo findBuilder(TypeMirror type) {
+    private BuilderInfo findBuilder(TypeMirror type, boolean report) {
         try {
             return roundContext.getAnnotationProcessorContext()
                 .getBuilderProvider()
                 .findBuilderInfo( type );
         }
         catch ( MoreThanOneBuilderCreationMethodException ex ) {
-            messager.printMessage(
-                typeUtils.asElement( type ),
-                Message.BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD,
-                type,
-                Strings.join( ex.getBuilderInfo(), ", ", BUILDER_INFO_CREATION_METHOD_EXTRACTOR )
-            );
+            if ( report ) {
+                messager.printMessage(
+                        typeUtils.asElement( type ),
+                        Message.BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD,
+                        type,
+                        Strings.join( ex.getBuilderInfo(), ", ", BUILDER_INFO_CREATION_METHOD_EXTRACTOR )
+                );
+            }
         }
 
         return null;
@@ -663,5 +662,22 @@ public class TypeFactory {
         roundContext.addTypeReadyForProcessing( type );
 
         return true;
+    }
+
+    public BuilderType builderTypeFor( Type type ) {
+        if ( type != null ) {
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), true );
+            return BuilderType.create( builderInfo, type, this, this.typeUtils );
+        }
+        return null;
+    }
+
+    public Type effectiveResultTypeFor( Type type ) {
+        if ( type != null ) {
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), false );
+            BuilderType builderType = BuilderType.create( builderInfo, type, this, this.typeUtils );
+            return builderType != null ? builderType.getBuilder() : type;
+        }
+        return type;
     }
 }

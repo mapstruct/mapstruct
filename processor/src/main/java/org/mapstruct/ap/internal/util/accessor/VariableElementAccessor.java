@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 

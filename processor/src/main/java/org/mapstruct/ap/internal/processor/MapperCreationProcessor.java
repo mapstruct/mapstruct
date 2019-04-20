@@ -373,6 +373,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
+                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType() ) )
                     .build();
 
                 if ( beanMappingMethod != null ) {

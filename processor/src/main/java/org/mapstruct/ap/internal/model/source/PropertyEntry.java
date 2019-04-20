@@ -11,8 +11,6 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
-
 
 /**
  * A PropertyEntry contains information on the name, readAccessor (for source), readAccessor and writeAccessor
@@ -57,7 +55,7 @@ public class PropertyEntry {
      */
     public static PropertyEntry forTargetReference(String[] fullName, Accessor readAccessor,
                                                    Accessor writeAccessor, Type type, BuilderType builderType ) {
-        return new PropertyEntry( fullName, readAccessor, writeAccessor, null, type, null );
+        return new PropertyEntry( fullName, readAccessor, writeAccessor, null, type, builderType );
     }
 
     /**

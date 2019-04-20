@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -102,6 +101,6 @@ public class Fields {
         }
 
         return element.getSuperclass().getKind() == TypeKind.DECLARED
-                        && !asTypeElement( element.getSuperclass() ).getQualifiedName().toString().equals( "java.lang.Object" );
+            && !asTypeElement( element.getSuperclass() ).getQualifiedName().toString().equals( "java.lang.Object" );
     }
 }
