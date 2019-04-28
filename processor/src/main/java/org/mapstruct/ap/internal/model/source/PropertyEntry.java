@@ -10,7 +10,6 @@ import java.util.Arrays;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 
 /**
@@ -22,7 +21,7 @@ public class PropertyEntry {
     private final String[] fullName;
     private final Accessor readAccessor;
     private final Accessor writeAccessor;
-    private final ExecutableElementAccessor presenceChecker;
+    private final Accessor presenceChecker;
     private final Type type;
 
     /**
@@ -34,7 +33,7 @@ public class PropertyEntry {
      * @param type
      */
     private PropertyEntry(String[] fullName, Accessor readAccessor, Accessor writeAccessor,
-                          ExecutableElementAccessor presenceChecker, Type type) {
+                          Accessor presenceChecker, Type type) {
         this.fullName = fullName;
         this.readAccessor = readAccessor;
         this.writeAccessor = writeAccessor;
@@ -66,7 +65,7 @@ public class PropertyEntry {
      * @return the property entry for given parameters.
      */
     public static PropertyEntry forSourceReference(String name, Accessor readAccessor,
-                                                   ExecutableElementAccessor presenceChecker, Type type) {
+                                                   Accessor presenceChecker, Type type) {
         return new PropertyEntry( new String[]{name}, readAccessor, null, presenceChecker, type );
     }
 
@@ -82,7 +81,7 @@ public class PropertyEntry {
         return writeAccessor;
     }
 
-    public ExecutableElementAccessor getPresenceChecker() {
+    public Accessor getPresenceChecker() {
         return presenceChecker;
     }
 

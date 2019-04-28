@@ -18,11 +18,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 /**
  * This class describes the target side of a property mapping.
@@ -198,8 +198,8 @@ public class TargetReference {
                     break;
                 }
 
-                if ( isLast || ( accessorNaming.isSetterMethod( targetWriteAccessor )
-                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
+                if ( isLast || ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                                targetWriteAccessor.getAccessorType() == AccessorType.FIELD ) ) {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
@@ -228,8 +228,7 @@ public class TargetReference {
         private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             Type nextType;
             Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
-            if ( accessorNaming.isGetterMethod( toUse ) ||
-                Executables.isFieldAccessor( toUse ) ) {
+            if ( toUse.getAccessorType() == AccessorType.GETTER  || toUse.getAccessorType() == AccessorType.FIELD ) {
                 nextType = typeFactory.getReturnType(
                     (DeclaredType) typeBasedOnMethod( initial ).getTypeMirror(),
                     toUse

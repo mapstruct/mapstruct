@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.util;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 /**
  * This a wrapper class which provides the value that needs to be used in the models.
@@ -45,7 +46,7 @@ public class ValueProvider {
             return null;
         }
         String value = accessor.getSimpleName().toString();
-        if ( accessor.getExecutable() != null ) {
+        if ( accessor.getAccessorType() != AccessorType.FIELD ) {
             value += "()";
         }
         return new ValueProvider( value );

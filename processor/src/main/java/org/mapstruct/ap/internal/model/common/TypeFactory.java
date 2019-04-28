@@ -49,6 +49,7 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
@@ -354,10 +355,10 @@ public class TypeFactory {
     }
 
     public Parameter getSingleParameter(DeclaredType includingType, Accessor method) {
-        ExecutableElement executable = method.getExecutable();
-        if ( executable == null ) {
+        if ( method.getAccessorType() == AccessorType.FIELD ) {
             return null;
         }
+        ExecutableElement executable = (ExecutableElement) method.getElement();
         List<? extends VariableElement> parameters = executable.getParameters();
 
         if ( parameters.size() != 1 ) {
@@ -369,7 +370,7 @@ public class TypeFactory {
     }
 
     public List<Parameter> getParameters(DeclaredType includingType, Accessor accessor) {
-        ExecutableElement method = accessor.getExecutable();
+        ExecutableElement method = (ExecutableElement) accessor.getElement();
         TypeMirror methodType = getMethodType( includingType, accessor.getElement() );
         if ( method == null || methodType.getKind() != TypeKind.EXECUTABLE ) {
             return new ArrayList<>();
@@ -427,10 +428,10 @@ public class TypeFactory {
     }
 
     public List<Type> getThrownTypes(Accessor accessor) {
-        if (accessor.getExecutable() == null) {
+        if (accessor.getAccessorType() == AccessorType.FIELD) {
             return new ArrayList<>();
         }
-        return extractTypes( accessor.getExecutable().getThrownTypes() );
+        return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );
     }
 
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {

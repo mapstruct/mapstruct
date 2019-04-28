@@ -50,7 +50,6 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -590,7 +589,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         Accessor sourceReadAccessor =
                             sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
 
-                        ExecutableElementAccessor sourcePresenceChecker =
+                        Accessor sourcePresenceChecker =
                             sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {
