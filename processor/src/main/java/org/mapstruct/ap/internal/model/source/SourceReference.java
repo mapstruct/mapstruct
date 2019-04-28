@@ -261,7 +261,7 @@ public class SourceReference {
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
                 Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
-                Map<String, ExecutableElementAccessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
+                Map<String, Accessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
                 for ( Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
@@ -297,7 +297,7 @@ public class SourceReference {
 
         private String name;
         private Accessor readAccessor;
-        private ExecutableElementAccessor presenceChecker;
+        private Accessor presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -311,7 +311,7 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromProperty presenceChecker(ExecutableElementAccessor presenceChecker) {
+        public BuilderFromProperty presenceChecker(Accessor presenceChecker) {
             this.presenceChecker = presenceChecker;
             return this;
         }

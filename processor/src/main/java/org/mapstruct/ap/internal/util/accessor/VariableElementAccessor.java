@@ -26,12 +26,13 @@ public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
     }
 
     @Override
-    public ExecutableElement getExecutable() {
-        return null;
-    }
-
-    @Override
     public String toString() {
         return element.toString();
     }
+
+    @Override
+    public AccessorType getAccessorType() {
+        return AccessorType.FIELD;
+    }
+
 }

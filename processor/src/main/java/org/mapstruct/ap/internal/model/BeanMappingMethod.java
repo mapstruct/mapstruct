@@ -590,7 +590,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         Accessor sourceReadAccessor =
                             sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
 
-                        ExecutableElementAccessor sourcePresenceChecker =
+                        Accessor sourcePresenceChecker =
                             sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {

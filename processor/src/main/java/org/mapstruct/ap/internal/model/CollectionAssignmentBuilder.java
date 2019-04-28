@@ -20,6 +20,7 @@ import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
@@ -57,7 +58,7 @@ public class CollectionAssignmentBuilder {
     private Accessor targetReadAccessor;
     private Type targetType;
     private String targetPropertyName;
-    private PropertyMapping.TargetWriteAccessorType targetAccessorType;
+    private AccessorType targetAccessorType;
     private Assignment assignment;
     private SourceRHS sourceRHS;
     private NullValueCheckStrategyPrism nvcs;
@@ -88,7 +89,7 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
-    public CollectionAssignmentBuilder targetAccessorType(PropertyMapping.TargetWriteAccessorType targetAccessorType) {
+    public CollectionAssignmentBuilder targetAccessorType(AccessorType targetAccessorType) {
         this.targetAccessorType = targetAccessorType;
         return this;
     }
@@ -129,8 +130,7 @@ public class CollectionAssignmentBuilder {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE || targetReadAccessor == null;
 
-        if ( targetAccessorType == PropertyMapping.TargetWriteAccessorType.SETTER ||
-            targetAccessorType == PropertyMapping.TargetWriteAccessorType.FIELD ) {
+        if ( targetAccessorType == AccessorType.SETTER || targetAccessorType == AccessorType.FIELD ) {
 
             if ( result.isCallingUpdateMethod() && !targetImmutable ) {
 
@@ -149,7 +149,7 @@ public class CollectionAssignmentBuilder {
                     result,
                     method.getThrownTypes(),
                     factoryMethod,
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
+                    targetAccessorType == AccessorType.FIELD,
                     targetType,
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
@@ -165,7 +165,7 @@ public class CollectionAssignmentBuilder {
                     nvcs,
                     nvpms,
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+      targetAccessorType == AccessorType.FIELD
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
@@ -176,7 +176,7 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+      targetAccessorType == AccessorType.FIELD
                 );
             }
             else {
@@ -185,7 +185,7 @@ public class CollectionAssignmentBuilder {
                     result,
                     method.getThrownTypes(),
                     targetType,
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+      targetAccessorType == AccessorType.FIELD
                 );
             }
         }
@@ -203,7 +203,7 @@ public class CollectionAssignmentBuilder {
                 result,
                 method.getThrownTypes(),
                 targetType,
-                PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+  targetAccessorType == AccessorType.FIELD
             );
         }
 

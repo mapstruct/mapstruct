@@ -22,6 +22,7 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -48,6 +49,7 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
@@ -73,38 +75,14 @@ public class PropertyMapping extends ModelElement {
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
 
-    public enum TargetWriteAccessorType {
-        FIELD,
-        GETTER,
-        SETTER,
-        ADDER;
-
-        public static TargetWriteAccessorType of(AccessorNamingUtils accessorNaming, Accessor accessor) {
-            if ( accessorNaming.isSetterMethod( accessor ) ) {
-                return TargetWriteAccessorType.SETTER;
-            }
-            else if ( accessorNaming.isAdderMethod( accessor ) ) {
-                return TargetWriteAccessorType.ADDER;
-            }
-            else if ( accessorNaming.isGetterMethod( accessor ) ) {
-                return TargetWriteAccessorType.GETTER;
-            }
-            else {
-                return TargetWriteAccessorType.FIELD;
-            }
-        }
-
-        public static boolean isFieldAssignment(TargetWriteAccessorType accessorType) {
-            return accessorType == FIELD;
-        }
-    }
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> extends AbstractBaseBuilder<T> {
 
         protected Accessor targetWriteAccessor;
-        protected TargetWriteAccessorType targetWriteAccessorType;
+        protected AccessorType targetWriteAccessorType;
         protected Type targetType;
+        protected BuilderType targetBuilderType;
         protected Accessor targetReadAccessor;
         protected String targetPropertyName;
         protected String sourcePropertyName;
@@ -125,7 +103,8 @@ public class PropertyMapping extends ModelElement {
             this.targetReadAccessor = targetProp.getReadAccessor();
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getAccessorNaming(), targetWriteAccessor );
+            this.targetBuilderType = targetProp.getBuilderType();
+            this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
         }
 
@@ -136,7 +115,7 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getAccessorNaming(), targetWriteAccessor );
+            this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             this.targetType = determineTargetType();
 
             return (T) this;
@@ -148,25 +127,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Type determineTargetType() {
-            // This is a bean mapping method, so we know the result is a declared type
-            Type mappingType = method.getResultType();
-            if ( !method.isUpdateMethod() ) {
-                mappingType = mappingType.getEffectiveType();
-            }
-            DeclaredType resultType = (DeclaredType) mappingType.getTypeMirror();
-
-            switch ( targetWriteAccessorType ) {
-                case ADDER:
-                case SETTER:
-                    return ctx.getTypeFactory()
-                        .getSingleParameter( resultType, targetWriteAccessor )
-                        .getType();
-                case GETTER:
-                case FIELD:
-                default:
-                    return ctx.getTypeFactory()
-                        .getReturnType( resultType, targetWriteAccessor );
-            }
+            return ctx.getTypeFactory().getType(  targetWriteAccessor.getAccessedType()  );
         }
 
         public T targetPropertyName(String targetPropertyName) {
@@ -190,7 +151,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         protected boolean isFieldAssignment() {
-            return targetWriteAccessorType == TargetWriteAccessorType.FIELD;
+            return targetWriteAccessorType == AccessorType.FIELD;
         }
     }
 
@@ -300,11 +261,11 @@ public class PropertyMapping extends ModelElement {
             ctx.getMessager().note( 2, Message.PROPERTYMAPPING_MAPPING_NOTE, rightHandSide, targetWriteAccessor );
 
             rightHandSide.setUseElementAsSourceTypeForMatching(
-                targetWriteAccessorType == TargetWriteAccessorType.ADDER );
+                targetWriteAccessorType == AccessorType.ADDER );
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
-            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER ) {
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
                 preferUpdateMethods = false;
             }
             else {
@@ -446,13 +407,12 @@ public class PropertyMapping extends ModelElement {
             return null;
         }
 
-        private Assignment assignToPlain(Type targetType, TargetWriteAccessorType targetAccessorType,
+        private Assignment assignToPlain(Type targetType, AccessorType targetAccessorType,
                                          Assignment rightHandSide) {
 
             Assignment result;
 
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
-                targetAccessorType == TargetWriteAccessorType.FIELD ) {
+            if ( targetAccessorType == AccessorType.SETTER || targetAccessorType == AccessorType.FIELD ) {
                 result = assignToPlainViaSetter( targetType, rightHandSide );
             }
             else {
@@ -530,7 +490,7 @@ public class PropertyMapping extends ModelElement {
             return result;
         }
 
-        private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
+        private Assignment assignToCollection(Type targetType, AccessorType targetAccessorType,
                                             Assignment rhs) {
             return new CollectionAssignmentBuilder()
                 .mappingBuilderContext( ctx )
@@ -738,7 +698,7 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
             Type sourceType;
-            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER ) {
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
                 sourceType = sourceRHS.getSourceTypeForMatching();
             }
             else {
@@ -764,7 +724,7 @@ public class PropertyMapping extends ModelElement {
             // because we are forging a Mapping for a method with multiple source parameters.
             // If the target type is enum, then we can't create an update method
             if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod )
-                && targetWriteAccessorType != TargetWriteAccessorType.ADDER) {
+                && targetWriteAccessorType != AccessorType.ADDER) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }
@@ -783,7 +743,7 @@ public class PropertyMapping extends ModelElement {
                 forgeMethodWithMappingOptions,
                 forgedNamedBased
             );
-            return createForgedAssignment( sourceRHS, forgedMethod );
+            return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
@@ -899,8 +859,8 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor ) ||
-                    Executables.isFieldAccessor( targetWriteAccessor ) ) {
+                if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                targetWriteAccessor.getAccessorType() == AccessorType.FIELD ) {
 
                     // target accessor is setter, so decorate assignment as setter
                     if ( assignment.isCallingUpdateMethod() ) {
@@ -1015,8 +975,8 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
 
-            if ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor ) ||
-                Executables.isFieldAccessor( targetWriteAccessor ) ) {
+            if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                            targetWriteAccessor.getAccessorType() == AccessorType.FIELD ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
             }
