@@ -9,6 +9,8 @@
 <@compress single_line=true>
     <#if factoryMethod??>
         <@includeModel object=factoryMethod targetType=resultType/>
+    <#elseif enumSet>
+        EnumSet.noneOf( <@includeModel object=enumSetElementType raw=true/>.class )
     <#else>
     new
         <#if resultType.implementationType??>
