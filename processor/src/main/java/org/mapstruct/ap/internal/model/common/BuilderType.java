@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.common;
 
 import java.util.Collection;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
@@ -109,6 +110,11 @@ public class BuilderType {
             owner = typeFactory.getType( builderCreationOwner );
         }
 
+        // When the builderCreationMethod is constructor, its return type is Void. In this case the
+        // builder type should be the owner type.
+        if (builderInfo.getBuilderCreationMethod().getKind() == ElementKind.CONSTRUCTOR) {
+            builder = owner;
+        }
 
         return new BuilderType(
             builder,
