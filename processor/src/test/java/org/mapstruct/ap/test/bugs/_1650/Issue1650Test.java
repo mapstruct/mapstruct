@@ -36,10 +36,10 @@ public class Issue1650Test {
 
        // update mapping
        AMapper.INSTANCE.toAPrime( a, aPrime );
-       assertThat( aPrime.getcPrime() ).isNotNull();
+       assertThat( aPrime.getCPrime() ).isNotNull();
 
        // create mapping
         APrime aPrime1 = AMapper.INSTANCE.toAPrime( a );
-        assertThat( aPrime1.getcPrime() ).isNotNull();
+        assertThat( aPrime1.getCPrime() ).isNotNull();
     }
 }

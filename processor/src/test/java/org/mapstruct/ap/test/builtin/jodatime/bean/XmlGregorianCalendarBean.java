@@ -15,11 +15,11 @@ public class XmlGregorianCalendarBean {
 
     XMLGregorianCalendar xMLGregorianCalendar;
 
-    public XMLGregorianCalendar getxMLGregorianCalendar() {
+    public XMLGregorianCalendar getXMLGregorianCalendar() {
         return xMLGregorianCalendar;
     }
 
-    public void setxMLGregorianCalendar(XMLGregorianCalendar xMLGregorianCalendar) {
+    public void setXMLGregorianCalendar(XMLGregorianCalendar xMLGregorianCalendar) {
         this.xMLGregorianCalendar = xMLGregorianCalendar;
     }
 

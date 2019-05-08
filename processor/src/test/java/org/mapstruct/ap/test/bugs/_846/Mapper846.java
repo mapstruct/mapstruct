@@ -44,11 +44,11 @@ public class Mapper846 {
         A() {
         }
 
-        public String getaName() {
+        public String getAName() {
             return aName;
         }
 
-        public void setaName(String name) {
+        public void setAName(String name) {
             this.aName = name;
         }
     }
@@ -56,7 +56,7 @@ public class Mapper846 {
     @Mapper
     interface MyMapper {
 
-        @Mapping(source = "name", target = "aName")
+        @Mapping(source = "name", target = "AName")
         A convert(BInterface b);
 
         @InheritInverseConfiguration

@@ -20,6 +20,6 @@ public interface XmlGregorianCalendarToLocalDateTime {
 
     XmlGregorianCalendarToLocalDateTime INSTANCE = Mappers.getMapper( XmlGregorianCalendarToLocalDateTime.class );
 
-    @Mapping( target = "localDateTime", source = "xMLGregorianCalendar" )
+    @Mapping( target = "localDateTime", source = "XMLGregorianCalendar" )
     LocalDateTimeBean toDateTimeBean( XmlGregorianCalendarBean in );
 }

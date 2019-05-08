@@ -9,11 +9,11 @@ public class APrime {
 
     private CPrime cPrime;
 
-    public CPrime getcPrime() {
+    public CPrime getCPrime() {
         return cPrime;
     }
 
-    public void setcPrime(CPrime cPrime) {
+    public void setCPrime(CPrime cPrime) {
         this.cPrime = cPrime;
     }
 }

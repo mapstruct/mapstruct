@@ -59,14 +59,14 @@ public class JodaTimeTest {
         in.setDateTime( dt );
         XmlGregorianCalendarBean res = DateTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
-        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( -60 );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getSecond() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
+        assertThat( res.getXMLGregorianCalendar().getTimezone() ).isEqualTo( -60 );
     }
 
     @Test
@@ -78,11 +78,11 @@ public class JodaTimeTest {
         in.setDateTime( dt );
         XmlGregorianCalendarBean res = DateTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
     }
 
     @Test
@@ -92,7 +92,7 @@ public class JodaTimeTest {
         XmlGregorianCalendarBean in = new XmlGregorianCalendarBean();
         XMLGregorianCalendar xcal =
             DatatypeFactory.newInstance().newXMLGregorianCalendar( 2010, 1, 15, 1, 1, 1, 100, 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 2010 );
@@ -118,7 +118,7 @@ public class JodaTimeTest {
         xcal.setMinute( 34 );
         xcal.setSecond( 45 );
         xcal.setMillisecond( 500 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 1999 );
@@ -144,7 +144,7 @@ public class JodaTimeTest {
         xcal.setMinute( 34 );
         xcal.setSecond( 45 );
         xcal.setTimezone( 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 1999 );
@@ -169,7 +169,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setSecond( 45 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 1999 );
@@ -194,7 +194,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setTimezone( 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 1999 );
@@ -218,7 +218,7 @@ public class JodaTimeTest {
         xcal.setDay( 25 );
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime().getYear() ).isEqualTo( 1999 );
@@ -241,7 +241,7 @@ public class JodaTimeTest {
         xcal.setMonth( 5 );
         xcal.setDay( 25 );
         xcal.setHour( 23 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         DateTimeBean res = XmlGregorianCalendarToDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getDateTime() ).isNull();
@@ -259,7 +259,7 @@ public class JodaTimeTest {
         XmlGregorianCalendarBean xcb2 = DateTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( dtb2 );
 
         assertThat( dtb1.getDateTime() ).isEqualTo( dtb2.getDateTime() );
-        assertThat( xcb1.getxMLGregorianCalendar() ).isEqualTo( xcb2.getxMLGregorianCalendar() );
+        assertThat( xcb1.getXMLGregorianCalendar() ).isEqualTo( xcb2.getXMLGregorianCalendar() );
 
     }
 
@@ -272,14 +272,14 @@ public class JodaTimeTest {
         in.setLocalDateTime( dt );
         XmlGregorianCalendarBean res = LocalDateTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
-        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getSecond() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
+        assertThat( res.getXMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
     @Test
@@ -291,14 +291,14 @@ public class JodaTimeTest {
         in.setLocalDateTime( dt );
         XmlGregorianCalendarBean res = LocalDateTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( 0 );
-        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( 0 );
-        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getSecond() ).isEqualTo( 0 );
+        assertThat( res.getXMLGregorianCalendar().getMillisecond() ).isEqualTo( 0 );
+        assertThat( res.getXMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
     @Test
@@ -308,7 +308,7 @@ public class JodaTimeTest {
         XmlGregorianCalendarBean in = new XmlGregorianCalendarBean();
         XMLGregorianCalendar xcal =
             DatatypeFactory.newInstance().newXMLGregorianCalendar( 2010, 1, 15, 1, 1, 1, 100, 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateTimeBean res = XmlGregorianCalendarToLocalDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getLocalDateTime().getYear() ).isEqualTo( 2010 );
@@ -332,7 +332,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setSecond( 45 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateTimeBean res = XmlGregorianCalendarToLocalDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getLocalDateTime().getYear() ).isEqualTo( 1999 );
@@ -356,7 +356,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setTimezone( 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateTimeBean res = XmlGregorianCalendarToLocalDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getLocalDateTime().getYear() ).isEqualTo( 1999 );
@@ -378,7 +378,7 @@ public class JodaTimeTest {
         xcal.setMonth( 5 );
         xcal.setDay( 25 );
         xcal.setHour( 23 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateTimeBean res = XmlGregorianCalendarToLocalDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getLocalDateTime() ).isNull();
@@ -394,14 +394,14 @@ public class JodaTimeTest {
         in.setLocalDate( dt );
         XmlGregorianCalendarBean res = LocalDateToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getSecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getMillisecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
     @Test
@@ -414,7 +414,7 @@ public class JodaTimeTest {
             5,
             25,
             DatatypeConstants.FIELD_UNDEFINED );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateBean res = XmlGregorianCalendarToLocalDate.INSTANCE.toLocalDateBean( in );
         assertThat( res.getLocalDate().getYear() ).isEqualTo( 1999 );
@@ -432,7 +432,7 @@ public class JodaTimeTest {
             5,
             DatatypeConstants.FIELD_UNDEFINED,
             DatatypeConstants.FIELD_UNDEFINED );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalDateBean res = XmlGregorianCalendarToLocalDate.INSTANCE.toLocalDateBean( in );
         assertThat( res.getLocalDate() ).isNull();
@@ -448,14 +448,14 @@ public class JodaTimeTest {
         in.setLocalTime( dt );
         XmlGregorianCalendarBean res = LocalTimeToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
 
-        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
-        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
-        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( 0 );
-        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
-        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getYear() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getMonth() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getDay() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getXMLGregorianCalendar().getHour() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
+        assertThat( res.getXMLGregorianCalendar().getSecond() ).isEqualTo( 0 );
+        assertThat( res.getXMLGregorianCalendar().getMillisecond() ).isEqualTo( 100 );
+        assertThat( res.getXMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
     @Test
@@ -465,7 +465,7 @@ public class JodaTimeTest {
         XmlGregorianCalendarBean in = new XmlGregorianCalendarBean();
         XMLGregorianCalendar xcal =
             DatatypeFactory.newInstance().newXMLGregorianCalendarTime( 1, 1, 1, 100, 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalTimeBean res = XmlGregorianCalendarToLocalTime.INSTANCE.toLocalTimeBean( in );
         assertThat( res.getLocalTime().getHourOfDay() ).isEqualTo( 1 );
@@ -483,7 +483,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setSecond( 45 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalTimeBean res = XmlGregorianCalendarToLocalTime.INSTANCE.toLocalTimeBean( in );
         assertThat( res.getLocalTime().getHourOfDay() ).isEqualTo( 23 );
@@ -501,7 +501,7 @@ public class JodaTimeTest {
         xcal.setHour( 23 );
         xcal.setMinute( 34 );
         xcal.setTimezone( 60 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalTimeBean res = XmlGregorianCalendarToLocalTime.INSTANCE.toLocalTimeBean( in );
         assertThat( res.getLocalTime().getHourOfDay() ).isEqualTo( 23 );
@@ -520,7 +520,7 @@ public class JodaTimeTest {
         xcal.setMonth( 5 );
         xcal.setDay( 25 );
         xcal.setHour( 23 );
-        in.setxMLGregorianCalendar( xcal );
+        in.setXMLGregorianCalendar( xcal );
 
         LocalTimeBean res = XmlGregorianCalendarToLocalTime.INSTANCE.toLocalTimeBean( in );
         assertThat( res.getLocalTime() ).isNull();

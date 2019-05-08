@@ -500,7 +500,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 if ( modifiableGetters.containsKey( propertyName ) ) {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
-                    if ( !getter.getSimpleName().toString().startsWith( "is" ) ) {
+                    if ( !getter.getSimpleName().toString().matches( "^is[A-Z].*" ) ) {
                         modifiableGetters.put( getPropertyName( getter ), getter );
                     }
 

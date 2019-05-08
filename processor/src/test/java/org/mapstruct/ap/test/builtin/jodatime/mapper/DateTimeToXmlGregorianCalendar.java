@@ -20,6 +20,6 @@ public interface DateTimeToXmlGregorianCalendar {
 
     DateTimeToXmlGregorianCalendar INSTANCE = Mappers.getMapper( DateTimeToXmlGregorianCalendar.class );
 
-    @Mapping( target = "xMLGregorianCalendar", source = "dateTime")
+    @Mapping( target = "XMLGregorianCalendar", source = "dateTime")
     XmlGregorianCalendarBean toXmlGregorianCalendarBean( DateTimeBean in );
 }

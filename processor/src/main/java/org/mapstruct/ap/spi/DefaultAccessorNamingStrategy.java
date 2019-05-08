@@ -71,12 +71,12 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public boolean isGetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        boolean isNonBooleanGetterName = methodName.startsWith( "get" ) && methodName.length() > 3 &&
+        boolean isNonBooleanGetterName = methodName.matches( "^get[A-Z].*" ) &&
             method.getReturnType().getKind() != TypeKind.VOID;
 
-        boolean isBooleanGetterName = methodName.startsWith( "is" ) && methodName.length() > 2;
+        boolean isBooleanGetterName = methodName.matches( "^is[A-Z].*" );
         boolean returnTypeIsBoolean = method.getReturnType().getKind() == TypeKind.BOOLEAN ||
-            "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) );
+            Boolean.class.getName().equals( getQualifiedName( method.getReturnType() ) );
 
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
@@ -94,7 +94,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        return methodName.startsWith( "set" ) && methodName.length() > 3 || isFluentSetter( method );
+        return methodName.matches( "^set[A-Z].*" ) || isFluentSetter( method );
     }
 
     protected boolean isFluentSetter(ExecutableElement method) {
@@ -133,7 +133,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public boolean isAdderMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        return methodName.startsWith( "add" ) && methodName.length() > 3;
+        return methodName.matches( "^add[A-Z].*" );
     }
 
     /**
@@ -149,7 +149,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
      */
     public boolean isPresenceCheckMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
-        return methodName.startsWith( "has" ) && methodName.length() > 3;
+        return methodName.matches( "^has[A-Z].*" );
     }
 
     /**
@@ -166,13 +166,13 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
-        if ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
+        if ( methodName.matches( "^get[A-Z].*" ) || methodName.matches( "^set[A-Z].*" ) ) {
             return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
         }
         else if ( isFluentSetter( getterOrSetterMethod ) ) {
             return methodName;
         }
-        return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+        return IntrospectorUtils.decapitalize( methodName.substring( methodName.matches( "^is[A-Z].*" ) ? 2 : 3 ) );
     }
 
     /**

@@ -41,6 +41,8 @@ public class AbstractBuilderTest {
 
         assertThat( product.getPrice() ).isEqualTo( 31 );
         assertThat( product.getName() ).isEqualTo( "router" );
+        assertThat( product.getSettlementPrice() ).isEqualTo( 31 );
+        assertThat( product.getIssuer() ).isTrue();
     }
 
     @Test
