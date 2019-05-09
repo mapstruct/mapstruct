@@ -14,6 +14,14 @@ package org.mapstruct.ap.spi.util;
  */
 public class IntrospectorUtils {
 
+    private static final String METHOD_NAME_PATTERN = "^%s[A-Z].*";
+    private static final String GETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "get" );
+    private static final String BOOLEAN_GETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "is" );
+    private static final String SETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "set" );
+    private static final String WITHER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "with" );
+    private static final String ADDER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "add" );
+    private static final String PRESENCE_CHECKER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "has" );
+
     private IntrospectorUtils() {
     }
 
@@ -44,4 +52,27 @@ public class IntrospectorUtils {
         return new String( chars );
     }
 
+    public static boolean isGetter(final String methodName) {
+        return methodName.matches( GETTER_METHOD_NAME_PATTERN );
+    }
+
+    public static boolean isBooleanGetter(final String methodName) {
+        return methodName.matches( BOOLEAN_GETTER_METHOD_NAME_PATTERN );
+    }
+
+    public static boolean isSetter(final String methodName) {
+        return methodName.matches( SETTER_METHOD_NAME_PATTERN );
+    }
+
+    public static boolean isWither(final String methodName) {
+        return methodName.matches( WITHER_METHOD_NAME_PATTERN );
+    }
+
+    public static boolean isAdder(final String methodName) {
+        return methodName.matches( ADDER_METHOD_NAME_PATTERN );
+    }
+
+    public static boolean isPresenceChecker(final String methodName) {
+        return methodName.matches( PRESENCE_CHECKER_METHOD_NAME_PATTERN );
+    }
 }

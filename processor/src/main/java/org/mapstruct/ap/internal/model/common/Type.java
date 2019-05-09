@@ -43,6 +43,7 @@ import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import org.mapstruct.ap.internal.util.NativeTypes;
+import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -500,7 +501,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 if ( modifiableGetters.containsKey( propertyName ) ) {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
-                    if ( !getter.getSimpleName().toString().matches( "^is[A-Z].*" ) ) {
+                    if ( !IntrospectorUtils.isBooleanGetter( getter.getSimpleName().toString() ) ) {
                         modifiableGetters.put( getPropertyName( getter ), getter );
                     }
 
