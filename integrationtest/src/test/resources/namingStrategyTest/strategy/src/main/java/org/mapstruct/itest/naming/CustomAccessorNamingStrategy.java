@@ -29,20 +29,20 @@ public class CustomAccessorNamingStrategy  extends DefaultAccessorNamingStrategy
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        return methodName.matches( "^with[A-Z].*" );
+        return IntrospectorUtils.isWither( methodName );
     }
 
     @Override
     public boolean isAdderMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
-        return methodName.matches( "^add[A-Z].*" );
+        return IntrospectorUtils.isAdder( methodName );
     }
 
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
         return IntrospectorUtils.decapitalize(
-            methodName.matches( "^with[A-Z].*" ) ? methodName.substring( 4 ) : methodName );
+            IntrospectorUtils.isWither( methodName ) ? methodName.substring( 4 ) : methodName );
     }
 
     @Override

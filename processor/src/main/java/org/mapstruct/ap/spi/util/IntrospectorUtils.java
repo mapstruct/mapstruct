@@ -14,7 +14,7 @@ package org.mapstruct.ap.spi.util;
  */
 public class IntrospectorUtils {
 
-    private static final String METHOD_NAME_PATTERN = "^%s[A-Z].*";
+    private static final String METHOD_NAME_PATTERN = "^%s\\p{javaUpperCase}.*";
     private static final String GETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "get" );
     private static final String BOOLEAN_GETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "is" );
     private static final String SETTER_METHOD_NAME_PATTERN = String.format( METHOD_NAME_PATTERN, "set" );
