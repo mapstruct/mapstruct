@@ -104,9 +104,10 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties " +
-                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
-                    ".*WithProperties value\\)")
+                messageRegExp = "No target bean properties found: can't map Stream element \".*WithProperties "
+                                + "withProperties\" to \".*NoProperties noProperties\". "
+                                + "Consider to declare/implement a mapping method: \".*NoProperties "
+                                + "map\\(.*WithProperties value\\)" )
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
@@ -136,10 +137,11 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp =
-                    "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties noProperties\"." +
-                        " Consider to declare/implement a mapping method: \".*NoProperties map\\(.*WithProperties " +
-                        "value\\)")
+                messageRegExp = "No target bean properties found: can't map Stream element \".*WithProperties "
+                                + "withProperties\" to \".*NoProperties noProperties\"."
+                                + " Consider to declare/implement a mapping method: \".*NoProperties map\\("
+                                + ".*WithProperties "
+                                + "value\\)" )
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStream() {
@@ -154,8 +156,9 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
                 line = 20,
-                messageRegExp = "Can't map stream element \".*AttributedString\" to \".*String \". Consider to " +
-                    "declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
+                messageRegExp = "Can't map stream element \".*AttributedString\" to "
+                                + "\".*String \". Consider to declare/implement a mapping method: \".*String "
+                                + "map\\(.*AttributedString value\\)" )
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStreamWithDisabledAuto() {
@@ -169,9 +172,10 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp =
-                    "Can't map Stream element \".*WithProperties withProperties\" to .*NoProperties noProperties\"." +
-                        " Consider to declare/implement a mapping method: \".*NoProperties map(.*WithProperties value)")
+                messageRegExp = "No target bean properties found: can't map Stream element \".*WithProperties "
+                                + "withProperties\" to .*NoProperties noProperties\"."
+                                + " Consider to declare/implement a mapping method: \".*NoProperties map("
+                                + ".*WithProperties value)" )
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToList() {

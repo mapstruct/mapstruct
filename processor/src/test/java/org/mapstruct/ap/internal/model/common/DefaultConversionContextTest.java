@@ -153,6 +153,11 @@ public class DefaultConversionContextTest {
             lastKindPrinted = msg.getDiagnosticKind();
         }
 
+        @Override
+        public void note(int level, Message msg, Object... args) {
+            throw new UnsupportedOperationException( "Should not be called" );
+        }
+
         public Diagnostic.Kind getLastKindPrinted() {
             return lastKindPrinted;
         }

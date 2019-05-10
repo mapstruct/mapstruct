@@ -91,7 +91,7 @@ public final class LifecycleMethodResolver {
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
 
         Type targetType = method.getResultType();
 

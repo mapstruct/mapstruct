@@ -36,10 +36,14 @@
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
         these dependencies are not required at runtime, only for prism generation
         and tests -->
+        <!-- Using optional as well due to IntelliJ picking up the dependency
+         and running the hickory processor in projects using the mapstruct-processor.
+         This happens only when the processor is defined in the maven-compiler annotationProcessorPaths -->
         <dependency>
             <groupId>com.jolira</groupId>
             <artifactId>hickory</artifactId>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -304,4 +308,20 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>jdk-11-or-newer</id>
+            <activation>
+                <jdk>[11</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.3.1</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

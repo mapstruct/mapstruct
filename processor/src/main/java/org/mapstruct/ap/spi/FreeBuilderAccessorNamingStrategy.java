@@ -35,4 +35,5 @@ public class FreeBuilderAccessorNamingStrategy extends DefaultAccessorNamingStra
         // with set
         return false;
     }
+
 }

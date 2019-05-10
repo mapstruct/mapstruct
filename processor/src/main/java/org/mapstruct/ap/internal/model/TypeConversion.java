@@ -140,4 +140,10 @@ public class TypeConversion extends ModelElement implements Assignment {
     public boolean isCallingUpdateMethod() {
         return false;
     }
+
+    @Override
+    public String toString() {
+        String argument = getAssignment() != null ? getAssignment().toString() : getSourceReference();
+        return openExpression + argument + closeExpression;
+    }
 }

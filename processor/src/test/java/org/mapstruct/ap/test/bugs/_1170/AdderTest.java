@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import org.assertj.core.api.ListAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._1170._target.Target;
@@ -44,8 +45,8 @@ public class AdderTest {
         assertThat( target ).isNotNull();
         assertThat( target.getWithoutWildcards() ).containsExactly( 2L );
         assertThat( target.getWildcardInSources() ).containsExactly( 2L );
-        assertThat( target.getWildcardInTargets() ).containsExactly( 2L );
-        assertThat( target.getWildcardInBoths() ).containsExactly( 2L );
+        ( (ListAssert<Long>) assertThat( target.getWildcardInTargets() ) ).containsExactly( 2L );
+        ( (ListAssert<Long>) assertThat( target.getWildcardInBoths() ) ).containsExactly( 2L );
         assertThat( target.getWildcardAdderToSetters() ).containsExactly( 2L );
     }
 
@@ -63,10 +64,9 @@ public class AdderTest {
 
         assertThat( source ).isNotNull();
         assertThat( source.getWithoutWildcards() ).containsExactly( "mouse" );
-        assertThat( source.getWildcardInSources() ).containsExactly( "mouse" );
+        ( (ListAssert<String>) assertThat( source.getWildcardInSources() ) ).containsExactly( "mouse" );
         assertThat( source.getWildcardInTargets() ).containsExactly( "mouse" );
-        assertThat( source.getWildcardInBoths() ).containsExactly( "mouse" );
-        assertThat( source.getWildcardAdderToSetters() ).containsExactly( "mouse" );
+        ( (ListAssert<String>) assertThat( source.getWildcardInBoths() ) ).containsExactly( "mouse" );
+        ( (ListAssert<String>) assertThat( source.getWildcardAdderToSetters() ) ).containsExactly( "mouse" );
     }
-
 }

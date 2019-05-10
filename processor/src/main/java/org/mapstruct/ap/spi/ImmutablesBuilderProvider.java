@@ -83,4 +83,5 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         builderQualifiedName.append( "Immutable" ).append( typeElement.getSimpleName() );
         return elementUtils.getTypeElement( builderQualifiedName );
     }
+
 }

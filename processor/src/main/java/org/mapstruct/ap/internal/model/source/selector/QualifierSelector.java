@@ -138,12 +138,7 @@ public class QualifierSelector implements MethodSelector {
                     matches.add( candidate );
                 }
             }
-            if ( !matches.isEmpty() ) {
-                return matches;
-            }
-            else {
-                return methods;
-            }
+            return matches;
         }
     }
 

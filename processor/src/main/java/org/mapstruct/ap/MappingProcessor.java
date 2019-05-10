@@ -82,7 +82,8 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
     MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
     MappingProcessor.UNMAPPED_TARGET_POLICY,
-    MappingProcessor.DEFAULT_COMPONENT_MODEL
+    MappingProcessor.DEFAULT_COMPONENT_MODEL,
+    MappingProcessor.VERBOSE
 })
 public class MappingProcessor extends AbstractProcessor {
 
@@ -97,6 +98,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
+    protected static final String VERBOSE = "mapstruct.verbose";
 
     private Options options;
 
@@ -120,7 +122,9 @@ public class MappingProcessor extends AbstractProcessor {
         options = createOptions();
         annotationProcessorContext = new AnnotationProcessorContext(
             processingEnv.getElementUtils(),
-            processingEnv.getTypeUtils()
+            processingEnv.getTypeUtils(),
+            processingEnv.getMessager(),
+            options.isVerbose()
         );
     }
 
@@ -132,7 +136,8 @@ public class MappingProcessor extends AbstractProcessor {
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
-            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) )
+            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
+            Boolean.valueOf( processingEnv.getOptions().get( VERBOSE ) )
         );
     }
 
@@ -221,6 +226,11 @@ public class MappingProcessor extends AbstractProcessor {
                 processMapperTypeElement( context, mapperElement );
             }
             catch ( TypeHierarchyErroneousException thie ) {
+                if ( options.isVerbose() ) {
+                    processingEnv.getMessager().printMessage(
+                        Kind.NOTE, "MapStruct: referred types not available (yet), deferring mapper: "
+                            + mapperElement );
+                }
                 deferredMappers.add( mapperElement );
             }
             catch ( Throwable t ) {
@@ -242,7 +252,7 @@ public class MappingProcessor extends AbstractProcessor {
         StringWriter sw = new StringWriter();
         thrown.printStackTrace( new PrintWriter( sw ) );
 
-        String reportableStacktrace = sw.toString().replace( System.getProperty( "line.separator" ), "  " );
+        String reportableStacktrace = sw.toString().replace( System.lineSeparator( ), "  " );
 
         processingEnv.getMessager().printMessage(
             Kind.ERROR, "Internal error in the mapping processor: " + reportableStacktrace, element );

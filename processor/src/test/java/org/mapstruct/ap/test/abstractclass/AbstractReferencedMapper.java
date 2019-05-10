@@ -5,12 +5,11 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import javax.xml.ws.Holder;
-
 /**
  * @author Andreas Gudian
  */
 public abstract class AbstractReferencedMapper implements ReferencedMapperInterface {
+
     @Override
     public int holderToInt(Holder<String> holder) {
         return 41;

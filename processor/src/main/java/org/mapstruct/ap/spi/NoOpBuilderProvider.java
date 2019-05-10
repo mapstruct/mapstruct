@@ -23,5 +23,6 @@ public class NoOpBuilderProvider implements BuilderProvider {
     public BuilderInfo findBuilderInfo(TypeMirror type) {
         return null;
     }
+
 }
 // end::documentation[]

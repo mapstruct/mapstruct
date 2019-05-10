@@ -15,6 +15,10 @@ import javax.tools.Diagnostic;
 public enum Message {
 
     // CHECKSTYLE:OFF
+    PROCESSING_NOTE( "processing: %s.", Diagnostic.Kind.NOTE ),
+    CONFIG_NOTE( "applying mapper configuration: %s.", Diagnostic.Kind.NOTE ),
+
+    BEANMAPPING_CREATE_NOTE( "creating bean mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'nullValuePropertyMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_ABSTRACT( "The result type %s may not be an abstract class nor interface." ),
@@ -31,8 +35,12 @@ public enum Message {
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
 
+    PROPERTYMAPPING_MAPPING_NOTE( "mapping property: %s to: %s.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_CREATE_NOTE( "creating property mapping: %s.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_SELECT_NOTE( "selecting property mapping: %s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
-    PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND( "Can't map %s to %s. Consider to implement a mapping method: \"%s map(%s value)\"." ),
+    PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND( "No target bean properties found: can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
+    PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND( "No target bean properties found: can't map %s to %s. Consider to implement a mapping method: \"%s map(%s value)\"." ),
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),
     PROPERTYMAPPING_EMPTY_TARGET( "Target must not be empty in @Mapping." ),
     PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED( "Source and constant are both defined in @Mapping, either define a source or a constant." ),
@@ -67,10 +75,19 @@ public enum Message {
     CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     CONSTANTMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s for property \"%s\"." ),
 
+    MAPMAPPING_CREATE_NOTE( "creating map mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     MAPMAPPING_KEY_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source key type to target key type." ),
     MAPMAPPING_VALUE_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source value type to target value type." ),
     MAPMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', 'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, define at least one of them." ),
+    MAPMAPPING_SELECT_KEY_NOTE( "selecting key mapping: %s.", Diagnostic.Kind.NOTE ),
+    MAPMAPPING_SELECT_VALUE_NOTE( "selecting value mapping: %s.", Diagnostic.Kind.NOTE ),
+    MAPMAPPING_CREATE_KEY_NOTE( "creating key mapping: %s.", Diagnostic.Kind.NOTE ),
+    MAPMAPPING_CREATE_VALUE_NOTE( "creating value mapping: %s.", Diagnostic.Kind.NOTE ),
 
+    STREAMMAPPING_CREATE_NOTE( "creating stream mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
+    ITERABLEMAPPING_CREATE_NOTE( "creating iterable mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
+    ITERABLEMAPPING_SELECT_ELEMENT_NOTE( "selecting element mapping: %s.", Diagnostic.Kind.NOTE ),
+    ITERABLEMAPPING_CREATE_ELEMENT_NOTE( "creating element mapping: %s.", Diagnostic.Kind.NOTE ),
     ITERABLEMAPPING_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source element type into target element type." ),
     ITERABLEMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, define at least one of them." ),
 
@@ -80,6 +97,8 @@ public enum Message {
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     ENUMMAPPING_DEPRECATED( "Mapping of Enums via @Mapping is going to be removed in future versions of MapStruct. Please use @ValueMapping instead!", Diagnostic.Kind.WARNING ),
+
+    LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),
@@ -128,6 +147,7 @@ public enum Message {
     INHERITINVERSECONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritInverseConfiguration to select one of them explicitly: %s." ),
     INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
 
+    VALUEMAPPING_CREATE_NOTE( "creating value mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
     VALUEMAPPING_ANY_AREADY_DEFINED( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." ),
     VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),

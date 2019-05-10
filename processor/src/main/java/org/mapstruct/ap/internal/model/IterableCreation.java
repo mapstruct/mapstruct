@@ -12,6 +12,8 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 /**
  * Model element that can be used to create a type of {@link Iterable} or {@link java.util.Map}. If an implementation
  * type is used and the target type has a constructor with {@code int} as parameter and the source parameter is of
@@ -69,6 +71,20 @@ public class IterableCreation extends ModelElement {
         if ( factoryMethod == null && resultType.getImplementationType() != null ) {
             types.addAll( resultType.getImplementationType().getImportTypes() );
         }
+
+        if ( isEnumSet() ) {
+            types.add( getEnumSetElementType() );
+            // The result type itself is an EnumSet
+            types.add( resultType );
+        }
         return types;
+    }
+
+    public Type getEnumSetElementType() {
+        return first( getResultType().determineTypeArguments( Iterable.class ) );
+    }
+
+    public boolean isEnumSet() {
+        return "java.util.EnumSet".equals( resultType.getFullyQualifiedName() );
     }
 }

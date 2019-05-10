@@ -43,6 +43,7 @@ Sean Huang - https://github.com/seanjob
 Sjaak Derksen - https://github.com/sjaakd
 Stefan May - https://github.com/osthus-sm
 Taras Mychaskiw - https://github.com/twentylemon
+Thibault Duperron - https://github.com/Zomzog
 Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld

@@ -223,12 +223,17 @@ When invoking javac directly, these options are passed to the compiler in the fo
                 <version>${org.mapstruct.version}</version>
             </path>
         </annotationProcessorPaths>
+        <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
+        <showWarnings>true</showWarnings>
         <compilerArgs>
             <compilerArg>
                 -Amapstruct.suppressGeneratorTimestamp=true
             </compilerArg>
             <compilerArg>
                 -Amapstruct.suppressGeneratorVersionInfoComment=true
+            </compilerArg>
+            <compilerArg>
+                -Amapstruct.verbose=true
             </compilerArg>
         </compilerArgs>
     </configuration>
@@ -246,7 +251,8 @@ When invoking javac directly, these options are passed to the compiler in the fo
 compileJava {
     options.compilerArgs = [
         '-Amapstruct.suppressGeneratorTimestamp=true',
-        '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+        '-Amapstruct.verbose=true'
     ]
 }
 ...
@@ -263,6 +269,10 @@ The following options exist:
 |`mapstruct.
 suppressGeneratorTimestamp`
 |If set to `true`, the creation of a time stamp in the `@Generated` annotation in the generated mapper classes is suppressed.
+|`false`
+
+|`mapstruct.verbose`
+|If set to `true`, MapStruct in which MapStruct logs its major decisions. Note, at the moment of writing in Maven, also `showWarnings` needs to be added due to a problem in the maven-compiler-plugin configuration.
 |`false`
 
 |`mapstruct.
@@ -686,7 +696,7 @@ project on GitHub.
 MapStruct also supports mapping of immutable types via builders.
 When performing a mapping MapStruct checks if there is a builder for the type being mapped.
 This is done via the `BuilderProvider` SPI.
-If a Builder exists for a certain type, than that builder will be used for the mappings.
+If a Builder exists for a certain type, then that builder will be used for the mappings.
 
 The default implementation of the `BuilderProvider` assumes the following:
 
@@ -707,7 +717,7 @@ To finish the mapping MapStruct generates code that will invoke the build method
 [NOTE]
 ======
 The <<object-factories>> are also considered for the builder type.
-E.g. If an object factory exists for our `PersonBuilder` than this factory would be used instead of the builder creation method.
+E.g. If an object factory exists for our `PersonBuilder` then this factory would be used instead of the builder creation method.
 ======
 
 .Person with Builder example
@@ -2154,7 +2164,6 @@ MapStruct offers control over the object to create when the source argument of t
 However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
 
 * *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
-* *Primitives*: the default values for primitives will be returned, e.g. `false` for `boolean` or `0` for `int`.
 * *Iterables / Arrays*: an empty iterable will be returned.
 * *Maps*: an empty map will be returned.
 

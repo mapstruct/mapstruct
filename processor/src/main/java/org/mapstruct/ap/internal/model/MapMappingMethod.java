@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,8 +20,12 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -85,21 +87,28 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
             SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key" );
+
+            SelectionCriteria keyCriteria =
+                            SelectionCriteria.forMappingMethods( keySelectionParameters, null, false );
+
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 keyTargetType,
-                null, // there is no targetPropertyName
                 keyFormattingParameters,
-                keySelectionParameters,
+                keyCriteria,
                 keySourceRHS,
-                false,
                 null
             );
 
-            if ( keyAssignment == null ) {
+            if ( keyAssignment == null && !keyCriteria.hasQualfiers( ) ) {
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
+                if ( keyAssignment != null ) {
+                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_KEY_NOTE, keyAssignment );
+                }
             }
-
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_KEY_NOTE, keyAssignment );
+            }
 
             if ( keyAssignment == null ) {
                 if ( method instanceof ForgedMethod ) {
@@ -127,14 +136,16 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
                     "map value" );
+
+            SelectionCriteria valueCriteria =
+                            SelectionCriteria.forMappingMethods( valueSelectionParameters, null, false );
+
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 valueTargetType,
-                null, // there is no targetPropertyName
                 valueFormattingParameters,
-                valueSelectionParameters,
+                valueCriteria,
                 valueSourceRHS,
-                false,
                 null
             );
 
@@ -148,8 +159,14 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
-            if ( valueAssignment == null ) {
+            if ( valueAssignment == null && !valueCriteria.hasQualfiers( ) ) {
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
+                if ( valueAssignment != null ) {
+                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_VALUE_NOTE, valueAssignment );
+                }
+            }
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
             }
 
             if ( valueAssignment == null ) {
@@ -184,7 +201,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     .getFactoryMethod( method, method.getResultType(), null, ctx );
             }
 
-
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
@@ -210,6 +226,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         protected boolean shouldUsePropertyNamesInHistory() {
             return true;
         }
+
     }
 
     private MapMappingMethod(Method method, Collection<String> existingVariableNames, Assignment keyAssignment,
