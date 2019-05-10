@@ -29,4 +29,12 @@ public @interface Builder {
      * @return the method that needs to tbe invoked on the builder
      */
     String buildMethod() default "build";
+
+    /**
+     * Toggling builders on / off. Builders are sometimes used solely for unit testing (fluent testdata)
+     * MapStruct will need to use the regular getters /setters in that case.
+     *
+     * @return when true, no builder patterns will be applied
+     */
+    boolean noBuilder() default false;
 }
