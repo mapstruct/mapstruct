@@ -39,6 +39,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.Extractor;
@@ -521,7 +522,10 @@ public class TypeFactory {
         return null;
     }
 
-    private BuilderInfo findBuilder(TypeMirror type, boolean report) {
+    private BuilderInfo findBuilder(TypeMirror type, BuilderPrism builderPrism, boolean report) {
+        if ( builderPrism != null && builderPrism.noBuilder() ) {
+            return null;
+        }
         try {
             return roundContext.getAnnotationProcessorContext()
                 .getBuilderProvider()
@@ -664,17 +668,17 @@ public class TypeFactory {
         return true;
     }
 
-    public BuilderType builderTypeFor( Type type ) {
+    public BuilderType builderTypeFor( Type type, BuilderPrism builderPrism ) {
         if ( type != null ) {
-            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), true );
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, true );
             return BuilderType.create( builderInfo, type, this, this.typeUtils );
         }
         return null;
     }
 
-    public Type effectiveResultTypeFor( Type type ) {
+    public Type effectiveResultTypeFor( Type type, BuilderPrism builderPrism ) {
         if ( type != null ) {
-            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), false );
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, false );
             BuilderType builderType = BuilderType.create( builderInfo, type, this, this.typeUtils );
             return builderType != null ? builderType.getBuilder() : type;
         }

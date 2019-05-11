@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.builder.off;
 
-import java.util.List;
-
 public class SimpleMutablePerson {
     private String fullName;
 

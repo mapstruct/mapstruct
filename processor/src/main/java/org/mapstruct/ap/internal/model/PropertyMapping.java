@@ -37,6 +37,7 @@ import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
@@ -112,7 +113,8 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType );
+            BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builderPrism );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
         }

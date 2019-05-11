@@ -11,10 +11,8 @@ import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.source.BeanMapping;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -38,11 +36,7 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        Optional<BuilderPrism> beanMethodBuilder = Optional.ofNullable( method.getMappingOptions() )
-                                                           .map( MappingOptions::getBeanMapping )
-                                                           .flatMap( BeanMapping::getBuilder );
-        Optional<BuilderPrism> builderMapping = method.getMapperConfiguration().getBuilderPrism( beanMethodBuilder );
-
+        Optional<BuilderPrism> builderMapping = BeanMapping.builderPrismFor( method );
         if ( !builderMapping.isPresent() && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }

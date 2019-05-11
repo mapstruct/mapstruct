@@ -175,7 +175,14 @@ public class BeanMapping {
         return ignoreUnmappedSourceProperties;
     }
 
-    public Optional<BuilderPrism> getBuilder() {
-        return Optional.ofNullable( builder );
+    /**
+     * derives the builder prism given the options and configuration
+     * @param method containing mandatory configuration and the mapping options (optionally containing a beanmapping)
+     * @return a BuilderPrism as optional
+     */
+    public static Optional<BuilderPrism> builderPrismFor(Method method) {
+        return method.getMapperConfiguration()
+                     .getBuilderPrism( Optional.ofNullable( method.getMappingOptions().getBeanMapping() )
+                                               .map( b -> b.builder ) );
     }
 }
