@@ -6,10 +6,12 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.Collection;
+import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -36,14 +38,18 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        BuilderPrism builderMapping = builderMappingPrism( method, ctx );
-        if ( builderMapping == null && buildMethods.size() == 1 ) {
+        Optional<BuilderPrism> beanMethodBuilder = Optional.ofNullable( method.getMappingOptions() )
+                                                           .map( MappingOptions::getBeanMapping )
+                                                           .flatMap( BeanMapping::getBuilder );
+        Optional<BuilderPrism> builderMapping = method.getMapperConfiguration().getBuilderPrism( beanMethodBuilder );
+
+        if ( !builderMapping.isPresent() && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }
         else {
             String buildMethodPattern = DEFAULT_BUILD_METHOD_NAME;
-            if ( builderMapping != null ) {
-                buildMethodPattern = builderMapping.buildMethod();
+            if ( builderMapping.isPresent() ) {
+                buildMethodPattern = builderMapping.get().buildMethod();
             }
             for ( ExecutableElement buildMethod : buildMethods ) {
                 String methodName = buildMethod.getSimpleName().toString();
@@ -52,7 +58,7 @@ public class BuilderFinisherMethodResolver {
                 }
             }
 
-            if ( builderMapping == null ) {
+            if ( !builderMapping.isPresent() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT,
@@ -65,7 +71,7 @@ public class BuilderFinisherMethodResolver {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    builderMapping.mirror,
+                    builderMapping.get().mirror,
                     Message.BUILDER_NO_BUILD_METHOD_FOUND,
                     buildMethodPattern,
                     builderType.getBuilder(),
@@ -78,11 +84,4 @@ public class BuilderFinisherMethodResolver {
         return null;
     }
 
-    private static BuilderPrism builderMappingPrism(Method method, MappingBuilderContext ctx) {
-        BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
-        if ( beanMapping != null && beanMapping.getBuilder() != null ) {
-            return beanMapping.getBuilder();
-        }
-        return MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).getBuilderPrism();
-    }
 }

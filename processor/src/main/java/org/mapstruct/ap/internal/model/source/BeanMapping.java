@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
@@ -174,7 +175,7 @@ public class BeanMapping {
         return ignoreUnmappedSourceProperties;
     }
 
-    public BuilderPrism getBuilder() {
-        return builder;
+    public Optional<BuilderPrism> getBuilder() {
+        return Optional.ofNullable( builder );
     }
 }
