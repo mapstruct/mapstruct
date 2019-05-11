@@ -272,9 +272,9 @@ public class MapperConfiguration {
         return mapperPrism.disableSubMappingMethodsGeneration(); // fall back to default defined in the annotation
     }
 
-    public Optional<BuilderPrism> getBuilderPrism(Optional<BuilderPrism> beanMappingBuilderPrism) {
-        if ( beanMappingBuilderPrism != null && beanMappingBuilderPrism.isPresent()  ) {
-            return beanMappingBuilderPrism;
+    public Optional<BuilderPrism> getBuilderPrism(BuilderPrism beanMappingBuilderPrism) {
+        if ( beanMappingBuilderPrism != null  ) {
+            return Optional.ofNullable( beanMappingBuilderPrism );
         }
         else if ( mapperPrism.values.builder() != null ) {
             return Optional.ofNullable( mapperPrism.builder() );

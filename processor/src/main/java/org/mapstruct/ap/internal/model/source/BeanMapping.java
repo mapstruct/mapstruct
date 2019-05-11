@@ -183,6 +183,7 @@ public class BeanMapping {
     public static Optional<BuilderPrism> builderPrismFor(Method method) {
         return method.getMapperConfiguration()
                      .getBuilderPrism( Optional.ofNullable( method.getMappingOptions().getBeanMapping() )
-                                               .map( b -> b.builder ) );
+                                               .map( b -> b.builder )
+                                               .orElse( null ) );
     }
 }
