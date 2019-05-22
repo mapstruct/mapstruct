@@ -12,7 +12,7 @@
     }
 <#list propertyEntries as entry>
     <#if entry.presenceCheckerName?? >
-    if ( !<@localVarName index=entry_index/>.${entry.presenceCheckerName}() ) {
+    if ( <#if entry_index != 0><@localVarName index=entry_index/> == null || </#if>!<@localVarName index=entry_index/>.${entry.presenceCheckerName}() ) {
         return ${returnType.null};
     }
     </#if>
