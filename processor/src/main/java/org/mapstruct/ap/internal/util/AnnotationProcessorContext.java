@@ -14,6 +14,7 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
@@ -106,18 +107,53 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         this.initialized = true;
     }
 
-    private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
+    protected List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
         List<AstModifyingAnnotationProcessor> processors = new ArrayList<>();
 
         ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
                 AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
-        for ( Iterator<AstModifyingAnnotationProcessor> it = loader.iterator(); it.hasNext(); ) {
+        for ( Iterator<AstModifyingAnnotationProcessor> it = loader.iterator(); hasMoreAnnotationProcessors( it ); ) {
             processors.add( it.next() );
         }
 
         return processors;
+    }
+
+    protected boolean hasMoreAnnotationProcessors(Iterator<AstModifyingAnnotationProcessor> it) {
+        try {
+            return it.hasNext();
+        }
+        catch ( Throwable t ) {
+            if ( messager != null ) {
+                messager.printMessage( Kind.ERROR,
+                        "MapStruct: Could not load a configured AstModifyingAnnotationProcesor. "
+                        + "Will try to skip it." );
+            }
+
+            /*
+             * Will give it one more try before giving up
+             * on any other processors might still be in the lazy iterator
+             */
+
+            try {
+                it.next();
+            }
+            catch ( Throwable t2 ) { }
+
+            try {
+                return it.hasNext();
+            }
+            catch ( Throwable t2 ) {
+                if ( messager != null ) {
+                    messager.printMessage( Kind.ERROR,
+                            "MapStruct: Could not skip conflicting AstModifyingAnnotationProcesor."
+                            + " Will stop processing now." );
+                }
+                return false;
+            }
+        }
     }
 
     @Override
