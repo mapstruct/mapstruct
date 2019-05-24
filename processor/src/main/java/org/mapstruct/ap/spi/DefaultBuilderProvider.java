@@ -204,7 +204,14 @@ public class DefaultBuilderProvider implements BuilderProvider {
         return method.getParameters().isEmpty()
             && method.getModifiers().contains( Modifier.PUBLIC )
             && method.getModifiers().contains( Modifier.STATIC )
-            && !typeUtils.isSameType( method.getReturnType(), typeElement.asType() );
+            && method.getReturnType().getKind() != TypeKind.VOID
+            // Only compare raw elements
+            // Reason: if the method is a generic method (<T> Holder<T> build()) and the type element is (Holder<T>)
+            // then the return type of the method does not match the type of the type element
+            && !typeUtils.isSameType(
+            typeUtils.erasure( method.getReturnType() ),
+            typeUtils.erasure( typeElement.asType() )
+        );
     }
 
     /**
