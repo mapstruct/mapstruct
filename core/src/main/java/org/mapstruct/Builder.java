@@ -36,5 +36,5 @@ public @interface Builder {
      *
      * @return when true, no builder patterns will be applied
      */
-    boolean noBuilder() default false;
+    boolean disableBuilder() default false;
 }

@@ -50,9 +50,9 @@ public class ForgedMethod implements Method {
      * @param parameterProvidedMethods additional factory/lifecycle methods to consider that are provided by context
      *            parameters
      */
-    public ForgedMethod(String name, Type sourceType, Type returnType,
-                        MapperConfiguration mapperConfiguration, ExecutableElement positionHintElement,
-                        List<Parameter> additionalParameters, ParameterProvidedMethods parameterProvidedMethods) {
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
+                        ParameterProvidedMethods parameterProvidedMethods) {
         this(
             name,
             sourceType,

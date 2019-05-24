@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 @Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface SimpleMapper {
 
-    @BeanMapping( builder = @Builder( noBuilder = true ) )
+    @BeanMapping( builder = @Builder( disableBuilder = true ) )
     @Mapping(target = "name", source = "fullName")
     SimpleNotRealyImmutablePerson toNotRealyImmutable(SimpleMutablePerson source);
 }

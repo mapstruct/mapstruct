@@ -523,7 +523,7 @@ public class TypeFactory {
     }
 
     private BuilderInfo findBuilder(TypeMirror type, BuilderPrism builderPrism, boolean report) {
-        if ( builderPrism != null && builderPrism.noBuilder() ) {
+        if ( builderPrism != null && builderPrism.disableBuilder() ) {
             return null;
         }
         try {
