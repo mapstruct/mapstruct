@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
@@ -174,7 +175,15 @@ public class BeanMapping {
         return ignoreUnmappedSourceProperties;
     }
 
-    public BuilderPrism getBuilder() {
-        return builder;
+    /**
+     * derives the builder prism given the options and configuration
+     * @param method containing mandatory configuration and the mapping options (optionally containing a beanmapping)
+     * @return a BuilderPrism as optional
+     */
+    public static Optional<BuilderPrism> builderPrismFor(Method method) {
+        return method.getMapperConfiguration()
+                     .getBuilderPrism( Optional.ofNullable( method.getMappingOptions().getBeanMapping() )
+                                               .map( b -> b.builder )
+                                               .orElse( null ) );
     }
 }

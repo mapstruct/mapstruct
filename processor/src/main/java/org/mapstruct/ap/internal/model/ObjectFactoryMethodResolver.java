@@ -38,7 +38,6 @@ public class ObjectFactoryMethodResolver {
      * returns a no arg factory method
      *
      * @param method target mapping method
-     * @param targetType return type to match
      * @param selectionParameters parameters used in the selection process
      * @param ctx
      *
@@ -46,9 +45,29 @@ public class ObjectFactoryMethodResolver {
      *
      */
     public static MethodReference getFactoryMethod( Method method,
-                                                    Type targetType,
                                                     SelectionParameters selectionParameters,
                                                     MappingBuilderContext ctx) {
+        return getFactoryMethod( method, method.getResultType(), selectionParameters, ctx );
+    }
+
+
+
+    /**
+     * returns a no arg factory method
+     *
+     * @param method target mapping method
+     * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
+     * @param selectionParameters parameters used in the selection process
+     * @param ctx
+     *
+     * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
+     *
+     */
+    public static MethodReference getFactoryMethod( Method method,
+                                                    Type alternativeTarget,
+                                                    SelectionParameters selectionParameters,
+                                                    MappingBuilderContext ctx) {
+
 
         MethodSelectors selectors =
             new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
@@ -58,18 +77,18 @@ public class ObjectFactoryMethodResolver {
                 method,
                 getAllAvailableMethods( method, ctx.getSourceModel() ),
                 java.util.Collections.<Type> emptyList(),
-                targetType.getEffectiveType(),
+                alternativeTarget,
                 SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
         if (matchingFactoryMethods.isEmpty()) {
-            return findBuilderFactoryMethod( targetType );
+            return null;
         }
 
         if ( matchingFactoryMethods.size() > 1 ) {
             ctx.getMessager().printMessage(
                 method.getExecutable(),
                 Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                targetType.getEffectiveType(),
+                alternativeTarget,
                 Strings.join( matchingFactoryMethods, ", " ) );
 
             return null;
@@ -98,8 +117,7 @@ public class ObjectFactoryMethodResolver {
         }
     }
 
-    private static MethodReference findBuilderFactoryMethod(Type targetType) {
-        BuilderType builder = targetType.getBuilderType();
+    public static MethodReference getBuilderFactoryMethod(Method method, BuilderType builder ) {
         if ( builder == null ) {
             return null;
         }
@@ -110,7 +128,7 @@ public class ObjectFactoryMethodResolver {
             return null;
         }
 
-        if ( !builder.getBuildingType().isAssignableTo( targetType ) ) {
+        if ( !builder.getBuildingType().isAssignableTo( method.getReturnType() ) ) {
             //TODO print error message
             return null;
         }

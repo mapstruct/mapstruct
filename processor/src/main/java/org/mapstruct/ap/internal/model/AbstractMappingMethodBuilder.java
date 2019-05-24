@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.util.Strings;
@@ -63,7 +64,12 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             true
         );
 
-        return createForgedAssignment( sourceRHS, forgedMethod );
+        return createForgedAssignment(
+                        sourceRHS,
+                        ctx.getTypeFactory()
+                           .builderTypeFor( targetType, BeanMapping.builderPrismFor( method ).orElse( null ) ),
+                        forgedMethod
+        );
     }
 
     private String getName(Type sourceType, Type targetType) {

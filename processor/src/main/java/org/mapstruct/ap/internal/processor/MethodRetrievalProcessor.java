@@ -387,8 +387,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
                                                 Parameter targetParameter, List<Parameter> contextParameters,
-                                                Type resultType, Type returnType,
-                                                boolean containsTargetTypeParameter) {
+                                                Type resultType, Type returnType, boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
             messager.printMessage( method, Message.RETRIEVAL_NO_INPUT_ARGS );
             return false;
@@ -406,8 +405,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) &&
-            !resultType.isAssignableTo( returnType.getEffectiveType() )) {
+                        !resultType.isAssignableTo( returnType ) &&
+                        !resultType.isAssignableTo( typeFactory.effectiveResultTypeFor( returnType, null ) ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }

@@ -13,16 +13,18 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 /**
  * This class describes the target side of a property mapping.
@@ -146,8 +148,7 @@ public class TargetReference {
             Parameter parameter = method.getMappingTargetParameter();
 
             boolean foundEntryMatch;
-            Type resultType = method.getResultType();
-            resultType = typeBasedOnMethod( resultType );
+            Type resultType = typeBasedOnMethod( method.getResultType() );
 
             // there can be 4 situations
             // 1. Return type
@@ -198,8 +199,8 @@ public class TargetReference {
                     break;
                 }
 
-                if ( isLast || ( accessorNaming.isSetterMethod( targetWriteAccessor )
-                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
+                if ( isLast || ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                                targetWriteAccessor.getAccessorType() == AccessorType.FIELD ) ) {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
@@ -207,8 +208,27 @@ public class TargetReference {
 
                     // check if an entry alread exists, otherwise create
                     String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
-                    PropertyEntry propertyEntry = PropertyEntry.forTargetReference( fullName, targetReadAccessor,
-                        targetWriteAccessor, nextType );
+                    BuilderType builderType;
+                    PropertyEntry propertyEntry = null;
+                    if ( method.isUpdateMethod() ) {
+                        propertyEntry = PropertyEntry.forTargetReference( fullName,
+                                        targetReadAccessor,
+                                        targetWriteAccessor,
+                                        nextType,
+                                        null
+                        );
+                    }
+                    else {
+                        BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+                        builderType = typeFactory.builderTypeFor( nextType, builderPrism );
+                        propertyEntry = PropertyEntry.forTargetReference( fullName,
+                                        targetReadAccessor,
+                                        targetWriteAccessor,
+                                        nextType,
+                                        builderType
+                        );
+
+                    }
                     targetEntries.add( propertyEntry );
                 }
 
@@ -228,8 +248,7 @@ public class TargetReference {
         private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             Type nextType;
             Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
-            if ( accessorNaming.isGetterMethod( toUse ) ||
-                Executables.isFieldAccessor( toUse ) ) {
+            if ( toUse.getAccessorType() == AccessorType.GETTER  || toUse.getAccessorType() == AccessorType.FIELD ) {
                 nextType = typeFactory.getReturnType(
                     (DeclaredType) typeBasedOnMethod( initial ).getTypeMirror(),
                     toUse
@@ -268,7 +287,8 @@ public class TargetReference {
                 return type;
             }
             else {
-                return type.getEffectiveType();
+                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+                return typeFactory.effectiveResultTypeFor( type, builderPrism );
             }
         }
 

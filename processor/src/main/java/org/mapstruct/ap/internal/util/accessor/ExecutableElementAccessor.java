@@ -15,22 +15,27 @@ import javax.lang.model.type.TypeMirror;
  */
 public class ExecutableElementAccessor extends AbstractAccessor<ExecutableElement> {
 
-    public ExecutableElementAccessor(ExecutableElement element) {
+    private final TypeMirror accessedType;
+    private final AccessorType accessorType;
+
+    public ExecutableElementAccessor(ExecutableElement element, TypeMirror accessedType, AccessorType accessorType) {
         super( element );
+        this.accessedType = accessedType;
+        this.accessorType = accessorType;
     }
 
     @Override
     public TypeMirror getAccessedType() {
-        return element.getReturnType();
-    }
-
-    @Override
-    public ExecutableElement getExecutable() {
-        return element;
+        return accessedType;
     }
 
     @Override
     public String toString() {
         return element.toString();
+    }
+
+    @Override
+    public AccessorType getAccessorType() {
+        return accessorType;
     }
 }

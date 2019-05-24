@@ -139,7 +139,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
         MethodReference factoryMethod = null;
         if ( !method.isUpdateMethod() ) {
-            factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, method.getResultType(), null, ctx );
+            factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, null, ctx );
         }
 
         Set<String> existingVariables = new HashSet<>( method.getParameterNames() );

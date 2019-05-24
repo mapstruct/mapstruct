@@ -157,7 +157,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public String getSourceReference() {
-        return assignment.getSourceReference();
+        return assignment != null ? assignment.getSourceReference() : null;
     }
 
     @Override
@@ -353,7 +353,8 @@ public class MethodReference extends ModelElement implements Assignment {
     @Override
     public String toString() {
         String mapper = declaringMapper != null ? declaringMapper.getType().getName().toString() : "";
-        String argument = getAssignment() != null ? getAssignment().toString() : getSourceReference();
+        String argument = getAssignment() != null ? getAssignment().toString() :
+                        ( getSourceReference() != null ? getSourceReference() : "" );
         String returnTypeAsString = returnType != null ? returnType.toString() : "";
         List<String> arguments = sourceParameters.stream()
             .map( p -> p.isMappingContext() || p.isMappingTarget() || p.isTargetType() ? p.getName() : argument )

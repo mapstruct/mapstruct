@@ -198,7 +198,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
                 factoryMethod = ObjectFactoryMethodResolver
-                    .getFactoryMethod( method, method.getResultType(), null, ctx );
+                    .getFactoryMethod( method, null, ctx );
             }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );

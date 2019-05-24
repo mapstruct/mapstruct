@@ -82,13 +82,6 @@ public class BuilderType {
         return buildMethods;
     }
 
-    public BuilderInfo asBuilderInfo() {
-        return new BuilderInfo.Builder()
-            .builderCreationMethod( this.builderCreationMethod )
-            .buildMethod( this.buildMethods )
-            .build();
-    }
-
     public static BuilderType create(BuilderInfo builderInfo, Type typeToBuild, TypeFactory typeFactory,
         Types typeUtils) {
         if ( builderInfo == null ) {

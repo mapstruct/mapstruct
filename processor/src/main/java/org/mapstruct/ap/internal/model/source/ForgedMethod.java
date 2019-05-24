@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -82,11 +81,11 @@ public class ForgedMethod implements Method {
      * @param mappingOptions the mapping options for this method
      * @param forgedNameBased forges a name based (matched) mapping method
      */
-    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
-                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                        ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
-                        MappingOptions mappingOptions, boolean forgedNameBased) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
+     public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
+                         ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
+                         MappingOptions mappingOptions, boolean forgedNameBased) {
+         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
 
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );

@@ -38,4 +38,5 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
     public T getElement() {
         return element;
     }
+
 }

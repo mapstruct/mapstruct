@@ -5,20 +5,18 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -28,6 +26,8 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -50,6 +50,7 @@ public class SourceMethod implements Method {
     private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final Type returnType;
+    private final BuilderType builderType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfiguration config;
@@ -80,6 +81,7 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
+        private BuilderType builderType = null;
         private List<Type> exceptionTypes;
         private Map<String, List<Mapping>> mappings;
         private IterableMapping iterableMapping = null;
@@ -207,6 +209,7 @@ public class SourceMethod implements Method {
         this.executable = builder.executable;
         this.parameters = builder.parameters;
         this.returnType = builder.returnType;
+        this.builderType = builder.builderType;
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
