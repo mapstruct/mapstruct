@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -98,7 +99,7 @@ public class MappingResolverImpl implements MappingResolver {
                                           FormattingParameters formattingParameters,
                                           SelectionCriteria criteria, SourceRHS sourceRHS,
                                           AnnotationMirror positionHint,
-                                          Forger forger) {
+                                          Supplier<Assignment> forger) {
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -138,7 +139,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final boolean savedPreferUpdateMapping;
         private final FormattingParameters formattingParameters;
         private final AnnotationMirror positionHint;
-        private final Forger forger;
+        private final Supplier<Assignment> forger;
 
         // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a supported method
@@ -149,7 +150,7 @@ public class MappingResolverImpl implements MappingResolver {
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
                                  AnnotationMirror positionHint,
-                                 Forger forger) {
+                                 Supplier<Assignment> forger) {
 
             this.mappingMethod = mappingMethod;
             this.methods = filterPossibleCandidateMethods( sourceModel );
@@ -258,7 +259,7 @@ public class MappingResolverImpl implements MappingResolver {
                 );
             }
             else {
-                return forger.forge();
+                return forger.get();
             }
 
             // if nothing works, alas, the result is null
