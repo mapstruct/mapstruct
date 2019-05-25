@@ -98,7 +98,16 @@ public class QualifierTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousMapper.class,
+            @Diagnostic(
+                type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 28,
+                messageRegExp =
+                "No qualifying method found for qualifiers: "
+                + "org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated and "
+                + "/ or qualifying names: .*"),
+            @Diagnostic(
+                type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
                 messageRegExp =

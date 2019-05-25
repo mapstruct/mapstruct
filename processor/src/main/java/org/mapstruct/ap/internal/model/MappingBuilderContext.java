@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
@@ -93,7 +94,8 @@ public class MappingBuilderContext {
         Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
-                                       AnnotationMirror positionHint);
+                                       AnnotationMirror positionHint,
+                                       Supplier<Assignment> forger);
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
     }
