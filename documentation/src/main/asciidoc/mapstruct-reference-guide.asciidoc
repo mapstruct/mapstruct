@@ -1344,7 +1344,7 @@ public @interface GermanToEnglish {
 ----
 ====
 
-Please take note of the retention `TitleTranslator` on class level, `EnglishToGerman`, `GermanToEnglish` on method level!
+Please take note of the target `TitleTranslator` on type level, `EnglishToGerman`, `GermanToEnglish` on method level!
 
 Then, using the qualifiers, the mapping could look like this:
 
