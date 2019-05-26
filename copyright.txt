@@ -23,6 +23,7 @@ Gervais Blaise - https://github.com/gervaisb
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
 Jeff Smyth - https://github.com/smythie86
+Jonathan Kraska - https://github.com/jakraska
 Joshua Spoerri - https://github.com/spoerri
 Kevin Grüneberg - https://github.com/kevcodez
 Michael Pardo - https://github.com/pardom
