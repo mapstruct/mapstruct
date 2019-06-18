@@ -82,20 +82,23 @@ public class Mappers {
             Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
             Constructor<?>[] constructors = implementation.getConstructors();
             Constructor<T> constructor;
-            if (constructors.length == 0) {
+            if ( constructors.length == 0 ) {
                 constructor = implementation.getDeclaredConstructor();
-                constructor.setAccessible(true);
-            } else {
+                constructor.setAccessible( true );
+            }
+            else {
                 constructor = (Constructor<T>) constructors[0];
             }
 
             Object[] params = Arrays.stream(constructor.getParameterTypes())
-                    .map(Mappers::getMapper)
-                    .toArray(Object[]::new);
-            return constructor.newInstance(params);
-        } catch (ClassNotFoundException e) {
+                    .map( Mappers::getMapper )
+                    .toArray( Object[]::new );
+            return constructor.newInstance( params );
+        }
+        catch ( ClassNotFoundException e ) {
             return getMapperFromServiceLoader( clazz, classLoader );
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        }
+        catch ( InstantiationException | InvocationTargetException | IllegalAccessException e ) {
             throw new RuntimeException( e );
         }
     }
