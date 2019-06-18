@@ -90,7 +90,7 @@ public class Mappers {
                 constructor = (Constructor<T>) constructors[0];
             }
 
-            Object[] params = Arrays.stream(constructor.getParameterTypes())
+            Object[] params = Arrays.stream( constructor.getParameterTypes() )
                     .map( Mappers::getMapper )
                     .toArray( Object[]::new );
             return constructor.newInstance( params );
