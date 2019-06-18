@@ -5,13 +5,14 @@
  */
 package org.mapstruct.factory;
 
+import org.mapstruct.Mapper;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
-
-import org.mapstruct.Mapper;
 
 /**
  * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
@@ -75,19 +76,26 @@ public class Mappers {
         throw new ClassNotFoundException("Cannot find implementation for " + mapperType.getName() );
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) throws NoSuchMethodException {
         try {
-            @SuppressWarnings( "unchecked" )
             Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
-            Constructor<T> constructor = implementation.getDeclaredConstructor();
-            constructor.setAccessible( true );
+            Constructor<?>[] constructors = implementation.getConstructors();
+            Constructor<T> constructor;
+            if (constructors.length == 0) {
+                constructor = implementation.getDeclaredConstructor();
+                constructor.setAccessible(true);
+            } else {
+                constructor = (Constructor<T>) constructors[0];
+            }
 
-            return constructor.newInstance();
-        }
-        catch (ClassNotFoundException e) {
+            Object[] params = Arrays.stream(constructor.getParameterTypes())
+                    .map(Mappers::getMapper)
+                    .toArray(Object[]::new);
+            return constructor.newInstance(params);
+        } catch (ClassNotFoundException e) {
             return getMapperFromServiceLoader( clazz, classLoader );
-        }
-        catch ( InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException( e );
         }
     }
