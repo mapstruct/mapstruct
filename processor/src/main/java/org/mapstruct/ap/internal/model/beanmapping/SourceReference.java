@@ -5,15 +5,13 @@
  */
 package org.mapstruct.ap.internal.model.beanmapping;
 
-import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
-import static org.mapstruct.ap.internal.util.Collections.last;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -25,6 +23,9 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 /**
  * This class describes the source side of a property mapping.
@@ -55,10 +56,16 @@ public class SourceReference extends AbstractReference {
      */
     public static class BuilderFromMapping {
 
-        private Mapping mapping;
+       // private Mapping mapping;
         private Method method;
-        private FormattingMessager messager;
+        private FormattingMessager messager = null;
         private TypeFactory typeFactory;
+
+        private boolean isForwarded = false;
+        private Method templateMethod = null;
+        private String sourceName;
+        private AnnotationMirror annotationMirror;
+        private AnnotationValue sourceAnnotationValue;
 
         public BuilderFromMapping messager(FormattingMessager messager) {
             this.messager = messager;
@@ -66,7 +73,13 @@ public class SourceReference extends AbstractReference {
         }
 
         public BuilderFromMapping mapping(Mapping mapping) {
-            this.mapping = mapping;
+            this.sourceName = mapping.getSourceName();
+            this.annotationMirror = mapping.getMirror();
+            this.sourceAnnotationValue = mapping.getSourceAnnotationValue();
+            if ( mapping.getInheritContext() != null ) {
+                isForwarded = mapping.getInheritContext().isForwarded();
+                templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+            }
             return this;
         }
 
@@ -80,19 +93,23 @@ public class SourceReference extends AbstractReference {
             return this;
         }
 
+        public BuilderFromMapping sourceName(String sourceName) {
+            this.sourceName = sourceName;
+            return this;
+        }
+
         public SourceReference build() {
 
-            String sourceName = mapping.getSourceName();
             if ( sourceName == null ) {
                 return null;
             }
 
             String sourceNameTrimmed = sourceName.trim();
-            if ( !sourceName.equals( sourceNameTrimmed ) ) {
+            if ( !sourceName.equals( sourceNameTrimmed ) && messager != null ) {
                 messager.printMessage(
                     method.getExecutable(),
-                    mapping.getMirror(),
-                    mapping.getSourceAnnotationValue(),
+                    annotationMirror,
+                    sourceAnnotationValue,
                     Message.PROPERTYMAPPING_WHITESPACE_TRIMMED,
                     sourceName,
                     sourceNameTrimmed
@@ -206,12 +223,7 @@ public class SourceReference extends AbstractReference {
                 if ( parameter == null ) {
                     reportMappingError(
                         Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
-                        parameterName,
-                        Strings.join(
-                            method.getSourceParameters(),
-                            ", ",
-                            Parameter::getName
-                        )
+                        parameterName, Strings.join( method.getSourceParameters(), ", ", Parameter::getName )
                     );
                 }
             }
@@ -221,8 +233,7 @@ public class SourceReference extends AbstractReference {
         private Parameter getSourceParameterFromMethodOrTemplate(String parameterName ) {
 
             Parameter result = null;
-            if ( mapping.getInheritContext() != null && mapping.getInheritContext().isForwarded() ) {
-                Method templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+            if ( isForwarded ) {
                 Parameter parameter = Parameter.getSourceParameter( templateMethod.getParameters(), parameterName );
                 if ( parameter != null ) {
                     result = method.getSourceParameters()
@@ -260,8 +271,7 @@ public class SourceReference extends AbstractReference {
                 );
                 elements.add( mostSimilarWord );
                 reportMappingError(
-                    Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
-                    Strings.join( elements, "." )
+                    Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, sourceName, Strings.join( elements, "." )
                 );
             }
         }
@@ -269,19 +279,22 @@ public class SourceReference extends AbstractReference {
         private List<PropertyEntry> matchWithSourceAccessorTypes(Type type, String[] entryNames) {
             List<PropertyEntry> sourceEntries = new ArrayList<>();
             Type newType = type;
-            for ( String entryName : entryNames ) {
+            for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
                 Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
                 Map<String, Accessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
                 for ( Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
-                    if ( getter.getKey().equals( entryName ) ) {
+                    if ( getter.getKey().equals( entryNames[i] ) ) {
                         newType = typeFactory.getReturnType(
                             (DeclaredType) newType.getTypeMirror(),
                             getter.getValue()
                         );
-                        sourceEntries.add( forSourceReference( entryName, getter.getValue(),
-                            sourcePresenceCheckers.get( entryName ), newType
+                        sourceEntries.add( forSourceReference(
+                            Arrays.copyOf( entryNames, i + 1 ),
+                            getter.getValue(),
+                            sourcePresenceCheckers.get( entryNames[i] ),
+                            newType
                         ) );
                         matchFound = true;
                         break;
@@ -295,9 +308,9 @@ public class SourceReference extends AbstractReference {
         }
 
         private void reportMappingError(Message msg, Object... objects) {
-            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                msg, objects
-            );
+            if ( messager != null ) {
+                messager.printMessage( method.getExecutable(), annotationMirror, sourceAnnotationValue, msg, objects );
+            }
         }
     }
 
@@ -340,7 +353,12 @@ public class SourceReference extends AbstractReference {
         public SourceReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<>();
             if ( readAccessor != null ) {
-                sourcePropertyEntries.add( forSourceReference( name, readAccessor, presenceChecker, type ) );
+                sourcePropertyEntries.add( forSourceReference(
+                    new String[] { name },
+                    readAccessor,
+                    presenceChecker,
+                    type
+                ) );
             }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
@@ -382,6 +400,25 @@ public class SourceReference extends AbstractReference {
         else {
             return null;
         }
+    }
+
+    public List<SourceReference> push(TypeFactory typeFactory, Method method ) {
+        List<SourceReference> result = new ArrayList<>();
+        PropertyEntry deepestProperty = getDeepestProperty();
+        if ( deepestProperty != null ) {
+            Type type = deepestProperty.getType();
+            Map<String, Accessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
+            for ( Map.Entry<String, Accessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
+                String newFullName = deepestProperty.getFullName() + "." + newDeepestReadAccessorEntry.getKey();
+                SourceReference sourceReference = new BuilderFromMapping()
+                    .sourceName( newFullName )
+                    .method( method )
+                    .typeFactory( typeFactory )
+                    .build();
+                result.add( sourceReference );
+            }
+        }
+        return result;
     }
 
 }

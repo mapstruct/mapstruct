@@ -5,36 +5,23 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-import java.util.ArrayList;
-import java.util.List;
+public class OrderItem {
+    private String id;
+    private int status;
 
-public class OrderItem extends Item {
-
-    public void addOrderLine( OrderLine orderLine ) {
-        if ( null == this.orderLines ) {
-            this.orderLines = new ArrayList<OrderLine>();
-        }
-
-        this.orderLines.add( orderLine );
+    public String getId() {
+        return id;
     }
 
-    public void setOrderLines( List<OrderLine> orderLines ) {
-        this.orderLines = orderLines;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public List<OrderLine> getOrderLines() {
-        return orderLines;
+    public int getStatus() {
+        return status;
     }
 
-    private List<OrderLine> orderLines;
-
-    private CustomerItem customer;
-
-    public void setCustomer( CustomerItem customer ) {
-        this.customer = customer;
-    }
-
-    public CustomerItem getCustomer() {
-        return this.customer;
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic.Kind;
@@ -119,7 +120,7 @@ class JdkCompilingStatement extends CompilingStatement {
             if ( diag.getKind() != Kind.ERROR
                 || previous == null
                 || !previous.getSourceFileName().equals( diag.getSourceFileName() )
-                || !previous.getLine().equals( diag.getLine() ) ) {
+                || !Objects.equals( previous.getLine(), diag.getLine() ) ) {
                 filtered.add( diag );
                 previous = diag;
             }

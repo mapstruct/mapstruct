@@ -30,7 +30,7 @@ public class MappingReferences {
                                                     TypeFactory typeFactory) {
 
         Set<MappingReference> references = new LinkedHashSet<>();
-        Set<MappingReference> targetThisReferences = new LinkedHashSet<>();
+        MappingReference targetThisReference = null;
 
         for ( Mapping mapping : sourceMethod.getMappingOptions().getMappings() ) {
 
@@ -42,24 +42,26 @@ public class MappingReferences {
                                                                                       .build();
 
             // handle target reference
-            TargetReference targetReference = new TargetReference.BuilderFromTargetMapping().mapping( mapping )
-                                                                                            .method( sourceMethod )
-                                                                                            .messager( messager )
-                                                                                            .typeFactory( typeFactory )
-                                                                                            .build();
+            TargetReference targetReference = new TargetReference.Builder().mapping( mapping )
+                                                                           .method( sourceMethod )
+                                                                           .messager( messager )
+                                                                           .typeFactory( typeFactory )
+                                                                           .build();
 
             // add when inverse is also valid
             MappingReference mappingReference = new MappingReference( mapping, targetReference, sourceReference );
             if ( isValidWhenInversed( mappingReference ) ) {
-                if ( targetReference.isTargetThis() ) {
-                    targetThisReferences.add( mappingReference );
+                if ( ".".equals( mapping.getTargetName() ) ) {
+                    targetThisReference = mappingReference;
                 }
                 else {
                     references.add( mappingReference );
                 }
             }
         }
-        references.addAll( targetThisReferences );
+        if ( targetThisReference != null ) {
+            references.add( targetThisReference );
+        }
         return new MappingReferences( references, false );
     }
 
@@ -116,7 +118,6 @@ public class MappingReferences {
         }
         return false;
     }
-
 
     /**
      * MapStruct filters automatically inversed invalid methods out. TODO: this is a principle we should discuss!

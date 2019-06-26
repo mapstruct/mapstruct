@@ -481,16 +481,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             for ( MappingReference mapping : mappingReferences.getMappingReferences() ) {
                 if ( mapping.isValid() ) {
-                    String target = mapping.getTargetReference().getShallowestPropertyName();
-                    if ( !handledTargets.contains( target ) ) {
-                        if ( handleDefinedMapping( mapping, handledTargets ) ) {
-                            errorOccurred = true;
-                        }
+                    if ( ".".equals( mapping.getMapping().getTargetName() ) ) {
+                        List<SourceReference> sourceReferences = mapping.getSourceReference()
+                            .push( ctx.getTypeFactory(), method );
+                        applyPropertyNameBasedMapping( sourceReferences );
                     }
-                    if ( mapping.getSourceReference() != null ) {
-                        String source = mapping.getSourceReference().getShallowestPropertyName();
-                        if ( source != null ) {
-                            unprocessedSourceProperties.remove( source );
+                    else {
+                        String target = mapping.getTargetReference().getShallowestPropertyName();
+                        if ( !handledTargets.contains( target ) ) {
+                            if ( handleDefinedMapping( mapping, handledTargets ) ) {
+                                errorOccurred = true;
+                            }
+                        }
+                        if ( mapping.getSourceReference() != null ) {
+                            String source = mapping.getSourceReference().getShallowestPropertyName();
+                            if ( source != null ) {
+                                unprocessedSourceProperties.remove( source );
+                            }
                         }
                     }
                 }

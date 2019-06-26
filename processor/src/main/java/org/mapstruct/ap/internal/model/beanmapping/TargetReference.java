@@ -8,8 +8,10 @@ package org.mapstruct.ap.internal.model.beanmapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
@@ -56,13 +58,20 @@ public class TargetReference extends AbstractReference {
     /**
      * Builds a {@link TargetReference} from an {@code @Mappping}.
      */
-    public static class BuilderFromTargetMapping {
+    public static class Builder {
 
-        private Mapping mapping;
         private Method method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
 
+        // mapping parameters
+        private boolean isReversed = false;
+        private boolean isIgnored = false;
+        private String targetName = null;
+        private AnnotationMirror annotationMirror = null;
+        private AnnotationValue targetAnnotationValue = null;
+        private AnnotationValue sourceAnnotationValue = null;
+        private Method templateMethod = null;
         /**
          * During {@link #getTargetEntries(Type, String[])} an error can occur. However, we are invoking
          * that multiple times because the first entry can also be the name of the parameter. Therefore we keep
@@ -70,41 +79,49 @@ public class TargetReference extends AbstractReference {
          */
         private MappingErrorMessage errorMessage;
 
-        public BuilderFromTargetMapping messager(FormattingMessager messager) {
+        public Builder messager(FormattingMessager messager) {
             this.messager = messager;
             return this;
         }
 
-        public BuilderFromTargetMapping mapping(Mapping mapping) {
-            this.mapping = mapping;
+        public Builder mapping(Mapping mapping) {
+            if ( mapping.getInheritContext() != null ) {
+                this.isReversed = mapping.getInheritContext().isReversed();
+                this.templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+            }
+            this.isIgnored = mapping.isIgnored();
+            this.targetName = mapping.getTargetName();
+            this.annotationMirror = mapping.getMirror();
+            this.targetAnnotationValue = mapping.getTargetAnnotationValue();
+            this.sourceAnnotationValue = mapping.getSourceAnnotationValue();
             return this;
         }
 
-        public BuilderFromTargetMapping method(Method method) {
-            this.method = method;
-            return this;
-        }
-
-        public BuilderFromTargetMapping typeFactory(TypeFactory typeFactory) {
+        public Builder typeFactory(TypeFactory typeFactory) {
             this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public Builder method(Method method) {
+            this.method = method;
             return this;
         }
 
         public TargetReference build() {
 
-            boolean isInverse = mapping.getInheritContext() != null && mapping.getInheritContext().isReversed();
+            Objects.requireNonNull( method );
+            Objects.requireNonNull( typeFactory );
 
-            String targetName = mapping.getTargetName();
             if ( targetName == null ) {
                 return null;
             }
 
             String targetNameTrimmed = targetName.trim();
-            if ( !targetName.equals( targetNameTrimmed ) ) {
+            if ( !targetName.equals( targetNameTrimmed ) && messager != null ) {
                 messager.printMessage(
                     method.getExecutable(),
-                    mapping.getMirror(),
-                    mapping.getTargetAnnotationValue(),
+                    annotationMirror,
+                    targetAnnotationValue,
                     Message.PROPERTYMAPPING_WHITESPACE_TRIMMED,
                     targetName,
                     targetNameTrimmed
@@ -125,13 +142,13 @@ public class TargetReference extends AbstractReference {
             List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames );
             foundEntryMatch = (entries.size() == targetPropertyNames.length);
             if ( !foundEntryMatch && segments.length > 1
-                && matchesSourceOrTargetParameter( segments[0], parameter, isInverse ) ) {
+                && matchesSourceOrTargetParameter( segments[0], parameter, isReversed ) ) {
                 targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                 entries = getTargetEntries( resultType, targetPropertyNames );
                 foundEntryMatch = (entries.size() == targetPropertyNames.length);
             }
 
-            if ( !foundEntryMatch && errorMessage != null && !isInverse ) {
+            if ( !foundEntryMatch && errorMessage != null && !isReversed ) {
                 // This is called only for reporting errors
                 errorMessage.report( );
             }
@@ -158,7 +175,7 @@ public class TargetReference extends AbstractReference {
                 boolean isLast = i == entryNames.length - 1;
                 boolean isNotLast = i < entryNames.length - 1;
                 if ( isWriteAccessorNotValidWhenNotLast( targetWriteAccessor, isNotLast )
-                    || isWriteAccessorNotValidWhenLast( targetWriteAccessor, targetReadAccessor, mapping, isLast ) ) {
+                    || isWriteAccessorNotValidWhenLast( targetWriteAccessor, targetReadAccessor, isIgnored, isLast ) ) {
                     // there should always be a write accessor (except for the last when the mapping is ignored and
                     // there is a read accessor) and there should be read accessor mandatory for all but the last
                     setErrorMessage( targetWriteAccessor, targetReadAccessor, entryNames, i, nextType );
@@ -232,14 +249,14 @@ public class TargetReference extends AbstractReference {
         private void setErrorMessage(Accessor targetWriteAccessor, Accessor targetReadAccessor, String[] entryNames,
                                      int index, Type nextType) {
             if ( targetWriteAccessor == null && targetReadAccessor == null ) {
-                errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
+                errorMessage = new NoPropertyErrorMessage( this, entryNames, index, nextType );
             }
             else if ( targetWriteAccessor == null ) {
-                errorMessage = new NoWriteAccessorErrorMessage( mapping, method, messager );
+                errorMessage = new NoWriteAccessorErrorMessage(this );
             }
             else {
                 //TODO there is no read accessor. What should we do here?
-                errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
+                errorMessage = new NoPropertyErrorMessage( this, entryNames, index, nextType );
             }
         }
 
@@ -283,15 +300,15 @@ public class TargetReference extends AbstractReference {
          *
          * @param writeAccessor that needs to be checked
          * @param readAccessor that is used
-         * @param mapping that is used
+         * @param isIgnored true when ignored
          * @param isLast whether or not this is the last write accessor in the entry chain
          *
          * @return {@code true} if the write accessor is not valid, {@code false} otherwise. See description for more
          * information
          */
         private static boolean isWriteAccessorNotValidWhenLast(Accessor writeAccessor, Accessor readAccessor,
-            Mapping mapping, boolean isLast) {
-            return writeAccessor == null && isLast && ( readAccessor == null || !mapping.isIgnored() );
+            boolean isIgnored, boolean isLast) {
+            return writeAccessor == null && isLast && ( readAccessor == null || !isIgnored );
         }
 
         /**
@@ -334,7 +351,6 @@ public class TargetReference extends AbstractReference {
         private boolean matchesSourceOnInverseSourceParameter( String segment, boolean isInverse ) {
             boolean result = false;
             if ( isInverse ) {
-                Method templateMethod = mapping.getInheritContext().getInheritedFromMethod();
                 // there is only source parameter by definition when applying @InheritInverseConfiguration
                 Parameter inverseSourceParameter = first( templateMethod.getSourceParameters() );
                 result = inverseSourceParameter.getName().equals( segment );
@@ -345,10 +361,6 @@ public class TargetReference extends AbstractReference {
 
     private TargetReference(Parameter sourceParameter, List<PropertyEntry> targetPropertyEntries, boolean isValid) {
         super( sourceParameter, targetPropertyEntries, isValid );
-    }
-
-    public boolean isTargetThis() {
-        return getPropertyEntries().isEmpty();
     }
 
     public TargetReference pop() {
@@ -368,34 +380,36 @@ public class TargetReference extends AbstractReference {
     }
 
     private abstract static class MappingErrorMessage {
-        private final Mapping mapping;
-        private final Method method;
-        private final FormattingMessager messager;
+        private final Builder builder;
 
-        private MappingErrorMessage(Mapping mapping, Method method, FormattingMessager messager) {
-            this.mapping = mapping;
-            this.method = method;
-            this.messager = messager;
+        private MappingErrorMessage(Builder builder) {
+            this.builder = builder;
         }
 
         abstract void report();
 
         protected void printErrorMessage(Message message, Object... args) {
+            if ( builder.messager == null ) {
+                return;
+            }
             Object[] errorArgs = new Object[args.length + 2];
-            errorArgs[0] = mapping.getTargetName();
-            errorArgs[1] = method.getResultType();
+            errorArgs[0] = builder.targetName;
+            errorArgs[1] = builder.method.getResultType();
             System.arraycopy( args, 0, errorArgs, 2, args.length );
-            AnnotationMirror annotationMirror = mapping.getMirror();
-            messager.printMessage( method.getExecutable(), annotationMirror, mapping.getSourceAnnotationValue(),
-                message, errorArgs
+            AnnotationMirror annotationMirror = builder.annotationMirror;
+            builder.messager.printMessage( builder.method.getExecutable(),
+                annotationMirror,
+                builder.sourceAnnotationValue,
+                message,
+                errorArgs
             );
         }
     }
 
     private static class NoWriteAccessorErrorMessage extends MappingErrorMessage {
 
-        private NoWriteAccessorErrorMessage(Mapping mapping, Method method, FormattingMessager messager) {
-            super( mapping, method, messager );
+        private NoWriteAccessorErrorMessage(Builder builder) {
+            super( builder );
         }
 
         @Override
@@ -410,9 +424,9 @@ public class TargetReference extends AbstractReference {
         private final int index;
         private final Type nextType;
 
-        private NoPropertyErrorMessage(Mapping mapping, Method method, FormattingMessager messager,
-                                       String[] entryNames, int index, Type nextType) {
-            super( mapping, method, messager );
+        private NoPropertyErrorMessage(Builder builder, String[] entryNames, int index,
+                                       Type nextType) {
+            super( builder );
             this.entryNames = entryNames;
             this.index = index;
             this.nextType = nextType;
