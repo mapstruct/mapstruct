@@ -27,7 +27,6 @@ import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
-import org.mapstruct.ap.internal.model.EnumMappingMethod;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
@@ -339,22 +338,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .valueMappings( mappingOptions.getValueMappings() )
                     .build();
                 mappingMethods.add( valueMappingMethod );
-            }
-            else if ( method.isEnumMapping() ) {
-
-                messager.printMessage(
-                    method.getExecutable(),
-                    Message.ENUMMAPPING_DEPRECATED );
-
-                EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-                MappingMethod enumMappingMethod = builder
-                    .mappingContext( mappingContext )
-                    .sourceMethod( method )
-                    .build();
-
-                if ( enumMappingMethod != null ) {
-                    mappingMethods.add( enumMappingMethod );
-                }
             }
             else if ( method.isStreamMapping() ) {
                 this.messager.note( 1, Message.STREAMMAPPING_CREATE_NOTE, method );

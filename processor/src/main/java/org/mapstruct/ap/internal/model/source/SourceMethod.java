@@ -27,6 +27,7 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 
+import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -328,7 +329,7 @@ public class SourceMethod implements Method {
             && method.isAbstract()
             && isMapMapping() == method.isMapMapping()
             && isIterableMapping() == method.isIterableMapping()
-            && isEnumMapping() == method.isEnumMapping()
+            && isEnumMapping( this ) == isEnumMapping( method )
             && getResultType().isAssignableTo( method.getResultType() )
             && allParametersAreAssignable( getSourceParameters(), method.getSourceParameters() );
     }
@@ -376,12 +377,6 @@ public class SourceMethod implements Method {
         return isMapMapping;
     }
 
-    public boolean isEnumMapping() {
-        if ( isEnumMapping == null ) {
-            isEnumMapping = MappingMethodUtils.isEnumMapping( this );
-        }
-        return isEnumMapping;
-    }
 
     /**
      * The default enum mapping (no mappings specified) will from now on be handled as a value mapping. If there
@@ -392,7 +387,7 @@ public class SourceMethod implements Method {
     public boolean isValueMapping() {
 
         if ( isValueMapping == null ) {
-            isValueMapping = isEnumMapping() && mappingOptions.getMappings().isEmpty();
+            isValueMapping = isEnumMapping( this ) && mappingOptions.getMappings().isEmpty();
         }
         return isValueMapping;
     }
@@ -427,7 +422,7 @@ public class SourceMethod implements Method {
         for ( List<Mapping> mappingOfProperty : mappingOptions.getMappings().values() ) {
             for ( Mapping mapping : mappingOfProperty ) {
 
-                if ( isEnumMapping() ) {
+                if ( isEnumMapping( this ) ) {
                     if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
                         mappingsOfSourceProperty.add( mapping );
                     }

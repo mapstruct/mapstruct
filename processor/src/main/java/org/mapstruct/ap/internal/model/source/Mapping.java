@@ -76,7 +76,6 @@ public class Mapping {
                     mappingsOfProperty = new ArrayList<>();
                     mappings.put( mappingPrism.target(), mappingsOfProperty );
                 }
-
                 mappingsOfProperty.add( mapping );
 
                 if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
@@ -427,24 +426,23 @@ public class Mapping {
                       AccessorNamingUtils accessorNaming, boolean isReverse,
                       Parameter reverseSourceParameter) {
 
-        if ( !method.isEnumMapping() ) {
-            sourceReference = new SourceReference.BuilderFromMapping()
-                .mapping( this )
-                .method( method )
-                .messager( messager )
-                .typeFactory( typeFactory )
-                .build();
+        sourceReference = new SourceReference.BuilderFromMapping()
+            .mapping( this )
+            .method( method )
+            .messager( messager )
+            .typeFactory( typeFactory )
+            .build();
 
-            targetReference = new TargetReference.BuilderFromTargetMapping()
-                .mapping( this )
-                .isReverse( isReverse )
-                .method( method )
-                .messager( messager )
-                .typeFactory( typeFactory )
-                .accessorNaming( accessorNaming )
-                .reverseSourceParameter( reverseSourceParameter )
-                .build();
-        }
+        targetReference = new TargetReference.BuilderFromTargetMapping()
+            .mapping( this )
+            .isReverse( isReverse )
+            .method( method )
+            .messager( messager )
+            .typeFactory( typeFactory )
+            .accessorNaming( accessorNaming )
+            .reverseSourceParameter( reverseSourceParameter )
+            .build();
+
     }
 
     /**
