@@ -5,16 +5,12 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -24,20 +20,22 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
+import static org.mapstruct.ap.internal.model.source.Mapping.getMappingTargetNamesBy;
+
 /**
  * Encapsulates all options specifiable on a mapping method
  *
  * @author Andreas Gudian
  */
 public class MappingOptions {
-    private static final MappingOptions EMPTY = new MappingOptions( Collections.<String, List<Mapping>>emptyMap(),
+    private static final MappingOptions EMPTY = new MappingOptions( Collections.emptySet(),
         null,
         null,
         null,
         Collections.<ValueMapping>emptyList(),
         false
     );
-    private Map<String, List<Mapping>> mappings;
+    private Set<Mapping> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
     private BeanMapping beanMapping;
@@ -45,7 +43,7 @@ public class MappingOptions {
     private boolean fullyInitialized;
     private final boolean restrictToDefinedMappings;
 
-    public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
+    public MappingOptions(Set<Mapping> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
         BeanMapping beanMapping, List<ValueMapping> valueMappings, boolean restrictToDefinedMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -71,10 +69,8 @@ public class MappingOptions {
      * @param restrictToDefinedMappings whether to restrict the mappings only to the defined mappings
      * @return MappingOptions with only regular mappings
      */
-    public static MappingOptions forMappingsOnly(Map<String, List<Mapping>> mappings,
-        boolean restrictToDefinedMappings) {
+    public static MappingOptions forMappingsOnly(Set<Mapping> mappings, boolean restrictToDefinedMappings) {
         return forMappingsOnly( mappings, restrictToDefinedMappings, restrictToDefinedMappings );
-
     }
 
     /**
@@ -85,7 +81,7 @@ public class MappingOptions {
      * @param forForgedMethods whether the mappings are for forged methods
      * @return MappingOptions with only regular mappings
      */
-    public static MappingOptions forMappingsOnly(Map<String, List<Mapping>> mappings,
+    public static MappingOptions forMappingsOnly(Set<Mapping> mappings,
         boolean restrictToDefinedMappings, boolean forForgedMethods) {
         return new MappingOptions(
             mappings,
@@ -102,7 +98,7 @@ public class MappingOptions {
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
      * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
      */
-    public Map<String, List<Mapping>> getMappings() {
+    public Set<Mapping> getMappings() {
         return mappings;
     }
 
@@ -112,28 +108,25 @@ public class MappingOptions {
      * @return boolean, true if there are nested target references
      */
     public boolean hasNestedTargetReferences() {
-        for ( List<Mapping> mappingList : mappings.values() ) {
-            for ( Mapping mapping : mappingList ) {
-                TargetReference targetReference = mapping.getTargetReference();
-                if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
-                    return true;
-                }
+
+        for ( Mapping mapping : mappings ) {
+            TargetReference targetReference = mapping.getTargetReference();
+            if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
+                return true;
             }
+
         }
         return false;
     }
 
     /**
-     *
      * @return all dependencies to other properties the contained mappings are dependent on
      */
-    public List<String> collectNestedDependsOn() {
+    public Set<String> collectNestedDependsOn() {
 
-        List<String> nestedDependsOn = new ArrayList<>();
-        for ( List<Mapping> mappingList : mappings.values() ) {
-            for ( Mapping mapping : mappingList ) {
-                nestedDependsOn.addAll( mapping.getDependsOn() );
-            }
+        Set<String> nestedDependsOn = new LinkedHashSet<>();
+        for ( Mapping mapping : mappings ) {
+            nestedDependsOn.addAll( mapping.getDependsOn() );
         }
         return nestedDependsOn;
     }
@@ -145,11 +138,7 @@ public class MappingOptions {
      * @param sourceParameter the new source parameter
      */
     public void initWithParameter( Parameter sourceParameter ) {
-        for ( List<Mapping> mappingList : mappings.values() ) {
-            for ( Mapping mapping : mappingList )  {
-                mapping.init( sourceParameter );
-            }
-        }
+        mappings.forEach( m -> m.init( sourceParameter ) );
     }
 
     public IterableMapping getIterableMapping() {
@@ -168,7 +157,7 @@ public class MappingOptions {
         return valueMappings;
     }
 
-    public void setMappings(Map<String, List<Mapping>> mappings) {
+    public void setMappings(Set<Mapping> mappings) {
         this.mappings = mappings;
     }
 
@@ -255,34 +244,26 @@ public class MappingOptions {
 
             }
 
-            Map<String, List<Mapping>> newMappings = new HashMap<>();
+            Set<Mapping> newMappings = new LinkedHashSet<>();
 
-            for ( List<Mapping> lmappings : inherited.getMappings().values() ) {
-                for ( Mapping mapping : lmappings ) {
-                    if ( isInverse ) {
-                        mapping = mapping.reverse( method, messager, typeFactory, accessorNaming );
-                    }
-
-                    if ( mapping != null ) {
-                        List<Mapping> mappingsOfProperty = newMappings.get( mapping.getTargetName() );
-                        if ( mappingsOfProperty == null ) {
-                            mappingsOfProperty = new ArrayList<>();
-                            newMappings.put( mapping.getTargetName(), mappingsOfProperty );
-                        }
-
-                        mappingsOfProperty.add( mapping.copyForInheritanceTo( method ) );
-                    }
+            for ( Mapping lmapping : inherited.getMappings() ) {
+                Mapping mapping;
+                if ( isInverse ) {
+                    mapping = lmapping.reverse( method, messager, typeFactory, accessorNaming );
+                }
+                else {
+                    mapping = lmapping;
+                }
+                if ( mapping != null ) {
+                    newMappings.add( mapping.copyForInheritanceTo( method ) );
                 }
             }
 
-
-            // now add all of its own mappings
-            newMappings.putAll( getMappings() );
+            // now add all (does not override duplicates and leaves original mappings)
+            mappings.addAll( newMappings );
 
             // filter new mappings
-            filterNestedTargetIgnores( newMappings );
-
-            setMappings( newMappings );
+            filterNestedTargetIgnores( mappings );
         }
     }
 
@@ -297,45 +278,35 @@ public class MappingOptions {
             );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
-        List<String> mappedPropertyNames = new ArrayList<>();
-        for ( String targetMappingName : mappings.keySet() ) {
-            mappedPropertyNames.add( targetMappingName.split( "\\." )[0] );
-        }
+
+
+        Set<String> mappedPropertyNames = mappings.stream()
+                                                  .map( m -> getPropertyEntries( m )[0] )
+                                                  .collect( Collectors.toSet() );
+
         for ( String targetPropertyName : writeAccessors.keySet() ) {
             if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
                 Mapping mapping = Mapping.forIgnore( targetPropertyName );
                 mapping.init( method, messager, typeFactory, accessorNaming );
-                mappings.put( targetPropertyName, Arrays.asList( mapping ) );
+                mappings.add( mapping );
             }
         }
     }
 
-    private void filterNestedTargetIgnores( Map<String, List<Mapping>> mappings) {
+    private void filterNestedTargetIgnores( Set<Mapping> mappings) {
 
         // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
-        Set<String> ignored = new HashSet<>();
-        for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
-            Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
-            if ( mapping.isIgnored() && mapping.getTargetReference().isValid() ) {
-                ignored.add( mapping.getTargetName() );
-            }
-        }
+        Set<String> ignored = getMappingTargetNamesBy( Mapping::isIgnored, mappings );
+        mappings.removeIf( m -> isToBeIgnored( ignored, m ) );
+    }
 
-        // collect all entries to remove (avoid concurrent modification)
-        Set<String> toBeRemoved = new HashSet<>();
-        for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
-            Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
-            TargetReference targetReference = mapping.getTargetReference();
-            if ( targetReference.isValid()
-                && targetReference.getPropertyEntries().size() > 1
-                && ignored.contains( first( targetReference.getPropertyEntries() ).getName() ) ) {
-                toBeRemoved.add( mappingEntry.getKey() );
-            }
-        }
+    private boolean isToBeIgnored(Set<String> ignored, Mapping mapping) {
+        String[] propertyEntries = getPropertyEntries( mapping );
+        return propertyEntries.length > 1 && ignored.contains( propertyEntries[ 0 ] );
+    }
 
-        // finall remove all duplicates
-        mappings.keySet().removeAll( toBeRemoved );
-
+    private String[] getPropertyEntries( Mapping mapping ) {
+        return mapping.getTargetName().split( "\\." );
     }
 
     public boolean isRestrictToDefinedMappings() {

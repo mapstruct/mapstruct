@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -84,7 +83,7 @@ public class SourceMethod implements Method {
         private Type returnType = null;
         private BuilderType builderType = null;
         private List<Type> exceptionTypes;
-        private Map<String, List<Mapping>> mappings;
+        private Set<Mapping> mappings;
         private IterableMapping iterableMapping = null;
         private MapMapping mapMapping = null;
         private BeanMapping beanMapping = null;
@@ -122,7 +121,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMappings(Map<String, List<Mapping>> mappings) {
+        public Builder setMappings(Set<Mapping> mappings) {
             this.mappings = mappings;
             return this;
         }
@@ -189,18 +188,15 @@ public class SourceMethod implements Method {
 
         public SourceMethod build() {
 
+            if ( mappings == null ) {
+                mappings = Collections.emptySet();
+            }
+
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
 
             SourceMethod sourceMethod = new SourceMethod( this, mappingOptions );
-
-            if ( mappings != null ) {
-                for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
-                    for ( Mapping mapping : entry.getValue() ) {
-                        mapping.init( sourceMethod, messager, typeFactory, accessorNaming );
-                    }
-                }
-            }
+            mappings.stream().forEach( m -> m.init( sourceMethod, messager, typeFactory, accessorNaming ) );
             return sourceMethod;
         }
     }
@@ -306,8 +302,11 @@ public class SourceMethod implements Method {
     }
 
     public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-        List<Mapping> all = mappingOptions.getMappings().get( targetPropertyName );
-        return all != null ? first( all ) : null;
+        return mappingOptions.getMappings()
+                             .stream()
+                             .filter( m -> m.getTargetName().equals( targetPropertyName ) )
+                             .findFirst()
+                             .orElse( null );
     }
 
     public boolean reverses(SourceMethod method) {
@@ -410,6 +409,7 @@ public class SourceMethod implements Method {
         return sb.toString();
     }
 
+    // TODO remove?
     /**
      * Returns the {@link Mapping}s for the given source property.
      *
@@ -419,22 +419,20 @@ public class SourceMethod implements Method {
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
         List<Mapping> mappingsOfSourceProperty = new ArrayList<>();
 
-        for ( List<Mapping> mappingOfProperty : mappingOptions.getMappings().values() ) {
-            for ( Mapping mapping : mappingOfProperty ) {
+        for ( Mapping mapping : mappingOptions.getMappings() ) {
 
-                if ( isEnumMapping( this ) ) {
-                    if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
-                        mappingsOfSourceProperty.add( mapping );
-                    }
+            if ( isEnumMapping( this ) ) {
+                if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
+                    mappingsOfSourceProperty.add( mapping );
                 }
-                else {
-                    List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
+            }
+            else {
+                List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
 
-                    // there can only be a mapping if there's only one entry for a source property, so: param.property.
-                    // There can be no mapping if there are more entries. So: param.property.property2
-                    if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
-                        mappingsOfSourceProperty.add( mapping );
-                    }
+                // there can only be a mapping if there's only one entry for a source property, so: param.property.
+                // There can be no mapping if there are more entries. So: param.property.property2
+                if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
+                    mappingsOfSourceProperty.add( mapping );
                 }
             }
         }

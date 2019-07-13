@@ -5,13 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -52,7 +54,7 @@ public class Mapping {
     private final SelectionParameters selectionParameters;
 
     private final boolean isIgnored;
-    private final List<String> dependsOn;
+    private final Set<String> dependsOn;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -64,21 +66,30 @@ public class Mapping {
     private SourceReference sourceReference;
     private TargetReference targetReference;
 
-    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
-        ExecutableElement method, FormattingMessager messager, Types typeUtils) {
-        Map<String, List<Mapping>> mappings = new HashMap<>();
+    public static Set<Mapping> getMappingsBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
+        return mappings.stream().filter( predicate ).collect( Collectors.toSet() );
+    }
+
+    public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
+        return mappings.stream().filter( predicate ).map( Mapping::getTargetName ).collect( Collectors.toSet() );
+    }
+
+    public static boolean containsByTargetName(String name, Set<Mapping> mappings) {
+        return mappings.stream().anyMatch( mapping -> name.equals( mapping.getTargetName() ) );
+    }
+
+    public static Mapping getByTargetName(String name, Set<Mapping> mappings) {
+        return mappings.stream().filter( mapping -> name.equals( mapping )  ).findAny( ).orElse( null );
+    }
+
+    public static Set<Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
+                                                 FormattingMessager messager, Types typeUtils) {
+        Set<Mapping> mappings = new LinkedHashSet<>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
-                List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
-                if ( mappingsOfProperty == null ) {
-                    mappingsOfProperty = new ArrayList<>();
-                    mappings.put( mappingPrism.target(), mappingsOfProperty );
-                }
-                mappingsOfProperty.add( mapping );
-
-                if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
+                if ( !mappings.add( mapping ) ) {
                     messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
                 }
             }
@@ -103,8 +114,9 @@ public class Mapping {
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
-        List<String> dependsOn =
-            mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
+        Set<String> dependsOn = mappingPrism.dependsOn() != null ?
+            new LinkedHashSet( mappingPrism.dependsOn() ) :
+            Collections.<String>emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
@@ -165,7 +177,7 @@ public class Mapping {
             null,
             null,
             null,
-            new ArrayList(),
+            new HashSet<>(),
             null,
             null
         );
@@ -301,7 +313,7 @@ public class Mapping {
                      String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                      AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
                      FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn,
+                     AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
                      NullValueCheckStrategyPrism nullValueCheckStrategy,
                      NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy ) {
         this.sourceName = sourceName;
@@ -554,7 +566,7 @@ public class Mapping {
         return null;
     }
 
-    public List<String> getDependsOn() {
+    public Set<String> getDependsOn() {
         return dependsOn;
     }
 
@@ -581,7 +593,7 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptyList(),
+            Collections.<String>emptySet(),
             nullValueCheckStrategy,
             nullValuePropertyMappingStrategy
         );
@@ -637,6 +649,23 @@ public class Mapping {
         mapping.targetReference = targetReference;
 
         return mapping;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+        Mapping mapping = (Mapping) o;
+        return targetName.equals( mapping.targetName );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( targetName );
     }
 
     @Override

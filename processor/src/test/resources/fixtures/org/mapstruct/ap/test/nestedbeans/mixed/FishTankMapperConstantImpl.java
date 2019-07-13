@@ -31,12 +31,26 @@ public class FishTankMapperConstantImpl implements FishTankMapperConstant {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
+        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
         fishTankDto.setName( source.getName() );
 
         return fishTankDto;
+    }
+
+    protected FishDto fishToFishDto(Fish fish) {
+        if ( fish == null ) {
+            return null;
+        }
+
+        FishDto fishDto = new FishDto();
+
+        fishDto.setKind( fish.getType() );
+
+        fishDto.setName( "Nemo" );
+
+        return fishDto;
     }
 
     protected MaterialTypeDto materialTypeToMaterialTypeDto(MaterialType materialType) {
@@ -63,20 +77,6 @@ public class FishTankMapperConstantImpl implements FishTankMapperConstant {
         materialDto.setManufacturer( "MMM" );
 
         return materialDto;
-    }
-
-    protected FishDto fishToFishDto(Fish fish) {
-        if ( fish == null ) {
-            return null;
-        }
-
-        FishDto fishDto = new FishDto();
-
-        fishDto.setKind( fish.getType() );
-
-        fishDto.setName( "Nemo" );
-
-        return fishDto;
     }
 
     protected WaterPlantDto waterPlantToWaterPlantDto(WaterPlant waterPlant) {

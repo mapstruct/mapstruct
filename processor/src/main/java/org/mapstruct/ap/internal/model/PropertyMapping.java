@@ -70,7 +70,7 @@ public class PropertyMapping extends ModelElement {
     private final ValueProvider targetReadAccessorProvider;
     private final Type targetType;
     private final Assignment assignment;
-    private final List<String> dependsOn;
+    private final Set<String> dependsOn;
     private final Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
@@ -84,7 +84,7 @@ public class PropertyMapping extends ModelElement {
         protected String targetPropertyName;
         protected String sourcePropertyName;
 
-        protected List<String> dependsOn;
+        protected Set<String> dependsOn;
         protected Set<String> existingVariableNames;
         protected AnnotationMirror positionHint;
 
@@ -134,7 +134,7 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
-        public T dependsOn(List<String> dependsOn) {
+        public T dependsOn(Set<String> dependsOn) {
             this.dependsOn = dependsOn;
             return (T) this;
         }
@@ -1005,7 +1005,7 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider,
                             Type targetType, Assignment propertyAssignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            Set<String> dependsOn, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment
         );
@@ -1014,7 +1014,7 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider, Type targetType,
                             Assignment assignment,
-        List<String> dependsOn, Assignment defaultValueAssignment) {
+        Set<String> dependsOn, Assignment defaultValueAssignment) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -1022,7 +1022,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
 
         this.assignment = assignment;
-        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
+        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptySet();
         this.defaultValueAssignment = defaultValueAssignment;
     }
 
@@ -1070,7 +1070,7 @@ public class PropertyMapping extends ModelElement {
         );
     }
 
-    public List<String> getDependsOn() {
+    public Set<String> getDependsOn() {
         return dependsOn;
     }
 

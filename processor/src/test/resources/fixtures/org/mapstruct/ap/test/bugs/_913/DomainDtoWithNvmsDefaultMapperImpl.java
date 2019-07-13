@@ -26,22 +26,22 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
         Domain domain = new Domain();
 
         if ( source != null ) {
-            domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
-            domain.setLongs( stringListToLongSet( source.getStrings() ) );
             List<String> list = source.getStrings();
             if ( list != null ) {
                 domain.setStrings( new HashSet<String>( list ) );
             }
-            List<String> list1 = source.getStringsWithDefault();
+            domain.setLongs( stringListToLongSet( source.getStrings() ) );
+            List<String> list1 = source.getStringsInitialized();
             if ( list1 != null ) {
-                domain.setStringsWithDefault( new ArrayList<String>( list1 ) );
+                domain.setStringsInitialized( new HashSet<String>( list1 ) );
+            }
+            domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+            List<String> list2 = source.getStringsWithDefault();
+            if ( list2 != null ) {
+                domain.setStringsWithDefault( new ArrayList<String>( list2 ) );
             }
             else {
                 domain.setStringsWithDefault( helper.toList( "3" ) );
-            }
-            List<String> list2 = source.getStringsInitialized();
-            if ( list2 != null ) {
-                domain.setStringsInitialized( new HashSet<String>( list2 ) );
             }
         }
 
@@ -52,6 +52,22 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
     public void update(Dto source, Domain target) {
 
         if ( source != null ) {
+            if ( target.getStrings() != null ) {
+                List<String> list = source.getStrings();
+                if ( list != null ) {
+                    target.getStrings().clear();
+                    target.getStrings().addAll( list );
+                }
+                else {
+                    target.setStrings( new HashSet<String>() );
+                }
+            }
+            else {
+                List<String> list = source.getStrings();
+                if ( list != null ) {
+                    target.setStrings( new HashSet<String>( list ) );
+                }
+            }
             if ( target.getLongs() != null ) {
                 Set<Long> set = stringListToLongSet( source.getStrings() );
                 if ( set != null ) {
@@ -68,20 +84,20 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.setLongs( set );
                 }
             }
-            if ( target.getStrings() != null ) {
-                List<String> list = source.getStrings();
-                if ( list != null ) {
-                    target.getStrings().clear();
-                    target.getStrings().addAll( list );
+            if ( target.getStringsInitialized() != null ) {
+                List<String> list1 = source.getStringsInitialized();
+                if ( list1 != null ) {
+                    target.getStringsInitialized().clear();
+                    target.getStringsInitialized().addAll( list1 );
                 }
                 else {
-                    target.setStrings( new HashSet<String>() );
+                    target.setStringsInitialized( new HashSet<String>() );
                 }
             }
             else {
-                List<String> list = source.getStrings();
-                if ( list != null ) {
-                    target.setStrings( new HashSet<String>( list ) );
+                List<String> list1 = source.getStringsInitialized();
+                if ( list1 != null ) {
+                    target.setStringsInitialized( new HashSet<String>( list1 ) );
                 }
             }
             if ( target.getLongsInitialized() != null ) {
@@ -101,38 +117,22 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                 }
             }
             if ( target.getStringsWithDefault() != null ) {
-                List<String> list1 = source.getStringsWithDefault();
-                if ( list1 != null ) {
+                List<String> list2 = source.getStringsWithDefault();
+                if ( list2 != null ) {
                     target.getStringsWithDefault().clear();
-                    target.getStringsWithDefault().addAll( list1 );
+                    target.getStringsWithDefault().addAll( list2 );
                 }
                 else {
                     target.setStringsWithDefault( helper.toList( "3" ) );
                 }
             }
             else {
-                List<String> list1 = source.getStringsWithDefault();
-                if ( list1 != null ) {
-                    target.setStringsWithDefault( new ArrayList<String>( list1 ) );
+                List<String> list2 = source.getStringsWithDefault();
+                if ( list2 != null ) {
+                    target.setStringsWithDefault( new ArrayList<String>( list2 ) );
                 }
                 else {
                     target.setStringsWithDefault( helper.toList( "3" ) );
-                }
-            }
-            if ( target.getStringsInitialized() != null ) {
-                List<String> list2 = source.getStringsInitialized();
-                if ( list2 != null ) {
-                    target.getStringsInitialized().clear();
-                    target.getStringsInitialized().addAll( list2 );
-                }
-                else {
-                    target.setStringsInitialized( new HashSet<String>() );
-                }
-            }
-            else {
-                List<String> list2 = source.getStringsInitialized();
-                if ( list2 != null ) {
-                    target.setStringsInitialized( new HashSet<String>( list2 ) );
                 }
             }
         }
@@ -142,6 +142,22 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
     public Domain updateWithReturn(Dto source, Domain target) {
 
         if ( source != null ) {
+            if ( target.getStrings() != null ) {
+                List<String> list = source.getStrings();
+                if ( list != null ) {
+                    target.getStrings().clear();
+                    target.getStrings().addAll( list );
+                }
+                else {
+                    target.setStrings( new HashSet<String>() );
+                }
+            }
+            else {
+                List<String> list = source.getStrings();
+                if ( list != null ) {
+                    target.setStrings( new HashSet<String>( list ) );
+                }
+            }
             if ( target.getLongs() != null ) {
                 Set<Long> set = stringListToLongSet( source.getStrings() );
                 if ( set != null ) {
@@ -158,20 +174,20 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.setLongs( set );
                 }
             }
-            if ( target.getStrings() != null ) {
-                List<String> list = source.getStrings();
-                if ( list != null ) {
-                    target.getStrings().clear();
-                    target.getStrings().addAll( list );
+            if ( target.getStringsInitialized() != null ) {
+                List<String> list1 = source.getStringsInitialized();
+                if ( list1 != null ) {
+                    target.getStringsInitialized().clear();
+                    target.getStringsInitialized().addAll( list1 );
                 }
                 else {
-                    target.setStrings( new HashSet<String>() );
+                    target.setStringsInitialized( new HashSet<String>() );
                 }
             }
             else {
-                List<String> list = source.getStrings();
-                if ( list != null ) {
-                    target.setStrings( new HashSet<String>( list ) );
+                List<String> list1 = source.getStringsInitialized();
+                if ( list1 != null ) {
+                    target.setStringsInitialized( new HashSet<String>( list1 ) );
                 }
             }
             if ( target.getLongsInitialized() != null ) {
@@ -191,38 +207,22 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                 }
             }
             if ( target.getStringsWithDefault() != null ) {
-                List<String> list1 = source.getStringsWithDefault();
-                if ( list1 != null ) {
+                List<String> list2 = source.getStringsWithDefault();
+                if ( list2 != null ) {
                     target.getStringsWithDefault().clear();
-                    target.getStringsWithDefault().addAll( list1 );
+                    target.getStringsWithDefault().addAll( list2 );
                 }
                 else {
                     target.setStringsWithDefault( helper.toList( "3" ) );
                 }
             }
             else {
-                List<String> list1 = source.getStringsWithDefault();
-                if ( list1 != null ) {
-                    target.setStringsWithDefault( new ArrayList<String>( list1 ) );
+                List<String> list2 = source.getStringsWithDefault();
+                if ( list2 != null ) {
+                    target.setStringsWithDefault( new ArrayList<String>( list2 ) );
                 }
                 else {
                     target.setStringsWithDefault( helper.toList( "3" ) );
-                }
-            }
-            if ( target.getStringsInitialized() != null ) {
-                List<String> list2 = source.getStringsInitialized();
-                if ( list2 != null ) {
-                    target.getStringsInitialized().clear();
-                    target.getStringsInitialized().addAll( list2 );
-                }
-                else {
-                    target.setStringsInitialized( new HashSet<String>() );
-                }
-            }
-            else {
-                List<String> list2 = source.getStringsInitialized();
-                if ( list2 != null ) {
-                    target.setStringsInitialized( new HashSet<String>( list2 ) );
                 }
             }
         }

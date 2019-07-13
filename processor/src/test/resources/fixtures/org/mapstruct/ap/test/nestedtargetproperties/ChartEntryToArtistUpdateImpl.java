@@ -41,11 +41,11 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             return;
         }
 
-        if ( chartEntry.getCity() != null ) {
-            mappingTarget.setCity( chartEntry.getCity() );
-        }
         if ( chartEntry.getRecordedAt() != null ) {
             mappingTarget.setName( chartEntry.getRecordedAt() );
+        }
+        if ( chartEntry.getCity() != null ) {
+            mappingTarget.setCity( chartEntry.getCity() );
         }
     }
 
@@ -83,6 +83,9 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             mappingTarget.setArtist( new Artist() );
         }
         chartEntryToArtist( chartEntry, mappingTarget.getArtist() );
+        if ( chartEntry.getSongTitle() != null ) {
+            mappingTarget.setTitle( chartEntry.getSongTitle() );
+        }
         if ( mappingTarget.getPositions() != null ) {
             List<Integer> list = mapPosition( chartEntry.getPosition() );
             if ( list != null ) {
@@ -95,9 +98,6 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             if ( list != null ) {
                 mappingTarget.setPositions( list );
             }
-        }
-        if ( chartEntry.getSongTitle() != null ) {
-            mappingTarget.setTitle( chartEntry.getSongTitle() );
         }
     }
 }

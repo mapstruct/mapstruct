@@ -7,10 +7,9 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -502,24 +501,18 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by target property name
      */
-    private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
-        Map<String, List<Mapping>> mappings = new HashMap<>();
+    private Set<Mapping> getMappings(ExecutableElement method) {
+        Set<Mapping> mappings = new LinkedHashSet<>(  );
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            if ( !mappings.containsKey( mappingAnnotation.target() ) ) {
-                mappings.put( mappingAnnotation.target(), new ArrayList<>() );
-            }
-            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
-            if ( mapping != null ) {
-                mappings.get( mappingAnnotation.target() ).add( mapping );
-            }
+            mappings.add( Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils ) );
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
+            mappings.addAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
         }
 
         return mappings;
