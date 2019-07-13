@@ -20,9 +20,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -50,7 +48,6 @@ public class SourceMethod implements Method {
     private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final Type returnType;
-    private final BuilderType builderType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfiguration config;
@@ -67,7 +64,6 @@ public class SourceMethod implements Method {
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
 
-    private Boolean isEnumMapping;
     private Boolean isValueMapping;
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
@@ -89,8 +85,6 @@ public class SourceMethod implements Method {
         private BeanMapping beanMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
-        private AccessorNamingUtils accessorNaming = null;
-        private FormattingMessager messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
@@ -156,16 +150,6 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setAccessorNaming(AccessorNamingUtils accessorNaming) {
-            this.accessorNaming = accessorNaming;
-            return this;
-        }
-
-        public Builder setMessager(FormattingMessager messager) {
-            this.messager = messager;
-            return this;
-        }
-
         public Builder setMapperConfiguration(MapperConfiguration mapperConfig) {
             this.mapperConfig = mapperConfig;
             return this;
@@ -195,9 +179,7 @@ public class SourceMethod implements Method {
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
 
-            SourceMethod sourceMethod = new SourceMethod( this, mappingOptions );
-            mappings.stream().forEach( m -> m.init( sourceMethod, messager, typeFactory, accessorNaming ) );
-            return sourceMethod;
+            return new SourceMethod( this, mappingOptions );
         }
     }
 
@@ -206,7 +188,6 @@ public class SourceMethod implements Method {
         this.executable = builder.executable;
         this.parameters = builder.parameters;
         this.returnType = builder.returnType;
-        this.builderType = builder.builderType;
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
@@ -299,14 +280,6 @@ public class SourceMethod implements Method {
     @Override
     public Accessibility getAccessibility() {
         return accessibility;
-    }
-
-    public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-        return mappingOptions.getMappings()
-                             .stream()
-                             .filter( m -> m.getTargetName().equals( targetPropertyName ) )
-                             .findFirst()
-                             .orElse( null );
     }
 
     public boolean reverses(SourceMethod method) {
@@ -438,16 +411,6 @@ public class SourceMethod implements Method {
         }
 
         return mappingsOfSourceProperty;
-    }
-
-    public Parameter getSourceParameter(String sourceParameterName) {
-        for ( Parameter parameter : getSourceParameters() ) {
-            if ( parameter.getName().equals( sourceParameterName ) ) {
-                return parameter;
-            }
-        }
-
-        return null;
     }
 
     public List<SourceMethod> getApplicablePrototypeMethods() {

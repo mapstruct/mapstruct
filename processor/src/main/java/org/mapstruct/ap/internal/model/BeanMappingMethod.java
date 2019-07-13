@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
@@ -49,6 +51,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
+import static org.mapstruct.ap.internal.model.source.Mapping.getMappingByTargetName;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
@@ -83,8 +86,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final List<PropertyMapping> propertyMappings = new ArrayList<>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
         private final Set<String> existingVariableNames = new HashSet<>();
-        private Set<Mapping> methodMappings;
-        private SingleMappingByTargetPropertyNameFunction singleMapping;
+        private Function<String, Mapping> singleMapping;
+        private Consumer<Set<Mapping>> mappingsInitializer;
         private final Map<String, Set<Mapping>> unprocessedDefinedTargets = new LinkedHashMap<>();
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
@@ -98,13 +101,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         public Builder sourceMethod(SourceMethod sourceMethod) {
-            singleMapping = new SourceMethodSingleMapping( sourceMethod );
+            singleMapping =
+                targetName -> getMappingByTargetName( targetName, sourceMethod.getMappingOptions().getMappings() );
+            mappingsInitializer =
+                mappings -> mappings.stream().forEach( mapping -> initReferencesForSourceMethodMapping( mapping ) );
             this.method = sourceMethod;
             return this;
         }
 
         public Builder forgedMethod(Method method) {
-            singleMapping = new EmptySingleMapping();
+            singleMapping = targetPropertyName -> null;
+            mappingsInitializer =
+                mappings -> mappings.stream().forEach( mapping -> initReferencesForForgedMethodMapping( mapping ) );
             this.method = method;
             return this;
         }
@@ -150,7 +158,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
 
-            this.methodMappings = this.method.getMappingOptions().getMappings();
+            /* initialize mappings for this method && filter invalid reverse methods */
+            mappingsInitializer.accept( method.getMappingOptions().getMappings() );
+            method.getMappingOptions().getMappings().removeIf( mapping -> !isValidWhenReversed( mapping ) );
+
             CollectionMappingStrategyPrism cms = this.method.getMapperConfiguration().getCollectionMappingStrategy();
 
             // determine accessors
@@ -445,7 +456,68 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return factoryMethod;
         }
 
+        /**
+         * Initialized the source- and target reference for a certain mapping for regular non forged methods
+         *
+         * @param mapping the mapping
+         */
+        private void initReferencesForSourceMethodMapping(Mapping mapping ) {
 
+            // handle source reference
+            SourceReference sourceReference = new SourceReference.BuilderFromMapping()
+                .mapping( mapping )
+                .method( method )
+                .messager( ctx.getMessager() )
+                .typeFactory( ctx.getTypeFactory() )
+                .build();
+            mapping.setSourceReference( sourceReference );
+
+            // handle target reference
+            TargetReference targetReference = new TargetReference.BuilderFromTargetMapping()
+                .mapping( mapping )
+                .method( method )
+                .messager( ctx.getMessager() )
+                .typeFactory( ctx.getTypeFactory() )
+                .build();
+            mapping.setTargetReference( targetReference );
+
+        }
+
+        /**
+         * Initialized the source- and target reference for forged methods (e.g. when handling nesting)
+         *
+         * @param mapping the mapping
+         */
+        private void initReferencesForForgedMethodMapping(Mapping mapping ) {
+
+            /* a forge method has always one mandatory source parameter and no more */
+            Parameter sourceParameter = first( Parameter.getSourceParameters( method.getParameters() ) );
+
+            SourceReference sourceReference = mapping.getSourceReference();
+            if ( sourceReference != null ) {
+                SourceReference oldSourceReference = sourceReference;
+                sourceReference = new SourceReference.BuilderFromSourceReference()
+                    .sourceParameter( sourceParameter )
+                    .sourceReference( oldSourceReference )
+                    .build();
+            }
+            mapping.setSourceReference( sourceReference );
+
+        }
+
+        /**
+         * MapStruct filters automatically reversed invalid methods out. TODO: this is a principle we should discuss!
+         * @param mapping
+         * @return
+         */
+        private static boolean isValidWhenReversed(Mapping mapping) {
+            if ( mapping.getInheritContext() != null && mapping.getInheritContext().isReversed() ) {
+                return mapping.getTargetReference().isValid() && ( mapping.getSourceReference() != null ?
+                    mapping.getSourceReference().isValid() :
+                    true );
+            }
+            return true;
+        }
 
         /**
          * Iterates over all defined mapping methods ({@code @Mapping(s)}), either directly given or inherited from the
@@ -467,7 +539,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 errorOccurred = handleDefinedNestedTargetMapping( handledTargets );
             }
 
-            for ( Mapping mapping : methodMappings ) {
+            for ( Mapping mapping : method.getMappingOptions().getMappings() ) {
                 TargetReference targetReference = mapping.getTargetReference();
                 if ( targetReference.isValid() ) {
                     String target = first( targetReference.getPropertyEntries() ).getFullName();
@@ -667,8 +739,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {
-                            Mapping mapping = singleMapping.getSingleMappingByTargetPropertyName(
-                                targetProperty.getKey() );
+                            Mapping mapping = singleMapping.apply( targetProperty.getKey() );
                             DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
@@ -740,7 +811,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                     Parameter sourceParameter = sourceParameters.next();
                     if ( sourceParameter.getName().equals( targetProperty.getKey() ) ) {
-                        Mapping mapping = singleMapping.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
+                        Mapping mapping = singleMapping.apply( targetProperty.getKey() );
 
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
@@ -1028,28 +1099,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private interface SingleMappingByTargetPropertyNameFunction {
 
         Mapping getSingleMappingByTargetPropertyName(String targetPropertyName);
-    }
-
-    private static class EmptySingleMapping implements SingleMappingByTargetPropertyNameFunction {
-
-        @Override
-        public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-            return null;
-        }
-    }
-
-    private static class SourceMethodSingleMapping implements SingleMappingByTargetPropertyNameFunction {
-
-        private final SourceMethod sourceMethod;
-
-        private SourceMethodSingleMapping(SourceMethod sourceMethod) {
-            this.sourceMethod = sourceMethod;
-        }
-
-        @Override
-        public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-            return sourceMethod.getSingleMappingByTargetPropertyName( targetPropertyName );
-        }
     }
 
 }

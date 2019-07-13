@@ -16,21 +16,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -63,11 +56,41 @@ public class Mapping {
     private final NullValueCheckStrategyPrism nullValueCheckStrategy;
     private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
 
+    private final InheritContext inheritContext;
     private SourceReference sourceReference;
     private TargetReference targetReference;
 
+    public static class InheritContext {
+
+        private final boolean isReversed;
+        private final boolean isForwarded;
+        private final Method inheritedFromMethod;
+
+        public InheritContext(boolean isReversed, boolean isForwarded, Method inheritedFromMethod) {
+            this.isReversed = isReversed;
+            this.isForwarded = isForwarded;
+            this.inheritedFromMethod = inheritedFromMethod;
+        }
+
+        public boolean isReversed() {
+            return isReversed;
+        }
+
+        public boolean isForwarded() {
+            return isForwarded;
+        }
+
+        public Method getInheritedFromMethod() {
+            return inheritedFromMethod;
+        }
+    }
+
     public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
         return mappings.stream().filter( predicate ).map( Mapping::getTargetName ).collect( Collectors.toSet() );
+    }
+
+    public static Mapping getMappingByTargetName(String targetName, Set<Mapping> mappings) {
+        return mappings.stream().filter( mapping -> mapping.targetName.equals( targetName ) ).findAny().orElse( null );
     }
 
     public static Set<Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
@@ -146,7 +169,8 @@ public class Mapping {
             mappingPrism.values.dependsOn(),
             dependsOn,
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            null
         );
     }
 
@@ -166,6 +190,7 @@ public class Mapping {
             null,
             null,
             new HashSet<>(),
+            null,
             null,
             null
         );
@@ -297,13 +322,14 @@ public class Mapping {
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
-    private Mapping( String sourceName, String constant, String javaExpression, String defaultJavaExpression,
-                     String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
-                     AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
-                     FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                     AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
-                     NullValueCheckStrategyPrism nullValueCheckStrategy,
-                     NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy ) {
+    private Mapping(String sourceName, String constant, String javaExpression, String defaultJavaExpression,
+                    String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+                    FormattingParameters formattingParameters, SelectionParameters selectionParameters,
+                    AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
+                    NullValueCheckStrategyPrism nullValueCheckStrategy,
+                    NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy,
+                    InheritContext inheritContext) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -320,6 +346,7 @@ public class Mapping {
         this.dependsOn = dependsOn;
         this.nullValueCheckStrategy = nullValueCheckStrategy;
         this.nullValuePropertyMappingStrategy = nullValuePropertyMappingStrategy;
+        this.inheritContext = inheritContext;
     }
 
     private Mapping( Mapping mapping, TargetReference targetReference ) {
@@ -341,6 +368,7 @@ public class Mapping {
         this.targetReference = targetReference;
         this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
         this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
+        this.inheritContext = mapping.inheritContext;
     }
 
     private Mapping( Mapping mapping, SourceReference sourceReference ) {
@@ -362,6 +390,7 @@ public class Mapping {
         this.targetReference = mapping.targetReference;
         this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
         this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
+        this.inheritContext = mapping.inheritContext;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -402,63 +431,7 @@ public class Mapping {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private static boolean isEnumType(TypeMirror mirror) {
-        return mirror.getKind() == TypeKind.DECLARED &&
-            ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
-    }
-
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                     AccessorNamingUtils accessorNaming) {
-        init( method, messager, typeFactory, accessorNaming, false, null );
-    }
-
-    /**
-     * Initialize the Mapping.
-     *
-     * @param method the source method that the mapping belongs to
-     * @param messager the messager that can be used for outputting messages
-     * @param typeFactory the type factory
-     * @param accessorNaming the accessor naming utils
-     * @param isReverse whether the init is for a reverse mapping
-     * @param reverseSourceParameter the source parameter from the revers mapping
-     */
-    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                      AccessorNamingUtils accessorNaming, boolean isReverse,
-                      Parameter reverseSourceParameter) {
-
-        sourceReference = new SourceReference.BuilderFromMapping()
-            .mapping( this )
-            .method( method )
-            .messager( messager )
-            .typeFactory( typeFactory )
-            .build();
-
-        targetReference = new TargetReference.BuilderFromTargetMapping()
-            .mapping( this )
-            .isReverse( isReverse )
-            .method( method )
-            .messager( messager )
-            .typeFactory( typeFactory )
-            .accessorNaming( accessorNaming )
-            .reverseSourceParameter( reverseSourceParameter )
-            .build();
-
-    }
-
-    /**
-     * Initializes the mapping with a new source parameter.
-     *
-     * @param sourceParameter sets the source parameter that acts as a basis for this mapping
-     */
-    public void init( Parameter sourceParameter ) {
-        if ( sourceReference != null ) {
-            SourceReference oldSourceReference = sourceReference;
-            sourceReference = new SourceReference.BuilderFromSourceReference()
-                .sourceParameter( sourceParameter )
-                .sourceReference( oldSourceReference )
-                .build();
-        }
-    }
+    // immutable properties
 
     /**
      * Returns the complete source name of this mapping, either a qualified (e.g. {@code parameter1.foo}) or
@@ -518,20 +491,38 @@ public class Mapping {
         return dependsOnAnnotationValue;
     }
 
-    public SourceReference getSourceReference() {
-        return sourceReference;
-    }
-
-    public TargetReference getTargetReference() {
-        return targetReference;
-    }
-
     public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
         return nullValueCheckStrategy;
     }
 
     public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
         return nullValuePropertyMappingStrategy;
+    }
+
+    public Set<String> getDependsOn() {
+        return dependsOn;
+    }
+
+    public InheritContext getInheritContext() {
+        return inheritContext;
+    }
+
+    ////  mutable properties
+
+    public SourceReference getSourceReference() {
+        return sourceReference;
+    }
+
+    public void setSourceReference(SourceReference sourceReference) {
+        this.sourceReference = sourceReference;
+    }
+
+    public TargetReference getTargetReference() {
+        return targetReference;
+    }
+
+    public void setTargetReference(TargetReference targetReference) {
+        this.targetReference = targetReference;
     }
 
     public Mapping popTargetReference() {
@@ -554,20 +545,19 @@ public class Mapping {
         return null;
     }
 
-    public Set<String> getDependsOn() {
-        return dependsOn;
+    /**
+     *  mapping can only be reversed if the source was not a constant nor an expression nor a nested property
+     *  and the mapping is not a 'target-source-ignore' mapping
+     *
+     * @return true when the above applies
+     */
+    public boolean canInverse() {
+        return constant == null && javaExpression == null && !( isIgnored && sourceName == null );
     }
 
-    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                           AccessorNamingUtils accessorNaming) {
+    public Mapping copyForInverseInheritance(SourceMethod method ) {
 
-        // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
-        // and the mapping is not a 'target-source-ignore' mapping
-        if ( constant != null || javaExpression != null || ( isIgnored && sourceName == null ) ) {
-            return null;
-        }
-
-        Mapping reverse = new Mapping(
+        return new Mapping(
             sourceName != null ? targetName : null,
             null, // constant
             null, // expression
@@ -583,34 +573,19 @@ public class Mapping {
             dependsOnAnnotationValue,
             Collections.<String>emptySet(),
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            new InheritContext( true, false, method )
         );
 
-        reverse.init(
-            method,
-            messager,
-            typeFactory,
-            accessorNaming,
-            true,
-            sourceReference != null ? sourceReference.getParameter() : null
-        );
-
-        // check if the reverse mapping has indeed a write accessor, otherwise the mapping cannot be reversed
-        if ( !reverse.targetReference.isValid() ) {
-            return null;
-        }
-
-        return reverse;
     }
 
     /**
-     * Creates a copy of this mapping, which is adapted to the given method
+     * Creates a copy of this mapping
      *
-     * @param method the method to create the copy for
      * @return the copy
      */
-    public Mapping copyForInheritanceTo(SourceMethod method) {
-        Mapping mapping = new Mapping(
+    public Mapping copyForForwardInheritance( SourceMethod method ) {
+        return new Mapping(
             sourceName,
             constant,
             javaExpression,
@@ -626,17 +601,10 @@ public class Mapping {
             dependsOnAnnotationValue,
             dependsOn,
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            new InheritContext( false, true, method )
         );
 
-        if ( sourceReference != null ) {
-            mapping.sourceReference = sourceReference.copyForInheritanceTo( method );
-        }
-
-        // TODO... must something be done here? Andreas?
-        mapping.targetReference = targetReference;
-
-        return mapping;
     }
 
     @Override

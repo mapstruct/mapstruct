@@ -12,12 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.source.Mapping.getMappingTargetNamesBy;
@@ -131,16 +128,6 @@ public class MappingOptions {
         return nestedDependsOn;
     }
 
-    /**
-     * Initializes the underlying mappings with a new property. Specifically used in in combination with forged methods
-     * where the new parameter name needs to be established at a later moment.
-     *
-     * @param sourceParameter the new source parameter
-     */
-    public void initWithParameter( Parameter sourceParameter ) {
-        mappings.forEach( m -> m.init( sourceParameter ) );
-    }
-
     public IterableMapping getIterableMapping() {
         return iterableMapping;
     }
@@ -188,16 +175,12 @@ public class MappingOptions {
     /**
      * Merges in all the mapping options configured, giving the already defined options precedence.
      *
-     * @param inherited the options to inherit, may be {@code null}
+     * @param templateMethod the template method with the options to inherit, may be {@code null}
      * @param isInverse if {@code true}, the specified options are from an inverse method
      * @param method the source method
-     * @param messager the messager
-     * @param typeFactory the type factory
-     * @param accessorNaming the accessor naming utils
      */
-    public void applyInheritedOptions(MappingOptions inherited, boolean isInverse, SourceMethod method,
-                                      FormattingMessager messager, TypeFactory typeFactory,
-                                      AccessorNamingUtils accessorNaming) {
+    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
+        MappingOptions inherited = templateMethod.getMappingOptions();
         if ( null != inherited ) {
             if ( getIterableMapping() == null ) {
                 if ( inherited.getIterableMapping() != null ) {
@@ -237,21 +220,17 @@ public class MappingOptions {
                         }
                     }
                 }
-
             }
 
             Set<Mapping> newMappings = new LinkedHashSet<>();
-
-            for ( Mapping lmapping : inherited.getMappings() ) {
-                Mapping mapping;
+            for ( Mapping mapping : inherited.getMappings() ) {
                 if ( isInverse ) {
-                    mapping = lmapping.reverse( method, messager, typeFactory, accessorNaming );
+                    if ( mapping.canInverse() ) {
+                        newMappings.add( mapping.copyForInverseInheritance( templateMethod ) );
+                    }
                 }
                 else {
-                    mapping = lmapping;
-                }
-                if ( mapping != null ) {
-                    newMappings.add( mapping.copyForInheritanceTo( method ) );
+                    newMappings.add( mapping.copyForForwardInheritance( templateMethod ) );
                 }
             }
 
@@ -263,8 +242,7 @@ public class MappingOptions {
         }
     }
 
-    public void applyIgnoreAll(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                               AccessorNamingUtils accessorNaming) {
+    public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
@@ -283,7 +261,6 @@ public class MappingOptions {
         for ( String targetPropertyName : writeAccessors.keySet() ) {
             if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
                 Mapping mapping = Mapping.forIgnore( targetPropertyName );
-                mapping.init( method, messager, typeFactory, accessorNaming );
                 mappings.add( mapping );
             }
         }

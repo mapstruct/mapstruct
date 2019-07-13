@@ -257,9 +257,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
             .setValueMappings( getValueMappings( method ) )
             .setTypeUtils( typeUtils )
-            .setMessager( messager )
             .setTypeFactory( typeFactory )
-            .setAccessorNaming( accessorNaming )
             .setMapperConfiguration( mapperConfig )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
@@ -317,7 +315,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
-            .setAccessorNaming( accessorNaming )
             .build();
     }
 

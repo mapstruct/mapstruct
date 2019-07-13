@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 
@@ -19,12 +18,13 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * This class describes the target side of a property mapping.
@@ -61,28 +61,10 @@ public class TargetReference {
     public static class BuilderFromTargetMapping {
 
         private Mapping mapping;
-        private SourceMethod method;
+        private Method method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
-        private AccessorNamingUtils accessorNaming;
-        private boolean isReverse;
-        /**
-         * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
-         * needed.
-         * E.g. If we have a mapping like:
-         * <code>
-         * {@literal @}Mapping( target = "letterSignature", source = "dto.signature" )
-         * </code>
-         *
-         * When it is reversed it will look like:
-         * <code>
-         * {@literal @}Mapping( target = "dto.signature", source = "letterSignature" )
-         * </code>
-         *
-         * The {@code dto} needs to be considered as a possibility for a target name only if a Target Reference for
-         * a reverse is created.
-         */
-        private Parameter reverseSourceParameter;
+
         /**
          * During {@link #getTargetEntries(Type, String[])} an error can occur. However, we are invoking
          * that multiple times because the first entry can also be the name of the parameter. Therefore we keep
@@ -100,7 +82,7 @@ public class TargetReference {
             return this;
         }
 
-        public BuilderFromTargetMapping method(SourceMethod method) {
+        public BuilderFromTargetMapping method(Method method) {
             this.method = method;
             return this;
         }
@@ -110,25 +92,11 @@ public class TargetReference {
             return this;
         }
 
-        public BuilderFromTargetMapping accessorNaming(AccessorNamingUtils accessorNaming) {
-            this.accessorNaming = accessorNaming;
-            return this;
-        }
-
-        public BuilderFromTargetMapping isReverse(boolean isReverse) {
-            this.isReverse = isReverse;
-            return this;
-        }
-
-        public BuilderFromTargetMapping reverseSourceParameter(Parameter reverseSourceParameter) {
-            this.reverseSourceParameter = reverseSourceParameter;
-            return this;
-        }
-
         public TargetReference build() {
 
-            String targetName = mapping.getTargetName();
+            boolean isInverse =  mapping.getInheritContext() != null ? mapping.getInheritContext().isReversed() : false;
 
+            String targetName = mapping.getTargetName();
             if ( targetName == null ) {
                 return null;
             }
@@ -159,13 +127,13 @@ public class TargetReference {
             List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames );
             foundEntryMatch = (entries.size() == targetPropertyNames.length);
             if ( !foundEntryMatch && segments.length > 1
-                && matchesSourceOrTargetParameter( segments[0], parameter, reverseSourceParameter, isReverse ) ) {
+                && matchesSourceOrTargetParameter( segments[0], parameter, isInverse ) ) {
                 targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                 entries = getTargetEntries( resultType, targetPropertyNames );
                 foundEntryMatch = (entries.size() == targetPropertyNames.length);
             }
 
-            if ( !foundEntryMatch && errorMessage != null && !isReverse ) {
+            if ( !foundEntryMatch && errorMessage != null && !isInverse ) {
                 // This is called only for reporting errors
                 errorMessage.report( );
             }
@@ -334,19 +302,46 @@ public class TargetReference {
          *
          * @param segment that needs to be checked
          * @param targetParameter the target parameter if it exists
-         * @param reverseSourceParameter the reverse source parameter if it exists
-         * @param isReverse whether a reverse {@link TargetReference} is being built
+
+         * @param isInverse whether a reverse {@link TargetReference} is being built
          *
          * @return {@code true} if the segment matches the name of the {@code targetParameter} or the name of the
          * {@code reverseSourceParameter} when this is a reverse {@link TargetReference} is being built, {@code
          * false} otherwise
          */
-        private static boolean matchesSourceOrTargetParameter(String segment, Parameter targetParameter,
-            Parameter reverseSourceParameter, boolean isReverse) {
-            boolean matchesTargetParameter =
-                targetParameter != null && targetParameter.getName().equals( segment );
-            return matchesTargetParameter
-                || isReverse && reverseSourceParameter != null && reverseSourceParameter.getName().equals( segment );
+        private boolean matchesSourceOrTargetParameter(String segment, Parameter targetParameter, boolean isInverse) {
+            boolean matchesTargetParameter = targetParameter != null && targetParameter.getName().equals( segment );
+            return matchesTargetParameter || matchesSourceOnInverseSourceParameter( segment, isInverse );
+        }
+
+        /**
+         * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
+         * needed.
+         * E.g. If we have a mapping like:
+         * <code>
+         * {@literal @}Mapping( target = "letterSignature", source = "dto.signature" )
+         * </code>
+         * When it is reversed it will look like:
+         * <code>
+         * {@literal @}Mapping( target = "dto.signature", source = "letterSignature" )
+         * </code>
+         * The {@code dto} needs to be considered as a possibility for a target name only if a Target Reference for
+         * a reverse is created.
+         *
+         * @param segment that needs to be checked*
+         * @param isInverse whether a reverse {@link TargetReference} is being built
+         *
+         * @return on match when inverse and segment matches the one and only source parameter
+         */
+        private boolean matchesSourceOnInverseSourceParameter( String segment, boolean isInverse ) {
+            boolean result = false;
+            if ( isInverse ) {
+                Method templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+                // there is only source parameter by definition when applying @InheritInverseConfiguration
+                Parameter inverseSourceParameter = first( templateMethod.getSourceParameters() );
+                result = inverseSourceParameter.getName().equals( segment );
+            }
+            return result;
         }
     }
 
@@ -398,10 +393,10 @@ public class TargetReference {
 
     private abstract static class MappingErrorMessage {
         private final Mapping mapping;
-        private final SourceMethod method;
+        private final Method method;
         private final FormattingMessager messager;
 
-        private MappingErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+        private MappingErrorMessage(Mapping mapping, Method method, FormattingMessager messager) {
             this.mapping = mapping;
             this.method = method;
             this.messager = messager;
@@ -423,7 +418,7 @@ public class TargetReference {
 
     private static class NoWriteAccessorErrorMessage extends MappingErrorMessage {
 
-        private NoWriteAccessorErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+        private NoWriteAccessorErrorMessage(Mapping mapping, Method method, FormattingMessager messager) {
             super( mapping, method, messager );
         }
 
@@ -439,7 +434,7 @@ public class TargetReference {
         private final int index;
         private final Type nextType;
 
-        private NoPropertyErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager,
+        private NoPropertyErrorMessage(Mapping mapping, Method method, FormattingMessager messager,
                                        String[] entryNames, int index, Type nextType) {
             super( mapping, method, messager );
             this.entryNames = entryNames;
