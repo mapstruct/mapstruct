@@ -157,10 +157,6 @@ public class MappingOptions {
         return valueMappings;
     }
 
-    public void setMappings(Set<Mapping> mappings) {
-        this.mappings = mappings;
-    }
-
     public void setIterableMapping(IterableMapping iterableMapping) {
         this.iterableMapping = iterableMapping;
     }
@@ -267,8 +263,8 @@ public class MappingOptions {
         }
     }
 
-    public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessager messager,
-                               TypeFactory typeFactory, AccessorNamingUtils accessorNaming) {
+    public void applyIgnoreAll(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+                               AccessorNamingUtils accessorNaming) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {

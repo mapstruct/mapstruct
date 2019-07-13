@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.Mapping;
@@ -20,7 +21,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.TargetReference;
-import org.mapstruct.ap.internal.util.Extractor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -31,23 +31,6 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * @author Filip Hrisafov
  */
 public class NestedTargetPropertyMappingHolder {
-
-    private static final Extractor<SourceReference, Parameter> SOURCE_PARAM_EXTRACTOR = new
-        Extractor<SourceReference, Parameter>() {
-            @Override
-            public Parameter apply(SourceReference sourceReference) {
-                return sourceReference.getParameter();
-            }
-        };
-
-    private static final Extractor<SourceReference, PropertyEntry> PROPERTY_EXTRACTOR = new
-        Extractor<SourceReference, PropertyEntry>() {
-            @Override
-            public PropertyEntry apply(SourceReference sourceReference) {
-                return sourceReference.getPropertyEntries().isEmpty() ? null :
-                    first( sourceReference.getPropertyEntries() );
-            }
-        };
 
     private final List<Parameter> processedSourceParameters;
     private final Set<String> handledTargets;
@@ -483,7 +466,7 @@ public class NestedTargetPropertyMappingHolder {
             populateWithSingleTargetReferences(
                 mappingsKeyedByParameter,
                 singleTargetReferences,
-                SOURCE_PARAM_EXTRACTOR
+                SourceReference::getParameter
             );
 
             for ( Map.Entry<Parameter, Set<Mapping>> entry : mappingsKeyedByParameter.entrySet() ) {
@@ -571,7 +554,8 @@ public class NestedTargetPropertyMappingHolder {
             populateWithSingleTargetReferences(
                 mappingsKeyedByProperty,
                 singleTargetReferencesToUse,
-                PROPERTY_EXTRACTOR
+                sourceReference -> sourceReference.getPropertyEntries().isEmpty() ? null :
+                    first( sourceReference.getPropertyEntries() )
             );
 
             for ( Map.Entry<PropertyEntry, Set<Mapping>> entry : mappingsKeyedByProperty.entrySet() ) {
@@ -668,7 +652,7 @@ public class NestedTargetPropertyMappingHolder {
          * @param keyExtractor to be used to extract a key
          */
         private <K> void populateWithSingleTargetReferences(Map<K, Set<Mapping>> map,
-            Set<Mapping> singleTargetReferences, Extractor<SourceReference, K> keyExtractor) {
+            Set<Mapping> singleTargetReferences, Function<SourceReference, K> keyExtractor) {
             if ( singleTargetReferences != null ) {
                 //This are non nested target references only their property needs to be added as they most probably
                 // define it

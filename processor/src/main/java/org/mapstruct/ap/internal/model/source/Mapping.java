@@ -66,20 +66,8 @@ public class Mapping {
     private SourceReference sourceReference;
     private TargetReference targetReference;
 
-    public static Set<Mapping> getMappingsBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
-        return mappings.stream().filter( predicate ).collect( Collectors.toSet() );
-    }
-
     public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
         return mappings.stream().filter( predicate ).map( Mapping::getTargetName ).collect( Collectors.toSet() );
-    }
-
-    public static boolean containsByTargetName(String name, Set<Mapping> mappings) {
-        return mappings.stream().anyMatch( mapping -> name.equals( mapping.getTargetName() ) );
-    }
-
-    public static Mapping getByTargetName(String name, Set<Mapping> mappings) {
-        return mappings.stream().filter( mapping -> name.equals( mapping )  ).findAny( ).orElse( null );
     }
 
     public static Set<Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,

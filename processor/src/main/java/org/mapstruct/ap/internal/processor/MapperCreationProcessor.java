@@ -506,7 +506,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // @BeanMapping( ignoreByDefault = true )
         if ( mappingOptions.getBeanMapping() != null && mappingOptions.getBeanMapping().isignoreByDefault() ) {
             mappingOptions.applyIgnoreAll(
-                mappingOptions,
                 method,
                 messager,
                 typeFactory,
