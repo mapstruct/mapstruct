@@ -282,7 +282,7 @@ public class SourceMethod implements Method {
         return accessibility;
     }
 
-    public boolean reverses(SourceMethod method) {
+    public boolean inverses(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
@@ -349,6 +349,15 @@ public class SourceMethod implements Method {
         return isMapMapping;
     }
 
+    /**
+     * Enum Mapping was realized with @Mapping in stead of @ValueMapping. @Mapping is no longer
+     * supported.
+     *
+     * @return true when @Mapping is used in stead of @ValueMapping
+     */
+    public boolean isRemovedEnumMapping() {
+        return MappingMethodUtils.isEnumMapping( this );
+    }
 
     /**
      * The default enum mapping (no mappings specified) will from now on be handled as a value mapping. If there
@@ -432,7 +441,7 @@ public class SourceMethod implements Method {
             applicableReversePrototypeMethods = new ArrayList<>();
 
             for ( SourceMethod prototype : prototypeMethods ) {
-                if ( reverses( prototype ) ) {
+                if ( inverses( prototype ) ) {
                     applicableReversePrototypeMethods.add( prototype );
                 }
             }

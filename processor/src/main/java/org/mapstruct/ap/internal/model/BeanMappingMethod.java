@@ -158,7 +158,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
 
-            /* initialize mappings for this method && filter invalid reverse methods */
+            /* initialize mappings for this method && filter invalid inverse methods */
             mappingsInitializer.accept( method.getMappingOptions().getMappings() );
             method.getMappingOptions().getMappings().removeIf( mapping -> !isValidWhenReversed( mapping ) );
 
@@ -506,7 +506,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * MapStruct filters automatically reversed invalid methods out. TODO: this is a principle we should discuss!
+         * MapStruct filters automatically inversed invalid methods out. TODO: this is a principle we should discuss!
          * @param mapping
          * @return
          */

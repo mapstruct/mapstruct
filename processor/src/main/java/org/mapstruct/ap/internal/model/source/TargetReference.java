@@ -120,7 +120,7 @@ public class TargetReference {
 
             // there can be 4 situations
             // 1. Return type
-            // 2. A reverse target reference where the source parameter name is used in the original mapping
+            // 2. An inverse target reference where the source parameter name is used in the original mapping
             // 3. @MappingTarget, with
             // 4. or without parameter name.
             String[] targetPropertyNames = segments;
@@ -298,15 +298,15 @@ public class TargetReference {
 
         /**
          * Validates that the {@code segment} is the same as the {@code targetParameter} or the {@code
-         * reverseSourceParameter} names
+         * inverseSourceParameter} names
          *
          * @param segment that needs to be checked
          * @param targetParameter the target parameter if it exists
 
-         * @param isInverse whether a reverse {@link TargetReference} is being built
+         * @param isInverse whether a inverse {@link TargetReference} is being built
          *
          * @return {@code true} if the segment matches the name of the {@code targetParameter} or the name of the
-         * {@code reverseSourceParameter} when this is a reverse {@link TargetReference} is being built, {@code
+         * {@code inverseSourceParameter} when this is a inverse {@link TargetReference} is being built, {@code
          * false} otherwise
          */
         private boolean matchesSourceOrTargetParameter(String segment, Parameter targetParameter, boolean isInverse) {
@@ -315,21 +315,21 @@ public class TargetReference {
         }
 
         /**
-         * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
+         * Needed when we are building from inverse mapping. It is needed, so we can remove the first level if it is
          * needed.
          * E.g. If we have a mapping like:
          * <code>
          * {@literal @}Mapping( target = "letterSignature", source = "dto.signature" )
          * </code>
-         * When it is reversed it will look like:
+         * When it is inversed it will look like:
          * <code>
          * {@literal @}Mapping( target = "dto.signature", source = "letterSignature" )
          * </code>
          * The {@code dto} needs to be considered as a possibility for a target name only if a Target Reference for
-         * a reverse is created.
+         * a inverse is created.
          *
          * @param segment that needs to be checked*
-         * @param isInverse whether a reverse {@link TargetReference} is being built
+         * @param isInverse whether a inverse {@link TargetReference} is being built
          *
          * @return on match when inverse and segment matches the one and only source parameter
          */

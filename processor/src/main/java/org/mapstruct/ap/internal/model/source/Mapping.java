@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -86,7 +85,10 @@ public class Mapping {
     }
 
     public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
-        return mappings.stream().filter( predicate ).map( Mapping::getTargetName ).collect( Collectors.toSet() );
+        return mappings.stream()
+                       .filter( predicate )
+                       .map( Mapping::getTargetName )
+                       .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
     public static Mapping getMappingByTargetName(String targetName, Set<Mapping> mappings) {
@@ -100,8 +102,11 @@ public class Mapping {
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
-                if ( !mappings.add( mapping ) ) {
+                if ( mappings.contains( mapping ) ) {
                     messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
+                }
+                else {
+                    mappings.add( mapping );
                 }
             }
         }
@@ -189,7 +194,7 @@ public class Mapping {
             null,
             null,
             null,
-            new HashSet<>(),
+            Collections.emptySet(),
             null,
             null,
             null
@@ -546,7 +551,7 @@ public class Mapping {
     }
 
     /**
-     *  mapping can only be reversed if the source was not a constant nor an expression nor a nested property
+     *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property
      *  and the mapping is not a 'target-source-ignore' mapping
      *
      * @return true when the above applies

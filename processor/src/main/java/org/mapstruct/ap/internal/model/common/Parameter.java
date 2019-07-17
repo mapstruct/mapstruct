@@ -134,7 +134,7 @@ public class Parameter extends ModelElement {
         );
     }
 
-    /**ø
+    /**
      * @param parameters the parameters to filter
      * @return the parameters from the given list that are considered 'source parameters'
      */

@@ -96,7 +96,7 @@ public enum Message {
     ENUMMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
-    ENUMMAPPING_DEPRECATED( "Mapping of Enums via @Mapping is going to be removed in future versions of MapStruct. Please use @ValueMapping instead!", Diagnostic.Kind.WARNING ),
+    ENUMMAPPING_REMOVED( "Mapping of Enums via @Mapping is going to be removed in future versions of MapStruct. Please use @ValueMapping instead!" ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 

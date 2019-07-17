@@ -211,9 +211,9 @@ public class MappingOptions {
             }
             else {
                 if ( inherited.getValueMappings() != null ) {
-                    // iff there are also inherited mappings, we reverse and add them.
+                    // iff there are also inherited mappings, we inverse and add them.
                     for ( ValueMapping inheritedValueMapping : inherited.getValueMappings() ) {
-                        ValueMapping valueMapping = isInverse ? inheritedValueMapping.reverse() : inheritedValueMapping;
+                        ValueMapping valueMapping = isInverse ? inheritedValueMapping.inverse() : inheritedValueMapping;
                         if ( valueMapping != null
                             && !getValueMappings().contains(  valueMapping ) ) {
                             getValueMappings().add( valueMapping );
