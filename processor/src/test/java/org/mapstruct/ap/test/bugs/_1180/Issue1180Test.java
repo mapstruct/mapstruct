@@ -30,9 +30,9 @@ public class Issue1180Test {
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SharedConfig.class,
+            @Diagnostic(type = ErroneousIssue1180Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 20,
+                line = 18,
                 messageRegExp = "No property named \"sourceProperty\\.nonExistant\" exists.*")
         })
     public void shouldCompileButNotGiveNullPointer() {

@@ -27,7 +27,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
-import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
+import static org.mapstruct.ap.internal.conversion.ReverseConversion.inverse;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
@@ -244,7 +244,7 @@ public class Conversions {
             register( sourceType, targetType, new PrimitiveToWrapperConversion( sourceType, targetType ) );
         }
         else if ( !sourceType.isPrimitive() && targetType.isPrimitive() ) {
-            register( sourceType, targetType, reverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
+            register( sourceType, targetType, inverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
         }
         else {
             register( sourceType, targetType, new WrapperToWrapperConversion( sourceType, targetType ) );
@@ -283,7 +283,7 @@ public class Conversions {
         Type targetType = typeFactory.getType( targetClass );
 
         conversions.put( new Key( sourceType, targetType ), conversion );
-        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
     }
 
     private void register(String sourceTypeName, Class<?> targetClass, ConversionProvider conversion) {
@@ -291,7 +291,7 @@ public class Conversions {
         Type targetType = typeFactory.getType( targetClass );
 
         conversions.put( new Key( sourceType, targetType ), conversion );
-        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {

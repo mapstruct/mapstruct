@@ -37,20 +37,7 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
-        }
-        else {
-            user.setSettings( null );
-        }
-        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
-        if ( preferences != null ) {
-            for ( String contactDataDTOPreference : preferences ) {
-                user.addPreference( contactDataDTOPreference );
-            }
-        }
-        user.setAddress( userDTOContactDataDTOAddress( userDTO ) );
+        user.setEmail( userDTOContactDataDTOEmail( userDTO ) );
         String phone = userDTOContactDataDTOPhone( userDTO );
         if ( phone != null ) {
             user.setPhone( Integer.parseInt( phone ) );
@@ -58,7 +45,20 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setPhone( null );
         }
-        user.setEmail( userDTOContactDataDTOEmail( userDTO ) );
+        user.setAddress( userDTOContactDataDTOAddress( userDTO ) );
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
+            for ( String contactDataDTOPreference : preferences ) {
+                user.addPreference( contactDataDTOPreference );
+            }
+        }
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        }
+        else {
+            user.setSettings( null );
+        }
         user.setName( userDTO.getName() );
     }
 
@@ -68,9 +68,17 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        String email = userDTOContactDataDTOEmail( userDTO );
+        if ( email != null ) {
+            user.setEmail( email );
+        }
+        String phone = userDTOContactDataDTOPhone( userDTO );
+        if ( phone != null ) {
+            user.setPhone( Integer.parseInt( phone ) );
+        }
+        String address = userDTOContactDataDTOAddress( userDTO );
+        if ( address != null ) {
+            user.setAddress( address );
         }
         List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
         if ( preferences != null ) {
@@ -78,17 +86,9 @@ public class UserMapperImpl implements UserMapper {
                 user.addPreference( contactDataDTOPreference );
             }
         }
-        String address = userDTOContactDataDTOAddress( userDTO );
-        if ( address != null ) {
-            user.setAddress( address );
-        }
-        String phone = userDTOContactDataDTOPhone( userDTO );
-        if ( phone != null ) {
-            user.setPhone( Integer.parseInt( phone ) );
-        }
-        String email = userDTOContactDataDTOEmail( userDTO );
-        if ( email != null ) {
-            user.setEmail( email );
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
         }
         if ( userDTO.getName() != null ) {
             user.setName( userDTO.getName() );
@@ -101,25 +101,12 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        String email = userDTOContactDataDTOEmail( userDTO );
+        if ( email != null ) {
+            user.setEmail( email );
         }
         else {
-            user.setSettings( new String[0] );
-        }
-        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
-        if ( preferences != null ) {
-            for ( String contactDataDTOPreference : preferences ) {
-                user.addPreference( contactDataDTOPreference );
-            }
-        }
-        String address = userDTOContactDataDTOAddress( userDTO );
-        if ( address != null ) {
-            user.setAddress( address );
-        }
-        else {
-            user.setAddress( "" );
+            user.setEmail( "" );
         }
         String phone = userDTOContactDataDTOPhone( userDTO );
         if ( phone != null ) {
@@ -128,12 +115,25 @@ public class UserMapperImpl implements UserMapper {
         else {
             user.setPhone( 0 );
         }
-        String email = userDTOContactDataDTOEmail( userDTO );
-        if ( email != null ) {
-            user.setEmail( email );
+        String address = userDTOContactDataDTOAddress( userDTO );
+        if ( address != null ) {
+            user.setAddress( address );
         }
         else {
-            user.setEmail( "" );
+            user.setAddress( "" );
+        }
+        List<String> preferences = userDTOContactDataDTOPreferences( userDTO );
+        if ( preferences != null ) {
+            for ( String contactDataDTOPreference : preferences ) {
+                user.addPreference( contactDataDTOPreference );
+            }
+        }
+        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
+        if ( settings1 != null ) {
+            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        }
+        else {
+            user.setSettings( new String[0] );
         }
         if ( userDTO.getName() != null ) {
             user.setName( userDTO.getName() );
@@ -150,24 +150,24 @@ public class UserMapperImpl implements UserMapper {
 
         ContactDataDTO contactDataDTO = new ContactDataDTO();
 
+        contactDataDTO.setEmail( user.getEmail() );
         if ( user.getPhone() != null ) {
             contactDataDTO.setPhone( String.valueOf( user.getPhone() ) );
+        }
+        contactDataDTO.setAddress( user.getAddress() );
+        List<String> list = user.getPreferences();
+        if ( list != null ) {
+            contactDataDTO.setPreferences( new ArrayList<String>( list ) );
         }
         String[] settings = user.getSettings();
         if ( settings != null ) {
             contactDataDTO.setSettings( Arrays.copyOf( settings, settings.length ) );
         }
-        List<String> list = user.getPreferences();
-        if ( list != null ) {
-            contactDataDTO.setPreferences( new ArrayList<String>( list ) );
-        }
-        contactDataDTO.setAddress( user.getAddress() );
-        contactDataDTO.setEmail( user.getEmail() );
 
         return contactDataDTO;
     }
 
-    private String[] userDTOContactDataDTOSettings(UserDTO userDTO) {
+    private String userDTOContactDataDTOEmail(UserDTO userDTO) {
         if ( userDTO == null ) {
             return null;
         }
@@ -175,41 +175,11 @@ public class UserMapperImpl implements UserMapper {
         if ( contactDataDTO == null ) {
             return null;
         }
-        String[] settings = contactDataDTO.getSettings();
-        if ( settings == null ) {
+        String email = contactDataDTO.getEmail();
+        if ( email == null ) {
             return null;
         }
-        return settings;
-    }
-
-    private List<String> userDTOContactDataDTOPreferences(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
-        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
-        if ( contactDataDTO == null ) {
-            return null;
-        }
-        List<String> preferences = contactDataDTO.getPreferences();
-        if ( preferences == null ) {
-            return null;
-        }
-        return preferences;
-    }
-
-    private String userDTOContactDataDTOAddress(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
-        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
-        if ( contactDataDTO == null ) {
-            return null;
-        }
-        String address = contactDataDTO.getAddress();
-        if ( address == null ) {
-            return null;
-        }
-        return address;
+        return email;
     }
 
     private String userDTOContactDataDTOPhone(UserDTO userDTO) {
@@ -227,7 +197,7 @@ public class UserMapperImpl implements UserMapper {
         return phone;
     }
 
-    private String userDTOContactDataDTOEmail(UserDTO userDTO) {
+    private String userDTOContactDataDTOAddress(UserDTO userDTO) {
         if ( userDTO == null ) {
             return null;
         }
@@ -235,10 +205,40 @@ public class UserMapperImpl implements UserMapper {
         if ( contactDataDTO == null ) {
             return null;
         }
-        String email = contactDataDTO.getEmail();
-        if ( email == null ) {
+        String address = contactDataDTO.getAddress();
+        if ( address == null ) {
             return null;
         }
-        return email;
+        return address;
+    }
+
+    private List<String> userDTOContactDataDTOPreferences(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
+        if ( contactDataDTO == null ) {
+            return null;
+        }
+        List<String> preferences = contactDataDTO.getPreferences();
+        if ( preferences == null ) {
+            return null;
+        }
+        return preferences;
+    }
+
+    private String[] userDTOContactDataDTOSettings(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+        ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
+        if ( contactDataDTO == null ) {
+            return null;
+        }
+        String[] settings = contactDataDTO.getSettings();
+        if ( settings == null ) {
+            return null;
+        }
+        return settings;
     }
 }

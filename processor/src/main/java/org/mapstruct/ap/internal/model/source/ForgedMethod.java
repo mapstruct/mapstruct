@@ -104,7 +104,6 @@ public class ForgedMethod implements Method {
         this.positionHintElement = positionHintElement;
         this.history = history;
         this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
-        this.mappingOptions.initWithParameter( sourceParameter );
         this.forgedNameBased = forgedNameBased;
     }
 

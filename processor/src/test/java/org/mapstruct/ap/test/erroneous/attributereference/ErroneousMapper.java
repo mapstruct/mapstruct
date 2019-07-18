@@ -13,11 +13,15 @@ import org.mapstruct.Mappings;
 public interface ErroneousMapper {
 
     @Mappings({
-        @Mapping(source = "bar", target = "foo"),
-        @Mapping(source = "source1.foo", target = "foo"),
-        @Mapping(source = "foo", target = "bar")
+        @Mapping(target = "foo", source = "bar"),
+        @Mapping(target = "foo", source = "source1.foo" ),
+        @Mapping(target = "bar", source = "foo")
     })
     Target sourceToTarget(Source source);
+
+    // to test that nested is also reported correctly
+    @Mapping(target = "foo", source = "source1.foo" )
+    Target sourceToTarget2(Source source);
 
     AnotherTarget sourceToAnotherTarget(Source source);
 }

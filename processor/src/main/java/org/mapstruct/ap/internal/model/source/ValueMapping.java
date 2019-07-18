@@ -109,7 +109,7 @@ public class ValueMapping {
         return targetAnnotationValue;
     }
 
-    public ValueMapping reverse() {
+    public ValueMapping inverse() {
         ValueMapping result;
         if ( !MappingConstantsPrism.ANY_REMAINING.equals( source )
             || !MappingConstantsPrism.ANY_UNMAPPED.equals( source ) ) {

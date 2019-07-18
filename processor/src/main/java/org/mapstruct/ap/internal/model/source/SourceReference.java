@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -59,7 +60,7 @@ public class SourceReference {
     public static class BuilderFromMapping {
 
         private Mapping mapping;
-        private SourceMethod method;
+        private Method method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
 
@@ -73,7 +74,7 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromMapping method(SourceMethod method) {
+        public BuilderFromMapping method(Method method) {
             this.method = method;
             return this;
         }
@@ -141,7 +142,7 @@ public class SourceReference {
 
             if ( !foundEntryMatch ) {
                 //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
-                if ( parameter.getName().equals( segments[0] ) ) {
+                if ( getSourceParameterFromMethodOrTemplate( segments[0] ) != null ) {
                     propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                     entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
                     foundEntryMatch = ( entries.size() == propertyNames.length );
@@ -205,7 +206,7 @@ public class SourceReference {
             Parameter parameter = null;
             if ( segments.length > 0 ) {
                 String parameterName = segments[0];
-                parameter = method.getSourceParameter( parameterName );
+                parameter = getSourceParameterFromMethodOrTemplate( parameterName );
                 if ( parameter == null ) {
                     reportMappingError(
                         Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
@@ -224,6 +225,26 @@ public class SourceReference {
                 }
             }
             return parameter;
+        }
+
+        private Parameter getSourceParameterFromMethodOrTemplate(String parameterName ) {
+
+            Parameter result = null;
+            if ( mapping.getInheritContext() != null && mapping.getInheritContext().isForwarded() ) {
+                Method templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+                Parameter parameter = Parameter.getSourceParameter( templateMethod.getParameters(), parameterName );
+                if ( parameter != null ) {
+                    result = method.getSourceParameters()
+                                   .stream()
+                                   .filter( p -> p.getType().isAssignableTo( parameter.getType() ) )
+                                   .collect( Collectors.reducing( (a, b) -> null ) )
+                                   .orElse( null );
+                }
+            }
+            else {
+                result = Parameter.getSourceParameter( method.getParameters(), parameterName );
+            }
+            return result;
         }
 
         private void reportErrorOnNoMatch( Parameter parameter, String[] propertyNames, List<PropertyEntry> entries) {

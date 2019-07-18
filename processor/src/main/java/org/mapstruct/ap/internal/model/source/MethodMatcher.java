@@ -348,7 +348,7 @@ public class MethodMatcher {
                 switch ( superBound.getKind() ) {
                     case DECLARED:
                         // for example method: String method(? super String)
-                        // to check super type, we can simply reverse the argument, but that would initially yield
+                        // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         return typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound );
 
@@ -365,7 +365,7 @@ public class MethodMatcher {
                         // Chapter 4.4, states that a bound is either: 'A type variable-', 'A class-' or 'An
                         // interface-' type followed by further interface types. So we must compare with the first
                         // argument in the Expression String & Serializable & ..., so, in this case String.
-                        // to check super type, we can simply reverse the argument, but that would initially yield
+                        // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
                         return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
