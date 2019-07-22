@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
@@ -30,9 +29,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.source.MappingReferences;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
@@ -50,6 +48,9 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.source.ForgedMethod.forParameterMapping;
+import static org.mapstruct.ap.internal.model.source.ForgedMethod.forElementMapping;
+import static org.mapstruct.ap.internal.model.source.ForgedMethod.forPropertyMapping;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -158,7 +159,7 @@ public class PropertyMapping extends ModelElement {
         private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
-        private MappingOptions forgeMethodWithMappingOptions;
+        private MappingReferences forgeMethodWithMappingReferences;
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
         private NullValueCheckStrategyPrism nvcs;
@@ -194,8 +195,8 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder forgeMethodWithMappingOptions(MappingOptions mappingOptions) {
-            this.forgeMethodWithMappingOptions = mappingOptions;
+        public PropertyMappingBuilder forgeMethodWithMappingReferences(MappingReferences mappingReferences) {
+            this.forgeMethodWithMappingReferences = mappingReferences;
             return this;
         }
 
@@ -273,7 +274,7 @@ public class PropertyMapping extends ModelElement {
 
             // forge a method instead of resolving one when there are mapping options.
             Assignment assignment = null;
-            if ( forgeMethodWithMappingOptions == null ) {
+            if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
                     targetType,
@@ -321,15 +322,15 @@ public class PropertyMapping extends ModelElement {
             Assignment assignment;
             Type sourceType = rightHandSide.getSourceType();
             if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
-                assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+                assignment = forgeIterableMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
-                assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+                assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
-                assignment = forgeStreamMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+                assignment = forgeStreamMapping( sourceType, targetType, rightHandSide );
             }
             else {
                 assignment = forgeMapping( rightHandSide );
@@ -552,20 +553,11 @@ public class PropertyMapping extends ModelElement {
                     sourceType = ctx.getTypeFactory().getWrappedType( sourceType );
                 }
 
-                // copy mapper configuration from the source method, its the same mapper
-                MapperConfiguration config = method.getMapperConfiguration();
-
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
                 forgedName = Strings.getSafeVariableName( forgedName, ctx.getReservedNames() );
-                ForgedMethod methodRef = new ForgedMethod(
-                    forgedName,
-                    sourceReference.getParameter().getType(),
-                    sourceType,
-                    config,
-                    method.getExecutable(),
-                    Collections.<Parameter> emptyList(),
-                    ParameterProvidedMethods.empty() );
+                Type sourceParameterType = sourceReference.getParameter().getType();
+                ForgedMethod methodRef = forParameterMapping( forgedName, sourceParameterType, sourceType, method );
 
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
@@ -628,25 +620,23 @@ public class PropertyMapping extends ModelElement {
             return sourcePresenceChecker;
         }
 
-        private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source,
-                                              ExecutableElement element) {
+        private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source) {
 
             StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
-            return forgeWithElementMapping( sourceType, targetType, source, element, builder );
+            return forgeWithElementMapping( sourceType, targetType, source, builder );
         }
 
-        private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source,
-                                                ExecutableElement element) {
+        private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source) {
 
             IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-            return forgeWithElementMapping( sourceType, targetType, source, element, builder );
+            return forgeWithElementMapping( sourceType, targetType, source, builder );
         }
 
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element, ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
+            ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
 
             targetType = targetType.withoutBounds();
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "[]" );
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
             ContainerMappingMethod iterableMappingMethod = builder
                 .mappingContext( ctx )
@@ -658,32 +648,19 @@ public class PropertyMapping extends ModelElement {
             return createForgedAssignment( source, methodRef, iterableMappingMethod );
         }
 
-        private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
-                                                 ExecutableElement element, String suffix) {
+        private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
             String name = getName( sourceType, targetType );
             name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             // copy mapper configuration from the source method, its the same mapper
-            MapperConfiguration config = method.getMapperConfiguration();
-            return new ForgedMethod(
-                name,
-                sourceType,
-                targetType,
-                config,
-                element,
-                method.getContextParameters(),
-                method.getContextProvidedMethods(),
-                getForgedMethodHistory( source, suffix ),
-                null,
-                forgedNamedBased
-            );
+            ForgedMethodHistory forgedMethodHistory = getForgedMethodHistory( source, suffix );
+            return forElementMapping( name, sourceType, targetType, method, forgedMethodHistory, forgedNamedBased );
         }
 
-        private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
-                                           ExecutableElement element) {
+        private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source) {
 
             targetType = targetType.withoutBounds();
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "{}" );
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
             MapMappingMethod mapMappingMethod = builder
@@ -729,16 +706,13 @@ public class PropertyMapping extends ModelElement {
             else {
                 returnType = targetType;
             }
-            ForgedMethod forgedMethod = new ForgedMethod(
-                name,
+            ForgedMethod forgedMethod = forPropertyMapping( name,
                 sourceType,
                 returnType,
-                method.getMapperConfiguration(),
-                method.getExecutable(),
                 parameters,
-                method.getContextProvidedMethods(),
+                method,
                 getForgedMethodHistory( sourceRHS ),
-                forgeMethodWithMappingOptions,
+                forgeMethodWithMappingReferences,
                 forgedNamedBased
             );
             return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );

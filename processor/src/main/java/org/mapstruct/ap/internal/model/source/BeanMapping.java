@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
@@ -111,25 +110,6 @@ public class BeanMapping {
             ignoreByDefault,
             beanMapping.ignoreUnmappedSourceProperties(),
             builderMapping
-        );
-    }
-
-    /**
-     * This method should be used to generate BeanMappings for our internal generated Mappings. Like forged update
-     * methods.
-     *
-     * @return bean mapping that needs to be used for Mappings
-     */
-    public static BeanMapping forForgedMethods() {
-        return new BeanMapping(
-            null,
-            null,
-            null,
-            null,
-            ReportingPolicyPrism.IGNORE,
-            false,
-            Collections.emptyList(),
-            null
         );
     }
 

@@ -25,10 +25,9 @@ import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
- * Represents a property mapping as configured via {@code @Mapping}.
+ * Represents a property mapping as configured via {@code @Mapping} (no intermediate state).
  *
  * @author Gunnar Morling
  */
@@ -56,8 +55,6 @@ public class Mapping {
     private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
 
     private final InheritContext inheritContext;
-    private SourceReference sourceReference;
-    private TargetReference targetReference;
 
     public static class InheritContext {
 
@@ -297,50 +294,6 @@ public class Mapping {
         this.inheritContext = inheritContext;
     }
 
-    private Mapping( Mapping mapping, TargetReference targetReference ) {
-        this.sourceName = mapping.sourceName;
-        this.constant = mapping.constant;
-        this.javaExpression = mapping.javaExpression;
-        this.defaultJavaExpression = mapping.defaultJavaExpression;
-        this.targetName = Strings.join( targetReference.getElementNames(), "." );
-        this.defaultValue = mapping.defaultValue;
-        this.isIgnored = mapping.isIgnored;
-        this.mirror = mapping.mirror;
-        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
-        this.targetAnnotationValue = mapping.targetAnnotationValue;
-        this.formattingParameters = mapping.formattingParameters;
-        this.selectionParameters = mapping.selectionParameters;
-        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
-        this.dependsOn = mapping.dependsOn;
-        this.sourceReference = mapping.sourceReference;
-        this.targetReference = targetReference;
-        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
-        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
-        this.inheritContext = mapping.inheritContext;
-    }
-
-    private Mapping( Mapping mapping, SourceReference sourceReference ) {
-        this.sourceName = Strings.join( sourceReference.getElementNames(), "." );
-        this.constant = mapping.constant;
-        this.javaExpression = mapping.javaExpression;
-        this.defaultJavaExpression = mapping.defaultJavaExpression;
-        this.targetName = mapping.targetName;
-        this.defaultValue = mapping.defaultValue;
-        this.isIgnored = mapping.isIgnored;
-        this.mirror = mapping.mirror;
-        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
-        this.targetAnnotationValue = mapping.targetAnnotationValue;
-        this.formattingParameters = mapping.formattingParameters;
-        this.selectionParameters = mapping.selectionParameters;
-        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
-        this.dependsOn = mapping.dependsOn;
-        this.sourceReference = sourceReference;
-        this.targetReference = mapping.targetReference;
-        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
-        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
-        this.inheritContext = mapping.inheritContext;
-    }
-
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
                                         FormattingMessager messager) {
         if ( mappingPrism.expression().isEmpty() ) {
@@ -457,41 +410,6 @@ public class Mapping {
 
     ////  mutable properties
 
-    public SourceReference getSourceReference() {
-        return sourceReference;
-    }
-
-    public void setSourceReference(SourceReference sourceReference) {
-        this.sourceReference = sourceReference;
-    }
-
-    public TargetReference getTargetReference() {
-        return targetReference;
-    }
-
-    public void setTargetReference(TargetReference targetReference) {
-        this.targetReference = targetReference;
-    }
-
-    public Mapping popTargetReference() {
-        if ( targetReference != null ) {
-            TargetReference newTargetReference = targetReference.pop();
-            if (newTargetReference != null ) {
-                return new Mapping(this, newTargetReference );
-            }
-        }
-        return null;
-    }
-
-    public Mapping popSourceReference() {
-        if ( sourceReference != null ) {
-            SourceReference newSourceReference = sourceReference.pop();
-            if (newSourceReference != null ) {
-                return new Mapping(this, newSourceReference );
-            }
-        }
-        return null;
-    }
 
     /**
      *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property

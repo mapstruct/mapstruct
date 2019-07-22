@@ -177,7 +177,7 @@ public class SourceMethod implements Method {
             }
 
             MappingOptions mappingOptions =
-                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
+                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
             return new SourceMethod( this, mappingOptions );
         }
@@ -389,37 +389,6 @@ public class SourceMethod implements Method {
         sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
 
         return sb.toString();
-    }
-
-    // TODO remove?
-    /**
-     * Returns the {@link Mapping}s for the given source property.
-     *
-     * @param sourcePropertyName the source property name
-     * @return list of mappings
-     */
-    public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
-        List<Mapping> mappingsOfSourceProperty = new ArrayList<>();
-
-        for ( Mapping mapping : mappingOptions.getMappings() ) {
-
-            if ( isEnumMapping( this ) ) {
-                if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
-                    mappingsOfSourceProperty.add( mapping );
-                }
-            }
-            else {
-                List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
-
-                // there can only be a mapping if there's only one entry for a source property, so: param.property.
-                // There can be no mapping if there are more entries. So: param.property.property2
-                if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
-                    mappingsOfSourceProperty.add( mapping );
-                }
-            }
-        }
-
-        return mappingsOfSourceProperty;
     }
 
     public List<SourceMethod> getApplicablePrototypeMethods() {
