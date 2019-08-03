@@ -186,6 +186,9 @@ public @interface Mapping {
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
      * mapping methods (hand written or generated) qualify and thus would result in an 'Ambiguous mapping methods found'
      * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
+     * <p>
+     * Qualifiers only apply to the {@link #source()}, and cannot be used to qualify {@link #constant()}
+     * and {@link #expression()} values.
      *
      * @return the qualifiers
      */
