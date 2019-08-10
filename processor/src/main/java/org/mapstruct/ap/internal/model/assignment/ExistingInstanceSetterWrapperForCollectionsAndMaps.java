@@ -60,7 +60,7 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isMapNullToDefault() && ( targetType.getImplementationType() != null ) ) {
             imported.add( targetType.getImplementationType() );
         }
