@@ -387,7 +387,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private boolean canBeConstructed(Type typeToBeConstructed) {
             return !typeToBeConstructed.isAbstract()
                     && typeToBeConstructed.isAssignableTo( this.method.getResultType() )
-                    && typeToBeConstructed.hasEmptyAccessibleContructor();
+                    && typeToBeConstructed.hasEmptyAccessibleConstructor();
         }
 
         private void reportResultTypeFromBeanMappingNotConstructableError(Type resultType) {
@@ -410,7 +410,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                 method.getResultType()
                 );
             }
-            else if ( !resultType.hasEmptyAccessibleContructor() ) {
+            else if ( !resultType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                                 method.getExecutable(),
                                 BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
@@ -428,7 +428,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                 returnType
                 );
             }
-            else if ( !returnType.hasEmptyAccessibleContructor() ) {
+            else if ( !returnType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                                 method.getExecutable(),
                                 Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,

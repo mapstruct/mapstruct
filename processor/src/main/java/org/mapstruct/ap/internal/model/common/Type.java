@@ -99,7 +99,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private Type boundingBase = null;
 
-    private Boolean hasEmptyAccessibleContructor;
+    private Boolean hasEmptyAccessibleConstructor;
 
     private final Filters filters;
 
@@ -1018,20 +1018,20 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
-    public boolean hasEmptyAccessibleContructor() {
+    public boolean hasEmptyAccessibleConstructor() {
 
-        if ( this.hasEmptyAccessibleContructor == null ) {
-            hasEmptyAccessibleContructor = false;
+        if ( this.hasEmptyAccessibleConstructor == null ) {
+            hasEmptyAccessibleConstructor = false;
             List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
             for ( ExecutableElement constructor : constructors ) {
                 if ( !constructor.getModifiers().contains( Modifier.PRIVATE )
                     && constructor.getParameters().isEmpty() ) {
-                    hasEmptyAccessibleContructor = true;
+                    hasEmptyAccessibleConstructor = true;
                     break;
                 }
             }
         }
-        return hasEmptyAccessibleContructor;
+        return hasEmptyAccessibleConstructor;
     }
 
     /**

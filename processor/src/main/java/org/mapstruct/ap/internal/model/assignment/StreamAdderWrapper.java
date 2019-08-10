@@ -70,8 +70,7 @@ public class StreamAdderWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<>();
-        imported.addAll( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         imported.add( adderType.getTypeBound() );
         return imported;
     }

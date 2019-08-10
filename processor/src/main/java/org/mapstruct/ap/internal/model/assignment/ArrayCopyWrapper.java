@@ -40,8 +40,7 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<>();
-        imported.addAll( getAssignment().getImportTypes() );
+        Set<Type> imported = new HashSet<>( getAssignment().getImportTypes() );
         imported.add( arraysType );
         imported.add( targetType );
         return imported;
