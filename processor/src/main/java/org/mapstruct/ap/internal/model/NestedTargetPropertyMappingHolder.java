@@ -627,7 +627,7 @@ public class NestedTargetPropertyMappingHolder {
 
         private PropertyMapping createPropertyMappingForNestedTarget(MappingOptions mappingOptions,
             PropertyEntry targetProperty, SourceReference sourceReference, boolean forceUpdateMethod) {
-            PropertyMapping propertyMapping = new PropertyMapping.PropertyMappingBuilder()
+            return new PropertyMapping.PropertyMappingBuilder()
                 .mappingContext( mappingContext )
                 .sourceMethod( method )
                 .targetProperty( targetProperty )
@@ -639,7 +639,6 @@ public class NestedTargetPropertyMappingHolder {
                 .forceUpdateMethod( forceUpdateMethod )
                 .forgedNamedBased( false )
                 .build();
-            return propertyMapping;
         }
 
         /**

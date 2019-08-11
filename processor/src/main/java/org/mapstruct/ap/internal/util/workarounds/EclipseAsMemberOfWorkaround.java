@@ -84,7 +84,7 @@ final class EclipseAsMemberOfWorkaround {
     }
 
     private static <T> T tryCast(Object instance, Class<T> type) {
-        if ( instance != null && type.isInstance( instance ) ) {
+        if ( type.isInstance( instance ) ) {
             return type.cast( instance );
         }
 

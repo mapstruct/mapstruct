@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -117,12 +118,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
 
         ContainerMappingMethod other = (ContainerMappingMethod) obj;
 
-        if ( this.selectionParameters != null ) {
-            if ( !this.selectionParameters.equals( other.selectionParameters ) ) {
-                return false;
-            }
-        }
-        else if ( other.selectionParameters != null ) {
+        if ( !Objects.equals( selectionParameters, other.selectionParameters ) ) {
             return false;
         }
 
