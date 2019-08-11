@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
@@ -54,7 +55,6 @@ public class SupportingMappingMethod extends MappingMethod {
     }
 
     private Field getSafeField(BuiltInFieldReference ref, Set<Field> existingFields) {
-        Field result = null;
         String name = ref.getVariableName();
         for ( Field existingField : existingFields ) {
             if ( existingField.getType().equals( ref.getType() ) ) {
@@ -68,11 +68,7 @@ public class SupportingMappingMethod extends MappingMethod {
                 name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
             }
         }
-        if ( result == null ) {
-            result = new SupportingField( this, ref, name );
-        }
-
-        return result;
+        return new SupportingField( this, ref, name );
     }
 
     public SupportingMappingMethod(HelperMethod method) {
@@ -144,14 +140,11 @@ public class SupportingMappingMethod extends MappingMethod {
             return false;
         }
         SupportingMappingMethod other = (SupportingMappingMethod) obj;
-        if ( templateName == null ) {
-            if ( other.templateName != null ) {
-                return false;
-            }
-        }
-        else if ( !templateName.equals( other.templateName ) ) {
+
+        if ( !Objects.equals( templateName, other.templateName ) ) {
             return false;
         }
+
         return true;
     }
 }

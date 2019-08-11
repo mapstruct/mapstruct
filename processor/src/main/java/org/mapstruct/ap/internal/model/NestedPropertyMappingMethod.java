@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -185,19 +186,18 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
             SafePropertyEntry that = (SafePropertyEntry) o;
 
-            if ( readAccessorName != null ? !readAccessorName.equals( that.readAccessorName ) :
-                that.readAccessorName != null ) {
+            if ( !Objects.equals( readAccessorName, that.readAccessorName ) ) {
                 return false;
             }
 
-            if ( presenceCheckerName != null ? !presenceCheckerName.equals( that.presenceCheckerName ) :
-                that.presenceCheckerName != null ) {
+            if ( !Objects.equals( presenceCheckerName, that.presenceCheckerName ) ) {
                 return false;
             }
 
-            if ( type != null ? !type.equals( that.type ) : that.type != null ) {
+            if ( !Objects.equals( type, that.type ) ) {
                 return false;
             }
+
             return true;
         }
 

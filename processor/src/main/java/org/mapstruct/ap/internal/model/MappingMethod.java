@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -227,15 +228,15 @@ public abstract class MappingMethod extends ModelElement {
         //Reason: Whenever we forge methods we can reuse mappings if they are the same. However, if we take the name
         // into consideration, they'll never be the same, because we create safe methods names.
         final MappingMethod other = (MappingMethod) obj;
-        if ( this.parameters != other.parameters &&
-            (this.parameters == null || !this.parameters.equals( other.parameters )) ) {
+
+        if ( !Objects.equals( parameters, other.parameters ) ) {
             return false;
         }
-        if ( this.returnType != other.returnType &&
-            (this.returnType == null || !this.returnType.equals( other.returnType )) ) {
+
+        if ( !Objects.equals( returnType, other.returnType ) ) {
             return false;
         }
+
         return true;
     }
-
 }

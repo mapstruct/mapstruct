@@ -89,7 +89,7 @@ public class MappingResolverImpl implements MappingResolver {
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
 
-        this.conversions = new Conversions( elementUtils, typeFactory );
+        this.conversions = new Conversions( typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory, messager );
     }
@@ -307,7 +307,7 @@ public class MappingResolverImpl implements MappingResolver {
             SelectedMethod<Method> matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
 
             if ( matchingSourceMethod != null ) {
-                return getMappingMethodReference( matchingSourceMethod, targetType );
+                return getMappingMethodReference( matchingSourceMethod );
             }
 
             if ( considerBuiltInMethods ) {
@@ -555,8 +555,7 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        private Assignment getMappingMethodReference(SelectedMethod<Method> method,
-                                                     Type targetType) {
+        private Assignment getMappingMethodReference(SelectedMethod<Method> method) {
             MapperReference mapperReference = findMapperReference( method.getMethod() );
 
             return MethodReference.forMapperReference(

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -62,14 +63,11 @@ public class SupportingConstructorFragment extends ModelElement {
             return false;
         }
         SupportingConstructorFragment other = (SupportingConstructorFragment) obj;
-        if ( templateName == null ) {
-            if ( other.templateName != null ) {
-                return false;
-            }
-        }
-        else if ( !templateName.equals( other.templateName ) ) {
+
+        if ( !Objects.equals( templateName, other.templateName ) ) {
             return false;
         }
+
         return true;
     }
 
