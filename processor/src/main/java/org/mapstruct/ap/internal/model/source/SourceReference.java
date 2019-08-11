@@ -20,7 +20,6 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -214,12 +213,7 @@ public class SourceReference {
                         Strings.join(
                             method.getSourceParameters(),
                             ", ",
-                            new Extractor<Parameter, String>() {
-                                @Override
-                                public String apply(Parameter parameter) {
-                                    return parameter.getName();
-                                }
-                            }
+                            Parameter::getName
                         )
                     );
                 }

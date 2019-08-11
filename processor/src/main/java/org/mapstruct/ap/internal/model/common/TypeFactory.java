@@ -68,12 +68,7 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
 public class TypeFactory {
 
     private static final Extractor<BuilderInfo, String> BUILDER_INFO_CREATION_METHOD_EXTRACTOR =
-        new Extractor<BuilderInfo, String>() {
-            @Override
-            public String apply(BuilderInfo builderInfo) {
-                return builderInfo.getBuilderCreationMethod().toString();
-            }
-        };
+        builderInfo -> builderInfo.getBuilderCreationMethod().toString();
 
     private final Elements elementUtils;
     private final Types typeUtils;

@@ -85,7 +85,7 @@ public class MappingOptions {
             null,
             null,
             forForgedMethods ? BeanMapping.forForgedMethods() : null,
-            Collections.<ValueMapping>emptyList(),
+            Collections.emptyList(),
             restrictToDefinedMappings
         );
 

@@ -341,10 +341,7 @@ public class MappingProcessor extends AbstractProcessor {
 
         @Override
         public int compare(ModelElementProcessor<?, ?> o1, ModelElementProcessor<?, ?> o2) {
-            return
-                o1.getPriority() < o2.getPriority() ? -1 :
-                    o1.getPriority() == o2.getPriority() ? 0 :
-                        1;
+            return Integer.compare( o1.getPriority(), o2.getPriority() );
         }
     }
 }
