@@ -99,8 +99,7 @@ public class MapperConfiguration {
     }
 
     public List<TypeMirror> imports() {
-        List<TypeMirror> imports = new ArrayList<>();
-        imports.addAll( mapperPrism.imports() );
+        List<TypeMirror> imports = new ArrayList<>( mapperPrism.imports() );
         if ( mapperConfigPrism != null ) {
             imports.addAll( mapperConfigPrism.imports() );
         }
@@ -262,7 +261,7 @@ public class MapperConfiguration {
 
     public boolean isDisableSubMappingMethodsGeneration() {
         if ( mapperPrism.disableSubMappingMethodsGeneration() ) {
-            return mapperPrism.disableSubMappingMethodsGeneration();
+            return true;
         }
 
         if ( mapperConfigPrism != null && mapperConfigPrism.disableSubMappingMethodsGeneration() ) {

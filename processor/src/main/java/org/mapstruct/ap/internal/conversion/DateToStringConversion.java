@@ -15,7 +15,6 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.model.common.Type;
 
 import static java.util.Arrays.asList;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
@@ -31,7 +30,7 @@ public class DateToStringConversion implements ConversionProvider {
     @Override
     public Assignment to(ConversionContext conversionContext) {
         return new TypeConversion( asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            Collections.<Type>emptyList(),
+            Collections.emptyList(),
             getConversionExpression( conversionContext, "format" )
         );
     }

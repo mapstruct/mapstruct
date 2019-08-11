@@ -235,8 +235,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public List<Type> getThrownTypes() {
-        List<Type> exceptions = new ArrayList<>();
-        exceptions.addAll( thrownTypes );
+        List<Type> exceptions = new ArrayList<>( thrownTypes );
         if ( assignment != null ) {
             exceptions.addAll( assignment.getThrownTypes() );
         }

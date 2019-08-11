@@ -17,9 +17,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
@@ -104,7 +106,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             singleMapping =
                 targetName -> getMappingByTargetName( targetName, sourceMethod.getMappingOptions().getMappings() );
             mappingsInitializer =
-                mappings -> mappings.stream().forEach( mapping -> initReferencesForSourceMethodMapping( mapping ) );
+                mappings -> mappings.stream().forEach( this::initReferencesForSourceMethodMapping );
             this.method = sourceMethod;
             return this;
         }
@@ -112,7 +114,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         public Builder forgedMethod(Method method) {
             singleMapping = targetPropertyName -> null;
             mappingsInitializer =
-                mappings -> mappings.stream().forEach( mapping -> initReferencesForForgedMethodMapping( mapping ) );
+                mappings -> mappings.stream().forEach( this::initReferencesForForgedMethodMapping );
             this.method = method;
             return this;
         }
@@ -177,8 +179,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     continue;
                 }
                 Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
-                for ( String key : readAccessors.keySet() ) {
-                    unprocessedSourceProperties.put( key, readAccessors.get( key ) );
+
+                for ( Entry<String, Accessor> entry : readAccessors.entrySet() ) {
+                    unprocessedSourceProperties.put( entry.getKey(), entry.getValue() );
                 }
             }
             existingVariableNames.addAll( method.getParameterNames() );
@@ -191,8 +194,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // map properties with mapping
-            boolean mappingErrorOccured = handleDefinedMappings();
-            if ( mappingErrorOccured ) {
+            boolean mappingErrorOccurred = handleDefinedMappings();
+            if ( mappingErrorOccurred ) {
                 return null;
             }
 
@@ -366,13 +369,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
             else {
                 Collections.sort(
-                    propertyMappings, new Comparator<PropertyMapping>() {
-                        @Override
-                        public int compare(PropertyMapping o1, PropertyMapping o2) {
-                            return graphAnalyzer.getTraversalSequence( o1.getName() )
-                                - graphAnalyzer.getTraversalSequence( o2.getName() );
-                        }
-                    }
+                    propertyMappings,
+                    Comparator.comparingInt( propertyMapping ->
+                            graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) )
                 );
             }
         }
@@ -512,9 +511,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          */
         private static boolean isValidWhenReversed(Mapping mapping) {
             if ( mapping.getInheritContext() != null && mapping.getInheritContext().isReversed() ) {
-                return mapping.getTargetReference().isValid() && ( mapping.getSourceReference() != null ?
-                    mapping.getSourceReference().isValid() :
-                    true );
+                return mapping.getTargetReference().isValid() && ( mapping.getSourceReference() == null ||
+                    mapping.getSourceReference().isValid() );
             }
             return true;
         }
@@ -1051,24 +1049,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public List<Parameter> getSourceParametersExcludingPrimitives() {
-        List<Parameter> sourceParameters = new ArrayList<>();
-        for ( Parameter sourceParam : getSourceParameters() ) {
-            if ( !sourceParam.getType().isPrimitive() ) {
-                sourceParameters.add( sourceParam );
-            }
-        }
-
-        return sourceParameters;
+        return getSourceParameters().stream()
+                            .filter( parameter -> !parameter.getType().isPrimitive() )
+                            .collect( Collectors.toList() );
     }
 
     public List<Parameter> getSourcePrimitiveParameters() {
-        List<Parameter> sourceParameters = new ArrayList<>();
-        for ( Parameter sourceParam : getSourceParameters() ) {
-            if ( sourceParam.getType().isPrimitive() ) {
-                sourceParameters.add( sourceParam );
-            }
-        }
-        return sourceParameters;
+        return getSourceParameters().stream()
+                            .filter( parameter -> parameter.getType().isPrimitive() )
+                            .collect( Collectors.toList() );
     }
 
     @Override
@@ -1092,8 +1081,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         if ( !super.equals( obj ) ) {
             return false;
         }
-        return propertyMappings != null ? propertyMappings.equals( that.propertyMappings ) :
-            that.propertyMappings == null;
+        return Objects.equals( propertyMappings, that.propertyMappings );
     }
 
     private interface SingleMappingByTargetPropertyNameFunction {

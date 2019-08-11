@@ -84,9 +84,7 @@ public class Fields {
 
     private static void addFields(List<VariableElement> alreadyCollected, List<VariableElement> variablesToAdd) {
         List<VariableElement> safeToAdd = new ArrayList<>( variablesToAdd.size() );
-        for ( VariableElement toAdd : variablesToAdd ) {
-            safeToAdd.add( toAdd );
-        }
+        safeToAdd.addAll( variablesToAdd );
 
         alreadyCollected.addAll( 0, safeToAdd );
     }

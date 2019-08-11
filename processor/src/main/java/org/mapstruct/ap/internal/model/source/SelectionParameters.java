@@ -144,8 +144,8 @@ public class SelectionParameters {
 
     public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
         return new SelectionParameters(
-            Collections.<TypeMirror>emptyList(),
-            Collections.<String>emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
             null,
             null,
             sourceRHS
