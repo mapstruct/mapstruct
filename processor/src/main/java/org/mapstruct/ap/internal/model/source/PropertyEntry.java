@@ -129,10 +129,7 @@ public class PropertyEntry {
             return false;
         }
         final PropertyEntry other = (PropertyEntry) obj;
-        if ( !Arrays.deepEquals( this.fullName, other.fullName ) ) {
-            return false;
-        }
-        return true;
+        return Arrays.deepEquals( this.fullName, other.fullName );
     }
 
     @Override

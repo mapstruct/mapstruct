@@ -193,6 +193,6 @@ public interface Method {
      * to be an update method in order for this to be true.
      */
     default boolean isMappingTargetAssignableToReturnType() {
-        return isUpdateMethod() ? getResultType().isAssignableTo( getReturnType() ) : false;
+        return isUpdateMethod() && getResultType().isAssignableTo( getReturnType() );
     }
 }

@@ -94,7 +94,7 @@ public class TargetReference {
 
         public TargetReference build() {
 
-            boolean isInverse =  mapping.getInheritContext() != null ? mapping.getInheritContext().isReversed() : false;
+            boolean isInverse = mapping.getInheritContext() != null && mapping.getInheritContext().isReversed();
 
             String targetName = mapping.getTargetName();
             if ( targetName == null ) {

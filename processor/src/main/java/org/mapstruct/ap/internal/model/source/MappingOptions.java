@@ -29,7 +29,7 @@ public class MappingOptions {
         null,
         null,
         null,
-        Collections.<ValueMapping>emptyList(),
+        Collections.emptyList(),
         false
     );
     private Set<Mapping> mappings;
@@ -182,22 +182,16 @@ public class MappingOptions {
     public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
         MappingOptions inherited = templateMethod.getMappingOptions();
         if ( null != inherited ) {
-            if ( getIterableMapping() == null ) {
-                if ( inherited.getIterableMapping() != null ) {
-                    setIterableMapping( inherited.getIterableMapping() );
-                }
+            if ( getIterableMapping() == null && inherited.getIterableMapping() != null) {
+                setIterableMapping( inherited.getIterableMapping() );
             }
 
-            if ( getMapMapping() == null ) {
-                if ( inherited.getMapMapping() != null ) {
-                    setMapMapping( inherited.getMapMapping() );
-                }
+            if ( getMapMapping() == null && inherited.getMapMapping() != null) {
+                setMapMapping( inherited.getMapMapping() );
             }
 
-            if ( getBeanMapping() == null ) {
-                if ( inherited.getBeanMapping() != null ) {
-                    setBeanMapping( BeanMapping.forInheritance( inherited.getBeanMapping() ) );
-                }
+            if ( getBeanMapping() == null && inherited.getBeanMapping() != null ) {
+                setBeanMapping( BeanMapping.forInheritance( inherited.getBeanMapping() ) );
             }
 
             if ( getValueMappings() == null ) {
@@ -206,7 +200,7 @@ public class MappingOptions {
                     setValueMappings( inherited.getValueMappings() );
                 }
                 else {
-                    setValueMappings( Collections.<ValueMapping>emptyList() );
+                    setValueMappings( Collections.emptyList() );
                 }
             }
             else {

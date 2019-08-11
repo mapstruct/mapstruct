@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -142,9 +143,6 @@ public class ValueMapping {
             return false;
         }
         final ValueMapping other = (ValueMapping) obj;
-        if ( (this.source == null) ? (other.source != null) : !this.source.equals( other.source ) ) {
-            return false;
-        }
-        return true;
+        return Objects.equals( this.source, other.source );
     }
 }
