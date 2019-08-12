@@ -51,7 +51,7 @@ public abstract class HelperMethod implements Method {
      * @return the types used by this method for which import statements need to be generated
      */
     public Set<Type> getImportTypes() {
-        return Collections.<Type>emptySet();
+        return Collections.emptySet();
     }
 
     /**

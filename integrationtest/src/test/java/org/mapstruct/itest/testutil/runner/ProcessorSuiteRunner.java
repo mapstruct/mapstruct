@@ -111,7 +111,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
 
     private List<ProcessorTestCase> initializeTestCases(ProcessorSuite suite,
                 Constructor<? extends CommandLineEnhancer> cliEnhancerConstructor) {
-        List<ProcessorType> types = new ArrayList<ProcessorType>();
+        List<ProcessorType> types = new ArrayList<>();
 
         for ( ProcessorType compiler : suite.processorTypes() ) {
             if ( compiler.getIncluded().length > 0 ) {
@@ -190,7 +190,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
             verifier = new Verifier( destination.getCanonicalPath() );
         }
 
-        List<String> goals = new ArrayList<String>( 3 );
+        List<String> goals = new ArrayList<>( 3 );
 
         goals.add( "clean" );
 
