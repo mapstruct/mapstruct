@@ -2711,6 +2711,7 @@ Within those groups, the method invocations are ordered by their location of def
 
 *Important:* the order of methods declared within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
 
+*Important:* when using a builder, the `@AfterMapping` annotated method must have the builder as `@MappingTarget` annotated parameter so that the method is able to modify the object going to be build. The `build` method is called when the `@AfterMapping` annotated method scope finishes. MapStruct will not call the `@AfterMapping` annotated method if the real target is used as `@MappingTarget` annotated parameter.
 
 [[using-spi]]
 == Using the MapStruct SPI
