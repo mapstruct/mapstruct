@@ -16,11 +16,7 @@ public abstract class AbstractReferencedMapper implements ReferencedMapperInterf
     }
 
     public boolean objectToBoolean(Object obj) {
-        if ( obj instanceof String ) {
-            return true;
-        }
-
-        return false;
+        return obj instanceof String;
     }
 
     @Override

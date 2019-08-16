@@ -15,7 +15,7 @@ import org.junit.Test;
 public class IntrospectorUtilsTest {
 
     @Test
-    public void testDecapitalize() throws Exception {
+    public void testDecapitalize() {
         assertThat( IntrospectorUtils.decapitalize( null ) ).isNull();
         assertThat( IntrospectorUtils.decapitalize( "" ) ).isEqualTo( "" );
         assertThat( IntrospectorUtils.decapitalize( "URL" ) ).isEqualTo( "URL" );

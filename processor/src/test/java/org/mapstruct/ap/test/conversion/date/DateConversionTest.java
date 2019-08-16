@@ -50,8 +50,8 @@ public class DateConversionTest {
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversions() {
         Source source = new Source();
-        source.setDate( new GregorianCalendar( 2013, 6, 6 ).getTime() );
-        source.setAnotherDate( new GregorianCalendar( 2013, 1, 14 ).getTime() );
+        source.setDate( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
+        source.setAnotherDate( new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -65,8 +65,8 @@ public class DateConversionTest {
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionsJdk11() {
         Source source = new Source();
-        source.setDate( new GregorianCalendar( 2013, 6, 6 ).getTime() );
-        source.setAnotherDate( new GregorianCalendar( 2013, 1, 14 ).getTime() );
+        source.setDate( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
+        source.setAnotherDate( new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -86,8 +86,10 @@ public class DateConversionTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
-        assertThat( source.getAnotherDate() ).isEqualTo( new GregorianCalendar( 2013, 1, 14, 8, 30 ).getTime() );
+        assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
+        assertThat( source.getAnotherDate() ).isEqualTo(
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14, 8, 30 ).getTime()
+        );
     }
 
     @Test
@@ -101,16 +103,18 @@ public class DateConversionTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
-        assertThat( source.getAnotherDate() ).isEqualTo( new GregorianCalendar( 2013, 1, 14, 8, 30 ).getTime() );
+        assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
+        assertThat( source.getAnotherDate() ).isEqualTo(
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14, 8, 30 ).getTime()
+        );
     }
 
     @Test
     public void shouldApplyStringConversionForIterableMethod() {
         List<Date> dates = Arrays.asList(
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
         );
 
         List<String> stringDates = SourceTargetMapper.INSTANCE.stringListToDateList( dates );
@@ -122,9 +126,9 @@ public class DateConversionTest {
     @Test
     public void shouldApplyStringConversionForArrayMethod() {
         List<Date> dates = Arrays.asList(
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
         );
 
         String[] stringDates = SourceTargetMapper.INSTANCE.stringListToDateArray( dates );
@@ -141,9 +145,9 @@ public class DateConversionTest {
 
         assertThat( dates ).isNotNull();
         assertThat( dates ).containsExactly(
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
         );
     }
 
@@ -155,18 +159,18 @@ public class DateConversionTest {
 
         assertThat( dates ).isNotNull();
         assertThat( dates ).containsExactly(
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
         );
     }
 
     @Test
     public void shouldApplyStringConversionForReverseArrayArrayMethod() {
          Date[] dates = new Date[]{
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
          };
         String[] stringDates = SourceTargetMapper.INSTANCE.dateArrayToStringArray( dates );
 
@@ -182,15 +186,15 @@ public class DateConversionTest {
 
         assertThat( dates ).isNotNull();
         assertThat( dates ).isEqualTo( new Date[] {
-            new GregorianCalendar( 2013, 6, 6 ).getTime(),
-            new GregorianCalendar( 2013, 1, 14 ).getTime(),
-            new GregorianCalendar( 2013, 3, 11 ).getTime()
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
         } );
     }
 
     @IssueKey("858")
     @Test
-    public void shouldApplyDateToSqlConversion() throws Exception {
+    public void shouldApplyDateToSqlConversion() {
         GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );
         GregorianCalendar sqlDate = new GregorianCalendar( 2016, Calendar.AUGUST, 23, 21, 35, 35 );
         GregorianCalendar timestamp = new GregorianCalendar( 2016, Calendar.AUGUST, 22, 21, 35, 35 );
@@ -212,7 +216,7 @@ public class DateConversionTest {
 
     @IssueKey("858")
     @Test
-    public void shouldApplySqlToDateConversion() throws Exception {
+    public void shouldApplySqlToDateConversion() {
         Target target = new Target();
         GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );
         GregorianCalendar sqlDate = new GregorianCalendar( 2016, Calendar.AUGUST, 23, 21, 35, 35 );

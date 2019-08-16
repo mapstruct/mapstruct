@@ -17,9 +17,9 @@ public  class CompanyMapperPostProcessing  {
     @AfterMapping
     public void toAddressDto(Address address, @MappingTarget AddressDto addressDto) {
         String addressLine = address.getAddressLine();
-        int seperatorIndex = addressLine.indexOf( ";" );
-        addressDto.setStreet( addressLine.substring( 0, seperatorIndex ) );
-        String houseNumber = addressLine.substring( seperatorIndex + 1, addressLine.length() );
+        int separatorIndex = addressLine.indexOf( ";" );
+        addressDto.setStreet( addressLine.substring( 0, separatorIndex ) );
+        String houseNumber = addressLine.substring( separatorIndex + 1 );
         addressDto.setHouseNumber( Integer.parseInt( houseNumber ) );
     }
 

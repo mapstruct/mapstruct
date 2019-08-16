@@ -140,7 +140,7 @@ public class ArrayMappingTest {
 
     @IssueKey("534")
     @Test
-    public void shouldMapbooleanWhenReturnDefault() {
+    public void shouldMapBooleanWhenReturnDefault() {
 
         boolean[] existingTarget = new boolean[]{true};
         boolean[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -152,7 +152,7 @@ public class ArrayMappingTest {
     }
 
     @Test
-    public void shouldMapshortWhenReturnDefault() {
+    public void shouldMapShortWhenReturnDefault() {
         short[] existingTarget = new short[]{ 5 };
         short[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
@@ -161,7 +161,7 @@ public class ArrayMappingTest {
     }
 
     @Test
-    public void shouldMapcharWhenReturnDefault() {
+    public void shouldMapCharWhenReturnDefault() {
         char[] existingTarget = new char[]{ 'a' };
         char[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
@@ -170,53 +170,53 @@ public class ArrayMappingTest {
     }
 
     @Test
-    public void shouldMapintWhenReturnDefault() {
+    public void shouldMapIntWhenReturnDefault() {
         int[] existingTarget = new int[]{ 5 };
         int[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
-        assertThat( target ).containsOnly( new int[] { 0 } );
-        assertThat( existingTarget ).containsOnly( new int[] { 0 } );
+        assertThat( target ).containsOnly( 0 );
+        assertThat( existingTarget ).containsOnly( 0 );
     }
 
     @Test
-    public void shouldMaplongWhenReturnDefault() {
+    public void shouldMapLongWhenReturnDefault() {
         long[] existingTarget = new long[]{ 5L };
         long[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
-        assertThat( target ).containsOnly( new long[] { 0L } );
-        assertThat( existingTarget ).containsOnly( new long[] { 0L } );
+        assertThat( target ).containsOnly( 0L );
+        assertThat( existingTarget ).containsOnly( 0L );
     }
 
     @Test
-    public void shouldMapfloatWhenReturnDefault() {
+    public void shouldMapFloatWhenReturnDefault() {
         float[] existingTarget = new float[]{ 3.1f };
         float[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
-        assertThat( target ).containsOnly( new float[] { 0.0f } );
-        assertThat( existingTarget ).containsOnly( new float[] { 0.0f } );
+        assertThat( target ).containsOnly( 0.0f );
+        assertThat( existingTarget ).containsOnly( 0.0f );
     }
 
     @Test
-    public void shouldMapdoubleWhenReturnDefault() {
+    public void shouldMapDoubleWhenReturnDefault() {
         double[] existingTarget = new double[]{ 5.0d };
         double[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
-        assertThat( target ).containsOnly( new double[] { 0.0d } );
-        assertThat( existingTarget ).containsOnly( new double[] { 0.0d } );
+        assertThat( target ).containsOnly( 0.0d );
+        assertThat( existingTarget ).containsOnly( 0.0d );
     }
 
     @Test
-    public void shouldVoidMapintWhenReturnNull() {
+    public void shouldVoidMapIntWhenReturnNull() {
         long[] existingTarget = new long[]{ 5L };
         ScienceMapper.INSTANCE.nvmMappingVoidReturnNull( null, existingTarget );
-        assertThat( existingTarget ).containsOnly( new long[] { 5L } );
+        assertThat( existingTarget ).containsOnly( 5L );
     }
 
     @Test
-    public void shouldVoidMapintWhenReturnDefault() {
+    public void shouldVoidMapIntWhenReturnDefault() {
         long[] existingTarget = new long[]{ 5L };
         ScienceMapper.INSTANCE.nvmMappingVoidReturnDefault( null, existingTarget );
-        assertThat( existingTarget ).containsOnly( new long[] { 0L } );
+        assertThat( existingTarget ).containsOnly( 0L );
     }
 
     @Test
