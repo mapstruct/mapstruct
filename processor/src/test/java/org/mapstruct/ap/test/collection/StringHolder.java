@@ -41,13 +41,10 @@ public class StringHolder {
         }
         StringHolder other = (StringHolder) obj;
         if ( string == null ) {
-            if ( other.string != null ) {
-                return false;
-            }
+            return other.string == null;
         }
-        else if ( !string.equals( other.string ) ) {
-            return false;
+        else {
+            return string.equals( other.string );
         }
-        return true;
     }
 }

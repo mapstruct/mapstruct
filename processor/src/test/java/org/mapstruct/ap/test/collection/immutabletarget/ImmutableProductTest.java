@@ -34,7 +34,7 @@ public class ImmutableProductTest {
         CupboardDto in = new CupboardDto();
         in.setContent( Arrays.asList( "cups", "soucers" ) );
         CupboardEntity out = new CupboardEntity();
-        out.setContent( Collections.<String>emptyList() );
+        out.setContent( Collections.emptyList() );
 
         CupboardMapper.INSTANCE.map( in, out );
 

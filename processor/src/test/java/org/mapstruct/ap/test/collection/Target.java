@@ -144,14 +144,14 @@ public class Target {
 
     public List<String> getStringListNoSetter() {
         if ( stringListNoSetter == null ) {
-            stringListNoSetter = new ArrayList<String>();
+            stringListNoSetter = new ArrayList<>();
         }
         return stringListNoSetter;
     }
 
     public List<String> getStringListNoSetter2() {
         if ( stringListNoSetter2 == null ) {
-            stringListNoSetter2 = new ArrayList<String>();
+            stringListNoSetter2 = new ArrayList<>();
         }
         return stringListNoSetter2;
     }

@@ -32,7 +32,7 @@ public class NoSetterCollectionMappingTest {
     public void compilesAndMapsCorrectly() {
         NoSetterSource source = new NoSetterSource();
         source.setListValues( Arrays.asList( "foo", "bar" ) );
-        HashMap<String, String> mapValues = new HashMap<String, String>();
+        HashMap<String, String> mapValues = new HashMap<>();
         mapValues.put( "fooKey", "fooVal" );
         mapValues.put( "barKey", "barVal" );
 

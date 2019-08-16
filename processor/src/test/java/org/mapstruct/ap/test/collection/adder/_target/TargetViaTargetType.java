@@ -26,7 +26,7 @@ public class TargetViaTargetType {
     public void addPet(IndoorPet pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
-            pets = new ArrayList<IndoorPet>();
+            pets = new ArrayList<>();
         }
         pets.add( pet );
     }

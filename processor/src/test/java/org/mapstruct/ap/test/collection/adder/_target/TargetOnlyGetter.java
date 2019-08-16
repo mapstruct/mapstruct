@@ -34,7 +34,7 @@ public class TargetOnlyGetter {
     public void addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
-            pets = new ArrayList<Long>();
+            pets = new ArrayList<>();
         }
         pets.add( pet );
     }
