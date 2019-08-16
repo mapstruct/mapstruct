@@ -26,14 +26,14 @@ public class TargetHuman {
     public void addTooth(Integer pet) {
         AdderUsageObserver.setUsed( true );
         if ( teeth == null ) {
-            teeth = new ArrayList<Integer>();
+            teeth = new ArrayList<>();
         }
         teeth.add( pet );
     }
 
     public void addTeeth(Integer tooth) {
         if ( teeth == null ) {
-            teeth = new ArrayList<Integer>();
+            teeth = new ArrayList<>();
         }
         teeth.add( tooth );
     }

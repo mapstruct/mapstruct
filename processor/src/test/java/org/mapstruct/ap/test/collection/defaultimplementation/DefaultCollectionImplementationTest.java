@@ -128,7 +128,7 @@ public class DefaultCollectionImplementationTest {
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSet() {
         Set<TargetFoo> target =
-            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<SourceFoo>( createSourceFooList() ) );
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<>( createSourceFooList() ) );
 
         assertResultList( target );
     }
@@ -145,7 +145,7 @@ public class DefaultCollectionImplementationTest {
     @Test
     @IssueKey("19")
     public void shouldUseTargetParameterForMapping() {
-        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        List<TargetFoo> target = new ArrayList<>();
         SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter(
             target,
             createSourceFooList()
@@ -157,7 +157,7 @@ public class DefaultCollectionImplementationTest {
     @Test
     @IssueKey("19")
     public void shouldUseAndReturnTargetParameterForMapping() {
-        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        List<TargetFoo> target = new ArrayList<>();
         Iterable<TargetFoo> result =
             SourceTargetMapper.INSTANCE
                 .sourceFoosToTargetFoosUsingTargetParameterAndReturn( createSourceFooList(), target );
@@ -189,7 +189,7 @@ public class DefaultCollectionImplementationTest {
     }
 
     private Map<Long, SourceFoo> createSourceFooMap() {
-        Map<Long, SourceFoo> map = new HashMap<Long, SourceFoo>();
+        Map<Long, SourceFoo> map = new HashMap<>();
         map.put( 1L, new SourceFoo( "Bob" ) );
         map.put( 2L, new SourceFoo( "Alice" ) );
 

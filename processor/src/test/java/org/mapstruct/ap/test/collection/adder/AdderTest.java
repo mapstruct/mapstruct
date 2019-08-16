@@ -117,14 +117,14 @@ public class AdderTest {
 
     @IssueKey("241")
     @Test
-    public void testAddwithExistingTarget() throws DogException {
+    public void testAddWithExistingTarget() {
         AdderUsageObserver.setUsed( false );
 
         Source source = new Source();
         source.setPets( Arrays.asList( "mouse" ) );
 
         Target target = new Target();
-        target.setPets( new ArrayList<Long>( Arrays.asList( 1L ) ) );
+        target.setPets( new ArrayList<>( Arrays.asList( 1L ) ) );
 
         SourceTargetMapper.INSTANCE.toExistingTarget( source, target );
         assertThat( target ).isNotNull();
@@ -178,7 +178,7 @@ public class AdderTest {
     }
 
     @Test
-    public void testshouldFallBackToDaliSingularInAbsenseOfHumanSingular() {
+    public void testShouldFallBackToDaliSingularInAbsenseOfHumanSingular() {
         AdderUsageObserver.setUsed( false );
 
         SourceTeeth source = new SourceTeeth();
@@ -192,7 +192,7 @@ public class AdderTest {
     }
 
     @Test
-    public void testAddReverse() throws DogException {
+    public void testAddReverse() {
         AdderUsageObserver.setUsed( false );
 
         Target source = new Target();
@@ -219,7 +219,7 @@ public class AdderTest {
     }
 
     @Test
-    public void testAddViaTargetType() throws DogException {
+    public void testAddViaTargetType() {
         AdderUsageObserver.setUsed( false );
 
         Source source = new Source();
@@ -235,7 +235,7 @@ public class AdderTest {
 
     @IssueKey("242")
     @Test
-    public void testSingleElementSource() throws DogException {
+    public void testSingleElementSource() {
         AdderUsageObserver.setUsed( false );
 
         SingleElementSource source = new SingleElementSource();
@@ -250,7 +250,7 @@ public class AdderTest {
 
     @IssueKey( "310" )
     @Test
-    public void testMissingImport() throws DogException {
+    public void testMissingImport() {
         generatedSource.addComparisonToFixtureFor( Source2Target2Mapper.class );
 
         Source2 source = new Source2();

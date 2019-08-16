@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.collection.map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -32,9 +33,9 @@ public class MapMappingTest {
 
     @Test
     public void shouldCreateMapMethodImplementation() {
-        Map<Long, Date> values = new HashMap<Long, Date>();
-        values.put( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() );
-        values.put( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() );
+        Map<Long, Date> values = new HashMap<>();
+        values.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
+        values.put( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() );
 
         Map<String, String> target = SourceTargetMapper.INSTANCE.longDateMapToStringStringMap( values );
 
@@ -60,8 +61,8 @@ public class MapMappingTest {
     public void shouldCreateMapMethodImplementationWithTargetParameter() {
         Map<String, String> values = createStringStringMap();
 
-        Map<Long, Date> target = new HashMap<Long, Date>();
-        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
+        Map<Long, Date> target = new HashMap<>();
+        target.put( 66L, new GregorianCalendar( 2013, Calendar.AUGUST, 16 ).getTime() );
 
         SourceTargetMapper.INSTANCE.stringStringMapToLongDateMapUsingTargetParameter( target, values );
 
@@ -73,8 +74,8 @@ public class MapMappingTest {
     public void shouldCreateMapMethodImplementationWithReturnedTargetParameter() {
         Map<String, String> values = createStringStringMap();
 
-        Map<Long, Date> target = new HashMap<Long, Date>();
-        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
+        Map<Long, Date> target = new HashMap<>();
+        target.put( 66L, new GregorianCalendar( 2013, Calendar.AUGUST, 16 ).getTime() );
 
         Map<Long, Date> returnedTarget = SourceTargetMapper.INSTANCE
             .stringStringMapToLongDateMapUsingTargetParameterAndReturn( values, target );
@@ -88,13 +89,13 @@ public class MapMappingTest {
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
         assertThat( target ).contains(
-            entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
-            entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
+            entry( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() ),
+            entry( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() )
         );
     }
 
     private Map<String, String> createStringStringMap() {
-        Map<String, String> values = new HashMap<String, String>();
+        Map<String, String> values = new HashMap<>();
         values.put( "42", "01.01.1980" );
         values.put( "121", "20.07.2013" );
         return values;
@@ -102,13 +103,13 @@ public class MapMappingTest {
 
     @Test
     public void shouldInvokeMapMethodImplementationForMapTypedProperty() {
-        Map<Long, Date> values = new HashMap<Long, Date>();
-        values.put( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() );
-        values.put( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() );
+        Map<Long, Date> values = new HashMap<>();
+        values.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
+        values.put( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() );
 
         Source source = new Source();
         source.setValues( values );
-        source.setPublicValues( new HashMap<Long, Date>( values ) );
+        source.setPublicValues( new HashMap<>( values ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -135,7 +136,7 @@ public class MapMappingTest {
 
         Target target = new Target();
         target.setValues( values );
-        target.publicValues = new HashMap<String, String>( values );
+        target.publicValues = new HashMap<>( values );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -143,21 +144,21 @@ public class MapMappingTest {
         assertThat( source.getValues() ).isNotNull();
         assertThat( source.getValues() ).hasSize( 2 );
         assertThat( source.getValues() ).contains(
-            entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
-            entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
+            entry( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() ),
+            entry( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() )
         );
 
         assertThat( source.getPublicValues() )
             .isNotNull()
             .hasSize( 2 )
             .contains(
-                entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
-                entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
+                entry( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() ),
+                entry( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() )
             );
     }
 
     private Map<Integer, Integer> createIntIntMap() {
-        Map<Integer, Integer> values = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> values = new HashMap<>();
         values.put( 42, 47 );
         values.put( 121, 123 );
         return values;

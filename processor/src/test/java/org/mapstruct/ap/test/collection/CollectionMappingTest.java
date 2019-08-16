@@ -113,7 +113,7 @@ public class CollectionMappingTest {
         assertThat( source.getOtherStringList() ).containsExactly( "Bob", "Alice" );
 
         // prepare a test list to monitor add all behaviour
-        List<String> testList = new TestList<String>();
+        List<String> testList = new TestList<>();
         testList.addAll( target.getOtherStringList() );
         TestList.setAddAllCalled( false );
         target.setOtherStringList( testList );
@@ -146,7 +146,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapArrayList() {
         Source source = new Source();
-        source.setStringArrayList( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        source.setStringArrayList( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -158,7 +158,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldReverseMapArrayList() {
         Target target = new Target();
-        target.setStringArrayList( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        target.setStringArrayList( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -170,7 +170,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapSet() {
         Source source = new Source();
-        source.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        source.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -182,7 +182,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldReverseMapSet() {
         Target target = new Target();
-        target.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        target.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -194,7 +194,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapSetAsCopy() {
         Source source = new Source();
-        source.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        source.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
         target.getStringSet().add( "Bill" );
@@ -206,7 +206,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapHashSetAsCopy() {
         Source source = new Source();
-        source.setStringHashSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        source.setStringHashSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
         target.getStringHashSet().add( "Bill" );
@@ -218,7 +218,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldReverseMapSetAsCopy() {
         Target target = new Target();
-        target.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        target.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
         source.getStringSet().add( "Bill" );
@@ -254,7 +254,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapIntegerSetToRawSet() {
         Source source = new Source();
-        source.setIntegerSet( new HashSet<Integer>( Arrays.asList( 1, 2 ) ) );
+        source.setIntegerSet( new HashSet<>( Arrays.asList( 1, 2 ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -266,7 +266,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldMapIntegerSetToStringSet() {
         Source source = new Source();
-        source.setAnotherIntegerSet( new HashSet<Integer>( Arrays.asList( 1, 2 ) ) );
+        source.setAnotherIntegerSet( new HashSet<>( Arrays.asList( 1, 2 ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -278,7 +278,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldReverseMapIntegerSetToStringSet() {
         Target target = new Target();
-        target.setAnotherStringSet( new HashSet<String>( Arrays.asList( "1", "2" ) ) );
+        target.setAnotherStringSet( new HashSet<>( Arrays.asList( "1", "2" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -302,7 +302,7 @@ public class CollectionMappingTest {
     @IssueKey("6")
     public void shouldReverseMapSetOfEnumToStringSet() {
         Target target = new Target();
-        target.setColours( new HashSet<String>( Arrays.asList( "BLUE", "GREEN" ) ) );
+        target.setColours( new HashSet<>( Arrays.asList( "BLUE", "GREEN" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -314,7 +314,7 @@ public class CollectionMappingTest {
     public void shouldMapMapAsCopy() {
         Source source = new Source();
 
-        Map<String, Long> map = new HashMap<String, Long>();
+        Map<String, Long> map = new HashMap<>();
         map.put( "Bob", 123L );
         map.put( "Alice", 456L );
         source.setStringLongMap( map );
@@ -331,7 +331,7 @@ public class CollectionMappingTest {
     public void shouldMapMapWithClearAndPutAll() {
         Source source = new Source();
 
-        Map<String, Long> map = new HashMap<String, Long>();
+        Map<String, Long> map = new HashMap<>();
         map.put( "Bob", 123L );
         map.put( "Alice", 456L );
         source.setOtherStringLongMap( map );
@@ -345,7 +345,7 @@ public class CollectionMappingTest {
         source.getOtherStringLongMap().remove( "Alice" );
 
        // prepare a test list to monitor add all behaviour
-        Map<String, Long> originalInstance  = new TestMap<String, Long>();
+        Map<String, Long> originalInstance  = new TestMap<>();
         originalInstance.putAll( target.getOtherStringLongMap() );
         TestMap.setPuttAllCalled( false );
         target.setOtherStringLongMap( originalInstance );
@@ -362,7 +362,7 @@ public class CollectionMappingTest {
     @IssueKey("87")
     public void shouldMapIntegerSetToNumberSet() {
         Set<Number> numbers = SourceTargetMapper.INSTANCE
-            .integerSetToNumberSet( new HashSet<Integer>( Arrays.asList( 123, 456 ) ) );
+            .integerSetToNumberSet( new HashSet<>( Arrays.asList( 123, 456 ) ) );
 
         assertThat( numbers ).isNotNull();
         assertThat( numbers ).containsOnly( 123, 456 );
@@ -385,7 +385,7 @@ public class CollectionMappingTest {
     @IssueKey("853")
     public void shouldMapNonGenericList() {
         Source source = new Source();
-        source.setStringList3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        source.setStringList3( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -406,12 +406,11 @@ public class CollectionMappingTest {
         assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @IssueKey("853")
     public void shouldMapNonGenericMap() {
         Source source = new Source();
-        Map<String, Long> map = new HashMap<String, Long>();
+        Map<String, Long> map = new HashMap<>();
         map.put( "Bob", 123L );
         map.put( "Alice", 456L );
         source.setStringLongMapForNonGeneric( map );
