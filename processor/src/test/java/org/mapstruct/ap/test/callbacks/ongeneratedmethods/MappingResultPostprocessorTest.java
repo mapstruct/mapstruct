@@ -44,7 +44,7 @@ public class MappingResultPostprocessorTest {
         Employee employee = new Employee();
         employee.setAddress( address );
         Company company = new Company();
-        company.setEmployees( Arrays.asList( new Employee[] { employee } ) );
+        company.setEmployees( Arrays.asList( employee ) );
 
         // test
         CompanyDto companyDto = CompanyMapper.INSTANCE.toCompanyDto( company );

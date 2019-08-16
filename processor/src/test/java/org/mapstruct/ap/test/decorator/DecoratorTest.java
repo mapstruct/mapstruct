@@ -43,7 +43,7 @@ public class DecoratorTest {
     public void shouldInvokeDecoratorMethods() {
         //given
         Calendar birthday = Calendar.getInstance();
-        birthday.set( 1928, 4, 23 );
+        birthday.set( 1928, Calendar.MAY, 23 );
         Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
 
         //when
@@ -99,7 +99,7 @@ public class DecoratorTest {
     public void shouldApplyDecoratorWithDefaultConstructor() {
         //given
         Calendar birthday = Calendar.getInstance();
-        birthday.set( 1928, 4, 23 );
+        birthday.set( 1928, Calendar.MAY, 23 );
         Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
 
         //when
@@ -120,7 +120,7 @@ public class DecoratorTest {
     public void shouldApplyDelegateToClassBasedMapper() {
         //given
         Calendar birthday = Calendar.getInstance();
-        birthday.set( 1928, 4, 23 );
+        birthday.set( 1928, Calendar.MAY, 23 );
         Person person = new Person2( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
 
 
@@ -150,7 +150,7 @@ public class DecoratorTest {
     public void shouldApplyCustomMappers() {
         //given
         Calendar birthday = Calendar.getInstance();
-        birthday.set( 1928, 4, 23 );
+        birthday.set( 1928, Calendar.MAY, 23 );
         Person2 person = new Person2( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
         person.setEmployer( new Employer( "ACME" ) );
         person.setSportsClub( new SportsClub( "SC Duckburg" ) );

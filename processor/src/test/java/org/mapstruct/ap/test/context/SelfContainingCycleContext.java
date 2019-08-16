@@ -19,7 +19,7 @@ import org.mapstruct.TargetType;
  * @author Andreas Gudian
  */
 public class SelfContainingCycleContext {
-    private Map<Object, Object> knownInstances = new IdentityHashMap<Object, Object>();
+    private Map<Object, Object> knownInstances = new IdentityHashMap<>();
 
     @BeforeMapping
     @SuppressWarnings("unchecked")

@@ -35,7 +35,7 @@ public class CharConversionTest {
     @Test
     public void shouldApplyReverseCharConversion() {
         CharTarget target = new CharTarget();
-        target.setC( Character.valueOf( 'G' ) );
+        target.setC( 'G' );
 
         CharSource source = CharMapper.INSTANCE.targetToSource( target );
 

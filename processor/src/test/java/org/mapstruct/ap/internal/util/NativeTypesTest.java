@@ -19,7 +19,7 @@ import org.junit.Test;
 public class NativeTypesTest {
 
     @Test
-    public void testIsNumber() throws Exception {
+    public void testIsNumber() {
         assertFalse( NativeTypes.isNumber( null ) );
         assertFalse( NativeTypes.isNumber( Object.class ) );
         assertFalse( NativeTypes.isNumber( String.class ) );

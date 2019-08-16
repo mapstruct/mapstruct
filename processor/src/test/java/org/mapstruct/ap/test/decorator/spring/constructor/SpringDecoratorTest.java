@@ -66,7 +66,7 @@ public class SpringDecoratorTest {
     public void shouldInvokeDecoratorMethods() {
         //given
         Calendar birthday = Calendar.getInstance();
-        birthday.set( 1928, 4, 23 );
+        birthday.set( 1928, Calendar.MAY, 23 );
         Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
 
         //when

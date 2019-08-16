@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class CarMapperTest {
 
     @Test
-    public void shouldProvideMapperInstance() throws Exception {
+    public void shouldProvideMapperInstance() {
         assertThat( CarMapper.INSTANCE ).isNotNull();
     }
 
@@ -46,9 +47,9 @@ public class CarMapperTest {
         Car car = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
 
         //when
@@ -65,9 +66,9 @@ public class CarMapperTest {
         Car car = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
 
         //when
@@ -82,7 +83,7 @@ public class CarMapperTest {
     @Test
     public void shouldReverseMapReferenceAttribute() {
         //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<>() );
 
         //when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
@@ -99,9 +100,9 @@ public class CarMapperTest {
         Car car = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
 
         //when
@@ -115,7 +116,7 @@ public class CarMapperTest {
     @Test
     public void shouldConsiderCustomMappingForReverseMapping() {
         //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<>() );
 
         //when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
@@ -131,9 +132,9 @@ public class CarMapperTest {
         Car car = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
 
         //when
@@ -147,14 +148,16 @@ public class CarMapperTest {
     @Test
     public void shouldApplyConverterForReverseMapping() {
         //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<>() );
 
         //when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
         //then
         assertThat( car ).isNotNull();
-        assertThat( car.getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1980, 0, 1 ).getTime() );
+        assertThat( car.getManufacturingDate() ).isEqualTo(
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime()
+        );
     }
 
     @Test
@@ -163,20 +166,20 @@ public class CarMapperTest {
         Car car1 = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
         Car car2 = new Car(
             "Railton",
             4,
-            new GregorianCalendar( 1934, 0, 1 ).getTime(),
+            new GregorianCalendar( 1934, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bill" ),
-            new ArrayList<Person>()
+            new ArrayList<>()
         );
 
         //when
-        List<CarDto> dtos = CarMapper.INSTANCE.carsToCarDtos( new ArrayList<Car>( Arrays.asList( car1, car2 ) ) );
+        List<CarDto> dtos = CarMapper.INSTANCE.carsToCarDtos( Arrays.asList( car1, car2 ) );
 
         //then
         assertThat( dtos ).isNotNull();
@@ -196,11 +199,11 @@ public class CarMapperTest {
     @Test
     public void shouldReverseMapIterable() {
         //given
-        CarDto car1 = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
-        CarDto car2 = new CarDto( "Railton", 4, "1934", new PersonDto( "Bill" ), new ArrayList<PersonDto>() );
+        CarDto car1 = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<>() );
+        CarDto car2 = new CarDto( "Railton", 4, "1934", new PersonDto( "Bill" ), new ArrayList<>() );
 
         //when
-        List<Car> cars = CarMapper.INSTANCE.carDtosToCars( new ArrayList<CarDto>( Arrays.asList( car1, car2 ) ) );
+        List<Car> cars = CarMapper.INSTANCE.carDtosToCars( Arrays.asList( car1, car2 ) );
 
         //then
         assertThat( cars ).isNotNull();
@@ -208,12 +211,16 @@ public class CarMapperTest {
 
         assertThat( cars.get( 0 ).getMake() ).isEqualTo( "Morris" );
         assertThat( cars.get( 0 ).getNumberOfSeats() ).isEqualTo( 2 );
-        assertThat( cars.get( 0 ).getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1980, 0, 1 ).getTime() );
+        assertThat( cars.get( 0 ).getManufacturingDate() ).isEqualTo(
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime()
+        );
         assertThat( cars.get( 0 ).getDriver().getName() ).isEqualTo( "Bob" );
 
         assertThat( cars.get( 1 ).getMake() ).isEqualTo( "Railton" );
         assertThat( cars.get( 1 ).getNumberOfSeats() ).isEqualTo( 4 );
-        assertThat( cars.get( 1 ).getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1934, 0, 1 ).getTime() );
+        assertThat( cars.get( 1 ).getManufacturingDate() ).isEqualTo(
+            new GregorianCalendar( 1934, Calendar.JANUARY, 1 ).getTime()
+        );
         assertThat( cars.get( 1 ).getDriver().getName() ).isEqualTo( "Bill" );
     }
 
@@ -223,9 +230,9 @@ public class CarMapperTest {
         Car car = new Car(
             "Morris",
             2,
-            new GregorianCalendar( 1980, 0, 1 ).getTime(),
+            new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>( Arrays.asList( new Person( "Alice" ), new Person( "Bill" ) ) )
+            Arrays.asList( new Person( "Alice" ), new Person( "Bill" ) )
         );
 
         //when
@@ -247,7 +254,7 @@ public class CarMapperTest {
             2,
             "1980",
             new PersonDto( "Bob" ),
-            new ArrayList<PersonDto>( Arrays.asList( new PersonDto( "Alice" ), new PersonDto( "Bill" ) ) )
+            Arrays.asList( new PersonDto( "Alice" ), new PersonDto( "Bill" ) )
         );
 
         //when
