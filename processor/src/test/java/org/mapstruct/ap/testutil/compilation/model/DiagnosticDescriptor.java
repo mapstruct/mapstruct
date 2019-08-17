@@ -42,11 +42,11 @@ public class DiagnosticDescriptor {
     }
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
-        String soureFileName = diagnostic.type() != void.class
+        String sourceFileName = diagnostic.type() != void.class
             ? diagnostic.type().getName().replace( ".", File.separator ) + ".java"
             : null;
         return new DiagnosticDescriptor(
-            soureFileName,
+            sourceFileName,
             diagnostic.kind(),
             diagnostic.line() != -1 ? diagnostic.line() : null,
             diagnostic.alternativeLine() != -1 ? diagnostic.alternativeLine() : null,

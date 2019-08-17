@@ -21,7 +21,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class DestinationPackageNameTest {
     @Test
     @WithClasses({ DestinationPackageNameMapper.class })
-    public void shouldGenerateInRightPackage() throws Exception {
+    public void shouldGenerateInRightPackage() {
         DestinationPackageNameMapper instance = DestinationPackageNameMapper.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperImpl" );
@@ -29,7 +29,7 @@ public class DestinationPackageNameTest {
 
     @Test
     @WithClasses({ DestinationPackageNameMapperWithSuffix.class })
-    public void shouldGenerateInRightPackageWithSuffix() throws Exception {
+    public void shouldGenerateInRightPackageWithSuffix() {
         DestinationPackageNameMapperWithSuffix instance = DestinationPackageNameMapperWithSuffix.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperWithSuffixMyImpl" );
@@ -37,7 +37,7 @@ public class DestinationPackageNameTest {
 
     @Test
     @WithClasses({ DestinationPackageNameMapperConfig.class, DestinationPackageNameMapperWithConfig.class })
-    public void shouldGenerateRightSuffixWithConfig() throws Exception {
+    public void shouldGenerateRightSuffixWithConfig() {
         DestinationPackageNameMapperWithConfig instance = DestinationPackageNameMapperWithConfig.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperWithConfigImpl" );
@@ -45,7 +45,7 @@ public class DestinationPackageNameTest {
 
     @Test
     @WithClasses({ DestinationPackageNameMapperConfig.class, DestinationPackageNameMapperWithConfigOverride.class })
-    public void shouldGenerateRightSuffixWithConfigOverride() throws Exception {
+    public void shouldGenerateRightSuffixWithConfigOverride() {
         DestinationPackageNameMapperWithConfigOverride instance =
                 DestinationPackageNameMapperWithConfigOverride.INSTANCE;
         assertThat( instance.getClass().getName() )
@@ -56,7 +56,7 @@ public class DestinationPackageNameTest {
 
     @Test
     @WithClasses({ DestinationPackageNameMapperDecorated.class, DestinationPackageNameMapperDecorator.class })
-    public void shouldGenerateRightSuffixWithDecorator() throws Exception {
+    public void shouldGenerateRightSuffixWithDecorator() {
         DestinationPackageNameMapperDecorated instance = DestinationPackageNameMapperDecorated.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperDecoratedImpl" );

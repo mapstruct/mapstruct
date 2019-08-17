@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.rules.TestRule;
@@ -39,9 +40,9 @@ public class GeneratedSource implements TestRule {
      * static ThreadLocal, as the {@link CompilingStatement} must inject itself statically for this rule to gain access
      * to the statement's information. As test execution of different classes in parallel is supported.
      */
-    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();
+    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<>();
 
-    private List<Class<?>> fixturesFor = new ArrayList<Class<?>>();
+    private List<Class<?>> fixturesFor = new ArrayList<>();
 
     @Override
     public Statement apply(Statement base, Description description) {
@@ -67,9 +68,7 @@ public class GeneratedSource implements TestRule {
      * @return the same rule for chaining
      */
     public GeneratedSource addComparisonToFixtureFor(Class<?>... fixturesFor) {
-        for ( Class<?> fixture : fixturesFor ) {
-            this.fixturesFor.add( fixture );
-        }
+        this.fixturesFor.addAll( Arrays.asList( fixturesFor ) );
         return this;
     }
 

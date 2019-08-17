@@ -84,11 +84,11 @@ public class FactoryTest {
         foo4.setProp( "foo4" );
         source.setProp4( foo4 );
 
-        List<String> fooList = new ArrayList<String>();
+        List<String> fooList = new ArrayList<>();
         fooList.add( "fooListEntry" );
         source.setPropList( fooList );
 
-        Map<String, String> fooMap = new HashMap<String, String>();
+        Map<String, String> fooMap = new HashMap<>();
         fooMap.put( "key", "fooValue" );
         source.setPropMap( fooMap );
         return source;

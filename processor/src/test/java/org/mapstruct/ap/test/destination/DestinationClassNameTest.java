@@ -21,7 +21,7 @@ import org.mapstruct.factory.Mappers;
 public class DestinationClassNameTest {
     @Test
     @WithClasses({ DestinationClassNameMapper.class })
-    public void shouldGenerateRightName() throws Exception {
+    public void shouldGenerateRightName() {
         DestinationClassNameMapper instance = DestinationClassNameMapper.INSTANCE;
         assertThat( instance.getClass().getSimpleName() ).isEqualTo( "MyDestinationClassNameMapperCustomImpl" );
     }
@@ -48,7 +48,7 @@ public class DestinationClassNameTest {
 
     @Test
     @WithClasses({ DestinationClassNameMapperConfig.class, DestinationClassNameMapperWithConfig.class })
-    public void shouldGenerateRightNameWithConfig() throws Exception {
+    public void shouldGenerateRightNameWithConfig() {
         DestinationClassNameMapperWithConfig instance = DestinationClassNameMapperWithConfig.INSTANCE;
         assertThat( instance.getClass().getSimpleName() )
                 .isEqualTo( "MyDestinationClassNameMapperWithConfigConfigImpl" );
@@ -56,7 +56,7 @@ public class DestinationClassNameTest {
 
     @Test
     @WithClasses({ DestinationClassNameMapperConfig.class, DestinationClassNameMapperWithConfigOverride.class })
-    public void shouldGenerateRightNameWithConfigOverride() throws Exception {
+    public void shouldGenerateRightNameWithConfigOverride() {
         DestinationClassNameMapperWithConfigOverride instance = DestinationClassNameMapperWithConfigOverride.INSTANCE;
         assertThat( instance.getClass().getSimpleName() )
                 .isEqualTo( "CustomDestinationClassNameMapperWithConfigOverrideMyImpl" );
@@ -64,7 +64,7 @@ public class DestinationClassNameTest {
 
     @Test
     @WithClasses({ DestinationClassNameMapperDecorated.class, DestinationClassNameMapperDecorator.class })
-    public void shouldGenerateRightNameWithDecorator() throws Exception {
+    public void shouldGenerateRightNameWithDecorator() {
         DestinationClassNameMapperDecorated instance = DestinationClassNameMapperDecorated.INSTANCE;
         assertThat( instance.getClass().getSimpleName() )
                 .isEqualTo( "MyDestinationClassNameMapperDecoratedCustomImpl" );

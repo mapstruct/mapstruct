@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class TargetList {
 
-    private List<String> list = new ArrayList<String>();
+    private List<String> list = new ArrayList<>();
 
     public List<String> getList() {
         return list;

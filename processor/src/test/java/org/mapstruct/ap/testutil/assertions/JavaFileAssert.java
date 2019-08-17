@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -92,9 +93,9 @@ public class JavaFileAssert extends FileAssert {
      * @param expected the file that should be matched
      */
     public void hasSameMapperContent(File expected) {
-        Charset charset = Charset.forName( "UTF-8" );
+        Charset charset = StandardCharsets.UTF_8;
         try {
-            List<Delta<String>> diffs = new ArrayList<Delta<String>>( this.diff.diff(
+            List<Delta<String>> diffs = new ArrayList<>( this.diff.diff(
                 actual,
                 charset,
                 expected,
