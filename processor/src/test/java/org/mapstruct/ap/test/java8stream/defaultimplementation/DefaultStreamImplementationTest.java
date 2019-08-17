@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.java8stream.defaultimplementation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +89,7 @@ public class DefaultStreamImplementationTest {
 
     @Test
     public void shouldUseTargetParameterForMapping() {
-        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        List<TargetFoo> target = new ArrayList<>();
         SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter(
             target,
             createSourceFooStream()
@@ -147,7 +146,7 @@ public class DefaultStreamImplementationTest {
 
     @Test
     public void shouldUseAndReturnTargetParameterForMapping() {
-        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        List<TargetFoo> target = new ArrayList<>();
         Iterable<TargetFoo> result =
             SourceTargetMapper.INSTANCE
                 .sourceFoosToTargetFoosUsingTargetParameterAndReturn( createSourceFooStream(), target );
@@ -172,6 +171,6 @@ public class DefaultStreamImplementationTest {
     }
 
     private Stream<SourceFoo> createSourceFooStream() {
-        return Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ).stream();
+        return Stream.of( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) );
     }
 }

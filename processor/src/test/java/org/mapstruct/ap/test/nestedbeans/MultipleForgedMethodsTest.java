@@ -34,8 +34,8 @@ public class MultipleForgedMethodsTest {
     @Test
     public void testNestedMapsAutoMap() {
 
-        HashMap<WordDto, WordDto> dtoAntonyms = new HashMap<WordDto, WordDto>();
-        HashMap<Word, Word> entityAntonyms = new HashMap<Word, Word>();
+        HashMap<WordDto, WordDto> dtoAntonyms = new HashMap<>();
+        HashMap<Word, Word> entityAntonyms = new HashMap<>();
 
         String[] words = { "black", "good", "up", "left", "fast" };
         String[] antonyms = { "white", "bad", "down", "right", "slow" };

@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.java8stream.context;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -26,15 +25,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StreamWithContextTest {
 
     @Test
-    public void shouldApplyAfterMapping() throws Exception {
+    public void shouldApplyAfterMapping() {
         Stream<String> stringStream = StreamWithContextMapper.INSTANCE.intStreamToStringStream(
-            Arrays.asList( 1, 2, 3, 5 ).stream() );
+            Stream.of( 1, 2, 3, 5 ) );
 
         assertThat( stringStream ).containsOnly( "1", "2" );
     }
 
     @Test
-    public void shouldApplyBeforeMappingOnArray() throws Exception {
+    public void shouldApplyBeforeMappingOnArray() {
         Integer[] integers = new Integer[] { 1, 3 };
         Stream<Integer> stringStream = StreamWithContextMapper.INSTANCE.arrayToStream( integers );
 
@@ -42,9 +41,9 @@ public class StreamWithContextTest {
     }
 
     @Test
-    public void shouldApplyBeforeAndAfterMappingOnCollection() throws Exception {
+    public void shouldApplyBeforeAndAfterMappingOnCollection() {
         Collection<String> stringsStream = StreamWithContextMapper.INSTANCE.streamToCollection(
-            Arrays.asList( 10, 20, 40 ).stream() );
+            Stream.of( 10, 20, 40 ) );
 
         assertThat( stringsStream ).containsOnly( "23", "10", "20", "40", "230" );
     }
