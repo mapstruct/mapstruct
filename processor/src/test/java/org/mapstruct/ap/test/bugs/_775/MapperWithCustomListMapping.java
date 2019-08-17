@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._775;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -23,11 +23,8 @@ public abstract class MapperWithCustomListMapping {
     public abstract IterableContainer toContainerWithIterable(ListContainer source);
 
     protected List<Integer> hexListToIntList(Collection<String> source) {
-        List<Integer> iterable = new ArrayList<Integer>( source.size() );
-        for ( String string : source ) {
-            iterable.add( Integer.parseInt( string, 16 ) );
-        }
-
-        return iterable;
+        return source.stream()
+            .map( string -> Integer.parseInt( string, 16 ) )
+            .collect( Collectors.toList() );
     }
 }

@@ -35,7 +35,7 @@ public class Issue1359Test {
         Target target = new Target();
         assertThat( target ).extracting( "properties" ).contains( null, atIndex( 0 ) );
 
-        Set<String> properties = new HashSet<String>();
+        Set<String> properties = new HashSet<>();
         properties.add( "first" );
         Source source = new Source( properties );
         Issue1359Mapper.INSTANCE.map( target, source );

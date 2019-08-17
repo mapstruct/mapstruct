@@ -14,23 +14,23 @@ import java.util.List;
  */
 public class Target {
 
-    private List<Long> withoutWildcards = new ArrayList<Long>();
+    private List<Long> withoutWildcards = new ArrayList<>();
 
-    private List<Long> wildcardInSources = new ArrayList<Long>();
+    private List<Long> wildcardInSources = new ArrayList<>();
 
-    private List<Long> wildcardInTargets = new ArrayList<Long>();
+    private List<Long> wildcardInTargets = new ArrayList<>();
 
-    private List<Long> wildcardInBoths = new ArrayList<Long>();
+    private List<Long> wildcardInBoths = new ArrayList<>();
 
-    private List<Long> wildcardAdderToSetters = new ArrayList<Long>();
+    private List<Long> wildcardAdderToSetters = new ArrayList<>();
 
-    private List<Long> wildcardInSourcesAddAll = new ArrayList<Long>();
+    private List<Long> wildcardInSourcesAddAll = new ArrayList<>();
 
-    private List<BigDecimal> sameTypeWildcardInSources = new ArrayList<BigDecimal>();
+    private List<BigDecimal> sameTypeWildcardInSources = new ArrayList<>();
 
-    private List<BigDecimal> sameTypeWildcardInTargets = new ArrayList<BigDecimal>();
+    private List<BigDecimal> sameTypeWildcardInTargets = new ArrayList<>();
 
-    private List<BigDecimal> sameTypeWildcardInBoths = new ArrayList<BigDecimal>();
+    private List<BigDecimal> sameTypeWildcardInBoths = new ArrayList<>();
 
     public List<Long> getWithoutWildcards() {
         return withoutWildcards;

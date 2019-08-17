@@ -17,7 +17,7 @@ public class Source {
 
     public void addProperty(String property) {
         if ( properties == null ) {
-            properties = new ArrayList<String>();
+            properties = new ArrayList<>();
         }
         properties.add( property );
     }

@@ -27,7 +27,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class Issue865Test {
 
     @Test
-    public void shouldGenerateNpeCheckBeforCallingAddAllWhenInUpdateMethods() {
+    public void shouldGenerateNpeCheckBeforeCallingAddAllWhenInUpdateMethods() {
 
         ProjectDto dto = new ProjectDto();
         dto.setName( "myProject" );
@@ -41,7 +41,8 @@ public class Issue865Test {
         assertThat( entity.getCoreUsers() ).isNull();
     }
 
-    public void shouldGenerateNpeCheckBeforCallingAddAllWhenInUpdateMethodsAndTargetWithoutSetter() {
+    @Test
+    public void shouldGenerateNpeCheckBeforeCallingAddAllWhenInUpdateMethodsAndTargetWithoutSetter() {
 
         ProjectDto dto = new ProjectDto();
         dto.setName( "myProject" );

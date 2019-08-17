@@ -21,14 +21,14 @@ public abstract class SourceTargetMapper {
     public abstract Target map(Source source);
 
     protected List<List<Target.TargetNested>> mapLists(List<List<Source.SourceNested>> lists) {
-        return new ArrayList<List<Target.TargetNested>>();
+        return new ArrayList<>();
     }
 
     protected Map<String, List<Target.MapNested>> map(Map<Integer, List<Source.SourceNested>> map) {
-        return new HashMap<String, List<Target.MapNested>>();
+        return new HashMap<>();
     }
 
     protected GenericHolder<List<Target.GenericNested>> map(GenericHolder<List<Source.SourceNested>> genericHolder) {
-        return new GenericHolder<List<Target.GenericNested>>();
+        return new GenericHolder<>();
     }
 }

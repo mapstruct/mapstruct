@@ -37,7 +37,7 @@ public class Issue1005Test {
                 line = 17,
                 messageRegExp = "The result type .*\\.AbstractEntity may not be an abstract class nor interface.")
         })
-    public void shouldFailDueToAbstractResultType() throws Exception {
+    public void shouldFailDueToAbstractResultType() {
     }
 
     @WithClasses(Issue1005ErroneousAbstractReturnTypeMapper.class)
@@ -50,7 +50,7 @@ public class Issue1005Test {
                 messageRegExp = "The return type .*\\.AbstractEntity is an abstract class or interface. Provide a non" +
                     " abstract / non interface result type or a factory method.")
         })
-    public void shouldFailDueToAbstractReturnType() throws Exception {
+    public void shouldFailDueToAbstractReturnType() {
     }
 
     @WithClasses(Issue1005ErroneousInterfaceResultTypeMapper.class)
@@ -62,7 +62,7 @@ public class Issue1005Test {
                 line = 17,
                 messageRegExp = "The result type .*\\.HasPrimaryKey may not be an abstract class nor interface.")
         })
-    public void shouldFailDueToInterfaceResultType() throws Exception {
+    public void shouldFailDueToInterfaceResultType() {
     }
 
     @WithClasses(Issue1005ErroneousInterfaceReturnTypeMapper.class)
@@ -75,6 +75,6 @@ public class Issue1005Test {
                 messageRegExp = "The return type .*\\.HasKey is an abstract class or interface. Provide a non " +
                     "abstract / non interface result type or a factory method.")
         })
-    public void shouldFailDueToInterfaceReturnType() throws Exception {
+    public void shouldFailDueToInterfaceReturnType() {
     }
 }

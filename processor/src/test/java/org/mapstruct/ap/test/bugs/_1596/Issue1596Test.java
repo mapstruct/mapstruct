@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1596Test {
 
     @Test
-    public void shouldIncludeBuildeType() {
+    public void shouldIncludeBuildType() {
 
         ItemDTO item = ImmutableItemDTO.builder().id( "test" ).build();
 
