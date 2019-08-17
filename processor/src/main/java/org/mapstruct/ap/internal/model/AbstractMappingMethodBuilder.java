@@ -9,11 +9,9 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.BeanMapping;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.util.Strings;
 
-import static org.mapstruct.ap.internal.model.source.ForgedMethod.forElementMapping;
+import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).

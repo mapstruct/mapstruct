@@ -3,13 +3,15 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
 public class MappingReferences {

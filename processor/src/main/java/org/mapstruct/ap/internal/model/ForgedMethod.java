@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +14,10 @@ import javax.lang.model.element.ExecutableElement;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 

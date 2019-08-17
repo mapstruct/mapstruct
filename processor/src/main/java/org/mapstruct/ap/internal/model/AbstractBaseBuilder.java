@@ -11,7 +11,6 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.MapperConfiguration;

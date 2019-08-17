@@ -15,14 +15,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.mapstruct.ap.internal.model.beanmapping.MappingReference;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
+import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
+import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.model.source.MappingReference;
-import org.mapstruct.ap.internal.model.source.MappingReferences;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.PropertyEntry;
-import org.mapstruct.ap.internal.model.source.SourceReference;
-import org.mapstruct.ap.internal.model.source.TargetReference;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
