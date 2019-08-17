@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapList() {
         Source source = new Source();
-        source.setStringStream( Arrays.asList( "Bob", "Alice" ).stream() );
+        source.setStringStream( Stream.of( "Bob", "Alice" ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -66,7 +66,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapListWithoutSetter() {
         Source source = new Source();
-        source.setStringStream2( Arrays.asList( "Bob", "Alice" ).stream() );
+        source.setStringStream2( Stream.of( "Bob", "Alice" ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -88,7 +88,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapArrayList() {
         Source source = new Source();
-        source.setStringArrayStream( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringArrayStream( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -99,7 +99,7 @@ public class StreamMappingTest {
     @Test
     public void shouldReverseMapArrayList() {
         Target target = new Target();
-        target.setStringArrayList( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        target.setStringArrayList( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -110,7 +110,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapSet() {
         Source source = new Source();
-        source.setStringStreamToSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringStreamToSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -121,7 +121,7 @@ public class StreamMappingTest {
     @Test
     public void shouldReverseMapSet() {
         Target target = new Target();
-        target.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+        target.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -132,7 +132,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapListToCollection() {
         Source source = new Source();
-        source.setIntegerStream( Arrays.asList( 1, 2 ).stream() );
+        source.setIntegerStream( Stream.of( 1, 2 ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -154,7 +154,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapIntegerSetToStringSet() {
         Source source = new Source();
-        source.setAnotherIntegerStream( new HashSet<Integer>( Arrays.asList( 1, 2 ) ).stream() );
+        source.setAnotherIntegerStream( new HashSet<>( Arrays.asList( 1, 2 ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -165,7 +165,7 @@ public class StreamMappingTest {
     @Test
     public void shouldReverseMapIntegerSetToStringSet() {
         Target target = new Target();
-        target.setAnotherStringSet( new HashSet<String>( Arrays.asList( "1", "2" ) ) );
+        target.setAnotherStringSet( new HashSet<>( Arrays.asList( "1", "2" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -176,7 +176,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapSetOfEnumToStringSet() {
         Source source = new Source();
-        source.setColours( EnumSet.of( Colour.BLUE, Colour.GREEN ).stream() );
+        source.setColours( Stream.of( Colour.BLUE, Colour.GREEN ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -187,7 +187,7 @@ public class StreamMappingTest {
     @Test
     public void shouldReverseMapSetOfEnumToStringSet() {
         Target target = new Target();
-        target.setColours( new HashSet<String>( Arrays.asList( "BLUE", "GREEN" ) ) );
+        target.setColours( new HashSet<>( Arrays.asList( "BLUE", "GREEN" ) ) );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -198,7 +198,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapIntegerStreamToNumberSet() {
         Set<Number> numbers = SourceTargetMapper.INSTANCE
-            .integerStreamToNumberSet( Arrays.asList( 123, 456 ).stream() );
+            .integerStreamToNumberSet( Stream.of( 123, 456 ) );
 
         assertThat( numbers ).isNotNull();
         assertThat( numbers ).containsOnly( 123, 456 );
@@ -207,7 +207,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapNonGenericList() {
         Source source = new Source();
-        source.setStringStream3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringStream3( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 

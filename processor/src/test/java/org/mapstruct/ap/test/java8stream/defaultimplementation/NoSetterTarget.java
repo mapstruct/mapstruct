@@ -13,7 +13,7 @@ import java.util.List;
  *
  */
 public class NoSetterTarget {
-    private List<String> listValues = new ArrayList<String>();
+    private List<String> listValues = new ArrayList<>();
 
     public List<String> getListValues() {
         return listValues;

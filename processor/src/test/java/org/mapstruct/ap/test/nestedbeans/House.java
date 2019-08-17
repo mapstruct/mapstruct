@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
+import java.util.Objects;
+
 public class House {
 
     private String name;
@@ -60,10 +62,10 @@ public class House {
         if ( year != house.year ) {
             return false;
         }
-        if ( name != null ? !name.equals( house.name ) : house.name != null ) {
+        if ( !Objects.equals( name, house.name ) ) {
             return false;
         }
-        return roof != null ? roof.equals( house.roof ) : house.roof == null;
+        return Objects.equals( roof, house.roof );
 
     }
 

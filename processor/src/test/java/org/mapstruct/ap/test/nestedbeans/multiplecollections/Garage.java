@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.nestedbeans.multiplecollections;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.mapstruct.ap.test.nestedbeans.Car;
 
@@ -48,10 +49,10 @@ public class Garage {
 
         Garage garage = (Garage) o;
 
-        if ( cars != null ? !cars.equals( garage.cars ) : garage.cars != null ) {
+        if ( !Objects.equals( cars, garage.cars ) ) {
             return false;
         }
-        return usedCars != null ? usedCars.equals( garage.usedCars ) : garage.usedCars == null;
+        return Objects.equals( usedCars, garage.usedCars );
 
     }
 

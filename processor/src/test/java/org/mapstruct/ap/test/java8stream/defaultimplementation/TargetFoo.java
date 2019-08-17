@@ -45,14 +45,11 @@ public class TargetFoo implements Comparable<TargetFoo> {
         }
         TargetFoo other = (TargetFoo) obj;
         if ( name == null ) {
-            if ( other.name != null ) {
-                return false;
-            }
+            return other.name == null;
         }
-        else if ( !name.equals( other.name ) ) {
-            return false;
+        else {
+            return name.equals( other.name );
         }
-        return true;
     }
 
     @Override

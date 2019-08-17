@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.java8stream.defaultimplementation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ public class NoSetterStreamMappingTest {
     @Test
     public void compilesAndMapsCorrectly() {
         NoSetterSource source = new NoSetterSource();
-        source.setListValues( Arrays.asList( "foo", "bar" ).stream() );
+        source.setListValues( Stream.of( "foo", "bar" ) );
 
         NoSetterTarget target = NoSetterMapper.INSTANCE.toTarget( source );
 
@@ -37,7 +37,7 @@ public class NoSetterStreamMappingTest {
         // now test existing instances
 
         NoSetterSource source2 = new NoSetterSource();
-        source2.setListValues( Arrays.asList( "baz" ).stream() );
+        source2.setListValues( Stream.of( "baz" ) );
         List<String> originalCollectionInstance = target.getListValues();
 
         NoSetterTarget target2 = NoSetterMapper.INSTANCE.toTargetWithExistingTarget( source2, target );
