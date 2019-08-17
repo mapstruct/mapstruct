@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  */
 public class NestedTarget {
 
-    private List<String> properties = new ArrayList<String>();
+    private List<String> properties = new ArrayList<>();
 
     public Stream<String> getProperties() {
         return properties.stream();

@@ -44,7 +44,7 @@ public class IterableWithBoundedElementTypeTest {
         IterableContainer result = MapperWithForgedIterableMapping.INSTANCE.toContainerWithIterable( source );
 
         ( (IterableAssert<Integer>) assertThat( result.getValues() ) )
-                .contains( Integer.valueOf( 42 ), Integer.valueOf( 47 ) );
+                .contains( 42, 47 );
     }
 
     @Test
@@ -55,6 +55,6 @@ public class IterableWithBoundedElementTypeTest {
         IterableContainer result = MapperWithCustomListMapping.INSTANCE.toContainerWithIterable( source );
 
         ( (IterableAssert<Integer>) assertThat( result.getValues() ) )
-                .contains( Integer.valueOf( 66 ), Integer.valueOf( 71 ) );
+                .contains( 66, 71 );
     }
 }

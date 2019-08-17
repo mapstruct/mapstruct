@@ -20,7 +20,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class Issue1061Test {
 
     @Test
-    public void shouldCompile() throws Exception {
+    public void shouldCompile() {
 
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public class DtoWithPresenceCheck {
 
     private List<String> strings;
-    private List<String> stringsInitialized = new ArrayList<String>( Arrays.asList( "5" ) );
+    private List<String> stringsInitialized = new ArrayList<>( Arrays.asList( "5" ) );
     private List<String> stringsWithDefault;
 
     public boolean hasStrings() {

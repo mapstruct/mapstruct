@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1155Test {
 
     @Test
-    public void shouldCompile() throws Exception {
+    public void shouldCompile() {
 
         Entity.Dto dto = new Entity.Dto();
         dto.clientId = 10;

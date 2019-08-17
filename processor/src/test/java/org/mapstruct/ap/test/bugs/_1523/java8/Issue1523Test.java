@@ -58,7 +58,7 @@ public class Issue1523Test {
         // default one was explicitly set to UTC, thus +01:00 is a different one
         source.setValue( ZonedDateTime.parse( "2018-06-15T00:00:00+01:00" ) );
         Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT+01:00" ) );
-        cal.set( 2018, 02, 15, 00, 00, 00 );
+        cal.set( 2018, Calendar.MARCH, 15, 00, 00, 00 );
         source.setValue2( cal );
 
         Target target = Issue1523Mapper.INSTANCE.map( source );
