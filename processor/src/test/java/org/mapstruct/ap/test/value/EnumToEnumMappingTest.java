@@ -186,7 +186,7 @@ public class EnumToEnumMappingTest {
 
     @IssueKey( "1091" )
     @Test
-    public void shouldMapAnyRemainingToNullCorrectly() throws Exception {
+    public void shouldMapAnyRemainingToNullCorrectly() {
         ExternalOrderType externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.RETAIL );
         assertThat( externalOrderType )
             .isNotNull()

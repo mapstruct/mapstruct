@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -35,11 +36,11 @@ public class VariableNamingTest {
         Source source = new Source();
 
         source.setSomeNumber( 42 );
-        source.setValues( Arrays.<Long>asList( 42L, 121L ) );
+        source.setValues( Arrays.asList( 42L, 121L ) );
 
-        Map<Long, Date> map = new HashMap<Long, Date>();
-        map.put( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() );
-        map.put( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() );
+        Map<Long, Date> map = new HashMap<>();
+        map.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
+        map.put( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() );
         source.setMap( map );
 
         Break target = SourceTargetMapper.INSTANCE.sourceToBreak( source );

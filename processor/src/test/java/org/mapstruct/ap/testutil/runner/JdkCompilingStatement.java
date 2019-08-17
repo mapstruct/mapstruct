@@ -49,7 +49,7 @@ class JdkCompilingStatement extends CompilingStatement {
                                                                        String classOutputDir,
                                                                        String additionalCompilerClasspath) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
         Iterable<? extends JavaFileObject> compilationUnits =
@@ -97,7 +97,7 @@ class JdkCompilingStatement extends CompilingStatement {
     }
 
     private static List<File> asFiles(List<String> paths) {
-        List<File> classpath = new ArrayList<File>();
+        List<File> classpath = new ArrayList<>();
         for ( String path : paths ) {
             classpath.add( new File( path ) );
         }
@@ -112,7 +112,7 @@ class JdkCompilingStatement extends CompilingStatement {
      */
     @Override
     protected List<DiagnosticDescriptor> filterExpectedDiagnostics(List<DiagnosticDescriptor> expectedDiagnostics) {
-        List<DiagnosticDescriptor> filtered = new ArrayList<DiagnosticDescriptor>( expectedDiagnostics.size() );
+        List<DiagnosticDescriptor> filtered = new ArrayList<>( expectedDiagnostics.size() );
 
         DiagnosticDescriptor previous = null;
         for ( DiagnosticDescriptor diag : expectedDiagnostics ) {

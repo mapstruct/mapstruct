@@ -228,8 +228,7 @@ public class SourceConstantsTest {
 
     private Date getDate(String format, String date) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat( format );
-        Date result = dateFormat.parse( date );
-        return result;
+        return dateFormat.parse( date );
     }
 
 }

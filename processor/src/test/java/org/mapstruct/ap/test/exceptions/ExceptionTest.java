@@ -65,7 +65,7 @@ public class ExceptionTest {
     @Test( expected = RuntimeException.class )
     @IssueKey( "198" )
     public void shouldThrowRuntimeInIterableMapping() throws TestException2 {
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         source.add( 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerListToLongList( source );
@@ -74,7 +74,7 @@ public class ExceptionTest {
     @Test( expected = TestException2.class )
     @IssueKey( "198" )
     public void shouldThrowTestException2InIterableMapping() throws TestException2 {
-        List<Integer> source = new ArrayList<Integer>();
+        List<Integer> source = new ArrayList<>();
         source.add( 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerListToLongList( source );
@@ -83,7 +83,7 @@ public class ExceptionTest {
     @Test( expected = RuntimeException.class )
     @IssueKey( "198" )
     public void shouldThrowRuntimeInMapKeyMapping() throws TestException2 {
-        Map<Integer, String> source = new HashMap<Integer, String>();
+        Map<Integer, String> source = new HashMap<>();
         source.put( 1, "test" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerKeyMapToLongKeyMap( source );
@@ -92,7 +92,7 @@ public class ExceptionTest {
     @Test( expected = TestException2.class )
     @IssueKey( "198" )
     public void shouldThrowTestException2InMapKeyMapping() throws TestException2 {
-        Map<Integer, String> source = new HashMap<Integer, String>();
+        Map<Integer, String> source = new HashMap<>();
         source.put( 2, "test" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerKeyMapToLongKeyMap( source );
@@ -101,7 +101,7 @@ public class ExceptionTest {
     @Test( expected = RuntimeException.class )
     @IssueKey( "198" )
     public void shouldThrowRuntimeInMapValueMapping() throws TestException2 {
-        Map<String, Integer> source = new HashMap<String, Integer>();
+        Map<String, Integer> source = new HashMap<>();
         source.put( "test", 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerValueMapToLongValueMap( source );
@@ -110,7 +110,7 @@ public class ExceptionTest {
     @Test( expected = TestException2.class )
     @IssueKey( "198" )
     public void shouldThrowTestException2InMapValueMapping() throws TestException2 {
-        Map<String, Integer> source = new HashMap<String, Integer>();
+        Map<String, Integer> source = new HashMap<>();
         source.put( "test", 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.integerValueMapToLongValueMap( source );

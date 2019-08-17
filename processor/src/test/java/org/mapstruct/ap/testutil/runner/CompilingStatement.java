@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.junit.runners.model.FrameworkMethod;
@@ -102,7 +101,7 @@ abstract class CompilingStatement extends Statement {
         return compilationCache.getLastSourceOutputDir();
     }
 
-    protected void setupDirectories() throws Exception {
+    protected void setupDirectories() {
         String compilationRoot = getBasePath()
             + TARGET_COMPILATION_TESTS
             + method.getDeclaringClass().getName()
@@ -154,7 +153,7 @@ abstract class CompilingStatement extends Statement {
             System.getProperty( "java.class.path" ).split( File.pathSeparator );
         String testClasses = "target" + File.separator + "test-classes";
 
-        List<String> classpath = new ArrayList<String>();
+        List<String> classpath = new ArrayList<>();
         for ( String path : bootClasspath ) {
             if ( !path.contains( testClasses ) && isWhitelisted( path, whitelist ) ) {
                 classpath.add( path );
@@ -273,7 +272,7 @@ abstract class CompilingStatement extends Statement {
 
         assertThat( expectedNotesRemaining )
             .describedAs( "There are unmatched notes: " +
-                expectedNotesRemaining.stream().collect( Collectors.joining( LINE_SEPARATOR ) ).toString() )
+                String.join( LINE_SEPARATOR, expectedNotesRemaining ) )
             .isEmpty();
     }
 
@@ -340,7 +339,7 @@ abstract class CompilingStatement extends Statement {
      * @return A set containing the classes to be compiled for this test
      */
     private Set<Class<?>> getTestClasses() {
-        Set<Class<?>> testClasses = new HashSet<Class<?>>();
+        Set<Class<?>> testClasses = new HashSet<>();
 
         WithClasses withClasses = method.getAnnotation( WithClasses.class );
         if ( withClasses != null ) {
@@ -368,7 +367,7 @@ abstract class CompilingStatement extends Statement {
      * for this test
      */
     private Map<Class<?>, Class<?>> getServices() {
-        Map<Class<?>, Class<?>> services = new HashMap<Class<?>, Class<?>>();
+        Map<Class<?>, Class<?>> services = new HashMap<>();
 
         addServices( services, method.getAnnotation( WithServiceImplementations.class ) );
         addService( services, method.getAnnotation( WithServiceImplementation.class ) );
@@ -428,7 +427,7 @@ abstract class CompilingStatement extends Statement {
                     method.getMethod().getDeclaringClass().getAnnotation( ProcessorOption.class ) );
         }
 
-        List<String> result = new ArrayList<String>( processorOptions.size() );
+        List<String> result = new ArrayList<>( processorOptions.size() );
         for ( ProcessorOption option : processorOptions ) {
             result.add( asOptionString( option ) );
         }
@@ -455,7 +454,7 @@ abstract class CompilingStatement extends Statement {
     }
 
     protected static Set<File> getSourceFiles(Collection<Class<?>> classes) {
-        Set<File> sourceFiles = new HashSet<File>( classes.size() );
+        Set<File> sourceFiles = new HashSet<>( classes.size() );
 
         for ( Class<?> clazz : classes ) {
             sourceFiles.add(
@@ -537,12 +536,12 @@ abstract class CompilingStatement extends Statement {
     private void deleteDirectory(File path) {
         if ( path.exists() ) {
             File[] files = path.listFiles();
-            for ( int i = 0; i < files.length; i++ ) {
-                if ( files[i].isDirectory() ) {
-                    deleteDirectory( files[i] );
+            for ( File file : files ) {
+                if ( file.isDirectory() ) {
+                    deleteDirectory( file );
                 }
                 else {
-                    files[i].delete();
+                    file.delete();
                 }
             }
         }
@@ -587,7 +586,7 @@ abstract class CompilingStatement extends Statement {
             if ( result != 0 ) {
                 return result;
             }
-            result = Long.valueOf( o1.getLine() ).compareTo( o2.getLine() );
+            result = o1.getLine().compareTo( o2.getLine() );
             if ( result != 0 ) {
                 return result;
             }

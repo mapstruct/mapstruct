@@ -15,6 +15,6 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     public JAXBElement<String> createDate(String date) {
-        return new JAXBElement<String>(  new QName( "dont-care" ), String.class, "06.07.2013" );
+        return new JAXBElement<>( new QName( "dont-care" ), String.class, "06.07.2013" );
     }
 }

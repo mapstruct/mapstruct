@@ -32,7 +32,7 @@ public class MapperWithGenericSuperClassTest {
         Vessel vessel = new Vessel();
         vessel.setName( "Pacific Queen" );
 
-        SearchResult<Vessel> vessels = new SearchResult<Vessel>();
+        SearchResult<Vessel> vessels = new SearchResult<>();
         vessels.setValues( Arrays.asList( vessel ) );
         vessels.setSize( 1L );
 

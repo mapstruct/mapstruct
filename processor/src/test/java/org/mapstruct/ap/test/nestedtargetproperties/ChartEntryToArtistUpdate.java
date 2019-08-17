@@ -46,7 +46,7 @@ public abstract class ChartEntryToArtistUpdate {
             return Arrays.asList( in );
         }
         else {
-            return Collections.<Integer>emptyList();
+            return Collections.emptyList();
         }
     }
 

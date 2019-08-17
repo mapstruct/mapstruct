@@ -45,13 +45,10 @@ public class SomeOtherType extends BaseType {
         }
         SomeOtherType other = (SomeOtherType) obj;
         if ( value == null ) {
-            if ( other.value != null ) {
-                return false;
-            }
+            return other.value == null;
         }
-        else if ( !value.equals( other.value ) ) {
-            return false;
+        else {
+            return value.equals( other.value );
         }
-        return true;
     }
 }

@@ -29,14 +29,9 @@ public class PlotWords {
     @EnglishToGerman
     @Named( "EnglishToGerman"  )
     public List<String> translate( List<String> keywords ) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for ( String keyword : keywords ) {
-            if ( EN_GER.containsKey( keyword ) ) {
-                result.add( EN_GER.get( keyword ) );
-            }
-            else {
-                result.add( keyword );
-            }
+            result.add( EN_GER.getOrDefault( keyword, keyword ) );
         }
         return result;
     }

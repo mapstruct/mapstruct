@@ -111,7 +111,7 @@ public class ExternalSelectionTest {
         SecretaryDto secretaryDto = new SecretaryDto();
         secretaryDto.setName( "Jim" );
         departmentDto.setEmployees( Arrays.asList( employeeDto ) );
-        Map<SecretaryDto, EmployeeDto> secretaryToEmployee = new HashMap<SecretaryDto, EmployeeDto>();
+        Map<SecretaryDto, EmployeeDto> secretaryToEmployee = new HashMap<>();
         secretaryToEmployee.put( secretaryDto, employeeDto );
         departmentDto.setSecretaryToEmployee( secretaryToEmployee );
 

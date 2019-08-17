@@ -35,25 +35,25 @@ public class ObjectFactory {
 
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1", name = "Order")
     public JAXBElement<OrderType> createOrder(OrderType value) {
-        return new JAXBElement<OrderType>( ORDER_QNAME, OrderType.class, null, value );
+        return new JAXBElement<>( ORDER_QNAME, OrderType.class, null, value );
     }
 
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
         name = "orderNumber1", scope = OrderType.class)
     public JAXBElement<Long> createOrderTypeOrderNumber1(Long value) {
-        return new JAXBElement<Long>( ORDER_TYPE_ORDER_NUMBER1_QNAME, Long.class, OrderType.class, value );
+        return new JAXBElement<>( ORDER_TYPE_ORDER_NUMBER1_QNAME, Long.class, OrderType.class, value );
     }
 
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
         name = "orderNumber2", scope = OrderType.class)
     public JAXBElement<Long> createOrderTypeOrderNumber2(Long value) {
-        return new JAXBElement<Long>( ORDER_TYPE_ORDER_NUMBER2_QNAME, Long.class, OrderType.class, value );
+        return new JAXBElement<>( ORDER_TYPE_ORDER_NUMBER2_QNAME, Long.class, OrderType.class, value );
     }
 
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
         name = "shippingDetails", scope = OrderType.class)
     public JAXBElement<OrderShippingDetailsType> createOrderTypeShippingDetails(OrderShippingDetailsType value) {
-        return new JAXBElement<OrderShippingDetailsType>(
+        return new JAXBElement<>(
             ORDER_TYPE_SHIPPING_DETAILS_QNAME,
             OrderShippingDetailsType.class, OrderType.class, value
         );
@@ -62,7 +62,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.mapstruct.org/itest/jaxb/xsd/test1",
         name = "description", scope = OrderType.class)
     public JAXBElement<String> createOrderTypeDescription(String value) {
-        return new JAXBElement<String>(ORDER_TYPE_DESCRIPTION_QNAME, String.class, OrderType.class, value);
+        return new JAXBElement<>( ORDER_TYPE_DESCRIPTION_QNAME, String.class, OrderType.class, value );
     }
 
 }

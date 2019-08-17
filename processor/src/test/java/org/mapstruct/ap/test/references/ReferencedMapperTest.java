@@ -66,7 +66,7 @@ public class ReferencedMapperTest {
     @Test
     @IssueKey( "136" )
     public void shouldUseGenericFactoryForMap() {
-        Map<String, String> source = new HashMap<String, String>();
+        Map<String, String> source = new HashMap<>();
         source.put( "foo1", "bar1" );
         source.put( "foo2", "bar2" );
         Map<SomeType, SomeOtherType> result = SourceTargetMapper.INSTANCE.fromStringMap( source );
@@ -85,7 +85,7 @@ public class ReferencedMapperTest {
         source.setProp1( new SomeType( "42" ) );
         source.setProp2( new SomeType( "1701" ) );
         source.setProp3( new SomeType( "true" ) );
-        source.setProp4( new GenericWrapper<SomeType>( new SomeType( "x" ) ) );
+        source.setProp4( new GenericWrapper<>( new SomeType( "x" ) ) );
 
         TargetWithPrimitives result = SourceTargetMapperWithPrimitives.INSTANCE.sourceToTarget( source );
 

@@ -39,7 +39,7 @@ public class IterableAndQualifiersTest {
     public void testGenerationBasedOnQualifier() {
 
         TopologyDto topologyDto1 = new TopologyDto();
-        List<TopologyFeatureDto> topologyFeatures1 = new ArrayList<TopologyFeatureDto>();
+        List<TopologyFeatureDto> topologyFeatures1 = new ArrayList<>();
         RiverDto riverDto = new RiverDto();
         riverDto.setName( "Rhine" );
         riverDto.setLength( 5 );
@@ -53,7 +53,7 @@ public class IterableAndQualifiersTest {
         assertThat( ( (RiverEntity) result1.getTopologyFeatures().get( 0 ) ).getLength() ).isEqualTo( 5 );
 
         TopologyDto topologyDto2 = new TopologyDto();
-        List<TopologyFeatureDto> topologyFeatures2 = new ArrayList<TopologyFeatureDto>();
+        List<TopologyFeatureDto> topologyFeatures2 = new ArrayList<>();
         CityDto cityDto = new CityDto();
         cityDto.setName( "Amsterdam" );
         cityDto.setPopulation( 800000 );
