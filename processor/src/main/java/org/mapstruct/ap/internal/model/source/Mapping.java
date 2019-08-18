@@ -132,7 +132,7 @@ public class Mapping {
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
         Set<String> dependsOn = mappingPrism.dependsOn() != null ?
             new LinkedHashSet( mappingPrism.dependsOn() ) :
-            Collections.<String>emptySet();
+            Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
@@ -214,116 +214,59 @@ public class Mapping {
             return false;
         }
 
+        Message message = null;
         if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.expression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.ignore() != null && mappingPrism.ignore() ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_IGNORE_AND_NVPMS
-            );
+            message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
+        }
+
+        if ( message == null ) {
+            return true;
+        }
+        else {
+            messager.printMessage( element, mappingPrism.mirror, message );
             return false;
         }
-        return true;
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
@@ -576,7 +519,7 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptySet(),
+            Collections.emptySet(),
             nullValueCheckStrategy,
             nullValuePropertyMappingStrategy,
             new InheritContext( true, false, method )
