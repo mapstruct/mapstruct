@@ -128,7 +128,7 @@ public class BeanMapping {
             null,
             ReportingPolicyPrism.IGNORE,
             false,
-            Collections.<String>emptyList(),
+            Collections.emptyList(),
             null
         );
     }
