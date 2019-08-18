@@ -378,6 +378,13 @@ public class TargetReference {
         return elementNames;
     }
 
+    public String getTopPropertyName() {
+        if (  !propertyEntries.isEmpty() ) {
+            return first( propertyEntries ).getFullName();
+        }
+        return null;
+    }
+
     public TargetReference pop() {
         if ( propertyEntries.size() > 1 ) {
             List<PropertyEntry> newPropertyEntries = new ArrayList<>( propertyEntries.size() - 1 );
@@ -392,6 +399,33 @@ public class TargetReference {
         else {
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+
+        String result = "";
+        if ( !isValid ) {
+            result = "invalid";
+        }
+        else if ( propertyEntries.isEmpty() ) {
+            if ( parameter != null ) {
+                result = String.format( "parameter \"%s %s\"", parameter.getType(), parameter.getName() );
+            }
+        }
+        else if ( propertyEntries.size() == 1 ) {
+            PropertyEntry propertyEntry = propertyEntries.get( 0 );
+            result = String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+        }
+        else {
+            PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+            result = String.format(
+                "property \"%s %s\"",
+                lastPropertyEntry.getType(),
+                Strings.join( getElementNames(), "." )
+            );
+        }
+        return result;
     }
 
     private abstract static class MappingErrorMessage {

@@ -480,18 +480,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             for ( MappingReference mapping : mappingReferences.getMappingReferences() ) {
-                TargetReference targetReference = mapping.getTargetReference();
-                if ( targetReference.isValid() ) {
-                    String target = first( targetReference.getPropertyEntries() ).getFullName();
+                if ( mapping.isValid() ) {
+                    String target = mapping.getTargetReference().getTopPropertyName();
                     if ( !handledTargets.contains( target ) ) {
                         if ( handleDefinedMapping( mapping, handledTargets ) ) {
                             errorOccurred = true;
                         }
                     }
-                    if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
-                        List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
-                        if ( !sourceEntries.isEmpty() ) {
-                            String source = first( sourceEntries ).getFullName();
+                    if ( mapping.getSourceReference() != null ) {
+                        String source = mapping.getSourceReference().getTopPropertyName();
+                        if ( source != null ) {
                             unprocessedSourceProperties.remove( source );
                         }
                     }
@@ -558,6 +556,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
+            // check if source / expression / constant are not somehow handled already
+            if ( unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
+                return false;
+            }
+
             // check the mapping options
             // its an ignored property mapping
             if ( mapping.isIgnored() ) {
@@ -565,6 +568,43 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetProperty.getName() );
             }
 
+            // its a constant
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
+            else if ( mapping.getConstant() != null ) {
+
+                propertyMapping = new ConstantMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .constantExpression( mapping.getConstant() )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( targetPropertyName )
+                    .formattingParameters( mapping.getFormattingParameters() )
+                    .selectionParameters( mapping.getSelectionParameters() )
+                    .existingVariableNames( existingVariableNames )
+                    .dependsOn( mapping.getDependsOn() )
+                    .mirror( mapping.getMirror() )
+                    .build();
+                handledTargets.add( targetPropertyName );
+            }
+
+            // its an expression
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
+            else if ( mapping.getJavaExpression() != null ) {
+
+                propertyMapping = new JavaExpressionMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .javaExpression( mapping.getJavaExpression() )
+                    .existingVariableNames( existingVariableNames )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( targetPropertyName )
+                    .dependsOn( mapping.getDependsOn() )
+                    .mirror( mapping.getMirror() )
+                    .build();
+                handledTargets.add( targetPropertyName );
+            }
             // its a plain-old property mapping
             else if ( mapping.getSourceName() != null ) {
 
@@ -598,46 +638,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     errorOccured = true;
                 }
             }
-
-            // its a constant
-            // if we have an unprocessed target that means that it most probably is nested and we should
-            // not generated any mapping for it now. Eventually it will be done though
-            else if ( mapping.getConstant() != null && !unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
-
-                propertyMapping = new ConstantMappingBuilder()
-                    .mappingContext( ctx )
-                    .sourceMethod( method )
-                    .constantExpression( mapping.getConstant() )
-                    .targetProperty( targetProperty )
-                    .targetPropertyName( targetPropertyName )
-                    .formattingParameters( mapping.getFormattingParameters() )
-                    .selectionParameters( mapping.getSelectionParameters() )
-                    .existingVariableNames( existingVariableNames )
-                    .dependsOn( mapping.getDependsOn() )
-                    .mirror( mapping.getMirror() )
-                    .build();
-                handledTargets.add( targetPropertyName );
-            }
-
-            // its an expression
-            // if we have an unprocessed target that means that it most probably is nested and we should
-            // not generated any mapping for it now. Eventually it will be done though
-            else if ( mapping.getJavaExpression() != null
-                && !unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
-
-                propertyMapping = new JavaExpressionMappingBuilder()
-                    .mappingContext( ctx )
-                    .sourceMethod( method )
-                    .javaExpression( mapping.getJavaExpression() )
-                    .existingVariableNames( existingVariableNames )
-                    .targetProperty( targetProperty )
-                    .targetPropertyName( targetPropertyName )
-                    .dependsOn( mapping.getDependsOn() )
-                    .mirror( mapping.getMirror() )
-                    .build();
-                handledTargets.add( targetPropertyName );
-            }
-
             // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
             if ( propertyMapping != null ) {
                 propertyMappings.add( propertyMapping );

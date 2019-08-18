@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.beanmapping;
 import java.util.Objects;
 
 import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Represents the intermediate (nesting) state of the {@link Mapping} in this class.
@@ -80,16 +79,24 @@ public class MappingReference {
         return Objects.hash( mapping );
     }
 
+    public boolean isValid( ) {
+        boolean result = false;
+        if ( targetReference.isValid() ) {
+             result = sourceReference != null ? sourceReference.isValid() : true;
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
-        String targetRefName = Strings.join( targetReference.getElementNames(), "." );
-        String sourceRefName = "null";
+        String targetRefStr = targetReference.toString();
+        String sourceRefStr = "null";
         if ( sourceReference != null ) {
-            sourceRefName = Strings.join( sourceReference.getElementNames(), "." );
+            sourceRefStr = sourceReference.toString();
         }
         return "MappingReference {"
-            + "\n    sourceRefName='" + sourceRefName + "\',"
-            + "\n    targetRefName='" + targetRefName + "\',"
+            + "\n    sourceReference='" + sourceRefStr + "\',"
+            + "\n    targetReference='" + targetRefStr + "\',"
             + "\n}";
     }
 }

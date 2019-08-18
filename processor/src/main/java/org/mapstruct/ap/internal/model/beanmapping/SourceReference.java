@@ -435,24 +435,38 @@ public class SourceReference {
         }
     }
 
+    public String getTopPropertyName() {
+        if (  !propertyEntries.isEmpty() ) {
+            return first( propertyEntries ).getFullName();
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
 
-        if ( propertyEntries.isEmpty() ) {
-            return String.format( "parameter \"%s %s\"", getParameter().getType(), getParameter().getName() );
+        String result = "";
+        if ( !isValid ) {
+            result = "invalid";
+        }
+        else if ( propertyEntries.isEmpty() ) {
+            if ( parameter != null ) {
+                result = String.format( "parameter \"%s %s\"", parameter.getType(), parameter.getName() );
+            }
         }
         else if ( propertyEntries.size() == 1 ) {
             PropertyEntry propertyEntry = propertyEntries.get( 0 );
-            return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+            result = String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
         }
         else {
             PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
-            return String.format(
+            result = String.format(
                 "property \"%s %s\"",
                 lastPropertyEntry.getType(),
                 Strings.join( getElementNames(), "." )
             );
         }
+        return result;
     }
 
 }
