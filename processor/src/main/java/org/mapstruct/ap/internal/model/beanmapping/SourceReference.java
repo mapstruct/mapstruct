@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model.beanmapping;
 
 import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
-import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -50,11 +48,7 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
  *
  * @author Sjaak Derksen
  */
-public class SourceReference {
-
-    private final Parameter parameter;
-    private final List<PropertyEntry> propertyEntries;
-    private final boolean isValid;
+public class SourceReference extends AbstractReference {
 
     /**
      * Builds a {@link SourceReference} from an {@code @Mappping}.
@@ -371,102 +365,23 @@ public class SourceReference {
         }
 
         public SourceReference build() {
-            return new SourceReference( sourceParameter, sourceReference.propertyEntries, true );
+            return new SourceReference( sourceParameter, sourceReference.getPropertyEntries(), true );
         }
     }
 
     private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
-        this.parameter = sourceParameter;
-        this.propertyEntries = sourcePropertyEntries;
-        this.isValid = isValid;
-    }
-
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    public List<PropertyEntry> getPropertyEntries() {
-        return propertyEntries;
-    }
-
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public List<String> getElementNames() {
-        List<String> sourceName = new ArrayList<>();
-        sourceName.add( parameter.getName() );
-        for ( PropertyEntry propertyEntry : propertyEntries ) {
-            sourceName.add( propertyEntry.getName() );
-        }
-        return sourceName;
-    }
-
-    /**
-     * Creates a copy of this reference, which is adapted to the given method
-     *
-     * @param method the method to create the copy for
-     * @return the copy
-     */
-    public SourceReference copyForInheritanceTo(SourceMethod method) {
-        List<Parameter> replacementParamCandidates = new ArrayList<>();
-        for ( Parameter sourceParam : method.getSourceParameters() ) {
-            if ( parameter != null && sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
-                replacementParamCandidates.add( sourceParam );
-            }
-        }
-
-        Parameter replacement = parameter;
-        if ( replacementParamCandidates.size() == 1 ) {
-            replacement = first( replacementParamCandidates );
-        }
-
-        return new SourceReference( replacement, propertyEntries, isValid );
+        super( sourceParameter, sourcePropertyEntries, isValid );
     }
 
     public SourceReference pop() {
-        if ( propertyEntries.size() > 1 ) {
+        if ( getPropertyEntries().size() > 1 ) {
             List<PropertyEntry> newPropertyEntries =
-                new ArrayList<>( propertyEntries.subList( 1, propertyEntries.size() ) );
-            return new SourceReference( parameter, newPropertyEntries, isValid );
+                new ArrayList<>( getPropertyEntries().subList( 1, getPropertyEntries().size() ) );
+            return new SourceReference( getParameter(), newPropertyEntries, isValid() );
         }
         else {
             return null;
         }
-    }
-
-    public String getTopPropertyName() {
-        if (  !propertyEntries.isEmpty() ) {
-            return first( propertyEntries ).getFullName();
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-
-        String result = "";
-        if ( !isValid ) {
-            result = "invalid";
-        }
-        else if ( propertyEntries.isEmpty() ) {
-            if ( parameter != null ) {
-                result = String.format( "parameter \"%s %s\"", parameter.getType(), parameter.getName() );
-            }
-        }
-        else if ( propertyEntries.size() == 1 ) {
-            PropertyEntry propertyEntry = propertyEntries.get( 0 );
-            result = String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
-        }
-        else {
-            PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
-            result = String.format(
-                "property \"%s %s\"",
-                lastPropertyEntry.getType(),
-                Strings.join( getElementNames(), "." )
-            );
-        }
-        return result;
     }
 
 }

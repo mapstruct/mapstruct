@@ -53,7 +53,6 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
@@ -668,7 +667,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                     for ( Parameter sourceParameter : method.getSourceParameters() ) {
 
-                        SourceReference sourceRef= getSourceRef( sourceParameter, targetPropertyName );
+                        SourceReference sourceRef = getSourceRef( sourceParameter, targetPropertyName );
                         PropertyMapping newPropertyMapping = null;
 
                         if ( sourceRef != null ) {
