@@ -63,8 +63,8 @@ public class OrderingTest {
             @Diagnostic(type = ErroneousAddressMapperWithCyclicDependency.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): firstName -> lastName -> "
-                    + "middleName -> firstName"
+                messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): lastName -> middleName -> "
+                    + "firstName -> lastName"
             )
         }
     )
