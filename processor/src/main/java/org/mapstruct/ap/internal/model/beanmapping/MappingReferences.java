@@ -29,10 +29,9 @@ public class MappingReferences {
     public static MappingReferences forSourceMethod(SourceMethod sourceMethod, FormattingMessager messager,
                                                     TypeFactory typeFactory) {
 
-        Set<Mapping> mappings = sourceMethod.getMappingOptions().getMappings();
-
-
         Set<MappingReference> references = new LinkedHashSet<>();
+        Set<MappingReference> targetThisReferences = new LinkedHashSet<>();
+
         for ( Mapping mapping : sourceMethod.getMappingOptions().getMappings() ) {
 
             // handle source reference
@@ -52,9 +51,15 @@ public class MappingReferences {
             // add when inverse is also valid
             MappingReference mappingReference = new MappingReference( mapping, targetReference, sourceReference );
             if ( isValidWhenInversed( mappingReference ) ) {
-                references.add( mappingReference );
+                if ( targetReference.isTargetThis() ) {
+                    targetThisReferences.add( mappingReference );
+                }
+                else {
+                    references.add( mappingReference );
+                }
             }
         }
+        references.addAll( targetThisReferences );
         return new MappingReferences( references, false );
     }
 
@@ -104,7 +109,7 @@ public class MappingReferences {
 
         for ( MappingReference mappingRef : mappingReferences ) {
             TargetReference targetReference = mappingRef.getTargetReference();
-            if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
+            if ( targetReference.isValid() && targetReference.isNested()) {
                 return true;
             }
 

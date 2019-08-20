@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 public abstract class AbstractReference {
 
@@ -49,11 +50,52 @@ public abstract class AbstractReference {
         return elementNames;
     }
 
-    public String getTopPropertyName() {
+    /**
+     * returns the property name on the shallowest nesting level
+     * @return
+     */
+    public PropertyEntry getShallowestProperty() {
         if (  !propertyEntries.isEmpty() ) {
-            return first( propertyEntries ).getFullName();
+            return first( propertyEntries );
         }
         return null;
+    }
+
+    /**
+     * returns the property name on the shallowest nesting level
+     * @return
+     */
+    public String getShallowestPropertyName() {
+        if (  !propertyEntries.isEmpty() ) {
+            return first( propertyEntries ).getName();
+        }
+        return null;
+    }
+
+    /**
+     * returns the property name on the deepest nesting level
+     * @return
+     */
+    public PropertyEntry getDeepestProperty() {
+        if (  !propertyEntries.isEmpty() ) {
+            return last( propertyEntries );
+        }
+        return null;
+    }
+
+    /**
+     * returns the property name on the deepest nesting level
+     * @return
+     */
+    public String getDeepestPropertyName() {
+        if (  !propertyEntries.isEmpty() ) {
+            return last( propertyEntries ).getName();
+        }
+        return null;
+    }
+
+    public boolean isNested() {
+        return propertyEntries.size() > 1;
     }
 
     @Override

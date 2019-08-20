@@ -519,10 +519,10 @@ public class PropertyMapping extends ModelElement {
 
         private SourceRHS getSourceRHS( SourceReference sourceReference ) {
             Parameter sourceParam = sourceReference.getParameter();
-            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            PropertyEntry propertyEntry = sourceReference.getDeepestProperty();
 
             // parameter reference
-            if ( propertyEntries.isEmpty() ) {
+            if ( propertyEntry == null ) {
                 return new SourceRHS( sourceParam.getName(),
                                       sourceParam.getType(),
                                       existingVariableNames,
@@ -530,8 +530,7 @@ public class PropertyMapping extends ModelElement {
                 );
             }
             // simple property
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+            else if ( !sourceReference.isNested() ) {
                 String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
                 return new SourceRHS( sourceParam.getName(),
                                       sourceRef,
@@ -543,7 +542,7 @@ public class PropertyMapping extends ModelElement {
             }
             // nested property given as dot path
             else {
-                Type sourceType = last( propertyEntries ).getType();
+                Type sourceType = propertyEntry.getType();
                 if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
                     // Handle null's. If the forged method needs to be mapped to an object, the forged method must be
                     // able to return null. So in that case primitive types are mapped to their corresponding wrapped
@@ -581,7 +580,7 @@ public class PropertyMapping extends ModelElement {
                 );
 
                 // create a local variable to which forged method can be assigned.
-                String desiredName = last( sourceReference.getPropertyEntries() ).getName();
+                String desiredName = propertyEntry.getName();
                 sourceRhs.setSourceLocalVarName( sourceRhs.createUniqueVarName( desiredName ) );
 
                 return sourceRhs;
@@ -595,7 +594,7 @@ public class PropertyMapping extends ModelElement {
                 Parameter sourceParam = sourceReference.getParameter();
                 // TODO is first correct here?? shouldn't it be last since the remainer is checked
                 // in the forged method?
-                PropertyEntry propertyEntry = first( sourceReference.getPropertyEntries() );
+                PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
                     sourcePresenceChecker = sourceParam.getName()
                         + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";

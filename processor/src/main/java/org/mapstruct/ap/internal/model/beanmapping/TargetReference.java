@@ -347,6 +347,10 @@ public class TargetReference extends AbstractReference {
         super( sourceParameter, targetPropertyEntries, isValid );
     }
 
+    public boolean isTargetThis() {
+        return getPropertyEntries().isEmpty();
+    }
+
     public TargetReference pop() {
         if ( getPropertyEntries().size() > 1 ) {
             List<PropertyEntry> newPropertyEntries = new ArrayList<>( getPropertyEntries().size() - 1 );
