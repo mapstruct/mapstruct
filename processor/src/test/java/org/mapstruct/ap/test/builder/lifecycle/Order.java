@@ -17,7 +17,7 @@ public class Order {
     private final String creator;
 
     public Order(Builder builder) {
-        this.items = new ArrayList<Item>( builder.items );
+        this.items = new ArrayList<>( builder.items );
         this.creator = builder.creator;
     }
 
@@ -34,7 +34,7 @@ public class Order {
     }
 
     public static class Builder {
-        private List<Item> items = new ArrayList<Item>();
+        private List<Item> items = new ArrayList<>();
         private String creator;
 
         public Builder items(List<Item> items) {

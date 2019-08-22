@@ -38,7 +38,7 @@ public class DisablingNestedSimpleBeansMappingTest {
             )
         })
     @Test
-    public void shouldUseDisabledMethodGenerationOnMapper() throws Exception {
+    public void shouldUseDisabledMethodGenerationOnMapper() {
     }
 
     @WithClasses({
@@ -55,6 +55,6 @@ public class DisablingNestedSimpleBeansMappingTest {
             )
         })
     @Test
-    public void shouldUseDisabledMethodGenerationOnMapperConfig() throws Exception {
+    public void shouldUseDisabledMethodGenerationOnMapperConfig() {
     }
 }

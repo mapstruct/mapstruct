@@ -84,6 +84,6 @@ public class OrderingTest {
             )
         }
     )
-    public void shouldReportErrorIfPropertiyGivenInDependsOnDoesNotExist() {
+    public void shouldReportErrorIfPropertyGivenInDependsOnDoesNotExist() {
     }
 }

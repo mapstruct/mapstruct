@@ -133,7 +133,7 @@ public class NumberFormatConversionTest {
     @Test
     public void shouldApplyStringConversionsToMaps() {
 
-        Map<Float, Float> source1 = new HashMap<Float, Float>();
+        Map<Float, Float> source1 = new HashMap<>();
         source1.put( 1.0001f, 2.01f );
 
         Map<String, String> target = SourceTargetMapper.INSTANCE.sourceToTarget( source1 );

@@ -40,7 +40,7 @@ public class StreamsTest {
     public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
-    public void shouldNotContainFunctionIdentity() throws Exception {
+    public void shouldNotContainFunctionIdentity() {
         generatedSource.forMapper( StreamMapper.class )
             .content()
             .as( "The Mapper implementation should not use Function.identity()" )
@@ -48,24 +48,24 @@ public class StreamsTest {
     }
 
     @Test
-    public void shouldMapSourceStream() throws Exception {
+    public void shouldMapSourceStream() {
         List<Integer> someInts = Arrays.asList( 1, 2, 3 );
         Stream<Integer> stream = someInts.stream();
         Source source = new Source();
         source.setStream( stream );
-        source.setStringStream( Arrays.asList( "4", "5", "6", "7" ).stream() );
+        source.setStringStream( Stream.of( "4", "5", "6", "7" ) );
         source.setInts( Arrays.asList( 1, 2, 3 ) );
-        source.setIntegerSet( Arrays.asList( 1, 1, 2, 2, 4, 4 ).stream() );
-        source.setStringCollection( Arrays.asList( "1", "1", "2", "3" ).stream().distinct() );
-        source.setIntegerIterable( Arrays.asList( 10, 11, 12 ).stream() );
-        source.setSortedSet( Arrays.asList( 12, 11, 10 ).stream() );
-        source.setNavigableSet( Arrays.asList( 12, 11, 10 ).stream() );
-        source.setIntToStringStream( Arrays.asList( 10, 11, 12 ).stream() );
-        source.setStringArrayStream( Arrays.asList( "4", "5", "6", "6" ).stream().limit( 2 ) );
+        source.setIntegerSet( Stream.of( 1, 1, 2, 2, 4, 4 ) );
+        source.setStringCollection( Stream.of( "1", "1", "2", "3" ).distinct() );
+        source.setIntegerIterable( Stream.of( 10, 11, 12 ) );
+        source.setSortedSet( Stream.of( 12, 11, 10 ) );
+        source.setNavigableSet( Stream.of( 12, 11, 10 ) );
+        source.setIntToStringStream( Stream.of( 10, 11, 12 ) );
+        source.setStringArrayStream( Stream.of( "4", "5", "6", "6" ).limit( 2 ) );
 
         SourceElement element = new SourceElement();
         element.setSource( "source1" );
-        source.setSourceElements( Arrays.asList( element ).stream() );
+        source.setSourceElements( Stream.of( element ) );
 
 
         Target target = StreamMapper.INSTANCE.map( source );
@@ -85,18 +85,18 @@ public class StreamsTest {
     }
 
     @Test
-    public void shouldMapTargetStream() throws Exception {
+    public void shouldMapTargetStream() {
         List<Integer> someInts = Arrays.asList( 1, 2, 3 );
         Stream<Integer> stream = someInts.stream();
         Target target = new Target();
         target.setTargetStream( stream );
         target.setStringStream( Arrays.asList( "4", "5", "6", "7" ) );
-        target.setInts( Arrays.asList( 1, 2, 3 ).stream() );
+        target.setInts( Stream.of( 1, 2, 3 ) );
         target.setIntegerSet( Collections.asSet( 1, 1, 2, 2, 4, 4 ) );
         target.setStringCollection( Collections.asSet( "1", "1", "2", "3" ) );
         target.setIntegerIterable( Arrays.asList( 10, 11, 12 ) );
-        target.setSortedSet( new TreeSet<Integer>( Arrays.asList( 12, 11, 10 ) ) );
-        target.setNavigableSet( new TreeSet<Integer>( Arrays.asList( 12, 11, 10 ) ) );
+        target.setSortedSet( new TreeSet<>( Arrays.asList( 12, 11, 10 ) ) );
+        target.setNavigableSet( new TreeSet<>( Arrays.asList( 12, 11, 10 ) ) );
         target.setIntToStringStream( Arrays.asList( "4", "5", "6" ) );
         target.setStringArrayStream( new Integer[] { 10, 11, 12 } );
 

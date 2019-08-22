@@ -48,7 +48,7 @@ public class NodeMapperContext {
         fireMethodCalled( level, "setInstance", source, target );
         if ( level == null ) {
             LEVEL.set( 1 );
-            MAPPING.set( new IdentityHashMap<Object, Object>() );
+            MAPPING.set( new IdentityHashMap<>() );
         }
         else {
             LEVEL.set( level + 1 );

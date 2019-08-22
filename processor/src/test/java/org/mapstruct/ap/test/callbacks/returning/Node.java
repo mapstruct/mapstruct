@@ -25,8 +25,8 @@ public class Node {
 
     public Node(String name) {
         this.name = name;
-        this.children = new ArrayList<Node>();
-        this.attributes = new ArrayList<Attribute>();
+        this.children = new ArrayList<>();
+        this.attributes = new ArrayList<>();
     }
 
     public Node getParent() {
