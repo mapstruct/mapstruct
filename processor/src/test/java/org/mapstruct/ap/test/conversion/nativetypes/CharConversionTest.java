@@ -45,7 +45,7 @@ public class CharConversionTest {
 
     @Test
     @IssueKey( "229" )
-    public void wrapperToPrimitveIsNullSafe() {
+    public void wrapperToPrimitiveIsNullSafe() {
         CharTarget target = new CharTarget();
 
         CharSource source = CharMapper.INSTANCE.targetToSource( target );

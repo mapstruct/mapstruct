@@ -40,10 +40,10 @@ public abstract class SourceTargetMapperAndBar2Factory {
     }
 
     public CustomList<String> createCustomList() {
-        return new CustomListImpl<String>( "CUSTOMLIST" );
+        return new CustomListImpl<>( "CUSTOMLIST" );
     }
 
     public CustomMap<String, String> createCustomMap() {
-        return new CustomMapImpl<String, String>( "CUSTOMMAP" );
+        return new CustomMapImpl<>( "CUSTOMMAP" );
     }
 }

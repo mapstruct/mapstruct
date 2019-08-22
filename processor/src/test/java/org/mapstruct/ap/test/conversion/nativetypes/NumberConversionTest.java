@@ -441,7 +441,7 @@ public class NumberConversionTest {
 
     @Test
     @IssueKey( "229" )
-    public void wrapperToPrimitveIsNullSafe() {
+    public void wrapperToPrimitiveIsNullSafe() {
         assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new ByteWrapperSource() ) ).isNotNull();
         assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new DoubleWrapperSource() ) ).isNotNull();
         assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new ShortWrapperSource() ) ).isNotNull();

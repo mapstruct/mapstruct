@@ -76,7 +76,7 @@ public class NullValuePropertyMappingTest {
 
     @Test
     @WithClasses(CustomerNvpmsPropertyMappingMapper.class)
-    public void testHierarchyIgnoreOnPropertyMappingMehtod() {
+    public void testHierarchyIgnoreOnPropertyMappingMethod() {
         testConfig( CustomerNvpmsPropertyMappingMapper.INSTANCE::map );
     }
 

@@ -175,6 +175,6 @@ public class NestedSourcePropertiesTest {
             }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })
-    public void inverseShouldRaiseErrorForEmptyContructor() {
+    public void inverseShouldRaiseErrorForEmptyConstructor() {
     }
 }

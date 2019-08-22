@@ -8,16 +8,15 @@ package org.mapstruct.ap.test.conversion.lossy;
 import java.math.BigInteger;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class VerySpecialNumberMapper {
 
-    VerySpecialNumber fromFLoat( float f ) {
+    VerySpecialNumber fromFloat(float f) {
         return new VerySpecialNumber();
     }
 
-    BigInteger toBigInteger( VerySpecialNumber v ) {
+    BigInteger toBigInteger(VerySpecialNumber v) {
         return new BigInteger( "10" );
     }
 }
