@@ -17,7 +17,33 @@ import java.util.Date;
 /**
  * Configures the mapping between two map types, e.g. {@code Map<String, String>} and {@code Map<Long, Date>}.
  *
- * <p>Note: at least one element needs to be specified</p>
+ * <p>
+ * <strong>Example</strong>:
+ * </p>
+ * <pre>
+ * &#64;Mapper
+ * public interface SimpleMapper {
+ *       &#64;MapMapping(valueDateFormat = "dd.MM.yyyy")
+ *      {@code Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source) };
+ * }
+ * </pre>
+ * <pre>
+ * // generates
+ * public class SimpleMapperImpl implements SimpleMapper {
+ *      &#64;Override
+ * {@code     public Map<String, String<longDateMapToStringStringMap(Map<Long, Date> source) } {
+ * {@code         Map<String, String> map = new HashMap<String, String>(); }
+ * {@code         for ( java.util.Map.Entry<Long, Date> entry : source.entrySet() ) } {
+ *              String key = new DecimalFormat( "" ).format( entry.getKey() );
+ *              String value = new SimpleDateFormat( "dd.MM.yyyy" ).format( entry.getValue() );
+ *              map.put( key, value );
+ *          }
+ *          // ...
+ *      }
+ * }
+ * </pre>
+ *
+ * <p><strong>NOTE:</strong> at least one element needs to be specified</p>
  *
  * @author Gunnar Morling
  */
@@ -66,6 +92,7 @@ public @interface MapMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] keyQualifiedBy() default { };
 
@@ -93,6 +120,7 @@ public @interface MapMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] valueQualifiedBy() default { };
 

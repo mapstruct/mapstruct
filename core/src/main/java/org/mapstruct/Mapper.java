@@ -18,6 +18,59 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * Marks an interface or abstract class as a mapper and activates the generation of a implementation of that type via
  * MapStruct.
  *
+ * <p>
+ * <strong>Example 1:</strong> Creating mapper
+ * </p>
+ * <pre>
+ * &#64;Mapper
+ * public interface CarMapper {
+ *     CarDto toCarDto(Car source);
+ * }
+ * </pre>
+ * <p>
+ * <strong>Example 2:</strong> Use additional mappers with parameters {@link #uses()}, {@link #componentModel()}
+ * and {@link #injectionStrategy()}
+ * </p>
+ * <pre>
+ * // we have MarkMapper (map field "mark" to field "name" to upper case)
+ * &#64;Mapper(componentModel = "spring")
+ * public class MarkMapper {
+ *     public String mapMark(String mark) {
+ *         return mark.toUpperCase();
+ *     }
+ * }
+ * // we have CarMapper
+ * &#64;Mapper(
+ *      componentModel = "spring",
+ *      uses = MarkMapper.class,
+ *      injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+ * public interface CarMapper {
+ *     &#64;Mapping(source = "mark", target = "name")
+ *     CarDto convertMap(CarEntity carEntity);
+ * }
+ * </pre>
+ * <pre>
+ * // generates
+ * &#64;Component
+ * public class CarMapperImpl implements CarMapper {
+ *     private final MarkMapper markMapper;
+ *     &#64;Autowired
+ *     public CarMapperImpl(MarkMapper markMapper) {
+ *         this.markMapper = markMapper;
+ *     }
+ *     &#64;Override
+ *     public CarDto convertMap(CarEntity carEntity) {
+ *         if ( carEntity == null ) {
+ *             return null;
+ *         }
+ *         CarDto carDto = new CarDto();
+ *         carDto.setName( markMapper.mapMark( carEntity.getMark() ) );
+ *         return carDto;
+ *     }
+ * }
+ *
+ * </pre>
+ *
  * @author Gunnar Morling
  */
 @Target(ElementType.TYPE)

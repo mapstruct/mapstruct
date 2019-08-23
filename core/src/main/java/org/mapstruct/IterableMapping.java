@@ -21,6 +21,30 @@ import java.util.Date;
  * <p>Note: either  @IterableMapping#dateFormat, @IterableMapping#resultType or @IterableMapping#qualifiedBy
  * must be specified</p>
  *
+ * <p>
+ * <strong>Example:</strong> Convert {@code List<Float> to List<String> }
+ * </p>
+ * <pre>
+ * &#64;Mapper
+ * public interface FloatToStringMapper {
+ *      &#64;IterableMapping( numberFormat = "##.00" )
+ *     {@code List<String> sourceToTarget(List<Float> source); }
+ * }
+ * </pre>
+ * <pre>
+ * // generates
+ * public class FloatToStringMapperImpl implements FloatToStringMapper {
+ *      &#64;Override
+ * {@code     public List<String> sourceToTarget(List<Float> source)  } {
+ * {@code         List<String> list = new ArrayList<String>( source.size() ); }
+ *          for ( Float float1 : source ) {
+ *              list.add( new DecimalFormat( "##.00" ).format( float1 ) );
+ *          }
+ *     // ...
+ *      }
+ * }
+ * </pre>
+ *
  * Supported mappings are:
  * <ul>
  *     <li>{@code Iterable<A>} to/from {@code Iterable<B>}/{@code Iterable<A>}</li>
@@ -60,6 +84,7 @@ public @interface IterableMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
 

@@ -30,6 +30,36 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * types are assignable.
  * </p>
  *
+ * <p>
+ * <strong>Example:</strong>
+ * </p>
+ * <pre>
+ * // create config
+ * &#64;MapperConfig(
+ *     uses = CustomMapperViaMapperConfig.class,
+ *     unmappedTargetPolicy = ReportingPolicy.ERROR
+ * )
+ * public interface CentralConfig {
+ * }
+ * </pre>
+ * <pre>
+ * // use config
+ * &#64;Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
+ * public interface SourceTargetMapper {
+ *   // ...
+ * }
+ * </pre>
+ * <pre>
+ * // result after applying CentralConfig
+ * &#64;Mapper(
+ *     uses = { CustomMapperViaMapper.class, CustomMapperViaMapperConfig.class },
+ *     unmappedTargetPolicy = ReportingPolicy.ERROR
+ * )
+ * public interface SourceTargetMapper {
+ *    // ...
+ * }
+ * </pre>
+ *
  * @author Sjaak Derksen
  * @see Mapper#config()
  */

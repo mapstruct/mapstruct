@@ -18,6 +18,34 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * <p>
  * Either {@link #resultType()}, {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
+ * <p><strong>Example:</strong> Determining the result type</p>
+ * <pre>
+ * // When result types have an inheritance relation, selecting either mapping method {@link Mapping} or factory method
+ * // {@link BeanMapping} can be become ambiguous. Parameter  {@link BeanMapping#resultType()} can be used.
+ * public class FruitFactory {
+ *     public Apple createApple() {
+ *         return new Apple();
+ *     }
+ *     public Orange createOrange() {
+ *         return new Orange();
+ *     }
+ * }
+ * &#64;Mapper(uses = FruitFactory.class)
+ * public interface FruitMapper {
+ *     &#64;BeanMapping(resultType = Apple.class)
+ *     Fruit toFruit(FruitDto fruitDto);
+ * }
+ * </pre>
+ * <pre>
+ * // generates
+ * public class FruitMapperImpl implements FruitMapper {
+ *      &#64;Override
+ *      public Fruit toFruit(FruitDto fruitDto) {
+ *          Apple fruit = fruitFactory.createApple();
+ *          // ...
+ *      }
+ * }
+ * </pre>
  *
  * @author Sjaak Derksen
  */
@@ -40,9 +68,9 @@ public @interface BeanMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
-     * @see BeanMapping#qualifiedByName()
+     * @see Qualifier
      */
-    Class<? extends Annotation>[] qualifiedBy() default { };
+    Class<? extends Annotation>[] qualifiedBy() default {};
 
     /**
      * Similar to {@link #qualifiedBy()}, but used in combination with {@code @}{@link Named} in case no custom
