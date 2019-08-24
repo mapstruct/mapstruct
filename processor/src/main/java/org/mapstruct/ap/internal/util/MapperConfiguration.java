@@ -202,13 +202,21 @@ public class MapperConfiguration {
         }
     }
 
-    public InjectionStrategyPrism getInjectionStrategy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.injectionStrategy() == null ) {
-            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
-        }
-        else {
+    public InjectionStrategyPrism getInjectionStrategy(Options options) {
+        if ( mapperPrism.values.injectionStrategy() != null ) {
             return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
         }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.injectionStrategy() != null ) {
+            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
+        }
+
+        if ( options.getDefaultInjectionStrategy() != null ) {
+            return InjectionStrategyPrism.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
+        }
+
+        // fall back to default defined in the annotation
+        return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {

@@ -83,6 +83,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
     MappingProcessor.UNMAPPED_TARGET_POLICY,
     MappingProcessor.DEFAULT_COMPONENT_MODEL,
+    MappingProcessor.DEFAULT_INJECTION_STRATEGY,
     MappingProcessor.VERBOSE
 })
 public class MappingProcessor extends AbstractProcessor {
@@ -97,6 +98,7 @@ public class MappingProcessor extends AbstractProcessor {
         "mapstruct.suppressGeneratorVersionInfoComment";
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
+    protected static final String DEFAULT_INJECTION_STRATEGY = "mapstruct.defaultInjectionStrategy";
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
     protected static final String VERBOSE = "mapstruct.verbose";
 
@@ -136,6 +138,7 @@ public class MappingProcessor extends AbstractProcessor {
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
+            processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
             Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
             Boolean.valueOf( processingEnv.getOptions().get( VERBOSE ) )
         );

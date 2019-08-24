@@ -19,15 +19,18 @@ public class Options {
     private final ReportingPolicyPrism unmappedTargetPolicy;
     private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
+    private final String defaultInjectionStrategy;
     private final boolean verbose;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
                    ReportingPolicyPrism unmappedTargetPolicy,
-                   String defaultComponentModel, boolean alwaysGenerateSpi, boolean verbose) {
+                   String defaultComponentModel, String defaultInjectionStrategy,
+                   boolean alwaysGenerateSpi, boolean verbose) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
         this.defaultComponentModel = defaultComponentModel;
+        this.defaultInjectionStrategy = defaultInjectionStrategy;
         this.alwaysGenerateSpi = alwaysGenerateSpi;
         this.verbose = verbose;
     }
@@ -46,6 +49,10 @@ public class Options {
 
     public String getDefaultComponentModel() {
         return defaultComponentModel;
+    }
+
+    public String getDefaultInjectionStrategy() {
+        return defaultInjectionStrategy;
     }
 
     public boolean isAlwaysGenerateSpi() {
