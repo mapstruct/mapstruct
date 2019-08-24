@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.decorator.jsr330;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +14,7 @@ import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = ComponentModel.JSR330)
 @DecoratedWith(PersonMapperDecorator.class)
 public interface PersonMapper {
 

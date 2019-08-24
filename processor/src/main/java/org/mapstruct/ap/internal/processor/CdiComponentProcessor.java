@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -22,8 +23,8 @@ import org.mapstruct.ap.internal.model.Mapper;
 public class CdiComponentProcessor extends AnnotationBasedComponentModelProcessor {
 
     @Override
-    protected String getComponentModelIdentifier() {
-        return "cdi";
+    protected ComponentModelPrism getComponentModelIdentifier() {
+        return ComponentModelPrism.CDI;
     }
 
     @Override

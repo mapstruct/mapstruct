@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -23,8 +24,8 @@ import org.mapstruct.ap.internal.model.Mapper;
  */
 public class SpringComponentProcessor extends AnnotationBasedComponentModelProcessor {
     @Override
-    protected String getComponentModelIdentifier() {
-        return "spring";
+    protected ComponentModelPrism getComponentModelIdentifier() {
+        return ComponentModelPrism.SPRING;
     }
 
     @Override

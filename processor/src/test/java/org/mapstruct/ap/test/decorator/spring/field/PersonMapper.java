@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.decorator.spring.field;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -14,7 +15,7 @@ import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+@Mapper(componentModel = ComponentModel.SPRING, injectionStrategy = InjectionStrategy.FIELD)
 @DecoratedWith(PersonMapperDecorator.class)
 public interface PersonMapper {
 

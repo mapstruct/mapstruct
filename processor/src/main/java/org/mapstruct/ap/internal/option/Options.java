@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.option;
 
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
@@ -18,7 +19,7 @@ public class Options {
     private final boolean suppressGeneratorVersionComment;
     private final ReportingPolicyPrism unmappedTargetPolicy;
     private final boolean alwaysGenerateSpi;
-    private final String defaultComponentModel;
+    private final ComponentModelPrism defaultComponentModel;
     private final boolean verbose;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
@@ -27,7 +28,8 @@ public class Options {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
-        this.defaultComponentModel = defaultComponentModel;
+        this.defaultComponentModel = defaultComponentModel == null ? null :
+                                            ComponentModelPrism.valueOf( defaultComponentModel.toUpperCase() );
         this.alwaysGenerateSpi = alwaysGenerateSpi;
         this.verbose = verbose;
     }
@@ -44,7 +46,7 @@ public class Options {
         return unmappedTargetPolicy;
     }
 
-    public String getDefaultComponentModel() {
+    public ComponentModelPrism getDefaultComponentModel() {
         return defaultComponentModel;
     }
 

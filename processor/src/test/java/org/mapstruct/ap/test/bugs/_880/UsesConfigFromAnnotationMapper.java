@@ -5,13 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._880;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.Mapper;
 
 /**
  * @author Andreas Gudian
  *
  */
-@Mapper(componentModel = "default", config = Config.class)
+@Mapper(componentModel = ComponentModel.DEFAULT, config = Config.class)
 public interface UsesConfigFromAnnotationMapper {
     Poodle metamorph(Object essence);
 }

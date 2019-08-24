@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring._default;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
@@ -14,7 +15,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 /**
  * @author Filip Hrisafov
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface GenderSpringDefaultMapper {
 
     @ValueMappings({

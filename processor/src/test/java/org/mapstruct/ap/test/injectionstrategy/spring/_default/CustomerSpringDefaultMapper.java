@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring._default;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -12,7 +13,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 /**
  * @author Filip Hrisafov
  */
-@Mapper(componentModel = "spring", uses = GenderSpringDefaultMapper.class )
+@Mapper(componentModel = ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
 public interface CustomerSpringDefaultMapper {
 
     CustomerDto asTarget(CustomerEntity customerEntity);

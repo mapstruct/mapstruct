@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.imports;
 
 import java.util.Date;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.imports.referenced.Source;
 import org.mapstruct.ap.test.imports.referenced.Target;
@@ -16,7 +17,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Gunnar Morling
  */
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = ComponentModel.JSR330)
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );

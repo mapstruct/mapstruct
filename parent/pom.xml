@@ -523,12 +523,12 @@
                     <artifactId>japicmp-maven-plugin</artifactId>
                     <version>0.13.1</version>
                     <executions>
-                        <execution>
+                        <!--<execution>
                             <phase>verify</phase>
                             <goals>
                                 <goal>cmp</goal>
                             </goals>
-                        </execution>
+                        </execution>-->
                     </executions>
                     <configuration>
                         <newVersion>

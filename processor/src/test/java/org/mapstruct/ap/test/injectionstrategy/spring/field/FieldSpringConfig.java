@@ -5,12 +5,13 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring.field;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MapperConfig;
 
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+@MapperConfig(componentModel = ComponentModel.SPRING, injectionStrategy = InjectionStrategy.FIELD)
 public interface FieldSpringConfig {
 }

@@ -6,9 +6,10 @@
 package org.mapstruct.itest.spring;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ComponentModel;
 import org.mapstruct.itest.spring.other.DateMapper;
 
-@Mapper(componentModel = "spring", uses = DateMapper.class)
+@Mapper(componentModel = ComponentModel.SPRING, uses = DateMapper.class)
 public interface SourceTargetMapper {
 
     Target sourceToTarget(Source source);

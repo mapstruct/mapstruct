@@ -86,22 +86,22 @@ public @interface MapperConfig {
      * Specifies the component model to which the generated mapper should
      * adhere. Supported values are
      * <ul>
-     * <li> {@code default}: the mapper uses no component model, instances are
+     * <li> {@code DEFAULT}: the mapper uses no component model, instances are
      * typically retrieved via {@link Mappers#getMapper(Class)}</li>
      * <li>
-     * {@code cdi}: the generated mapper is an application-scoped CDI bean and
+     * {@code CDI}: the generated mapper is an application-scoped CDI bean and
      * can be retrieved via {@code @Inject}</li>
      * <li>
-     * {@code spring}: the generated mapper is a Spring bean and
+     * {@code SPRING}: the generated mapper is a Spring bean and
      * can be retrieved via {@code @Autowired}</li>
      * <li>
-     * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
+     * {@code JSR330}: the generated mapper is annotated with {@code @javax.inject.Named} and
      * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
      *
      * @return The component model for the generated mapper.
      */
-    String componentModel() default "default";
+    ComponentModel componentModel() default ComponentModel.DEFAULT;
 
     /**
      * Specifies the name of the implementation class. The {@code <CLASS_NAME>} will be replaced by the

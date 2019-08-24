@@ -18,6 +18,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
@@ -243,20 +244,21 @@ public class MapperConfiguration {
         return NullValueMappingStrategyPrism.RETURN_DEFAULT == strategy;
     }
 
-    public String componentModel(Options options) {
+    public ComponentModelPrism componentModel(Options options) {
         if ( mapperPrism.values.componentModel() != null ) {
-            return mapperPrism.componentModel();
+            return ComponentModelPrism.valueOf( mapperPrism.componentModel() );
         }
 
         if ( mapperConfigPrism != null && mapperConfigPrism.values.componentModel() != null ) {
-            return mapperConfigPrism.componentModel();
+            return ComponentModelPrism.valueOf( mapperConfigPrism.componentModel() );
         }
 
         if ( options.getDefaultComponentModel() != null ) {
             return options.getDefaultComponentModel();
         }
 
-        return mapperPrism.componentModel(); // fall back to default defined in the annotation
+        // fall back to default defined in the annotation
+        return ComponentModelPrism.valueOf( mapperPrism.componentModel() );
     }
 
     public boolean isDisableSubMappingMethodsGeneration() {

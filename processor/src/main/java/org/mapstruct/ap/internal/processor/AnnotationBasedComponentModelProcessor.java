@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 
@@ -44,10 +45,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
 
-        String componentModel = mapperConfiguration.componentModel( context.getOptions() );
+        ComponentModelPrism componentModel = mapperConfiguration.componentModel( context.getOptions() );
         InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy();
 
-        if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
+        if ( !getComponentModelIdentifier().equals( componentModel ) ) {
             return mapper;
         }
 
@@ -242,7 +243,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     /**
      * @return the component model identifier
      */
-    protected abstract String getComponentModelIdentifier();
+    protected abstract ComponentModelPrism getComponentModelIdentifier();
 
     /**
      * @param mapper the mapper

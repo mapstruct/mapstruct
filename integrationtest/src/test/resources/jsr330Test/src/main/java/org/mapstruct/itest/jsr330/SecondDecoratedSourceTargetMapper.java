@@ -6,10 +6,11 @@
 package org.mapstruct.itest.jsr330;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ComponentModel;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.jsr330.other.DateMapper;
 
-@Mapper(componentModel = "jsr330", uses = DateMapper.class)
+@Mapper(componentModel = ComponentModel.JSR330, uses = DateMapper.class)
 @DecoratedWith(SecondSourceTargetMapperDecorator.class)
 public interface SecondDecoratedSourceTargetMapper {
 

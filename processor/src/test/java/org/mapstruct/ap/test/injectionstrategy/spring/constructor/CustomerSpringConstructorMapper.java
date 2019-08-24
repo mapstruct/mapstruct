@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring.constructor;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +15,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 /**
  * @author Kevin Grüneberg
  */
-@Mapper( componentModel = "spring",
+@Mapper( componentModel = ComponentModel.SPRING,
     uses = GenderSpringConstructorMapper.class,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR )
 public interface CustomerSpringConstructorMapper {

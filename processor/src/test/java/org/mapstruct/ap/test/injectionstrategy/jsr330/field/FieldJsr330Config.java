@@ -5,12 +5,13 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jsr330.field;
 
+import org.mapstruct.ComponentModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MapperConfig;
 
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(componentModel = "jsr330", injectionStrategy = InjectionStrategy.FIELD)
+@MapperConfig(componentModel = ComponentModel.JSR330, injectionStrategy = InjectionStrategy.FIELD)
 public interface FieldJsr330Config {
 }

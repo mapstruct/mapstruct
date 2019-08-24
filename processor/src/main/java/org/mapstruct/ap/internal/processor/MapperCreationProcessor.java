@@ -94,7 +94,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.accessorNaming = context.getAccessorNaming();
 
         MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
-        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
+        List<MapperReference> mapperReferences = initReferencedMappers( mapperConfig );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
             typeFactory,
@@ -126,7 +126,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return 1000;
     }
 
-    private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfiguration mapperConfig) {
+    private List<MapperReference> initReferencedMappers(MapperConfiguration mapperConfig) {
         List<MapperReference> result = new LinkedList<>();
         List<String> variableNames = new LinkedList<>();
 
@@ -237,7 +237,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_CONSTRUCTOR );
         }
 
-        Decorator decorator = new Decorator.Builder()
+        return new Decorator.Builder()
             .elementUtils( elementUtils )
             .typeFactory( typeFactory )
             .mapperElement( element )
@@ -250,8 +250,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( implPackage )
             .extraImports( getExtraImports( element ) )
             .build();
-
-        return decorator;
     }
 
     private SortedSet<Type> getExtraImports(TypeElement element) {

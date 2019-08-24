@@ -15,6 +15,7 @@ import javax.tools.StandardLocation;
 import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.ServicesEntry;
+import org.mapstruct.ap.internal.prism.ComponentModelPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.writer.ModelWriter;
 
@@ -36,10 +37,10 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
             spiGenerationNeeded = true;
         }
         else {
-            String componentModel =
+            ComponentModelPrism componentModel =
                 MapperConfiguration.getInstanceOn( mapperTypeElement ).componentModel( context.getOptions() );
 
-            spiGenerationNeeded = "default".equals( componentModel );
+            spiGenerationNeeded = ComponentModelPrism.DEFAULT.equals( componentModel );
         }
 
         if ( !context.isErroneous() && spiGenerationNeeded && mapper.hasCustomImplementation() ) {
