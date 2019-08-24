@@ -1,0 +1,170 @@
+[[object-factories]]
+== Object factories
+
+By default, the generated code for mapping one bean type into another or updating a bean will call the default constructor to instantiate the target type.
+
+Alternatively you can plug in custom object factories which will be invoked to obtain instances of the target type. One use case for this is JAXB which creates `ObjectFactory` classes for obtaining new instances of schema types.
+
+To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
+
+.Custom object factories
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class DtoFactory {
+
+     public CarDto createCarDto() {
+         return // ... custom factory logic
+     }
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class EntityFactory {
+
+     public <T extends BaseEntity> T createEntity(@TargetType Class<T> entityClass) {
+         return // ... custom factory logic
+     }
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses= { DtoFactory.class, EntityFactory.class } )
+public interface CarMapper {
+
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+
+    CarDto carToCarDto(Car car);
+
+    Car carDtoToCar(CarDto carDto);
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    private final DtoFactory dtoFactory = new DtoFactory();
+
+    private final EntityFactory entityFactory = new EntityFactory();
+
+    @Override
+    public CarDto carToCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = dtoFactory.createCarDto();
+
+        //map properties...
+
+        return carDto;
+    }
+
+    @Override
+    public Car carDtoToCar(CarDto carDto) {
+        if ( carDto == null ) {
+            return null;
+        }
+
+        Car car = entityFactory.createEntity( Car.class );
+
+        //map properties...
+
+        return car;
+    }
+}
+----
+====
+
+.Custom object factories with update methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = { DtoFactory.class, EntityFactory.class, CarMapper.class } )
+public interface OwnerMapper {
+
+    OwnerMapper INSTANCE = Mappers.getMapper( OwnerMapper.class );
+
+    void updateOwnerDto(Owner owner, @MappingTarget OwnerDto ownerDto);
+
+    void updateOwner(OwnerDto ownerDto, @MappingTarget Owner owner);
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+public class OwnerMapperImpl implements OwnerMapper {
+
+    private final DtoFactory dtoFactory = new DtoFactory();
+
+    private final EntityFactory entityFactory = new EntityFactory();
+
+    private final OwnerMapper ownerMapper = Mappers.getMapper( OwnerMapper.class );
+
+    @Override
+    public void updateOwnerDto(Owner owner, @MappingTarget OwnerDto ownerDto) {
+        if ( owner == null ) {
+            return;
+        }
+
+        if ( owner.getCar() != null ) {
+            if ( ownerDto.getCar() == null ) {
+                ownerDto.setCar( dtoFactory.createCarDto() );
+            }
+            // update car within ownerDto
+        }
+        else {
+            ownerDto.setCar( null );
+        }
+
+       // updating other properties
+    }
+
+    @Override
+    public void updateOwner(OwnerDto ownerDto, @MappingTarget Owner owner) {
+        if ( ownerDto == null ) {
+            return;
+        }
+
+        if ( ownerDto.getCar() != null ) {
+            if ( owner.getCar() == null ) {
+                owner.setCar( entityFactory.createEntity( Car.class ) );
+            }
+            // update car within owner
+        }
+        else {
+            owner.setCar( null );
+        }
+
+       // updating other properties
+    }
+}
+----
+====
+
+In addition, annotating a factory method with `@ObjectFactory` lets you gain access to the mapping sources.
+Source objects can be added as parameters in the same way as for mapping method. The `@ObjectFactory`
+annotation is necessary to let MapStruct know that the given method is only a factory method.
+
+.Custom object factories with `@ObjectFactory`
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class DtoFactory {
+
+     @ObjectFactory
+     public CarDto createCarDto(Car car) {
+         return // ... custom factory logic
+     }
+}
+----
+====

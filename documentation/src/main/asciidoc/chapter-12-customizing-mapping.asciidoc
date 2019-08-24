@@ -1,0 +1,270 @@
+== Customizing mappings
+
+Sometimes it's needed to apply custom logic before or after certain mapping methods. MapStruct provides two ways for doing so: decorators which allow for a type-safe customization of specific mapping methods and the before-mapping and after-mapping lifecycle methods which allow for a generic customization of mapping methods with given source or target types.
+
+[[customizing-mappers-using-decorators]]
+=== Mapping customization with decorators
+
+In certain cases it may be required to customize a generated mapping method, e.g. to set an additional property in the target object which can't be set by a generated method implementation. MapStruct supports this requirement using decorators.
+
+[TIP]
+When working with the component model `cdi`, use https://docs.jboss.org/cdi/spec/1.0/html/decorators.html[CDI decorators] with MapStruct mappers instead of the `@DecoratedWith` annotation described here.
+
+To apply a decorator to a mapper class, specify it using the `@DecoratedWith` annotation.
+
+.Applying a decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
+
+    PersonDto personToPersonDto(Person person);
+
+    AddressDto addressToAddressDto(Address address);
+}
+----
+====
+
+The decorator must be a sub-type of the decorated mapper type. You can make it an abstract class which allows to only implement those methods of the mapper interface which you want to customize. For all non-implemented methods, a simple delegation to the original mapper will be generated using the default generation routine.
+
+The `PersonMapperDecorator` shown below customizes the `personToPersonDto()`. It sets an additional attribute which is not present in the source type of the mapping. The `addressToAddressDto()` method is not customized.
+
+.Implementing a decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    private final PersonMapper delegate;
+
+    public PersonMapperDecorator(PersonMapper delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setFullName( person.getFirstName() + " " + person.getLastName() );
+        return dto;
+    }
+}
+----
+====
+
+The example shows how you can optionally inject a delegate with the generated default implementation and use this delegate in your customized decorator methods.
+
+For a mapper with `componentModel = "default"`, define a constructor with a single parameter which accepts the type of the decorated mapper.
+
+When working with the component models `spring` or `jsr330`, this needs to be handled differently.
+
+[[decorators-with-spring]]
+==== Decorators with the Spring component model
+
+When using `@DecoratedWith` on a mapper with component model `spring`, the generated implementation of the original mapper is annotated with the Spring annotation `@Qualifier("delegate")`. To autowire that bean in your decorator, add that qualifier annotation as well:
+
+.Spring-based decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+     @Autowired
+     @Qualifier("delegate")
+     private PersonMapper delegate;
+
+     @Override
+     public PersonDto personToPersonDto(Person person) {
+         PersonDto dto = delegate.personToPersonDto( person );
+         dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+         return dto;
+     }
+ }
+----
+====
+
+The generated class that extends the decorator is annotated with Spring's `@Primary` annotation. To autowire the decorated mapper in the application, nothing special needs to be done:
+
+.Using a decorated mapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Autowired
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+====
+
+[[decorators-with-jsr-330]]
+==== Decorators with the JSR 330 component model
+
+JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated implementation of the original mapper is annotated with `@Named("fully-qualified-name-of-generated-implementation")` (please note that when using a decorator, the class name of the mapper implementation ends with an underscore). To inject that bean in your decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the generated class):
+
+.JSR 330 based decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    @Inject
+    @Named("org.examples.PersonMapperImpl_")
+    private PersonMapper delegate;
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+        return dto;
+    }
+}
+----
+====
+
+Unlike with the other component models, the usage site must be aware if a mapper is decorated or not, as for decorated mappers, the parameterless `@Named` annotation must be added to select the decorator to be injected:
+
+.Using a decorated mapper with JSR 330
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Inject
+@Named
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+====
+
+[WARNING]
+====
+`@DecoratedWith` in combination with component model `jsr330` is considered experimental as of the 1.0.0.CR2 release. The way the original mapper is referenced in the decorator or the way the decorated mapper is injected in the application code might still change.
+====
+
+[[customizing-mappings-with-before-and-after]]
+=== Mapping customization with before-mapping and after-mapping methods
+
+Decorators may not always fit the needs when it comes to customizing mappers. For example, if you need to perform the customization not only for a few selected methods, but for all methods that map specific super-types: in that case, you can use *callback methods* that are invoked before the mapping starts or after the mapping finished.
+
+Callback methods can be implemented in the abstract mapper itself, in a type reference in `Mapper#uses`, or in a type used as `@Context` parameter.
+
+.Mapper with @BeforeMapping and @AfterMapping hooks
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @BeforeMapping
+    protected void flushEntity(AbstractVehicle vehicle) {
+        // I would call my entity manager's flush() method here to make sure my entity
+        // is populated with the right @Version before I let it map into the DTO
+    }
+
+    @AfterMapping
+    protected void fillTank(AbstractVehicle vehicle, @MappingTarget AbstractVehicleDto result) {
+        result.fuelUp( new Fuel( vehicle.getTankCapacity(), vehicle.getFuelType() ) );
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        flushEntity( car );
+
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        fillTank( car, carDto );
+
+        return carDto;
+    }
+}
+----
+====
+
+If the `@BeforeMapping` / `@AfterMapping` method has parameters, the method invocation is only generated if the return type of the method (if non-`void`) is assignable to the return type of the mapping method and all parameters can be *assigned* by the source or target parameters of the mapping method:
+
+* A parameter annotated with `@MappingTarget` is populated with the target instance of the mapping.
+* A parameter annotated with `@TargetType` is populated with the target type of the mapping.
+* Parameters annotated with `@Context` are populated with the context parameters of the mapping method.
+* Any other parameter is populated with a source parameter of the mapping.
+
+For non-`void` methods, the return value of the method invocation is returned as the result of the mapping method if it is not `null`.
+
+As with mapping methods, it is possible to specify type parameters for before/after-mapping methods.
+
+.Mapper with @AfterMapping hook that returns a non-null value
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @AfterMapping
+    protected <T> T attachEntity(@MappingTarget T entity) {
+        return entityManager.merge(entity);
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        CarDto target = attachEntity( carDto );
+        if ( target != null ) {
+            return target;
+        }
+
+        return carDto;
+    }
+}
+----
+====
+
+All before/after-mapping methods that *can* be applied to a mapping method *will* be used. <<selection-based-on-qualifiers>> can be used to further control which methods may be chosen and which not. For that, the qualifier annotation needs to be applied to the before/after-method and referenced in `BeanMapping#qualifiedBy` or `IterableMapping#qualifiedBy`.
+
+The order of the method invocation is determined primarily by their variant:
+
+1. `@BeforeMapping` methods without an `@MappingTarget` parameter are called before any null-checks on source
+parameters and constructing a new target bean.
+2. `@BeforeMapping` methods with an `@MappingTarget` parameter are called after constructing a new target bean.
+3. `@AfterMapping` methods are called at the end of the mapping method before the last `return` statement.
+
+Within those groups, the method invocations are ordered by their location of definition:
+
+1. Methods declared on `@Context` parameters, ordered by the parameter order.
+2. Methods implemented in the mapper itself.
+3. Methods from types referenced in `Mapper#uses()`, in the order of the type declaration in the annotation.
+4. Methods declared in one type are used after methods declared in their super-type.
+
+*Important:* the order of methods declared within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
+
+*Important:* when using a builder, the `@AfterMapping` annotated method must have the builder as `@MappingTarget` annotated parameter so that the method is able to modify the object going to be build. The `build` method is called when the `@AfterMapping` annotated method scope finishes. MapStruct will not call the `@AfterMapping` annotated method if the real target is used as `@MappingTarget` annotated parameter.
