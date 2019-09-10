@@ -20,8 +20,7 @@ import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
 @Mapper(uses = {
     org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class,
     org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class,
-    org.mapstruct.itest.jaxb.xsd.underscores.ObjectFactory.class,
-    JaxbMapper.class
+    org.mapstruct.itest.jaxb.xsd.underscores.ObjectFactory.class
 })
 public interface SourceTargetMapper {
 
