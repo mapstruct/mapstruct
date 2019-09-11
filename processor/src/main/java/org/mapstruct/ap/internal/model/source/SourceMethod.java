@@ -15,7 +15,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -77,7 +76,6 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
-        private BuilderType builderType = null;
         private List<Type> exceptionTypes;
         private Set<Mapping> mappings;
         private IterableMapping iterableMapping = null;
@@ -290,12 +288,6 @@ public class SourceMethod implements Method {
             && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
-    public boolean isSame(SourceMethod method) {
-        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( first( getSourceParameters() ).getType(), first( method.getSourceParameters() ).getType() )
-            && equals( getResultType(), method.getResultType() );
-    }
-
     public boolean canInheritFrom(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
@@ -373,10 +365,6 @@ public class SourceMethod implements Method {
         return isValueMapping;
     }
 
-    private boolean equals(Object o1, Object o2) {
-        return (o1 == null && o2 == null) || (o1 != null) && o1.equals( o2 );
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( returnType.toString() );
@@ -389,37 +377,6 @@ public class SourceMethod implements Method {
         sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
 
         return sb.toString();
-    }
-
-    // TODO remove?
-    /**
-     * Returns the {@link Mapping}s for the given source property.
-     *
-     * @param sourcePropertyName the source property name
-     * @return list of mappings
-     */
-    public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
-        List<Mapping> mappingsOfSourceProperty = new ArrayList<>();
-
-        for ( Mapping mapping : mappingOptions.getMappings() ) {
-
-            if ( isEnumMapping( this ) ) {
-                if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
-                    mappingsOfSourceProperty.add( mapping );
-                }
-            }
-            else {
-                List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
-
-                // there can only be a mapping if there's only one entry for a source property, so: param.property.
-                // There can be no mapping if there are more entries. So: param.property.property2
-                if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
-                    mappingsOfSourceProperty.add( mapping );
-                }
-            }
-        }
-
-        return mappingsOfSourceProperty;
     }
 
     public List<SourceMethod> getApplicablePrototypeMethods() {
