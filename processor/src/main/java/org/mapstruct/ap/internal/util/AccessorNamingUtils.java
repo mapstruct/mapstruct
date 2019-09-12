@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -78,13 +81,14 @@ public final class AccessorNamingUtils {
      * @return the 'element name' to which an adder method applies. If. e.g. an adder method is named
      * {@code addChild(Child v)}, the element name would be 'Child'.
      */
-    public String getElementNameForAdder(Accessor adderMethod) {
+    public List<String> getElementNamesForAdder(Accessor adderMethod) {
         if ( adderMethod.getAccessorType() == AccessorType.ADDER ) {
-            return accessorNamingStrategy.getElementName( (ExecutableElement) adderMethod.getElement() );
+            String elementName = accessorNamingStrategy.getElementName( (ExecutableElement) adderMethod.getElement() );
+            if ( elementName != null ) {
+                return Arrays.asList( elementName, elementName.concat( "List" ) );
+            }
         }
-        else {
-            return null;
-        }
+        return Collections.emptyList();
     }
 
     private static String getQualifiedName(TypeMirror type) {

@@ -37,12 +37,12 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -689,15 +689,15 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         for ( Accessor candidate : candidates ) {
-            String elementName = accessorNaming.getElementNameForAdder( candidate );
-            if ( elementName != null && elementName.equals( Nouns.singularizeHuman( pluralPropertyName ) ) ) {
+            List<String> elementNames = accessorNaming.getElementNamesForAdder( candidate );
+            if ( elementNames.contains( Nouns.singularizeHuman( pluralPropertyName ) ) ) {
                 return candidate;
             }
         }
 
         for ( Accessor candidate : candidates ) {
-            String elementName = accessorNaming.getElementNameForAdder( candidate );
-            if ( elementName != null && elementName.equals( Nouns.singularizeDali( pluralPropertyName ) ) ) {
+            List<String> elementNames = accessorNaming.getElementNamesForAdder( candidate );
+            if ( elementNames.contains( Nouns.singularizeDali( pluralPropertyName ) ) ) {
                 return candidate;
             }
         }
