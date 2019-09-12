@@ -51,8 +51,6 @@ import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
