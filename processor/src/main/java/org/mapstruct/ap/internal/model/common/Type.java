@@ -688,10 +688,6 @@ public class Type extends ModelElement implements Comparable<Type> {
             return null;
         }
 
-        if ( candidates.size() == 1 ) {
-            return candidates.get( 0 );
-        }
-
         for ( Accessor candidate : candidates ) {
             String elementName = accessorNaming.getElementNameForAdder( candidate );
             if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
