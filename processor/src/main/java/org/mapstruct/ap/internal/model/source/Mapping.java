@@ -481,9 +481,6 @@ public class Mapping {
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        if ( ".".equals( targetName ) ) {
-            return false;
-        }
         Mapping mapping = (Mapping) o;
         return targetName.equals( mapping.targetName );
     }
