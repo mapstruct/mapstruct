@@ -29,25 +29,23 @@ public class MappingOptions {
         null,
         null,
         null,
-        Collections.emptyList(),
-        false
+        Collections.emptyList()
     );
+
     private Set<Mapping> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
     private BeanMapping beanMapping;
     private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
-    private final boolean restrictToDefinedMappings;
 
     public MappingOptions(Set<Mapping> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping, List<ValueMapping> valueMappings, boolean restrictToDefinedMappings ) {
+        BeanMapping beanMapping, List<ValueMapping> valueMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
         this.beanMapping = beanMapping;
         this.valueMappings = valueMappings;
-        this.restrictToDefinedMappings = restrictToDefinedMappings;
     }
 
     /**
@@ -60,72 +58,11 @@ public class MappingOptions {
     }
 
     /**
-     * creates mapping options with only regular mappings
-     *
-     * @param mappings regular mappings to add
-     * @param restrictToDefinedMappings whether to restrict the mappings only to the defined mappings
-     * @return MappingOptions with only regular mappings
-     */
-    public static MappingOptions forMappingsOnly(Set<Mapping> mappings, boolean restrictToDefinedMappings) {
-        return forMappingsOnly( mappings, restrictToDefinedMappings, restrictToDefinedMappings );
-    }
-
-    /**
-     * creates mapping options with only regular mappings
-     *
-     * @param mappings regular mappings to add
-     * @param restrictToDefinedMappings whether to restrict the mappings only to the defined mappings
-     * @param forForgedMethods whether the mappings are for forged methods
-     * @return MappingOptions with only regular mappings
-     */
-    public static MappingOptions forMappingsOnly(Set<Mapping> mappings,
-        boolean restrictToDefinedMappings, boolean forForgedMethods) {
-        return new MappingOptions(
-            mappings,
-            null,
-            null,
-            forForgedMethods ? BeanMapping.forForgedMethods() : null,
-            Collections.emptyList(),
-            restrictToDefinedMappings
-        );
-
-    }
-
-    /**
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
      * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
      */
     public Set<Mapping> getMappings() {
         return mappings;
-    }
-
-    /**
-     * Check there are nested target references for this mapping options.
-     *
-     * @return boolean, true if there are nested target references
-     */
-    public boolean hasNestedTargetReferences() {
-
-        for ( Mapping mapping : mappings ) {
-            TargetReference targetReference = mapping.getTargetReference();
-            if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    /**
-     * @return all dependencies to other properties the contained mappings are dependent on
-     */
-    public Set<String> collectNestedDependsOn() {
-
-        Set<String> nestedDependsOn = new LinkedHashSet<>();
-        for ( Mapping mapping : mappings ) {
-            nestedDependsOn.addAll( mapping.getDependsOn() );
-        }
-        return nestedDependsOn;
     }
 
     public IterableMapping getIterableMapping() {
@@ -274,10 +211,6 @@ public class MappingOptions {
 
     private String[] getPropertyEntries( Mapping mapping ) {
         return mapping.getTargetName().split( "\\." );
-    }
-
-    public boolean isRestrictToDefinedMappings() {
-        return restrictToDefinedMappings;
     }
 
 }

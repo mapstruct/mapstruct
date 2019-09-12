@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model.beanmapping;
 
-import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
+import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
@@ -20,6 +20,9 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
