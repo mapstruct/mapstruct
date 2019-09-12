@@ -36,6 +36,7 @@ Peter Larson - https://github.com/pjlarson
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
 Richard Lea - https://github.com/chigix
+Ruslan Mikhalev - https://github.com/DNAlchemist
 Saheb Preet Singh - https://github.com/sahebpreet
 Samuel Wright - https://github.com/samwright
 Sebastian Haberey - https://github.com/sebastianhaberey
