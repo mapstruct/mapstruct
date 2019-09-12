@@ -14,6 +14,11 @@ import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
+/**
+ * Class acts as a common base class for {@link TargetReference} and {@link SourceReference}.
+ *
+ * @author sjaak
+ */
 public abstract class AbstractReference {
 
     private final Parameter parameter;
@@ -55,10 +60,10 @@ public abstract class AbstractReference {
      * @return
      */
     public PropertyEntry getShallowestProperty() {
-        if (  !propertyEntries.isEmpty() ) {
-            return first( propertyEntries );
+        if ( propertyEntries.isEmpty() ) {
+            return null;
         }
-        return null;
+        return first( propertyEntries );
     }
 
     /**
@@ -66,10 +71,10 @@ public abstract class AbstractReference {
      * @return
      */
     public String getShallowestPropertyName() {
-        if (  !propertyEntries.isEmpty() ) {
-            return first( propertyEntries ).getName();
+        if ( propertyEntries.isEmpty() ) {
+            return null;
         }
-        return null;
+        return first( propertyEntries ).getName();
     }
 
     /**
@@ -77,10 +82,10 @@ public abstract class AbstractReference {
      * @return
      */
     public PropertyEntry getDeepestProperty() {
-        if (  !propertyEntries.isEmpty() ) {
-            return last( propertyEntries );
+        if ( propertyEntries.isEmpty() ) {
+            return null;
         }
-        return null;
+        return last( propertyEntries );
     }
 
     /**
@@ -88,10 +93,10 @@ public abstract class AbstractReference {
      * @return
      */
     public String getDeepestPropertyName() {
-        if (  !propertyEntries.isEmpty() ) {
-            return last( propertyEntries ).getName();
+        if ( propertyEntries.isEmpty() ) {
+            return null;
         }
-        return null;
+        return last( propertyEntries ).getName();
     }
 
     public boolean isNested() {

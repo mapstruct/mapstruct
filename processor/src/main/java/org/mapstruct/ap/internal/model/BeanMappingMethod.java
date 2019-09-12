@@ -1020,10 +1020,5 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return Objects.equals( propertyMappings, that.propertyMappings );
     }
 
-    private interface SingleMappingByTargetPropertyNameFunction {
-
-        Mapping getSingleMappingByTargetPropertyName(String targetPropertyName);
-    }
-
 }
 
