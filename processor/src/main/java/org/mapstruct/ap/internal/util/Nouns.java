@@ -88,8 +88,8 @@ public class Nouns {
     }
 
     /**
-     * Converts given pluralized noun into the singular human form. If no singular form could be determined, the given word
-     * itself is returned.
+     * Converts given pluralized noun into the singular human form. If no singular form could be determined,
+     * the given word itself is returned.
      *
      * @param plural plural word
      * @return singular human form, if available
@@ -106,8 +106,8 @@ public class Nouns {
     }
 
     /**
-     * Converts given pluralized noun into the singular dali form. If no singular form could be determined, the given word
-     * itself is returned.
+     * Converts given pluralized noun into the singular dali form. If no singular form could be determined,
+     * the given word itself is returned.
      *
      * @param plural plural word
      * @return singular dali form, if available
