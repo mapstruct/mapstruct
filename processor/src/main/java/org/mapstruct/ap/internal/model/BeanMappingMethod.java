@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
@@ -52,7 +51,6 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
-import static org.mapstruct.ap.internal.model.source.Mapping.getMappingByTargetName;
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
@@ -88,7 +86,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
         private final Set<String> existingVariableNames = new HashSet<>();
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
-        private Function<String, Mapping> singleMapping;
 
         private MappingReferences mappingReferences;
 
@@ -103,15 +100,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         public Builder sourceMethod(SourceMethod sourceMethod) {
-            singleMapping =
-                targetName -> getMappingByTargetName( targetName, sourceMethod.getMappingOptions().getMappings() );
             this.method = sourceMethod;
             this.mappingReferences = forSourceMethod( sourceMethod, ctx.getMessager(), ctx.getTypeFactory() );
             return this;
         }
 
         public Builder forgedMethod(ForgedMethod forgedMethod) {
-            singleMapping = targetPropertyName -> null;
             this.method = forgedMethod;
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
@@ -320,12 +314,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .name( propertyName )
                         .build();
 
+                    Accessor targetPropertyReadAccessor =
+                        method.getResultType().getPropertyReadAccessors().get( propertyName );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
                         .sourceMethod( method )
                         .targetWriteAccessor( unprocessedTargetProperties.get( propertyName ) )
-                        .targetReadAccessor( getTargetPropertyReadAccessor( propertyName ) )
+                        .targetReadAccessor( targetPropertyReadAccessor )
                         .targetPropertyName( propertyName )
                         .sourceReference( reference )
                         .existingVariableNames( existingVariableNames )
@@ -480,18 +476,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             for ( MappingReference mapping : mappingReferences.getMappingReferences() ) {
-                TargetReference targetReference = mapping.getTargetReference();
-                if ( targetReference.isValid() ) {
-                    String target = first( targetReference.getPropertyEntries() ).getFullName();
+                if ( mapping.isValid() ) {
+                    String target = mapping.getTargetReference().getShallowestPropertyName();
                     if ( !handledTargets.contains( target ) ) {
                         if ( handleDefinedMapping( mapping, handledTargets ) ) {
                             errorOccurred = true;
                         }
                     }
-                    if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
-                        List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
-                        if ( !sourceEntries.isEmpty() ) {
-                            String source = first( sourceEntries ).getFullName();
+                    if ( mapping.getSourceReference() != null ) {
+                        String source = mapping.getSourceReference().getShallowestPropertyName();
+                        if ( source != null ) {
                             unprocessedSourceProperties.remove( source );
                         }
                     }
@@ -558,6 +552,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
+            // check if source / expression / constant are not somehow handled already
+            if ( unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
+                return false;
+            }
+
             // check the mapping options
             // its an ignored property mapping
             if ( mapping.isIgnored() ) {
@@ -565,11 +564,52 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetProperty.getName() );
             }
 
+            // its a constant
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
+            else if ( mapping.getConstant() != null ) {
+
+                propertyMapping = new ConstantMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .constantExpression( mapping.getConstant() )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( targetPropertyName )
+                    .formattingParameters( mapping.getFormattingParameters() )
+                    .selectionParameters( mapping.getSelectionParameters() )
+                    .existingVariableNames( existingVariableNames )
+                    .dependsOn( mapping.getDependsOn() )
+                    .mirror( mapping.getMirror() )
+                    .build();
+                handledTargets.add( targetPropertyName );
+            }
+
+            // its an expression
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
+            else if ( mapping.getJavaExpression() != null ) {
+
+                propertyMapping = new JavaExpressionMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .javaExpression( mapping.getJavaExpression() )
+                    .existingVariableNames( existingVariableNames )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( targetPropertyName )
+                    .dependsOn( mapping.getDependsOn() )
+                    .mirror( mapping.getMirror() )
+                    .build();
+                handledTargets.add( targetPropertyName );
+            }
             // its a plain-old property mapping
-            else if ( mapping.getSourceName() != null ) {
+            else  {
 
                 // determine source parameter
                 SourceReference sourceRef = mappingRef.getSourceReference();
+                if ( sourceRef == null && method.getSourceParameters().size() == 1 ) {
+                    sourceRef = getSourceRef( method.getSourceParameters().get( 0 ), targetPropertyName );
+                }
+
                 if ( sourceRef.isValid() ) {
 
                     // targetProperty == null can occur: we arrived here because we want as many errors
@@ -598,46 +638,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     errorOccured = true;
                 }
             }
-
-            // its a constant
-            // if we have an unprocessed target that means that it most probably is nested and we should
-            // not generated any mapping for it now. Eventually it will be done though
-            else if ( mapping.getConstant() != null && !unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
-
-                propertyMapping = new ConstantMappingBuilder()
-                    .mappingContext( ctx )
-                    .sourceMethod( method )
-                    .constantExpression( mapping.getConstant() )
-                    .targetProperty( targetProperty )
-                    .targetPropertyName( targetPropertyName )
-                    .formattingParameters( mapping.getFormattingParameters() )
-                    .selectionParameters( mapping.getSelectionParameters() )
-                    .existingVariableNames( existingVariableNames )
-                    .dependsOn( mapping.getDependsOn() )
-                    .mirror( mapping.getMirror() )
-                    .build();
-                handledTargets.add( targetPropertyName );
-            }
-
-            // its an expression
-            // if we have an unprocessed target that means that it most probably is nested and we should
-            // not generated any mapping for it now. Eventually it will be done though
-            else if ( mapping.getJavaExpression() != null
-                && !unprocessedDefinedTargets.containsKey( targetPropertyName ) ) {
-
-                propertyMapping = new JavaExpressionMappingBuilder()
-                    .mappingContext( ctx )
-                    .sourceMethod( method )
-                    .javaExpression( mapping.getJavaExpression() )
-                    .existingVariableNames( existingVariableNames )
-                    .targetProperty( targetProperty )
-                    .targetPropertyName( targetPropertyName )
-                    .dependsOn( mapping.getDependsOn() )
-                    .mirror( mapping.getMirror() )
-                    .build();
-                handledTargets.add( targetPropertyName );
-            }
-
             // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
             if ( propertyMapping != null ) {
                 propertyMappings.add( propertyMapping );
@@ -653,91 +653,60 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping() {
-
-            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
-                unprocessedTargetProperties.entrySet().iterator();
-
-            while ( targetPropertyEntriesIterator.hasNext() ) {
-
-                Entry<String, Accessor> targetProperty = targetPropertyEntriesIterator.next();
-                String targetPropertyName = targetProperty.getKey();
-
-                PropertyMapping propertyMapping = null;
-
-                if ( propertyMapping == null ) {
-
-                    for ( Parameter sourceParameter : method.getSourceParameters() ) {
-
-                        Type sourceType = sourceParameter.getType();
-
-                        if ( sourceType.isPrimitive() || sourceType.isArrayType() ) {
-                            continue;
-                        }
-
-                        PropertyMapping newPropertyMapping = null;
-
-                        Accessor sourceReadAccessor =
-                            sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
-
-                        Accessor sourcePresenceChecker =
-                            sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
-
-                        if ( sourceReadAccessor != null ) {
-                            Mapping mapping = singleMapping.apply( targetProperty.getKey() );
-                            DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
-
-                            SourceReference sourceRef = new SourceReference.BuilderFromProperty()
-                                .sourceParameter( sourceParameter )
-                                .type( ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor ) )
-                                .readAccessor( sourceReadAccessor )
-                                .presenceChecker( sourcePresenceChecker )
-                                .name( targetProperty.getKey() )
-                                .build();
-
-                            MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
-                            newPropertyMapping = new PropertyMappingBuilder()
-                                .mappingContext( ctx )
-                                .sourceMethod( method )
-                                .targetWriteAccessor( targetProperty.getValue() )
-                                .targetReadAccessor( getTargetPropertyReadAccessor( targetPropertyName ) )
-                                .targetPropertyName( targetPropertyName )
-                                .sourceReference( sourceRef )
-                                .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
-                                .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
-                                .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
-                                .existingVariableNames( existingVariableNames )
-                                .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptySet() )
-                                .forgeMethodWithMappingReferences( mappingRefs )
-                                .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
-                                .nullValuePropertyMappingStrategy( mapping != null ?
-                                    mapping.getNullValuePropertyMappingStrategy() : null )
-                                .mirror( mapping != null ? mapping.getMirror() : null )
-                                .build();
-
-                            unprocessedSourceParameters.remove( sourceParameter );
-                        }
-
-                        if ( propertyMapping != null && newPropertyMapping != null ) {
-                            // TODO improve error message
-                            ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                                targetPropertyName
-                            );
-                            break;
-                        }
-                        else if ( newPropertyMapping != null ) {
-                            propertyMapping = newPropertyMapping;
-                        }
+            List<SourceReference> sourceReferences = new ArrayList<>();
+            for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
+                for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                    SourceReference sourceRef = getSourceRef( sourceParameter, targetPropertyName );
+                    if ( sourceRef != null ) {
+                        sourceReferences.add( sourceRef );
                     }
                 }
+            }
+            applyPropertyNameBasedMapping( sourceReferences );
+        }
+
+        /**
+         * Iterates over all target properties and all source parameters.
+         * <p>
+         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
+         * the set of remaining target properties.
+         */
+        private void applyPropertyNameBasedMapping(List<SourceReference> sourceReferences) {
+
+            for ( SourceReference sourceRef : sourceReferences ) {
+
+                String targetPropertyName = sourceRef.getDeepestPropertyName();
+                Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
+                if ( targetPropertyWriteAccessor == null ) {
+                    // TODO improve error message
+                    ctx.getMessager()
+                       .printMessage( method.getExecutable(),
+                           Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                           targetPropertyName
+                       );
+                    continue;
+                }
+
+                Accessor targetPropertyReadAccessor =
+                    method.getResultType().getPropertyReadAccessors().get( targetPropertyName );
+                MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
+                PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
+                                                              .sourceMethod( method )
+                                                              .targetWriteAccessor( targetPropertyWriteAccessor )
+                                                              .targetReadAccessor( targetPropertyReadAccessor )
+                                                              .targetPropertyName( targetPropertyName )
+                                                              .sourceReference( sourceRef )
+                                                              .existingVariableNames( existingVariableNames )
+                                                              .forgeMethodWithMappingReferences( mappingRefs )
+                                                              .build();
+
+                unprocessedSourceParameters.remove( sourceRef.getParameter() );
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
-                    targetPropertyEntriesIterator.remove();
-                    unprocessedDefinedTargets.remove( targetPropertyName );
-                    unprocessedSourceProperties.remove( targetPropertyName );
                 }
+                unprocessedDefinedTargets.remove( targetPropertyName );
+                unprocessedSourceProperties.remove( targetPropertyName );
             }
         }
 
@@ -756,30 +725,24 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                     Parameter sourceParameter = sourceParameters.next();
                     if ( sourceParameter.getName().equals( targetProperty.getKey() ) ) {
-                        Mapping mapping = singleMapping.apply( targetProperty.getKey() );
 
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
                             .name( targetProperty.getKey() )
                             .build();
 
+                        Accessor targetPropertyReadAccessor =
+                            method.getResultType().getPropertyReadAccessors().get( targetProperty.getKey() );
                         MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
                             .targetWriteAccessor( targetProperty.getValue() )
-                            .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
+                            .targetReadAccessor( targetPropertyReadAccessor )
                             .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
-                            .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
-                            .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
                             .existingVariableNames( existingVariableNames )
-                            .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptySet() )
                             .forgeMethodWithMappingReferences( mappingRefs )
-                            .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
-                            .nullValuePropertyMappingStrategy( mapping != null ?
-                                mapping.getNullValuePropertyMappingStrategy() : null )
-                            .mirror( mapping != null ? mapping.getMirror() : null )
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -792,16 +755,39 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
+        private SourceReference getSourceRef(Parameter sourceParameter, String targetPropertyName) {
+
+            SourceReference sourceRef = null;
+
+            if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
+                return sourceRef;
+            }
+
+            Accessor sourceReadAccessor =
+                sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
+
+            Accessor sourcePresenceChecker =
+                sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
+
+            if ( sourceReadAccessor != null ) {
+                DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
+                Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
+                sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
+                                                                     .type( returnType )
+                                                                     .readAccessor( sourceReadAccessor )
+                                                                     .presenceChecker( sourcePresenceChecker )
+                                                                     .name( targetPropertyName )
+                                                                     .build();
+            }
+            return sourceRef;
+        }
+
         private MappingReferences extractMappingReferences(String targetProperty, boolean restrictToDefinedMappings) {
             if ( unprocessedDefinedTargets.containsKey( targetProperty ) ) {
                 Set<MappingReference> mappings = unprocessedDefinedTargets.get( targetProperty );
                 return new MappingReferences( mappings, restrictToDefinedMappings );
             }
             return null;
-        }
-
-        private Accessor getTargetPropertyReadAccessor(String propertyName) {
-            return method.getResultType().getPropertyReadAccessors().get( propertyName );
         }
 
         private ReportingPolicyPrism getUnmappedTargetPolicy() {
@@ -1032,11 +1018,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return false;
         }
         return Objects.equals( propertyMappings, that.propertyMappings );
-    }
-
-    private interface SingleMappingByTargetPropertyNameFunction {
-
-        Mapping getSingleMappingByTargetPropertyName(String targetPropertyName);
     }
 
 }
