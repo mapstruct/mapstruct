@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -57,7 +58,7 @@ public class ForgedMethod implements Method {
             name,
             sourceType,
             returnType,
-            Collections.<Parameter>emptyList(),
+            Collections.emptyList(),
             basedOn,
             null,
             MappingReferences.empty(),
@@ -361,10 +362,10 @@ public class ForgedMethod implements Method {
 
         ForgedMethod that = (ForgedMethod) o;
 
-        if ( parameters != null ? !parameters.equals( that.parameters ) : that.parameters != null ) {
+        if ( !Objects.equals( parameters, that.parameters ) ) {
             return false;
         }
-        return returnType != null ? returnType.equals( that.returnType ) : that.returnType == null;
+        return Objects.equals( returnType, that.returnType );
 
     }
 
