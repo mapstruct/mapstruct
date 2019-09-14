@@ -15,7 +15,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -77,7 +76,6 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
-        private BuilderType builderType = null;
         private List<Type> exceptionTypes;
         private Set<Mapping> mappings;
         private IterableMapping iterableMapping = null;
@@ -290,12 +288,6 @@ public class SourceMethod implements Method {
             && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
-    public boolean isSame(SourceMethod method) {
-        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( first( getSourceParameters() ).getType(), first( method.getSourceParameters() ).getType() )
-            && equals( getResultType(), method.getResultType() );
-    }
-
     public boolean canInheritFrom(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
@@ -371,10 +363,6 @@ public class SourceMethod implements Method {
             isValueMapping = isEnumMapping( this ) && mappingOptions.getMappings().isEmpty();
         }
         return isValueMapping;
-    }
-
-    private boolean equals(Object o1, Object o2) {
-        return (o1 == null && o2 == null) || (o1 != null) && o1.equals( o2 );
     }
 
     @Override
