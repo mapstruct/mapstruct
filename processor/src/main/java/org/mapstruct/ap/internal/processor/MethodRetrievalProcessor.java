@@ -200,7 +200,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
-            || isValidLifecycleCallbackMethod( method, returnType ) ) {
+            || isValidLifecycleCallbackMethod( method ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -276,7 +276,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 contextParam.getType().getTypeElement(),
                 mapperToImplement,
                 mapperConfig,
-                Collections.<SourceMethod> emptyList() );
+                Collections.emptyList() );
 
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
@@ -318,7 +318,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .build();
     }
 
-    private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
+    private boolean isValidLifecycleCallbackMethod(ExecutableElement method) {
         return Executables.isLifecycleCallbackMethod( method );
     }
 
@@ -530,7 +530,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            ValueMapping valueMapping = ValueMapping.fromMappingPrism( mappingAnnotation, method, messager );
+            ValueMapping valueMapping = ValueMapping.fromMappingPrism( mappingAnnotation );
             if ( valueMapping != null ) {
                 valueMappings.add( valueMapping );
             }

@@ -31,7 +31,7 @@ public class MethodSelectors {
             new MethodFamilySelector(),
             new TypeSelector( typeFactory, messager ),
             new QualifierSelector( typeUtils, elementUtils ),
-            new TargetTypeSelector( typeUtils, elementUtils ),
+            new TargetTypeSelector( typeUtils ),
             new XmlElementDeclSelector( typeUtils ),
             new InheritanceSelector(),
             new CreateOrUpdateSelector(),
