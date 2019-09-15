@@ -7,14 +7,16 @@ package org.mapstruct.ap.test.bugs._1801.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Immutable implementation of {@link ItemDTO}.
  * <p>
  * Use the builder to create immutable instances:
  * {@code ImmutableItemDTO.builder()}.
+ *
+ * @author Zhizhi Deng
  */
-@SuppressWarnings({ "all" })
 public final class ImmutableItemDTO extends ItemDTO {
     private final String id;
 
@@ -38,8 +40,8 @@ public final class ImmutableItemDTO extends ItemDTO {
      *
      * @return A modified copy of the {@code this} object
      */
-    public final ImmutableItemDTO withId(String value) {
-        if ( this.id == value ) {
+    public ImmutableItemDTO withId(String value) {
+        if ( Objects.equals( this.id, value ) ) {
             return this;
         }
         return new ImmutableItemDTO( value );
@@ -139,7 +141,7 @@ public final class ImmutableItemDTO extends ItemDTO {
          *
          * @return {@code this} builder for use in a chained invocation
          */
-        public final Builder from(ItemDTO instance) {
+        public Builder from(ItemDTO instance) {
             id( instance.getId() );
             return this;
         }
@@ -151,7 +153,7 @@ public final class ImmutableItemDTO extends ItemDTO {
          *
          * @return {@code this} builder for use in a chained invocation
          */
-        public final Builder id(String id) {
+        public Builder id(String id) {
             this.id = id;
             initBits &= ~INIT_BIT_ID;
             return this;
@@ -172,7 +174,7 @@ public final class ImmutableItemDTO extends ItemDTO {
         }
 
         private String formatRequiredAttributesMessage() {
-            List<String> attributes = new ArrayList<String>();
+            List<String> attributes = new ArrayList<>();
             if ( ( initBits & INIT_BIT_ID ) != 0 ) {
                 attributes.add( "id" );
             }

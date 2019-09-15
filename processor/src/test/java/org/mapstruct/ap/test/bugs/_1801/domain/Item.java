@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1801.domain;
 
+/**
+ * @author Zhizhi Deng
+ */
 public abstract class Item {
     public abstract String getId();
 

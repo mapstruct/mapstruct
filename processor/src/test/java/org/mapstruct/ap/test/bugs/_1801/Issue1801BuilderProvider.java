@@ -5,24 +5,33 @@
  */
 package org.mapstruct.ap.test.bugs._1801;
 
+import java.util.List;
+import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
-import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
 
+/**
+ * @author Zhizhi Deng
+ */
 public class Issue1801BuilderProvider extends ImmutablesBuilderProvider implements BuilderProvider {
 
-    private BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement) {
-        return findBuilderInfoFromInnerBuilderClass( typeElement );
+    @Override
+    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
+        Name name = typeElement.getQualifiedName();
+        if ( name.toString().endsWith( ".Item" ) ) {
+            BuilderInfo info = findBuilderInfoFromInnerBuilderClass( typeElement );
+            if ( info != null ) {
+                return info;
+            }
+        }
+        return super.findBuilderInfo( typeElement );
     }
 
     /**
@@ -50,57 +59,38 @@ public class Issue1801BuilderProvider extends ImmutablesBuilderProvider implemen
             return null;
         }
 
-        List<TypeElement> types = ElementFilter.typesIn( typeElement.getEnclosedElements() );
-        List<BuilderInfo> builderInfo = new ArrayList<>();
-        types.stream()
-             .filter( innerType -> isPossibleInnerBuilder( innerType, typeElement ) )
-             .forEach( innerBuilderClass -> {
-                 Collection<ExecutableElement> buildMethods = findBuildMethods( innerBuilderClass, typeElement );
-                 if (!buildMethods.isEmpty()) {
-                     ElementFilter.constructorsIn( innerBuilderClass.getEnclosedElements() )
-                                  .stream()
-                                  .filter( constructor -> constructor.getParameters().isEmpty() &&
-                                      constructor.getModifiers().contains( Modifier.PUBLIC ) )
-                                  .findAny()
-                                  .ifPresent( defaultConstructor -> builderInfo.add(
-                                      new BuilderInfo.Builder()
-                                          .builderCreationMethod( defaultConstructor )
-                                          .buildMethod( buildMethods )
-                                          .build()
-                                  ) );
-                 }
-             } );
+        List<TypeElement> innerTypes = ElementFilter.typesIn( typeElement.getEnclosedElements() );
+        ExecutableElement defaultConstructor = innerTypes.stream()
+                                                         .filter( this::isBuilderCandidate )
+                                                         .map( this::getEmptyArgPublicConstructor )
+                                                         .filter( Objects::nonNull )
+                                                         .findAny()
+                                                         .orElse( null );
 
-        if (builderInfo.size() == 1) {
-            return builderInfo.get( 0 );
+        if ( defaultConstructor != null ) {
+            return new BuilderInfo.Builder()
+                .builderCreationMethod( defaultConstructor )
+                .buildMethod( findBuildMethods( (TypeElement) defaultConstructor.getEnclosingElement(), typeElement ) )
+                .build();
         }
-        else if (builderInfo.size() > 1) {
-            throw new MoreThanOneBuilderCreationMethodException(typeElement.asType(), builderInfo);
-        }
-
         return null;
     }
 
-    private boolean isPossibleInnerBuilder(TypeElement innerClass, TypeElement outerClass) {
-        final String packageName = this.elementUtils.getPackageOf( outerClass ).getQualifiedName().toString();
-        final Name outerSimpleName = outerClass.getSimpleName();
-        final String builderClassName = packageName + ".Immutable" + outerSimpleName + ".Builder";
-        return innerClass.getSimpleName().contentEquals( "Builder" ) &&
-            getTypeElement( innerClass.getSuperclass() ).getQualifiedName().contentEquals( builderClassName ) &&
-            innerClass.getModifiers().contains( Modifier.PUBLIC );
+    private boolean isBuilderCandidate(TypeElement innerType ) {
+        TypeElement outerType = (TypeElement) innerType.getEnclosingElement();
+        String packageName = this.elementUtils.getPackageOf( outerType ).getQualifiedName().toString();
+        Name outerSimpleName = outerType.getSimpleName();
+        String builderClassName = packageName + ".Immutable" + outerSimpleName + ".Builder";
+        return innerType.getSimpleName().contentEquals( "Builder" )
+            && getTypeElement( innerType.getSuperclass() ).getQualifiedName().contentEquals( builderClassName )
+            && innerType.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    @Override
-    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
-        Name name = typeElement.getQualifiedName();
-        if ( name.toString().endsWith( ".Item" ) ) {
-            BuilderInfo info = findBuilderInfoForImmutables( typeElement );
-            if ( info != null ) {
-                return info;
-            }
-        }
-
-        return super.findBuilderInfo( typeElement );
+    private ExecutableElement getEmptyArgPublicConstructor(TypeElement builderType) {
+        return ElementFilter.constructorsIn( builderType.getEnclosedElements() ).stream()
+                     .filter( c -> c.getParameters().isEmpty() )
+                     .filter( c -> c.getModifiers().contains( Modifier.PUBLIC ) )
+                     .findAny()
+            .orElse( null );
     }
-
 }

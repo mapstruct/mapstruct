@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1801.dto;
 
+/**
+ * @author Zhizhi Deng
+ */
 public abstract class ItemDTO {
     public abstract String getId();
 }

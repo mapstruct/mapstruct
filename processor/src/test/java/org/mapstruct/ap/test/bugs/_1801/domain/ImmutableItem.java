@@ -13,6 +13,8 @@ import java.util.List;
  * <p>
  * Superclass should expose a static subclass of the Builder to create immutable instance
  * {@code public static Builder extends ImmutableItem.Builder}.
+ *
+ * @author Zhizhi Deng
  */
 @SuppressWarnings({"all"})
 public final class ImmutableItem extends Item {

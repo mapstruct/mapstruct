@@ -140,21 +140,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
                 if ( returnTypeImpl != null ) {
                     factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
-                    }
-                    else {
-                        reportResultTypeFromBeanMappingNotConstructableError( returnTypeImpl );
                     }
                 }
-                else {
-                    returnTypeImpl = isBuilderRequired() ? returnTypeBuilder.getBuilder() : method.getReturnType();
+                else if ( isBuilderRequired() ) {
+                    returnTypeImpl = returnTypeBuilder.getBuilder();
                     factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
-                    else {
-                        reportReturnTypeNotConstructableError( returnTypeImpl );
+                }
+                else if ( !method.isUpdateMethod() ) {
+                    returnTypeImpl = method.getReturnType();
+                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                        returnTypeToConstruct = returnTypeImpl;
                     }
                 }
             }
@@ -383,57 +384,60 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return null;
         }
 
-        private boolean canBeConstructed(Type typeToBeConstructed) {
-            return !typeToBeConstructed.isAbstract()
-                    && typeToBeConstructed.isAssignableTo( this.method.getResultType() )
-                    && typeToBeConstructed.hasEmptyAccessibleConstructor();
-        }
+        private boolean canResultTypeFromBeanMappingBeConstructed(Type resultType) {
 
-        private void reportResultTypeFromBeanMappingNotConstructableError(Type resultType) {
-
+            boolean error = true;
             if ( resultType.isAbstract() ) {
                 ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
-                                BEANMAPPING_ABSTRACT,
-                                resultType,
-                                method.getResultType()
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    BEANMAPPING_ABSTRACT,
+                    resultType,
+                    method.getResultType()
                 );
+                error = false;
             }
             else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                 ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
-                                BEANMAPPING_NOT_ASSIGNABLE,
-                                resultType,
-                                method.getResultType()
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    BEANMAPPING_NOT_ASSIGNABLE,
+                    resultType,
+                    method.getResultType()
                 );
+                error = false;
             }
             else if ( !resultType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
-                                Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                                resultType
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    resultType
                 );
+                error = false;
             }
+            return error;
         }
 
-        private void reportReturnTypeNotConstructableError(Type returnType) {
+        private boolean canReturnTypeBeConstructed(Type returnType) {
+            boolean error = true;
             if ( returnType.isAbstract() ) {
                 ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                GENERAL_ABSTRACT_RETURN_TYPE,
-                                returnType
+                    method.getExecutable(),
+                    GENERAL_ABSTRACT_RETURN_TYPE,
+                    returnType
                 );
+                error = false;
             }
             else if ( !returnType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                                returnType
+                    method.getExecutable(),
+                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    returnType
                 );
+                error = false;
             }
+            return error;
         }
 
         /**
@@ -1021,4 +1025,3 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
 }
-
