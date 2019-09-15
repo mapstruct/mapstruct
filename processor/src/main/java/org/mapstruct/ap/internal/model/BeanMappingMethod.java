@@ -127,21 +127,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
                 if ( returnTypeImpl != null ) {
                     factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
-                    }
-                    else {
-                        reportResultTypeFromBeanMappingNotConstructableError( returnTypeImpl );
                     }
                 }
-                else {
-                    returnTypeImpl = isBuilderRequired() ? returnTypeBuilder.getBuilder() : method.getReturnType();
+                else if (isBuilderRequired() ) {
+                    returnTypeImpl = returnTypeBuilder.getBuilder();
                     factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
-                    else {
-                        reportReturnTypeNotConstructableError( returnTypeImpl );
+                }
+                else if ( !method.isUpdateMethod() ) {
+                    returnTypeImpl = method.getReturnType();
+                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                        returnTypeToConstruct = returnTypeImpl;
                     }
                 }
             }
@@ -374,14 +375,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return null;
         }
 
-        private boolean canBeConstructed(Type typeToBeConstructed) {
-            return !typeToBeConstructed.isAbstract()
-                && typeToBeConstructed.isAssignableTo( this.method.getResultType() )
-                && typeToBeConstructed.hasEmptyAccessibleContructor();
-        }
+        private boolean canResultTypeFromBeanMappingBeConstructed(Type resultType) {
 
-        private void reportResultTypeFromBeanMappingNotConstructableError(Type resultType) {
-
+            boolean error = true;
             if ( resultType.isAbstract() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
@@ -390,6 +386,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     resultType,
                     method.getResultType()
                 );
+                error = false;
             }
             else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                 ctx.getMessager().printMessage(
@@ -399,6 +396,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     resultType,
                     method.getResultType()
                 );
+                error = false;
             }
             else if ( !resultType.hasEmptyAccessibleContructor() ) {
                 ctx.getMessager().printMessage(
@@ -407,16 +405,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                     resultType
                 );
+                error = false;
             }
+            return error;
         }
 
-        private void reportReturnTypeNotConstructableError(Type returnType) {
+        private boolean canReturnTypeBeConstructed(Type returnType) {
+            boolean error = true;
             if ( returnType.isAbstract() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     GENERAL_ABSTRACT_RETURN_TYPE,
                     returnType
                 );
+                error = false;
             }
             else if ( !returnType.hasEmptyAccessibleContructor() ) {
                 ctx.getMessager().printMessage(
@@ -424,7 +426,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                     returnType
                 );
+                error = false;
             }
+            return error;
         }
 
         /**
