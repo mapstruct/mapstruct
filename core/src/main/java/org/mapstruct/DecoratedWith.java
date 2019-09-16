@@ -23,8 +23,6 @@ import java.lang.annotation.Target;
  * <b>NOTE:</b> This annotation is not supported for the component model {@code cdi}. Use CDI's own
  * <a href="https://docs.jboss.org/cdi/spec/1.0/html/decorators.html">{@code @Decorator}</a> feature instead.
  * <p>
- * <b>NOTE:</b> The decorator feature when used with component model {@code jsr330} is considered <em>experimental</em>
- * and it may change in future releases.
  * <h2>Examples</h2>
  * <p>
  * For the examples below, consider the following mapper declaration:
