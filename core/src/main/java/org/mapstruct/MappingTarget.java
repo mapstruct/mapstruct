@@ -20,38 +20,38 @@ import java.lang.annotation.Target;
  * <p>
  * <strong>Example 1:</strong> Update exist bean without return value
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface HumanMapper {
  *     void updateHuman(HumanDto humanDto, @MappingTarget Human human);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * &#64;Override
  * public void updateHuman(HumanDto humanDto, Human human) {
  *     human.setName( humanDto.getName() );
  *     // ...
  * }
- * </pre>
+ * </code></pre>
  * <p>
  * <strong>Example 2:</strong> Update exist bean and return it
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface HumanMapper {
  *     Human updateHuman(HumanDto humanDto, @MappingTarget Human human);
  * }
- * </pre>
+ * </code></pre>
  * // generates:
- * <pre>
- *&#64;Override
- *public Human updateHuman(HumanDto humanDto, Human human) {
+ * <pre><code class='java'>
+ * &#64;Override
+ * public Human updateHuman(HumanDto humanDto, Human human) {
  *     // ...
  *     human.setName( humanDto.getName() );
  *     return human;
  * }
- *</pre>
+ *</code></pre>
  *
  *
  * @author Andreas Gudian

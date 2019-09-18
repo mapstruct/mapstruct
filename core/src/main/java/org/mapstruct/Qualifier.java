@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * <li>{@link MapMapping#valueQualifiedBy() }</li>
  * </ul>
  * <p><strong>Example:</strong></p>
- * <pre>
+ * <pre><code class='java'>
  * // create qualifiers
  * &#64;Qualifier
  * &#64;Target(ElementType.TYPE)
@@ -39,8 +39,8 @@ import java.lang.annotation.Target;
  * &#64;Target(ElementType.METHOD)
  * &#64;Retention(RetentionPolicy.CLASS)
  * public @interface GermanToEnglish {}
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // we can create class with map methods
  * &#64;TitleTranslator
  * public class Titles {
@@ -53,16 +53,16 @@ import java.lang.annotation.Target;
  *         // some mapping logic
  *     }
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // usage
  * &#64;Mapper( uses = Titles.class )
  * public interface MovieMapper {
  *      &#64;Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
  *      GermanRelease toGerman( OriginalRelease movies );
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class MovieMapperImpl implements MovieMapper {
  *      private final Titles titles = new Titles();
@@ -76,7 +76,7 @@ import java.lang.annotation.Target;
  *          return germanRelease;
  *     }
  * }
- * </pre>
+ * </code></pre>
  *
  * <b>NOTE:</b> Qualifiers should have {@link RetentionPolicy#CLASS}.
  *

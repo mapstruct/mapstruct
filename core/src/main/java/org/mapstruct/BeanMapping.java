@@ -19,7 +19,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * Either {@link #resultType()}, {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
  * <p><strong>Example:</strong> Determining the result type</p>
- * <pre>
+ * <pre><code class='java'>
  * // When result types have an inheritance relation, selecting either mapping method {@link Mapping} or factory method
  * // {@link BeanMapping} can be become ambiguous. Parameter  {@link BeanMapping#resultType()} can be used.
  * public class FruitFactory {
@@ -35,8 +35,8 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *     &#64;BeanMapping(resultType = Apple.class)
  *     Fruit toFruit(FruitDto fruitDto);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class FruitMapperImpl implements FruitMapper {
  *      &#64;Override
@@ -45,7 +45,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *          // ...
  *      }
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  */

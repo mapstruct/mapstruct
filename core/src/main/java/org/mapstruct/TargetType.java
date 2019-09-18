@@ -19,9 +19,9 @@ import java.lang.annotation.Target;
  * <p>
  * <strong>Example:</strong>
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * public class EntityFactory {
- * {@code   public <T extends BaseEntity> T createEntity(@TargetType Class<T> entityClass)} {
+ *    public &lt;T extends BaseEntity&gt; T createEntity(@TargetType Class&lt;T&gt; entityClass) {
  *         return // ... custom factory logic
  *    }
  * }
@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * public interface CarMapper {
  *     CarEntity carDtoToCar(CarDto dto);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class CarMapperImpl implements CarMapper {
  *     private final EntityFactory entityFactory = new EntityFactory();
@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  *         return carEntity;
  *     }
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Andreas Gudian
  */

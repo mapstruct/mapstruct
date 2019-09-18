@@ -15,25 +15,25 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
- * Configures the mapping between two map types, e.g. {@code Map<String, String>} and {@code Map<Long, Date>}.
+ * Configures the mapping between two map types, e.g. Map&lt;String, String&gt; and Map&lt;Long, Date&gt;.
  *
  * <p>
  * <strong>Example</strong>:
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface SimpleMapper {
  *       &#64;MapMapping(valueDateFormat = "dd.MM.yyyy")
- *      {@code Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source) };
+ *       Map&lt;String, String&gt; longDateMapToStringStringMap(Map&lt;Long, Date&gt; source);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class SimpleMapperImpl implements SimpleMapper {
  *      &#64;Override
- * {@code     public Map<String, String<longDateMapToStringStringMap(Map<Long, Date> source) } {
- * {@code         Map<String, String> map = new HashMap<String, String>(); }
- * {@code         for ( java.util.Map.Entry<Long, Date> entry : source.entrySet() ) } {
+ *      public Map&lt;String, String&gt; longDateMapToStringStringMap(Map&lt;Long, Date&gt; source) } {
+ *          Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;(); }
+ *          for ( java.util.Map.Entry&lt;Long, Date&gt; entry : source.entrySet() ) } {
  *              String key = new DecimalFormat( "" ).format( entry.getKey() );
  *              String value = new SimpleDateFormat( "dd.MM.yyyy" ).format( entry.getValue() );
  *              map.put( key, value );
@@ -41,7 +41,7 @@ import java.util.Date;
  *          // ...
  *      }
  * }
- * </pre>
+ * </code></pre>
  *
  * <p><strong>NOTE:</strong> at least one element needs to be specified</p>
  *

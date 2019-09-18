@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * wrapper annotation and directly specify several @ValueMapping annotations on one method.</strong>
  *
  * <p>These two examples are equal</p>
- * <pre>
+ * <pre><code class='java'>
  * // before Java 8
  * &#64;Mapper
  * public interface GenderMapper {
@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
  *     })
  *     GenderDto mapToDto(Gender gender);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * //Java 8 and later
  * &#64;Mapper
  * public interface GenderMapper {
@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *     &#64;ValueMapping(source = "FEMALE", target = "F")
  *     GenderDto mapToDto(Gender gender);
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  */

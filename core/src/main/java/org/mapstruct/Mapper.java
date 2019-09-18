@@ -21,17 +21,17 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * <p>
  * <strong>Example 1:</strong> Creating mapper
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface CarMapper {
  *     CarDto toCarDto(Car source);
  * }
- * </pre>
+ * </code></pre>
  * <p>
  * <strong>Example 2:</strong> Use additional mappers with parameters {@link #uses()}, {@link #componentModel()}
  * and {@link #injectionStrategy()}
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * // we have MarkMapper (map field "mark" to field "name" to upper case)
  * &#64;Mapper(componentModel = "spring")
  * public class MarkMapper {
@@ -48,8 +48,8 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *     &#64;Mapping(source = "mark", target = "name")
  *     CarDto convertMap(CarEntity carEntity);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * &#64;Component
  * public class CarMapperImpl implements CarMapper {
@@ -68,8 +68,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *         return carDto;
  *     }
  * }
- *
- * </pre>
+ * </code></pre>
  *
  * @author Gunnar Morling
  */

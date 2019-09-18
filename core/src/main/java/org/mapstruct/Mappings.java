@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  *
  * <p>These two examples are equal.
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * // before Java 8
  * &#64;Mapper
  * public interface MyMapper {
@@ -28,8 +28,8 @@ import java.lang.annotation.Target;
  *     })
  *     HumanDto toHumanDto(Human human);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // Java 8 and later
  * &#64;Mapper
  * public interface MyMapper {
@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  *     &#64;Mapping(source = "second", target = "secondProperty")
  *     HumanDto toHumanDto(Human human);
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Gunnar Morling
  */

@@ -17,7 +17,7 @@ import org.mapstruct.util.Experimental;
  * <p>
  * <strong>Example:</strong> Using builder
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * // Mapper
  * &#64;Mapper
  * public interface SimpleBuilderMapper {
@@ -25,8 +25,8 @@ import org.mapstruct.util.Experimental;
  *      &#64;Mapping(target = "job", constant = "programmer"),
  *      SimpleImmutablePerson toImmutable(SimpleMutablePerson source);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * &#64;Override
  * public SimpleImmutablePerson toImmutable(SimpleMutablePerson source) {
@@ -38,7 +38,7 @@ import org.mapstruct.util.Experimental;
  *      simpleImmutablePerson.job( "programmer" );
  *      // ...
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Filip Hrisafov
  *

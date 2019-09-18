@@ -25,15 +25,15 @@ import java.lang.annotation.Target;
  * <p>
  * <strong>Example</strong>
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface HumanMapper {
  *      Human toHuman(HumanDto humanDto);
  *      &#64;InheritInverseConfiguration
  *      HumanDto toHumanDto(Human human);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class HumanMapperImpl implements HumanMapper {
  *      &#64;Override
@@ -55,7 +55,7 @@ import java.lang.annotation.Target;
  *          return humanDto;
  *      }
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  */

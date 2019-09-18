@@ -18,32 +18,32 @@ import java.util.Date;
  * Configures the mapping between two iterable like types, e.g. {@code List<String>} and {@code List<Date>}.
  *
  *
- * <p>Note: either  @IterableMapping#dateFormat, @IterableMapping#resultType or @IterableMapping#qualifiedBy
+ * <p>Note: either  {@link #dateFormat()}, {@link #elementTargetType()} or {@link #qualifiedBy() }
  * must be specified</p>
  *
  * <p>
- * <strong>Example:</strong> Convert {@code List<Float> to List<String> }
+ * <strong>Example:</strong> Convert List&lt;Float&gt; to List&lt;String&gt;
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper
  * public interface FloatToStringMapper {
  *      &#64;IterableMapping( numberFormat = "##.00" )
- *     {@code List<String> sourceToTarget(List<Float> source); }
+ *      List&lt;String&gt; sourceToTarget(List&lt;Float&gt; source);
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // generates
  * public class FloatToStringMapperImpl implements FloatToStringMapper {
  *      &#64;Override
- * {@code     public List<String> sourceToTarget(List<Float> source)  } {
- * {@code         List<String> list = new ArrayList<String>( source.size() ); }
+ *      public List&lt;String&gt; sourceToTarget(List&lt;Float&gt; source) {
+ *          List&lt;String&gt; list = new ArrayList&lt;String&gt;( source.size() );
  *          for ( Float float1 : source ) {
  *              list.add( new DecimalFormat( "##.00" ).format( float1 ) );
  *          }
  *     // ...
  *      }
  * }
- * </pre>
+ * </code></pre>
  *
  * Supported mappings are:
  * <ul>

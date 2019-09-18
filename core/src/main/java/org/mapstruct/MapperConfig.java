@@ -33,7 +33,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * <p>
  * <strong>Example:</strong>
  * </p>
- * <pre>
+ * <pre><code class='java'>
  * // create config
  * &#64;MapperConfig(
  *     uses = CustomMapperViaMapperConfig.class,
@@ -41,15 +41,15 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * )
  * public interface CentralConfig {
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // use config
  * &#64;Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
  * public interface SourceTargetMapper {
  *   // ...
  * }
- * </pre>
- * <pre>
+ * </code></pre>
+ * <pre><code class='java'>
  * // result after applying CentralConfig
  * &#64;Mapper(
  *     uses = { CustomMapperViaMapper.class, CustomMapperViaMapperConfig.class },
@@ -58,7 +58,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * public interface SourceTargetMapper {
  *    // ...
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  * @see Mapper#config()
