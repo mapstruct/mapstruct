@@ -186,7 +186,7 @@ public class MapperConfiguration {
         else if ( beanPrism != null ) {
             return beanPrism;
         }
-        else if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
+        else if ( mapperConfigPrism != null && mapperPrism.values.nullValuePropertyMappingStrategy() == null ) {
             return NullValuePropertyMappingStrategyPrism.valueOf(
                 mapperConfigPrism.nullValuePropertyMappingStrategy()
             );
