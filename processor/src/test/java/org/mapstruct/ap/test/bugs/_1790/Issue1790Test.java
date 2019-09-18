@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1790Test {
 
     @Test
-    public void name() {
+    public void shouldProperlyApplyNullValuePropertyMappingStrategyWhenInheriting() {
         Target target = new Target();
         target.setName( "My name is set" );
 
