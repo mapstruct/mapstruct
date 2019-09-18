@@ -255,14 +255,15 @@ If a component model is given for a specific mapper via `@Mapper#componentModel(
 |`default`
 
 |`mapstruct.defaultInjectionStrategy`
-| The type of the injection in mapper via parameter `uses`.
+| The type of the injection in mapper via parameter `uses`. This is only used on annotated based component models
+  such as CDI, Spring and JSR 330.
 
 Supported values are:
 
 * `field`: dependencies will be injected in fields
 * `constructor`: will be generated constructor. Dependencies will be injected via constructor.
 
-For `componentModel()=cdi` also will be generated default constructor.
+When CDI `componentModel` a default constructor will also be generated.
 If a injection strategy is given for a specific mapper via `@Mapper#injectionStrategy()`, the value from the annotation takes precedence over the option.
 |`field`
 
