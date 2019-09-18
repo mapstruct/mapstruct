@@ -254,6 +254,19 @@ Supported values are:
 If a component model is given for a specific mapper via `@Mapper#componentModel()`, the value from the annotation takes precedence.
 |`default`
 
+|`mapstruct.defaultInjectionStrategy`
+| The type of the injection in mapper via parameter `uses`. This is only used on annotated based component models
+  such as CDI, Spring and JSR 330.
+
+Supported values are:
+
+* `field`: dependencies will be injected in fields
+* `constructor`: will be generated constructor. Dependencies will be injected via constructor.
+
+When CDI `componentModel` a default constructor will also be generated.
+If a injection strategy is given for a specific mapper via `@Mapper#injectionStrategy()`, the value from the annotation takes precedence over the option.
+|`field`
+
 |`mapstruct.unmappedTargetPolicy`
 |The default reporting policy to be applied in case an attribute of the target object of a mapping method is not populated with a source value.
 
