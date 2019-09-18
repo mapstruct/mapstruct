@@ -142,11 +142,6 @@ private PersonMapper personMapper; // injects the decorator, with the injected o
 ----
 ====
 
-[WARNING]
-====
-`@DecoratedWith` in combination with component model `jsr330` is considered experimental as of the 1.0.0.CR2 release. The way the original mapper is referenced in the decorator or the way the decorated mapper is injected in the application code might still change.
-====
-
 [[customizing-mappings-with-before-and-after]]
 === Mapping customization with before-mapping and after-mapping methods
 
