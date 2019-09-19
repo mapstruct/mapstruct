@@ -12,7 +12,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper( uses = QualifierProvider.class, unmappedTargetPolicy = ReportingPolicy.IGNORE )
-public interface SourceTargetMapperExpressionAndQualifiers {
+public interface ErroneousSourceTargetMapperExpressionAndQualifiers {
 
     @Mappings( {
         @Mapping( target = "anotherProp", expression = "java( s.getClass().getName() )", qualifiedByName = "toUpper" ),

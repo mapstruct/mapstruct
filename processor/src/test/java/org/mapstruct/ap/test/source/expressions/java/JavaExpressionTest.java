@@ -14,7 +14,6 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.source.defaultExpressions.java.ErroneousDefaultExpressionDefaultValueMapper;
 import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -143,18 +142,18 @@ public class JavaExpressionTest {
         Target.class,
         QualifierProvider.class,
         TimeAndFormat.class,
-        SourceTargetMapperExpressionAndQualifiers.class
+        ErroneousSourceTargetMapperExpressionAndQualifiers.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapperExpressionAndQualifiers.class,
+            @Diagnostic(type = ErroneousSourceTargetMapperExpressionAndQualifiers.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18,
                 messageRegExp = "Expression and a qualifier both defined in @Mapping," +
                     " either defined an expression or a qualifier."
             ),
-            @Diagnostic(type = SourceTargetMapperExpressionAndQualifiers.class,
+            @Diagnostic(type = ErroneousSourceTargetMapperExpressionAndQualifiers.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
                 messageRegExp = "Expression and a qualifier both defined in @Mapping," +
