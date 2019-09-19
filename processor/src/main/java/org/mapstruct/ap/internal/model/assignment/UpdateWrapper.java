@@ -74,8 +74,7 @@ public class UpdateWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<>();
-        imported.addAll( super.getImportTypes() );
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( factoryMethod != null ) {
             imported.addAll( factoryMethod.getImportTypes() );
         }

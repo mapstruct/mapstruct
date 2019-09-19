@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -123,9 +124,7 @@ public final class LifecycleMethodResolver {
         List<SourceMethod> availableMethods =
             new ArrayList<>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
-        for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
-            availableMethods.add( methodProvidedByParams );
-        }
+        availableMethods.addAll( methodsProvidedByParams );
         availableMethods.addAll( sourceModelMethods );
 
         return availableMethods;
@@ -141,7 +140,7 @@ public final class LifecycleMethodResolver {
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             method,
             callbackMethods,
-            Collections.<Type> emptyList(),
+            Collections.emptyList(),
             targetType,
             SelectionCriteria.forLifecycleMethods( selectionParameters ) );
 
@@ -185,24 +184,14 @@ public final class LifecycleMethodResolver {
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<>();
-        for ( SourceMethod method : methods ) {
-            if ( method.isBeforeMappingMethod() ) {
-                result.add( method );
-            }
-        }
-
-        return result;
+        return methods.stream()
+                      .filter( SourceMethod::isBeforeMappingMethod )
+                      .collect( Collectors.toList() );
     }
 
     private static List<SourceMethod> filterAfterMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<>();
-        for ( SourceMethod method : methods ) {
-            if ( method.isAfterMappingMethod() ) {
-                result.add( method );
-            }
-        }
-
-        return result;
+        return methods.stream()
+                      .filter( SourceMethod::isAfterMappingMethod )
+                      .collect( Collectors.toList() );
     }
 }

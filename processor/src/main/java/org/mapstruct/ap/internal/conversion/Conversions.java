@@ -21,7 +21,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.lang.model.util.Elements;
+import java.util.Objects;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -41,7 +41,7 @@ public class Conversions {
     private final Type stringType;
     private final TypeFactory typeFactory;
 
-    public Conversions(Elements elementUtils, TypeFactory typeFactory) {
+    public Conversions(TypeFactory typeFactory) {
         this.typeFactory = typeFactory;
 
         this.enumType = typeFactory.getType( Enum.class );
@@ -341,22 +341,15 @@ public class Conversions {
                 return false;
             }
             Key other = (Key) obj;
-            if ( sourceType == null ) {
-                if ( other.sourceType != null ) {
-                    return false;
-                }
-            }
-            else if ( !sourceType.equals( other.sourceType ) ) {
+
+            if ( !Objects.equals( sourceType, other.sourceType ) ) {
                 return false;
             }
-            if ( targetType == null ) {
-                if ( other.targetType != null ) {
-                    return false;
-                }
-            }
-            else if ( !targetType.equals( other.targetType ) ) {
+
+            if ( !Objects.equals( targetType, other.targetType ) ) {
                 return false;
             }
+
             return true;
         }
     }

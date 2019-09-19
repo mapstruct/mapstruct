@@ -52,10 +52,10 @@ public abstract class ChartEntryToArtist {
 
     protected List<Integer> mapPosition(Integer in) {
         if ( in != null ) {
-            return new ArrayList<Integer>( Arrays.asList( in ) );
+            return new ArrayList<>( Arrays.asList( in ) );
         }
         else {
-            return new ArrayList<Integer>();
+            return new ArrayList<>();
         }
     }
 

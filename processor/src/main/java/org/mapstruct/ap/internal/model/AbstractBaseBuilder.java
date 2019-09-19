@@ -11,7 +11,6 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -108,7 +107,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( mappingMethod == null ) {
             return null;
         }
-        if (methodRef.getMappingOptions().isRestrictToDefinedMappings() ||
+        if (methodRef.getMappingReferences().isRestrictToDefinedMappings() ||
             !ctx.getMappingsToGenerate().contains( mappingMethod )) {
             // If the mapping options are restricted only to the defined mappings, then use the mapping method.
             // See https://github.com/mapstruct/mapstruct/issues/1148

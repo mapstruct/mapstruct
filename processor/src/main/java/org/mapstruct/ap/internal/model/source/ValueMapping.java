@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -35,7 +36,7 @@ public class ValueMapping {
 
         boolean anyFound = false;
         for ( ValueMappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            ValueMapping mapping = fromMappingPrism( mappingPrism, method, messager );
+            ValueMapping mapping = fromMappingPrism( mappingPrism );
             if ( mapping != null ) {
 
                 if ( !mappings.contains( mapping ) ) {
@@ -67,8 +68,7 @@ public class ValueMapping {
         }
     }
 
-    public static ValueMapping fromMappingPrism(ValueMappingPrism mappingPrism, ExecutableElement element,
-                                           FormattingMessager messager) {
+    public static ValueMapping fromMappingPrism( ValueMappingPrism mappingPrism ) {
 
         return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );
@@ -142,9 +142,6 @@ public class ValueMapping {
             return false;
         }
         final ValueMapping other = (ValueMapping) obj;
-        if ( (this.source == null) ? (other.source != null) : !this.source.equals( other.source ) ) {
-            return false;
-        }
-        return true;
+        return Objects.equals( this.source, other.source );
     }
 }

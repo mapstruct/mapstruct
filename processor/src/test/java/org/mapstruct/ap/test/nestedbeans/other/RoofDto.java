@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nestedbeans.other;
 
+import java.util.Objects;
+
 public class RoofDto {
     private String color;
 
@@ -34,7 +36,7 @@ public class RoofDto {
 
         RoofDto roofDto = (RoofDto) o;
 
-        return color != null ? color.equals( roofDto.color ) : roofDto.color == null;
+        return Objects.equals( color, roofDto.color );
 
     }
 

@@ -108,14 +108,14 @@ public class ComplexInheritanceTest {
     private SourceExt createSourceExt(int foo) {
         SourceExt s = new SourceExt();
         s.setFoo( foo );
-        s.setBar( Long.valueOf( 47 ) );
+        s.setBar( 47L );
         return s;
     }
 
     private SourceExt2 createSourceExt2(int foo) {
         SourceExt2 s = new SourceExt2();
         s.setFoo( foo );
-        s.setBaz( Long.valueOf( 47 ) );
+        s.setBaz( 47L );
         return s;
     }
 }

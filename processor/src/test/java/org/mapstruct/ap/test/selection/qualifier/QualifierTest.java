@@ -68,7 +68,7 @@ public class QualifierTest {
         OriginalRelease foreignMovies = new OriginalRelease();
         foreignMovies.setTitle( "Sixth Sense, The" );
         foreignMovies.setKeyWords( Arrays.asList( "evergreen", "magnificent" ) );
-        Map<String, List<String>> facts = new HashMap<String, List<String>>();
+        Map<String, List<String>> facts = new HashMap<>();
         facts.put( "director", Arrays.asList( "M. Night Shyamalan" ) );
         facts.put( "cast", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) );
         facts.put( "plot keywords", Arrays.asList( "boy", "child psychologist", "I see dead people" ) );
@@ -150,7 +150,7 @@ public class QualifierTest {
         OriginalRelease foreignMovies = new OriginalRelease();
         foreignMovies.setTitle( "Sixth Sense, The" );
         foreignMovies.setKeyWords( Arrays.asList( "evergreen", "magnificent" ) );
-        Map<String, List<String>> facts = new HashMap<String, List<String>>();
+        Map<String, List<String>> facts = new HashMap<>();
         facts.put( "director", Arrays.asList( "M. Night Shyamalan" ) );
         facts.put( "cast", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) );
         facts.put( "plot keywords", Arrays.asList( "boy", "child psychologist", "I see dead people" ) );

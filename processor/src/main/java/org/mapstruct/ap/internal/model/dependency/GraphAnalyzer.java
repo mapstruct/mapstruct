@@ -116,10 +116,10 @@ public class GraphAnalyzer {
         private final Map<String, Node> nodes = new LinkedHashMap<>();
 
         public GraphAnalyzerBuilder withNode(String name, Set<String> descendants) {
-            Node node = getNode( name );
+            Node node = nodes.computeIfAbsent( name, Node::new );
 
             for ( String descendant : descendants ) {
-                node.addDescendant( getNode( descendant ) );
+                node.addDescendant( nodes.computeIfAbsent( descendant, Node::new ) );
             }
 
             return this;
@@ -139,17 +139,6 @@ public class GraphAnalyzer {
             GraphAnalyzer graphAnalyzer = new GraphAnalyzer( nodes );
             graphAnalyzer.analyze();
             return graphAnalyzer;
-        }
-
-        private Node getNode(String name) {
-            Node node = nodes.get( name );
-
-            if ( node == null ) {
-                node = new Node( name );
-                nodes.put( name, node );
-            }
-
-            return node;
         }
     }
 }

@@ -76,8 +76,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
-        domain.setLongs( new HashSet<Long>() );
-        domain.setStrings( new HashSet<String>() );
+        domain.setLongs( new HashSet<>() );
+        domain.setStrings( new HashSet<>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
@@ -100,8 +100,8 @@ public class Issue913SetterMapperForCollectionsTest {
         Dto dto = new Dto();
         dto.setStringsInitialized( null );
         Domain domain = new Domain();
-        domain.setLongs( new HashSet<Long>() );
-        domain.setStrings( new HashSet<String>() );
+        domain.setLongs( new HashSet<>() );
+        domain.setStrings( new HashSet<>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         assertThat( domain.getStringsInitialized() ).isNull();
@@ -122,8 +122,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
-        domain1.setLongs( new HashSet<Long>() );
-        domain1.setStrings( new HashSet<String>() );
+        domain1.setLongs( new HashSet<>() );
+        domain1.setStrings( new HashSet<>() );
         Domain domain2 = DomainDtoWithNvmsNullMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
@@ -163,10 +163,10 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
-        Set<Long> longIn = new HashSet<Long>();
+        Set<Long> longIn = new HashSet<>();
         longIn.add( 10L );
         domain.setLongs( longIn );
-        domain.setStrings( new HashSet<String>() );
+        domain.setStrings( new HashSet<>() );
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
@@ -189,10 +189,10 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
-        Set<Long> longIn = new HashSet<Long>();
+        Set<Long> longIn = new HashSet<>();
         longIn.add( 10L );
         domain1.setLongs( longIn );
-        domain1.setStrings( new HashSet<String>() );
+        domain1.setStrings( new HashSet<>() );
         domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithNvmsDefaultMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
@@ -234,9 +234,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
-        domain.setLongs( new HashSet<Long>() );
+        domain.setLongs( new HashSet<>() );
         domain.getLongs().add( 10L );
-        domain.setStrings( new HashSet<String>() );
+        domain.setStrings( new HashSet<>() );
         domain.getStrings().add( "30" );
         DomainDtoWithPresenceCheckMapper.INSTANCE.update( dto, domain );
 
@@ -257,9 +257,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
-        domain1.setLongs( new HashSet<Long>() );
+        domain1.setLongs( new HashSet<>() );
         domain1.getLongs().add( 10L );
-        domain1.setStrings( new HashSet<String>() );
+        domain1.setStrings( new HashSet<>() );
         domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithPresenceCheckMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
@@ -300,9 +300,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
-        domain.setLongs( new HashSet<Long>() );
+        domain.setLongs( new HashSet<>() );
         domain.getLongs().add( 10L );
-        domain.setStrings( new HashSet<String>() );
+        domain.setStrings( new HashSet<>() );
         domain.getStrings().add( "30" );
         DomainDtoWithNcvsAlwaysMapper.INSTANCE.update( dto, domain );
 
@@ -323,9 +323,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
-        domain1.setLongs( new HashSet<Long>() );
+        domain1.setLongs( new HashSet<>() );
         domain1.getLongs().add( 10L );
-        domain1.setStrings( new HashSet<String>() );
+        domain1.setStrings( new HashSet<>() );
         domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithNcvsAlwaysMapper.INSTANCE.updateWithReturn( dto, domain1 );
 

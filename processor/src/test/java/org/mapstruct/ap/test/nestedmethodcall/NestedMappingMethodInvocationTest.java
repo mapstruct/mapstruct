@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.nestedmethodcall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -70,13 +71,13 @@ public class NestedMappingMethodInvocationTest {
         ObjectFactory.class,
         TargetDto.class
     } )
-    public void shouldMapViaMethodAndConversion() throws DatatypeConfigurationException {
+    public void shouldMapViaMethodAndConversion() {
         SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
 
         TargetDto target = instance.sourceToTarget( createSource() );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
+        assertThat( target.getDate() ).isEqualTo( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
     }
 
     @Test
@@ -86,7 +87,7 @@ public class NestedMappingMethodInvocationTest {
         ObjectFactory.class,
         TargetDto.class
     } )
-    public void shouldMapViaConversionAndMethod() throws DatatypeConfigurationException {
+    public void shouldMapViaConversionAndMethod() {
         SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
 
         SourceType source = instance.targetToSource( createTarget() );
@@ -97,36 +98,36 @@ public class NestedMappingMethodInvocationTest {
     }
 
     private OrderType createOrderType() throws DatatypeConfigurationException {
-        List<JAXBElement<XMLGregorianCalendar>> dates = new ArrayList<JAXBElement<XMLGregorianCalendar>>();
+        List<JAXBElement<XMLGregorianCalendar>> dates = new ArrayList<>();
         dates.add(
-                new JAXBElement<XMLGregorianCalendar>(
-                        QNAME,
-                        XMLGregorianCalendar.class,
-                        createXmlCal( 1999, 3, 2 )
-                )
+            new JAXBElement<>(
+                QNAME,
+                XMLGregorianCalendar.class,
+                createXmlCal( 1999, 3, 2 )
+            )
         );
         dates.add(
-                new JAXBElement<XMLGregorianCalendar>(
-                        QNAME,
-                        XMLGregorianCalendar.class,
-                        createXmlCal( 2004, 7, 28 )
-                )
+            new JAXBElement<>(
+                QNAME,
+                XMLGregorianCalendar.class,
+                createXmlCal( 2004, 7, 28 )
+            )
         );
 
-        List<JAXBElement<String>> description = new ArrayList<JAXBElement<String>>();
-        description.add( new JAXBElement<String>( QNAME, String.class, "elem1" ) );
-        description.add( new JAXBElement<String>( QNAME, String.class, "elem2" ) );
+        List<JAXBElement<String>> description = new ArrayList<>();
+        description.add( new JAXBElement<>( QNAME, String.class, "elem1" ) );
+        description.add( new JAXBElement<>( QNAME, String.class, "elem2" ) );
 
         OrderType orderType = new OrderType();
-        orderType.setOrderNumber( new JAXBElement<Long>( QNAME, Long.class, 5L ) );
+        orderType.setOrderNumber( new JAXBElement<>( QNAME, Long.class, 5L ) );
         orderType.setOrderDetails(
-                new JAXBElement<OrderDetailsType>(
-                        QNAME,
-                        OrderDetailsType.class,
-                        new OrderDetailsType()
-                )
+            new JAXBElement<>(
+                QNAME,
+                OrderDetailsType.class,
+                new OrderDetailsType()
+            )
         );
-        orderType.getOrderDetails().getValue().setName( new JAXBElement<String>( QNAME, String.class, "test" ) );
+        orderType.getOrderDetails().getValue().setName( new JAXBElement<>( QNAME, String.class, "test" ) );
         orderType.getOrderDetails().getValue().setDescription( description );
         orderType.setDates( dates );
 
@@ -141,13 +142,13 @@ public class NestedMappingMethodInvocationTest {
 
     private SourceType createSource() {
          SourceType source = new SourceType();
-         source.setDate( new JAXBElement<String>( QNAME, String.class, "06.07.2013" ) );
+         source.setDate( new JAXBElement<>( QNAME, String.class, "06.07.2013" ) );
          return source;
     }
 
     private TargetDto createTarget() {
          TargetDto target = new TargetDto();
-         target.setDate( new GregorianCalendar( 2013, 6, 6 ).getTime() );
+         target.setDate( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
          return target;
     }
 }

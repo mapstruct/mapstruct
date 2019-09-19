@@ -174,7 +174,7 @@ public class SelectionParametersTest {
     public void testGetters() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
@@ -226,7 +226,7 @@ public class SelectionParametersTest {
     public void testEqualsSameInstance() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
@@ -238,7 +238,7 @@ public class SelectionParametersTest {
     public void testEqualsWitNull() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
@@ -250,7 +250,7 @@ public class SelectionParametersTest {
     public void testEqualsQualifiersOneNull() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
@@ -264,12 +264,12 @@ public class SelectionParametersTest {
     public void testEqualsQualifiersInDifferentOrder() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, qualifyingNames, resultType, typeUtils );
@@ -282,12 +282,12 @@ public class SelectionParametersTest {
     public void testEqualsQualifyingNamesOneNull() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, null, resultType, typeUtils );
@@ -300,13 +300,13 @@ public class SelectionParametersTest {
     public void testEqualsQualifyingNamesInDifferentOrder() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
         List<String> qualifyingNames2 = Arrays.asList( "german", "language" );
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, qualifyingNames2, resultType, typeUtils );
@@ -319,13 +319,13 @@ public class SelectionParametersTest {
     public void testEqualsResultTypeOneNull() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
         List<String> qualifyingNames2 = Arrays.asList( "language", "german" );
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, qualifyingNames2, null, typeUtils );
@@ -338,14 +338,14 @@ public class SelectionParametersTest {
     public void testAllEqual() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
         List<String> qualifyingNames2 = Arrays.asList( "language", "german" );
         TypeMirror resultType2 = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, qualifyingNames2, resultType2, typeUtils );
@@ -358,14 +358,14 @@ public class SelectionParametersTest {
     public void testDifferentResultTypes() {
         List<String> qualifyingNames = Arrays.asList( "language", "german" );
         TypeMirror resultType = new TestTypeMirror( "resultType" );
-        List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers = new ArrayList<>();
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params = new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
 
         List<String> qualifyingNames2 = Arrays.asList( "language", "german" );
         TypeMirror resultType2 = new TestTypeMirror( "otherResultType" );
-        List<TypeMirror> qualifiers2 = new ArrayList<TypeMirror>();
+        List<TypeMirror> qualifiers2 = new ArrayList<>();
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeType" ) );
         qualifiers2.add( new TestTypeMirror( "org.mapstruct.test.SomeOtherType" ) );
         SelectionParameters params2 = new SelectionParameters( qualifiers2, qualifyingNames2, resultType2, typeUtils );

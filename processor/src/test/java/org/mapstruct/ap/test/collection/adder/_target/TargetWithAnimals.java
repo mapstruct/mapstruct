@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class TargetWithAnimals {
 
-    private List<String> animals = new ArrayList<String>();
+    private List<String> animals = new ArrayList<>();
 
     public List<String> getAnimals() {
         return animals;

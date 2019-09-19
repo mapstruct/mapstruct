@@ -21,10 +21,7 @@ public class EntityFactory {
         try {
             entity = entityClass.newInstance();
         }
-        catch ( IllegalAccessException exception ) {
-            throw new MappingException( "Rare exception thrown, refer to stack trace", exception );
-        }
-        catch ( InstantiationException exception ) {
+        catch ( IllegalAccessException | InstantiationException exception ) {
             throw new MappingException( "Rare exception thrown, refer to stack trace", exception );
         }
         catch ( Exception exception ) {

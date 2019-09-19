@@ -20,7 +20,7 @@ import org.mapstruct.factory.Mappers;
 public abstract class Issue1131Mapper {
     public static final Issue1131Mapper INSTANCE = Mappers.getMapper( Issue1131Mapper.class );
 
-    public static final List<String> CALLED_METHODS = new ArrayList<String>();
+    public static final List<String> CALLED_METHODS = new ArrayList<>();
 
     public abstract void merge(Source source, @MappingTarget Target target);
 
@@ -40,7 +40,7 @@ public abstract class Issue1131Mapper {
     @ObjectFactory
     protected List<Target.Nested> createWithSourceList(List<Source.Nested> source) {
         CALLED_METHODS.add( "create(List<Source.Nested>)" );
-        List<Target.Nested> result = new ArrayList<Target.Nested>();
+        List<Target.Nested> result = new ArrayList<>();
         result.add( new Target.Nested( "from createWithSourceList" ) );
         return result;
     }

@@ -68,7 +68,7 @@ public class CallbackMethodTest {
     @Test
     public void callbackMethodsForIterableMappingWithResultParamCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget(
-            Arrays.asList( createSource() ), new ArrayList<Target>() );
+            Arrays.asList( createSource() ), new ArrayList<>() );
 
         assertIterableMappingInvocations( ClassContainingCallbacks.getInvocations() );
         assertIterableMappingInvocations( BaseMapper.getInvocations() );
@@ -86,7 +86,7 @@ public class CallbackMethodTest {
     public void callbackMethodsForMapMappingWithResultParamCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget(
             toMap( "foo", createSource() ),
-            new HashMap<String, Target>() );
+            new HashMap<>() );
 
         assertMapMappingInvocations( ClassContainingCallbacks.getInvocations() );
         assertMapMappingInvocations( BaseMapper.getInvocations() );
@@ -173,7 +173,7 @@ public class CallbackMethodTest {
     }
 
     private <T> Map<String, T> toMap(String string, T value) {
-        Map<String, T> result = new HashMap<String, T>();
+        Map<String, T> result = new HashMap<>();
         result.put( string, value );
         return result;
     }
@@ -191,7 +191,7 @@ public class CallbackMethodTest {
     }
 
     private List<Invocation> beanMappingInvocationList(Object source, Object target, Object emptyTarget) {
-        List<Invocation> invocations = new ArrayList<Invocation>();
+        List<Invocation> invocations = new ArrayList<>();
 
         invocations.addAll( allBeforeMappingMethods( source, emptyTarget, Target.class ) );
         invocations.addAll( allAfterMappingMethods( source, target, Target.class ) );
@@ -200,7 +200,7 @@ public class CallbackMethodTest {
     }
 
     private List<Invocation> allAfterMappingMethods(Object source, Object target, Class<?> targetClass) {
-        return new ArrayList<Invocation>( Arrays.asList(
+        return new ArrayList<>( Arrays.asList(
             new Invocation( "noArgsAfterMapping" ),
             new Invocation( "withSourceAfterMapping", source ),
             new Invocation( "withSourceAsObjectAfterMapping", source ),
@@ -211,7 +211,7 @@ public class CallbackMethodTest {
     }
 
     private List<Invocation> allBeforeMappingMethods(Object source, Object emptyTarget, Class<?> targetClass) {
-        return new ArrayList<Invocation>( Arrays.asList(
+        return new ArrayList<>( Arrays.asList(
             new Invocation( "noArgsBeforeMapping" ),
             new Invocation( "withSourceBeforeMapping", source ),
             new Invocation( "withSourceAsObjectBeforeMapping", source ),
@@ -226,7 +226,7 @@ public class CallbackMethodTest {
     }
 
     private List<Invocation> allQualifiedCallbackMethods(Object source, Object target) {
-        List<Invocation> invocations = new ArrayList<Invocation>();
+        List<Invocation> invocations = new ArrayList<>();
         invocations.add( new Invocation( "withSourceBeforeMappingQualified", source ) );
 
         if ( source instanceof List || source instanceof Map ) {

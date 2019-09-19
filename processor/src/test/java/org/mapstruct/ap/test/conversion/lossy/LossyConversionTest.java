@@ -61,7 +61,7 @@ public class LossyConversionTest {
                 messageRegExp = "Can't map property \"long numberOfForks\". It has a possibly lossy conversion from "
                     + "long to int.")
         })
-    public void testConversionFromlongToint() {
+    public void testConversionFromLongToInt() {
     }
 
     @Test
@@ -100,7 +100,7 @@ public class LossyConversionTest {
                 messageRegExp = "Can't map property \"java.lang.Double depth\". It has a possibly lossy conversion "
                     + "from java.lang.Double to float.")
         })
-    public void testConversionFromDoubleTofloat() {
+    public void testConversionFromDoubleToFloat() {
     }
 
     @Test
@@ -125,7 +125,7 @@ public class LossyConversionTest {
                 line = 24,
                 messageRegExp = "property \"double height\" has a possibly lossy conversion from double to float.")
         })
-    public void test2StepConversionFromdoubleTofloat() {
+    public void test2StepConversionFromDoubleToFloat() {
     }
 
     @Test

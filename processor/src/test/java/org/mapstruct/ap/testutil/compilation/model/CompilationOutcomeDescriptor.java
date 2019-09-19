@@ -28,8 +28,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
  */
 public class CompilationOutcomeDescriptor {
 
-    private static final String LINE_SEPARATOR = System.lineSeparator( );
-
     private CompilationResult compilationResult;
     private List<DiagnosticDescriptor> diagnostics;
     private List<String> notes;
@@ -57,12 +55,12 @@ public class CompilationOutcomeDescriptor {
         if ( expectedCompilationResult == null ) {
             return new CompilationOutcomeDescriptor(
                 CompilationResult.SUCCEEDED,
-                Collections.<DiagnosticDescriptor>emptyList(),
+                Collections.emptyList(),
                 notes
             );
         }
         else {
-            List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+            List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
             for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
                 expectedCompilationResult.diagnostics() ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
@@ -76,7 +74,7 @@ public class CompilationOutcomeDescriptor {
         CompilationResult compilationResult =
             compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
         List<String> notes = new ArrayList<>();
-        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
         for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
@@ -93,7 +91,7 @@ public class CompilationOutcomeDescriptor {
     public static CompilationOutcomeDescriptor forResult(String sourceDir, CompilerResult compilerResult) {
         CompilationResult compilationResult =
             compilerResult.isSuccess() ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
-        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
 
         for ( CompilerMessage message : compilerResult.getCompilerMessages() ) {
             if ( message.getKind() != CompilerMessage.Kind.NOTE ) {

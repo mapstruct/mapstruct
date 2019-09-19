@@ -68,12 +68,7 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
 public class TypeFactory {
 
     private static final Extractor<BuilderInfo, String> BUILDER_INFO_CREATION_METHOD_EXTRACTOR =
-        new Extractor<BuilderInfo, String>() {
-            @Override
-            public String apply(BuilderInfo builderInfo) {
-                return builderInfo.getBuilderCreationMethod().toString();
-            }
-        };
+        builderInfo -> builderInfo.getBuilderCreationMethod().toString();
 
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -385,7 +380,7 @@ public class TypeFactory {
         Iterator<? extends VariableElement> varIt = parameters.iterator();
         Iterator<? extends TypeMirror> typesIt = parameterTypes.iterator();
 
-        for ( ; varIt.hasNext(); ) {
+        while ( varIt.hasNext() ) {
             VariableElement parameter = varIt.next();
             TypeMirror parameterType = typesIt.next();
 
@@ -552,38 +547,6 @@ public class TypeFactory {
 
         ArrayType arrayType = (ArrayType) mirror;
         return arrayType.getComponentType();
-    }
-
-    /**
-     * Converts any collection type, e.g. {@code List<T>} to {@code Collection<T>} and any map type, e.g.
-     * {@code HashMap<K,V>} to {@code Map<K,V>}.
-     *
-     * @param collectionOrMap any collection or map type
-     * @return the type representing {@code Collection<T>} or {@code Map<K,V>}, if the argument type is a subtype of
-     *         {@code Collection<T>} or of {@code Map<K,V>} respectively.
-     */
-    public Type asCollectionOrMap(Type collectionOrMap) {
-        List<Type> originalParameters = collectionOrMap.getTypeParameters();
-        TypeMirror[] originalParameterMirrors = new TypeMirror[originalParameters.size()];
-        int i = 0;
-        for ( Type param : originalParameters ) {
-            originalParameterMirrors[i++] = param.getTypeMirror();
-        }
-
-        if ( collectionOrMap.isCollectionType()
-            && !"java.util.Collection".equals( collectionOrMap.getFullyQualifiedName() ) ) {
-            return getType( typeUtils.getDeclaredType(
-                elementUtils.getTypeElement( "java.util.Collection" ),
-                originalParameterMirrors ) );
-        }
-        else if ( collectionOrMap.isMapType()
-            && !"java.util.Map".equals( collectionOrMap.getFullyQualifiedName() ) ) {
-            return getType( typeUtils.getDeclaredType(
-                elementUtils.getTypeElement( "java.util.Map" ),
-                originalParameterMirrors ) );
-        }
-
-        return collectionOrMap;
     }
 
     /**

@@ -15,7 +15,7 @@ public class Source extends AbstractDto implements HasId, AlsoHasId {
     private final int size;
     private final Calendar birthday;
     private final String notAttractingEqualsMethod = "no way";
-    private final Holder<String> manuallyConverted = new Holder<String>( "What is the answer?" );
+    private final Holder<String> manuallyConverted = new Holder<>( "What is the answer?" );
 
     public Source() {
         publicSize = 191;

@@ -20,21 +20,21 @@ public class TargetOnlyGetter {
     }
 
     public void addCat(Long cat) {
-        // dummy method to test selection mechanims
+        // dummy method to test selection mechanism
     }
 
     public void addDog(Long cat) {
-        // dummy method to test selection mechanims
+        // dummy method to test selection mechanism
     }
 
     public void addPets(Long cat) {
-        // dummy method to test selection mechanims
+        // dummy method to test selection mechanism
     }
 
     public void addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
-            pets = new ArrayList<Long>();
+            pets = new ArrayList<>();
         }
         pets.add( pet );
     }

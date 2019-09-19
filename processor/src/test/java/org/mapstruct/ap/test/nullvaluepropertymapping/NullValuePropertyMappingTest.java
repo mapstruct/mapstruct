@@ -59,25 +59,25 @@ public class NullValuePropertyMappingTest {
     @Test
     @WithClasses({ NvpmsConfig.class, CustomerNvpmsOnConfigMapper.class })
     public void testHierarchyIgnoreOnConfig() {
-        testConfig( ( Customer s, CustomerDTO t ) -> CustomerNvpmsOnConfigMapper.INSTANCE.map( s, t ) );
+        testConfig( CustomerNvpmsOnConfigMapper.INSTANCE::map );
     }
 
     @Test
     @WithClasses(CustomerNvpmsOnMapperMapper.class)
     public void testHierarchyIgnoreOnMapping() {
-        testConfig( ( Customer s, CustomerDTO t ) -> CustomerNvpmsOnMapperMapper.INSTANCE.map( s, t ) );
+        testConfig( CustomerNvpmsOnMapperMapper.INSTANCE::map );
     }
 
     @Test
     @WithClasses(CustomerNvpmsOnBeanMappingMethodMapper.class)
     public void testHierarchyIgnoreOnBeanMappingMethod() {
-        testConfig( ( Customer s, CustomerDTO t ) -> CustomerNvpmsOnBeanMappingMethodMapper.INSTANCE.map( s, t ) );
+        testConfig( CustomerNvpmsOnBeanMappingMethodMapper.INSTANCE::map );
     }
 
     @Test
     @WithClasses(CustomerNvpmsPropertyMappingMapper.class)
-    public void testHierarchyIgnoreOnPropertyMappingMehtod() {
-        testConfig( ( Customer s, CustomerDTO t ) -> CustomerNvpmsPropertyMappingMapper.INSTANCE.map( s, t ) );
+    public void testHierarchyIgnoreOnPropertyMappingMethod() {
+        testConfig( CustomerNvpmsPropertyMappingMapper.INSTANCE::map );
     }
 
     @Test

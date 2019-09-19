@@ -7,7 +7,7 @@ package org.mapstruct.ap.test.java8stream.streamtononiterable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class StreamToNonIterableMappingTest {
     @Test
     public void shouldMapStringStreamToStringUsingCustomMapper() {
         Source source = new Source();
-        source.setNames( Arrays.asList( "Alice", "Bob", "Jim" ).stream() );
+        source.setNames( Stream.of( "Alice", "Bob", "Jim" ) );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();

@@ -14,7 +14,7 @@ public class Target {
 
     public List<TargetFoo> getFooListNoSetter() {
         if ( fooListNoSetter == null ) {
-            fooListNoSetter = new ArrayList<TargetFoo>();
+            fooListNoSetter = new ArrayList<>();
         }
         return fooListNoSetter;
     }

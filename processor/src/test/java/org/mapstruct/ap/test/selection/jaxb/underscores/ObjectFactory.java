@@ -34,23 +34,23 @@ public class ObjectFactory {
 
     @XmlElementDecl( namespace = "http://www.mapstruct.org/itest/jaxb/xsd/underscores", name = "Super" )
     public JAXBElement<SuperType> createSuper(SuperType value) {
-        return new JAXBElement<SuperType>(SUPER_QNAME, SuperType.class, null, value );
+        return new JAXBElement<>( SUPER_QNAME, SuperType.class, null, value );
     }
 
     @XmlElementDecl( namespace = "http://www.mapstruct.org/itest/jaxb/xsd/underscores", name = "Sub" )
     public JAXBElement<SubType> createSub(SubType value) {
-        return new JAXBElement<SubType>(SUB_QNAME, SubType.class, null, value );
+        return new JAXBElement<>( SUB_QNAME, SubType.class, null, value );
     }
 
     @XmlElementDecl( namespace = "http://www.mapstruct.org/itest/jaxb/xsd/underscores",
             name = "inherited_underscore", scope = SuperType.class )
     public JAXBElement<String> createSuperTypeInheritedUnderscore(String value) {
-        return new JAXBElement<String>(SUPER_TYPE_INHERITED_UNDERSCORE_QNAME, String.class, SuperType.class, value );
+        return new JAXBElement<>( SUPER_TYPE_INHERITED_UNDERSCORE_QNAME, String.class, SuperType.class, value );
     }
 
     @XmlElementDecl( namespace = "http://www.mapstruct.org/itest/jaxb/xsd/underscores",
             name = "declared_underscore", scope = SubType.class )
     public JAXBElement<String> createSubTypeDeclaredUnderscore(String value) {
-        return new JAXBElement<String>(SUB_TYPE_DECLARED_UNDERSCORE_QNAME, String.class, SubType.class, value );
+        return new JAXBElement<>( SUB_TYPE_DECLARED_UNDERSCORE_QNAME, String.class, SubType.class, value );
     }
 }

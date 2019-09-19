@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
+import java.util.Objects;
+
 public class User {
 
     private String name;
@@ -64,13 +66,13 @@ public class User {
 
         User user = (User) o;
 
-        if ( name != null ? !name.equals( user.name ) : user.name != null ) {
+        if ( !Objects.equals( name, user.name ) ) {
             return false;
         }
-        if ( car != null ? !car.equals( user.car ) : user.car != null ) {
+        if ( !Objects.equals( car, user.car ) ) {
             return false;
         }
-        return house != null ? house.equals( user.house ) : user.house == null;
+        return Objects.equals( house, user.house );
 
     }
 

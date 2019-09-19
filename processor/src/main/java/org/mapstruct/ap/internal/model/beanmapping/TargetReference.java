@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +16,9 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -48,12 +51,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  *
  * @author Sjaak Derksen
  */
-public class TargetReference {
-
-    private final Parameter parameter;
-    private final List<PropertyEntry> propertyEntries;
-    private final boolean isValid;
-
+public class TargetReference extends AbstractReference {
 
     /**
      * Builds a {@link TargetReference} from an {@code @Mappping}.
@@ -94,7 +92,7 @@ public class TargetReference {
 
         public TargetReference build() {
 
-            boolean isInverse =  mapping.getInheritContext() != null ? mapping.getInheritContext().isReversed() : false;
+            boolean isInverse = mapping.getInheritContext() != null && mapping.getInheritContext().isReversed();
 
             String targetName = mapping.getTargetName();
             if ( targetName == null ) {
@@ -345,46 +343,24 @@ public class TargetReference {
         }
     }
 
-    private TargetReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
-        this.parameter = sourceParameter;
-        this.propertyEntries = sourcePropertyEntries;
-        this.isValid = isValid;
+    private TargetReference(Parameter sourceParameter, List<PropertyEntry> targetPropertyEntries, boolean isValid) {
+        super( sourceParameter, targetPropertyEntries, isValid );
     }
 
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    public List<PropertyEntry> getPropertyEntries() {
-        return propertyEntries;
-    }
-
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public List<String> getElementNames() {
-        List<String> elementNames = new ArrayList<>();
-        if ( parameter != null ) {
-            // only relevant for source properties
-            elementNames.add( parameter.getName() );
-        }
-        for ( PropertyEntry propertyEntry : propertyEntries ) {
-            elementNames.add( propertyEntry.getName() );
-        }
-        return elementNames;
+    public boolean isTargetThis() {
+        return getPropertyEntries().isEmpty();
     }
 
     public TargetReference pop() {
-        if ( propertyEntries.size() > 1 ) {
-            List<PropertyEntry> newPropertyEntries = new ArrayList<>( propertyEntries.size() - 1 );
-            for ( PropertyEntry propertyEntry : propertyEntries ) {
+        if ( getPropertyEntries().size() > 1 ) {
+            List<PropertyEntry> newPropertyEntries = new ArrayList<>( getPropertyEntries().size() - 1 );
+            for ( PropertyEntry propertyEntry : getPropertyEntries() ) {
                 PropertyEntry newPropertyEntry = propertyEntry.pop();
                 if ( newPropertyEntry != null ) {
                     newPropertyEntries.add( newPropertyEntry );
                 }
             }
-            return new TargetReference( null, newPropertyEntries, isValid );
+            return new TargetReference( null, newPropertyEntries, isValid() );
         }
         else {
             return null;

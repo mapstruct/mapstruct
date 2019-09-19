@@ -16,11 +16,11 @@ import java.util.Set;
  */
 public class DomainWithoutSetter {
 
-    private final Set<String> strings = new HashSet<String>();
-    private final Set<Long> longs = new HashSet<Long>();
-    private final Set<String> stringsInitialized = new HashSet<String>();
-    private final Set<Long> longsInitialized = new HashSet<Long>();
-    private final List<String> stringsWithDefault = new ArrayList<String>();
+    private final Set<String> strings = new HashSet<>();
+    private final Set<Long> longs = new HashSet<>();
+    private final Set<String> stringsInitialized = new HashSet<>();
+    private final Set<Long> longsInitialized = new HashSet<>();
+    private final List<String> stringsWithDefault = new ArrayList<>();
 
     public Set<String> getStrings() {
         return strings;

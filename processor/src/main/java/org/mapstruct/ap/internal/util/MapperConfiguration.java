@@ -99,8 +99,7 @@ public class MapperConfiguration {
     }
 
     public List<TypeMirror> imports() {
-        List<TypeMirror> imports = new ArrayList<>();
-        imports.addAll( mapperPrism.imports() );
+        List<TypeMirror> imports = new ArrayList<>( mapperPrism.imports() );
         if ( mapperConfigPrism != null ) {
             imports.addAll( mapperConfigPrism.imports() );
         }
@@ -193,7 +192,7 @@ public class MapperConfiguration {
         else if ( beanPrism != null ) {
             return beanPrism;
         }
-        else if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
+        else if ( mapperConfigPrism != null && mapperPrism.values.nullValuePropertyMappingStrategy() == null ) {
             return NullValuePropertyMappingStrategyPrism.valueOf(
                 mapperConfigPrism.nullValuePropertyMappingStrategy()
             );
@@ -203,13 +202,21 @@ public class MapperConfiguration {
         }
     }
 
-    public InjectionStrategyPrism getInjectionStrategy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.injectionStrategy() == null ) {
-            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
-        }
-        else {
+    public InjectionStrategyPrism getInjectionStrategy(Options options) {
+        if ( mapperPrism.values.injectionStrategy() != null ) {
             return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
         }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.injectionStrategy() != null ) {
+            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
+        }
+
+        if ( options.getDefaultInjectionStrategy() != null ) {
+            return InjectionStrategyPrism.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
+        }
+
+        // fall back to default defined in the annotation
+        return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
@@ -262,7 +269,7 @@ public class MapperConfiguration {
 
     public boolean isDisableSubMappingMethodsGeneration() {
         if ( mapperPrism.disableSubMappingMethodsGeneration() ) {
-            return mapperPrism.disableSubMappingMethodsGeneration();
+            return true;
         }
 
         if ( mapperConfigPrism != null && mapperConfigPrism.disableSubMappingMethodsGeneration() ) {

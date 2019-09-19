@@ -49,10 +49,8 @@ public class CreateOrUpdateSelector implements MethodSelector {
                 updateCandidates.add( method );
             }
         }
-        if ( criteria.isPreferUpdateMapping() ) {
-            if ( !updateCandidates.isEmpty() ) {
-                return updateCandidates;
-            }
+        if ( criteria.isPreferUpdateMapping() && !updateCandidates.isEmpty() ) {
+            return updateCandidates;
         }
         return createCandidates;
     }

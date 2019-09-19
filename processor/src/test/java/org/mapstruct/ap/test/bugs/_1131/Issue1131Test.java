@@ -34,7 +34,7 @@ public class Issue1131Test {
         Source source = new Source();
         source.setNested( new Source.Nested() );
         source.getNested().setProperty( "something" );
-        source.setMoreNested( new ArrayList<Source.Nested>() );
+        source.setMoreNested( new ArrayList<>() );
 
         Target target = new Target();
 
@@ -55,7 +55,7 @@ public class Issue1131Test {
         Source source = new Source();
         source.setNested( new Source.Nested() );
         source.getNested().setProperty( "something" );
-        source.setMoreNested( new ArrayList<Source.Nested>() );
+        source.setMoreNested( new ArrayList<>() );
 
         Target target = new Target();
 

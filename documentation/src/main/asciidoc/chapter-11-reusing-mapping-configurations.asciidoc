@@ -1,0 +1,163 @@
+== Reusing mapping configurations
+
+This chapter discusses different means of reusing mapping configurations for several mapping methods: "inheritance" of configuration from other methods and sharing central configuration between multiple mapper types.
+
+[[mapping-configuration-inheritance]]
+=== Mapping configuration inheritance
+
+Method-level configuration annotations such as `@Mapping`, `@BeanMapping`, `@IterableMapping`, etc., can be *inherited* from one mapping method to a *similar* method using the annotation `@InheritConfiguration`:
+
+.Update method inheriting its configuration
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(target = "numberOfSeats", source = "seatCount")
+    Car carDtoToCar(CarDto car);
+
+    @InheritConfiguration
+    void carDtoIntoCar(CarDto carDto, @MappingTarget Car car);
+}
+----
+====
+
+The example above declares a mapping method `carDtoToCar()` with a configuration to define how the property `numberOfSeats` in the type `Car` shall be mapped. The update method that performs the mapping on an existing instance of `Car` needs the same configuration to successfully map all properties. Declaring `@InheritConfiguration` on the method lets MapStruct search for inheritance candidates to apply the annotations of the method that is inherited from.
+
+One method *A* can inherit the configuration from another method *B* if all types of *A* (source types and result type) are assignable to the corresponding types of *B*.
+
+Methods that are considered for inheritance need to be defined in the current mapper, a super class/interface, or in the shared configuration interface (as described in <<shared-configurations>>).
+
+In case more than one method is applicable as source for the inheritance, the method name must be specified within the annotation: `@InheritConfiguration( name = "carDtoToCar" )`.
+
+A method can use `@InheritConfiguration` and override or amend the configuration by additionally applying `@Mapping`, `@BeanMapping`, etc.
+
+[NOTE]
+====
+`@InheritConfiguration` cannot refer to methods in a used mapper.
+====
+
+[[inverse-mappings]]
+=== Inverse mappings
+
+In case of bi-directional mappings, e.g. from entity to DTO and from DTO to entity, the mapping rules for the forward method and the reverse method are often similar and can simply be inversed by switching `source` and `target`.
+
+Use the annotation `@InheritInverseConfiguration` to indicate that a method shall inherit the inverse configuration of the corresponding reverse method.
+
+.Inverse mapping method inheriting its configuration and ignoring some of them
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "numberOfSeats", target = "seatCount")
+    CarDto carToDto(Car car);
+
+    @InheritInverseConfiguration
+    @Mapping(target = "numberOfSeats", ignore = true)
+    Car carDtoToCar(CarDto carDto);
+}
+----
+====
+
+Here the `carDtoToCar()` method is the reverse mapping method for `carToDto()`. Note that any attribute mappings from `carToDto()` will be applied to the corresponding reverse mapping method as well. They are automatically reversed and copied to the method with the `@InheritInverseConfiguration` annotation.
+
+Specific mappings from the inversed method can (optionally) be overridden by  `ignore`, `expression` or `constant` in the mapping, e.g. like this: `@Mapping(target = "numberOfSeats", ignore=true)`.
+
+A method *A* is considered a *reverse* method of a method *B*, if the result type of *A* is the *same* as the single source type of *B* and if the single source type of *A* is the *same* as the result type of *B*.
+
+Methods that are considered for inverse inheritance need to be defined in the current mapper, a super class/interface.
+
+If multiple methods qualify, the method from which to inherit the configuration needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
+
+`@InheritConfiguration` takes, in case of conflict precedence over `@InheritInverseConfiguration`.
+
+Configurations are inherited transitively. So if method `C` defines a mapping `@Mapping( target = "x", ignore = true)`, `B` defines a mapping `@Mapping( target = "y", ignore = true)`, then if `A` inherits from `B` inherits from `C`, `A` will inherit mappings for both property `x` and `y`.
+
+Expressions and constants are excluded (silently ignored) in `@InheritInverseConfiguration`.
+
+Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2 release. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
+
+[NOTE]
+====
+`@InheritConfiguration` or `@InheritInverseConfiguration` cannot refer to methods in a used mapper.
+====
+
+[[shared-configurations]]
+=== Shared configurations
+
+MapStruct offers the possibility to define a shared configuration by pointing to a central interface annotated with `@MapperConfig`. For a mapper to use the shared configuration, the configuration interface needs to be defined in the `@Mapper#config` property.
+
+The `@MapperConfig` annotation has the same attributes as the `@Mapper` annotation. Any attributes not given via `@Mapper` will be inherited from the shared configuration. Attributes specified in `@Mapper` take precedence over the attributes specified via the referenced configuration class. List properties such as `uses` are simply combined:
+
+.Mapper configuration class and mapper using it
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@MapperConfig(
+    uses = CustomMapperViaMapperConfig.class,
+    unmappedTargetPolicy = ReportingPolicy.ERROR
+)
+public interface CentralConfig {
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
+// Effective configuration:
+// @Mapper(
+//     uses = { CustomMapperViaMapper.class, CustomMapperViaMapperConfig.class },
+//     unmappedTargetPolicy = ReportingPolicy.ERROR
+// )
+public interface SourceTargetMapper {
+  ...
+}
+
+----
+====
+
+The interface holding the `@MapperConfig` annotation may also declare *prototypes* of mapping methods that can be used to inherit method-level mapping annotations from. Such prototype methods are not meant to be implemented or used as part of the mapper API.
+
+.Mapper configuration class with prototype methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@MapperConfig(
+    uses = CustomMapperViaMapperConfig.class,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
+    mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG
+)
+public interface CentralConfig {
+
+    // Not intended to be generated, but to carry inheritable mapping annotations:
+    @Mapping(target = "primaryKey", source = "technicalKey")
+    BaseEntity anyDtoToEntity(BaseDto dto);
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
+public interface SourceTargetMapper {
+
+    @Mapping(target = "numberOfSeats", source = "seatCount")
+    // additionally inherited from CentralConfig, because Car extends BaseEntity and CarDto extends BaseDto:
+    // @Mapping(target = "primaryKey", source = "technicalKey")
+    Car toCar(CarDto car)
+}
+----
+====
+
+The attributes `@Mapper#mappingInheritanceStrategy()` / `@MapperConfig#mappingInheritanceStrategy()` configure when the method-level mapping configuration annotations are inherited from prototype methods in the interface to methods in the mapper:
+
+* `EXPLICIT` (default): the configuration will only be inherited, if the target mapping method is annotated with `@InheritConfiguration` and the source and target types are assignable to the corresponding types of the prototype method, all as described in <<mapping-configuration-inheritance>>.
+* `AUTO_INHERIT_FROM_CONFIG`: the configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritConfiguration(name = ...)` which will cause `AUTO_INHERIT_FROM_CONFIG` to be ignored.
+* `AUTO_INHERIT_REVERSE_FROM_CONFIG`: the inverse configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritInverseConfiguration(name = ...)` which will cause ``AUTO_INHERIT_REVERSE_FROM_CONFIG` to be ignored.
+* `AUTO_INHERIT_ALL_FROM_CONFIG`: both the configuration and the inverse configuration will be inherited automatically. The same rules apply as for `AUTO_INHERIT_FROM_CONFIG` or `AUTO_INHERIT_REVERSE_FROM_CONFIG`.

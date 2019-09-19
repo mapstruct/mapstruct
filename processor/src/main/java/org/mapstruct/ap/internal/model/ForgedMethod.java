@@ -3,16 +3,22 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -26,68 +32,104 @@ public class ForgedMethod implements Method {
     private final List<Parameter> parameters;
     private final Type returnType;
     private final String name;
-    private final ExecutableElement positionHintElement;
     private final List<Type> thrownTypes;
-    private final MapperConfiguration mapperConfiguration;
     private final ForgedMethodHistory history;
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
     private final Parameter mappingTargetParameter;
-    private final MappingOptions mappingOptions;
-    private final ParameterProvidedMethods contextProvidedMethods;
+    private final MappingReferences mappingReferences;
+
+    private final Method basedOn;
     private final boolean forgedNameBased;
 
     /**
-     * Creates a new forged method with the given name.
+     * Creates a new forged method with the given name for mapping a method parameter to a property.
      *
      * @param name the (unique name) for this method
      * @param sourceType the source type
      * @param returnType the return type.
-     * @param mapperConfiguration the mapper configuration
-     * @param positionHintElement element used to for reference to the position in the source file.
-     * @param additionalParameters additional parameters to add to the forged method
-     * @param parameterProvidedMethods additional factory/lifecycle methods to consider that are provided by context
-     *            parameters
+     * @param basedOn the method that (originally) triggered this nested method generation.
+     * @return a new forge method
      */
-    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
-                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                        ParameterProvidedMethods parameterProvidedMethods) {
-        this(
+    public static ForgedMethod forParameterMapping(String name, Type sourceType, Type returnType,
+                                                   Method basedOn) {
+        return new ForgedMethod(
             name,
             sourceType,
             returnType,
-            mapperConfiguration,
-            positionHintElement,
-            additionalParameters,
-            parameterProvidedMethods,
+            Collections.emptyList(),
+            basedOn,
             null,
-            null,
-            false );
+            MappingReferences.empty(),
+            false
+        );
     }
 
-     /**
-     * Creates a new forged method with the given name.
+    /**
+     * Creates a new forged method for mapping a bean property to a property
      *
      * @param name the (unique name) for this method
      * @param sourceType the source type
      * @param returnType the return type.
-     * @param mapperConfiguration the mapper configuration
-     * @param positionHintElement element used to for reference to the position in the source file.
-     * @param additionalParameters additional parameters to add to the forged method
-     * @param parameterProvidedMethods additional factory/lifecycle methods to consider that are provided by context
-     *            parameters
+     * @param parameters other parameters (including the context + @MappingTarget
+     * @param basedOn the method that (originally) triggered this nested method generation.
      * @param history a parent forged method if this is a forged method within a forged method
-     * @param mappingOptions the mapping options for this method
+     * @param mappingReferences the mapping options for this method
      * @param forgedNameBased forges a name based (matched) mapping method
+     * @return a new forge method
      */
-     public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
-                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                         ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
-                         MappingOptions mappingOptions, boolean forgedNameBased) {
-         String sourceParamName = Strings.decapitalize( sourceType.getName() );
+    public static ForgedMethod forPropertyMapping(String name, Type sourceType, Type returnType,
+                                                  List<Parameter> parameters, Method basedOn,
+                                                  ForgedMethodHistory history, MappingReferences mappingReferences,
+                                                  boolean forgedNameBased) {
+        return new ForgedMethod(
+            name,
+            sourceType,
+            returnType,
+            parameters,
+            basedOn,
+            history,
+            mappingReferences == null ? MappingReferences.empty() : mappingReferences,
+            forgedNameBased
+        );
+    }
+
+    /**
+     * Creates a new forged method for mapping a collection element, map key/value or stream element
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param returnType the return type.
+     * @param basedOn the method that (originally) triggered this nested method generation.
+     * @param history a parent forged method if this is a forged method within a forged method
+     * @param forgedNameBased forges a name based (matched) mapping method
+     *
+     * @return a new forge method
+     */
+    public static ForgedMethod forElementMapping(String name, Type sourceType, Type returnType, Method basedOn,
+                                                 ForgedMethodHistory history, boolean forgedNameBased) {
+        return new ForgedMethod(
+            name,
+            sourceType,
+            returnType,
+            basedOn.getContextParameters(),
+            basedOn,
+            history,
+            MappingReferences.empty(),
+            forgedNameBased
+        );
+    }
+
+    private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
+                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
+                         boolean forgedNameBased) {
+
+        // establish name
+        String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
 
+        // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
         Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
         this.parameters.add( sourceParameter );
@@ -95,15 +137,15 @@ public class ForgedMethod implements Method {
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.contextProvidedMethods = parameterProvidedMethods;
-
         this.returnType = returnType;
         this.thrownTypes = new ArrayList<>();
+
+        // based on method
+        this.basedOn = basedOn;
+
         this.name = Strings.sanitizeIdentifierName( name );
-        this.mapperConfiguration = mapperConfiguration;
-        this.positionHintElement = positionHintElement;
         this.history = history;
-        this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
+        this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
     }
 
@@ -116,15 +158,14 @@ public class ForgedMethod implements Method {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
         this.thrownTypes = new ArrayList<>();
-        this.mapperConfiguration = forgedMethod.mapperConfiguration;
-        this.positionHintElement = forgedMethod.positionHintElement;
         this.history = forgedMethod.history;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.mappingOptions = forgedMethod.mappingOptions;
-        this.contextProvidedMethods = forgedMethod.contextProvidedMethods;
+        this.mappingReferences = forgedMethod.mappingReferences;
+
+        this.basedOn = forgedMethod.basedOn;
 
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
@@ -182,7 +223,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public ParameterProvidedMethods getContextProvidedMethods() {
-        return contextProvidedMethods;
+        return basedOn.getContextProvidedMethods();
     }
 
     @Override
@@ -248,7 +289,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public ExecutableElement getExecutable() {
-        return positionHintElement;
+        return basedOn.getExecutable();
     }
 
     @Override
@@ -283,7 +324,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public MapperConfiguration getMapperConfiguration() {
-        return mapperConfiguration;
+        return basedOn.getMapperConfiguration();
     }
 
     @Override
@@ -303,7 +344,11 @@ public class ForgedMethod implements Method {
 
     @Override
     public MappingOptions getMappingOptions() {
-        return mappingOptions;
+        return basedOn.getMappingOptions();
+    }
+
+    public MappingReferences getMappingReferences() {
+        return mappingReferences;
     }
 
     @Override
@@ -317,10 +362,10 @@ public class ForgedMethod implements Method {
 
         ForgedMethod that = (ForgedMethod) o;
 
-        if ( parameters != null ? !parameters.equals( that.parameters ) : that.parameters != null ) {
+        if ( !Objects.equals( parameters, that.parameters ) ) {
             return false;
         }
-        return returnType != null ? returnType.equals( that.returnType ) : that.returnType == null;
+        return Objects.equals( returnType, that.returnType );
 
     }
 

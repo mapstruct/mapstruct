@@ -27,7 +27,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class Issue1255Test {
 
     @Test
-    public void shouldMapSomeBToSomeAWithoutField1() throws Exception {
+    public void shouldMapSomeBToSomeAWithoutField1() {
         SomeB someB = new SomeB();
         someB.setField1( "value1" );
         someB.setField2( "value2" );
@@ -41,7 +41,7 @@ public class Issue1255Test {
     }
 
     @Test
-    public void shouldMapSomeAToSomeB() throws Exception {
+    public void shouldMapSomeAToSomeB() {
         SomeA someA = new SomeA();
         someA.setField1( "value1" );
         someA.setField2( "value2" );

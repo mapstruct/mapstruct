@@ -9,9 +9,9 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.BeanMapping;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
@@ -43,26 +43,17 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         if ( method instanceof ForgedMethod ) {
             history = ( (ForgedMethod) method ).getHistory();
         }
-        ForgedMethod forgedMethod = new ForgedMethod(
-            name,
-            sourceType,
+
+        ForgedMethodHistory forgedHistory = new ForgedMethodHistory(
+            history,
+            Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
+            Strings.stubPropertyName( targetType.getName() ),
+            sourceRHS.getSourceType(),
             targetType,
-            method.getMapperConfiguration(),
-            method.getExecutable(),
-            method.getContextParameters(),
-            method.getContextProvidedMethods(),
-            new ForgedMethodHistory(
-                history,
-                Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
-                Strings.stubPropertyName( targetType.getName() ),
-                sourceRHS.getSourceType(),
-                targetType,
-                shouldUsePropertyNamesInHistory(),
-                sourceRHS.getSourceErrorMessagePart()
-            ),
-            null,
-            true
-        );
+            shouldUsePropertyNamesInHistory(),
+            sourceRHS.getSourceErrorMessagePart() );
+
+        ForgedMethod forgedMethod = forElementMapping( name, sourceType, targetType, method, forgedHistory, true );
 
         return createForgedAssignment(
                         sourceRHS,

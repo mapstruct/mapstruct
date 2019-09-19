@@ -7,8 +7,9 @@ package org.mapstruct.ap.test.prism;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.mapstruct.CollectionMappingStrategy;
@@ -67,12 +68,8 @@ public class EnumPrismsTest {
     }
 
     private static List<String> namesOf(Enum<?>[] values) {
-        List<String> names = new ArrayList<String>( values.length );
-
-        for ( Enum<?> e : values ) {
-            names.add( e.name() );
-        }
-
-        return names;
+        return Stream.of( values )
+            .map( Enum::name )
+            .collect( Collectors.toList() );
     }
 }

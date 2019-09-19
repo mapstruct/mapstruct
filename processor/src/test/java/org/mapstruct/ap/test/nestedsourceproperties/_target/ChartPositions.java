@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ChartPositions {
 
-    private final List<Long> positions = new ArrayList<Long>();
+    private final List<Long> positions = new ArrayList<>();
 
     public List<Long> getPositions() {
         return positions;

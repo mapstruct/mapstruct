@@ -26,7 +26,7 @@ public class TargetDali {
     public void addTeeth(Integer tooth) {
         AdderUsageObserver.setUsed( true );
         if ( teeth == null ) {
-            teeth = new ArrayList<Integer>();
+            teeth = new ArrayList<>();
         }
         teeth.add( tooth );
     }

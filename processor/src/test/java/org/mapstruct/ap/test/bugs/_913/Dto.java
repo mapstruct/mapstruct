@@ -16,7 +16,7 @@ import java.util.List;
 public class Dto {
 
     private List<String> strings;
-    private List<String> stringsInitialized = new ArrayList<String>( Arrays.asList( "5" ) );
+    private List<String> stringsInitialized = new ArrayList<>( Arrays.asList( "5" ) );
     private List<String> stringsWithDefault;
 
     public List<String> getStrings() {

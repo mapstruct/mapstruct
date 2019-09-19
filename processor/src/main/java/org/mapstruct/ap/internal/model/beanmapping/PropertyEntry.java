@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Arrays;
 
@@ -129,10 +129,7 @@ public class PropertyEntry {
             return false;
         }
         final PropertyEntry other = (PropertyEntry) obj;
-        if ( !Arrays.deepEquals( this.fullName, other.fullName ) ) {
-            return false;
-        }
-        return true;
+        return Arrays.deepEquals( this.fullName, other.fullName );
     }
 
     @Override

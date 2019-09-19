@@ -84,11 +84,11 @@ public class SuggestMostSimilarNameTest {
         diagnostics = {
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 19,
+                line = 21,
                 messageRegExp = "No property named \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 22,
+                line = 28,
                 messageRegExp = "No property named \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
         }
     )

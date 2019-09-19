@@ -26,7 +26,7 @@ public class Target {
 
     public void addElement(String element) {
         if ( elements == null ) {
-            elements = new ArrayList<String>();
+            elements = new ArrayList<>();
         }
         elements.add( element );
     }

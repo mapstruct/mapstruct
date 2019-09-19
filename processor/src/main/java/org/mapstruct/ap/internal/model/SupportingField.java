@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInFieldReference;
@@ -54,14 +55,11 @@ public class SupportingField extends Field {
             return false;
         }
         SupportingField other = (SupportingField) obj;
-        if ( templateName == null ) {
-            if ( other.templateName != null ) {
-                return false;
-            }
-        }
-        else if ( !templateName.equals( other.templateName ) ) {
+
+        if ( !Objects.equals( templateName, other.templateName ) ) {
             return false;
         }
+
         return true;
     }
 

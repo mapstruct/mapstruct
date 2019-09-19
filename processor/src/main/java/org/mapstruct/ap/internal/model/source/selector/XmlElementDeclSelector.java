@@ -62,14 +62,14 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
 
             SourceMethod candidateMethod = (SourceMethod) candidate.getMethod();
-            XmlElementDeclPrism xmlElememtDecl = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
+            XmlElementDeclPrism xmlElementDecl = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
 
-            if ( xmlElememtDecl == null ) {
+            if ( xmlElementDecl == null ) {
                 continue;
             }
 
-            String name = xmlElememtDecl.name();
-            TypeMirror scope = xmlElememtDecl.scope();
+            String name = xmlElementDecl.name();
+            TypeMirror scope = xmlElementDecl.scope();
 
             boolean nameIsSetAndMatches = name != null && name.equals( xmlElementRefInfo.nameValue() );
             boolean scopeIsSetAndMatches =
@@ -88,13 +88,13 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
         }
 
-        if ( nameAndScopeMatches.size() > 0 ) {
+        if ( !nameAndScopeMatches.isEmpty() ) {
             return nameAndScopeMatches;
         }
-        else if ( scopeMatches.size() > 0 ) {
+        else if ( !scopeMatches.isEmpty() ) {
             return scopeMatches;
         }
-        else if ( nameMatches.size() > 0 ) {
+        else if ( !nameMatches.isEmpty() ) {
             return nameMatches;
         }
         else {

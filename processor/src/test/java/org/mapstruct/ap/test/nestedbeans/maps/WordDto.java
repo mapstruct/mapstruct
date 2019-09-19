@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nestedbeans.maps;
 
+import java.util.Objects;
+
 public class WordDto {
     private String textValue;
 
@@ -34,7 +36,7 @@ public class WordDto {
 
         WordDto wordDto = (WordDto) o;
 
-        return textValue != null ? textValue.equals( wordDto.textValue ) : wordDto.textValue == null;
+        return Objects.equals( textValue, wordDto.textValue );
 
     }
 

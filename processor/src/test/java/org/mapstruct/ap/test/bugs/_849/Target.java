@@ -19,7 +19,7 @@ public class Target {
 
     public List<Serializable> getTargetList() {
         if ( targetList == null ) {
-            targetList = new ArrayList<Serializable>();
+            targetList = new ArrayList<>();
         }
         return targetList;
     }

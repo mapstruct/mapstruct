@@ -53,6 +53,6 @@ public class ErroneousJavaInternalTest {
                     "mapping method: \".*List<.*String> map\\(.*List<.*MyType> value\\)\"\\.")
         })
     @Test
-    public void shouldNotNestIntoJavaPackageObjects() throws Exception {
+    public void shouldNotNestIntoJavaPackageObjects() {
     }
 }

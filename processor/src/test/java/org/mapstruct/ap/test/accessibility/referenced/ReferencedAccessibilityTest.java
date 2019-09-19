@@ -43,19 +43,19 @@ public class ReferencedAccessibilityTest {
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
         }
     )
-    public void shouldNotBeAbleToAccessPrivateMethodInReferenced() throws Exception {
+    public void shouldNotBeAbleToAccessPrivateMethodInReferenced() {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperPrivate.class );
     }
 
     @Test
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperDefaultSame.class, ReferencedMapperDefaultSame.class } )
-    public void shouldBeAbleToAccessDefaultMethodInReferencedInSamePackage() throws Exception { }
+    public void shouldBeAbleToAccessDefaultMethodInReferencedInSamePackage() { }
 
     @Test
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperProtected.class, ReferencedMapperProtected.class } )
-    public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() throws Exception { }
+    public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() { }
 
     @Test
     @IssueKey("206")
@@ -71,14 +71,14 @@ public class ReferencedAccessibilityTest {
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
         }
     )
-    public void shouldNotBeAbleToAccessDefaultMethodInReferencedInOtherPackage() throws Exception {
+    public void shouldNotBeAbleToAccessDefaultMethodInReferencedInOtherPackage() {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperDefaultOther.class );
     }
 
     @Test
     @IssueKey( "206" )
     @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetmapperProtectedBase.class } )
-    public void shouldBeAbleToAccessProtectedMethodInBase() throws Exception { }
+    public void shouldBeAbleToAccessProtectedMethodInBase() { }
 
     @Test
     @IssueKey("206")
@@ -94,7 +94,7 @@ public class ReferencedAccessibilityTest {
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
         }
     )
-    public void shouldNotBeAbleToAccessPrivateMethodInBase() throws Exception {
+    public void shouldNotBeAbleToAccessPrivateMethodInBase() {
         generatedSource.addComparisonToFixtureFor( AbstractSourceTargetMapperPrivate.class );
     }
 }

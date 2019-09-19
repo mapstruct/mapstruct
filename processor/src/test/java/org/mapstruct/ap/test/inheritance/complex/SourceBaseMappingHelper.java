@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.inheritance.complex;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SourceBaseMappingHelper {
     public Reference asReference(SourceBase source) {
@@ -33,13 +33,8 @@ public class SourceBaseMappingHelper {
         if ( collection == null ) {
             return null;
         }
-
-        List<Number> list = new ArrayList<Number>( collection.size() );
-
-        for ( Integer original : collection ) {
-            list.add( Integer.valueOf( original + 1 ) );
-        }
-
-        return list;
+        return collection.stream()
+            .map( original -> original + 1 )
+            .collect( Collectors.toList() );
     }
 }
