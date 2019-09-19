@@ -236,6 +236,10 @@ public class Mapping {
         else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null ) {
             message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
+        else if ( mappingPrism.values.expression() != null
+            && ( mappingPrism.values.qualifiedByName() != null || mappingPrism.values.qualifiedBy() != null ) ) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED;
+        }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.defaultValue() != null ) {
             message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS;

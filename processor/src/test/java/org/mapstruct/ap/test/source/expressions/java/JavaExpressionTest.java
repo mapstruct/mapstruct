@@ -14,9 +14,13 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.source.defaultExpressions.java.ErroneousDefaultExpressionDefaultValueMapper;
 import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
@@ -130,5 +134,34 @@ public class JavaExpressionTest {
         TargetList target = SourceTargetListMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getList() ).isEqualTo( Arrays.asList( "test2" ) );
+    }
+
+    @IssueKey(  "1851" )
+    @Test
+    @WithClasses({
+        Source.class,
+        Target.class,
+        QualifierProvider.class,
+        TimeAndFormat.class,
+        SourceTargetMapperExpressionAndQualifiers.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperExpressionAndQualifiers.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 18,
+                messageRegExp = "Expression and a qualifier both defined in @Mapping," +
+                    " either defined an expression or a qualifier."
+            ),
+            @Diagnostic(type = SourceTargetMapperExpressionAndQualifiers.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 24,
+                messageRegExp = "Expression and a qualifier both defined in @Mapping," +
+                    " either defined an expression or a qualifier."
+            )
+        }
+    )
+    public void testExpressionAndQualifiedByNameDoesNotCompile() {
     }
 }
