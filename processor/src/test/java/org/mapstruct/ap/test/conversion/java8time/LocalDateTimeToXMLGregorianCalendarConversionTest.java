@@ -47,7 +47,8 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
     }
 
     @Test
-    public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectly() throws DatatypeConfigurationException {
+    public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithNanoseconds()
+                                                throws DatatypeConfigurationException {
         LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50, 9000000 );
         Target target = new Target();
         target.setLocalDateTime( localDateTime );
@@ -56,6 +57,42 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
 
         XMLGregorianCalendar expectedCalendar = DatatypeFactory.newInstance()
             .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 50, 9,
+                DatatypeConstants.FIELD_UNDEFINED
+            );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getXmlGregorianCalendar() ).isEqualTo( expectedCalendar );
+    }
+
+    @Test
+    public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithSeconds()
+                                                throws DatatypeConfigurationException {
+        LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50 );
+        Target target = new Target();
+        target.setLocalDateTime( localDateTime );
+
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+
+        XMLGregorianCalendar expectedCalendar = DatatypeFactory.newInstance()
+            .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 50, 0,
+                DatatypeConstants.FIELD_UNDEFINED
+            );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getXmlGregorianCalendar() ).isEqualTo( expectedCalendar );
+    }
+
+    @Test
+    public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithMinutes()
+                                                throws DatatypeConfigurationException {
+        LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30 );
+        Target target = new Target();
+        target.setLocalDateTime( localDateTime );
+
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+
+        XMLGregorianCalendar expectedCalendar = DatatypeFactory.newInstance()
+            .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 0, 0,
                 DatatypeConstants.FIELD_UNDEFINED
             );
 
