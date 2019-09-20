@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source.builtin;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Set;
 
 import javax.xml.datatype.DatatypeConstants;
@@ -29,7 +30,8 @@ public class LocalDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianC
         this.parameter = new Parameter( "localDateTime", typeFactory.getType( LocalDateTime.class ) );
         this.importTypes = asSet(
             parameter.getType(),
-            typeFactory.getType( DatatypeConstants.class )
+            typeFactory.getType( DatatypeConstants.class ),
+            typeFactory.getType( ChronoField.class )
         );
     }
 

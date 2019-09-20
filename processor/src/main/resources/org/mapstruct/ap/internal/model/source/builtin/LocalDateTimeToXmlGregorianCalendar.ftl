@@ -18,6 +18,6 @@ private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@incl
         localDateTime.getHour(),
         localDateTime.getMinute(),
         localDateTime.getSecond(),
-        0, // millisecond
+        localDateTime.get( ChronoField.MILLI_OF_SECOND ),
         <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED );
 }

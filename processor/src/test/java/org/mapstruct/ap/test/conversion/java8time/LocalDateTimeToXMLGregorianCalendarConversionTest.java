@@ -48,14 +48,14 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
 
     @Test
     public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectly() throws DatatypeConfigurationException {
-        LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50 );
+        LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50, 9000000 );
         Target target = new Target();
         target.setLocalDateTime( localDateTime );
 
         Source source = SourceTargetMapper.INSTANCE.toSource( target );
 
         XMLGregorianCalendar expectedCalendar = DatatypeFactory.newInstance()
-            .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 50, 0,
+            .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 50, 9,
                 DatatypeConstants.FIELD_UNDEFINED
             );
 
@@ -74,8 +74,8 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         source.setXmlGregorianCalendar( xmlGregorianCalendar );
 
         Target target = SourceTargetMapper.INSTANCE.toTarget( source );
-        // without milliseconds and nanoseconds
-        LocalDateTime expectedLocalDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50 );
+
+        LocalDateTime expectedLocalDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50, 500000000 );
 
         assertThat( target ).isNotNull();
         assertThat( target.getLocalDateTime() ).isEqualTo( expectedLocalDateTime );

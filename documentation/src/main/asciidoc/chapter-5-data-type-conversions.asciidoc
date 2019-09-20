@@ -90,7 +90,7 @@ public interface CarMapper {
 
 * Between Jodas `org.joda.time.LocalDateTime`, `org.joda.time.LocalDate` and `javax.xml.datatype.XMLGregorianCalendar`, `java.util.Date`.
 
-* Between `java.time.LocalDate`, `java.time.LocalDateTime` and `javax.xml.datatype.XMLGregorianCalendar` (without converting milliseconds and nanoseconds).
+* Between `java.time.LocalDate`, `java.time.LocalDateTime` and `javax.xml.datatype.XMLGregorianCalendar`.
 
 * Between `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime` from Java 8 Date-Time package and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option (see above).
 

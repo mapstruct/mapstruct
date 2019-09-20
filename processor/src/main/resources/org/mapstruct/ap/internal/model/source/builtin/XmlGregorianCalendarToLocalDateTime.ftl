@@ -11,11 +11,43 @@ private static <@includeModel object=findType("java.time.LocalDateTime")/> ${nam
         return null;
     }
 
-    return <@includeModel object=findType("java.time.LocalDateTime")/>.of(
-        xcal.getYear(),
-        xcal.getMonth(),
-        xcal.getDay(),
-        xcal.getHour(),
-        xcal.getMinute(),
-        xcal.getSecond() );
+    if ( xcal.getYear() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMonth() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getDay() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getHour() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMinute() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        ) {
+            if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return <@includeModel object=findType("java.time.LocalDateTime")/>.of(
+                    xcal.getYear(),
+                    xcal.getMonth(),
+                    xcal.getDay(),
+                    xcal.getHour(),
+                    xcal.getMinute(),
+                    xcal.getSecond(),
+                    Duration.ofMillis( xcal.getMillisecond() ).getNano()
+                );
+            }
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return <@includeModel object=findType("java.time.LocalDateTime")/>.of(
+                    xcal.getYear(),
+                    xcal.getMonth(),
+                    xcal.getDay(),
+                    xcal.getHour(),
+                    xcal.getMinute(),
+                    xcal.getSecond()
+                );
+            }
+            else {
+                return <@includeModel object=findType("java.time.LocalDateTime")/>.of(
+                    xcal.getYear(),
+                    xcal.getMonth(),
+                    xcal.getDay(),
+                    xcal.getHour(),
+                    xcal.getMinute()
+                );
+            }
+        }
+    return null;
 }
