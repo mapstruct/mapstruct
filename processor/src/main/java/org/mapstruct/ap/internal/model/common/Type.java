@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -378,24 +376,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private boolean shouldUseSimpleName() {
         String fqn = notToBeImportedTypes.get( name );
         return this.qualifiedName.equals( fqn );
-    }
-
-    /**
-     * @param annotationTypeName the fully qualified name of the annotation type
-     *
-     * @return true, if the type is annotated with an annotation of the specified type (super-types are not inspected)
-     */
-    public boolean isAnnotatedWith(String annotationTypeName) {
-        List<? extends AnnotationMirror> annotationMirrors = typeElement.getAnnotationMirrors();
-
-        for ( AnnotationMirror mirror : annotationMirrors ) {
-            Name mirrorAnnotationName = ( (TypeElement) mirror.getAnnotationType().asElement() ).getQualifiedName();
-            if ( mirrorAnnotationName.contentEquals( annotationTypeName ) ) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public Type erasure() {
