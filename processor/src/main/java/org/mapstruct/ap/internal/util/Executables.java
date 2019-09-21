@@ -103,8 +103,8 @@ public class Executables {
 
     /**
      * Finds all executable elements within the given type element, including executable elements defined in super
-     * classes and implemented interfaces. Methods defined in {@link java.lang.Object} are ignored, as well as
-     * implementations of {@link java.lang.Object#equals(Object)}.
+     * classes and implemented interfaces. Methods defined in {@link java.lang.Object},
+     * implementations of {@link java.lang.Object#equals(Object)} and private methods are ignored
      *
      * @param elementUtils element helper
      * @param element the element to inspect
@@ -182,7 +182,7 @@ public class Executables {
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
         List<Accessor> safeToAdd = new ArrayList<>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
-            if ( isNotObjectEquals( toAdd )
+            if ( isNotPrivate( toAdd ) && isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
                 safeToAdd.add( new ExecutableElementAccessor( toAdd ) );
             }
@@ -215,6 +215,15 @@ public class Executables {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param executable the executable to check
+     *
+     * @return {@code true}, iff the executable does not have a private modifier
+     */
+    private static boolean isNotPrivate(ExecutableElement executable) {
+        return !executable.getModifiers().contains( Modifier.PRIVATE );
     }
 
     /**
