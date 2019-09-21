@@ -16,9 +16,10 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 
 public class MappingReferences {
 
-    private static final MappingReferences EMPTY = new MappingReferences( Collections.emptySet(), false );
+    private static final MappingReferences EMPTY = new MappingReferences( Collections.emptySet(),  false );
 
     private final Set<MappingReference> mappingReferences;
+    private final MappingReference targetThis;
     private final boolean restrictToDefinedMappings;
     private final boolean forForgedMethods;
 
@@ -59,16 +60,22 @@ public class MappingReferences {
                 }
             }
         }
-        if ( targetThisReference != null ) {
-            references.add( targetThisReference );
-        }
-        return new MappingReferences( references, false );
+        return new MappingReferences( references, targetThisReference, false );
+    }
+
+    public MappingReferences(Set<MappingReference> mappingReferences, MappingReference targetThis,
+                             boolean restrictToDefinedMappings) {
+        this.mappingReferences = mappingReferences;
+        this.restrictToDefinedMappings = restrictToDefinedMappings;
+        this.forForgedMethods = restrictToDefinedMappings;
+        this.targetThis = targetThis;
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings) {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = restrictToDefinedMappings;
+        this.targetThis = null;
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings,
@@ -76,6 +83,7 @@ public class MappingReferences {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = forForgedMethods;
+        this.targetThis = null;
     }
 
     public Set<MappingReference> getMappingReferences() {
@@ -119,6 +127,10 @@ public class MappingReferences {
         return false;
     }
 
+    public MappingReference getTargetThis() {
+        return targetThis;
+    }
+
     /**
      * MapStruct filters automatically inversed invalid methods out. TODO: this is a principle we should discuss!
      * @param mappingRef
@@ -132,4 +144,5 @@ public class MappingReferences {
         }
         return true;
     }
+
 }

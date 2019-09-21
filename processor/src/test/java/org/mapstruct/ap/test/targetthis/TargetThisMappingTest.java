@@ -63,4 +63,23 @@ public class TargetThisMappingTest {
         assertThat( c.getId() ).isEqualTo( customerDTO.getItem().getId() );
         assertThat( c.getStatus() ).isEqualTo( customerDTO.getItem().getStatus() );
     }
+
+    @Test
+    @WithClasses( SimpleMapperWithIgnore.class )
+    public void testTargetingThisWithIgnore() {
+        CustomerDTO ce = new CustomerDTO();
+        ce.setName( "customer name" );
+
+        ItemDTO e = new ItemDTO();
+        e.setId( "item id" );
+        e.setStatus( 1 );
+        ce.setItem( e );
+
+        CustomerItem c = SimpleMapperWithIgnore.INSTANCE.map( ce );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getName() ).isEqualTo( "customer name" );
+        assertThat( c.getId() ).isNull();
+        assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
+    }
 }
