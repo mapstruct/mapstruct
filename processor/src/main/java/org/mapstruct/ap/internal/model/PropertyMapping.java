@@ -110,7 +110,7 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+            BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
             this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builderPrism );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
@@ -278,7 +278,7 @@ public class PropertyMapping extends ModelElement {
                     criteria,
                     rightHandSide,
                     positionHint,
-                    () -> forge(  )
+                    this::forge
                 );
             }
             else {
@@ -504,7 +504,7 @@ public class PropertyMapping extends ModelElement {
         private Assignment assignToArray(Type targetType, Assignment rightHandSide) {
 
             Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
-            Assignment assignment = new ArrayCopyWrapper(
+            return new ArrayCopyWrapper(
                 rightHandSide,
                 targetPropertyName,
                 arrayType,
@@ -512,7 +512,6 @@ public class PropertyMapping extends ModelElement {
                 isFieldAssignment(),
                 nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                 nvpms == SET_TO_DEFAULT );
-            return assignment;
         }
 
         private SourceRHS getSourceRHS( SourceReference sourceReference ) {

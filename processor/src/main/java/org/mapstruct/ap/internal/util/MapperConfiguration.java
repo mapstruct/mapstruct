@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.util;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -279,18 +278,18 @@ public class MapperConfiguration {
         return mapperPrism.disableSubMappingMethodsGeneration(); // fall back to default defined in the annotation
     }
 
-    public Optional<BuilderPrism> getBuilderPrism(BuilderPrism beanMappingBuilderPrism) {
+    public BuilderPrism getBuilderPrism(BuilderPrism beanMappingBuilderPrism) {
         if ( beanMappingBuilderPrism != null  ) {
-            return Optional.ofNullable( beanMappingBuilderPrism );
+            return  beanMappingBuilderPrism;
         }
         else if ( mapperPrism.values.builder() != null ) {
-            return Optional.ofNullable( mapperPrism.builder() );
+            return mapperPrism.builder();
         }
         else if ( mapperConfigPrism != null && mapperConfigPrism.values.builder() != null ) {
-            return Optional.ofNullable( mapperConfigPrism.builder() );
+            return mapperConfigPrism.builder();
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 
