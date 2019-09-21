@@ -16,6 +16,9 @@ import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -57,6 +60,15 @@ public class VerboseTest {
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(CreateBeanMapping.class)
     @ExpectedNote("^MapStruct: referred types not available \\(yet\\), deferring mapper:.*CreateBeanMapping.*$")
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(
+            type = CreateBeanMapping.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 12,
+            messageRegExp = ".*No implementation was created for CreateBeanMapping due to having a problem in the " +
+                "erroneous element .*"
+        )
+    })
     public void testDeferred() {
     }
 
