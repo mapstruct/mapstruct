@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -22,12 +24,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.DefaultLogger;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -44,7 +40,12 @@ import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.xml.sax.InputSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
+import com.puppycrawl.tools.checkstyle.Checker;
+import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
+import com.puppycrawl.tools.checkstyle.DefaultLogger;
+import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 
 /**
  * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.
@@ -585,12 +586,11 @@ abstract class CompilingStatement extends Statement {
             if ( result != 0 ) {
                 return result;
             }
-            if ( o1.getLine() != null && o2.getLine() != null ) {
-                result = o1.getLine().compareTo( o2.getLine() );
-                if ( result != 0 ) {
-                    return result;
-                }
+            result = o1.getLine().compareTo( o2.getLine() );
+            if ( result != 0 ) {
+                return result;
             }
+
             return o1.getKind().compareTo( o2.getKind() );
         }
     }
