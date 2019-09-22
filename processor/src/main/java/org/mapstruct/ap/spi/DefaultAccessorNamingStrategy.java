@@ -57,7 +57,8 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
     /**
-     * Returns {@code true} when the {@link ExecutableElement} is a getter method. A method is a getter when it starts
+     * Returns {@code true} when the {@link ExecutableElement} is a getter method. A method is a getter when it
+     * has no parameters, starts
      * with 'get' and the return type is any type other than {@code void}, OR the getter starts with 'is' and the type
      * returned is a primitive or the wrapper for {@code boolean}. NOTE: the latter does strictly not comply to the bean
      * convention. The remainder of the name is supposed to reflect the property name.
@@ -69,6 +70,10 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
      * @return {@code true} when the method is a getter.
      */
     public boolean isGetterMethod(ExecutableElement method) {
+        if ( !method.getParameters().isEmpty() ) {
+            // If the method has parameters it can't be a getter
+            return false;
+        }
         String methodName = method.getSimpleName().toString();
 
         boolean isNonBooleanGetterName = methodName.startsWith( "get" ) && methodName.length() > 3 &&
@@ -166,11 +171,22 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
-        if ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
-            return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
-        }
-        else if ( isFluentSetter( getterOrSetterMethod ) ) {
-            return methodName;
+        if ( isFluentSetter( getterOrSetterMethod ) ) {
+            // If this is a fluent setter that starts with set and the 4th character is an uppercase one
+            // then we treat it as a Java Bean style method (we get the property starting from the 4th character).
+            // Otherwise we treat it as a fluent setter
+            // For example, for the following methods:
+            // * public Builder setSettlementDate(String settlementDate)
+            // * public Builder settlementDate(String settlementDate)
+            // We are going to extract the same property name settlementDate
+            if ( methodName.startsWith( "set" )
+                && methodName.length() > 3
+                && Character.isUpperCase( methodName.charAt( 3 ) ) ) {
+                return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
+            }
+            else {
+                return methodName;
+            }
         }
         return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
