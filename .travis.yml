@@ -1,4 +1,5 @@
 language: java
+dist: trusty
 jdk:
   - oraclejdk8
 install: true
@@ -11,13 +12,10 @@ deploy:
   script: "test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true deploy"
   skip_cleanup: true
   on:
+    repo: mapstruct/mapstruct
     branch: master
 
 sudo: required
 cache:
   directories:
   - $HOME/.m2
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
