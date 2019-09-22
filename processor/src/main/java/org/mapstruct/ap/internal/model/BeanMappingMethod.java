@@ -42,7 +42,6 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
@@ -393,7 +392,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( resultType.isAbstract() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    method.getMappingOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_ABSTRACT,
                     resultType,
                     method.getResultType()
@@ -403,7 +402,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    method.getMappingOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_NOT_ASSIGNABLE,
                     resultType,
                     method.getResultType()
@@ -413,7 +412,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else if ( !resultType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    method.getMappingOptions().getBeanMapping().getMirror(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                     resultType
                 );
