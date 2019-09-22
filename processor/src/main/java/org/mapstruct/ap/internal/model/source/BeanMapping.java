@@ -44,7 +44,7 @@ public class BeanMapping {
      */
     public static BeanMapping forInheritance( BeanMapping map ) {
         return new BeanMapping(
-            map.selectionParameters,
+            SelectionParameters.forInheritance( map.selectionParameters ),
             map.nullValueMappingStrategy,
             map.nullValuePropertyMappingStrategy,
             map.nullValueCheckStrategy,
