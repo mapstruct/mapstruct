@@ -172,10 +172,10 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
         if ( isFluentSetter( getterOrSetterMethod ) ) {
-            // If this is a fluent setter that starts with get or set and the 4th character is an uppercase one
+            // If this is a fluent setter that starts with set and the 4th character is an uppercase one
             // then we treat it as a Java Bean style method (we get the property starting from the 4th character).
             // Otherwise we treat it as a fluent setter
-            if ( ( methodName.startsWith( "get" ) || methodName.startsWith( "set" ) )
+            if ( methodName.startsWith( "set" )
                 && methodName.length() > 3
                 && Character.isUpperCase( methodName.charAt( 3 ) ) ) {
                 return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
