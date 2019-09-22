@@ -360,7 +360,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )

@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.Collection;
-import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
@@ -36,14 +35,14 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        Optional<BuilderPrism> builderMapping = BeanMapping.builderPrismFor( method );
-        if ( !builderMapping.isPresent() && buildMethods.size() == 1 ) {
+        BuilderPrism builderMapping = BeanMapping.builderPrismFor( method );
+        if ( builderMapping == null && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }
         else {
             String buildMethodPattern = DEFAULT_BUILD_METHOD_NAME;
-            if ( builderMapping.isPresent() ) {
-                buildMethodPattern = builderMapping.get().buildMethod();
+            if ( builderMapping != null ) {
+                buildMethodPattern = builderMapping.buildMethod();
             }
             for ( ExecutableElement buildMethod : buildMethods ) {
                 String methodName = buildMethod.getSimpleName().toString();
@@ -52,7 +51,7 @@ public class BuilderFinisherMethodResolver {
                 }
             }
 
-            if ( !builderMapping.isPresent() ) {
+            if ( builderMapping == null ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT,
@@ -65,7 +64,7 @@ public class BuilderFinisherMethodResolver {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    builderMapping.get().mirror,
+                    builderMapping.mirror,
                     Message.BUILDER_NO_BUILD_METHOD_FOUND,
                     buildMethodPattern,
                     builderType.getBuilder(),

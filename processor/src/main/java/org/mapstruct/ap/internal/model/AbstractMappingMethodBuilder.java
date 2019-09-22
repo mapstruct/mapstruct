@@ -58,7 +58,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         return createForgedAssignment(
                         sourceRHS,
                         ctx.getTypeFactory()
-                           .builderTypeFor( targetType, BeanMapping.builderPrismFor( method ).orElse( null ) ),
+                           .builderTypeFor( targetType, BeanMapping.builderPrismFor( method ) ),
                         forgedMethod
         );
     }

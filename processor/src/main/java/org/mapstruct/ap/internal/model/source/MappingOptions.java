@@ -179,7 +179,7 @@ public class MappingOptions {
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
                             writeType,
-                            BeanMapping.builderPrismFor( method ).orElse( null )
+                            BeanMapping.builderPrismFor( method )
             );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );

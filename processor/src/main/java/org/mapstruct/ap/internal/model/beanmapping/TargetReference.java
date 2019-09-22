@@ -203,7 +203,7 @@ public class TargetReference extends AbstractReference {
                         );
                     }
                     else {
-                        BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+                        BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
                         builderType = typeFactory.builderTypeFor( nextType, builderPrism );
                         propertyEntry = PropertyEntry.forTargetReference( fullName,
                                         targetReadAccessor,
@@ -271,7 +271,7 @@ public class TargetReference extends AbstractReference {
                 return type;
             }
             else {
-                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method ).orElse( null );
+                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
                 return typeFactory.effectiveResultTypeFor( type, builderPrism );
             }
         }

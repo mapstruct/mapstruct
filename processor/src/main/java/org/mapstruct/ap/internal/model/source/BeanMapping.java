@@ -213,9 +213,9 @@ public class BeanMapping {
     /**
      * derives the builder prism given the options and configuration
      * @param method containing mandatory configuration and the mapping options (optionally containing a beanmapping)
-     * @return a BuilderPrism as optional
+     * @return null if BuilderPrism not exist
      */
-    public static Optional<BuilderPrism> builderPrismFor(Method method) {
+    public static BuilderPrism builderPrismFor(Method method) {
         return method.getMapperConfiguration()
                      .getBuilderPrism( Optional.ofNullable( method.getMappingOptions().getBeanMapping() )
                                                .map( b -> b.builder )
