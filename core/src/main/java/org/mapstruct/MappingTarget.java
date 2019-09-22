@@ -17,6 +17,43 @@ import java.lang.annotation.Target;
  * <p>
  * <b>NOTE:</b> The parameter passed as a mapping target <b>must</b> not be {@code null}.
  *
+ * <p>
+ * <strong>Example 1:</strong> Update exist bean without return value
+ * </p>
+ * <pre><code class='java'>
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *     void updateHuman(HumanDto humanDto, @MappingTarget Human human);
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates
+ * &#64;Override
+ * public void updateHuman(HumanDto humanDto, Human human) {
+ *     human.setName( humanDto.getName() );
+ *     // ...
+ * }
+ * </code></pre>
+ * <p>
+ * <strong>Example 2:</strong> Update exist bean and return it
+ * </p>
+ * <pre><code class='java'>
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *     Human updateHuman(HumanDto humanDto, @MappingTarget Human human);
+ * }
+ * </code></pre>
+ * // generates:
+ * <pre><code class='java'>
+ * &#64;Override
+ * public Human updateHuman(HumanDto humanDto, Human human) {
+ *     // ...
+ *     human.setName( humanDto.getName() );
+ *     return human;
+ * }
+ *</code></pre>
+ *
+ *
  * @author Andreas Gudian
  */
 @Target(ElementType.PARAMETER)
