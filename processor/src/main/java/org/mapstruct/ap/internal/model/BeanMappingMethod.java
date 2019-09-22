@@ -663,7 +663,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.getTargetThis() != null ) {
                 List<SourceReference> sourceRefs = mappingReferences.getTargetThis()
                     .getSourceReference()
-                    .push( ctx.getTypeFactory(), method ).stream()
+                    .push( ctx.getTypeFactory(), ctx.getMessager(),  method ).stream()
                     .filter( sr -> unprocessedTargetProperties.containsKey( sr.getDeepestPropertyName() ) )
                     .collect( Collectors.toList() );
                 applyPropertyNameBasedMapping( sourceRefs );

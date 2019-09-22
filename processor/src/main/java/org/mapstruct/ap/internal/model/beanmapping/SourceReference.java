@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -56,7 +57,6 @@ public class SourceReference extends AbstractReference {
      */
     public static class BuilderFromMapping {
 
-       // private Mapping mapping;
         private Method method;
         private FormattingMessager messager = null;
         private TypeFactory typeFactory;
@@ -104,8 +104,10 @@ public class SourceReference extends AbstractReference {
                 return null;
             }
 
+            Objects.requireNonNull( messager );
+
             String sourceNameTrimmed = sourceName.trim();
-            if ( !sourceName.equals( sourceNameTrimmed ) && messager != null ) {
+            if ( !sourceName.equals( sourceNameTrimmed ) ) {
                 messager.printMessage(
                     method.getExecutable(),
                     annotationMirror,
@@ -223,7 +225,8 @@ public class SourceReference extends AbstractReference {
                 if ( parameter == null ) {
                     reportMappingError(
                         Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
-                        parameterName, Strings.join( method.getSourceParameters(), ", ", Parameter::getName )
+                        parameterName,
+                        Strings.join( method.getSourceParameters(), ", ", Parameter::getName )
                     );
                 }
             }
@@ -308,9 +311,7 @@ public class SourceReference extends AbstractReference {
         }
 
         private void reportMappingError(Message msg, Object... objects) {
-            if ( messager != null ) {
-                messager.printMessage( method.getExecutable(), annotationMirror, sourceAnnotationValue, msg, objects );
-            }
+            messager.printMessage( method.getExecutable(), annotationMirror, sourceAnnotationValue, msg, objects );
         }
     }
 
@@ -402,7 +403,7 @@ public class SourceReference extends AbstractReference {
         }
     }
 
-    public List<SourceReference> push(TypeFactory typeFactory, Method method ) {
+    public List<SourceReference> push(TypeFactory typeFactory, FormattingMessager messager, Method method ) {
         List<SourceReference> result = new ArrayList<>();
         PropertyEntry deepestProperty = getDeepestProperty();
         if ( deepestProperty != null ) {
@@ -413,6 +414,7 @@ public class SourceReference extends AbstractReference {
                 SourceReference sourceReference = new BuilderFromMapping()
                     .sourceName( newFullName )
                     .method( method )
+                    .messager( messager )
                     .typeFactory( typeFactory )
                     .build();
                 result.add( sourceReference );

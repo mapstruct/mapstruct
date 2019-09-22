@@ -111,13 +111,14 @@ public class TargetReference extends AbstractReference {
 
             Objects.requireNonNull( method );
             Objects.requireNonNull( typeFactory );
+            Objects.requireNonNull( messager );
 
             if ( targetName == null ) {
                 return null;
             }
 
             String targetNameTrimmed = targetName.trim();
-            if ( !targetName.equals( targetNameTrimmed ) && messager != null ) {
+            if ( !targetName.equals( targetNameTrimmed ) ) {
                 messager.printMessage(
                     method.getExecutable(),
                     annotationMirror,
@@ -389,9 +390,6 @@ public class TargetReference extends AbstractReference {
         abstract void report();
 
         protected void printErrorMessage(Message message, Object... args) {
-            if ( builder.messager == null ) {
-                return;
-            }
             Object[] errorArgs = new Object[args.length + 2];
             errorArgs[0] = builder.targetName;
             errorArgs[1] = builder.method.getResultType();
