@@ -135,7 +135,7 @@ public class JavaExpressionTest {
         assertThat( target.getList() ).isEqualTo( Arrays.asList( "test2" ) );
     }
 
-    @IssueKey(  "1851" )
+    @IssueKey( "1851" )
     @Test
     @WithClasses({
         Source.class,
@@ -151,16 +151,16 @@ public class JavaExpressionTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18,
                 messageRegExp = "Expression and a qualifier both defined in @Mapping," +
-                    " either defined an expression or a qualifier."
+                    " either define an expression or a qualifier."
             ),
             @Diagnostic(type = ErroneousSourceTargetMapperExpressionAndQualifiers.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
                 messageRegExp = "Expression and a qualifier both defined in @Mapping," +
-                    " either defined an expression or a qualifier."
+                    " either define an expression or a qualifier."
             )
         }
     )
-    public void testExpressionAndQualifiedByNameDoesNotCompile() {
+    public void testExpressionAndQualifiedDoesNotCompile() {
     }
 }
