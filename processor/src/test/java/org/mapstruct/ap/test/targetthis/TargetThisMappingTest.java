@@ -8,6 +8,9 @@ package org.mapstruct.ap.test.targetthis;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,4 +85,44 @@ public class TargetThisMappingTest {
         assertThat( c.getId() ).isNull();
         assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
     }
+
+    @Test
+    @WithClasses( ErroneousNestedMapper.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousNestedMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 19,
+                messageRegExp = "^Several possible source properties for target property \"id\"\\.$"),
+            @Diagnostic(type = ErroneousNestedMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 19,
+                messageRegExp = "^Several possible source properties for target property \"status\"\\.$")
+        }
+    )
+    public void testNestedDuplicates() {
+    }
+
+    @Test
+    @WithClasses( ConfictsResolvedNestedMapper.class )
+    public void testWithConflictsResolved() {
+
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setItem( new ItemDTO() );
+        orderDTO.getItem().setId( "item1" );
+        orderDTO.getItem().setStatus( 1 );
+        orderDTO.setCustomer( new CustomerDTO() );
+        orderDTO.getCustomer().setName( "customer name" );
+        orderDTO.getCustomer().setItem( new ItemDTO() );
+        orderDTO.getCustomer().getItem().setId( "item2" );
+        orderDTO.getCustomer().getItem().setStatus( 2 );
+
+        OrderItem c = ConfictsResolvedNestedMapper.INSTANCE.map( orderDTO );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getStatus() ).isEqualTo( orderDTO.getItem().getStatus() );
+        assertThat( c.getId() ).isEqualTo( orderDTO.getCustomer().getItem().getId() );
+    }
+
 }

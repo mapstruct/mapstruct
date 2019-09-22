@@ -657,15 +657,30 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * <p>
          * When a target property matches its name with the (nested) source property, it is added to the list if and
          * only if it is an unprocessed target property.
+         *
+         * duplicates will be handled by {@link #applyPropertyNameBasedMapping(List)}
          */
         private void applyTargetThisMapping() {
-            if ( mappingReferences.getTargetThis() != null ) {
-                List<SourceReference> sourceRefs = mappingReferences.getTargetThis()
+            Set<String> handledTargetProperties = new HashSet<>();
+            for ( MappingReference targetThis : mappingReferences.getTargetThisReferences() ) {
+
+                // handle all prior unprocessed target properties, but let duplicates fall through
+                List<SourceReference> sourceRefs = targetThis
                     .getSourceReference()
-                    .push( ctx.getTypeFactory(), ctx.getMessager(),  method ).stream()
-                    .filter( sr -> unprocessedTargetProperties.containsKey( sr.getDeepestPropertyName() ) )
+                    .push( ctx.getTypeFactory(), ctx.getMessager(), method )
+                    .stream()
+                    .filter( sr -> unprocessedTargetProperties.containsKey( sr.getDeepestPropertyName() )
+                        || handledTargetProperties.contains( sr.getDeepestPropertyName() ) )
                     .collect( Collectors.toList() );
+
+                // apply name based mapping
                 applyPropertyNameBasedMapping( sourceRefs );
+
+                // add handled target properties
+                handledTargetProperties.addAll( sourceRefs.stream()
+                    .map( SourceReference::getDeepestPropertyName )
+                    .collect(
+                        Collectors.toList() ) );
             }
         }
 
