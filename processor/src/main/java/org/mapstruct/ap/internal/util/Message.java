@@ -57,6 +57,7 @@ public enum Message {
     PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS( "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a constant or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS( "DefaultExpression and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_IGNORE_AND_NVPMS( "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, either define ignore or an nullValuePropertyMappingStrategy." ),
+    PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED("Expression and a qualifier both defined in @Mapping, either define an expression or a qualifier."),
     PROPERTYMAPPING_INVALID_EXPRESSION( "Value for expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION( "Value for default expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no source parameter named \"%s\". Method source parameters are: \"%s\"." ),

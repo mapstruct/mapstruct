@@ -136,7 +136,7 @@ public @interface Mapping {
      * imported via {@link Mapper#imports()}.
      * <p>
      * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
-     * {@link #defaultExpression()} or {@link #constant()}.
+     * {@link #defaultExpression()}, {@link #qualifiedBy()}, {@link #qualifiedByName()} or {@link #constant()}.
      *
      * @return An expression specifying the value for the designated target property
      */
