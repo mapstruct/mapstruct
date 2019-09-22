@@ -232,6 +232,36 @@ public interface AddressMapper {
 
 In this case the source parameter is directly mapped into the target as the example above demonstrates. The parameter `hn`, a non bean type (in this case `java.lang.Integer`) is mapped to `houseNumber`.
 
+[[mapping-nested-bean-properties-to-current-target]]
+ === Mapping nested bean properties to current target
+
+  If you don't want explicitly name all properties from nested source bean, you can use `.` as target.
+ This will tell MapStruct to map every property from source bean to target object. The following shows an example:
+
+  .Nested multi mapping method
+ ====
+ [source, java, linenums]
+ [subs="verbatim,attributes"]
+ ----
+ @Mapper
+ public interface CustomerMapper {
+
+     @Mapping(source = "record", target = ".")
+     Customer customerDtoToCustomer(CustomerDto customerDto);
+ }
+ ----
+ ====
+
+  The generated code will map every property from `CustomerDto.record` to `Customer` directly, without need to manually name any of them.
+
+  Multi mapping notation can be very useful when mapping hierarchical objects to flat objects and opposite way.
+
+  [TIP]
+ ====
+ If you need to send your domain object using JSON, one way to do this is to convert it to single object, where every parent class is represented as separate field in JSON.
+ And MapStruct allows you easily convert between these 2 types.
+ ====
+
 [[updating-bean-instances]]
 === Updating existing bean instances
 

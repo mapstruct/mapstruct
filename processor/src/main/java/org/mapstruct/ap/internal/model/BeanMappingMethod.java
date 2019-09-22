@@ -26,6 +26,11 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReference;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
+import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
+import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -34,14 +39,9 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBui
 import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
-import org.mapstruct.ap.internal.model.beanmapping.MappingReference;
-import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
-import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -199,6 +199,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( !mappingReferences.isRestrictToDefinedMappings() ) {
+
+                // apply name based mapping from a source reference
+                applyTargetThisMapping();
 
                 // map properties without a mapping
                 applyPropertyNameBasedMapping();
@@ -648,6 +651,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             return errorOccured;
+        }
+
+        /**
+         * When target this mapping present, iterates over unprocessed targets.
+         * <p>
+         * When a target property matches its name with the (nested) source property, it is added to the list if and
+         * only if it is an unprocessed target property.
+         */
+        private void applyTargetThisMapping() {
+            if ( mappingReferences.getTargetThis() != null ) {
+                List<SourceReference> sourceRefs = mappingReferences.getTargetThis()
+                    .getSourceReference()
+                    .push( ctx.getTypeFactory(), ctx.getMessager(),  method ).stream()
+                    .filter( sr -> unprocessedTargetProperties.containsKey( sr.getDeepestPropertyName() ) )
+                    .collect( Collectors.toList() );
+                applyPropertyNameBasedMapping( sourceRefs );
+            }
         }
 
         /**

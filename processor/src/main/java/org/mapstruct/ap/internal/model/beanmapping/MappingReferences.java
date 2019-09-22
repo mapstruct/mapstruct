@@ -16,9 +16,10 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 
 public class MappingReferences {
 
-    private static final MappingReferences EMPTY = new MappingReferences( Collections.emptySet(), false );
+    private static final MappingReferences EMPTY = new MappingReferences( Collections.emptySet(),  false );
 
     private final Set<MappingReference> mappingReferences;
+    private final MappingReference targetThis;
     private final boolean restrictToDefinedMappings;
     private final boolean forForgedMethods;
 
@@ -30,7 +31,7 @@ public class MappingReferences {
                                                     TypeFactory typeFactory) {
 
         Set<MappingReference> references = new LinkedHashSet<>();
-        Set<MappingReference> targetThisReferences = new LinkedHashSet<>();
+        MappingReference targetThisReference = null;
 
         for ( Mapping mapping : sourceMethod.getMappingOptions().getMappings() ) {
 
@@ -42,31 +43,39 @@ public class MappingReferences {
                                                                                       .build();
 
             // handle target reference
-            TargetReference targetReference = new TargetReference.BuilderFromTargetMapping().mapping( mapping )
-                                                                                            .method( sourceMethod )
-                                                                                            .messager( messager )
-                                                                                            .typeFactory( typeFactory )
-                                                                                            .build();
+            TargetReference targetReference = new TargetReference.Builder().mapping( mapping )
+                                                                           .method( sourceMethod )
+                                                                           .messager( messager )
+                                                                           .typeFactory( typeFactory )
+                                                                           .build();
 
             // add when inverse is also valid
             MappingReference mappingReference = new MappingReference( mapping, targetReference, sourceReference );
             if ( isValidWhenInversed( mappingReference ) ) {
-                if ( targetReference.isTargetThis() ) {
-                    targetThisReferences.add( mappingReference );
+                if ( ".".equals( mapping.getTargetName() ) ) {
+                    targetThisReference = mappingReference;
                 }
                 else {
                     references.add( mappingReference );
                 }
             }
         }
-        references.addAll( targetThisReferences );
-        return new MappingReferences( references, false );
+        return new MappingReferences( references, targetThisReference, false );
+    }
+
+    public MappingReferences(Set<MappingReference> mappingReferences, MappingReference targetThis,
+                             boolean restrictToDefinedMappings) {
+        this.mappingReferences = mappingReferences;
+        this.restrictToDefinedMappings = restrictToDefinedMappings;
+        this.forForgedMethods = restrictToDefinedMappings;
+        this.targetThis = targetThis;
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings) {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = restrictToDefinedMappings;
+        this.targetThis = null;
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings,
@@ -74,6 +83,7 @@ public class MappingReferences {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = forForgedMethods;
+        this.targetThis = null;
     }
 
     public Set<MappingReference> getMappingReferences() {
@@ -117,6 +127,9 @@ public class MappingReferences {
         return false;
     }
 
+    public MappingReference getTargetThis() {
+        return targetThis;
+    }
 
     /**
      * MapStruct filters automatically inversed invalid methods out. TODO: this is a principle we should discuss!
@@ -131,4 +144,5 @@ public class MappingReferences {
         }
         return true;
     }
+
 }

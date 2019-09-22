@@ -67,9 +67,9 @@ public class PropertyEntry {
      * @param type type of the property
      * @return the property entry for given parameters.
      */
-    public static PropertyEntry forSourceReference(String name, Accessor readAccessor,
+    public static PropertyEntry forSourceReference(String[] name, Accessor readAccessor,
                                                    Accessor presenceChecker, Type type) {
-        return new PropertyEntry( new String[]{name}, readAccessor, null, presenceChecker, type, null );
+        return new PropertyEntry( name, readAccessor, null, presenceChecker, type, null );
     }
 
     public String getName() {
