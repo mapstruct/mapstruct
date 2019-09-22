@@ -125,4 +125,25 @@ public class TargetThisMappingTest {
         assertThat( c.getId() ).isEqualTo( orderDTO.getCustomer().getItem().getId() );
     }
 
+    @Test
+    @WithClasses( FlatteningMapper.class )
+    public void testFlattening() {
+
+        FlatteningMapper.CustomerDTO customerDTO = new FlatteningMapper.CustomerDTO();
+        customerDTO.setName( new FlatteningMapper.NameDTO() );
+        customerDTO.getName().setName( "john doe" );
+        customerDTO.getName().setId( "1" );
+        customerDTO.setAccount( new FlatteningMapper.AccountDTO() );
+        customerDTO.getAccount().setDetails( "nice guys" );
+        customerDTO.getAccount().setNumber( "11223344" );
+
+        FlatteningMapper.Customer customer = FlatteningMapper.INSTANCE.map( customerDTO );
+
+        assertThat( customer ).isNotNull();
+        assertThat( customer.getName() ).isEqualTo( "john doe" );
+        assertThat( customer.getId() ).isEqualTo( "1" );
+        assertThat( customer.getDetails() ).isEqualTo( "nice guys" );
+        assertThat( customer.getNumber() ).isEqualTo( "11223344" );
+
+    }
 }
