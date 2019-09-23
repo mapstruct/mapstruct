@@ -96,11 +96,11 @@ public class TargetThisMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousNestedMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 19,
+                line = 22,
                 messageRegExp = "^Several possible source properties for target property \"id\"\\.$"),
             @Diagnostic(type = ErroneousNestedMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 19,
+                line = 22,
                 messageRegExp = "^Several possible source properties for target property \"status\"\\.$")
         }
     )
