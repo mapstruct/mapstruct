@@ -13,11 +13,12 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface SimpleMapper {
-    SimpleMapper INSTANCE = Mappers.getMapper( SimpleMapper.class );
+public interface ErroneousNestedMapper {
 
+    ErroneousNestedMapper INSTANCE = Mappers.getMapper( ErroneousNestedMapper.class );
+
+    @Mapping( target = ".", source = "customer.item" )
     @Mapping( target = ".", source = "item" )
-    @Mapping( target = "name", ignore = true )
-    CustomerItem map(CustomerDTO customer);
+    OrderItem map(OrderDTO order);
 
 }

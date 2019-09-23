@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
+/**
+ * @author Dainius Figoras
+ */
 public class ItemDTO {
     private String id;
     private int status;

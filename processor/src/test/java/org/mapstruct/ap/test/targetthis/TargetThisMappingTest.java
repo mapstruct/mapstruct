@@ -8,10 +8,16 @@ package org.mapstruct.ap.test.targetthis;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @author Dainius Figoras
+ */
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( {
     OrderDTO.class,
@@ -81,5 +87,73 @@ public class TargetThisMappingTest {
         assertThat( c.getName() ).isEqualTo( "customer name" );
         assertThat( c.getId() ).isNull();
         assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
+    }
+
+    @Test
+    @WithClasses( ErroneousNestedMapper.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousNestedMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 22,
+                messageRegExp = "^Several possible source properties for target property \"id\"\\.$"),
+            @Diagnostic(type = ErroneousNestedMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 22,
+                messageRegExp = "^Several possible source properties for target property \"status\"\\.$")
+        }
+    )
+    public void testNestedDuplicates() {
+    }
+
+    @Test
+    @WithClasses( ConfictsResolvedNestedMapper.class )
+    public void testWithConflictsResolved() {
+
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setItem( new ItemDTO() );
+        orderDTO.getItem().setId( "item1" );
+        orderDTO.getItem().setStatus( 1 );
+        orderDTO.setCustomer( new CustomerDTO() );
+        orderDTO.getCustomer().setName( "customer name" );
+        orderDTO.getCustomer().setItem( new ItemDTO() );
+        orderDTO.getCustomer().getItem().setId( "item2" );
+        orderDTO.getCustomer().getItem().setStatus( 2 );
+
+        OrderItem c = ConfictsResolvedNestedMapper.INSTANCE.map( orderDTO );
+
+        assertThat( c ).isNotNull();
+        assertThat( c.getStatus() ).isEqualTo( orderDTO.getItem().getStatus() );
+        assertThat( c.getId() ).isEqualTo( orderDTO.getCustomer().getItem().getId() );
+    }
+
+    @Test
+    @WithClasses( FlatteningMapper.class )
+    public void testFlattening() {
+
+        FlatteningMapper.CustomerDTO customerDTO = new FlatteningMapper.CustomerDTO();
+        customerDTO.setName( new FlatteningMapper.NameDTO() );
+        customerDTO.getName().setName( "john doe" );
+        customerDTO.getName().setId( "1" );
+        customerDTO.setAccount( new FlatteningMapper.AccountDTO() );
+        customerDTO.getAccount().setDetails( "nice guys" );
+        customerDTO.getAccount().setNumber( "11223344" );
+
+        FlatteningMapper.Customer customer = FlatteningMapper.INSTANCE.flatten( customerDTO );
+
+        assertThat( customer ).isNotNull();
+        assertThat( customer.getName() ).isEqualTo( "john doe" );
+        assertThat( customer.getId() ).isEqualTo( "1" );
+        assertThat( customer.getDetails() ).isEqualTo( "nice guys" );
+        assertThat( customer.getNumber() ).isEqualTo( "11223344" );
+
+        FlatteningMapper.CustomerDTO customerDTO2 = FlatteningMapper.INSTANCE.expand( customer );
+
+        assertThat( customerDTO2 ).isNotNull();
+        assertThat( customerDTO2.getName().getName() ).isEqualTo( "john doe" );
+        assertThat( customerDTO2.getName().getId() ).isEqualTo( "1" );
+        assertThat( customerDTO2.getAccount().getDetails() ).isEqualTo( "nice guys" );
+        assertThat( customerDTO2.getAccount().getNumber() ).isEqualTo( "11223344" );
     }
 }

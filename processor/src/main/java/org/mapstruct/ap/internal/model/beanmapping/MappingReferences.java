@@ -5,8 +5,10 @@
  */
 package org.mapstruct.ap.internal.model.beanmapping;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -19,7 +21,7 @@ public class MappingReferences {
     private static final MappingReferences EMPTY = new MappingReferences( Collections.emptySet(),  false );
 
     private final Set<MappingReference> mappingReferences;
-    private final MappingReference targetThis;
+    private final List<MappingReference> targetThisReferences;
     private final boolean restrictToDefinedMappings;
     private final boolean forForgedMethods;
 
@@ -31,7 +33,7 @@ public class MappingReferences {
                                                     TypeFactory typeFactory) {
 
         Set<MappingReference> references = new LinkedHashSet<>();
-        MappingReference targetThisReference = null;
+        List<MappingReference> targetThisReferences = new ArrayList<>(  );
 
         for ( Mapping mapping : sourceMethod.getMappingOptions().getMappings() ) {
 
@@ -53,29 +55,29 @@ public class MappingReferences {
             MappingReference mappingReference = new MappingReference( mapping, targetReference, sourceReference );
             if ( isValidWhenInversed( mappingReference ) ) {
                 if ( ".".equals( mapping.getTargetName() ) ) {
-                    targetThisReference = mappingReference;
+                    targetThisReferences.add( mappingReference );
                 }
                 else {
                     references.add( mappingReference );
                 }
             }
         }
-        return new MappingReferences( references, targetThisReference, false );
+        return new MappingReferences( references, targetThisReferences, false );
     }
 
-    public MappingReferences(Set<MappingReference> mappingReferences, MappingReference targetThis,
+    public MappingReferences(Set<MappingReference> mappingReferences, List<MappingReference> targetThisReferences,
                              boolean restrictToDefinedMappings) {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = restrictToDefinedMappings;
-        this.targetThis = targetThis;
+        this.targetThisReferences = targetThisReferences;
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings) {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = restrictToDefinedMappings;
-        this.targetThis = null;
+        this.targetThisReferences = Collections.emptyList();
     }
 
     public MappingReferences(Set<MappingReference> mappingReferences, boolean restrictToDefinedMappings,
@@ -83,7 +85,7 @@ public class MappingReferences {
         this.mappingReferences = mappingReferences;
         this.restrictToDefinedMappings = restrictToDefinedMappings;
         this.forForgedMethods = forForgedMethods;
-        this.targetThis = null;
+        this.targetThisReferences = Collections.emptyList();
     }
 
     public Set<MappingReference> getMappingReferences() {
@@ -127,8 +129,8 @@ public class MappingReferences {
         return false;
     }
 
-    public MappingReference getTargetThis() {
-        return targetThis;
+    public List<MappingReference> getTargetThisReferences() {
+        return targetThisReferences;
     }
 
     /**

@@ -9,6 +9,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Sjaak Derksen
+ */
 @Mapper
 public interface NestedMapper {
 

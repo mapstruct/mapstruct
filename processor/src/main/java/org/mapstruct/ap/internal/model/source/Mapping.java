@@ -482,6 +482,10 @@ public class Mapping {
         if ( this == o ) {
             return true;
         }
+        if ( ".".equals( this.targetName ) ) {
+            // target this will never be equal to any other target this or any other.
+            return false;
+        }
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }

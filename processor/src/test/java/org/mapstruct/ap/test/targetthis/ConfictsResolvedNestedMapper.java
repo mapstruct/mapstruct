@@ -13,11 +13,14 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface SimpleMapper {
-    SimpleMapper INSTANCE = Mappers.getMapper( SimpleMapper.class );
+public interface ConfictsResolvedNestedMapper {
 
+    ConfictsResolvedNestedMapper INSTANCE = Mappers.getMapper( ConfictsResolvedNestedMapper.class );
+
+    @Mapping( target = "id", source = "customer.item.id" )
+    @Mapping( target = ".", source = "customer.item" )
+    @Mapping( target = "status", source = "item.status" )
     @Mapping( target = ".", source = "item" )
-    @Mapping( target = "name", ignore = true )
-    CustomerItem map(CustomerDTO customer);
+    OrderItem map(OrderDTO order);
 
 }

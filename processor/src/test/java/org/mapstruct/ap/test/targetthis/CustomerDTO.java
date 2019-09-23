@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
+/**
+ * @author Dainius Figoras
+ */
 public class CustomerDTO {
     private String name;
     private int level;
