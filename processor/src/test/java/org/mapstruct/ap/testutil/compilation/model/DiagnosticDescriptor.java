@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
@@ -180,20 +181,10 @@ public class DiagnosticDescriptor {
         if ( line != other.line ) {
             return false;
         }
-        if ( message == null ) {
-            if ( other.message != null ) {
-                return false;
-            }
-        }
-        else if ( !message.equals( other.message ) ) {
+        if ( !Objects.equals( message, other.message ) ) {
             return false;
         }
-        if ( sourceFileName == null ) {
-            if ( other.sourceFileName != null ) {
-                return false;
-            }
-        }
-        else if ( !sourceFileName.equals( other.sourceFileName ) ) {
+        if ( !Objects.equals( sourceFileName, other.sourceFileName ) ) {
             return false;
         }
         return true;

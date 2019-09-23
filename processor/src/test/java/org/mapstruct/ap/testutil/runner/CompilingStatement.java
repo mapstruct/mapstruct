@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.junit.runners.model.FrameworkMethod;
@@ -164,12 +165,7 @@ abstract class CompilingStatement extends Statement {
     }
 
     private static boolean isWhitelisted(String path, String[] whitelist) {
-        for ( String whitelisted : whitelist ) {
-            if ( path.contains( whitelisted ) ) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of( whitelist ).anyMatch( path::contains );
     }
 
     protected void generateMapperImplementation() throws Exception {
@@ -279,8 +275,8 @@ abstract class CompilingStatement extends Statement {
     private void assertDiagnostics(List<DiagnosticDescriptor> actualDiagnostics,
                                    List<DiagnosticDescriptor> expectedDiagnostics) {
 
-        Collections.sort( actualDiagnostics, COMPARATOR );
-        Collections.sort( expectedDiagnostics, COMPARATOR );
+        actualDiagnostics.sort( COMPARATOR );
+        expectedDiagnostics.sort( COMPARATOR );
         expectedDiagnostics = filterExpectedDiagnostics( expectedDiagnostics );
 
         Iterator<DiagnosticDescriptor> actualIterator = actualDiagnostics.iterator();
