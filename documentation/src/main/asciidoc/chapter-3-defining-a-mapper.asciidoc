@@ -238,11 +238,11 @@ In this case the source parameter is directly mapped into the target as the exam
 If you don't want explicitly name all properties from nested source bean, you can use `.` as target.
  This will tell MapStruct to map every property from source bean to target object. The following shows an example:
 
-  .Nested multi mapping method
- ====
- [source, java, linenums]
- [subs="verbatim,attributes"]
- ----
+.use of "target this" annotation "."
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
  @Mapper
  public interface CustomerMapper {
 
@@ -251,8 +251,8 @@ If you don't want explicitly name all properties from nested source bean, you ca
      @Mapping( target = ".", source = "account" )
      Customer customerDtoToCustomer(CustomerDto customerDto);
  }
- ----
- ====
+----
+====
 
 The generated code will map every property from `CustomerDto.record` to `Customer` directly, without need to manually name any of them.
 The same goes for `Customer.account`.
@@ -260,7 +260,7 @@ The same goes for `Customer.account`.
 When there are conflicts, these can be resolved by explicitely defining the mapping. For instance in the example above. `name` occurs in `CustomerDto.record` and in `CustomerDto.account`. The mapping `@Mapping( target = "name", source = "record.name" )` resolves this conflict.
 
 
-This "target this" notation can be very useful when mapping hierarchical objects to flat objects.
+This "target this" notation can be very useful when mapping hierarchical objects to flat objects and vice versa (`@InheritInverseConfiguration`).
 
 
 

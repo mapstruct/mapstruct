@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,7 +20,10 @@ public interface FlatteningMapper {
 
     @Mapping(target = ".", source = "name")
     @Mapping(target = ".", source = "account")
-    Customer map(CustomerDTO customer);
+    Customer flatten(CustomerDTO customer);
+
+    @InheritInverseConfiguration
+    CustomerDTO expand(Customer customer);
 
     class Customer {
 

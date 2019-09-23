@@ -140,7 +140,7 @@ public class TargetThisMappingTest {
         customerDTO.getAccount().setDetails( "nice guys" );
         customerDTO.getAccount().setNumber( "11223344" );
 
-        FlatteningMapper.Customer customer = FlatteningMapper.INSTANCE.map( customerDTO );
+        FlatteningMapper.Customer customer = FlatteningMapper.INSTANCE.flatten( customerDTO );
 
         assertThat( customer ).isNotNull();
         assertThat( customer.getName() ).isEqualTo( "john doe" );
@@ -148,5 +148,12 @@ public class TargetThisMappingTest {
         assertThat( customer.getDetails() ).isEqualTo( "nice guys" );
         assertThat( customer.getNumber() ).isEqualTo( "11223344" );
 
+        FlatteningMapper.CustomerDTO customerDTO2 = FlatteningMapper.INSTANCE.expand( customer );
+
+        assertThat( customerDTO2 ).isNotNull();
+        assertThat( customerDTO2.getName().getName() ).isEqualTo( "john doe" );
+        assertThat( customerDTO2.getName().getId() ).isEqualTo( "1" );
+        assertThat( customerDTO2.getAccount().getDetails() ).isEqualTo( "nice guys" );
+        assertThat( customerDTO2.getAccount().getNumber() ).isEqualTo( "11223344" );
     }
 }
