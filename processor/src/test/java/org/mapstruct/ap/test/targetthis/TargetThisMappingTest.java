@@ -15,6 +15,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @author Dainius Figoras
+ */
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( {
     OrderDTO.class,
