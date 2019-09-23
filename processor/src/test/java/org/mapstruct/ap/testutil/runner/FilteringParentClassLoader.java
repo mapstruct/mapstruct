@@ -22,7 +22,7 @@ final class FilteringParentClassLoader extends ClassLoader {
      * @param excludedPrefixes class name prefixes to exclude
      */
     FilteringParentClassLoader(String... excludedPrefixes) {
-        this.excludedPrefixes = new ArrayList<String>( Arrays.asList( excludedPrefixes ) );
+        this.excludedPrefixes = new ArrayList<>( Arrays.asList( excludedPrefixes ) );
     }
 
     /**

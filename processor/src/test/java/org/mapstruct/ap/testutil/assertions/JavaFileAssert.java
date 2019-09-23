@@ -13,7 +13,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
@@ -101,13 +100,7 @@ public class JavaFileAssert extends FileAssert {
                 expected,
                 charset
             ) );
-            Iterator<Delta<String>> iterator = diffs.iterator();
-            while ( iterator.hasNext() ) {
-                Delta<String> delta = iterator.next();
-                if ( ignoreDelta( delta ) ) {
-                    iterator.remove();
-                }
-            }
+            diffs.removeIf( this::ignoreDelta );
             if ( !diffs.isEmpty() ) {
                 throw Failures.instance()
                     .failure( info, ShouldHaveSameContent.shouldHaveSameContent( actual, expected, diffs ) );

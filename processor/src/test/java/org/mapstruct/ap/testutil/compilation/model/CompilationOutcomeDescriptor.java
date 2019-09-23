@@ -8,6 +8,7 @@ package org.mapstruct.ap.testutil.compilation.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -143,12 +144,7 @@ public class CompilationOutcomeDescriptor {
         if ( compilationResult != other.compilationResult ) {
             return false;
         }
-        if ( diagnostics == null ) {
-            if ( other.diagnostics != null ) {
-                return false;
-            }
-        }
-        else if ( !diagnostics.equals( other.diagnostics ) ) {
+        if ( !Objects.equals( diagnostics, other.diagnostics ) ) {
             return false;
         }
         return true;

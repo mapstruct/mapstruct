@@ -130,10 +130,10 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
         }
 
         private Description withoutParameterizedName(Description description) {
-            String cleanDispayName = removeParameter( description.getDisplayName() );
+            String cleanDisplayName = removeParameter( description.getDisplayName() );
             Description cleanDescription =
                 Description.createSuiteDescription(
-                    cleanDispayName,
+                    cleanDisplayName,
                     description.getAnnotations().toArray( new Annotation[description.getAnnotations().size()] ) );
 
             for ( Description child : description.getChildren() ) {
