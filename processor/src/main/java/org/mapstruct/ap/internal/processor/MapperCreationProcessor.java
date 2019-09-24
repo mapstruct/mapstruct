@@ -93,7 +93,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement, messager );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
@@ -130,7 +130,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MapperReference> result = new LinkedList<>();
         List<String> variableNames = new LinkedList<>();
 
-        for ( TypeMirror usedMapper : mapperConfig.uses() ) {
+        for ( TypeMirror usedMapper : mapperConfig.uses( element ) ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
@@ -257,7 +257,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private SortedSet<Type> getExtraImports(TypeElement element) {
         SortedSet<Type> extraImports = new TreeSet<>();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element, messager );
 
         for ( TypeMirror extraImport : mapperConfiguration.imports() ) {
             Type type = typeFactory.getType( extraImport );

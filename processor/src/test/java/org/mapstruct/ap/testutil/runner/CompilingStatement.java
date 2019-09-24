@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.junit.runners.model.FrameworkMethod;
@@ -282,6 +283,8 @@ abstract class CompilingStatement extends Statement {
         Collections.sort( actualDiagnostics, COMPARATOR );
         Collections.sort( expectedDiagnostics, COMPARATOR );
         expectedDiagnostics = filterExpectedDiagnostics( expectedDiagnostics );
+        actualDiagnostics = actualDiagnostics.stream().distinct().collect( Collectors.toList() );
+
 
         Iterator<DiagnosticDescriptor> actualIterator = actualDiagnostics.iterator();
         Iterator<DiagnosticDescriptor> expectedIterator = expectedDiagnostics.iterator();

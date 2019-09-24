@@ -804,7 +804,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return mappingOptions.getBeanMapping().getReportingPolicy();
             }
 
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn(
+                                                        ctx.getMapperTypeElement(), ctx.getMessager() );
 
             return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
         }
@@ -884,7 +885,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private ReportingPolicyPrism getUnmappedSourcePolicy() {
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn(
+                                                            ctx.getMapperTypeElement(), ctx.getMessager() );
 
             return mapperSettings.unmappedSourcePolicy();
         }

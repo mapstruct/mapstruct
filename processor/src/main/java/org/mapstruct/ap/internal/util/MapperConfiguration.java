@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
@@ -42,19 +43,29 @@ public class MapperConfiguration {
     private final MapperPrism mapperPrism;
     private final MapperConfigPrism mapperConfigPrism;
     private final DeclaredType config;
+    private final FormattingMessager messager;
 
-    public static MapperConfiguration getInstanceOn(Element e) {
-        return new MapperConfiguration( MapperPrism.getInstanceOn( e ) );
+    public static MapperConfiguration getInstanceOn(Element e, FormattingMessager messager) {
+        return new MapperConfiguration( MapperPrism.getInstanceOn( e ), messager );
     }
 
-    private MapperConfiguration(MapperPrism mapperPrism) {
+    private MapperConfiguration(MapperPrism mapperPrism, FormattingMessager messager) {
         this.mapperPrism = mapperPrism;
+        this.messager = messager;
 
         if ( mapperPrism.values.config() != null ) {
-            // TODO #737 Only a declared type makes sense here; Validate and raise graceful error;
-            // Also validate that @MapperConfig is present
-            this.config = (DeclaredType) mapperPrism.config();
-            this.mapperConfigPrism = MapperConfigPrism.getInstanceOn( config.asElement() );
+            if ( mapperPrism.config() instanceof DeclaredType ) {
+                this.config = (DeclaredType) mapperPrism.config();
+                this.mapperConfigPrism = MapperConfigPrism.getInstanceOn( config.asElement() );
+            }
+            else {
+                this.config = null;
+                this.mapperConfigPrism = null;
+                messager.printMessage(
+                    Message.GENERAL_MAPPER_CONFIG_NOT_DECLARED_TYPE,
+                    mapperPrism.config().toString()
+                );
+            }
         }
         else {
             this.config = null;
@@ -80,18 +91,34 @@ public class MapperConfiguration {
         }
     }
 
-    public Set<DeclaredType> uses() {
+    public Set<DeclaredType> uses(TypeElement typeElement) {
         Set<DeclaredType> uses = new LinkedHashSet<>();
 
         for ( TypeMirror usedMapperType : mapperPrism.uses() ) {
-            // TODO #737 Only declared type make sense here; Validate and raise graceful error;
-            uses.add( (DeclaredType) usedMapperType );
+            if ( usedMapperType instanceof DeclaredType ) {
+                uses.add( (DeclaredType) usedMapperType );
+            }
+            else {
+                messager.printMessage(
+                    typeElement,
+                    Message.GENERAL_MAPPER_USES_NOT_DECLARED_TYPE,
+                    usedMapperType.toString()
+                );
+            }
         }
 
         if ( mapperConfigPrism != null ) {
             for ( TypeMirror usedMapperType : mapperConfigPrism.uses() ) {
-                // TODO #737 Only declared type make sense here; Validate and raise graceful error;
-                uses.add( (DeclaredType) usedMapperType );
+                if ( usedMapperType instanceof DeclaredType ) {
+                    uses.add( (DeclaredType) usedMapperType );
+                }
+                else {
+                    messager.printMessage(
+                        typeElement,
+                        Message.GENERAL_MAPPER_CONFIG_USES_NOT_DECLARED_TYPE,
+                        usedMapperType.toString()
+                    );
+                }
             }
         }
 

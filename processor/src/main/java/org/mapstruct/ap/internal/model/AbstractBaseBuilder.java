@@ -60,7 +60,8 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     }
 
     private boolean isDisableSubMappingMethodsGeneration() {
-        MapperConfiguration configuration = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+        MapperConfiguration configuration = MapperConfiguration.getInstanceOn(
+                                                            ctx.getMapperTypeElement(), ctx.getMessager() );
         return configuration.isDisableSubMappingMethodsGeneration();
     }
 

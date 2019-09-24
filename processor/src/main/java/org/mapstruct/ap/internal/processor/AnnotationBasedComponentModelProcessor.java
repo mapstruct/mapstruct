@@ -42,7 +42,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn(
+                                                            mapperTypeElement, context.getMessager() );
 
         String componentModel = mapperConfiguration.componentModel( context.getOptions() );
         InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy( context.getOptions() );

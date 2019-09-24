@@ -73,7 +73,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement, messager );
 
         if ( mapperConfig != null ) {
             this.messager.note( 0, Message.CONFIG_NOTE, mapperConfig.getClass().getName() );
@@ -96,7 +96,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private List<SourceMethod> retrievePrototypeMethods(TypeElement mapperTypeElement,
-            MapperConfiguration mapperConfig) {
+                                                        MapperConfiguration mapperConfig) {
         if ( mapperConfig.config() == null ) {
             return Collections.emptyList();
         }
@@ -138,6 +138,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @param mapperToImplement the top level type (mapper) that requires implementation
      * @param mapperConfig the mapper config
      * @param prototypeMethods prototype methods defined in mapper config type
+     *
      * @return All mapping methods declared by the given type
      */
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
@@ -150,7 +151,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 executable,
                 mapperToImplement,
                 mapperConfig,
-                prototypeMethods );
+                prototypeMethods
+            );
 
             if ( method != null ) {
                 methods.add( method );
@@ -159,12 +161,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( usedMapper.equals( mapperToImplement ) ) {
-            for ( DeclaredType mapper : mapperConfig.uses() ) {
+            for ( DeclaredType mapper : mapperConfig.uses( usedMapper ) ) {
                 methods.addAll( retrieveMethods(
                     asTypeElement( mapper ),
                     mapperToImplement,
                     mapperConfig,
-                    prototypeMethods ) );
+                    prototypeMethods
+                ) );
             }
         }
 
@@ -190,13 +193,15 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
-            return getMethodRequiringImplementation( methodType,
+            return getMethodRequiringImplementation(
+                methodType,
                 method,
                 parameters,
                 containsTargetTypeParameter,
                 mapperConfig,
                 prototypeMethods,
-                mapperToImplement );
+                mapperToImplement
+            );
         }
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
@@ -209,11 +214,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
-            List<Parameter> parameters,
-            boolean containsTargetTypeParameter,
-            MapperConfiguration mapperConfig,
-            List<SourceMethod> prototypeMethods,
-            TypeElement mapperToImplement) {
+                                                          List<Parameter> parameters,
+                                                          boolean containsTargetTypeParameter,
+                                                          MapperConfiguration mapperConfig,
+                                                          List<SourceMethod> prototypeMethods,
+                                                          TypeElement mapperToImplement) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = Parameter.getSourceParameters( parameters );
@@ -265,7 +270,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private ParameterProvidedMethods retrieveContextProvidedMethods(
-            List<Parameter> contextParameters, TypeElement mapperToImplement, MapperConfiguration mapperConfig) {
+        List<Parameter> contextParameters, TypeElement mapperToImplement, MapperConfiguration mapperConfig) {
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
         for ( Parameter contextParam : contextParameters ) {
@@ -276,7 +281,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 contextParam.getType().getTypeElement(),
                 mapperToImplement,
                 mapperConfig,
-                Collections.emptyList() );
+                Collections.emptyList()
+            );
 
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
@@ -401,8 +407,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-                        !resultType.isAssignableTo( returnType ) &&
-                        !resultType.isAssignableTo( typeFactory.effectiveResultTypeFor( returnType, null ) ) ) {
+            !resultType.isAssignableTo( returnType ) &&
+            !resultType.isAssignableTo( typeFactory.effectiveResultTypeFor( returnType, null ) ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }
@@ -423,8 +429,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.isTypeVar() || resultType.isTypeVar() ) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
-                return false;
+            messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
+            return false;
         }
 
         Type parameterType = sourceParameters.get( 0 ).getType();
@@ -499,7 +505,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<Mapping> getMappings(ExecutableElement method) {
-        Set<Mapping> mappings = new LinkedHashSet<>(  );
+        Set<Mapping> mappings = new LinkedHashSet<>();
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
