@@ -23,6 +23,7 @@ import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 import org.mapstruct.ap.spi.MapStructProcessingEnvironment;
+import org.mapstruct.ap.spi.PresenceCheckerStrategy;
 
 /**
  * Keeps contextual data in the scope of the entire annotation processor ("application scope").
@@ -35,6 +36,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
+    private PresenceCheckerStrategy presenceCheckerStrategy;
     private boolean initialized;
 
     private AccessorNamingUtils accessorNaming;
@@ -102,6 +104,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
+        this.presenceCheckerStrategy = PresenceCheckerStrategyHolder.getStrategy();
         this.initialized = true;
     }
 
@@ -146,5 +149,10 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     public BuilderProvider getBuilderProvider() {
         initialize();
         return builderProvider;
+    }
+
+    public PresenceCheckerStrategy getPresenceCheckerStrategy() {
+        initialize();
+        return presenceCheckerStrategy;
     }
 }

@@ -10,7 +10,7 @@
 <@lib.handleExceptions>
   <#if includeSourceNullCheck>
     <@lib.sourceLocalVarAssignment/>
-    if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null</#if> ) {
+    if ( <#if sourcePresenceCheckerReference?? ><#if invertedPresenceChecks>!</#if>${sourcePresenceCheckerReference}<#else><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null</#if> ) {
       <@assignToExistingTarget/>
       <@lib.handleAssignment/>;
     }

@@ -16,6 +16,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.PresenceCheckerStrategy;
 
 /**
  * A processor which performs one task of the mapper generation, e.g. retrieving
@@ -50,6 +51,8 @@ public interface ModelElementProcessor<P, R> {
         FormattingMessager getMessager();
 
         AccessorNamingUtils getAccessorNaming();
+
+        PresenceCheckerStrategy getPresenceCheckerStrategy();
 
         Options getOptions();
 

@@ -15,7 +15,7 @@
 -->
 <#macro handleSourceReferenceNullCheck>
     <#if sourcePresenceCheckerReference??>
-        if ( ${sourcePresenceCheckerReference} ) {
+        if ( <#if invertedPresenceChecks>!</#if>${sourcePresenceCheckerReference} ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
@@ -57,7 +57,7 @@
 -->
 <#macro handleLocalVarNullCheck needs_explicit_local_var>
   <#if sourcePresenceCheckerReference??>
-    if ( ${sourcePresenceCheckerReference} ) {
+    if ( <#if invertedPresenceChecks>!</#if>${sourcePresenceCheckerReference} ) {
       <#if needs_explicit_local_var>
         <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
         <#nested>

@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
+import org.mapstruct.ap.spi.PresenceCheckerStrategy;
 
 /**
  * This class provides the context for the builders.
@@ -104,6 +105,7 @@ public class MappingBuilderContext {
     private final Types typeUtils;
     private final FormattingMessager messager;
     private final AccessorNamingUtils accessorNaming;
+    private final PresenceCheckerStrategy presenceCheckerStrategy;
     private final Options options;
     private final TypeElement mapperTypeElement;
     private final List<SourceMethod> sourceModel;
@@ -113,11 +115,13 @@ public class MappingBuilderContext {
     private final Map<ForgedMethod, ForgedMethod> forgedMethodsUnderCreation =
         new HashMap<>();
 
+    //CHECKSTYLE:OFF
     public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
                           Types typeUtils,
                           FormattingMessager messager,
                           AccessorNamingUtils accessorNaming,
+                          PresenceCheckerStrategy presenceCheckerStrategy,
                           Options options,
                           MappingResolver mappingResolver,
                           TypeElement mapper,
@@ -128,12 +132,14 @@ public class MappingBuilderContext {
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.accessorNaming = accessorNaming;
+        this.presenceCheckerStrategy = presenceCheckerStrategy;
         this.options = options;
         this.mappingResolver = mappingResolver;
         this.mapperTypeElement = mapper;
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
     }
+    //CHECKSTYLE:ON
 
     /**
      * Returns a map which is used to track which forged methods are under creation.
@@ -178,6 +184,10 @@ public class MappingBuilderContext {
 
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    public PresenceCheckerStrategy getPresenceCheckerStrategy() {
+        return presenceCheckerStrategy;
     }
 
     public Options getOptions() {

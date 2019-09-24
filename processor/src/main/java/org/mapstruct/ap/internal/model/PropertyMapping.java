@@ -602,6 +602,7 @@ public class PropertyMapping extends ModelElement {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
                         if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
                             sourcePresenceChecker += " && " + variableName + " != null && "
+                                + (ctx.getPresenceCheckerStrategy().isInverted() ? "!" : "")
                                 + variableName + "." + entry.getPresenceChecker().getSimpleName() + "()";
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
                         }

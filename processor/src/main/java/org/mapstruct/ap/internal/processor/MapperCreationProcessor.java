@@ -102,6 +102,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             typeUtils,
             messager,
             accessorNaming,
+            context.getPresenceCheckerStrategy(),
             options,
             new MappingResolverImpl(
                 messager,

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.tools.FileObject;
 
+import org.mapstruct.ap.internal.util.PresenceCheckerStrategyHolder;
 import org.mapstruct.ap.internal.writer.Writable.Context;
 
 import freemarker.cache.StrongCacheStorage;
@@ -25,6 +26,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.TemplateModelException;
 
 /**
  * Writes Java source files based on given mapper models, using a FreeMarker
@@ -55,6 +57,17 @@ public class ModelWriter {
             "includeModel",
             new ModelIncludeDirective( CONFIGURATION )
         );
+
+        try {
+            CONFIGURATION.setSharedVariable(
+                "invertedPresenceChecks",
+                PresenceCheckerStrategyHolder.getStrategy().isInverted()
+            );
+        }
+        catch ( TemplateModelException e ) {
+            throw new RuntimeException( e );
+        }
+
         // do not refresh/gc the cached templates, as we never change them at runtime
         CONFIGURATION.setCacheStorage( new StrongCacheStorage() );
         CONFIGURATION.setTemplateUpdateDelay( Integer.MAX_VALUE );

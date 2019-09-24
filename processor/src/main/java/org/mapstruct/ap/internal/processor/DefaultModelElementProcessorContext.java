@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.PresenceCheckerStrategy;
 
 /**
  * Default implementation of the processor context.
@@ -41,6 +42,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final VersionInformation versionInformation;
     private final Types delegatingTypes;
     private final AccessorNamingUtils accessorNaming;
+    private final PresenceCheckerStrategy presenceCheckerStrategy;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
             RoundContext roundContext, Map<String, String> notToBeImported) {
@@ -48,6 +50,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
+        this.presenceCheckerStrategy = roundContext.getAnnotationProcessorContext().getPresenceCheckerStrategy();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
         this.typeFactory = new TypeFactory(
@@ -88,6 +91,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     @Override
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    @Override
+    public PresenceCheckerStrategy getPresenceCheckerStrategy() {
+        return presenceCheckerStrategy;
     }
 
     @Override
