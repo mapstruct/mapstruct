@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
@@ -18,7 +17,6 @@ import java.util.ListIterator;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -27,8 +25,6 @@ import javax.lang.model.util.Elements;
 import org.mapstruct.ap.internal.prism.AfterMappingPrism;
 import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
-import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 /**
@@ -54,28 +50,15 @@ public class Executables {
     private Executables() {
     }
 
-    /**
-     * An {@link Accessor} is a field accessor, if it doesn't have an executable element, is public and it is not
-     * static.
-     *
-     * @param accessor the accessor to ber checked
-     *
-     * @return {@code true} if the {@code accessor} is for a {@code public} non {@code static} field.
-     */
-    public static boolean isFieldAccessor(Accessor accessor) {
-        ExecutableElement executable = accessor.getExecutable();
-        return executable == null && isPublic( accessor ) && isNotStatic( accessor );
-    }
-
-    static boolean isPublicNotStatic(Accessor accessor) {
+    static boolean isPublicNotStatic(ExecutableElement accessor) {
         return isPublic( accessor ) && isNotStatic( accessor );
     }
 
-    static boolean isPublic(Accessor method) {
+    static boolean isPublic(ExecutableElement method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    private static boolean isNotStatic(Accessor accessor) {
+    private static boolean isNotStatic(ExecutableElement accessor) {
         return !accessor.getModifiers().contains( Modifier.STATIC );
     }
 
@@ -112,34 +95,14 @@ public class Executables {
      * @return the executable elements usable in the type
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
-        List<ExecutableElement> executables = new ArrayList<>();
-        for ( Accessor accessor : getAllEnclosedAccessors( elementUtils, element ) ) {
-            if ( accessor.getExecutable() != null ) {
-                executables.add( accessor.getExecutable() );
-            }
-        }
-        return executables;
-    }
-
-    /**
-     * Finds all executable elements/variable elements within the given type element, including executable/variable
-     * elements defined in super classes and implemented interfaces and including the fields in the . Methods defined
-     * in {@link java.lang.Object} are ignored, as well as implementations of {@link java.lang.Object#equals(Object)}.
-     *
-     * @param elementUtils element helper
-     * @param element the element to inspect
-     *
-     * @return the executable elements usable in the type
-     */
-    public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element) {
-        List<Accessor> enclosedElements = new ArrayList<>();
+        List<ExecutableElement> enclosedElements = new ArrayList<>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
 
         return enclosedElements;
     }
 
-    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<Accessor> alreadyAdded,
+    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<ExecutableElement> alreadyAdded,
                                                        TypeElement element, TypeElement parentType) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( elementUtils, element );
@@ -150,7 +113,6 @@ public class Executables {
         }
 
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
-        addFields( alreadyAdded, fieldsIn( element.getEnclosedElements() ) );
 
         if ( hasNonObjectSuperclass( element ) ) {
             addEnclosedElementsInHierarchy(
@@ -178,23 +140,14 @@ public class Executables {
      * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
      * @param parentType the type for with elements are collected
      */
-    private static void addNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
+    private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
-        List<Accessor> safeToAdd = new ArrayList<>( methodsToAdd.size() );
+        List<ExecutableElement> safeToAdd = new ArrayList<>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotPrivate( toAdd ) && isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
-                safeToAdd.add( new ExecutableElementAccessor( toAdd ) );
+                safeToAdd.add( toAdd );
             }
-        }
-
-        alreadyCollected.addAll( 0, safeToAdd );
-    }
-
-    private static void addFields(List<Accessor> alreadyCollected, List<VariableElement> variablesToAdd) {
-        List<Accessor> safeToAdd = new ArrayList<>( variablesToAdd.size() );
-        for ( VariableElement toAdd : variablesToAdd ) {
-            safeToAdd.add( new VariableElementAccessor( toAdd ) );
         }
 
         alreadyCollected.addAll( 0, safeToAdd );
@@ -234,10 +187,10 @@ public class Executables {
      * @param parentType the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
-    private static boolean wasNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
+    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
                                                ExecutableElement executable, TypeElement parentType) {
-        for ( ListIterator<Accessor> it = alreadyCollected.listIterator(); it.hasNext(); ) {
-            ExecutableElement executableInSubtype = it.next().getExecutable();
+        for ( ListIterator<ExecutableElement> it = alreadyCollected.listIterator(); it.hasNext(); ) {
+            ExecutableElement executableInSubtype = it.next();
             if ( executableInSubtype == null ) {
                 continue;
             }

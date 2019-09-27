@@ -113,18 +113,7 @@ public class MultipleBuilderMapperTest {
         TooManyBuilderCreationMethodsMapper.class
     })
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
-        // We have 2 diagnostics, as we don't do caching of the types, so a type is processed multiple types
         diagnostics = {
-            @Diagnostic(
-                type = Case.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 11,
-                messageRegExp = "More than one builder creation method for \".*\\.multiple\\.builder.Case\"\\. " +
-                    "Found methods: " +
-                    "\".*wrongBuilder\\(\\) ?, " +
-                    ".*builder\\(\\) ?\"\\. " +
-                    "Builder will not be used\\. Consider implementing a custom BuilderProvider SPI\\."
-            ),
             @Diagnostic(
                 type = Case.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,

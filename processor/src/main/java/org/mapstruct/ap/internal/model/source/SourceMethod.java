@@ -19,6 +19,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -50,6 +51,7 @@ public class SourceMethod implements Method {
     private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final Type returnType;
+    private final BuilderType builderType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfiguration config;
@@ -80,6 +82,7 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
+        private BuilderType builderType = null;
         private List<Type> exceptionTypes;
         private Map<String, List<Mapping>> mappings;
         private IterableMapping iterableMapping = null;
@@ -207,6 +210,7 @@ public class SourceMethod implements Method {
         this.executable = builder.executable;
         this.parameters = builder.parameters;
         this.returnType = builder.returnType;
+        this.builderType = builder.builderType;
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 

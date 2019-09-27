@@ -41,11 +41,13 @@ import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
@@ -365,11 +367,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
 
-
+                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
+                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builderPrism ) )
                     .build();
 
                 if ( beanMappingMethod != null ) {

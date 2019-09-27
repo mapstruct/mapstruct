@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
@@ -50,7 +48,11 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
+import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
+import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -63,20 +65,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
-    private final Type resultType;
+    private final Type returnTypeToConstruct;
+    private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
 
     public static class Builder {
 
         private MappingBuilderContext ctx;
         private Method method;
+
+        /* returnType to construct can have a builder */
+        private BuilderType returnTypeBuilder;
+
         private Map<String, Accessor> unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
-        private NullValueMappingStrategyPrism nullValueMappingStrategy;
-        private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<>();
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
@@ -87,27 +92,68 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
+        public Builder returnTypeBuilder( BuilderType returnTypeBuilder ) {
+            this.returnTypeBuilder = returnTypeBuilder;
+            return this;
+        }
+
         public Builder sourceMethod(SourceMethod sourceMethod) {
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
-            return setupMethodWithMapping( sourceMethod );
+            this.method = sourceMethod;
+            return this;
         }
 
         public Builder forgedMethod(Method method) {
             singleMapping = new EmptySingleMapping();
-            return setupMethodWithMapping( method );
+            this.method = method;
+            return this;
         }
 
-        private Builder setupMethodWithMapping(Method sourceMethod) {
-            this.method = sourceMethod;
-            this.methodMappings = sourceMethod.getMappingOptions().getMappings();
-            CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Type mappingType = method.getResultType();
-            if ( !method.isUpdateMethod() ) {
-                mappingType = mappingType.getEffectiveType();
+        public BeanMappingMethod build() {
+            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
+
+            /* the return type that needs to be constructed (new or factorized), so for instance: */
+            /*  1) the return type of a non-update method */
+            /*  2) or the implementation type that needs to be used when the return type is abstract */
+            /*  3) or the builder whenever the return type is immutable */
+            Type returnTypeToConstruct = null;
+
+            /* factory or builder method to construct the returnTypeToConstruct */
+            MethodReference factoryMethod = null;
+
+            // determine which return type to construct
+            if ( !method.getReturnType().isVoid() ) {
+                Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
+                if ( returnTypeImpl != null ) {
+                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                        returnTypeToConstruct = returnTypeImpl;
+                    }
+                    else {
+                        reportResultTypeFromBeanMappingNotConstructableError( returnTypeImpl );
+                    }
+                }
+                else {
+                    returnTypeImpl = isBuilderRequired() ? returnTypeBuilder.getBuilder() : method.getReturnType();
+                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    if ( factoryMethod != null || canBeConstructed( returnTypeImpl ) ) {
+                        returnTypeToConstruct = returnTypeImpl;
+                    }
+                    else {
+                        reportReturnTypeNotConstructableError( returnTypeImpl );
+                    }
+                }
             }
 
-            Map<String, Accessor> accessors = mappingType
-                .getPropertyWriteAccessors( cms );
+            /* the type that needs to be used in the mapping process as target */
+            Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
+
+            this.methodMappings = this.method.getMappingOptions().getMappings();
+            CollectionMappingStrategyPrism cms = this.method.getMapperConfiguration().getCollectionMappingStrategy();
+
+            // determine accessors
+            Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
 
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
@@ -125,17 +171,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
             existingVariableNames.addAll( method.getParameterNames() );
 
-            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            // get bean mapping (when specified as annotation )
+
             if ( beanMapping != null ) {
                 for ( String ignoreUnmapped : beanMapping.getIgnoreUnmappedSourceProperties() ) {
                     unprocessedSourceProperties.remove( ignoreUnmapped );
                 }
             }
 
-            return this;
-        }
-
-        public BeanMappingMethod build() {
             // map properties with mapping
             boolean mappingErrorOccured = handleDefinedMappings();
             if ( mappingErrorOccured ) {
@@ -158,87 +201,30 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
             reportErrorForUnmappedSourcePropertiesIfRequired();
 
-            // get bean mapping (when specified as annotation )
-            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
-            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
-
             // mapNullToDefault
             NullValueMappingStrategyPrism nullValueMappingStrategy =
                 beanMapping != null ? beanMapping.getNullValueMappingStrategy() : null;
             boolean mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
 
-
-            // selectionParameters
-            SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
-
-            // check if there's a factory method for the result type
-            MethodReference factoryMethod = null;
-            if ( !method.isUpdateMethod() ) {
-                factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod(
-                    method,
-                    method.getResultType(),
-                    selectionParameters,
-                    ctx
-                );
-            }
-
-            // if there's no factory method, try the resultType in the @BeanMapping
-            Type resultType = null;
-            if ( factoryMethod == null ) {
-                if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() ).getEffectiveType();
-                    if ( resultType.isAbstract() ) {
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
-                            beanMappingPrism.mirror,
-                            Message.BEANMAPPING_ABSTRACT,
-                            resultType,
-                            method.getResultType()
-                        );
-                    }
-                    else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
-                            beanMappingPrism.mirror,
-                            Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
-                        );
-                    }
-                    else if ( !resultType.hasEmptyAccessibleContructor() ) {
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
-                            beanMappingPrism.mirror,
-                            Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                            resultType
-                        );
-                    }
-                }
-                else if ( !method.isUpdateMethod() && method.getReturnType().getEffectiveType().isAbstract() ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        Message.GENERAL_ABSTRACT_RETURN_TYPE,
-                        method.getReturnType().getEffectiveType()
-                    );
-                }
-                else if ( !method.isUpdateMethod() &&
-                    !method.getReturnType().getEffectiveType().hasEmptyAccessibleContructor() ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                        method.getReturnType().getEffectiveType()
-                    );
-                }
-            }
-
+            // sort
             sortPropertyMappingsByDependencies();
 
+            // before / after mappings
             List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
                 method,
+                resultTypeToMap,
                 selectionParameters,
                 ctx,
                 existingVariableNames
             );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
+                LifecycleMethodResolver.afterMappingMethods(
+                    method,
+                    resultTypeToMap,
+                    selectionParameters,
+                    ctx,
+                    existingVariableNames
+                );
 
             if (factoryMethod != null && method instanceof ForgedMethod ) {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
@@ -246,7 +232,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             MethodReference finalizeMethod = null;
 
-            if ( shouldCallFinalizerMethod( resultType == null ? method.getResultType() : resultType ) ) {
+            if ( shouldCallFinalizerMethod( returnTypeToConstruct ) ) {
                 finalizeMethod = getFinalizerMethod();
             }
 
@@ -256,32 +242,41 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 propertyMappings,
                 factoryMethod,
                 mapNullToDefault,
-                resultType,
+                returnTypeToConstruct,
+                returnTypeBuilder,
                 beforeMappingMethods,
                 afterMappingMethods,
                 finalizeMethod
             );
         }
 
-        private boolean shouldCallFinalizerMethod(Type resultType) {
-            Type returnType = method.getReturnType();
-            if ( returnType.isVoid() ) {
+        /**
+         * @return builder is required when there is a returnTypeBuilder and the mapping method is not update method.
+         * However, builder is also required when there is a returnTypeBuilder, the mapping target is the builder and
+         * builder is not assignable to the return type (so without building).
+         */
+        private boolean isBuilderRequired() {
+            return returnTypeBuilder != null
+                && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
+        }
+
+        private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct ) {
+            if ( returnTypeToConstruct == null ) {
                 return false;
             }
-            Type mappingType = method.isUpdateMethod() ? resultType : resultType.getEffectiveType();
-            if ( mappingType.isAssignableTo( returnType ) ) {
+            else if ( returnTypeToConstruct.isAssignableTo( method.getReturnType() ) ) {
                 // If the mapping type can be assigned to the return type then we
                 // don't need a finalizer method
                 return false;
             }
 
-            return returnType.getBuilderType() != null;
+            return returnTypeBuilder != null;
         }
 
         private MethodReference getFinalizerMethod() {
             return BuilderFinisherMethodResolver.getBuilderFinisherMethod(
                 method,
-                method.getReturnType().getBuilderType(),
+                returnTypeBuilder,
                 ctx
             );
         }
@@ -370,6 +365,85 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 );
             }
+        }
+
+        private Type getReturnTypeToConstructFromSelectionParameters(SelectionParameters selectionParams) {
+            if ( selectionParams != null && selectionParams.getResultType() != null ) {
+                return ctx.getTypeFactory().getType( selectionParams.getResultType() );
+            }
+            return null;
+        }
+
+        private boolean canBeConstructed(Type typeToBeConstructed) {
+            return !typeToBeConstructed.isAbstract()
+                && typeToBeConstructed.isAssignableTo( this.method.getResultType() )
+                && typeToBeConstructed.hasEmptyAccessibleContructor();
+        }
+
+        private void reportResultTypeFromBeanMappingNotConstructableError(Type resultType) {
+
+            if ( resultType.isAbstract() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    BEANMAPPING_ABSTRACT,
+                    resultType,
+                    method.getResultType()
+                );
+            }
+            else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    BEANMAPPING_NOT_ASSIGNABLE,
+                    resultType,
+                    method.getResultType()
+                );
+            }
+            else if ( !resultType.hasEmptyAccessibleContructor() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    BeanMappingPrism.getInstanceOn( method.getExecutable() ).mirror,
+                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    resultType
+                );
+            }
+        }
+
+        private void reportReturnTypeNotConstructableError(Type returnType) {
+            if ( returnType.isAbstract() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    GENERAL_ABSTRACT_RETURN_TYPE,
+                    returnType
+                );
+            }
+            else if ( !returnType.hasEmptyAccessibleContructor() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    returnType
+                );
+            }
+        }
+
+        /**
+         * Find a factory method for a return type or for a builder.
+         * @param returnTypeImpl the return type implementation to construct
+         * @param selectionParameters
+         * @return
+         */
+        private MethodReference getFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
+            MethodReference factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method,
+                returnTypeImpl,
+                selectionParameters,
+                ctx
+            );
+            if ( factoryMethod == null && returnTypeBuilder != null ) {
+                factoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod( method, returnTypeBuilder );
+            }
+
+            return factoryMethod;
         }
 
         /**
@@ -590,7 +664,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         Accessor sourceReadAccessor =
                             sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
 
-                        ExecutableElementAccessor sourcePresenceChecker =
+                        Accessor sourcePresenceChecker =
                             sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {
@@ -840,7 +914,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
-                              Type resultType,
+                              Type returnTypeToConstruct,
+                              BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
                               MethodReference finalizerMethod) {
@@ -854,6 +929,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
 
         this.propertyMappings = propertyMappings;
+        this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
@@ -870,11 +946,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
-        this.resultType = resultType;
-    }
-
-    public List<PropertyMapping> getPropertyMappings() {
-        return propertyMappings;
+        this.returnTypeToConstruct = returnTypeToConstruct;
     }
 
     public List<PropertyMapping> getConstantMappings() {
@@ -886,14 +958,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return mappingsByParameter.get( parameter.getName() );
     }
 
-    @Override
-    public Type getResultType() {
-        if ( resultType == null ) {
-            return super.getResultType();
-        }
-        else {
-            return resultType;
-        }
+    public Type getReturnTypeToConstruct() {
+        return returnTypeToConstruct;
     }
 
     public MethodReference getFinalizerMethod() {
@@ -908,12 +974,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( propertyMapping.getImportTypes() );
         }
 
-        if ( !isExistingInstanceMapping() ) {
-            types.addAll( getResultType().getEffectiveType().getImportTypes() );
+        if ( returnTypeToConstruct != null ) {
+            types.addAll( returnTypeToConstruct.getImportTypes() );
         }
 
-        if ( getResultType().getBuilderType() != null ) {
-            types.add( getResultType().getBuilderType().getOwningType() );
+        if ( returnTypeBuilder != null ) {
+            types.add( returnTypeBuilder.getOwningType() );
         }
 
         return types;

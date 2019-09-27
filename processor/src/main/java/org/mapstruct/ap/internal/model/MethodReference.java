@@ -155,7 +155,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public String getSourceReference() {
-        return assignment.getSourceReference();
+        return assignment != null ? assignment.getSourceReference() : null;
     }
 
     @Override
