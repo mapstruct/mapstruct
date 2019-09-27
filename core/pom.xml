@@ -104,6 +104,14 @@
             <plugin>
                 <groupId>com.github.siom79.japicmp</groupId>
                 <artifactId>japicmp-maven-plugin</artifactId>
+                <configuration>
+                    <parameter>
+                        <excludes>
+                            <!-- Exclude Builder from check see https://github.com/siom79/japicmp/issues/249 -->
+                            <exclude>org.mapstruct.Builder</exclude>
+                        </excludes>
+                    </parameter>
+                </configuration>
             </plugin>
         </plugins>
     </build>

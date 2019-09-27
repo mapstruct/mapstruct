@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -26,7 +25,12 @@ public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
     }
 
     @Override
-    public ExecutableElement getExecutable() {
-        return null;
+    public String toString() {
+        return element.toString();
+    }
+
+    @Override
+    public AccessorType getAccessorType() {
+        return AccessorType.FIELD;
     }
 }

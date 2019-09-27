@@ -291,7 +291,10 @@ public class MappingOptions {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
-            writeType = writeType.getEffectiveType();
+            writeType = typeFactory.effectiveResultTypeFor(
+                writeType,
+                BeanMapping.builderPrismFor( method )
+            );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
         List<String> mappedPropertyNames = new ArrayList<>();

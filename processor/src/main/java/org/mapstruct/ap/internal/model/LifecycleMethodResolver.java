@@ -32,6 +32,48 @@ public final class LifecycleMethodResolver {
 
     /**
      * @param method the method to obtain the beforeMapping methods for
+     * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
+     * @param selectionParameters method selectionParameters
+     * @param ctx the builder context
+     * @param existingVariableNames the existing variable names in the mapping method
+     * @return all applicable {@code @BeforeMapping} methods for the given method
+     */
+    public static List<LifecycleCallbackMethodReference> beforeMappingMethods(Method method,
+                                                                              Type alternativeTarget,
+                                                                              SelectionParameters selectionParameters,
+                                                                              MappingBuilderContext ctx,
+                                                                              Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods( method,
+            alternativeTarget,
+            selectionParameters,
+            filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
+            ctx,
+            existingVariableNames );
+    }
+
+    /**
+     * @param method the method to obtain the afterMapping methods for
+     * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
+     * @param selectionParameters method selectionParameters
+     * @param ctx the builder context
+     * @param existingVariableNames list of already used variable names
+     * @return all applicable {@code @AfterMapping} methods for the given method
+     */
+    public static List<LifecycleCallbackMethodReference> afterMappingMethods(Method method,
+                                                                             Type alternativeTarget,
+                                                                             SelectionParameters selectionParameters,
+                                                                             MappingBuilderContext ctx,
+                                                                             Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods( method,
+            alternativeTarget,
+            selectionParameters,
+            filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
+            ctx,
+            existingVariableNames );
+    }
+
+    /**
+     * @param method the method to obtain the beforeMapping methods for
      * @param selectionParameters method selectionParameters
      * @param ctx the builder context
      * @param existingVariableNames the existing variable names in the mapping method
@@ -42,6 +84,7 @@ public final class LifecycleMethodResolver {
                                                                               MappingBuilderContext ctx,
                                                                               Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods( method,
+            method.getResultType(),
             selectionParameters,
             filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -56,10 +99,11 @@ public final class LifecycleMethodResolver {
      * @return all applicable {@code @AfterMapping} methods for the given method
      */
     public static List<LifecycleCallbackMethodReference> afterMappingMethods(Method method,
-                                                                             SelectionParameters selectionParameters,
-                                                                             MappingBuilderContext ctx,
-                                                                             Set<String> existingVariableNames) {
+        SelectionParameters selectionParameters,
+        MappingBuilderContext ctx,
+        Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods( method,
+            method.getResultType(),
             selectionParameters,
             filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -87,17 +131,11 @@ public final class LifecycleMethodResolver {
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
-            Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+            Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         MethodSelectors selectors =
             new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
-
-        Type targetType = method.getResultType();
-
-        if ( !method.isUpdateMethod() ) {
-            targetType = targetType.getEffectiveType();
-        }
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             method,

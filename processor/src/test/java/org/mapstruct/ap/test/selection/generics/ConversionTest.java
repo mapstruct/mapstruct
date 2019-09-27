@@ -156,22 +156,18 @@ public class ConversionTest {
         ErroneousSourceTargetMapper6.class,
         NoProperties.class
     })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 16,
-                messageRegExp = "Can't map property \".*NoProperties "
-                    + "foo\\.wrapped\" to"
-                    + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "foo\\.wrapped\""),
-            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 16,
-                messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an " +
-                    "accessible parameterless constructor\\.")
-
-        })
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic( type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 16, messageRegExp =
+            ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an "
+                + "accessible parameterless constructor\\." ),
+        @Diagnostic( type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 16, messageRegExp =
+            "No target bean properties found: can't map property \".*NoProperties "
+                + "foo\\.wrapped\" to"
+                + " \"org.mapstruct.ap.test.selection.generics.TypeA "
+                + "foo\\.wrapped\"" )
+    } )
     public void shouldFailOnNonMatchingWildCards() {
     }
 }

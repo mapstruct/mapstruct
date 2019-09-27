@@ -177,4 +177,21 @@ public class BeanMapping {
     public BuilderPrism getBuilder() {
         return builder;
     }
+
+    /**
+     * derives the builder prism given the options and configuration
+     * @param method containing mandatory configuration and the mapping options (optionally containing a beanmapping)
+     * @return a BuilderPrism
+     */
+    public static BuilderPrism builderPrismFor(Method method) {
+        BuilderPrism beanMappingBuilderPrism;
+        BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+        if ( beanMapping != null ) {
+            beanMappingBuilderPrism = beanMapping.builder;
+        }
+        else {
+            beanMappingBuilderPrism = null;
+        }
+        return method.getMapperConfiguration().getBuilderPrism( beanMappingBuilderPrism );
+    }
 }

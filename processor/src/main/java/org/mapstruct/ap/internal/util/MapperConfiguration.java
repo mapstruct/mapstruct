@@ -265,8 +265,11 @@ public class MapperConfiguration {
         return mapperPrism.disableSubMappingMethodsGeneration(); // fall back to default defined in the annotation
     }
 
-    public BuilderPrism getBuilderPrism() {
-        if ( mapperPrism.values.builder() != null ) {
+    public BuilderPrism getBuilderPrism(BuilderPrism beanMappingBuilderPrism) {
+        if ( beanMappingBuilderPrism != null ) {
+            return beanMappingBuilderPrism;
+        }
+        else if ( mapperPrism.values.builder() != null ) {
             return mapperPrism.builder();
         }
         else if ( mapperConfigPrism != null && mapperConfigPrism.values.builder() != null ) {

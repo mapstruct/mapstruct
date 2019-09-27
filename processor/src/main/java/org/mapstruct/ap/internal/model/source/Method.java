@@ -129,7 +129,6 @@ public interface Method {
      */
     Type getResultType();
 
-
     /**
      *
      * @return the names of the parameters of this mapping method
@@ -187,4 +186,13 @@ public interface Method {
      * @return the mapping options for this method
      */
     MappingOptions getMappingOptions();
+
+    /**
+     *
+     * @return true when @MappingTarget annotated parameter is the same type as the return type. The method has
+     * to be an update method in order for this to be true.
+     */
+    default boolean isMappingTargetAssignableToReturnType() {
+        return isUpdateMethod() ? getResultType().isAssignableTo( getReturnType() ) : false;
+    }
 }
