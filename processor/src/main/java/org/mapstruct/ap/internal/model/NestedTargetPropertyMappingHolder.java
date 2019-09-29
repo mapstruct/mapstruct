@@ -151,6 +151,16 @@ public class NestedTargetPropertyMappingHolder {
                         groupedByTP.singleTargetReferences.get( targetProperty )
                     );
 
+                    // We need an update method in the when one of the following is satisfied:
+                    // 1) Multiple source parameters for the target reference
+                    // 2) Multiple source references for the target reference
+                    // The reason for this is that multiple sources have effect on the target.
+                    // See Issue1828Test for more info.
+                    boolean forceUpdateMethod =
+                        multipleSourceParametersForTP || groupedSourceReferences.groupedBySourceReferences.size() > 1;
+
+                    boolean forceUpdateMethodOrNonNestedReferencesPresent =
+                        forceUpdateMethod || !groupedSourceReferences.nonNested.isEmpty();
                     // For all the groupedBySourceReferences we need to create property mappings
                     // from the Mappings and not restrict on the defined mappings (allow to forge name based mapping)
                     // if we have composite methods i.e. more then 2 parameters then we have to force a creation
@@ -159,8 +169,6 @@ public class NestedTargetPropertyMappingHolder {
                         .groupedBySourceReferences
                         .entrySet() ) {
                         PropertyEntry sourceEntry = entryBySP.getKey();
-                        boolean forceUpdateMethodOrNonNestedReferencesPresent =
-                            multipleSourceParametersForTP || !groupedSourceReferences.nonNested.isEmpty();
                         // If there are multiple source parameters that are mapped to the target reference
                         // then we restrict the mapping only to the defined mappings. And we create MappingOptions
                         // for forged methods (which means that any unmapped target properties are ignored)
