@@ -14,7 +14,6 @@ public interface FirstMapper {
 
     FirstMapper INSTANCE = Mappers.getMapper( FirstMapper.class );
 
-    @Mapping(target = "name", source = "name")
     @Mapping(target = "completeAddress.lineOne", source = "specialAddress.line1")
     @Mapping(target = "completeAddress.lineTwo", source = "specialAddress.line2")
     @Mapping(target = "completeAddress.city", source = "generalAddress.city")

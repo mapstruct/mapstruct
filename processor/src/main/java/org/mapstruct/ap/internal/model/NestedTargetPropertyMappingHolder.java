@@ -160,10 +160,11 @@ public class NestedTargetPropertyMappingHolder {
                         groupedByTP.singleTargetReferences.get( targetProperty )
                     );
 
-                    // If there are multi source parameters that are mapped to the target reference or
-                    // there are multiple source references to the target reference then we need to force an
-                    // update method. The reason for this is that multiple sources have effect on the target.
-                    // See Issue18282Test for more info.
+                    // We need an update method in the when one of the following is satisfied:
+                    // 1) Multiple source parameters for the target reference
+                    // 2) Multiple source references for the target reference
+                    // The reason for this is that multiple sources have effect on the target.
+                    // See Issue1828Test for more info.
                     boolean forceUpdateMethod =
                         multipleSourceParametersForTP || groupedSourceReferences.groupedBySourceReferences.size() > 1;
 
