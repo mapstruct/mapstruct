@@ -26,6 +26,23 @@ public class SelectionParameters {
     private final Types typeUtils;
     private final SourceRHS sourceRHS;
 
+    /**
+     * Returns new selection parameters
+     *
+     * ResultType is not inherited.
+     *
+     * @param selectionParameters
+     * @return
+     */
+    public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
+        return new SelectionParameters(
+            selectionParameters.qualifiers,
+            selectionParameters.qualifyingNames,
+            null,
+            selectionParameters.typeUtils
+        );
+    }
+
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         Types typeUtils) {
         this( qualifiers, qualifyingNames, resultType, typeUtils, null );
