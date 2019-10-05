@@ -55,7 +55,7 @@ public class BeanMapping {
             beanMapping.nullValuePropertyMappingStrategy,
             beanMapping.nullValueCheckStrategy,
             beanMapping.reportingPolicy,
-            false,
+            beanMapping.ignoreByDefault,
             beanMapping.ignoreUnmappedSourceProperties,
             beanMapping.builder,
             beanMapping.mirror
