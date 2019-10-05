@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BuilderIgnoringTest {
 
     @Test
+    @IssueKey( "1933" )
     public void shouldIgnoreBase() {
         PersonDto source = new PersonDto();
         source.setId( 100L );
@@ -38,7 +39,7 @@ public class BuilderIgnoringTest {
         Person target = BuilderIgnoringMapper.INSTANCE.mapWithIgnoringBase( source );
 
         assertThat( target.getId() ).isNull();
-        assertThat( target.getName() ).isEqualTo( "John" );
+        assertThat( target.getName() ).isNull();
         assertThat( target.getLastName() ).isEqualTo( "Doe" );
     }
 

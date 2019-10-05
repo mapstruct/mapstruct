@@ -55,7 +55,7 @@ public class IgnorePropertyTest {
     }
 
     @Test
-    @IssueKey("1392")
+    @IssueKey("1933")
     public void shouldIgnoreBase() {
 
         WorkBenchDto workBenchDto = new WorkBenchDto();
@@ -67,7 +67,7 @@ public class IgnorePropertyTest {
         WorkBenchEntity benchTarget = ToolMapper.INSTANCE.mapBench( workBenchDto );
 
         assertThat( benchTarget ).isNotNull();
-        assertThat( benchTarget.getArticleName() ).isEqualTo( "MyBench" );
+        assertThat( benchTarget.getArticleName() ).isNull();
         assertThat( benchTarget.getDescription() ).isEqualTo( "Beautiful" );
         assertThat( benchTarget.getKey() ).isNull();
         assertThat( benchTarget.getModificationDate() ).isNull();
