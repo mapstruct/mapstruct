@@ -22,7 +22,11 @@ public final class MappingMethodUtils {
 
     /**
      * Checks if the provided {@code method} is for enum mapping. A Method is an Enum Mapping method when the
-     * source parameter and result type are enum types.
+     * <ol>
+     * <li>source parameter type and result type are enum types</li>
+     * <li>source parameter type is a String and result type is an enum type</li>
+     * <li>source parameter type is a enum type and result type is an enum String</li>
+     * </ol>
      *
      * @param method to check
      *
