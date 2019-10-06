@@ -918,6 +918,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private ReportingPolicyPrism getUnmappedSourcePolicy() {
+            if ( mappingReferences.isForForgedMethods() ) {
+                return ReportingPolicyPrism.IGNORE;
+            }
             MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
 
             return mapperSettings.unmappedSourcePolicy();
