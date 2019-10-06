@@ -8,12 +8,6 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.ValueMappingMethod" -->
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-    <#list beforeMappingReferencesWithoutMappingTarget as callback>
-        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
-        <#if !callback_has_next>
-
-        </#if>
-    </#list>
     if ( ${sourceParameter.name} == null ) {
         return <@writeTarget target=nullTarget/>;
     }
@@ -27,18 +21,6 @@
     </#list>
     default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
-    <#list beforeMappingReferencesWithMappingTarget as callback>
-        <#if callback_index = 0>
-
-        </#if>
-        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
-    </#list>
-    <#list afterMappingReferences as callback>
-        <#if callback_index = 0>
-
-        </#if>
-        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
-    </#list>
 
     return ${resultName};
 }
