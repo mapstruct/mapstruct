@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_REMAINING;
+import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED;
+import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.NULL;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
@@ -16,11 +19,11 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
-import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -42,10 +45,7 @@ public class ValueMappingMethod extends MappingMethod {
 
         private Method method;
         private MappingBuilderContext ctx;
-        private final List<ValueMapping> trueValueMappings = new ArrayList<>();
-        private ValueMapping defaultTargetValue = null;
-        private ValueMapping nullTargetValue = null;
-        private boolean applyNamebasedMappings = true;
+        private ValueMappings valueMappings;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -58,21 +58,7 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         public Builder valueMappings(List<ValueMapping> valueMappings) {
-            for ( ValueMapping valueMapping : valueMappings ) {
-                if ( MappingConstantsPrism.ANY_REMAINING.equals( valueMapping.getSource() ) ) {
-                    defaultTargetValue = valueMapping;
-                }
-                else if ( MappingConstantsPrism.ANY_UNMAPPED.equals( valueMapping.getSource() ) ) {
-                    defaultTargetValue = valueMapping;
-                    applyNamebasedMappings = false;
-                }
-                else if ( MappingConstantsPrism.NULL.equals( valueMapping.getSource() ) ) {
-                    nullTargetValue = valueMapping;
-                }
-                else {
-                    trueValueMappings.add( valueMapping );
-                }
-            }
+            this.valueMappings = new ValueMappings( valueMappings );
             return this;
         }
 
@@ -80,27 +66,16 @@ public class ValueMappingMethod extends MappingMethod {
 
             // initialize all relevant parameters
             List<MappingEntry> mappingEntries = new ArrayList<>();
-            String nullTarget = null;
-            String defaultTarget = null;
-            boolean throwIllegalArgumentException = false;
 
-            // for now, we're only dealing with enum mappings, populate relevant parameters based on enum-2-enum
-            if ( first( method.getSourceParameters() ).getType().isEnumType() && method.getResultType().isEnumType() ) {
-                mappingEntries.addAll( enumToEnumMapping( method ) );
+            Type sourceType = first( method.getSourceParameters() ).getType();
+            Type targetType = method.getResultType();
 
-                if ( (nullTargetValue != null) && !MappingConstantsPrism.NULL.equals( nullTargetValue.getTarget() ) ) {
-                    // absense nulltargetvalue reverts to null. Or it could be a deliberate choice to return null
-                    nullTarget = nullTargetValue.getTarget();
-                }
-                if ( defaultTargetValue != null ) {
-                    // If the default target value is NULL then we should map it to null
-                    defaultTarget = MappingConstantsPrism.NULL.equals( defaultTargetValue.getTarget() ) ? null :
-                        defaultTargetValue.getTarget();
-                }
-                else {
-                    throwIllegalArgumentException = true;
-                }
-
+            // enum-to-enum
+            if ( sourceType.isEnumType() && targetType.isEnumType() ) {
+                mappingEntries.addAll( enumToEnumMapping( method, sourceType, targetType ) );
+            }
+            else if ( sourceType.isEnumType() && targetType.isString() ) {
+                mappingEntries.addAll( enumToStringMapping( method, sourceType ) );
             }
 
             // do before / after lifecycle mappings
@@ -112,32 +87,36 @@ public class ValueMappingMethod extends MappingMethod {
                 LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
 
             // finally return a mapping
-            return new ValueMappingMethod( method, mappingEntries, nullTarget, defaultTarget,
-                throwIllegalArgumentException, beforeMappingMethods, afterMappingMethods );
+            return new ValueMappingMethod( method,
+                mappingEntries,
+                valueMappings.nullValueTarget,
+                valueMappings.defaultTargetValue,
+                !valueMappings.hasDefaultValue,
+                beforeMappingMethods,
+                afterMappingMethods
+            );
         }
 
-        private List<MappingEntry> enumToEnumMapping(Method method) {
+        private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType ) {
 
             List<MappingEntry> mappings = new ArrayList<>();
-            List<String> unmappedSourceConstants
-                = new ArrayList<>( first( method.getSourceParameters() ).getType().getEnumConstants() );
-
-
-            if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ) {
+            List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
+            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean targetErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            if ( sourceErrorOccurred || targetErrorOccurred ) {
                 return mappings;
             }
 
             // Start to fill the mappings with the defined valuemappings
-            for ( ValueMapping valueMapping : trueValueMappings ) {
+            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
                 String target =
-                    MappingConstantsPrism.NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
+                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
-
             // add mappings based on name
-            if ( applyNamebasedMappings ) {
+            if ( !valueMappings.hasMapAnyUnmapped ) {
 
                 // get all target constants
                 List<String> targetConstants = method.getReturnType().getEnumConstants();
@@ -148,7 +127,7 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                 }
 
-                if ( defaultTargetValue == null && !unmappedSourceConstants.isEmpty() ) {
+                if ( valueMappings.defaultTarget == null && !unmappedSourceConstants.isEmpty() ) {
                     String sourceErrorMessage = "source";
                     String targetErrorMessage = "target";
                     if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
@@ -171,6 +150,35 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
+        private List<MappingEntry> enumToStringMapping(Method method, Type sourceType ) {
+
+            List<MappingEntry> mappings = new ArrayList<>();
+            List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
+            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
+            if ( sourceErrorOccurred || anyRemainingUsedError ) {
+                return mappings;
+            }
+
+            // Start to fill the mappings with the defined valuemappings
+            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
+                String target =
+                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
+                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                unmappedSourceConstants.remove( valueMapping.getSource() );
+            }
+
+            // add mappings based on name
+            if ( !valueMappings.hasMapAnyUnmapped ) {
+
+                // all remaining constants are mapped
+                for ( String sourceConstant : unmappedSourceConstants ) {
+                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                }
+            }
+            return mappings;
+        }
+
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
             if ( beanMappingPrism != null ) {
@@ -182,13 +190,12 @@ public class ValueMappingMethod extends MappingMethod {
             return null;
         }
 
-        private boolean reportErrorIfMappedEnumConstantsDontExist(Method method) {
-            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
-            List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
+        private boolean reportErrorIfMappedSourceEnumConstantsDontExist(Method method, Type sourceType) {
+            List<String> sourceEnumConstants = sourceType.getEnumConstants();
 
             boolean foundIncorrectMapping = false;
 
-            for ( ValueMapping mappedConstant : trueValueMappings ) {
+            for ( ValueMapping mappedConstant : valueMappings.regularValueMappings ) {
 
                 if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
@@ -196,11 +203,37 @@ public class ValueMappingMethod extends MappingMethod {
                         mappedConstant.getSourceAnnotationValue(),
                         Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
                         mappedConstant.getSource(),
-                        first( method.getSourceParameters() ).getType()
+                        sourceType
                     );
                     foundIncorrectMapping = true;
                 }
-                if ( !MappingConstantsPrism.NULL.equals( mappedConstant.getTarget() )
+            }
+            return !foundIncorrectMapping;
+        }
+
+        private boolean reportErrorIfSourceEnumConstantsContainsAnyRemaining(Method method) {
+            boolean foundIncorrectMapping = false;
+
+            if ( valueMappings.hasMapAnyRemaining ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    valueMappings.defaultTarget.getMirror(),
+                    valueMappings.defaultTarget.getSourceAnnotationValue(),
+                    Message.VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM,
+                    method.getResultType()
+                );
+                foundIncorrectMapping = true;
+            }
+            return !foundIncorrectMapping;
+        }
+
+        private boolean reportErrorIfMappedTargetEnumConstantsDontExist(Method method, Type targetType) {
+            List<String> targetEnumConstants = targetType.getEnumConstants();
+
+            boolean foundIncorrectMapping = false;
+
+            for ( ValueMapping mappedConstant : valueMappings.regularValueMappings ) {
+                if ( !NULL.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
                         mappedConstant.getMirror(),
@@ -213,31 +246,72 @@ public class ValueMappingMethod extends MappingMethod {
                 }
             }
 
-            if ( defaultTargetValue != null && !MappingConstantsPrism.NULL.equals( defaultTargetValue.getTarget() )
-                && !targetEnumConstants.contains( defaultTargetValue.getTarget() ) ) {
+            if ( valueMappings.defaultTarget != null && !NULL.equals( valueMappings.defaultTarget.getTarget() )
+                && !targetEnumConstants.contains( valueMappings.defaultTarget.getTarget() ) ) {
                 ctx.getMessager().printMessage( method.getExecutable(),
-                    defaultTargetValue.getMirror(),
-                    defaultTargetValue.getTargetAnnotationValue(),
+                    valueMappings.defaultTarget.getMirror(),
+                    valueMappings.defaultTarget.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
-                    defaultTargetValue.getTarget(),
+                    valueMappings.defaultTarget.getTarget(),
                     method.getReturnType()
                 );
                 foundIncorrectMapping = true;
             }
 
-            if ( nullTargetValue != null && MappingConstantsPrism.NULL.equals( nullTargetValue.getTarget() )
-                && !targetEnumConstants.contains( nullTargetValue.getTarget() ) ) {
+            if ( valueMappings.nullTarget != null && NULL.equals( valueMappings.nullTarget.getTarget() )
+                && !targetEnumConstants.contains( valueMappings.nullTarget.getTarget() ) ) {
                 ctx.getMessager().printMessage( method.getExecutable(),
-                    nullTargetValue.getMirror(),
-                    nullTargetValue.getTargetAnnotationValue(),
+                    valueMappings.nullTarget.getMirror(),
+                    valueMappings.nullTarget.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
-                    nullTargetValue.getTarget(),
+                    valueMappings.nullTarget.getTarget(),
                     method.getReturnType()
                 );
                 foundIncorrectMapping = true;
             }
 
             return !foundIncorrectMapping;
+        }
+    }
+
+    private static class ValueMappings {
+
+        List<ValueMapping> regularValueMappings = new ArrayList<>();
+        ValueMapping defaultTarget = null;
+        String defaultTargetValue = null;
+        ValueMapping nullTarget = null;
+        String nullValueTarget = null;
+        boolean hasMapAnyUnmapped = false;
+        boolean hasMapAnyRemaining = false;
+        boolean hasDefaultValue = false;
+
+        ValueMappings(List<ValueMapping> valueMappings) {
+
+            for ( ValueMapping valueMapping : valueMappings ) {
+                if ( ANY_REMAINING.equals( valueMapping.getSource() ) ) {
+                    defaultTarget = valueMapping;
+                    defaultTargetValue = getValue( defaultTarget );
+                    hasDefaultValue = true;
+                    hasMapAnyRemaining = true;
+                }
+                else if ( ANY_UNMAPPED.equals( valueMapping.getSource() ) ) {
+                    defaultTarget = valueMapping;
+                    defaultTargetValue = getValue( defaultTarget );
+                    hasDefaultValue = true;
+                    hasMapAnyUnmapped = true;
+                }
+                else if ( NULL.equals( valueMapping.getSource() ) ) {
+                    nullTarget = valueMapping;
+                    nullValueTarget = getValue( nullTarget );
+                }
+                else {
+                    regularValueMappings.add( valueMapping );
+                }
+            }
+        }
+
+        String getValue(ValueMapping valueMapping) {
+            return NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
         }
     }
 

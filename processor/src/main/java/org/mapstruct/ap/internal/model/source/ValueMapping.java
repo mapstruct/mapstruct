@@ -7,12 +7,10 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
 import java.util.Objects;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
-import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;

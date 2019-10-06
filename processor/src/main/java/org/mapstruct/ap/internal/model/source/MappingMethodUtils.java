@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import org.mapstruct.ap.internal.model.common.Type;
+
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -18,7 +20,6 @@ public final class MappingMethodUtils {
     private MappingMethodUtils() {
     }
 
-
     /**
      * Checks if the provided {@code method} is for enum mapping. A Method is an Enum Mapping method when the
      * source parameter and result type are enum types.
@@ -28,8 +29,21 @@ public final class MappingMethodUtils {
      * @return {@code true} if the method is for enum mapping, {@code false} otherwise
      */
     public static boolean isEnumMapping(Method method) {
-        return method.getSourceParameters().size() == 1
-            && first( method.getSourceParameters() ).getType().isEnumType()
-            && method.getResultType().isEnumType();
+        if ( method.getSourceParameters().size() != 1 ) {
+            return false;
+        }
+
+        Type source = first( method.getSourceParameters() ).getType();
+        Type result = method.getResultType();
+        if ( source.isEnumType() && result.isEnumType() ) {
+            return true;
+        }
+        if ( source.isString() && result.isEnumType() ) {
+            return true;
+        }
+        if ( source.isEnumType()  && result.isString() ) {
+            return true;
+        }
+        return false;
     }
 }
