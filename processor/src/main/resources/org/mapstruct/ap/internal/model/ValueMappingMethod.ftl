@@ -22,7 +22,7 @@
 
     switch ( ${sourceParameter.name} ) {
     <#list valueMappings as valueMapping>
-        case ${valueMapping.source}: ${resultName} = <@writeTarget target=valueMapping.target/>;
+        case <@writeSource source=valueMapping.source/>: ${resultName} = <@writeTarget target=valueMapping.target/>;
         break;
     </#list>
     default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
@@ -42,6 +42,15 @@
 
     return ${resultName};
 }
+<#macro writeSource source="">
+    <@compress single_line=true>
+        <#if sourceParameter.type.enumType>
+             ${source}
+        <#elseif sourceParameter.type.string>
+            "${source}"
+        </#if>
+    </@compress>
+</#macro>
 <#macro writeTarget target="">
     <@compress single_line=true>
         <#if target?has_content>

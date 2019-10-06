@@ -77,6 +77,9 @@ public class ValueMappingMethod extends MappingMethod {
             else if ( sourceType.isEnumType() && targetType.isString() ) {
                 mappingEntries.addAll( enumToStringMapping( method, sourceType ) );
             }
+            else if ( sourceType.isString() && targetType.isEnumType() ) {
+                mappingEntries.addAll( stringToEnumMapping( method, targetType ) );
+            }
 
             // do before / after lifecycle mappings
             SelectionParameters selectionParameters = getSelectionParameters( method, ctx.getTypeUtils() );
@@ -107,7 +110,7 @@ public class ValueMappingMethod extends MappingMethod {
                 return mappings;
             }
 
-            // Start to fill the mappings with the defined valuemappings
+            // Start to fill the mappings with the defined value mappings
             for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
                 String target =
                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
@@ -150,11 +153,40 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-        private List<MappingEntry> enumToStringMapping(Method method, Type sourceType ) {
+         private List<MappingEntry> enumToStringMapping(Method method, Type sourceType ) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
             boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
+            if ( sourceErrorOccurred || anyRemainingUsedError ) {
+                return mappings;
+            }
+
+            // Start to fill the mappings with the defined valuemappings
+            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
+                String target =
+                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
+                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                unmappedSourceConstants.remove( valueMapping.getSource() );
+            }
+
+            // add mappings based on name
+            if ( !valueMappings.hasMapAnyUnmapped ) {
+
+                // all remaining constants are mapped
+                for ( String sourceConstant : unmappedSourceConstants ) {
+                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                }
+            }
+            return mappings;
+        }
+
+        private List<MappingEntry> stringToEnumMapping(Method method, Type targetType ) {
+
+            List<MappingEntry> mappings = new ArrayList<>();
+            List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
+            boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
             if ( sourceErrorOccurred || anyRemainingUsedError ) {
                 return mappings;
