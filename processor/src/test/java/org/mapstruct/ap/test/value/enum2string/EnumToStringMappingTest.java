@@ -17,7 +17,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @IssueKey( "1557" )
 @WithClasses({ OrderType.class, OrderMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)

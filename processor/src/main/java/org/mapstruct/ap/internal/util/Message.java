@@ -152,8 +152,9 @@ public enum Message {
     VALUEMAPPING_CREATE_NOTE( "creating value mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
     VALUEMAPPING_ANY_AREADY_DEFINED( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." ),
-    VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
+    VALUEMAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
     VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM( "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for %s." ),
+    VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is mandatory for mapping of type String to an enum type." ),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
     // CHECKSTYLE:ON
 

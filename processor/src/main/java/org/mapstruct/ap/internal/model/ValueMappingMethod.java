@@ -142,7 +142,7 @@ public class ValueMappingMethod extends MappingMethod {
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
                     ctx.getMessager().printMessage( method.getExecutable(),
-                        Message.VALUE_MAPPING_UNMAPPED_SOURCES,
+                        Message.VALUEMAPPING_UNMAPPED_SOURCES,
                         sourceErrorMessage,
                         targetErrorMessage,
                         Strings.join( unmappedSourceConstants, ", " )
@@ -187,8 +187,8 @@ public class ValueMappingMethod extends MappingMethod {
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
             boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
-            boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
-            if ( sourceErrorOccurred || anyRemainingUsedError ) {
+            boolean mandatoryMissing = !reportErrorIfAnyRemainingOrAnyUnMappedMissing( method );
+            if ( sourceErrorOccurred || mandatoryMissing ) {
                 return mappings;
             }
 
@@ -253,6 +253,19 @@ public class ValueMappingMethod extends MappingMethod {
                     valueMappings.defaultTarget.getSourceAnnotationValue(),
                     Message.VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM,
                     method.getResultType()
+                );
+                foundIncorrectMapping = true;
+            }
+            return !foundIncorrectMapping;
+        }
+
+        private boolean reportErrorIfAnyRemainingOrAnyUnMappedMissing(Method method) {
+            boolean foundIncorrectMapping = false;
+
+            if ( !( valueMappings.hasMapAnyUnmapped || valueMappings.hasMapAnyRemaining ) ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING
                 );
                 foundIncorrectMapping = true;
             }

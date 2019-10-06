@@ -149,13 +149,13 @@ MapStruct supports enum to a String mapping along the same lines as is described
 *enum to `String`*
 
 1. Similarity: All not explicit defined mappings will result in each source enum constant value being mapped a `String` value with the same constant value.
-2. Similarity: `<ALL_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
-3. Difference: `<ALL_REMAINING>` will result in an error. It acts on the premise that there is name similarity between enum constants in source and target which does not make sense for a String type.
+2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
+3. Difference: `<ANY_REMAINING>` will result in an error. It acts on the premise that there is name similarity between enum constants in source and target which does not make sense for a String type.
 4. Difference: Given 1. and 3. there will never be unmapped values.
 
 *`String` to enum*
 
 1. Similarity: All not explicit defined mappings will result in the target enum constant mapped from the `String` value when that maches the target enum constant name.
-2. Similarity: `<ALL_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
-3. Difference: `<ALL_REMAINING>` will result in an error (same reasoning enum-to-`String`.
-4. Difference: Given 1. and 3. there will never be unmapped values.
+2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
+3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the default clause value.
+4. Difference: A default value always needs to be provided to have a determined outcome. Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in an error.

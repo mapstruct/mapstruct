@@ -29,9 +29,9 @@ public class StringToEnumMappingTest {
         assertThat( OrderMapper.INSTANCE.mapNormal( "DEFAULT" ) ).isEqualTo( OrderType.STANDARD );
         assertThat( OrderMapper.INSTANCE.mapNormal( "RETAIL" ) ).isEqualTo( OrderType.RETAIL );
         assertThat( OrderMapper.INSTANCE.mapNormal( "B2B" ) ).isEqualTo( OrderType.B2B );
-        assertThat( OrderMapper.INSTANCE.mapNormal( "RETAIL" ) ).isEqualTo( OrderType.RETAIL );
         assertThat( OrderMapper.INSTANCE.mapNormal( "STANDARD" ) ).isEqualTo( OrderType.STANDARD );
         assertThat( OrderMapper.INSTANCE.mapNormal( "NORMAL" ) ).isEqualTo( OrderType.NORMAL );
+        assertThat( OrderMapper.INSTANCE.mapNormal( "blah" ) ).isEqualTo( OrderType.RETAIL );
     }
 
     @Test
@@ -42,15 +42,15 @@ public class StringToEnumMappingTest {
     }
 
     @Test
-    @WithClasses(ErroneousOrderMapperUsingAnyRemaining.class)
+    @WithClasses(ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperUsingAnyRemaining.class,
+            @Diagnostic(type = ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 26,
-                messageRegExp = "\"<ANY_REMAINING>\" can only be used on targets of type enum and not for " +
-                    "java\\.lang\\.String\\.")
+                line = 28,
+                messageRegExp = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is mandatory for mapping of " +
+                    "type String to an enum type" )
         }
     )
     public void shouldRaiseErrorWhenUsingAnyRemaining() {

@@ -22,7 +22,8 @@ public interface OrderMapper {
 
     @ValueMappings({
         @ValueMapping(source = "SPECIAL", target = "EXTRA" ),
-        @ValueMapping(source = "DEFAULT", target = "STANDARD")
+        @ValueMapping(source = "DEFAULT", target = "STANDARD"),
+        @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "RETAIL" )
     })
     OrderType mapNormal(String orderType);
 

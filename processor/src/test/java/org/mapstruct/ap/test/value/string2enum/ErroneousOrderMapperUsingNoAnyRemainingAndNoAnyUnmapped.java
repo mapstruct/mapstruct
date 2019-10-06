@@ -16,14 +16,14 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface ErroneousOrderMapperUsingAnyRemaining {
+public interface ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped {
 
-    ErroneousOrderMapperUsingAnyRemaining INSTANCE = Mappers.getMapper( ErroneousOrderMapperUsingAnyRemaining.class );
+    ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped INSTANCE =
+        Mappers.getMapper( ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class );
 
     @ValueMappings({
         @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
-        @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
-        @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
+        @ValueMapping( source = "STANDARD", target = MappingConstants.NULL )
     })
-    String mapWithRemainingAndNull(OrderType orderType);
+    OrderType map(String orderType);
 }
