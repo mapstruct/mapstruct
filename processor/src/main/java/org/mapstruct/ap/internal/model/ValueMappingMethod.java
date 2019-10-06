@@ -5,21 +5,27 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.ValueMapping;
-import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
-
 import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_REMAINING;
 import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED;
 import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.NULL;
 import static org.mapstruct.ap.internal.util.Collections.first;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
+
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.ValueMapping;
+import org.mapstruct.ap.internal.prism.BeanMappingPrism;
+import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * A {@link ValueMappingMethod} which maps one value type to another, optionally configured by one or more
@@ -75,12 +81,22 @@ public class ValueMappingMethod extends MappingMethod {
                 mappingEntries.addAll( stringToEnumMapping( method, targetType ) );
             }
 
+            // do before / after lifecycle mappings
+            SelectionParameters selectionParameters = getSelectionParameters( method, ctx.getTypeUtils() );
+            Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
+
             // finally return a mapping
             return new ValueMappingMethod( method,
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
-                !valueMappings.hasDefaultValue
+                !valueMappings.hasDefaultValue,
+                beforeMappingMethods,
+                afterMappingMethods
             );
         }
 
@@ -193,6 +209,17 @@ public class ValueMappingMethod extends MappingMethod {
                 }
             }
             return mappings;
+        }
+
+        private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
+            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+            if ( beanMappingPrism != null ) {
+                List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
+                List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
+                TypeMirror resultType = beanMappingPrism.resultType();
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
+            }
+            return null;
         }
 
         private boolean reportErrorIfMappedSourceEnumConstantsDontExist(Method method, Type sourceType) {
@@ -321,8 +348,9 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
-        boolean throwIllegalArgumentException) {
-        super( method, Collections.emptyList(), Collections.emptyList() );
+        boolean throwIllegalArgumentException, List<LifecycleCallbackMethodReference> beforeMappingMethods,
+        List<LifecycleCallbackMethodReference> afterMappingMethods) {
+        super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
