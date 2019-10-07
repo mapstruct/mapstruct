@@ -25,7 +25,7 @@ public final class MappingMethodUtils {
      * <ol>
      * <li>source parameter type and result type are enum types</li>
      * <li>source parameter type is a String and result type is an enum type</li>
-     * <li>source parameter type is a enum type and result type is an enum String</li>
+     * <li>source parameter type is a enum type and result type is a String</li>
      * </ol>
      *
      * @param method to check

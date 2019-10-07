@@ -67,7 +67,7 @@ public class OrderMapperImpl implements OrderMapper {
 By default an error will be raised by MapStruct in case a constant of the source enum type does not have a corresponding constant with the same name in the target type and also is not mapped to another constant via `@ValueMapping`. This ensures that all constants are mapped in a safe and predictable manner. The generated
 mapping method will throw an IllegalStateException if for some reason an unrecognized source value occurs.
 
-MapStruct also has a mechanism for mapping any remaining (unspecified) mappings to a default. This can be used only once in a set of value mappings and only applies to the source. It comes in two flavors: `<ANY_REMAINING>` and `<ANY_UNMAPPED>`. The cannot be used at the same time.
+MapStruct also has a mechanism for mapping any remaining (unspecified) mappings to a default. This can be used only once in a set of value mappings and only applies to the source. It comes in two flavors: `<ANY_REMAINING>` and `<ANY_UNMAPPED>`. They cannot be used at the same time.
 
 In case of source `<ANY_REMAINING>` MapStruct will continue to map a source enum constant to a target enum constant with the same name. The remainder of the source enum constants will be mapped to the target specified in the `@ValueMapping` with `<ANY_REMAINING>` source.
 
@@ -144,18 +144,18 @@ The mapping of enum to enum via the `@Mapping` annotation is *DEPRECATED*. It wi
 
 === Mapping enum-to-String or String-to-enum
 
-MapStruct supports enum to a String mapping along the same lines as is described in <<Mapping enum to enum types>>. There are similarities and differences:
+MapStruct supports enum to a String mapping along the same lines as is described in <<Mapping enum to enum types, enum-to-enum types>>. There are similarities and differences:
 
 *enum to `String`*
 
 1. Similarity: All not explicit defined mappings will result in each source enum constant value being mapped a `String` value with the same constant value.
-2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
+2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
 3. Difference: `<ANY_REMAINING>` will result in an error. It acts on the premise that there is name similarity between enum constants in source and target which does not make sense for a String type.
 4. Difference: Given 1. and 3. there will never be unmapped values.
 
 *`String` to enum*
 
 1. Similarity: All not explicit defined mappings will result in the target enum constant mapped from the `String` value when that maches the target enum constant name.
-2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the default clause value.
-3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the default clause value.
-4. Difference: A default value always needs to be provided to have a determined outcome. Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in an error.
+2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
+3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the switch/default clause value.
+4. Difference: A switch/default value needs to be provided to have a determined outcome (enum has a limited set of values, `String` has unlimited options). Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in a warning.

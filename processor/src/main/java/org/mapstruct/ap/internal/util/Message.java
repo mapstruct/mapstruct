@@ -154,7 +154,7 @@ public enum Message {
     VALUEMAPPING_ANY_AREADY_DEFINED( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." ),
     VALUEMAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
     VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM( "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for %s." ),
-    VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is mandatory for mapping of type String to an enum type." ),
+    VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of type String to an enum type.", Diagnostic.Kind.WARNING  ),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
     // CHECKSTYLE:ON
 

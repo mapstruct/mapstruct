@@ -22,7 +22,7 @@ public interface ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped {
         Mappers.getMapper( ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class );
 
     @ValueMappings({
-        @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
+        @ValueMapping( source = MappingConstants.NULL, target = "STANDARD" ),
         @ValueMapping( source = "STANDARD", target = MappingConstants.NULL )
     })
     OrderType map(String orderType);

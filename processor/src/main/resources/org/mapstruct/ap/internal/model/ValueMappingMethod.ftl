@@ -40,7 +40,9 @@
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
 
+    <#if !(valueMappings.empty && throwIllegalArgumentException)>
     return ${resultName};
+    </#if>
 }
 <#macro writeSource source="">
     <@compress single_line=true>
