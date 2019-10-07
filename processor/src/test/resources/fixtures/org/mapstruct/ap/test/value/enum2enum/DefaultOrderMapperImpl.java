@@ -3,9 +3,11 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.value;
+package org.mapstruct.ap.test.value.enum2enum;
 
 import javax.annotation.Generated;
+import org.mapstruct.ap.test.value.ExternalOrderType;
+import org.mapstruct.ap.test.value.OrderType;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",

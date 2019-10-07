@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.value;
+package org.mapstruct.ap.test.value.enum2enum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +12,8 @@ import javax.tools.Diagnostic.Kind;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.value.ExternalOrderType;
+import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -214,7 +216,7 @@ public class EnumToEnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
-                line = 25,
+                line = 27,
                 messageRegExp = "Source value mapping: \"EXTRA\" cannot be mapped more than once\\.")
         }
     )
@@ -228,11 +230,11 @@ public class EnumToEnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 24,
+                line = 26,
                 messageRegExp = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.value.OrderType\\."),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 25,
+                line = 27,
                 messageRegExp = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.value." +
                     "ExternalOrderType\\.")
         }
@@ -247,7 +249,7 @@ public class EnumToEnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class,
                 kind = Kind.ERROR,
-                line = 21,
+                line = 23,
                 messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
                     "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
         }
@@ -262,7 +264,7 @@ public class EnumToEnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperDuplicateANY.class,
                 kind = Kind.ERROR,
-                line = 26,
+                line = 28,
                 messageRegExp = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once\\." )
         }
     )

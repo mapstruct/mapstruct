@@ -220,6 +220,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return typeElement != null && typeElement.getModifiers().contains( Modifier.ABSTRACT );
     }
 
+    public boolean isString() {
+        return String.class.getName().equals( getFullyQualifiedName() );
+    }
+
     /**
      * @return this type's enum constants in case it is an enum, an empty list otherwise.
      */

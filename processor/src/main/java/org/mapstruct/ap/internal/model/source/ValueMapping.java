@@ -7,16 +7,17 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
 import java.util.Objects;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
-import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+
+import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_REMAINING;
+import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED;
 
 /**
  * Represents the mapping between one value constant and another.
@@ -51,8 +52,8 @@ public class ValueMapping {
                         mappingPrism.source()
                     );
                 }
-                if ( MappingConstantsPrism.ANY_REMAINING.equals( mapping.source )
-                    || MappingConstantsPrism.ANY_UNMAPPED.equals( mapping.source ) ) {
+                if ( ANY_REMAINING.equals( mapping.source )
+                    || ANY_UNMAPPED.equals( mapping.source ) ) {
                     if ( anyFound ) {
                         messager.printMessage(
                             method,
@@ -111,8 +112,7 @@ public class ValueMapping {
 
     public ValueMapping inverse() {
         ValueMapping result;
-        if ( !MappingConstantsPrism.ANY_REMAINING.equals( source )
-            || !MappingConstantsPrism.ANY_UNMAPPED.equals( source ) ) {
+        if ( !(ANY_REMAINING.equals( source ) || ANY_UNMAPPED.equals( source ) ) ) {
             result = new ValueMapping(
                 target,
                 source,
