@@ -461,16 +461,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( parameterType.isEnumType() && !( resultType.isEnumType() || resultType.isString() ) ) {
-            messager.printMessage( method, Message.RETRIEVAL_ENUM_TO_NON_ENUM );
-            return false;
-        }
-
-        if ( !( parameterType.isEnumType() || parameterType.isString() ) && resultType.isEnumType() ) {
-            messager.printMessage( method, Message.RETRIEVAL_NON_ENUM_TO_ENUM );
-            return false;
-        }
-
         for ( Type typeParameter : resultType.getTypeParameters() ) {
             if ( typeParameter.isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
