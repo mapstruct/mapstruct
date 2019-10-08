@@ -6,6 +6,9 @@
 package org.mapstruct.ap.internal.model.source;
 
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.prism.BeanMappingPrism;
+import org.mapstruct.ap.internal.prism.ValueMappingPrism;
+import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -40,14 +43,29 @@ public final class MappingMethodUtils {
         Type source = first( method.getSourceParameters() ).getType();
         Type result = method.getResultType();
         if ( source.isEnumType() && result.isEnumType() ) {
-            return true;
+            return isProvenByAnnotation( method );
         }
         if ( source.isString() && result.isEnumType() ) {
-            return true;
+            return isProvenByAnnotation( method );
         }
         if ( source.isEnumType()  && result.isString() ) {
-            return true;
+            return isProvenByAnnotation( method );
         }
         return false;
+    }
+
+    /**
+     * See #1788 for example
+     *
+     * @param method the method
+     * @return true if method is proved by annotation @ValueMapping(s) or disproved by @BeanMapping
+     * also true if cannot be confirmed by any annotation.
+     */
+    private static boolean isProvenByAnnotation(Method method ) {
+        if ( ValueMappingPrism.getInstanceOn( method.getExecutable() ) != null  ||
+            ValueMappingsPrism.getInstanceOn( method.getExecutable() ) != null ) {
+            return true;
+        }
+        return BeanMappingPrism.getInstanceOn( method.getExecutable() ) == null;
     }
 }
