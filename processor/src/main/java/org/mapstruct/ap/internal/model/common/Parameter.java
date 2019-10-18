@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.common;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.VariableElement;
@@ -105,10 +106,10 @@ public class Parameter extends ModelElement {
 
         Parameter parameter = (Parameter) o;
 
-        if ( name != null ? !name.equals( parameter.name ) : parameter.name != null ) {
+        if ( !Objects.equals( name, parameter.name ) ) {
             return false;
         }
-        return type != null ? type.equals( parameter.type ) : parameter.type == null;
+        return Objects.equals( type, parameter.type );
 
     }
 

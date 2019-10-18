@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -114,24 +115,15 @@ public class SelectionParameters {
             return false;
         }
 
-        if ( !equals( this.qualifyingNames, other.qualifyingNames ) ) {
+        if ( !Objects.equals( this.qualifyingNames, other.qualifyingNames ) ) {
             return false;
         }
 
-        if ( !equals( this.sourceRHS, other.sourceRHS ) ) {
+        if ( !Objects.equals( this.sourceRHS, other.sourceRHS ) ) {
             return false;
         }
 
         return equals( this.resultType, other.resultType );
-    }
-
-    private boolean equals(Object object1, Object object2) {
-        if ( object1 == null ) {
-            return (object2 == null);
-        }
-        else {
-            return object1.equals( object2 );
-        }
     }
 
     private boolean equals(List<TypeMirror> mirrors1, List<TypeMirror> mirrors2) {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 
@@ -1026,7 +1027,6 @@ public class PropertyMapping extends ModelElement {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Set<Type> getImportTypes() {
         if ( defaultValueAssignment == null ) {
             return assignment.getImportTypes();
@@ -1062,13 +1062,13 @@ public class PropertyMapping extends ModelElement {
             return false;
         }
         final PropertyMapping other = (PropertyMapping) obj;
-        if ( (this.name == null) ? (other.name != null) : !this.name.equals( other.name ) ) {
+        if ( !Objects.equals( name, other.name ) ) {
             return false;
         }
-        if ( this.targetType != other.targetType && (this.targetType == null ||
-            !this.targetType.equals( other.targetType )) ) {
+        if ( !Objects.equals( targetType, other.targetType ) ) {
             return false;
         }
+
         return true;
     }
 

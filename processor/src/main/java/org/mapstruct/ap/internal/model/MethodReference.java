@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -84,7 +85,7 @@ public class MethodReference extends ModelElement implements Assignment {
             imported.addAll( binding.getImportTypes() );
         }
 
-        this.importTypes = Collections.<Type>unmodifiableSet( imported );
+        this.importTypes = Collections.unmodifiableSet( imported );
         this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
         this.definingType = method.getDefiningType();
@@ -304,22 +305,13 @@ public class MethodReference extends ModelElement implements Assignment {
             return false;
         }
         MethodReference other = (MethodReference) obj;
-        if ( declaringMapper == null ) {
-            if ( other.declaringMapper != null ) {
-                return false;
-            }
-        }
-        else if ( !declaringMapper.equals( other.declaringMapper ) ) {
+        if ( !Objects.equals( declaringMapper, other.declaringMapper ) ) {
             return false;
         }
-        if ( providingParameter == null ) {
-            if ( other.providingParameter != null ) {
-                return false;
-            }
-        }
-        else if ( !providingParameter.equals( other.providingParameter ) ) {
+        if ( !Objects.equals( providingParameter, other.providingParameter ) ) {
             return false;
         }
+
         return true;
     }
 
@@ -351,7 +343,7 @@ public class MethodReference extends ModelElement implements Assignment {
 
     @Override
     public String toString() {
-        String mapper = declaringMapper != null ? declaringMapper.getType().getName().toString() : "";
+        String mapper = declaringMapper != null ? declaringMapper.getType().getName() : "";
         String argument = getAssignment() != null ? getAssignment().toString() :
                         ( getSourceReference() != null ? getSourceReference() : "" );
         String returnTypeAsString = returnType != null ? returnType.toString() : "";
