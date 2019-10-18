@@ -454,13 +454,7 @@ public class SourceMethod implements Method {
      * @return {@code true} if the parameter list contains a parameter annotated with {@code @TargetType}
      */
     public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
-        for ( Parameter param : parameters ) {
-            if ( param.isTargetType() ) {
-                return true;
-            }
-        }
-
-        return false;
+        return parameters.stream().anyMatch( Parameter::isTargetType );
     }
 
     @Override

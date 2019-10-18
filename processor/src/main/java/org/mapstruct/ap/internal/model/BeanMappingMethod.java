@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -371,11 +370,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 );
             }
             else {
-                Collections.sort(
-                    propertyMappings,
-                    Comparator.comparingInt( propertyMapping ->
-                            graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) )
-                );
+                propertyMappings.sort( Comparator.comparingInt( propertyMapping ->
+                    graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) ) );
             }
         }
 

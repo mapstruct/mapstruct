@@ -80,17 +80,11 @@ public class LifecycleCallbackMethodReference extends MethodReference {
 
     @Override
     public Set<Type> getImportTypes() {
-        return declaringType != null ? Collections.asSet( declaringType ) : java.util.Collections.<Type> emptySet();
+        return declaringType != null ? Collections.asSet( declaringType ) : java.util.Collections.emptySet();
     }
 
     public boolean hasMappingTargetParameter() {
-        for ( ParameterBinding param : getParameterBindings() ) {
-            if ( param.isMappingTarget() ) {
-                return true;
-            }
-        }
-
-        return false;
+        return getParameterBindings().stream().anyMatch( ParameterBinding::isMappingTarget );
     }
 
     /**
