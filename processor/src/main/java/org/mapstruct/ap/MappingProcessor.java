@@ -8,7 +8,6 @@ package org.mapstruct.ap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -135,13 +134,13 @@ public class MappingProcessor extends AbstractProcessor {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
 
         return new Options(
-            Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
-            Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
+            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
+            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
             processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
-            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
-            Boolean.valueOf( processingEnv.getOptions().get( VERBOSE ) )
+            Boolean.parseBoolean( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
+            Boolean.parseBoolean( processingEnv.getOptions().get( VERBOSE ) )
         );
     }
 
@@ -357,7 +356,7 @@ public class MappingProcessor extends AbstractProcessor {
             processors.add( processorIterator.next() );
         }
 
-        Collections.sort( processors, new ProcessorComparator() );
+        processors.sort( new ProcessorComparator() );
 
         return processors;
     }

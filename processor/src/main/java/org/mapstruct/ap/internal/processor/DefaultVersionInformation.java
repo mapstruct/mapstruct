@@ -12,8 +12,11 @@ import java.util.jar.Manifest;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import static org.mapstruct.ap.internal.util.Message.GENERAL_JAVA_VERSION_IS_NOT_SUPPORTED;
 
 /**
  * Provides information about the processor version and the processor context implementation version.
@@ -91,6 +94,14 @@ public class DefaultVersionInformation implements VersionInformation {
     static DefaultVersionInformation fromProcessingEnvironment(ProcessingEnvironment processingEnv) {
         String runtimeVersion = System.getProperty( "java.version" );
         String runtimeVendor = System.getProperty( "java.vendor" );
+
+        String javaSpecificationVersion = System.getProperty( "java.specification.version" );
+
+        if ( javaSpecificationVersion.equals( "1.6" ) || javaSpecificationVersion.equals( "1.7" ) ) {
+            String message = String.format( GENERAL_JAVA_VERSION_IS_NOT_SUPPORTED.getDescription(),
+                                                                        javaSpecificationVersion );
+            processingEnv.getMessager().printMessage( Diagnostic.Kind.ERROR, message );
+        }
 
         String compiler = getCompiler( processingEnv );
 
