@@ -19,13 +19,13 @@ public class LombokMapperTest {
 
     @Test
     public void testSimpleImmutableBuilderHappyPath() {
-        PersonDto personDto = PersonMapper.INSTANCE.toDto( Person.builder()
+        PersonDto personDto = PersonMapper.INSTANCE.toDto( Person.foo()
             .age( 33 )
             .name( "Bob" )
             .address( Address.builder()
                 .addressLine( "Wild Drive" )
                 .build() )
-            .build() );
+            .create() );
         assertThat( personDto.getAge() ).isEqualTo( 33 );
         assertThat( personDto.getName() ).isEqualTo( "Bob" );
         assertThat( personDto.getAddress() ).isNotNull();
