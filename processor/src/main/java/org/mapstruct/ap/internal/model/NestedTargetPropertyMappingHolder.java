@@ -352,16 +352,12 @@ public class NestedTargetPropertyMappingHolder {
                 MappingReference newMapping = mapping.popTargetReference();
                 if ( newMapping != null ) {
                     // group properties on current name.
-                    if ( !mappingsKeyedByProperty.containsKey( property ) ) {
-                        mappingsKeyedByProperty.put( property, new LinkedHashSet<>() );
-                    }
-                    mappingsKeyedByProperty.get( property ).add( newMapping );
+                    mappingsKeyedByProperty.computeIfAbsent( property, propertyEntry -> new LinkedHashSet<>() )
+                        .add( newMapping );
                 }
                 else {
-                    if ( !singleTargetReferences.containsKey( property ) ) {
-                        singleTargetReferences.put( property, new LinkedHashSet<>() );
-                    }
-                    singleTargetReferences.get( property ).add( mapping );
+                    singleTargetReferences.computeIfAbsent( property, propertyEntry -> new LinkedHashSet<>() )
+                        .add( mapping );
                 }
             }
 
@@ -459,10 +455,8 @@ public class NestedTargetPropertyMappingHolder {
             for ( MappingReference mapping : mappings ) {
                 if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
                     Parameter parameter = mapping.getSourceReference().getParameter();
-                    if ( !mappingsKeyedByParameter.containsKey( parameter ) ) {
-                        mappingsKeyedByParameter.put( parameter, new LinkedHashSet<>() );
-                    }
-                    mappingsKeyedByParameter.get( parameter ).add( mapping );
+                    mappingsKeyedByParameter.computeIfAbsent( parameter, key -> new LinkedHashSet<>() )
+                        .add( mapping );
                 }
                 else {
                     appliesToAll.add( mapping );
@@ -530,10 +524,8 @@ public class NestedTargetPropertyMappingHolder {
                 if ( newMapping != null ) {
                     // group properties on current name.
                     PropertyEntry property = first( mapping.getSourceReference().getPropertyEntries() );
-                    if ( !mappingsKeyedByProperty.containsKey( property ) ) {
-                        mappingsKeyedByProperty.put( property, new LinkedHashSet<>() );
-                    }
-                    mappingsKeyedByProperty.get( property ).add( newMapping );
+                    mappingsKeyedByProperty.computeIfAbsent( property, propertyEntry -> new LinkedHashSet<>() )
+                        .add( newMapping );
                 }
                 //This is an ignore, or some expression, or a default. We apply these to all
                 else if ( mapping.getSourceReference() == null ) {
@@ -666,8 +658,8 @@ public class NestedTargetPropertyMappingHolder {
                 for ( MappingReference mapping : singleTargetReferences ) {
                     if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
                         K key = keyExtractor.apply( mapping.getSourceReference() );
-                        if ( key != null && !map.containsKey( key ) ) {
-                            map.put( key, new LinkedHashSet<>() );
+                        if ( key != null ) {
+                            map.computeIfAbsent( key, keyValue -> new LinkedHashSet<>() );
                         }
                     }
                 }
