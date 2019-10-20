@@ -485,23 +485,21 @@ public class Type extends ModelElement implements Comparable<Type> {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
                     if ( !getter.getSimpleName().toString().startsWith( "is" ) ) {
-                        modifiableGetters.put( getPropertyName( getter ), getter );
+                        modifiableGetters.put( propertyName, getter );
                     }
 
                 }
                 else {
-                    modifiableGetters.put( getPropertyName( getter ), getter );
+                    modifiableGetters.put( propertyName, getter );
                 }
             }
 
             List<Accessor> fieldsList = filters.fieldsIn( getAllFields() );
             for ( Accessor field : fieldsList ) {
                 String propertyName = getPropertyName( field );
-                if ( !modifiableGetters.containsKey( propertyName ) ) {
-                    // If there was no getter or is method for booleans, then resort to the field.
-                    // If a field was already added do not add it again.
-                    modifiableGetters.put( propertyName,  field );
-                }
+                // If there was no getter or is method for booleans, then resort to the field.
+                // If a field was already added do not add it again.
+                modifiableGetters.putIfAbsent( propertyName, field );
             }
             readAccessors = Collections.unmodifiableMap( modifiableGetters );
         }
