@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.util.workarounds;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -73,7 +72,7 @@ final class EclipseAsMemberOfWorkaround {
             candidatesFromInterfaces );
 
         // there can be multiple matches for the same method name from adjacent interface hierarchies.
-        Collections.sort( candidatesFromInterfaces, MostSpecificMethodBindingComparator.INSTANCE );
+        candidatesFromInterfaces.sort( MostSpecificMethodBindingComparator.INSTANCE );
 
         if ( !candidatesFromInterfaces.isEmpty() ) {
             // return the most specific match

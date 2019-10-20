@@ -76,7 +76,7 @@ public class ObjectFactoryMethodResolver {
             selectors.getMatchingMethods(
                 method,
                 getAllAvailableMethods( method, ctx.getSourceModel() ),
-                java.util.Collections.<Type> emptyList(),
+                java.util.Collections.emptyList(),
                 alternativeTarget,
                 SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
