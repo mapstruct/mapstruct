@@ -19,13 +19,4 @@ public interface SourceTargetMapper extends SourceTargetBaseMapper {
         @Mapping(source = "idBar", target = "bar")
     })
     Target mapSourceToTarget(Source source);
-
-    default Foo fooFromId(long id) {
-        return new Foo(id);
-    }
-
-    static Bar barFromId(String id) {
-        return new Bar(id);
-    }
-
 }

@@ -39,7 +39,6 @@ public interface CarMapper {
     @BeanMapping(nullValueMappingStrategy = RETURN_DEFAULT)
     @Mappings({
         @Mapping(target = "seatCount", source = "car.numberOfSeats"),
-        @Mapping(target = "model", source = "model"), // TODO,  should not be needed, must be made based on name only
         @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     })
     CarDto carToCarDto(Car car, String model);
