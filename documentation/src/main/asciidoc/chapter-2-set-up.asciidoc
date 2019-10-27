@@ -210,7 +210,7 @@ When invoking javac directly, these options are passed to the compiler in the fo
 ----
 ...
 compileJava {
-    options.compilerArgs = [
+    options.compilerArgs += [
         '-Amapstruct.suppressGeneratorTimestamp=true',
         '-Amapstruct.suppressGeneratorVersionInfoComment=true',
         '-Amapstruct.verbose=true'
