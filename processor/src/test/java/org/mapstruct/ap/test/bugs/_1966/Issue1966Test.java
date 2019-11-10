@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1966Test {
 
     @Test
-    public void shouldSelectDefaultExpression() {
+    public void shouldSelectDefaultExpressionEvenWhenSourceInMappingIsNotSpecified() {
 
         Issue1966Mapper.AnimalRecord dto = new Issue1966Mapper.AnimalRecord();
 

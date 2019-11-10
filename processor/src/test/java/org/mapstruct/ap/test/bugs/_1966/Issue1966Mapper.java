@@ -13,6 +13,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Sjaak Derksen
+ */
 @Mapper( imports = Collections.class )
 public interface Issue1966Mapper {
 
