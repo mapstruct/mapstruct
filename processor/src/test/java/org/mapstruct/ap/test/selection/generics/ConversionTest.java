@@ -43,19 +43,19 @@ public class ConversionTest {
 
         // setup source
         Source source = new Source();
-        source.setFooInteger( new Wrapper<Integer>( 5 ) );
-        source.setFooString( new Wrapper<String>( "test" ) );
-        source.setFooStringArray( new Wrapper<String[]>( new String[] { "test1", "test2" } ) );
-        source.setFooLongArray( new ArrayWrapper<Long>( new Long[] { 5L, 3L } ) );
-        source.setFooTwoArgs( new TwoArgWrapper<Integer, Boolean>( new TwoArgHolder<Integer, Boolean>( 3, true ) ) );
-        source.setFooNested( new Wrapper<Wrapper<BigDecimal>>( new Wrapper<BigDecimal>( new BigDecimal( 5 ) ) ) );
-        source.setFooUpperBoundCorrect( new UpperBoundWrapper<TypeB>( typeB ) );
-        source.setFooWildCardExtendsString( new WildCardExtendsWrapper<String>( "test3" ) );
-        source.setFooWildCardExtendsTypeCCorrect( new WildCardExtendsWrapper<TypeC>( typeC ) );
-        source.setFooWildCardExtendsTypeBCorrect( new WildCardExtendsWrapper<TypeB>( typeB ) );
-        source.setFooWildCardSuperString( new WildCardSuperWrapper<String>( "test4" ) );
-        source.setFooWildCardExtendsMBTypeCCorrect( new WildCardExtendsMBWrapper<TypeC>( typeC ) );
-        source.setFooWildCardSuperTypeBCorrect( new WildCardSuperWrapper<TypeB>( typeB ) );
+        source.setFooInteger( new Wrapper<>( 5 ) );
+        source.setFooString( new Wrapper<>( "test" ) );
+        source.setFooStringArray( new Wrapper<>( new String[] { "test1", "test2" } ) );
+        source.setFooLongArray( new ArrayWrapper<>( new Long[] { 5L, 3L } ) );
+        source.setFooTwoArgs( new TwoArgWrapper<>( new TwoArgHolder<>( 3, true ) ) );
+        source.setFooNested( new Wrapper<>( new Wrapper<>( new BigDecimal( 5 ) ) ) );
+        source.setFooUpperBoundCorrect( new UpperBoundWrapper<>( typeB ) );
+        source.setFooWildCardExtendsString( new WildCardExtendsWrapper<>( "test3" ) );
+        source.setFooWildCardExtendsTypeCCorrect( new WildCardExtendsWrapper<>( typeC ) );
+        source.setFooWildCardExtendsTypeBCorrect( new WildCardExtendsWrapper<>( typeB ) );
+        source.setFooWildCardSuperString( new WildCardSuperWrapper<>( "test4" ) );
+        source.setFooWildCardExtendsMBTypeCCorrect( new WildCardExtendsMBWrapper<>( typeC ) );
+        source.setFooWildCardSuperTypeBCorrect( new WildCardSuperWrapper<>( typeB ) );
 
         // define wrapper
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
@@ -160,22 +160,18 @@ public class ConversionTest {
         ErroneousSourceTargetMapper6.class,
         NoProperties.class
     })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 16,
-                messageRegExp = "No target bean properties found: can't map property \".*NoProperties "
-                    + "foo\\.wrapped\" to"
-                    + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "foo\\.wrapped\""),
-            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 16,
-                messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an " +
-                    "accessible parameterless constructor\\.")
-
-        })
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic( type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 16, messageRegExp =
+                        ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an "
+                                        + "accessible parameterless constructor\\." ),
+        @Diagnostic( type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 16, messageRegExp =
+                        "No target bean properties found: can't map property \".*NoProperties "
+                                        + "foo\\.wrapped\" to"
+                                        + " \"org.mapstruct.ap.test.selection.generics.TypeA "
+                                        + "foo\\.wrapped\"" )
+    } )
     public void shouldFailOnNonMatchingWildCards() {
     }
 }

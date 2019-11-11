@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Entity {
 
-    List<Long> longs = new ArrayList<Long>();
+    List<Long> longs = new ArrayList<>();
 
     public List<Long> getLongs() {
         return longs;

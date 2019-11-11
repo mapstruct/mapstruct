@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic.Kind;
@@ -49,7 +50,7 @@ class JdkCompilingStatement extends CompilingStatement {
                                                                        String classOutputDir,
                                                                        String additionalCompilerClasspath) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
         Iterable<? extends JavaFileObject> compilationUnits =
@@ -97,7 +98,7 @@ class JdkCompilingStatement extends CompilingStatement {
     }
 
     private static List<File> asFiles(List<String> paths) {
-        List<File> classpath = new ArrayList<File>();
+        List<File> classpath = new ArrayList<>();
         for ( String path : paths ) {
             classpath.add( new File( path ) );
         }
@@ -112,14 +113,14 @@ class JdkCompilingStatement extends CompilingStatement {
      */
     @Override
     protected List<DiagnosticDescriptor> filterExpectedDiagnostics(List<DiagnosticDescriptor> expectedDiagnostics) {
-        List<DiagnosticDescriptor> filtered = new ArrayList<DiagnosticDescriptor>( expectedDiagnostics.size() );
+        List<DiagnosticDescriptor> filtered = new ArrayList<>( expectedDiagnostics.size() );
 
         DiagnosticDescriptor previous = null;
         for ( DiagnosticDescriptor diag : expectedDiagnostics ) {
             if ( diag.getKind() != Kind.ERROR
                 || previous == null
                 || !previous.getSourceFileName().equals( diag.getSourceFileName() )
-                || !previous.getLine().equals( diag.getLine() ) ) {
+                || !Objects.equals( previous.getLine(), diag.getLine() ) ) {
                 filtered.add( diag );
                 previous = diag;
             }

@@ -15,17 +15,17 @@
         </#if>
     </#list>
     if ( ${sourceParameter.name} == null ) {
-        return <#if nullTarget??><@includeModel object=returnType/>.${nullTarget}<#else>null</#if>;
+        return <@writeTarget target=nullTarget/>;
     }
 
     <@includeModel object=resultType/> ${resultName};
 
     switch ( ${sourceParameter.name} ) {
     <#list valueMappings as valueMapping>
-        case ${valueMapping.source}: ${resultName} = <#if valueMapping.target??><@includeModel object=returnType/>.${valueMapping.target}<#else>null</#if>;
+        case <@writeSource source=valueMapping.source/>: ${resultName} = <@writeTarget target=valueMapping.target/>;
         break;
     </#list>
-    default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <#if defaultTarget??><@includeModel object=returnType/>.${defaultTarget}<#else>null</#if></#if>;
+    default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>
@@ -40,5 +40,29 @@
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
 
+    <#if !(valueMappings.empty && throwIllegalArgumentException)>
     return ${resultName};
+    </#if>
 }
+<#macro writeSource source="">
+    <@compress single_line=true>
+        <#if sourceParameter.type.enumType>
+             ${source}
+        <#elseif sourceParameter.type.string>
+            "${source}"
+        </#if>
+    </@compress>
+</#macro>
+<#macro writeTarget target="">
+    <@compress single_line=true>
+        <#if target?has_content>
+            <#if returnType.enumType>
+                <@includeModel object=returnType/>.${target}
+            <#elseif returnType.string>
+                "${target}"
+            </#if>
+        <#else>
+            null
+        </#if>
+    </@compress>
+</#macro>

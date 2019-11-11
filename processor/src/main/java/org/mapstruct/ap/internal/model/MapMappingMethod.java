@@ -17,7 +17,6 @@ import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -97,18 +96,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyFormattingParameters,
                 keyCriteria,
                 keySourceRHS,
-                null
+                null,
+                 () -> forge( keySourceRHS, keySourceType, keyTargetType, Message.MAPMAPPING_CREATE_KEY_NOTE )
             );
-
-            if ( keyAssignment == null && !keyCriteria.hasQualfiers( ) ) {
-                keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
-                if ( keyAssignment != null ) {
-                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_KEY_NOTE, keyAssignment );
-                }
-            }
-            else {
-                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_KEY_NOTE, keyAssignment );
-            }
 
             if ( keyAssignment == null ) {
                 if ( method instanceof ForgedMethod ) {
@@ -129,6 +119,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
             }
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_KEY_NOTE, keyAssignment );
+            }
 
             // find mapping method or conversion for value
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
@@ -146,7 +139,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 valueFormattingParameters,
                 valueCriteria,
                 valueSourceRHS,
-                null
+                null,
+                () -> forge( valueSourceRHS, valueSourceType, valueTargetType, Message.MAPMAPPING_CREATE_VALUE_NOTE )
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -157,16 +151,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 if ( valueAssignment != null ) {
                     forgedMethod.addThrownTypes( valueAssignment.getThrownTypes() );
                 }
-            }
-
-            if ( valueAssignment == null && !valueCriteria.hasQualfiers( ) ) {
-                valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
-                if ( valueAssignment != null ) {
-                    ctx.getMessager().note( 2, Message.MAPMAPPING_CREATE_VALUE_NOTE, valueAssignment );
-                }
-            }
-            else {
-                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
             }
 
             if ( valueAssignment == null ) {
@@ -188,6 +172,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
             }
+            else {
+                ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
+            }
 
             // mapNullToDefault
             boolean mapNullToDefault = false;
@@ -198,7 +185,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
                 factoryMethod = ObjectFactoryMethodResolver
-                    .getFactoryMethod( method, method.getResultType(), null, ctx );
+                    .getFactoryMethod( method, null, ctx );
             }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
@@ -220,6 +207,14 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 beforeMappingMethods,
                 afterMappingMethods
             );
+        }
+
+        Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType, Message message ) {
+            Assignment  assignment = forgeMapping( sourceRHS, sourceType, targetType );
+            if ( assignment != null ) {
+                ctx.getMessager().note( 2, message, assignment );
+            }
+            return assignment;
         }
 
         @Override

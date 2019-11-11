@@ -30,7 +30,7 @@ public class CurrencyConversionTest {
     public void shouldApplyCurrencyConversions() {
         final CurrencySource source = new CurrencySource();
         source.setCurrencyA( Currency.getInstance( "USD" ) );
-        Set<Currency> currencies = new HashSet<Currency>();
+        Set<Currency> currencies = new HashSet<>();
         currencies.add( Currency.getInstance( "EUR" ) );
         currencies.add( Currency.getInstance( "CHF" ) );
         source.setUniqueCurrencies( currencies );

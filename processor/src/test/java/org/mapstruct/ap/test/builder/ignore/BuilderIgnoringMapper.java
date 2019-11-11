@@ -20,6 +20,7 @@ public interface BuilderIgnoringMapper {
     BuilderIgnoringMapper INSTANCE = Mappers.getMapper( BuilderIgnoringMapper.class );
 
     @InheritConfiguration(name = "mapBase")
+    @Mapping( target = "lastName" )
     Person mapWithIgnoringBase(PersonDto source);
 
     @BeanMapping(ignoreByDefault = true)

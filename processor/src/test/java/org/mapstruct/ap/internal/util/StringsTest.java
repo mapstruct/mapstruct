@@ -34,7 +34,7 @@ public class StringsTest {
     }
 
     @Test
-    public void testCapitalize() throws Exception {
+    public void testCapitalize() {
         assertThat( Strings.capitalize( null ) ).isNull();
         assertThat( Strings.capitalize( "c" ) ).isEqualTo( "C" );
         assertThat( Strings.capitalize( "capitalize" ) ).isEqualTo( "Capitalize" );
@@ -43,7 +43,7 @@ public class StringsTest {
     }
 
     @Test
-    public void testDecapitalize() throws Exception {
+    public void testDecapitalize() {
         assertThat( Strings.decapitalize( null ) ).isNull();
         assertThat( Strings.decapitalize( "c" ) ).isEqualTo( "c" );
         assertThat( Strings.decapitalize( "capitalize" ) ).isEqualTo( "capitalize" );
@@ -52,14 +52,14 @@ public class StringsTest {
     }
 
     @Test
-    public void testJoin() throws Exception {
+    public void testJoin() {
         assertThat( Strings.join( new ArrayList<String>(), "-" ) ).isEqualTo( "" );
         assertThat( Strings.join( Arrays.asList( "Hello", "World" ), "-" ) ).isEqualTo( "Hello-World" );
         assertThat( Strings.join( Arrays.asList( "Hello" ), "-" ) ).isEqualTo( "Hello" );
     }
 
     @Test
-    public void testJoinAndCamelize() throws Exception {
+    public void testJoinAndCamelize() {
         assertThat( Strings.joinAndCamelize( new ArrayList<String>() ) ).isEqualTo( "" );
         assertThat( Strings.joinAndCamelize( Arrays.asList( "Hello", "World" ) ) ).isEqualTo( "HelloWorld" );
         assertThat( Strings.joinAndCamelize( Arrays.asList( "Hello", "world" ) ) ).isEqualTo( "HelloWorld" );
@@ -67,7 +67,7 @@ public class StringsTest {
     }
 
     @Test
-    public void testIsEmpty() throws Exception {
+    public void testIsEmpty() {
         assertThat( Strings.isEmpty( null ) ).isTrue();
         assertThat( Strings.isEmpty( "" ) ).isTrue();
         assertThat( Strings.isEmpty( " " ) ).isFalse();
@@ -75,7 +75,7 @@ public class StringsTest {
     }
 
     @Test
-    public void testGetSaveVariableNameWithArrayExistingVariables() throws Exception {
+    public void testGetSaveVariableNameWithArrayExistingVariables() {
         assertThat( Strings.getSafeVariableName( "int[]" ) ).isEqualTo( "intArray" );
         assertThat( Strings.getSafeVariableName( "Extends" ) ).isEqualTo( "extends1" );
         assertThat( Strings.getSafeVariableName( "class" ) ).isEqualTo( "class1" );
@@ -86,28 +86,28 @@ public class StringsTest {
     }
 
     @Test
-    public void testGetSaveVariableNameVariablesEndingOnNumberVariables() throws Exception {
+    public void testGetSaveVariableNameVariablesEndingOnNumberVariables() {
         assertThat( Strings.getSafeVariableName( "prop1", "prop1" ) ).isEqualTo( "prop1_1" );
         assertThat( Strings.getSafeVariableName( "prop1", "prop1", "prop1_1" ) ).isEqualTo( "prop1_2" );
     }
 
     @Test
-    public void testGetSaveVariableNameWithCollection() throws Exception {
-        assertThat( Strings.getSafeVariableName( "int[]", new ArrayList<String>() ) ).isEqualTo( "intArray" );
-        assertThat( Strings.getSafeVariableName( "Extends", new ArrayList<String>() ) ).isEqualTo( "extends1" );
+    public void testGetSaveVariableNameWithCollection() {
+        assertThat( Strings.getSafeVariableName( "int[]", new ArrayList<>() ) ).isEqualTo( "intArray" );
+        assertThat( Strings.getSafeVariableName( "Extends", new ArrayList<>() ) ).isEqualTo( "extends1" );
         assertThat( Strings.getSafeVariableName( "prop", Arrays.asList( "prop", "prop1" ) ) ).isEqualTo( "prop2" );
         assertThat( Strings.getSafeVariableName( "prop.font", Arrays.asList( "propFont", "propFont_" ) ) )
             .isEqualTo( "propFont1" );
     }
 
     @Test
-    public void testSanitizeIdentifierName() throws Exception {
+    public void testSanitizeIdentifierName() {
         assertThat( Strings.sanitizeIdentifierName( "test" ) ).isEqualTo( "test" );
         assertThat( Strings.sanitizeIdentifierName( "int[]" ) ).isEqualTo( "intArray" );
     }
 
     @Test
-    public void findMostSimilarWord() throws Exception {
+    public void findMostSimilarWord() {
         String mostSimilarWord = Strings.getMostSimilarWord(
             "fulName",
             Arrays.asList( "fullAge", "fullName", "address", "status" )

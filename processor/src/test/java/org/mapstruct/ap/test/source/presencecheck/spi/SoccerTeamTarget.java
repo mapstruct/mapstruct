@@ -22,7 +22,7 @@ public class SoccerTeamTarget {
 
     public void addPlayer(String player) {
         if ( this.players == null ) {
-            this.players = new ArrayList<String>();
+            this.players = new ArrayList<>();
         }
         this.players.add( player );
     }

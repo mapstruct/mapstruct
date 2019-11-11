@@ -7,12 +7,13 @@ matrix:
   - jdk: oraclejdk8
     after_success:
       - mvn jacoco:report && bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    dist: trusty
   - jdk: openjdk11
     # Only run the processor and its dependencies
     # The integration tests are using the maven toolchain and that is not yet ready for Java 11
     # There is an issue with the documentation so skip it
     script: mvn -B -V clean install -pl processor -am
-  - jdk: openjdk12
+  - jdk: openjdk13
     # Only run the processor and its dependencies
     # The integration tests are using the maven toolchain and that is not yet ready for Java 11
     # There is an issue with the documentation so skip it
@@ -37,7 +38,3 @@ sudo: required
 cache:
   directories:
   - $HOME/.m2
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer

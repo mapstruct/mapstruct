@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1170;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 
@@ -36,8 +36,6 @@ public class PetMapper {
      * @param pet
      *
      * @return
-     *
-     * @throws DogException
      */
     public Long toPet(String pet)  {
         return PETS_TO_TARGET.get( pet );
@@ -53,24 +51,17 @@ public class PetMapper {
      * @param pets
      *
      * @return
-     *
-     * @throws CatException
-     * @throws DogException
      */
     public List<Long> toPets(List<? extends String> pets)  {
-        List<Long> result = new ArrayList<Long>();
-        for ( String pet : pets ) {
-            result.add( toPet( pet ) );
-        }
-        return result;
+        return pets.stream()
+            .map( this::toPet )
+            .collect( Collectors.toList() );
     }
 
     public List<String> toSourcePets(List<Long> pets)  {
-        List<String> result = new ArrayList<String>();
-        for ( Long pet : pets ) {
-            result.add( PETS_TO_SOURCE.get( pet ) );
-        }
-        return result;
+        return pets.stream()
+            .map( PETS_TO_SOURCE::get )
+            .collect( Collectors.toList() );
     }
 
 }

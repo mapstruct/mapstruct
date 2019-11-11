@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -25,6 +26,23 @@ public class SelectionParameters {
     private final TypeMirror resultType;
     private final Types typeUtils;
     private final SourceRHS sourceRHS;
+
+    /**
+     * Returns new selection parameters
+     *
+     * ResultType is not inherited.
+     *
+     * @param selectionParameters
+     * @return
+     */
+    public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
+        return new SelectionParameters(
+            selectionParameters.qualifiers,
+            selectionParameters.qualifyingNames,
+            null,
+            selectionParameters.typeUtils
+        );
+    }
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         Types typeUtils) {
@@ -97,24 +115,15 @@ public class SelectionParameters {
             return false;
         }
 
-        if ( !equals( this.qualifyingNames, other.qualifyingNames ) ) {
+        if ( !Objects.equals( this.qualifyingNames, other.qualifyingNames ) ) {
             return false;
         }
 
-        if ( !equals( this.sourceRHS, other.sourceRHS ) ) {
+        if ( !Objects.equals( this.sourceRHS, other.sourceRHS ) ) {
             return false;
         }
 
         return equals( this.resultType, other.resultType );
-    }
-
-    private boolean equals(Object object1, Object object2) {
-        if ( object1 == null ) {
-            return (object2 == null);
-        }
-        else {
-            return object1.equals( object2 );
-        }
     }
 
     private boolean equals(List<TypeMirror> mirrors1, List<TypeMirror> mirrors2) {
@@ -144,8 +153,8 @@ public class SelectionParameters {
 
     public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
         return new SelectionParameters(
-            Collections.<TypeMirror>emptyList(),
-            Collections.<String>emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList(),
             null,
             null,
             sourceRHS

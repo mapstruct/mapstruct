@@ -5,36 +5,29 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
- * Represents a property mapping as configured via {@code @Mapping}.
+ * Represents a property mapping as configured via {@code @Mapping} (no intermediate state).
  *
  * @author Gunnar Morling
  */
@@ -52,7 +45,7 @@ public class Mapping {
     private final SelectionParameters selectionParameters;
 
     private final boolean isIgnored;
-    private final List<String> dependsOn;
+    private final Set<String> dependsOn;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -61,26 +54,56 @@ public class Mapping {
     private final NullValueCheckStrategyPrism nullValueCheckStrategy;
     private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
 
-    private SourceReference sourceReference;
-    private TargetReference targetReference;
+    private final InheritContext inheritContext;
 
-    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
-        ExecutableElement method, FormattingMessager messager, Types typeUtils) {
-        Map<String, List<Mapping>> mappings = new HashMap<>();
+    public static class InheritContext {
+
+        private final boolean isReversed;
+        private final boolean isForwarded;
+        private final Method inheritedFromMethod;
+
+        public InheritContext(boolean isReversed, boolean isForwarded, Method inheritedFromMethod) {
+            this.isReversed = isReversed;
+            this.isForwarded = isForwarded;
+            this.inheritedFromMethod = inheritedFromMethod;
+        }
+
+        public boolean isReversed() {
+            return isReversed;
+        }
+
+        public boolean isForwarded() {
+            return isForwarded;
+        }
+
+        public Method getInheritedFromMethod() {
+            return inheritedFromMethod;
+        }
+    }
+
+    public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
+        return mappings.stream()
+                       .filter( predicate )
+                       .map( Mapping::getTargetName )
+                       .collect( Collectors.toCollection( LinkedHashSet::new ) );
+    }
+
+    public static Mapping getMappingByTargetName(String targetName, Set<Mapping> mappings) {
+        return mappings.stream().filter( mapping -> mapping.targetName.equals( targetName ) ).findAny().orElse( null );
+    }
+
+    public static Set<Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
+                                                 FormattingMessager messager, Types typeUtils) {
+        Set<Mapping> mappings = new LinkedHashSet<>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
-                List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
-                if ( mappingsOfProperty == null ) {
-                    mappingsOfProperty = new ArrayList<>();
-                    mappings.put( mappingPrism.target(), mappingsOfProperty );
-                }
-
-                mappingsOfProperty.add( mapping );
-
-                if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
+                if ( mappings.contains( mapping ) ) {
                     messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
+                }
+                else {
+                    mappings.add( mapping );
                 }
             }
         }
@@ -104,8 +127,9 @@ public class Mapping {
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
-        List<String> dependsOn =
-            mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
+        Set<String> dependsOn = mappingPrism.dependsOn() != null ?
+            new LinkedHashSet( mappingPrism.dependsOn() ) :
+            Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
@@ -147,7 +171,8 @@ public class Mapping {
             mappingPrism.values.dependsOn(),
             dependsOn,
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            null
         );
     }
 
@@ -166,7 +191,8 @@ public class Mapping {
             null,
             null,
             null,
-            new ArrayList(),
+            Collections.emptySet(),
+            null,
             null,
             null
         );
@@ -185,126 +211,74 @@ public class Mapping {
             return false;
         }
 
+        Message message = null;
         if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
+        }
+        else if ( mappingPrism.values.expression() != null
+            && ( mappingPrism.values.qualifiedByName() != null || mappingPrism.values.qualifiedBy() != null ) ) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.constant() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.expression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.values.defaultExpression() != null ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS
-            );
-            return false;
+            message = Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS;
         }
         else if ( mappingPrism.values.nullValuePropertyMappingStrategy() != null
             && mappingPrism.ignore() != null && mappingPrism.ignore() ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                Message.PROPERTYMAPPING_IGNORE_AND_NVPMS
-            );
+            message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
+        }
+
+        if ( message == null ) {
+            return true;
+        }
+        else {
+            messager.printMessage( element, mappingPrism.mirror, message );
             return false;
         }
-        return true;
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
-    private Mapping( String sourceName, String constant, String javaExpression, String defaultJavaExpression,
-                     String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
-                     AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
-                     FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn,
-                     NullValueCheckStrategyPrism nullValueCheckStrategy,
-                     NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy ) {
+    private Mapping(String sourceName, String constant, String javaExpression, String defaultJavaExpression,
+                    String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+                    FormattingParameters formattingParameters, SelectionParameters selectionParameters,
+                    AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
+                    NullValueCheckStrategyPrism nullValueCheckStrategy,
+                    NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy,
+                    InheritContext inheritContext) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -321,48 +295,7 @@ public class Mapping {
         this.dependsOn = dependsOn;
         this.nullValueCheckStrategy = nullValueCheckStrategy;
         this.nullValuePropertyMappingStrategy = nullValuePropertyMappingStrategy;
-    }
-
-    private Mapping( Mapping mapping, TargetReference targetReference ) {
-        this.sourceName = mapping.sourceName;
-        this.constant = mapping.constant;
-        this.javaExpression = mapping.javaExpression;
-        this.defaultJavaExpression = mapping.defaultJavaExpression;
-        this.targetName = Strings.join( targetReference.getElementNames(), "." );
-        this.defaultValue = mapping.defaultValue;
-        this.isIgnored = mapping.isIgnored;
-        this.mirror = mapping.mirror;
-        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
-        this.targetAnnotationValue = mapping.targetAnnotationValue;
-        this.formattingParameters = mapping.formattingParameters;
-        this.selectionParameters = mapping.selectionParameters;
-        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
-        this.dependsOn = mapping.dependsOn;
-        this.sourceReference = mapping.sourceReference;
-        this.targetReference = targetReference;
-        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
-        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
-    }
-
-    private Mapping( Mapping mapping, SourceReference sourceReference ) {
-        this.sourceName = Strings.join( sourceReference.getElementNames(), "." );
-        this.constant = mapping.constant;
-        this.javaExpression = mapping.javaExpression;
-        this.defaultJavaExpression = mapping.defaultJavaExpression;
-        this.targetName = mapping.targetName;
-        this.defaultValue = mapping.defaultValue;
-        this.isIgnored = mapping.isIgnored;
-        this.mirror = mapping.mirror;
-        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
-        this.targetAnnotationValue = mapping.targetAnnotationValue;
-        this.formattingParameters = mapping.formattingParameters;
-        this.selectionParameters = mapping.selectionParameters;
-        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
-        this.dependsOn = mapping.dependsOn;
-        this.sourceReference = sourceReference;
-        this.targetReference = mapping.targetReference;
-        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
-        this.nullValuePropertyMappingStrategy = mapping.nullValuePropertyMappingStrategy;
+        this.inheritContext = inheritContext;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -403,64 +336,7 @@ public class Mapping {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private static boolean isEnumType(TypeMirror mirror) {
-        return mirror.getKind() == TypeKind.DECLARED &&
-            ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
-    }
-
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                     AccessorNamingUtils accessorNaming) {
-        init( method, messager, typeFactory, accessorNaming, false, null );
-    }
-
-    /**
-     * Initialize the Mapping.
-     *
-     * @param method the source method that the mapping belongs to
-     * @param messager the messager that can be used for outputting messages
-     * @param typeFactory the type factory
-     * @param accessorNaming the accessor naming utils
-     * @param isReverse whether the init is for a reverse mapping
-     * @param reverseSourceParameter the source parameter from the revers mapping
-     */
-    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                      AccessorNamingUtils accessorNaming, boolean isReverse,
-                      Parameter reverseSourceParameter) {
-
-        if ( !method.isEnumMapping() ) {
-            sourceReference = new SourceReference.BuilderFromMapping()
-                .mapping( this )
-                .method( method )
-                .messager( messager )
-                .typeFactory( typeFactory )
-                .build();
-
-            targetReference = new TargetReference.BuilderFromTargetMapping()
-                .mapping( this )
-                .isReverse( isReverse )
-                .method( method )
-                .messager( messager )
-                .typeFactory( typeFactory )
-                .accessorNaming( accessorNaming )
-                .reverseSourceParameter( reverseSourceParameter )
-                .build();
-        }
-    }
-
-    /**
-     * Initializes the mapping with a new source parameter.
-     *
-     * @param sourceParameter sets the source parameter that acts as a basis for this mapping
-     */
-    public void init( Parameter sourceParameter ) {
-        if ( sourceReference != null ) {
-            SourceReference oldSourceReference = sourceReference;
-            sourceReference = new SourceReference.BuilderFromSourceReference()
-                .sourceParameter( sourceParameter )
-                .sourceReference( oldSourceReference )
-                .build();
-        }
-    }
+    // immutable properties
 
     /**
      * Returns the complete source name of this mapping, either a qualified (e.g. {@code parameter1.foo}) or
@@ -520,14 +396,6 @@ public class Mapping {
         return dependsOnAnnotationValue;
     }
 
-    public SourceReference getSourceReference() {
-        return sourceReference;
-    }
-
-    public TargetReference getTargetReference() {
-        return targetReference;
-    }
-
     public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
         return nullValueCheckStrategy;
     }
@@ -536,40 +404,30 @@ public class Mapping {
         return nullValuePropertyMappingStrategy;
     }
 
-    public Mapping popTargetReference() {
-        if ( targetReference != null ) {
-            TargetReference newTargetReference = targetReference.pop();
-            if (newTargetReference != null ) {
-                return new Mapping(this, newTargetReference );
-            }
-        }
-        return null;
-    }
-
-    public Mapping popSourceReference() {
-        if ( sourceReference != null ) {
-            SourceReference newSourceReference = sourceReference.pop();
-            if (newSourceReference != null ) {
-                return new Mapping(this, newSourceReference );
-            }
-        }
-        return null;
-    }
-
-    public List<String> getDependsOn() {
+    public Set<String> getDependsOn() {
         return dependsOn;
     }
 
-    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
-                           AccessorNamingUtils accessorNaming) {
+    public InheritContext getInheritContext() {
+        return inheritContext;
+    }
 
-        // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
-        // and the mapping is not a 'target-source-ignore' mapping
-        if ( constant != null || javaExpression != null || ( isIgnored && sourceName == null ) ) {
-            return null;
-        }
+    ////  mutable properties
 
-        Mapping reverse = new Mapping(
+
+    /**
+     *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property
+     *  and the mapping is not a 'target-source-ignore' mapping
+     *
+     * @return true when the above applies
+     */
+    public boolean canInverse() {
+        return constant == null && javaExpression == null && !( isIgnored && sourceName == null );
+    }
+
+    public Mapping copyForInverseInheritance(SourceMethod method ) {
+
+        return new Mapping(
             sourceName != null ? targetName : null,
             null, // constant
             null, // expression
@@ -583,36 +441,21 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptyList(),
+            Collections.emptySet(),
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            new InheritContext( true, false, method )
         );
 
-        reverse.init(
-            method,
-            messager,
-            typeFactory,
-            accessorNaming,
-            true,
-            sourceReference != null ? sourceReference.getParameter() : null
-        );
-
-        // check if the reverse mapping has indeed a write accessor, otherwise the mapping cannot be reversed
-        if ( !reverse.targetReference.isValid() ) {
-            return null;
-        }
-
-        return reverse;
     }
 
     /**
-     * Creates a copy of this mapping, which is adapted to the given method
+     * Creates a copy of this mapping
      *
-     * @param method the method to create the copy for
      * @return the copy
      */
-    public Mapping copyForInheritanceTo(SourceMethod method) {
-        Mapping mapping = new Mapping(
+    public Mapping copyForForwardInheritance( SourceMethod method ) {
+        return new Mapping(
             sourceName,
             constant,
             javaExpression,
@@ -628,17 +471,31 @@ public class Mapping {
             dependsOnAnnotationValue,
             dependsOn,
             nullValueCheckStrategy,
-            nullValuePropertyMappingStrategy
+            nullValuePropertyMappingStrategy,
+            new InheritContext( false, true, method )
         );
 
-        if ( sourceReference != null ) {
-            mapping.sourceReference = sourceReference.copyForInheritanceTo( method );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
         }
+        if ( ".".equals( this.targetName ) ) {
+            // target this will never be equal to any other target this or any other.
+            return false;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+        Mapping mapping = (Mapping) o;
+        return targetName.equals( mapping.targetName );
+    }
 
-        // TODO... must something be done here? Andreas?
-        mapping.targetReference = targetReference;
-
-        return mapping;
+    @Override
+    public int hashCode() {
+        return Objects.hash( targetName );
     }
 
     @Override

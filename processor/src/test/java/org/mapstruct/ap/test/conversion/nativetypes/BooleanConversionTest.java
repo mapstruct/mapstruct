@@ -49,7 +49,7 @@ public class BooleanConversionTest {
 
     @Test
     @IssueKey( "229" )
-    public void wrapperToPrimitveIsNullSafe() {
+    public void wrapperToPrimitiveIsNullSafe() {
         BooleanTarget target = new BooleanTarget();
 
         BooleanSource source = BooleanMapper.INSTANCE.targetToSource( target );

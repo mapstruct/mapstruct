@@ -40,14 +40,11 @@ public class Target {
         }
         Target other = (Target) obj;
         if ( foo == null ) {
-            if ( other.foo != null ) {
-                return false;
-            }
+            return other.foo == null;
         }
-        else if ( !foo.equals( other.foo ) ) {
-            return false;
+        else {
+            return foo.equals( other.foo );
         }
-        return true;
     }
 
     @Override

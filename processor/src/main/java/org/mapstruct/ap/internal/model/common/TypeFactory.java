@@ -39,6 +39,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.Extractor;
@@ -49,6 +50,7 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
@@ -66,12 +68,7 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
 public class TypeFactory {
 
     private static final Extractor<BuilderInfo, String> BUILDER_INFO_CREATION_METHOD_EXTRACTOR =
-        new Extractor<BuilderInfo, String>() {
-            @Override
-            public String apply(BuilderInfo builderInfo) {
-                return builderInfo.getBuilderCreationMethod().toString();
-            }
-        };
+        builderInfo -> builderInfo.getBuilderCreationMethod().toString();
 
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -186,7 +183,6 @@ public class TypeFactory {
         }
 
         ImplementationType implementationType = getImplementationType( mirror );
-        BuilderInfo builderInfo = findBuilder( mirror );
 
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
@@ -280,7 +276,6 @@ public class TypeFactory {
             getTypeParameters( mirror, false ),
             implementationType,
             componentType,
-            builderInfo,
             packageName,
             name,
             qualifiedName,
@@ -354,10 +349,10 @@ public class TypeFactory {
     }
 
     public Parameter getSingleParameter(DeclaredType includingType, Accessor method) {
-        ExecutableElement executable = method.getExecutable();
-        if ( executable == null ) {
+        if ( method.getAccessorType() == AccessorType.FIELD ) {
             return null;
         }
+        ExecutableElement executable = (ExecutableElement) method.getElement();
         List<? extends VariableElement> parameters = executable.getParameters();
 
         if ( parameters.size() != 1 ) {
@@ -369,7 +364,7 @@ public class TypeFactory {
     }
 
     public List<Parameter> getParameters(DeclaredType includingType, Accessor accessor) {
-        ExecutableElement method = accessor.getExecutable();
+        ExecutableElement method = (ExecutableElement) accessor.getElement();
         TypeMirror methodType = getMethodType( includingType, accessor.getElement() );
         if ( method == null || methodType.getKind() != TypeKind.EXECUTABLE ) {
             return new ArrayList<>();
@@ -385,7 +380,7 @@ public class TypeFactory {
         Iterator<? extends VariableElement> varIt = parameters.iterator();
         Iterator<? extends TypeMirror> typesIt = parameterTypes.iterator();
 
-        for ( ; varIt.hasNext(); ) {
+        while ( varIt.hasNext() ) {
             VariableElement parameter = varIt.next();
             TypeMirror parameterType = typesIt.next();
 
@@ -427,10 +422,10 @@ public class TypeFactory {
     }
 
     public List<Type> getThrownTypes(Accessor accessor) {
-        if (accessor.getExecutable() == null) {
+        if (accessor.getAccessorType() == AccessorType.FIELD) {
             return new ArrayList<>();
         }
-        return extractTypes( accessor.getExecutable().getThrownTypes() );
+        return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );
     }
 
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {
@@ -502,7 +497,6 @@ public class TypeFactory {
                 getTypeParameters( mirror, true ),
                 null,
                 null,
-                null,
                 implementationType.getPackageName(),
                 implementationType.getName(),
                 implementationType.getFullyQualifiedName(),
@@ -523,19 +517,24 @@ public class TypeFactory {
         return null;
     }
 
-    private BuilderInfo findBuilder(TypeMirror type) {
+    private BuilderInfo findBuilder(TypeMirror type, BuilderPrism builderPrism, boolean report) {
+        if ( builderPrism != null && builderPrism.disableBuilder() ) {
+            return null;
+        }
         try {
             return roundContext.getAnnotationProcessorContext()
                 .getBuilderProvider()
                 .findBuilderInfo( type );
         }
         catch ( MoreThanOneBuilderCreationMethodException ex ) {
-            messager.printMessage(
-                typeUtils.asElement( type ),
-                Message.BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD,
-                type,
-                Strings.join( ex.getBuilderInfo(), ", ", BUILDER_INFO_CREATION_METHOD_EXTRACTOR )
-            );
+            if ( report ) {
+                messager.printMessage(
+                        typeUtils.asElement( type ),
+                        Message.BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD,
+                        type,
+                        Strings.join( ex.getBuilderInfo(), ", ", BUILDER_INFO_CREATION_METHOD_EXTRACTOR )
+                );
+            }
         }
 
         return null;
@@ -548,38 +547,6 @@ public class TypeFactory {
 
         ArrayType arrayType = (ArrayType) mirror;
         return arrayType.getComponentType();
-    }
-
-    /**
-     * Converts any collection type, e.g. {@code List<T>} to {@code Collection<T>} and any map type, e.g.
-     * {@code HashMap<K,V>} to {@code Map<K,V>}.
-     *
-     * @param collectionOrMap any collection or map type
-     * @return the type representing {@code Collection<T>} or {@code Map<K,V>}, if the argument type is a subtype of
-     *         {@code Collection<T>} or of {@code Map<K,V>} respectively.
-     */
-    public Type asCollectionOrMap(Type collectionOrMap) {
-        List<Type> originalParameters = collectionOrMap.getTypeParameters();
-        TypeMirror[] originalParameterMirrors = new TypeMirror[originalParameters.size()];
-        int i = 0;
-        for ( Type param : originalParameters ) {
-            originalParameterMirrors[i++] = param.getTypeMirror();
-        }
-
-        if ( collectionOrMap.isCollectionType()
-            && !"java.util.Collection".equals( collectionOrMap.getFullyQualifiedName() ) ) {
-            return getType( typeUtils.getDeclaredType(
-                elementUtils.getTypeElement( "java.util.Collection" ),
-                originalParameterMirrors ) );
-        }
-        else if ( collectionOrMap.isMapType()
-            && !"java.util.Map".equals( collectionOrMap.getFullyQualifiedName() ) ) {
-            return getType( typeUtils.getDeclaredType(
-                elementUtils.getTypeElement( "java.util.Map" ),
-                originalParameterMirrors ) );
-        }
-
-        return collectionOrMap;
     }
 
     /**
@@ -662,5 +629,22 @@ public class TypeFactory {
         roundContext.addTypeReadyForProcessing( type );
 
         return true;
+    }
+
+    public BuilderType builderTypeFor( Type type, BuilderPrism builderPrism ) {
+        if ( type != null ) {
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, true );
+            return BuilderType.create( builderInfo, type, this, this.typeUtils );
+        }
+        return null;
+    }
+
+    public Type effectiveResultTypeFor( Type type, BuilderPrism builderPrism ) {
+        if ( type != null ) {
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, false );
+            BuilderType builderType = BuilderType.create( builderInfo, type, this, this.typeUtils );
+            return builderType != null ? builderType.getBuilder() : type;
+        }
+        return type;
     }
 }

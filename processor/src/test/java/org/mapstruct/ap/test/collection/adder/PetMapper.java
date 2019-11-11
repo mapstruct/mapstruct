@@ -63,7 +63,7 @@ public class PetMapper {
      * @throws DogException
      */
     public List<Long> toPets(List<String> pets) throws CatException, DogException {
-        List<Long> result = new ArrayList<Long>();
+        List<Long> result = new ArrayList<>();
         for ( String pet : pets ) {
             result.add( toPet( pet ) );
         }
@@ -82,7 +82,7 @@ public class PetMapper {
     }
 
     public List<String> toSourcePets(List<Long> pets) throws CatException, DogException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for ( Long pet : pets ) {
             result.add( PETS_TO_SOURCE.get( pet ) );
         }

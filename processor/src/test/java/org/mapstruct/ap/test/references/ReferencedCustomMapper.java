@@ -27,7 +27,7 @@ public class ReferencedCustomMapper {
             return (T) new SomeOtherType( string );
         }
         else if ( clazz == GenericWrapper.class ) {
-            return (T) new GenericWrapper<String>( string );
+            return (T) new GenericWrapper<>( string );
         }
 
         return null;

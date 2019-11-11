@@ -33,9 +33,9 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         }
         if ( song != null ) {
             chartEntry.setSongTitle( song.getTitle() );
-            chartEntry.setCity( songArtistLabelStudioCity( song ) );
-            chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
             chartEntry.setArtistName( songArtistName( song ) );
+            chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
+            chartEntry.setCity( songArtistLabelStudioCity( song ) );
         }
         if ( position != null ) {
             chartEntry.setPosition( position );
@@ -53,9 +53,9 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         ChartEntry chartEntry = new ChartEntry();
 
         chartEntry.setSongTitle( song.getTitle() );
-        chartEntry.setCity( songArtistLabelStudioCity( song ) );
-        chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
         chartEntry.setArtistName( songArtistName( song ) );
+        chartEntry.setRecordedAt( songArtistLabelStudioName( song ) );
+        chartEntry.setCity( songArtistLabelStudioCity( song ) );
 
         return chartEntry;
     }
@@ -73,7 +73,7 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         return chartEntry;
     }
 
-    private String songArtistLabelStudioCity(Song song) {
+    private String songArtistName(Song song) {
         if ( song == null ) {
             return null;
         }
@@ -81,19 +81,11 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         if ( artist == null ) {
             return null;
         }
-        Label label = artist.getLabel();
-        if ( label == null ) {
+        String name = artist.getName();
+        if ( name == null ) {
             return null;
         }
-        Studio studio = label.getStudio();
-        if ( studio == null ) {
-            return null;
-        }
-        String city = studio.getCity();
-        if ( city == null ) {
-            return null;
-        }
-        return city;
+        return name;
     }
 
     private String songArtistLabelStudioName(Song song) {
@@ -119,7 +111,7 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         return name;
     }
 
-    private String songArtistName(Song song) {
+    private String songArtistLabelStudioCity(Song song) {
         if ( song == null ) {
             return null;
         }
@@ -127,10 +119,18 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         if ( artist == null ) {
             return null;
         }
-        String name = artist.getName();
-        if ( name == null ) {
+        Label label = artist.getLabel();
+        if ( label == null ) {
             return null;
         }
-        return name;
+        Studio studio = label.getStudio();
+        if ( studio == null ) {
+            return null;
+        }
+        String city = studio.getCity();
+        if ( city == null ) {
+            return null;
+        }
+        return city;
     }
 }

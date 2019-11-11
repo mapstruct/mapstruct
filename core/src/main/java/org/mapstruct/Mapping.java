@@ -16,17 +16,124 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+
 /**
  * Configures the mapping of one bean attribute or enum constant.
  * <p>
  * The name of the mapped attribute or constant is to be specified via {@link #target()}. For mapped bean attributes it
  * is assumed by default that the attribute has the same name in the source bean. Alternatively, one of
  * {@link #source()}, {@link #expression()} or {@link #constant()} can be specified to define the property source.
+ * </p>
  * <p>
  * In addition, the attributes {@link #dateFormat()} and {@link #qualifiedBy()} may be used to further define the
  * mapping.
+ * </p>
  *
  * <p>
+ * <strong>Example 1:</strong> Implicitly mapping fields with the same name:
+ * </p>
+ * <pre><code class='java'>
+ * // Both classes HumanDto and Human have property with name "fullName"
+ * // properties with the same name will be mapped implicitly
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *    HumanDto toHumanDto(Human human)
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates:
+ * &#64;Override
+ * public HumanDto toHumanDto(Human human) {
+ *    humanDto.setFullName( human.getFullName() );
+ *    // ...
+ * }
+ * </code></pre>
+ *
+ * <p><strong>Example 2:</strong> Mapping properties with different names</p>
+ * <pre><code class='java'>
+ * // We need map Human.companyName to HumanDto.company
+ * // we can use &#64;Mapping with parameters {@link #source()} and {@link #source()}
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *    &#64;Mapping(source="companyName", target="company")
+ *    HumanDto toHumanDto(Human human)
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates:
+ * &#64;Override
+ * public HumanDto toHumanDto(Human human) {
+ *     humanDto.setCompany( human.getCompanyName() );
+ *      // ...
+ * }
+ * </code></pre>
+ * <p>
+ * <strong>Example 3:</strong> Mapping with expression
+ * <b>IMPORTANT NOTE:</b> Now it works only for Java
+ * </p>
+ * <pre><code class='java'>
+ * // We need map Human.name to HumanDto.countNameSymbols.
+ * // we can use {@link #expression()} for it
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *    &#64;Mapping(target="countNameSymbols", expression="java(human.getName().length())")
+ *    HumanDto toHumanDto(Human human)
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates:
+ *&#64;Override
+ * public HumanDto toHumanDto(Human human) {
+ *    humanDto.setCountNameSymbols( human.getName().length() );
+ *    //...
+ * }
+ * </code></pre>
+ * <p>
+ * <strong>Example 4:</strong> Mapping to constant
+ * </p>
+ * <pre><code class='java'>
+ * // We need map HumanDto.name to string constant "Unknown"
+ * // we can use {@link #constant()} for it
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *    &#64;Mapping(target="name", constant="Unknown")
+ *    HumanDto toHumanDto(Human human)
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates
+ * &#64;Override
+ * public HumanDto toHumanDto(Human human) {
+ *   humanDto.setName( "Unknown" );
+ *   // ...
+ * }
+ * </code></pre>
+ * <p>
+ * <strong>Example 5:</strong> Mapping with default value
+ * </p>
+ * <pre><code class='java'>
+ * // We need map Human.name to HumanDto.fullName, but if Human.name == null, then set value "Somebody"
+ * // we can use {@link #defaultValue()} or {@link #defaultExpression()} for it
+ * &#64;Mapper
+ * public interface HumanMapper {
+ *    &#64;Mapping(source="name", target="name", defaultValue="Somebody")
+ *    HumanDto toHumanDto(Human human)
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates
+ * &#64;Override
+ * public HumanDto toHumanDto(Human human) {
+ *    if ( human.getName() != null ) {
+ *       humanDto.setFullName( human.getName() );
+ *    }
+ *    else {
+ *       humanDto.setFullName( "Somebody" );
+ *    }
+ *   // ...
+ * }
+ * </code></pre>
+ *
  * <b>IMPORTANT NOTE:</b> the enum mapping capability is deprecated and replaced by {@link ValueMapping} it
  * will be removed in subsequent versions.
  *
@@ -136,7 +243,7 @@ public @interface Mapping {
      * imported via {@link Mapper#imports()}.
      * <p>
      * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
-     * {@link #defaultExpression()} or {@link #constant()}.
+     * {@link #defaultExpression()}, {@link #qualifiedBy()}, {@link #qualifiedByName()} or {@link #constant()}.
      *
      * @return An expression specifying the value for the designated target property
      */
@@ -188,6 +295,7 @@ public @interface Mapping {
      * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
 

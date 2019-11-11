@@ -68,7 +68,7 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
         WithSingleCompiler singleCompiler = klass.getAnnotation( WithSingleCompiler.class );
 
         if (singleCompiler != null) {
-            return Arrays.<Runner> asList( new InnerAnnotationProcessorRunner( klass, singleCompiler.value() ) );
+            return Arrays.asList( new InnerAnnotationProcessorRunner( klass, singleCompiler.value() ) );
         }
         else if ( IS_AT_LEAST_JAVA_9 ) {
             // Current tycho-compiler-jdt (0.26.0) is not compatible with Java 11
@@ -77,7 +77,7 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
             return Arrays.asList( new InnerAnnotationProcessorRunner( klass, Compiler.JDK11 ) );
         }
 
-        return Arrays.<Runner> asList(
+        return Arrays.asList(
             new InnerAnnotationProcessorRunner( klass, Compiler.JDK ),
             new InnerAnnotationProcessorRunner( klass, Compiler.ECLIPSE )
             );
@@ -130,10 +130,10 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
         }
 
         private Description withoutParameterizedName(Description description) {
-            String cleanDispayName = removeParameter( description.getDisplayName() );
+            String cleanDisplayName = removeParameter( description.getDisplayName() );
             Description cleanDescription =
                 Description.createSuiteDescription(
-                    cleanDispayName,
+                    cleanDisplayName,
                     description.getAnnotations().toArray( new Annotation[description.getAnnotations().size()] ) );
 
             for ( Description child : description.getChildren() ) {

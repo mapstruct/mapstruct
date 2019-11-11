@@ -7,8 +7,6 @@ package org.mapstruct.ap.test.defaultvalue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.ParseException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.defaultvalue.other.Continent;
@@ -134,7 +132,7 @@ public class DefaultValueTest {
                             messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )
-    public void errorOnDefaultValueAndConstant() throws ParseException {
+    public void errorOnDefaultValueAndConstant() {
     }
 
     @Test
@@ -156,7 +154,7 @@ public class DefaultValueTest {
                             messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )
-    public void errorOnDefaultValueAndExpression() throws ParseException {
+    public void errorOnDefaultValueAndExpression() {
     }
 
 }

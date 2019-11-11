@@ -22,7 +22,7 @@ public class Source {
     public Integer fieldOnlyWithGetter;
     // CHECKSTYLE:ON
 
-    private final List<Integer> privateFinalList = new ArrayList<Integer>( Arrays.asList( 3, 4, 5 ) );
+    private final List<Integer> privateFinalList = new ArrayList<>( Arrays.asList( 3, 4, 5 ) );
 
     public List<Integer> getPrivateFinalList() {
         return privateFinalList;

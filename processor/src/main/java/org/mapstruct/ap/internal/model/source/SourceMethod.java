@@ -5,15 +5,11 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -23,11 +19,12 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -66,7 +63,6 @@ public class SourceMethod implements Method {
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
 
-    private Boolean isEnumMapping;
     private Boolean isValueMapping;
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
@@ -81,14 +77,12 @@ public class SourceMethod implements Method {
         private List<Parameter> parameters;
         private Type returnType = null;
         private List<Type> exceptionTypes;
-        private Map<String, List<Mapping>> mappings;
+        private Set<Mapping> mappings;
         private IterableMapping iterableMapping = null;
         private MapMapping mapMapping = null;
         private BeanMapping beanMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
-        private AccessorNamingUtils accessorNaming = null;
-        private FormattingMessager messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
@@ -119,7 +113,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMappings(Map<String, List<Mapping>> mappings) {
+        public Builder setMappings(Set<Mapping> mappings) {
             this.mappings = mappings;
             return this;
         }
@@ -154,16 +148,6 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setAccessorNaming(AccessorNamingUtils accessorNaming) {
-            this.accessorNaming = accessorNaming;
-            return this;
-        }
-
-        public Builder setMessager(FormattingMessager messager) {
-            this.messager = messager;
-            return this;
-        }
-
         public Builder setMapperConfiguration(MapperConfiguration mapperConfig) {
             this.mapperConfig = mapperConfig;
             return this;
@@ -186,19 +170,14 @@ public class SourceMethod implements Method {
 
         public SourceMethod build() {
 
-            MappingOptions mappingOptions =
-                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
-
-            SourceMethod sourceMethod = new SourceMethod( this, mappingOptions );
-
-            if ( mappings != null ) {
-                for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
-                    for ( Mapping mapping : entry.getValue() ) {
-                        mapping.init( sourceMethod, messager, typeFactory, accessorNaming );
-                    }
-                }
+            if ( mappings == null ) {
+                mappings = Collections.emptySet();
             }
-            return sourceMethod;
+
+            MappingOptions mappingOptions =
+                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+
+            return new SourceMethod( this, mappingOptions );
         }
     }
 
@@ -301,12 +280,7 @@ public class SourceMethod implements Method {
         return accessibility;
     }
 
-    public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-        List<Mapping> all = mappingOptions.getMappings().get( targetPropertyName );
-        return all != null ? first( all ) : null;
-    }
-
-    public boolean reverses(SourceMethod method) {
+    public boolean inverses(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
@@ -314,18 +288,12 @@ public class SourceMethod implements Method {
             && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
-    public boolean isSame(SourceMethod method) {
-        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( first( getSourceParameters() ).getType(), first( method.getSourceParameters() ).getType() )
-            && equals( getResultType(), method.getResultType() );
-    }
-
     public boolean canInheritFrom(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
             && isMapMapping() == method.isMapMapping()
             && isIterableMapping() == method.isIterableMapping()
-            && isEnumMapping() == method.isEnumMapping()
+            && isEnumMapping( this ) == isEnumMapping( method )
             && getResultType().isAssignableTo( method.getResultType() )
             && allParametersAreAssignable( getSourceParameters(), method.getSourceParameters() );
     }
@@ -373,11 +341,14 @@ public class SourceMethod implements Method {
         return isMapMapping;
     }
 
-    public boolean isEnumMapping() {
-        if ( isEnumMapping == null ) {
-            isEnumMapping = MappingMethodUtils.isEnumMapping( this );
-        }
-        return isEnumMapping;
+    /**
+     * Enum Mapping was realized with @Mapping in stead of @ValueMapping. @Mapping is no longer
+     * supported.
+     *
+     * @return true when @Mapping is used in stead of @ValueMapping
+     */
+    public boolean isRemovedEnumMapping() {
+        return MappingMethodUtils.isEnumMapping( this );
     }
 
     /**
@@ -389,13 +360,9 @@ public class SourceMethod implements Method {
     public boolean isValueMapping() {
 
         if ( isValueMapping == null ) {
-            isValueMapping = isEnumMapping() && mappingOptions.getMappings().isEmpty();
+            isValueMapping = isEnumMapping( this ) && mappingOptions.getMappings().isEmpty();
         }
         return isValueMapping;
-    }
-
-    private boolean equals(Object o1, Object o2) {
-        return (o1 == null && o2 == null) || (o1 != null) && o1.equals( o2 );
     }
 
     @Override
@@ -410,48 +377,6 @@ public class SourceMethod implements Method {
         sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
 
         return sb.toString();
-    }
-
-    /**
-     * Returns the {@link Mapping}s for the given source property.
-     *
-     * @param sourcePropertyName the source property name
-     * @return list of mappings
-     */
-    public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
-        List<Mapping> mappingsOfSourceProperty = new ArrayList<>();
-
-        for ( List<Mapping> mappingOfProperty : mappingOptions.getMappings().values() ) {
-            for ( Mapping mapping : mappingOfProperty ) {
-
-                if ( isEnumMapping() ) {
-                    if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
-                        mappingsOfSourceProperty.add( mapping );
-                    }
-                }
-                else {
-                    List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
-
-                    // there can only be a mapping if there's only one entry for a source property, so: param.property.
-                    // There can be no mapping if there are more entries. So: param.property.property2
-                    if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
-                        mappingsOfSourceProperty.add( mapping );
-                    }
-                }
-            }
-        }
-
-        return mappingsOfSourceProperty;
-    }
-
-    public Parameter getSourceParameter(String sourceParameterName) {
-        for ( Parameter parameter : getSourceParameters() ) {
-            if ( parameter.getName().equals( sourceParameterName ) ) {
-                return parameter;
-            }
-        }
-
-        return null;
     }
 
     public List<SourceMethod> getApplicablePrototypeMethods() {
@@ -473,7 +398,7 @@ public class SourceMethod implements Method {
             applicableReversePrototypeMethods = new ArrayList<>();
 
             for ( SourceMethod prototype : prototypeMethods ) {
-                if ( reverses( prototype ) ) {
+                if ( inverses( prototype ) ) {
                     applicableReversePrototypeMethods.add( prototype );
                 }
             }
@@ -529,13 +454,7 @@ public class SourceMethod implements Method {
      * @return {@code true} if the parameter list contains a parameter annotated with {@code @TargetType}
      */
     public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
-        for ( Parameter param : parameters ) {
-            if ( param.isTargetType() ) {
-                return true;
-            }
-        }
-
-        return false;
+        return parameters.stream().anyMatch( Parameter::isTargetType );
     }
 
     @Override

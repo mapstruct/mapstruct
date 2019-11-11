@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.nestedbeans.other;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CarDto {
 
@@ -60,10 +61,10 @@ public class CarDto {
         if ( year != carDto.year ) {
             return false;
         }
-        if ( name != null ? !name.equals( carDto.name ) : carDto.name != null ) {
+        if ( !Objects.equals( name, carDto.name ) ) {
             return false;
         }
-        return wheels != null ? wheels.equals( carDto.wheels ) : carDto.wheels == null;
+        return Objects.equals( wheels, carDto.wheels );
 
     }
 

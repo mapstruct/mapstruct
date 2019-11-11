@@ -42,7 +42,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class NullValueMappingTest {
 
     @Test
-    public void shouldProvideMapperInstance() throws Exception {
+    public void shouldProvideMapperInstance() {
         assertThat( CarMapper.INSTANCE ).isNotNull();
     }
 
@@ -83,6 +83,7 @@ public class NullValueMappingTest {
         //then
         assertThat( carDto1 ).isNotNull();
         assertThat( carDto1.getMake() ).isEqualTo( car.getMake() );
+        assertThat( carDto1.getModel() ).isEqualTo( "ModelT" );
         assertThat( carDto1.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
         assertThat( carDto1.getCatalogId() ).isNotEmpty();
 

@@ -16,6 +16,6 @@ public class StringListMapper {
     }
 
     public Stream<String> stringToStringList(String string) {
-        return string == null ? null : Arrays.asList( string.split( "-" ) ).stream();
+        return string == null ? null : Arrays.stream( string.split( "-" ) );
     }
 }

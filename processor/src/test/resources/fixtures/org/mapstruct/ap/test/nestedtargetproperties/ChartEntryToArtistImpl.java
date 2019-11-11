@@ -68,11 +68,11 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
 
         ChartEntry chartEntry = new ChartEntry();
 
-        chartEntry.setSongTitle( chartSongTitle( chart ) );
         chartEntry.setChartName( chart.getName() );
-        chartEntry.setCity( chartSongArtistLabelStudioCity( chart ) );
-        chartEntry.setRecordedAt( chartSongArtistLabelStudioName( chart ) );
+        chartEntry.setSongTitle( chartSongTitle( chart ) );
         chartEntry.setArtistName( chartSongArtistName( chart ) );
+        chartEntry.setRecordedAt( chartSongArtistLabelStudioName( chart ) );
+        chartEntry.setCity( chartSongArtistLabelStudioCity( chart ) );
         chartEntry.setPosition( mapPosition( chartSongPositions( chart ) ) );
 
         return chartEntry;
@@ -85,8 +85,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
 
         Studio studio = new Studio();
 
-        studio.setCity( chartEntry.getCity() );
         studio.setName( chartEntry.getRecordedAt() );
+        studio.setCity( chartEntry.getCity() );
 
         return studio;
     }
@@ -124,8 +124,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         Song song = new Song();
 
         song.setArtist( chartEntryToArtist( chartEntry ) );
-        song.setPositions( mapPosition( chartEntry.getPosition() ) );
         song.setTitle( chartEntry.getSongTitle() );
+        song.setPositions( mapPosition( chartEntry.getPosition() ) );
 
         return song;
     }
@@ -135,8 +135,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return;
         }
 
-        mappingTarget.setCity( chartEntry.getCity() );
         mappingTarget.setName( chartEntry.getRecordedAt() );
+        mappingTarget.setCity( chartEntry.getCity() );
     }
 
     protected void chartEntryToLabel1(ChartEntry chartEntry, Label mappingTarget) {
@@ -212,7 +212,7 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         return title;
     }
 
-    private String chartSongArtistLabelStudioCity(Chart chart) {
+    private String chartSongArtistName(Chart chart) {
         if ( chart == null ) {
             return null;
         }
@@ -224,19 +224,11 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         if ( artist == null ) {
             return null;
         }
-        Label label = artist.getLabel();
-        if ( label == null ) {
+        String name = artist.getName();
+        if ( name == null ) {
             return null;
         }
-        Studio studio = label.getStudio();
-        if ( studio == null ) {
-            return null;
-        }
-        String city = studio.getCity();
-        if ( city == null ) {
-            return null;
-        }
-        return city;
+        return name;
     }
 
     private String chartSongArtistLabelStudioName(Chart chart) {
@@ -266,7 +258,7 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         return name;
     }
 
-    private String chartSongArtistName(Chart chart) {
+    private String chartSongArtistLabelStudioCity(Chart chart) {
         if ( chart == null ) {
             return null;
         }
@@ -278,11 +270,19 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         if ( artist == null ) {
             return null;
         }
-        String name = artist.getName();
-        if ( name == null ) {
+        Label label = artist.getLabel();
+        if ( label == null ) {
             return null;
         }
-        return name;
+        Studio studio = label.getStudio();
+        if ( studio == null ) {
+            return null;
+        }
+        String city = studio.getCity();
+        if ( city == null ) {
+            return null;
+        }
+        return city;
     }
 
     private List<Integer> chartSongPositions(Chart chart) {

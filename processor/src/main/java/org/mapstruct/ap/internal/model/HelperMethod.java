@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -52,7 +51,7 @@ public abstract class HelperMethod implements Method {
      * @return the types used by this method for which import statements need to be generated
      */
     public Set<Type> getImportTypes() {
-        return Collections.<Type>emptySet();
+        return Collections.emptySet();
     }
 
     /**

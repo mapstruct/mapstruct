@@ -27,7 +27,7 @@ public class Annotation extends ModelElement {
     private List<String> properties;
 
     public Annotation(Type type) {
-        this( type, Collections.<String>emptyList() );
+        this( type, Collections.emptyList() );
     }
 
     public Annotation(Type type, List<String> properties) {

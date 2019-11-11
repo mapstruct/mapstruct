@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.util.accessor;
 import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
@@ -23,7 +24,7 @@ public interface Accessor {
      * This returns the type that this accessor gives as a return.
      *
      * e.g. The {@link ExecutableElement#getReturnType()} if this is a method accessor,
-     * or {@link javax.lang.model.element.VariableElement#asType()} for field accessors.
+     * or {@link VariableElement#asType()} for field accessors.
      *
      * @return the type that the accessor gives as a return
      */
@@ -40,12 +41,14 @@ public interface Accessor {
     Set<Modifier> getModifiers();
 
     /**
-     * @return the {@link ExecutableElement}, or {@code null} if the accessor does not have one
-     */
-    ExecutableElement getExecutable();
-
-    /**
-     * @return the underlying {@link Element}
+     * @return the underlying {@link Element}, {@link VariableElement} or {@link ExecutableElement}
      */
     Element getElement();
+
+    /**
+     * The accessor type
+     *
+     * @return
+     */
+    AccessorType getAccessorType();
 }

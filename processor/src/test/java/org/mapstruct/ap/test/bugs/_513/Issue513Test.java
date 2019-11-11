@@ -43,7 +43,7 @@ public class Issue513Test {
         Source source = new Source();
         SourceElement sourceElement = new SourceElement();
         sourceElement.setValue( "test" );
-        source.setCollection( Arrays.asList( new SourceElement[]{ sourceElement } ) );
+        source.setCollection( Arrays.asList( sourceElement ) );
 
         Issue513Mapper.INSTANCE.map( source );
 
@@ -56,7 +56,7 @@ public class Issue513Test {
         SourceKey sourceKey = new SourceKey();
         sourceKey.setValue( MappingKeyException.class.getSimpleName() );
         SourceValue sourceValue = new SourceValue();
-        HashMap<SourceKey, SourceValue> map = new HashMap<SourceKey, SourceValue>();
+        HashMap<SourceKey, SourceValue> map = new HashMap<>();
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 
@@ -71,7 +71,7 @@ public class Issue513Test {
         SourceKey sourceKey = new SourceKey();
         SourceValue sourceValue = new SourceValue();
         sourceValue.setValue( MappingValueException.class.getSimpleName() );
-        HashMap<SourceKey, SourceValue> map = new HashMap<SourceKey, SourceValue>();
+        HashMap<SourceKey, SourceValue> map = new HashMap<>();
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 
@@ -86,7 +86,7 @@ public class Issue513Test {
         SourceKey sourceKey = new SourceKey();
         SourceValue sourceValue = new SourceValue();
         sourceValue.setValue( MappingException.class.getSimpleName() );
-        HashMap<SourceKey, SourceValue> map = new HashMap<SourceKey, SourceValue>();
+        HashMap<SourceKey, SourceValue> map = new HashMap<>();
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 

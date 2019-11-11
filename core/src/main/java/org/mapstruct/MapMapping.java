@@ -15,9 +15,35 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
- * Configures the mapping between two map types, e.g. {@code Map<String, String>} and {@code Map<Long, Date>}.
+ * Configures the mapping between two map types, e.g. Map&lt;String, String&gt; and Map&lt;Long, Date&gt;.
  *
- * <p>Note: at least one element needs to be specified</p>
+ * <p>
+ * <strong>Example</strong>:
+ * </p>
+ * <pre><code class='java'>
+ * &#64;Mapper
+ * public interface SimpleMapper {
+ *       &#64;MapMapping(valueDateFormat = "dd.MM.yyyy")
+ *       Map&lt;String, String&gt; longDateMapToStringStringMap(Map&lt;Long, Date&gt; source);
+ * }
+ * </code></pre>
+ * <pre><code class='java'>
+ * // generates
+ * public class SimpleMapperImpl implements SimpleMapper {
+ *      &#64;Override
+ *      public Map&lt;String, String&gt; longDateMapToStringStringMap(Map&lt;Long, Date&gt; source) } {
+ *          Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;(); }
+ *          for ( java.util.Map.Entry&lt;Long, Date&gt; entry : source.entrySet() ) } {
+ *              String key = new DecimalFormat( "" ).format( entry.getKey() );
+ *              String value = new SimpleDateFormat( "dd.MM.yyyy" ).format( entry.getValue() );
+ *              map.put( key, value );
+ *          }
+ *          // ...
+ *      }
+ * }
+ * </code></pre>
+ *
+ * <p><strong>NOTE:</strong> at least one element needs to be specified</p>
  *
  * @author Gunnar Morling
  */
@@ -66,6 +92,7 @@ public @interface MapMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] keyQualifiedBy() default { };
 
@@ -93,6 +120,7 @@ public @interface MapMapping {
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see Qualifier
      */
     Class<? extends Annotation>[] valueQualifiedBy() default { };
 

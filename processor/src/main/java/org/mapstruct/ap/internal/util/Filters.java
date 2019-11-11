@@ -7,11 +7,24 @@ package org.mapstruct.ap.internal.util;
 
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.accessor.AccessorType.ADDER;
+import static org.mapstruct.ap.internal.util.accessor.AccessorType.GETTER;
+import static org.mapstruct.ap.internal.util.accessor.AccessorType.PRESENCE_CHECKER;
+import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
 
 /**
  * Filter methods for working with {@link Element} collections.
@@ -20,66 +33,60 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
  */
 public class Filters {
 
-    private Filters() {
+    private final AccessorNamingUtils accessorNaming;
+    private final Types typeUtils;
+    private final TypeMirror typeMirror;
+
+    public Filters(AccessorNamingUtils accessorNaming, Types typeUtils, TypeMirror typeMirror) {
+        this.accessorNaming = accessorNaming;
+        this.typeUtils = typeUtils;
+        this.typeMirror = typeMirror;
     }
 
-    public static List<Accessor> getterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> getterMethods = new LinkedList<>();
-
-        for ( Accessor method : elements ) {
-            if ( accessorNaming.isGetterMethod( method ) ) {
-                getterMethods.add( method );
-            }
-        }
-
-        return getterMethods;
+    public List<Accessor> getterMethodsIn(List<ExecutableElement> elements) {
+        return elements.stream()
+            .filter( accessorNaming::isGetterMethod )
+            .map( method ->  new ExecutableElementAccessor( method, getReturnType( method ), GETTER ) )
+            .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
-    public static List<Accessor> fieldsIn(List<Accessor> accessors) {
-        List<Accessor> fieldAccessors = new LinkedList<>();
-
-        for ( Accessor accessor : accessors ) {
-            if ( Executables.isFieldAccessor( accessor ) ) {
-                fieldAccessors.add( accessor );
-            }
-        }
-
-        return fieldAccessors;
+    private TypeMirror getReturnType(ExecutableElement executableElement) {
+        return getWithinContext( executableElement ).getReturnType();
     }
 
-    public static List<ExecutableElementAccessor> presenceCheckMethodsIn(AccessorNamingUtils accessorNaming,
-                                                                         List<Accessor> elements) {
-        List<ExecutableElementAccessor> presenceCheckMethods = new LinkedList<>();
-
-        for ( Accessor method : elements ) {
-            if ( accessorNaming.isPresenceCheckMethod( method ) ) {
-                presenceCheckMethods.add( (ExecutableElementAccessor) method );
-            }
-        }
-
-        return presenceCheckMethods;
+    public List<Accessor> fieldsIn(List<VariableElement> accessors) {
+        return accessors.stream()
+            .filter( Fields::isFieldAccessor )
+            .map( VariableElementAccessor::new )
+            .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
-    public static List<Accessor> setterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> setterMethods = new LinkedList<>();
-
-        for ( Accessor method : elements ) {
-            if ( accessorNaming.isSetterMethod( method ) ) {
-                setterMethods.add( method );
-            }
-        }
-        return setterMethods;
+    public List<Accessor> presenceCheckMethodsIn(List<ExecutableElement> elements) {
+        return elements.stream()
+            .filter( accessorNaming::isPresenceCheckMethod )
+            .map( method -> new ExecutableElementAccessor( method, getReturnType( method ), PRESENCE_CHECKER ) )
+            .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
-    public static List<Accessor> adderMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
-        List<Accessor> adderMethods = new LinkedList<>();
+    public List<Accessor> setterMethodsIn(List<ExecutableElement> elements) {
+        return elements.stream()
+            .filter( accessorNaming::isSetterMethod )
+            .map( method ->  new ExecutableElementAccessor( method, getFirstParameter( method ), SETTER ) )
+            .collect( Collectors.toCollection( LinkedList::new ) );
+    }
 
-        for ( Accessor method : elements ) {
-            if ( accessorNaming.isAdderMethod( method ) ) {
-                adderMethods.add( method );
-            }
-        }
+    private TypeMirror getFirstParameter(ExecutableElement executableElement) {
+        return first( getWithinContext( executableElement ).getParameterTypes() );
+    }
 
-        return adderMethods;
+    private ExecutableType getWithinContext( ExecutableElement executableElement ) {
+        return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
+    }
+
+    public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
+        return elements.stream()
+            .filter( accessorNaming::isAdderMethod )
+            .map( method -> new ExecutableElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }

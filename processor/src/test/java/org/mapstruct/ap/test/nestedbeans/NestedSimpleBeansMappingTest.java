@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.nestedbeans;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.assertj.core.groups.Tuple;
@@ -45,7 +44,7 @@ public class NestedSimpleBeansMappingTest {
     );
 
     @Test
-    public void shouldHaveAllFields() throws Exception {
+    public void shouldHaveAllFields() {
         // If this test fails that means something new was added to the structure of the User/UserDto.
         // Make sure that the other tests are also updated (the new field is asserted)
         String[] userFields = new String[] { "name", "car", "secondCar", "house" };
@@ -125,12 +124,9 @@ public class NestedSimpleBeansMappingTest {
     }
 
     private static void assertWheels(List<WheelDto> wheelDtos, List<Wheel> wheels) {
-        List<Tuple> wheelTuples = wheels.stream().map( new Function<Wheel, Tuple>() {
-            @Override
-            public Tuple apply(Wheel wheel) {
-                return tuple( wheel.isFront(), wheel.isRight() );
-            }
-        } ).collect( Collectors.<Tuple>toList() );
+        List<Tuple> wheelTuples = wheels.stream()
+            .map( wheel -> tuple( wheel.isFront(), wheel.isRight() ) )
+            .collect( Collectors.toList() );
         assertThat( wheelDtos )
             .extracting( "front", "right" )
             .containsExactlyElementsOf( wheelTuples );

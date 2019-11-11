@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -114,8 +113,8 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
                 AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
-        for ( Iterator<AstModifyingAnnotationProcessor> it = loader.iterator(); hasMoreAnnotationProcessors( it ); ) {
-            processors.add( it.next() );
+        for ( AstModifyingAnnotationProcessor astModifyingAnnotationProcessor : loader ) {
+            processors.add( astModifyingAnnotationProcessor );
         }
 
         return processors;

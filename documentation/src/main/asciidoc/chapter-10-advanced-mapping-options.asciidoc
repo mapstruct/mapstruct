@@ -1,0 +1,302 @@
+== Advanced mapping options
+This chapter describes several advanced options which allow to fine-tune the behavior of the generated mapping code as needed.
+
+[[default-values-and-constants]]
+=== Default values and constants
+
+Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values. When the target type is a primitive or a boxed type, the String value is taken literal. Bit / octal / decimal / hex patterns are allowed in such case as long as they are a valid literal.
+In all other cases, constant or default values are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
+
+A mapping with a constant must not include a reference to a source property. The following example shows some mappings using default values and constants:
+
+.Mapping method with default values and constants
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = StringListMapper.class)
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined")
+    @Mapping(target = "longProperty", source = "longProp", defaultValue = "-1")
+    @Mapping(target = "stringConstant", constant = "Constant Value")
+    @Mapping(target = "integerConstant", constant = "14")
+    @Mapping(target = "longWrapperConstant", constant = "3001")
+    @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014")
+    @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+If `s.getStringProp() == null`, then the target property `stringProperty` will be set to `"undefined"` instead of applying the value from `s.getStringProp()`. If `s.getLongProperty() == null`, then the target property `longProperty` will be set to `-1`.
+The String `"Constant Value"` is set as is to the target property `stringConstant`. The value `"3001"` is type-converted to the `Long` (wrapper) class of target property `longWrapperConstant`. Date properties also require a date format. The constant `"jack-jill-tom"` demonstrates how the hand-written class `StringListMapper` is invoked to map the dash-separated list into a `List<String>`.
+
+[[expressions]]
+=== Expressions
+
+By means of Expressions it will be possible to include constructs from a number of languages.
+
+Currently only Java is supported as a language. This feature is e.g. useful to invoke constructors. The entire source object is available for usage in the expression. Care should be taken to insert only valid Java code: MapStruct will not validate the expression at generation-time, but errors will show up in the generated classes during compilation.
+
+The example below demonstrates how two source properties can be mapped to one target:
+
+.Mapping method using an expression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new org.sample.TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless it's used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
+
+.Declaring an import
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+imports org.sample.TimeAndFormat;
+
+@Mapper( imports = TimeAndFormat.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+[[default-expressions]]
+=== Default Expressions
+
+Default expressions are a combination of default values and expressions. They will only be used when the source attribute is `null`.
+
+The same warnings and restrictions apply to default expressions that apply to expressions. Only Java is supported, and MapStruct will not validate the expression at generation-time.
+
+The example below demonstrates how two source properties can be mapped to one target:
+
+.Mapping method using a default expression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+imports java.util.UUID;
+
+@Mapper( imports = UUID.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target="id", source="sourceId", defaultExpression = "java( UUID.randomUUID().toString() )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation ((see <<expressions>>).
+
+[[determining-result-type]]
+=== Determining the result type
+
+When result types have an inheritance relation, selecting either mapping method (`@Mapping`) or a factory method (`@BeanMapping`) can become ambiguous. Suppose an Apple and a Banana, which are both specializations of Fruit.
+
+.Specifying the result type of a bean mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = FruitFactory.class )
+public interface FruitMapper {
+
+    @BeanMapping( resultType = Apple.class )
+    Fruit map( FruitDto source );
+
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class FruitFactory {
+
+    public Apple createApple() {
+        return new Apple( "Apple" );
+    }
+
+    public Banana createBanana() {
+        return new Banana( "Banana" );
+    }
+}
+----
+====
+
+So, which `Fruit` must be factorized in the mapping method `Fruit map(FruitDto source);`? A `Banana` or an `Apple`? Here's were the `@BeanMapping#resultType` comes in handy. It controls the factory method to select, or in absence of a factory method, the return type to create.
+
+[TIP]
+====
+The same mechanism is present on mapping: `@Mapping#resultType` and works like you expect it would: it selects the mapping method with the desired result type when present.
+====
+
+[TIP]
+====
+The mechanism is also present on iterable mapping and map mapping. `@IterableMapping#elementTargetType` is used to select the mapping method with the desired element in the resulting `Iterable`. For the `@MapMapping` a similar purpose is served by means of `#MapMapping#keyTargetType` and `MapMapping#valueTargetType`.
+====
+
+[[mapping-result-for-null-arguments]]
+=== Controlling mapping result for 'null' arguments
+
+MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
+
+However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
+
+* *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
+* *Iterables / Arrays*: an empty iterable will be returned.
+* *Maps*: an empty map will be returned.
+
+The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+
+
+[[mapping-result-for-null-properties]]
+=== Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).
+
+MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method results in 'absent'.
+
+By default the target property will be set to null.
+
+However:
+
+1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values.
+For `List` MapStruct generates an `ArrayList`, for `Map` a `HashMap`, for arrays an empty array, for `String` `""` and for primitive / boxed types a representation of `false` or `0`.
+For all other objects an new instance is created. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`.
+
+2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
+
+The strategy works in a hierarchical fashion. Setting `Mapping#nullValuePropertyMappingStrategy` on mapping level will override `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MappingConfig#nullValuePropertyMappingStrategy`.
+
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValuePropertyMappingStrategy` to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
+====
+
+[TIP]
+====
+`NullValuePropertyMappingStrategy` also applies when the presense checker returns `not present`.
+====
+
+[[checking-source-property-for-null-arguments]]
+=== Controlling checking result for 'null' properties in bean mapping
+
+MapStruct offers control over when to generate a `null` check. By default (`nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION`) a `null` check will be generated for:
+
+* direct setting of source value to target value when target is primitive and source is not.
+* applying type conversion and then:
+.. calling the setter on the target.
+.. calling another type conversion and subsequently calling the setter on the target.
+.. calling a mapping method and subsequently calling the setter on the target.
+
+First calling a mapping method on the source property is not protected by a null check. Therefor generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
+
+The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
+
+The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MappingConfig#nullValueCheckStrategy`.
+
+[[source-presence-check]]
+=== Source presence checking
+Some frameworks generate bean properties that have a source presence checker. Often this is in the form of a method `hasXYZ`, `XYZ` being a property on the source bean in a bean mapping method. MapStruct will call this `hasXYZ` instead of performing a `null` check when it finds such `hasXYZ` method.
+
+[TIP]
+====
+The source presence checker name can be changed in the MapStruct service provider interface (SPI). It can also be deactivated in this way.
+====
+
+[NOTE]
+====
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+null check, regardless the value of the `NullValueheckStrategy` to avoid addition of `null` to the target collection or map.
+====
+[[exceptions]]
+=== Exceptions
+
+Calling applications may require handling of exceptions when calling a mapping method. These exceptions could be thrown by hand-written logic and by the generated built-in mapping methods or type-conversions of MapStruct. When the calling application requires handling of exceptions, a throws clause can be defined in the mapping method:
+
+.Mapper using custom method declaring checked exception
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = HandWritten.class)
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car) throws GearException;
+}
+----
+====
+
+The hand written logic might look like this:
+
+.Custom mapping method declaring checked exception
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class HandWritten {
+
+    private static final String[] GEAR = {"ONE", "TWO", "THREE", "OVERDRIVE", "REVERSE"};
+
+    public String toGear(Integer gear) throws GearException, FatalException {
+        if ( gear == null ) {
+            throw new FatalException("null is not a valid gear");
+        }
+
+        if ( gear < 0 && gear > GEAR.length ) {
+            throw new GearException("invalid gear");
+        }
+        return GEAR[gear];
+    }
+}
+----
+====
+
+MapStruct now, wraps the `FatalException` in a `try-catch` block and rethrows an unchecked `RuntimeException`. MapStruct delegates handling of the `GearException` to the application logic because it is defined as throws clause in the `carToCarDto` method:
+
+.try-catch block in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+@Override
+public CarDto carToCarDto(Car car) throws GearException {
+    if ( car == null ) {
+        return null;
+    }
+
+    CarDto carDto = new CarDto();
+    try {
+        carDto.setGear( handWritten.toGear( car.getGear() ) );
+    }
+    catch ( FatalException e ) {
+        throw new RuntimeException( e );
+    }
+
+    return carDto;
+}
+----
+====
+
+Some **notes** on null checks. MapStruct does provide null checking only when required: when applying type-conversions or constructing a new type by invoking its constructor. This means that the user is responsible in hand-written code for returning valid non-null objects. Also null objects can be handed to hand-written code, since MapStruct does not want to make assumptions on the meaning assigned by the user to a null object. Hand-written code has to deal with this.

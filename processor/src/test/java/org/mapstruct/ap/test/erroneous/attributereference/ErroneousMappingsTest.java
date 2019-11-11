@@ -33,13 +33,12 @@ public class ErroneousMappingsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 16,
-                messageRegExp = "No property named \"bar\" exists in source parameter\\(s\\)\\. " +
-                    "Did you mean \"foo\"?"),
+                line = 20,
+                messageRegExp = "Target property \"foo\" must not be mapped more than once"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 17,
-                messageRegExp = "No property named \"source1.foo\" exists in source parameter\\(s\\)\\. " +
+                line = 16,
+                messageRegExp = "No property named \"bar\" exists in source parameter\\(s\\)\\. " +
                     "Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
@@ -48,11 +47,12 @@ public class ErroneousMappingsTest {
                     "org.mapstruct.ap.test.erroneous.attributereference.Target. Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 20,
-                messageRegExp = "Target property \"foo\" must not be mapped more than once"),
+                line = 23,
+                messageRegExp = "No property named \"source1.foo\" exists in source parameter\\(s\\)\\. " +
+                    "Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.WARNING,
-                line = 22,
+                line = 26,
                 messageRegExp = "Unmapped target property: \"bar\"")
         }
     )

@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,16 +62,13 @@ public class ModelWriter {
     }
 
     public void writeModel(FileObject sourceFile, Writable model) {
-        try {
-            BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
+        try ( BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ))) {
+                Map<Class<?>, Object> values = new HashMap<>();
+                values.put( Configuration.class, CONFIGURATION );
 
-            Map<Class<?>, Object> values = new HashMap<>();
-            values.put( Configuration.class, CONFIGURATION );
+                model.write( new DefaultModelElementWriterContext( values ), writer );
 
-            model.write( new DefaultModelElementWriterContext( values ), writer );
-
-            writer.flush();
-            writer.close();
+                writer.flush();
         }
         catch ( RuntimeException e ) {
             throw e;
@@ -100,7 +97,7 @@ public class ModelWriter {
 
             InputStream is = connection.getInputStream();
 
-            return new InputStreamReader( is, Charset.forName( "UTF-8" ) );
+            return new InputStreamReader( is, StandardCharsets.UTF_8 );
         }
 
         @Override

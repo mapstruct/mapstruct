@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,18 +115,18 @@ public class GraphAnalyzer {
 
         private final Map<String, Node> nodes = new LinkedHashMap<>();
 
-        public GraphAnalyzerBuilder withNode(String name, List<String> descendants) {
-            Node node = getNode( name );
+        public GraphAnalyzerBuilder withNode(String name, Set<String> descendants) {
+            Node node = nodes.computeIfAbsent( name, Node::new );
 
             for ( String descendant : descendants ) {
-                node.addDescendant( getNode( descendant ) );
+                node.addDescendant( nodes.computeIfAbsent( descendant, Node::new ) );
             }
 
             return this;
         }
 
         public GraphAnalyzerBuilder withNode(String name, String... descendants) {
-            return withNode( name, Arrays.asList( descendants ) );
+            return withNode( name, new LinkedHashSet<>( Arrays.asList( descendants ) ) );
         }
 
         /**
@@ -138,17 +139,6 @@ public class GraphAnalyzer {
             GraphAnalyzer graphAnalyzer = new GraphAnalyzer( nodes );
             graphAnalyzer.analyze();
             return graphAnalyzer;
-        }
-
-        private Node getNode(String name) {
-            Node node = nodes.get( name );
-
-            if ( node == null ) {
-                node = new Node( name );
-                nodes.put( name, node );
-            }
-
-            return node;
         }
     }
 }

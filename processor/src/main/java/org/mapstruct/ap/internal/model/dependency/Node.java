@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.dependency;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A node of a directed graph.
@@ -86,14 +87,11 @@ class Node {
             return false;
         }
         Node other = (Node) obj;
-        if ( name == null ) {
-            if ( other.name != null ) {
-                return false;
-            }
-        }
-        else if ( !name.equals( other.name ) ) {
+
+        if ( !Objects.equals( name, other.name ) ) {
             return false;
         }
+
         return true;
     }
 }

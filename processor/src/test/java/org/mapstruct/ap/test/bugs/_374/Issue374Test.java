@@ -53,7 +53,7 @@ public class Issue374Test {
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingIterableTargetToDefault() {
 
-        List<String> targetList = new ArrayList<String>();
+        List<String> targetList = new ArrayList<>();
         targetList.add( "test" );
         List<String> resultList = Issue374Mapper.INSTANCE.mapIterable( null, targetList );
         assertThat( resultList ).isEqualTo( targetList );
@@ -64,7 +64,7 @@ public class Issue374Test {
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingMapTargetToDefault() {
 
-        Map<Integer, String> targetMap = new HashMap<Integer, String>();
+        Map<Integer, String> targetMap = new HashMap<>();
         targetMap.put( 5, "test" );
         Map<Integer, String> resultMap  = Issue374Mapper.INSTANCE.mapMap( null, targetMap );
         assertThat( resultMap ).isEmpty();
@@ -85,7 +85,7 @@ public class Issue374Test {
     @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
     public void shouldMapExistingIterableTargetVoidReturnToDefault() {
 
-        List<String> targetList = new ArrayList<String>();
+        List<String> targetList = new ArrayList<>();
         targetList.add( "test" );
         Issue374VoidMapper.INSTANCE.mapIterable( null, targetList );
         assertThat( targetList ).isEmpty();
@@ -95,7 +95,7 @@ public class Issue374Test {
     @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
     public void shouldMapExistingMapTargetVoidReturnToDefault() {
 
-        Map<Integer, String> targetMap = new HashMap<Integer, String>();
+        Map<Integer, String> targetMap = new HashMap<>();
         targetMap.put( 5, "test" );
         Issue374VoidMapper.INSTANCE.mapMap( null, targetMap );
         assertThat( targetMap ).isEmpty();

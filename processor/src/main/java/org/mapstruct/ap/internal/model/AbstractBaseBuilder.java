@@ -7,10 +7,10 @@ package org.mapstruct.ap.internal.model;
 
 import javax.lang.model.element.AnnotationMirror;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -73,7 +73,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @return See above
      */
-    Assignment createForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
+    Assignment createForgedAssignment(SourceRHS sourceRHS, BuilderType builderType, ForgedMethod forgedMethod) {
 
         if ( ctx.getForgedMethodsUnderCreation().containsKey( forgedMethod ) ) {
             return createAssignment( sourceRHS, ctx.getForgedMethodsUnderCreation().get( forgedMethod ) );
@@ -93,6 +93,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         else {
             forgedMappingMethod = new BeanMappingMethod.Builder()
                 .forgedMethod( forgedMethod )
+                .returnTypeBuilder( builderType )
                 .mappingContext( ctx )
                 .build();
         }
@@ -106,7 +107,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( mappingMethod == null ) {
             return null;
         }
-        if (methodRef.getMappingOptions().isRestrictToDefinedMappings() ||
+        if (methodRef.getMappingReferences().isRestrictToDefinedMappings() ||
             !ctx.getMappingsToGenerate().contains( mappingMethod )) {
             // If the mapping options are restricted only to the defined mappings, then use the mapping method.
             // See https://github.com/mapstruct/mapstruct/issues/1148

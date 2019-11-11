@@ -57,6 +57,7 @@ public enum Message {
     PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS( "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a constant or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS( "DefaultExpression and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_IGNORE_AND_NVPMS( "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, either define ignore or an nullValuePropertyMappingStrategy." ),
+    PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED("Expression and a qualifier both defined in @Mapping, either define an expression or a qualifier."),
     PROPERTYMAPPING_INVALID_EXPRESSION( "Value for expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION( "Value for default expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no source parameter named \"%s\". Method source parameters are: \"%s\"." ),
@@ -96,7 +97,7 @@ public enum Message {
     ENUMMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
-    ENUMMAPPING_DEPRECATED( "Mapping of Enums via @Mapping is going to be removed in future versions of MapStruct. Please use @ValueMapping instead!", Diagnostic.Kind.WARNING ),
+    ENUMMAPPING_REMOVED( "Mapping of Enums via @Mapping is removed. Please use @ValueMapping instead!" ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
@@ -113,6 +114,7 @@ public enum Message {
     GENERAL_JODA_NOT_ON_CLASSPATH( "Cannot validate Joda dateformat, no Joda on classpath. Consider adding Joda to the annotation processorpath.", Diagnostic.Kind.WARNING ),
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
     GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible parameterless constructor." ),
+    GENERAL_NO_QUALIFYING_METHOD( "No qualifying method found for qualifiers: %s and / or qualifying names: %s" ),
 
     BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
     BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),
@@ -127,8 +129,6 @@ public enum Message {
     RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type." ),
     RETRIEVAL_PRIMITIVE_PARAMETER( "Can't generate mapping method with primitive parameter type." ),
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
-    RETRIEVAL_ENUM_TO_NON_ENUM( "Can't generate mapping method from enum type to non-enum type." ),
-    RETRIEVAL_NON_ENUM_TO_ENUM( "Can't generate mapping method from non-enum type to enum type." ),
     RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),
     RETRIEVAL_TYPE_VAR_RESULT( "Can't generate mapping method for a generic type variable target." ),
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
@@ -150,9 +150,10 @@ public enum Message {
     VALUEMAPPING_CREATE_NOTE( "creating value mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
     VALUEMAPPING_ANY_AREADY_DEFINED( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." ),
-    VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
+    VALUEMAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
+    VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM( "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for %s." ),
+    VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of type String to an enum type.", Diagnostic.Kind.WARNING  ),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
-
     // CHECKSTYLE:ON
 
     private final String description;

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -32,6 +33,49 @@ public final class LifecycleMethodResolver {
 
     /**
      * @param method the method to obtain the beforeMapping methods for
+     * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
+     * @param selectionParameters method selectionParameters
+     * @param ctx the builder context
+     * @param existingVariableNames the existing variable names in the mapping method
+     * @return all applicable {@code @BeforeMapping} methods for the given method
+     */
+    public static List<LifecycleCallbackMethodReference> beforeMappingMethods(Method method,
+                                                                              Type alternativeTarget,
+                                                                              SelectionParameters selectionParameters,
+                                                                              MappingBuilderContext ctx,
+                                                                              Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods( method,
+                        alternativeTarget,
+                        selectionParameters,
+                        filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
+                        ctx,
+                        existingVariableNames );
+    }
+
+    /**
+     * @param method the method to obtain the afterMapping methods for
+     * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
+     * @param selectionParameters method selectionParameters
+     * @param ctx the builder context
+     * @param existingVariableNames list of already used variable names
+     * @return all applicable {@code @AfterMapping} methods for the given method
+     */
+    public static List<LifecycleCallbackMethodReference> afterMappingMethods(Method method,
+                                                                             Type alternativeTarget,
+                                                                             SelectionParameters selectionParameters,
+                                                                             MappingBuilderContext ctx,
+                                                                             Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods( method,
+                        alternativeTarget,
+                        selectionParameters,
+                        filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
+                        ctx,
+                        existingVariableNames );
+    }
+
+
+    /**
+     * @param method the method to obtain the beforeMapping methods for
      * @param selectionParameters method selectionParameters
      * @param ctx the builder context
      * @param existingVariableNames the existing variable names in the mapping method
@@ -42,6 +86,7 @@ public final class LifecycleMethodResolver {
                                                                               MappingBuilderContext ctx,
                                                                               Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods( method,
+            method.getResultType(),
             selectionParameters,
             filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -60,6 +105,7 @@ public final class LifecycleMethodResolver {
                                                                              MappingBuilderContext ctx,
                                                                              Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods( method,
+            method.getResultType(),
             selectionParameters,
             filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -78,31 +124,23 @@ public final class LifecycleMethodResolver {
         List<SourceMethod> availableMethods =
             new ArrayList<>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
-        for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
-            availableMethods.add( methodProvidedByParams );
-        }
+        availableMethods.addAll( methodsProvidedByParams );
         availableMethods.addAll( sourceModelMethods );
 
         return availableMethods;
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
-            Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+            Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         MethodSelectors selectors =
             new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
 
-        Type targetType = method.getResultType();
-
-        if ( !method.isUpdateMethod() ) {
-            targetType = targetType.getEffectiveType();
-        }
-
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             method,
             callbackMethods,
-            Collections.<Type> emptyList(),
+            Collections.emptyList(),
             targetType,
             SelectionCriteria.forLifecycleMethods( selectionParameters ) );
 
@@ -146,24 +184,14 @@ public final class LifecycleMethodResolver {
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<>();
-        for ( SourceMethod method : methods ) {
-            if ( method.isBeforeMappingMethod() ) {
-                result.add( method );
-            }
-        }
-
-        return result;
+        return methods.stream()
+                      .filter( SourceMethod::isBeforeMappingMethod )
+                      .collect( Collectors.toList() );
     }
 
     private static List<SourceMethod> filterAfterMappingMethods(List<SourceMethod> methods) {
-        List<SourceMethod> result = new ArrayList<>();
-        for ( SourceMethod method : methods ) {
-            if ( method.isAfterMappingMethod() ) {
-                result.add( method );
-            }
-        }
-
-        return result;
+        return methods.stream()
+                      .filter( SourceMethod::isAfterMappingMethod )
+                      .collect( Collectors.toList() );
     }
 }

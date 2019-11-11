@@ -7,10 +7,9 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -201,7 +200,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
-            || isValidLifecycleCallbackMethod( method, returnType ) ) {
+            || isValidLifecycleCallbackMethod( method ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -255,12 +254,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setMapMapping(
                 MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
             .setBeanMapping(
-                BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
+                new BeanMapping.Builder()
+                    .beanMappingPrism( BeanMappingPrism.getInstanceOn( method ) )
+                    .messager( messager )
+                    .method( method )
+                    .typeUtils( typeUtils )
+                    .typeFactory( typeFactory )
+                    .build()
+            )
             .setValueMappings( getValueMappings( method ) )
             .setTypeUtils( typeUtils )
-            .setMessager( messager )
             .setTypeFactory( typeFactory )
-            .setAccessorNaming( accessorNaming )
             .setMapperConfiguration( mapperConfig )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
@@ -279,7 +283,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 contextParam.getType().getTypeElement(),
                 mapperToImplement,
                 mapperConfig,
-                Collections.<SourceMethod> emptyList() );
+                Collections.emptyList() );
 
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
@@ -318,11 +322,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
-            .setAccessorNaming( accessorNaming )
             .build();
     }
 
-    private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
+    private boolean isValidLifecycleCallbackMethod(ExecutableElement method) {
         return Executables.isLifecycleCallbackMethod( method );
     }
 
@@ -387,8 +390,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
                                                 Parameter targetParameter, List<Parameter> contextParameters,
-                                                Type resultType, Type returnType,
-                                                boolean containsTargetTypeParameter) {
+                                                Type resultType, Type returnType, boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
             messager.printMessage( method, Message.RETRIEVAL_NO_INPUT_ARGS );
             return false;
@@ -406,8 +408,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) &&
-            !resultType.isAssignableTo( returnType.getEffectiveType() )) {
+                        !resultType.isAssignableTo( returnType ) &&
+                        !resultType.isAssignableTo( typeFactory.effectiveResultTypeFor( returnType, null ) ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }
@@ -459,16 +461,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( parameterType.isEnumType() && !resultType.isEnumType() ) {
-            messager.printMessage( method, Message.RETRIEVAL_ENUM_TO_NON_ENUM );
-            return false;
-        }
-
-        if ( !parameterType.isEnumType() && resultType.isEnumType() ) {
-            messager.printMessage( method, Message.RETRIEVAL_NON_ENUM_TO_ENUM );
-            return false;
-        }
-
         for ( Type typeParameter : resultType.getTypeParameters() ) {
             if ( typeParameter.isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
@@ -503,24 +495,18 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by target property name
      */
-    private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
-        Map<String, List<Mapping>> mappings = new HashMap<>();
+    private Set<Mapping> getMappings(ExecutableElement method) {
+        Set<Mapping> mappings = new LinkedHashSet<>(  );
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            if ( !mappings.containsKey( mappingAnnotation.target() ) ) {
-                mappings.put( mappingAnnotation.target(), new ArrayList<>() );
-            }
-            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
-            if ( mapping != null ) {
-                mappings.get( mappingAnnotation.target() ).add( mapping );
-            }
+            mappings.add( Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils ) );
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
+            mappings.addAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
         }
 
         return mappings;
@@ -541,7 +527,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            ValueMapping valueMapping = ValueMapping.fromMappingPrism( mappingAnnotation, method, messager );
+            ValueMapping valueMapping = ValueMapping.fromMappingPrism( mappingAnnotation );
             if ( valueMapping != null ) {
                 valueMappings.add( valueMapping );
             }

@@ -12,7 +12,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.HelperMethod;
 
 /**
- * A {@link ConversionProvider} which creates the reversed conversions for a
+ *  * A {@link ConversionProvider} which creates the inversed conversions for a
  * given conversion provider.
  *
  * @author Gunnar Morling
@@ -21,7 +21,7 @@ public class ReverseConversion implements ConversionProvider {
 
     private ConversionProvider conversionProvider;
 
-    public static ReverseConversion reverse(ConversionProvider conversionProvider) {
+    public static ReverseConversion inverse(ConversionProvider conversionProvider) {
         return new ReverseConversion( conversionProvider );
     }
 

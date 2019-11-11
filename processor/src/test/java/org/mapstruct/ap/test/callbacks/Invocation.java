@@ -62,13 +62,10 @@ public class Invocation {
             return false;
         }
         if ( methodName == null ) {
-            if ( other.methodName != null ) {
-                return false;
-            }
+            return other.methodName == null;
         }
-        else if ( !methodName.equals( other.methodName ) ) {
-            return false;
+        else {
+            return methodName.equals( other.methodName );
         }
-        return true;
     }
 }

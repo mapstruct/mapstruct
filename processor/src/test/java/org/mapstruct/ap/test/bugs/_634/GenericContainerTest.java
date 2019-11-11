@@ -33,7 +33,7 @@ public class GenericContainerTest {
     @IssueKey("634")
     public void canMapGenericSourceTypeToGenericTargetType() {
         List<Foo> items = Arrays.asList( new Foo( "42" ), new Foo( "84" ) );
-        Source<Foo> source = new Source<Foo>( items );
+        Source<Foo> source = new Source<>( items );
 
         Target<Bar> target = SourceTargetMapper.INSTANCE.mapSourceToTarget( source );
 

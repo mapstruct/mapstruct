@@ -23,7 +23,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class FieldsMappingTest {
 
     @Test
-    public void shouldMapSourceToTarget() throws Exception {
+    public void shouldMapSourceToTarget() {
         Source source = new Source();
         source.normalInt = 4;
         source.normalList = Lists.newArrayList( 10, 11, 12 );
@@ -42,7 +42,7 @@ public class FieldsMappingTest {
     }
 
     @Test
-    public void shouldMapTargetToSource() throws Exception {
+    public void shouldMapTargetToSource() {
         Target target = new Target();
         target.finalInt = "40";
         target.normalInt = "4";

@@ -22,7 +22,7 @@ public abstract class Issue1131MapperWithContext {
     public static final Issue1131MapperWithContext INSTANCE = Mappers.getMapper( Issue1131MapperWithContext.class );
 
     public static class MappingContext {
-        private final List<String> calledMethods = new ArrayList<String>();
+        private final List<String> calledMethods = new ArrayList<>();
 
         public Target.Nested create(Source.Nested source) {
             calledMethods.add( "create(Source.Nested)" );
@@ -32,10 +32,10 @@ public abstract class Issue1131MapperWithContext {
         public List<Target.Nested> create(List<Source.Nested> source) {
             calledMethods.add( "create(List<Source.Nested>)" );
             if ( source == null ) {
-                return new ArrayList<Target.Nested>();
+                return new ArrayList<>();
             }
             else {
-                return new ArrayList<Target.Nested>( source.size() );
+                return new ArrayList<>( source.size() );
             }
         }
 

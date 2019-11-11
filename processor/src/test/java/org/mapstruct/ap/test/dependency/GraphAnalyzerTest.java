@@ -165,7 +165,7 @@ public class GraphAnalyzerTest {
     }
 
     private Set<String> asStrings(Set<List<String>> cycles) {
-        Set<String> asStrings = new HashSet<String>();
+        Set<String> asStrings = new HashSet<>();
 
         for ( List<String> cycle : cycles ) {
             asStrings.add( asString( cycle ) );

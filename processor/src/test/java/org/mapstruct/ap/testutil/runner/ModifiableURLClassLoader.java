@@ -99,19 +99,8 @@ final class ModifiableURLClassLoader extends URLClassLoader {
         try {
             ClassLoader.class.getMethod( "registerAsParallelCapable" ).invoke( null );
         }
-        catch ( NoSuchMethodException e ) {
-            return; // ignore
-        }
-        catch ( SecurityException e ) {
-            return; // ignore
-        }
-        catch ( IllegalAccessException e ) {
-            return; // ignore
-        }
-        catch ( IllegalArgumentException e ) {
-            return; // ignore
-        }
-        catch ( InvocationTargetException e ) {
+        catch ( NoSuchMethodException | SecurityException | IllegalAccessException
+            | IllegalArgumentException | InvocationTargetException e ) {
             return; // ignore
         }
     }

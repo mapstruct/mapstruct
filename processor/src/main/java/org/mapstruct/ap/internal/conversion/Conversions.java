@@ -21,13 +21,13 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.lang.model.util.Elements;
+import java.util.Objects;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
-import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
+import static org.mapstruct.ap.internal.conversion.ReverseConversion.inverse;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
@@ -41,7 +41,7 @@ public class Conversions {
     private final Type stringType;
     private final TypeFactory typeFactory;
 
-    public Conversions(Elements elementUtils, TypeFactory typeFactory) {
+    public Conversions(TypeFactory typeFactory) {
         this.typeFactory = typeFactory;
 
         this.enumType = typeFactory.getType( Enum.class );
@@ -244,7 +244,7 @@ public class Conversions {
             register( sourceType, targetType, new PrimitiveToWrapperConversion( sourceType, targetType ) );
         }
         else if ( !sourceType.isPrimitive() && targetType.isPrimitive() ) {
-            register( sourceType, targetType, reverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
+            register( sourceType, targetType, inverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
         }
         else {
             register( sourceType, targetType, new WrapperToWrapperConversion( sourceType, targetType ) );
@@ -283,7 +283,7 @@ public class Conversions {
         Type targetType = typeFactory.getType( targetClass );
 
         conversions.put( new Key( sourceType, targetType ), conversion );
-        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
     }
 
     private void register(String sourceTypeName, Class<?> targetClass, ConversionProvider conversion) {
@@ -291,7 +291,7 @@ public class Conversions {
         Type targetType = typeFactory.getType( targetClass );
 
         conversions.put( new Key( sourceType, targetType ), conversion );
-        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
@@ -341,22 +341,15 @@ public class Conversions {
                 return false;
             }
             Key other = (Key) obj;
-            if ( sourceType == null ) {
-                if ( other.sourceType != null ) {
-                    return false;
-                }
-            }
-            else if ( !sourceType.equals( other.sourceType ) ) {
+
+            if ( !Objects.equals( sourceType, other.sourceType ) ) {
                 return false;
             }
-            if ( targetType == null ) {
-                if ( other.targetType != null ) {
-                    return false;
-                }
-            }
-            else if ( !targetType.equals( other.targetType ) ) {
+
+            if ( !Objects.equals( targetType, other.targetType ) ) {
                 return false;
             }
+
             return true;
         }
     }

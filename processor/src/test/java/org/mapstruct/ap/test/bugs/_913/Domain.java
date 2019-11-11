@@ -14,8 +14,8 @@ import java.util.Set;
  * @author Sjaak Derksen
  */
 public class Domain {
-    static final Set<String> DEFAULT_STRINGS = new HashSet<String>();
-    static final Set<Long> DEFAULT_LONGS = new HashSet<Long>();
+    static final Set<String> DEFAULT_STRINGS = new HashSet<>();
+    static final Set<Long> DEFAULT_LONGS = new HashSet<>();
 
     private Set<String> strings = DEFAULT_STRINGS;
     private Set<Long> longs = DEFAULT_LONGS;

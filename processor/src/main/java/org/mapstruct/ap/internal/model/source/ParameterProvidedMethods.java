@@ -23,7 +23,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
  */
 public class ParameterProvidedMethods {
     private static final ParameterProvidedMethods EMPTY =
-        new ParameterProvidedMethods( Collections.<Parameter, List<SourceMethod>> emptyMap() );
+        new ParameterProvidedMethods( Collections.emptyMap() );
 
     private final Map<Parameter, List<SourceMethod>> parameterToProvidedMethods;
     private final Map<SourceMethod, Parameter> methodToProvidingParameter;

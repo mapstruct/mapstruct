@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.bugs._849;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class Issue849Test {
     public void shouldCompileWithAllImportsDeclared() {
 
         Source source = new Source();
-        source.setSourceList( Arrays.asList( (Serializable) "test" ) );
+        source.setSourceList( Arrays.asList( "test" ) );
 
         Target target = Issue849Mapper.INSTANCE.mapSourceToTarget( source );
         assertThat( target.getTargetList() ).containsExactly( "test" );

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
@@ -22,7 +23,6 @@ import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -93,7 +93,8 @@ public class MappingBuilderContext {
         Assignment getTargetAssignment(Method mappingMethod, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
-                                       AnnotationMirror positionHint);
+                                       AnnotationMirror positionHint,
+                                       Supplier<Assignment> forger);
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
     }

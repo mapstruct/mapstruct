@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1148Test {
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsNestedSource() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsNestedSource() {
         Entity.Dto dto = new Entity.Dto();
         dto.nestedDto = new Entity.NestedDto( 30 );
         dto.nestedDto2 = new Entity.NestedDto( 40 );
@@ -36,7 +36,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsNestedTarget() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsNestedTarget() {
         Entity.Dto dto = new Entity.Dto();
         dto.recipientId = 10;
         dto.senderId = 20;
@@ -52,7 +52,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsSymmetric() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsSymmetric() {
         Entity.Dto dto = new Entity.Dto();
         dto.sameLevel = new Entity.ClientDto(new Entity.NestedDto( 30 ));
         dto.sameLevel2 = new Entity.ClientDto(new Entity.NestedDto( 40 ));
@@ -68,7 +68,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsHalfSymmetric() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsHalfSymmetric() {
         Entity.Dto dto = new Entity.Dto();
         dto.level = new Entity.ClientDto(new Entity.NestedDto( 80 ));
         dto.level2 = new Entity.ClientDto(new Entity.NestedDto( 90 ));
@@ -82,7 +82,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsNestedSourceMultiple() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsNestedSourceMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.nestedDto = new Entity.NestedDto( 30 );
         Entity.Dto dto2 = new Entity.Dto();
@@ -94,7 +94,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsNestedTargetMultiple() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsNestedTargetMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.recipientId = 10;
         Entity.Dto dto2 = new Entity.Dto();
@@ -111,7 +111,7 @@ public class Issue1148Test {
     }
 
     @Test
-    public void shouldNotUseSameMethodForDifferentMappingsSymmetricMultiple() throws Exception {
+    public void shouldNotUseSameMethodForDifferentMappingsSymmetricMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.sameLevel = new Entity.ClientDto(new Entity.NestedDto( 30 ));
         Entity.Dto dto2 = new Entity.Dto();

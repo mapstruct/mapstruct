@@ -16,7 +16,7 @@ import org.mapstruct.Context;
  * @author Andreas Gudian
  */
 public class CycleContext {
-    private Map<Object, Object> knownInstances = new IdentityHashMap<Object, Object>();
+    private Map<Object, Object> knownInstances = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
     public <T> T getMappedInstance(Object source, Class<T> targetType) {

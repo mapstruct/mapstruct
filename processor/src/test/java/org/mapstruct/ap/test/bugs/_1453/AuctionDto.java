@@ -24,7 +24,7 @@ public class AuctionDto {
     }
 
     public void setPayments(List<? extends PaymentDto> payments) {
-        this.payments = payments == null ? null : new ArrayList<PaymentDto>( payments );
+        this.payments = payments == null ? null : new ArrayList<>( payments );
     }
 
     List<? super PaymentDto> takeOtherPayments() {
@@ -40,7 +40,7 @@ public class AuctionDto {
     }
 
     public void setMapPayments(Map<? extends PaymentDto, ? extends PaymentDto> mapPayments) {
-        this.mapPayments = mapPayments == null ? null : new HashMap<PaymentDto, PaymentDto>( mapPayments );
+        this.mapPayments = mapPayments == null ? null : new HashMap<>( mapPayments );
     }
 
     public Map<? super PaymentDto, ? super PaymentDto> getMapSuperPayments() {

@@ -5,9 +5,10 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.prism.ContextPrism;
@@ -105,10 +106,10 @@ public class Parameter extends ModelElement {
 
         Parameter parameter = (Parameter) o;
 
-        if ( name != null ? !name.equals( parameter.name ) : parameter.name != null ) {
+        if ( !Objects.equals( name, parameter.name ) ) {
             return false;
         }
-        return type != null ? type.equals( parameter.type ) : parameter.type == null;
+        return Objects.equals( type, parameter.type );
 
     }
 
@@ -139,15 +140,20 @@ public class Parameter extends ModelElement {
      * @return the parameters from the given list that are considered 'source parameters'
      */
     public static List<Parameter> getSourceParameters(List<Parameter> parameters) {
-        List<Parameter> sourceParameters = new ArrayList<>( parameters.size() );
+        return parameters.stream().filter( Parameter::isSourceParameter ).collect( Collectors.toList() );
+    }
 
-        for ( Parameter parameter : parameters ) {
-            if ( !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isMappingContext() ) {
-                sourceParameters.add( parameter );
-            }
-        }
-
-        return sourceParameters;
+    /**
+     * @param parameters the parameters to scan
+     * @param sourceParameterName the source parameter name to match
+     * @return the parameters from the given list that are considered 'source parameters'
+     */
+    public static Parameter getSourceParameter(List<Parameter> parameters, String sourceParameterName) {
+        return parameters.stream()
+                         .filter( Parameter::isSourceParameter )
+                         .filter( parameter -> parameter.getName().equals( sourceParameterName ) )
+                         .findAny()
+                         .orElse( null );
     }
 
     /**
@@ -155,34 +161,19 @@ public class Parameter extends ModelElement {
      * @return the parameters from the given list that are marked as 'mapping context parameters'
      */
     public static List<Parameter> getContextParameters(List<Parameter> parameters) {
-        List<Parameter> contextParameters = new ArrayList<>( parameters.size() );
-
-        for ( Parameter parameter : parameters ) {
-            if ( parameter.isMappingContext() ) {
-                contextParameters.add( parameter );
-            }
-        }
-
-        return contextParameters;
+        return parameters.stream().filter( Parameter::isMappingContext ).collect( Collectors.toList() );
     }
 
     public static Parameter getMappingTargetParameter(List<Parameter> parameters) {
-        for ( Parameter parameter : parameters ) {
-            if ( parameter.isMappingTarget() ) {
-                return parameter;
-            }
-        }
-
-        return null;
+        return parameters.stream().filter( Parameter::isMappingTarget ).findAny().orElse( null );
     }
 
     public static Parameter getTargetTypeParameter(List<Parameter> parameters) {
-        for ( Parameter parameter : parameters ) {
-            if ( parameter.isTargetType() ) {
-                return parameter;
-            }
-        }
-
-        return null;
+        return parameters.stream().filter( Parameter::isTargetType ).findAny().orElse( null );
     }
+
+    private static boolean isSourceParameter( Parameter parameter ) {
+        return !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isMappingContext();
+    }
+
 }

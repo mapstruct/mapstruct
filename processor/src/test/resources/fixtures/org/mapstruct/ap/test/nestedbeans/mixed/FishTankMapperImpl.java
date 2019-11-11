@@ -76,8 +76,8 @@ public class FishTankMapperImpl implements FishTankMapper {
         FishTank fishTank = new FishTank();
 
         fishTank.setFish( fishDtoToFish( source.getFish() ) );
-        fishTank.setQuality( waterQualityDtoToWaterQuality( source.getQuality() ) );
         fishTank.setInterior( fishTankDtoToInterior( source ) );
+        fishTank.setQuality( waterQualityDtoToWaterQuality( source.getQuality() ) );
         fishTank.setMaterial( materialTypeDtoToMaterialType( sourceMaterialMaterialType( source ) ) );
         fishTank.setPlant( waterPlantDtoToWaterPlant( source.getPlant() ) );
         fishTank.setName( source.getName() );
@@ -233,6 +233,30 @@ public class FishTankMapperImpl implements FishTankMapper {
         return fish;
     }
 
+    protected Ornament ornamentDtoToOrnament(OrnamentDto ornamentDto) {
+        if ( ornamentDto == null ) {
+            return null;
+        }
+
+        Ornament ornament = new Ornament();
+
+        ornament.setType( ornamentDto.getType() );
+
+        return ornament;
+    }
+
+    protected Interior fishTankDtoToInterior(FishTankDto fishTankDto) {
+        if ( fishTankDto == null ) {
+            return null;
+        }
+
+        Interior interior = new Interior();
+
+        interior.setOrnament( ornamentDtoToOrnament( fishTankDto.getOrnament() ) );
+
+        return interior;
+    }
+
     private String waterQualityReportDtoOrganisationName(WaterQualityReportDto waterQualityReportDto) {
         if ( waterQualityReportDto == null ) {
             return null;
@@ -271,30 +295,6 @@ public class FishTankMapperImpl implements FishTankMapper {
         waterQuality.setReport( waterQualityReportDtoToWaterQualityReport( waterQualityDto.getReport() ) );
 
         return waterQuality;
-    }
-
-    protected Ornament ornamentDtoToOrnament(OrnamentDto ornamentDto) {
-        if ( ornamentDto == null ) {
-            return null;
-        }
-
-        Ornament ornament = new Ornament();
-
-        ornament.setType( ornamentDto.getType() );
-
-        return ornament;
-    }
-
-    protected Interior fishTankDtoToInterior(FishTankDto fishTankDto) {
-        if ( fishTankDto == null ) {
-            return null;
-        }
-
-        Interior interior = new Interior();
-
-        interior.setOrnament( ornamentDtoToOrnament( fishTankDto.getOrnament() ) );
-
-        return interior;
     }
 
     private MaterialTypeDto sourceMaterialMaterialType(FishTankDto fishTankDto) {

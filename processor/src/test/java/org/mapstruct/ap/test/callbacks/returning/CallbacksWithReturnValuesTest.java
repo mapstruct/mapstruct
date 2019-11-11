@@ -42,7 +42,7 @@ public class CallbacksWithReturnValuesTest {
 
     @Test
     public void mappingWithContextCorrectlyResolvesCycles() {
-        final AtomicReference<Integer> contextLevel = new AtomicReference<Integer>( null );
+        final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
         ContextListener contextListener = new ContextListener() {
             @Override
             public void methodCalled(Integer level, String method, Object source, Object target) {

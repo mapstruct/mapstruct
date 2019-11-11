@@ -8,6 +8,7 @@ package org.mapstruct.ap.testutil.compilation.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,8 +28,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
  * @author Gunnar Morling
  */
 public class CompilationOutcomeDescriptor {
-
-    private static final String LINE_SEPARATOR = System.lineSeparator( );
 
     private CompilationResult compilationResult;
     private List<DiagnosticDescriptor> diagnostics;
@@ -57,12 +56,12 @@ public class CompilationOutcomeDescriptor {
         if ( expectedCompilationResult == null ) {
             return new CompilationOutcomeDescriptor(
                 CompilationResult.SUCCEEDED,
-                Collections.<DiagnosticDescriptor>emptyList(),
+                Collections.emptyList(),
                 notes
             );
         }
         else {
-            List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+            List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
             for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
                 expectedCompilationResult.diagnostics() ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
@@ -76,7 +75,7 @@ public class CompilationOutcomeDescriptor {
         CompilationResult compilationResult =
             compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
         List<String> notes = new ArrayList<>();
-        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
         for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
@@ -93,7 +92,7 @@ public class CompilationOutcomeDescriptor {
     public static CompilationOutcomeDescriptor forResult(String sourceDir, CompilerResult compilerResult) {
         CompilationResult compilationResult =
             compilerResult.isSuccess() ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
-        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>();
 
         for ( CompilerMessage message : compilerResult.getCompilerMessages() ) {
             if ( message.getKind() != CompilerMessage.Kind.NOTE ) {
@@ -145,12 +144,7 @@ public class CompilationOutcomeDescriptor {
         if ( compilationResult != other.compilationResult ) {
             return false;
         }
-        if ( diagnostics == null ) {
-            if ( other.diagnostics != null ) {
-                return false;
-            }
-        }
-        else if ( !diagnostics.equals( other.diagnostics ) ) {
+        if ( !Objects.equals( diagnostics, other.diagnostics ) ) {
             return false;
         }
         return true;

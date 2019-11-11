@@ -33,6 +33,10 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new CalendarToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToCalendar( typeFactory ) );
             builtInMethods.add( new ZonedDateTimeToXmlGregorianCalendar( typeFactory ) );
+            builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
+            builtInMethods.add( new LocalDateToXmlGregorianCalendar( typeFactory ) );
+            builtInMethods.add( new LocalDateTimeToXmlGregorianCalendar( typeFactory ) );
+            builtInMethods.add( new XmlGregorianCalendarToLocalDateTime( typeFactory ) );
         }
 
         if ( isJaxbAvailable( typeFactory ) ) {
@@ -41,10 +45,6 @@ public class BuiltInMappingMethods {
 
         builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
         builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
-        if ( isXmlGregorianCalendarPresent ) {
-            builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
-            builtInMethods.add( new LocalDateToXmlGregorianCalendar( typeFactory ) );
-        }
 
         if ( isJodaTimeAvailable( typeFactory ) && isXmlGregorianCalendarPresent ) {
             builtInMethods.add( new JodaDateTimeToXmlGregorianCalendar( typeFactory ) );

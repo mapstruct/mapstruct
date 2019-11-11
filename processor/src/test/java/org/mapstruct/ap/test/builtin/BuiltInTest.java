@@ -145,7 +145,7 @@ public class BuiltInTest {
     @Test
     @WithClasses( JaxbListMapper.class )
     @IssueKey( "141" )
-    public void shouldApplyBuiltInOnJAXBElementList() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnJAXBElementList() {
 
         JaxbElementListProperty source = new JaxbElementListProperty();
         source.setProp( createJaxbList( "TEST2" ) );
@@ -159,7 +159,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( DateToXmlGregCalMapper.class )
-    public void shouldApplyBuiltInOnDateToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnDateToXmlGregCal() throws ParseException {
 
         DateProperty source = new DateProperty();
         source.setProp( createDate( "31-08-1982 10:20:56" ) );
@@ -175,7 +175,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( XmlGregCalToDateMapper.class )
-    public void shouldApplyBuiltInOnXmlGregCalToDate() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnXmlGregCalToDate() throws DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
@@ -192,7 +192,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( StringToXmlGregCalMapper.class )
-    public void shouldApplyBuiltInStringToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInStringToXmlGregCal() {
 
         StringProperty source = new StringProperty();
         source.setProp( "05.07.1999" );
@@ -227,7 +227,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( XmlGregCalToStringMapper.class )
-    public void shouldApplyBuiltInXmlGregCalToString() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInXmlGregCalToString() throws DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
@@ -254,7 +254,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( CalendarToXmlGregCalMapper.class )
-    public void shouldApplyBuiltInOnCalendarToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnCalendarToXmlGregCal() throws ParseException {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
@@ -270,7 +270,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( XmlGregCalToCalendarMapper.class )
-    public void shouldApplyBuiltInOnXmlGregCalToCalendar() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnXmlGregCalToCalendar() throws DatatypeConfigurationException {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
@@ -288,7 +288,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( CalendarToDateMapper.class )
-    public void shouldApplyBuiltInOnCalendarToDate() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnCalendarToDate() throws ParseException {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
@@ -304,7 +304,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( DateToCalendarMapper.class )
-    public void shouldApplyBuiltInOnDateToCalendar() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnDateToCalendar() throws ParseException {
 
         DateProperty source = new DateProperty();
         source.setProp( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
@@ -321,7 +321,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( CalendarToStringMapper.class )
-    public void shouldApplyBuiltInOnCalendarToString() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnCalendarToString() throws ParseException {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
@@ -337,7 +337,7 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( StringToCalendarMapper.class )
-    public void shouldApplyBuiltInOnStringToCalendar() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnStringToCalendar() throws ParseException {
 
         StringProperty source = new StringProperty();
         source.setProp( "02.03.1999" );
@@ -354,11 +354,11 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( IterableSourceTargetMapper.class )
-    public void shouldApplyBuiltInOnIterable() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnIterable() throws DatatypeConfigurationException {
 
         IterableSource source = new IterableSource();
-        source.setDates( Arrays.asList( new XMLGregorianCalendar[] { createXmlCal( 1999, 3, 2, 60 ) } ) );
-        source.publicDates = Arrays.asList( new XMLGregorianCalendar[] { createXmlCal( 2016, 3, 2, 60 ) } );
+        source.setDates( Arrays.asList( createXmlCal( 1999, 3, 2, 60 ) ) );
+        source.publicDates = Arrays.asList( createXmlCal( 2016, 3, 2, 60 ) );
 
         IterableTarget target = IterableSourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
@@ -368,12 +368,12 @@ public class BuiltInTest {
 
     @Test
     @WithClasses( MapSourceTargetMapper.class )
-    public void shouldApplyBuiltInOnMap() throws ParseException, DatatypeConfigurationException {
+    public void shouldApplyBuiltInOnMap() throws DatatypeConfigurationException {
 
         MapSource source = new MapSource();
-        source.setExample( new HashMap<JAXBElement<String>, XMLGregorianCalendar>() );
+        source.setExample( new HashMap<>() );
         source.getExample().put( createJaxb( "TEST" ), createXmlCal( 1999, 3, 2, 60 ) );
-        source.publicExample = new HashMap<JAXBElement<String>, XMLGregorianCalendar>();
+        source.publicExample = new HashMap<>();
         source.publicExample.put( createJaxb( "TEST" ), createXmlCal( 2016, 3, 2, 60 ) );
 
         MapTarget target = MapSourceTargetMapper.INSTANCE.sourceToTarget( source );
@@ -417,11 +417,11 @@ public class BuiltInTest {
     }
 
     private JAXBElement<String> createJaxb(String test) {
-        return new JAXBElement<String>( new QName( "www.mapstruct.org", "test" ), String.class, test );
+        return new JAXBElement<>( new QName( "www.mapstruct.org", "test" ), String.class, test );
     }
 
     private List<JAXBElement<String>> createJaxbList(String test) {
-        List<JAXBElement<String>> result = new ArrayList<JAXBElement<String>>();
+        List<JAXBElement<String>> result = new ArrayList<>();
         result.add( createJaxb( test ) );
         return result;
     }

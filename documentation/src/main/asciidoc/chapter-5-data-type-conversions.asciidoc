@@ -1,0 +1,623 @@
+[[datatype-conversions]]
+== Data type conversions
+
+Not always a mapped attribute has the same type in the source and target objects. For instance an attribute may be of type `int` in the source bean but of type `Long` in the target bean.
+
+Another example are references to other objects which should be mapped to the corresponding types in the target model. E.g. the class `Car` might have a property `driver` of the type `Person` which needs to be converted into a `PersonDto` object when mapping a `Car` object.
+
+In this section you'll learn how MapStruct deals with such data type conversions.
+
+[[implicit-type-conversions]]
+=== Implicit type conversions
+
+MapStruct takes care of type conversions automatically in many cases. If for instance an attribute is of type `int` in the source bean but of type `String` in the target bean, the generated code will transparently perform a conversion by calling `String#valueOf(int)` and `Integer#parseInt(String)`, respectively.
+
+Currently the following conversions are applied automatically:
+
+* Between all Java primitive data types and their corresponding wrapper types, e.g. between `int` and `Integer`, `boolean` and `Boolean` etc. The generated code is `null` aware, i.e. when converting a wrapper type into the corresponding primitive type a `null` check will be performed.
+
+* Between all Java primitive number types and the wrapper types, e.g. between `int` and `long` or `byte` and `Integer`.
+
+[WARNING]
+====
+Converting from larger data types to smaller ones (e.g. from `long` to `int`) can cause a value or precision loss. The `Mapper` and `MapperConfig` annotations have a method `typeConversionPolicy` to control warnings / errors. Due to backward compatibility reasons the default value is 'ReportingPolicy.IGNORE`.
+====
+
+* Between all Java primitive types (including their wrappers) and `String`, e.g. between `int` and `String` or `Boolean` and `String`. A format string as understood by `java.text.DecimalFormat` can be specified.
+
+.Conversion from int to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "price", numberFormat = "$#.00")
+    CarDto carToCarDto(Car car);
+
+    @IterableMapping(numberFormat = "$#.00")
+    List<String> prices(List<Integer> prices);
+}
+----
+====
+* Between `enum` types and `String`.
+
+* Between big number types (`java.math.BigInteger`, `java.math.BigDecimal`) and Java primitive types (including their wrappers) as well as String. A format string as understood by `java.text.DecimalFormat` can be specified.
+
+.Conversion from BigDecimal to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "power", numberFormat = "#.##E0")
+    CarDto carToCarDto(Car car);
+
+}
+----
+====
+
+
+* Between `JAXBElement<T>` and `T`, `List<JAXBElement<T>>` and `List<T>`
+
+* Between `java.util.Calendar`/`java.util.Date` and JAXB's `XMLGregorianCalendar`
+
+* Between `java.util.Date`/`XMLGregorianCalendar` and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option as this:
+
+.Conversion from Date to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "manufacturingDate", dateFormat = "dd.MM.yyyy")
+    CarDto carToCarDto(Car car);
+
+    @IterableMapping(dateFormat = "dd.MM.yyyy")
+    List<String> stringListToDateList(List<Date> dates);
+}
+----
+====
+
+* Between Jodas `org.joda.time.DateTime`, `org.joda.time.LocalDateTime`, `org.joda.time.LocalDate`, `org.joda.time.LocalTime` and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option (see above).
+
+* Between Jodas `org.joda.time.DateTime` and  `javax.xml.datatype.XMLGregorianCalendar`, `java.util.Calendar`.
+
+* Between Jodas `org.joda.time.LocalDateTime`, `org.joda.time.LocalDate` and `javax.xml.datatype.XMLGregorianCalendar`, `java.util.Date`.
+
+* Between `java.time.LocalDate`, `java.time.LocalDateTime` and `javax.xml.datatype.XMLGregorianCalendar`.
+
+* Between `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime` from Java 8 Date-Time package and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option (see above).
+
+* Between `java.time.Instant`, `java.time.Duration`, `java.time.Period` from Java 8 Date-Time package and `String` using the `parse` method in each class to map from `String` and using `toString` to map into `String`.
+
+* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Date` where, when mapping a `ZonedDateTime` from a given `Date`, the system default timezone is used.
+
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where timezone UTC is used as the timezone.
+
+* Between `java.time.LocalDate` from Java 8 Date-Time package and `java.util.Date` / `java.sql.Date` where timezone UTC is used as the timezone.
+
+* Between `java.time.Instant` from Java 8 Date-Time package and `java.util.Date`.
+
+* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
+
+* Between `java.sql.Date` and `java.util.Date`
+
+* Between `java.sql.Time` and `java.util.Date`
+
+* Between `java.sql.Timestamp` and `java.util.Date`
+
+* When converting from a `String`, omitting `Mapping#dateFormat`, it leads to usage of the default pattern and date format symbols for the default locale. An exception to this rule is `XmlGregorianCalendar` which results in parsing the `String` according to http://www.w3.org/TR/xmlschema-2/#dateTime[XML Schema 1.0 Part 2, Section 3.2.7-14.1, Lexical Representation].
+
+* Between `java.util.Currency` and `String`.
+** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/ISO_4217[ISO-4217] alphabetic code otherwise an `IllegalArgumentException` is thrown
+
+[[mapping-object-references]]
+=== Mapping object references
+
+Typically an object has not only primitive attributes but also references other objects. E.g. the `Car` class could contain a reference to a `Person` object (representing the car's driver) which should be mapped to a `PersonDto` object referenced by the `CarDto` class.
+
+In this case just define a mapping method for the referenced object type as well:
+
+.Mapper with one mapping method using another
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+
+    PersonDto personToPersonDto(Person person);
+}
+----
+====
+
+The generated code for the `carToCarDto()` method will invoke the `personToPersonDto()` method for mapping the `driver` attribute, while the generated implementation for `personToPersonDto()` performs the mapping of person objects.
+
+That way it is possible to map arbitrary deep object graphs. When mapping from entities into data transfer objects it is often useful to cut references to other entities at a certain point. To do so, implement a custom mapping method (see the next section) which e.g. maps a referenced entity to its id in the target object.
+
+When generating the implementation of a mapping method, MapStruct will apply the following routine for each attribute pair in the source and target object:
+
+* If source and target attribute have the same type, the value will be simply copied from source to target. If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target attribute.
+* If source and target attribute type differ, check whether there is another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
+* If no such method exists MapStruct will look whether a built-in conversion for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
+* If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes.
+* If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
+
+[NOTE]
+====
+In order to stop MapStruct from generating automatic sub-mapping methods, one can use `@Mapper( disableSubMappingMethodsGeneration = true )`.
+====
+
+[NOTE]
+====
+During the generation of automatic sub-mapping methods <<shared-configurations>> will not be taken into consideration, yet.
+Follow issue https://github.com/mapstruct/mapstruct/issues/1086[#1086] for more information.
+====
+
+[[controlling-nested-bean-mappings]]
+=== Controlling nested bean mappings
+
+As explained above, MapStruct will generate a method based on the name of the source and target property. Unfortunately, in many occasions these names do not match.
+
+The ‘.’ notation in an `@Mapping` source or target type can be used to control how properties should be mapped when names do not match.
+There is an elaborate https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-nested-bean-mappings[example] in our examples repository to explain how this problem can be overcome.
+
+In the simplest scenario there’s a property on a nested level that needs to be corrected.
+Take for instance a property `fish` which has an identical name in `FishTankDto` and `FishTank`.
+For this property MapStruct automatically generates a mapping: `FishDto fishToFishDto(Fish fish)`.
+MapStruct cannot possibly be aware of the deviating properties `kind` and `type`.
+Therefore this can be addressed in a mapping rule: `@Mapping(target="fish.kind", source="fish.type")`.
+This tells MapStruct to deviate from looking for a name `kind` at this level and map it to `type`.
+
+.Mapper controlling nested beans mappings I
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapper {
+
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", ignore = true)
+    @Mapping(target = "ornament", source = "interior.ornament")
+    @Mapping(target = "material.materialType", source = "material")
+    @Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")
+    FishTankDto map( FishTank source );
+}
+----
+====
+
+The same constructs can be used to ignore certain properties at a nesting level, as is demonstrated in the second `@Mapping` rule.
+
+MapStruct can even be used to “cherry pick” properties when source and target do not share the same nesting level (the same number of properties).
+This can be done in the source – and in the target type. This is demonstrated in the next 2 rules: `@Mapping(target="ornament", source="interior.ornament")` and `@Mapping(target="material.materialType", source="material")`.
+
+The latter can even be done when mappings first share a common base.
+For example: all properties that share the same name of `Quality` are mapped to `QualityDto`.
+Likewise, all properties of `Report` are mapped to `ReportDto`, with one exception: `organisation` in `OrganisationDto` is left empty (since there is no organization at the source level).
+Only the `name` is populated with the `organisationName` from `Report`.
+This is demonstrated in `@Mapping(target="quality.report.organisation.name", source="quality.report.organisationName")`
+
+Coming back to the original example: what if `kind` and `type` would be beans themselves?
+In that case MapStruct would again generate a method continuing to map.
+Such is demonstrated in the next example:
+
+
+.Mapper controlling nested beans mappings II
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapperWithDocument {
+
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", expression = "java(\"Jaws\")")
+    @Mapping(target = "plant", ignore = true )
+    @Mapping(target = "ornament", ignore = true )
+    @Mapping(target = "material", ignore = true)
+    @Mapping(target = "quality.document", source = "quality.report")
+    @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
+    FishTankWithNestedDocumentDto map( FishTank source );
+
+}
+----
+====
+
+Note what happens in `@Mapping(target="quality.document", source="quality.report")`.
+`DocumentDto` does not exist as such on the target side. It is mapped from `Report`.
+MapStruct continues to generate mapping code here. That mapping itself can be guided towards another name.
+This even works for constants and expression. Which is shown in the final example: `@Mapping(target="quality.document.organisation.name", constant="NoIdeaInc")`.
+
+MapStruct will perform a null check on each nested property in the source.
+
+[TIP]
+====
+Instead of configuring everything via the parent method we encourage users to explicitly write their own nested methods.
+This puts the configuration of the nested mapping into one place (method) where it can be reused from several methods in the upper level,
+instead of re-configuring the same things on all of those upper methods.
+====
+
+[NOTE]
+====
+In some cases the `ReportingPolicy` that is going to be used for the generated nested method would be `IGNORE`.
+This means that it is possible for MapStruct not to report unmapped target properties in nested mappings.
+====
+
+
+[[invoking-other-mappers]]
+=== Invoking other mappers
+
+In addition to methods defined on the same mapper type MapStruct can also invoke mapping methods defined in other classes, be it mappers generated by MapStruct or hand-written mapping methods. This can be useful to structure your mapping code in several classes (e.g. with one mapper type per application module) or if you want to provide custom mapping logic which can't be generated by MapStruct.
+
+For instance the `Car` class might contain an attribute `manufacturingDate` while the corresponding DTO attribute is of type String. In order to map this attribute, you could implement a mapper class like this:
+
+.Manually implemented mapper class
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class DateMapper {
+
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy-MM-dd" )
+            .format( date ) : null;
+    }
+
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy-MM-dd" )
+                .parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+}
+----
+====
+
+In the `@Mapper` annotation at the `CarMapper` interface reference the `DateMapper` class like this:
+
+.Referencing another mapper class
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses=DateMapper.class)
+public class CarMapper {
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+When generating code for the implementation of the `carToCarDto()` method, MapStruct will look for a method which maps a `Date` object into a String, find it on the `DateMapper` class and generate an invocation of `asString()` for mapping the `manufacturingDate` attribute.
+
+Generated mappers retrieve referenced mappers using the component model configured for them. If e.g. CDI was used as component model for `CarMapper`, `DateMapper` would have to be a CDI bean as well. When using the default component model, any hand-written mapper classes to be referenced by MapStruct generated mappers must declare a public no-args constructor in order to be instantiable.
+
+[[passing-target-type]]
+=== Passing the mapping target type to custom mappers
+
+When having a custom mapper hooked into the generated mapper with `@Mapper#uses()`, an additional parameter of type `Class` (or a super-type of it) can be defined in the custom mapping method in order to perform general mapping tasks for specific target object types. That attribute must be annotated with `@TargetType` for MapStruct to generate calls that pass the `Class` instance representing the corresponding property type of the target bean.
+
+For instance, the `CarDto` could have a property `owner` of type `Reference` that contains the primary key of a `Person` entity. You could now create a generic custom mapper that resolves any `Reference` objects to their corresponding managed JPA entity instances.
+
+.Mapping method expecting mapping target type as parameter
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@ApplicationScoped // CDI component model
+public class ReferenceMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public <T extends BaseEntity> T resolve(Reference reference, @TargetType Class<T> entityClass) {
+        return reference != null ? entityManager.find( entityClass, reference.getPk() ) : null;
+    }
+
+    public Reference toReference(BaseEntity entity) {
+        return entity != null ? new Reference( entity.getPk() ) : null;
+    }
+}
+
+@Mapper(componentModel = "cdi", uses = ReferenceMapper.class )
+public interface CarMapper {
+
+    Car carDtoToCar(CarDto carDto);
+}
+----
+====
+
+MapStruct will then generate something like this:
+
+.Generated code
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@ApplicationScoped
+public class CarMapperImpl implements CarMapper {
+
+    @Inject
+    private ReferenceMapper referenceMapper;
+
+    @Override
+    public Car carDtoToCar(CarDto carDto) {
+        if ( carDto == null ) {
+            return null;
+        }
+
+        Car car = new Car();
+
+        car.setOwner( referenceMapper.resolve( carDto.getOwner(), Owner.class ) );
+        // ...
+
+        return car;
+    }
+}
+----
+====
+
+[[passing-context]]
+=== Passing context or state objects to custom methods
+
+Additional _context_ or _state_ information can be passed through generated mapping methods to custom methods with `@Context` parameters. Such parameters are passed to other mapping methods, `@ObjectFactory` methods (see <<object-factories>>) or `@BeforeMapping` / `@AfterMapping` methods (see <<customizing-mappings-with-before-and-after>>) when applicable and can thus be used in custom code.
+
+`@Context` parameters are searched for `@ObjectFactory` methods, which are called on the provided context parameter value if applicable.
+
+`@Context` parameters are also searched for `@BeforeMapping` / `@AfterMapping` methods, which are called on the provided context parameter value if applicable.
+
+*Note:* no `null` checks are performed before calling before/after mapping methods on context parameters. The caller needs to make sure that `null` is not passed in that case.
+
+For generated code to call a method that is declared with `@Context` parameters, the declaration of the mapping method being generated needs to contain at least those (or assignable) `@Context` parameters as well. The generated code will not create new instances of missing `@Context` parameters nor will it pass a literal `null` instead.
+
+.Using `@Context` parameters for passing data down to hand-written property mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract CarDto toCar(Car car, @Context Locale translationLocale);
+
+protected OwnerManualDto translateOwnerManual(OwnerManual ownerManual, @Context Locale locale) {
+    // manually implemented logic to translate the OwnerManual with the given Locale
+}
+----
+====
+
+MapStruct will then generate something like this:
+
+.Generated code
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+public CarDto toCar(Car car, Locale translationLocale) {
+    if ( car == null ) {
+        return null;
+    }
+
+    CarDto carDto = new CarDto();
+
+    carDto.setOwnerManual( translateOwnerManual( car.getOwnerManual(), translationLocale );
+    // more generated mapping code
+
+    return carDto;
+}
+----
+====
+
+
+[[mapping-method-resolution]]
+=== Mapping method resolution
+
+When mapping a property from one type to another, MapStruct looks for the most specific method which maps the source type into the target type. The method may either be declared on the same mapper interface or on another mapper which is registered via `@Mapper#uses()`. The same applies for factory methods (see <<object-factories>>).
+
+The algorithm for finding a mapping or factory method resembles Java's method resolution algorithm as much as possible. In particular, methods with a more specific source type will take precedence (e.g. if there are two methods, one which maps the searched source type, and another one which maps a super-type of the same). In case more than one most-specific method is found, an error will be raised.
+
+[TIP]
+====
+When working with JAXB, e.g. when converting a `String` to a corresponding `JAXBElement<String>`, MapStruct will take the `scope` and `name` attributes of `@XmlElementDecl` annotations into account when looking for a mapping method. This makes sure that the created `JAXBElement` instances will have the right QNAME value. You can find a test which maps JAXB objects https://github.com/mapstruct/mapstruct/blob/{mapstructVersion}/integrationtest/src/test/resources/jaxbTest/src/test/java/org/mapstruct/itest/jaxb/JaxbBasedMapperTest.java[here].
+====
+
+[[selection-based-on-qualifiers]]
+=== Mapping method selection based on qualifiers
+
+In many occasions one requires mapping methods with the same method signature (apart from the name) that have different behavior.
+MapStruct has a handy mechanism to deal with such situations: `@Qualifier` (`org.mapstruct.Qualifier`).
+A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper
+and can be referred to in a bean property mapping, iterable mapping or map mapping.
+Multiple qualifiers can be ‘stuck onto’ a method and mapping.
+
+So, let's say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
+
+.Several mapping methods with identical source and target types
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Titles {
+
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+And a mapper using this handwritten mapper, in which source and target have a property 'title' that should be mapped:
+
+.Mapper causing an ambiguous mapping method error
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+Without the use of qualifiers, this would result in an ambiguous mapping method error, because 2 qualifying methods are found (`translateTitleEG`, `translateTitleGE`) and MapStruct would not have a hint which one to choose.
+
+Enter the qualifier approach:
+
+.Declaring a qualifier type
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface TitleTranslator {
+}
+----
+====
+
+And, some qualifiers to indicate which translator to use to map from source language to target language:
+
+.Declaring qualifier types for mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+public @interface EnglishToGerman {
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+public @interface GermanToEnglish {
+}
+----
+====
+
+Please take note of the target `TitleTranslator` on type level, `EnglishToGerman`, `GermanToEnglish` on method level!
+
+Then, using the qualifiers, the mapping could look like this:
+
+.Mapper using qualifiers
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+.Custom mapper qualifying the methods it provides
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@TitleTranslator
+public class Titles {
+
+    @EnglishToGerman
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @GermanToEnglish
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+[WARNING]
+====
+Please make sure the used retention policy equals retention policy `CLASS` (`@Retention(RetentionPolicy.CLASS)`).
+====
+
+[WARNING]
+====
+A class / method annotated with a qualifier will not qualify anymore for mappings that do not have the `qualifiedBy` element.
+====
+
+[TIP]
+====
+The same mechanism is also present on bean mappings: `@BeanMapping#qualifiedBy`: it selects the factory method marked with the indicated qualifier.
+====
+
+In many occasions, declaring a new annotation to aid the selection process can be too much for what you try to achieve. For those situations, MapStruct has the `@Named` annotation. This annotation is a pre-defined qualifier (annotated with `@Qualifier` itself) and can be used to name a Mapper or, more directly a mapping method by means of its value. The same example above would look like:
+
+.Custom mapper, annotating the methods to qualify by means of `@Named`
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Named("TitleTranslator")
+public class Titles {
+
+    @Named("EnglishToGerman")
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @Named("GermanToEnglish")
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+.Mapper using named
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+[WARNING]
+====
+Although the used mechanism is the same, the user has to be a bit more careful. Refactoring the name of a defined qualifier in an IDE will neatly refactor all other occurrences as well. This is obviously not the case for changing a name.
+====

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.nestedbeans.maps;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class AntonymsDictionary {
     private Map<Word, Word> antonyms;
@@ -36,7 +37,7 @@ public class AntonymsDictionary {
 
         AntonymsDictionary antonymsDictionary = (AntonymsDictionary) o;
 
-        return antonyms != null ? antonyms.equals( antonymsDictionary.antonyms ) : antonymsDictionary.antonyms == null;
+        return Objects.equals( antonyms, antonymsDictionary.antonyms );
 
     }
 

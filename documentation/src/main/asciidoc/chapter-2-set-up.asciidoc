@@ -1,0 +1,299 @@
+[[setup]]
+== Set up
+
+MapStruct is a Java annotation processor based on http://www.jcp.org/en/jsr/detail?id=269[JSR 269] and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
+
+It comprises the following artifacts:
+
+* _org.mapstruct:mapstruct_: contains the required annotations such as `@Mapping`
+* _org.mapstruct:mapstruct-processor_: contains the annotation processor which generates mapper implementations
+
+=== Apache Maven
+
+For Maven based projects add the following to your POM file in order to use MapStruct:
+
+.Maven configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+...
+<properties>
+    <org.mapstruct.version>{mapstructVersion}</org.mapstruct.version>
+</properties>
+...
+<dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+</dependencies>
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+...
+----
+====
+
+[TIP]
+====
+If you are working with the Eclipse IDE, make sure to have a current version of the http://www.eclipse.org/m2e/[M2E plug-in].
+When importing a Maven project configured as shown above, it will set up the MapStruct annotation processor so it runs right in the IDE, whenever you save a mapper type.
+Neat, isn't it?
+
+To double check that everything is working as expected, go to your project's properties and select "Java Compiler" -> "Annotation Processing" -> "Factory Path".
+The MapStruct processor JAR should be listed and enabled there.
+Any processor options configured via the compiler plug-in (see below) should be listed under "Java Compiler" -> "Annotation Processing".
+
+If the processor is not kicking in, check that the configuration of annotation processors through M2E is enabled.
+To do so, go to "Preferences" -> "Maven" -> "Annotation Processing" and select "Automatically configure JDT APT".
+Alternatively, specify the following in the `properties` section of your POM file: `<m2e.apt.activation>jdt_apt</m2e.apt.activation>`.
+
+Also make sure that your project is using Java 1.8 or later (project properties -> "Java Compiler" -> "Compile Compliance Level").
+It will not work with older versions.
+====
+
+=== Gradle
+
+Add the following to your Gradle build file in order to enable MapStruct:
+
+.Gradle configuration (3.4 and later)
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+plugins {
+    ...
+    id 'net.ltgt.apt' version '0.20'
+}
+
+// You can integrate with your IDEs.
+// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
+apply plugin: 'net.ltgt.apt-idea'
+apply plugin: 'net.ltgt.apt-eclipse'
+
+dependencies {
+    ...
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+...
+----
+====
+.Gradle (3.3 and older)
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+plugins {
+    ...
+    id 'net.ltgt.apt' version '0.20'
+}
+
+// You can integrate with your IDEs.
+// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
+apply plugin: 'net.ltgt.apt-idea'
+apply plugin: 'net.ltgt.apt-eclipse'
+
+dependencies {
+    ...
+    compile "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+...
+----
+====
+
+You can find a complete example in the https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-gradle[mapstruct-examples] project on GitHub.
+
+
+=== Apache Ant
+
+Add the `javac` task configured as follows to your _build.xml_ file in order to enable MapStruct in your Ant-based project. Adjust the paths as required for your project layout.
+
+.Ant configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+...
+<javac
+    srcdir="src/main/java"
+    destdir="target/classes"
+    classpath="path/to/mapstruct-{mapstructVersion}.jar">
+    <compilerarg line="-processorpath path/to/mapstruct-processor-{mapstructVersion}.jar"/>
+    <compilerarg line="-s target/generated-sources"/>
+</javac>
+...
+----
+====
+
+You can find a complete example in the https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-ant[mapstruct-examples] project on GitHub.
+
+[[configuration-options]]
+=== Configuration options
+
+The MapStruct code generator can be configured using _annotation processor options_.
+
+When invoking javac directly, these options are passed to the compiler in the form _-Akey=value_. When using MapStruct via Maven, any processor options can be passed using an `options` element within the configuration of the Maven processor plug-in like this:
+
+.Maven configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+...
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
+    <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </path>
+        </annotationProcessorPaths>
+        <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
+        <showWarnings>true</showWarnings>
+        <compilerArgs>
+            <compilerArg>
+                -Amapstruct.suppressGeneratorTimestamp=true
+            </compilerArg>
+            <compilerArg>
+                -Amapstruct.suppressGeneratorVersionInfoComment=true
+            </compilerArg>
+            <compilerArg>
+                -Amapstruct.verbose=true
+            </compilerArg>
+        </compilerArgs>
+    </configuration>
+</plugin>
+...
+----
+====
+
+.Gradle configuration
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+compileJava {
+    options.compilerArgs = [
+        '-Amapstruct.suppressGeneratorTimestamp=true',
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+        '-Amapstruct.verbose=true'
+    ]
+}
+...
+----
+====
+
+The following options exist:
+
+.MapStruct processor options
+[cols="1,2a,1"]
+|===
+|Option|Purpose|Default
+
+|`mapstruct.
+suppressGeneratorTimestamp`
+|If set to `true`, the creation of a time stamp in the `@Generated` annotation in the generated mapper classes is suppressed.
+|`false`
+
+|`mapstruct.verbose`
+|If set to `true`, MapStruct in which MapStruct logs its major decisions. Note, at the moment of writing in Maven, also `showWarnings` needs to be added due to a problem in the maven-compiler-plugin configuration.
+|`false`
+
+|`mapstruct.
+suppressGeneratorVersionInfoComment`
+|If set to `true`, the creation of the `comment` attribute in the `@Generated` annotation in the generated mapper classes is suppressed. The comment contains information about the version of MapStruct and about the compiler used for the annotation processing.
+|`false`
+
+|`mapstruct.defaultComponentModel`
+|The name of the component model (see <<retrieving-mapper>>) based on which mappers should be generated.
+
+Supported values are:
+
+* `default`: the mapper uses no component model, instances are typically retrieved via `Mappers#getMapper(Class)`
+* `cdi`: the generated mapper is an application-scoped CDI bean and can be retrieved via `@Inject`
+* `spring`: the generated mapper is a singleton-scoped Spring bean and can be retrieved via `@Autowired`
+* `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject`, e.g. using Spring
+
+If a component model is given for a specific mapper via `@Mapper#componentModel()`, the value from the annotation takes precedence.
+|`default`
+
+|`mapstruct.defaultInjectionStrategy`
+| The type of the injection in mapper via parameter `uses`. This is only used on annotated based component models
+  such as CDI, Spring and JSR 330.
+
+Supported values are:
+
+* `field`: dependencies will be injected in fields
+* `constructor`: will be generated constructor. Dependencies will be injected via constructor.
+
+When CDI `componentModel` a default constructor will also be generated.
+If a injection strategy is given for a specific mapper via `@Mapper#injectionStrategy()`, the value from the annotation takes precedence over the option.
+|`field`
+
+|`mapstruct.unmappedTargetPolicy`
+|The default reporting policy to be applied in case an attribute of the target object of a mapping method is not populated with a source value.
+
+Supported values are:
+
+* `ERROR`: any unmapped target property will cause the mapping code generation to fail
+* `WARN`: any unmapped target property will cause a warning at build time
+* `IGNORE`: unmapped target properties are ignored
+
+If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`, the value from the annotation takes precedence.
+|`WARN`
+|===
+
+=== Using MapStruct on Java 9
+
+MapStruct can be used with Java 9 (JPMS), support for it is experimental.
+
+A core theme of Java 9 is the modularization of the JDK. One effect of this is that a specific module needs	to be enabled for a project in order to use the `javax.annotation.Generated` annotation. `@Generated` is added by MapStruct to generated mapper classes to tag them as generated code, stating the date of generation, the generator version etc.
+
+To allow usage of the `@Generated` annotation the module _java.xml.ws.annotation_ must be enabled. When using Maven, this can be done like this:
+
+    export MAVEN_OPTS="--add-modules java.xml.ws.annotation"
+
+If the `@Generated` annotation is not available, MapStruct will detect this situation and not add it to generated mappers.
+
+[NOTE]
+=====
+In Java 9 `java.annotation.processing.Generated` was added (part of the `java.compiler` module),
+if this annotation is available then it will be used.
+=====

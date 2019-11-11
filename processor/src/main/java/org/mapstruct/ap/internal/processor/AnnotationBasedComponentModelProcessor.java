@@ -45,7 +45,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
 
         String componentModel = mapperConfiguration.componentModel( context.getOptions() );
-        InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy();
+        InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy( context.getOptions() );
 
         if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
             return mapper;

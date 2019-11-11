@@ -1,0 +1,227 @@
+[[mapping-collections]]
+== Mapping collections
+
+The mapping of collection types (`List`, `Set` etc.) is done in the same way as mapping bean types, i.e. by defining mapping methods with the required source and target types in a mapper interface. MapStruct supports a wide range of iterable types from the http://docs.oracle.com/javase/tutorial/collections/intro/index.html[Java Collection Framework].
+
+The generated code will contain a loop which iterates over the source collection, converts each element and puts it into the target collection. If a mapping method for the collection element types is found in the given mapper or the mapper it uses, this method is invoked to perform the element conversion. Alternatively, if an implicit conversion for the source and target element types exists, this conversion routine will be invoked. The following shows an example:
+
+.Mapper with collection mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    Set<String> integerSetToStringSet(Set<Integer> integers);
+
+    List<CarDto> carsToCarDtos(List<Car> cars);
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+The generated implementation of the `integerSetToStringSet` performs the conversion from `Integer` to `String` for each element, while the generated `carsToCarDtos()` method invokes the `carToCarDto()` method for each contained element as shown in the following:
+
+.Generated collection mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@Override
+public Set<String> integerSetToStringSet(Set<Integer> integers) {
+    if ( integers == null ) {
+        return null;
+    }
+
+    Set<String> set = new HashSet<String>();
+
+    for ( Integer integer : integers ) {
+        set.add( String.valueOf( integer ) );
+    }
+
+    return set;
+}
+
+@Override
+public List<CarDto> carsToCarDtos(List<Car> cars) {
+    if ( cars == null ) {
+        return null;
+    }
+
+    List<CarDto> list = new ArrayList<CarDto>();
+
+    for ( Car car : cars ) {
+        list.add( carToCarDto( car ) );
+    }
+
+    return list;
+}
+----
+====
+
+Note that MapStruct will look for a collection mapping method with matching parameter and return type, when mapping a collection-typed attribute of a bean, e.g. from `Car#passengers` (of type `List<Person>`) to `CarDto#passengers` (of type `List<PersonDto>`).
+
+.Usage of collection mapping method to map a bean property
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+carDto.setPassengers( personsToPersonDtos( car.getPassengers() ) );
+...
+----
+====
+
+Some frameworks and libraries only expose JavaBeans getters but no setters for collection-typed properties. Types generated from an XML schema using JAXB adhere to this pattern by default. In this case the generated code for mapping such a property invokes its getter and adds all the mapped elements:
+
+.Usage of an adding method for collection mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+carDto.getPassengers().addAll( personsToPersonDtos( car.getPassengers() ) );
+...
+----
+====
+
+[WARNING]
+====
+It is not allowed to declare mapping methods with an iterable source and a non-iterable target or the other way around. An error will be raised when detecting this situation.
+====
+
+[[mapping-maps]]
+=== Mapping maps
+
+Also map-based mapping methods are supported. The following shows an example:
+
+.Map mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public interface SourceTargetMapper {
+
+    @MapMapping(valueDateFormat = "dd.MM.yyyy")
+    Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
+}
+----
+====
+
+Similar to iterable mappings, the generated code will iterate through the source map, convert each value and key (either by means of an implicit conversion or by invoking another mapping method) and put them into the target map:
+
+.Generated implementation of map mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@Override
+public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) {
+    if ( source == null ) {
+        return null;
+    }
+
+    Map<Long, Date> map = new HashMap<Long, Date>();
+
+    for ( Map.Entry<String, String> entry : source.entrySet() ) {
+
+        Long key = Long.parseLong( entry.getKey() );
+        Date value;
+        try {
+            value = new SimpleDateFormat( "dd.MM.yyyy" ).parse( entry.getValue() );
+        }
+        catch( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+
+        map.put( key, value );
+    }
+
+    return map;
+}
+----
+====
+
+[[collection-mapping-strategies]]
+=== Collection mapping strategies
+
+MapStruct has a `CollectionMappingStrategy`, with the possible values: `ACCESSOR_ONLY`, `SETTER_PREFERRED`, `ADDER_PREFERRED` and `TARGET_IMMUTABLE`.
+
+In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are applied to the presence/absense of a `set-s`, `add-` and / or `get-s` method on the target object:
+
+.Collection mapping strategy options
+|===
+|Option|Only target set-s Available|Only target add- Available|Both set-s / add- Available|No set-s / add- Available|Existing Target(`@TargetType`)
+
+|`ACCESSOR_ONLY`
+|set-s
+|get-s
+|set-s
+|get-s
+|get-s
+
+|`SETTER_PREFERRED`
+|set-s
+|add-
+|set-s
+|get-s
+|get-s
+
+|`ADDER_PREFERRED`
+|set-s
+|add-
+|add-
+|get-s
+|get-s
+
+|`TARGET_IMMUTABLE`
+|set-s
+|exception
+|set-s
+|exception
+|set-s
+|===
+
+Some background: An `adder` method is typically used in case of http://www.eclipse.org/webtools/dali/[generated (JPA) entities], to add a single element (entity) to an underlying collection. Invoking the adder establishes a parent-child relation between parent - the bean (entity) on which the adder is invoked - and its child(ren), the elements (entities) in the collection. To find the appropriate `adder`, MapStruct will try to make a match between the generic parameter type of the underlying collection and the single argument of a candidate `adder`. When there are more candidates, the plural `setter` / `getter` name is converted to singular and will be used in addition to make a match.
+
+The option `DEFAULT` should not be used explicitly. It is used to distinguish between an explicit user desire to override the default in a `@MapperConfig` from the implicit Mapstruct choice in a `@Mapper`. The option `DEFAULT` is synonymous to `ACCESSOR_ONLY`.
+
+[TIP]
+====
+When working with an `adder` method and JPA entities, Mapstruct assumes that the target collections are initialized with a collection implementation (e.g. an `ArrayList`). You can use factories to create a new target entity with intialized collections instead of Mapstruct creating the target entity by its constructor.
+====
+
+[[implementation-types-for-collection-mappings]]
+=== Implementation types used for collection mappings
+
+When an iterable or map mapping method declares an interface type as return type, one of its implementation types will be instantiated in the generated code. The following table shows the supported interface types and their corresponding implementation types as instantiated in the generated code:
+
+.Collection mapping implementation types
+|===
+|Interface type|Implementation type
+
+|`Iterable`|`ArrayList`
+
+|`Collection`|`ArrayList`
+
+|`List`|`ArrayList`
+
+|`Set`|`HashSet`
+
+|`SortedSet`|`TreeSet`
+
+|`NavigableSet`|`TreeSet`
+
+|`Map`|`HashMap`
+
+|`SortedMap`|`TreeMap`
+
+|`NavigableMap`|`TreeMap`
+
+|`ConcurrentMap`|`ConcurrentHashMap`
+|`ConcurrentNavigableMap`|`ConcurrentSkipListMap`
+|===

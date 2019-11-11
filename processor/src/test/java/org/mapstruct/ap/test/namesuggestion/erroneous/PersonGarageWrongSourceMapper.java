@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.namesuggestion.erroneous;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.namesuggestion.Person;
 import org.mapstruct.ap.test.namesuggestion.PersonDto;
 import org.mapstruct.factory.Mappers;
@@ -16,10 +17,18 @@ public interface PersonGarageWrongSourceMapper {
 
     PersonGarageWrongSourceMapper MAPPER = Mappers.getMapper( PersonGarageWrongSourceMapper.class );
 
-    @Mapping(source = "garage.colour.rgb", target = "garage.color.rgb")
+    @Mappings( {
+        @Mapping( target = "garage.color.rgb", source = "garage.colour.rgb" ),
+        @Mapping( target = "fullAge", source = "age" ),
+        @Mapping( target = "fullName", source = "name" )
+    } )
     Person mapPerson(PersonDto dto);
 
-    @Mapping(source = "garage.colour", target = "garage.color")
+    @Mappings( {
+        @Mapping( target = "garage.color", source = "garage.colour" ),
+        @Mapping( target = "fullAge", source = "age" ),
+        @Mapping( target = "fullName", source = "name" )
+    } )
     Person mapPersonGarage(PersonDto dto);
 
 }

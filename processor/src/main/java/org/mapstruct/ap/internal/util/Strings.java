@@ -153,12 +153,12 @@ public class Strings {
         }
 
         int c = 1;
-        String seperator = Character.isDigit( name.charAt( name.length() - 1 ) ) ? "_" : "";
-        while ( conflictingNames.contains( name + seperator + c ) ) {
+        String separator = Character.isDigit( name.charAt( name.length() - 1 ) ) ? "_" : "";
+        while ( conflictingNames.contains( name + separator + c ) ) {
             c++;
         }
 
-        return name + seperator + c;
+        return name + separator + c;
     }
 
     /**

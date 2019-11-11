@@ -29,7 +29,7 @@ public class ObjectFactory {
 
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", name = "OrderShippingDetails")
     public JAXBElement<OrderShippingDetailsType> createOrderShippingDetails(OrderShippingDetailsType value) {
-        return new JAXBElement<OrderShippingDetailsType>(
+        return new JAXBElement<>(
             ORDER_SHIPPING_DETAILS_QNAME,
             OrderShippingDetailsType.class, null, value
         );
@@ -38,7 +38,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", name = "orderShippedFrom",
         scope = OrderShippingDetailsType.class)
     public JAXBElement<String> createOrderShippingDetailsTypeOrderShippedFrom(String value) {
-        return new JAXBElement<String>(
+        return new JAXBElement<>(
             ORDER_SHIPPING_DETAILS_TYPE_ORDER_SHIPPED_FROM_QNAME, String.class,
             OrderShippingDetailsType.class, value
         );
@@ -47,7 +47,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", name = "orderShippedTo",
         scope = OrderShippingDetailsType.class)
     public JAXBElement<String> createOrderShippingDetailsTypeOrderShippedTo(String value) {
-        return new JAXBElement<String>(
+        return new JAXBElement<>(
             ORDER_SHIPPING_DETAILS_TYPE_ORDER_SHIPPED_TO_QNAME, String.class,
             OrderShippingDetailsType.class, value
         );

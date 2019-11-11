@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nestedbeans.other;
 
+import java.util.Objects;
+
 public class UserDto {
 
     private String name;
@@ -55,13 +57,13 @@ public class UserDto {
 
         UserDto userDto = (UserDto) o;
 
-        if ( name != null ? !name.equals( userDto.name ) : userDto.name != null ) {
+        if ( !Objects.equals( name, userDto.name ) ) {
             return false;
         }
-        if ( car != null ? !car.equals( userDto.car ) : userDto.car != null ) {
+        if ( !Objects.equals( car, userDto.car ) ) {
             return false;
         }
-        return house != null ? house.equals( userDto.house ) : userDto.house == null;
+        return Objects.equals( house, userDto.house );
 
     }
 

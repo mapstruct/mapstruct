@@ -29,7 +29,7 @@ public interface ToolMapper {
     @InheritConfiguration( name = "mapBase" )
     ToolEntity mapTool(ToolDto source);
 
-    // demonstrates that all the businss stuff is mapped (implicit-by-name and defined)
+    // demonstrates that all the business stuff is mapped (implicit-by-name and defined)
     @InheritConfiguration( name = "mapBase" )
     @Mapping(target = "description", source = "articleDescription")
     WorkBenchEntity mapBench(WorkBenchDto source);
