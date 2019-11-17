@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.itest.tests;
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -29,14 +34,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * <p>This is supposed to be run from the mapstruct root project folder. 
+ * <p>This is supposed to be run from the mapstruct root project folder.
  * Otherwise, use <code>-Dmapstruct_root=path_to_project</code>.
  */
 @RunWith( Parameterized.class )
 public class GradleIncrementalCompilationTest {
-    private static Path ROOT_PATH;
-    private static String PROJECT_DIR = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
-    private static String COMPILE_TASK_NAME = "compileJava";
+    private static Path rootPath;
+    private static String projectDir = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
+    private static String compileTaskName = "compileJava";
 
     @Rule
     public final TemporaryFolder testBuildDir = new TemporaryFolder();
@@ -69,7 +74,7 @@ public class GradleIncrementalCompilationTest {
     }
 
     private void assertCompileOutcome(BuildResult result, TaskOutcome outcome) {
-        assertEquals( outcome, result.task( ":" + COMPILE_TASK_NAME ).getOutcome() );
+        assertEquals( outcome, result.task( ":" + compileTaskName ).getOutcome() );
     }
 
     private void assertRecompiled(BuildResult result, int recompiledCount) {
@@ -84,19 +89,19 @@ public class GradleIncrementalCompilationTest {
         String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getRoot().getAbsolutePath();
 
         // Inject the path to the folder containing the mapstruct-processor JAR
-        String jarDirectoryArg = "-PmapstructRootPath=" + ROOT_PATH.toString();
-        return Arrays.asList( COMPILE_TASK_NAME, buildDirPropertyArg, jarDirectoryArg );
+        String jarDirectoryArg = "-PmapstructRootPath=" + rootPath.toString();
+        return Arrays.asList( compileTaskName, buildDirPropertyArg, jarDirectoryArg );
     }
 
     @BeforeClass
     public static void setupClass() throws Exception {
-        ROOT_PATH = Paths.get( System.getProperty( "mapstruct_root", "." ) ).toAbsolutePath();
+        rootPath = Paths.get( System.getProperty( "mapstruct_root", "." ) ).toAbsolutePath();
     }
 
     @Before
     public void setup() throws IOException {
         // Copy test project files to the temp dir
-        Path gradleProjectPath = ROOT_PATH.resolve( PROJECT_DIR );
+        Path gradleProjectPath = rootPath.resolve( projectDir );
         FileUtils.copyDirectory( gradleProjectPath.toFile(), testProjectDir.getRoot() );
         compileArgs = buildCompileArgs();
         sourceDirectory = new File( testProjectDir.getRoot(), "src/main/java" );
