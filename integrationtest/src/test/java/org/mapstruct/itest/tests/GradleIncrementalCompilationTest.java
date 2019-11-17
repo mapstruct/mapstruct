@@ -9,6 +9,8 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,9 +28,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+/**
+ * <p>This is supposed to be run from the mapstruct root project folder. 
+ * Otherwise, use <code>-Dmapstruct_root=path_to_project</code>.
+ */
 @RunWith( Parameterized.class )
 public class GradleIncrementalCompilationTest {
-    private static String PROJECT_DIR = "src/test/resources/gradleIncrementalCompilationTest";
+    private static Path ROOT_PATH;
+    private static String PROJECT_DIR = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
     private static String COMPILE_TASK_NAME = "compileJava";
 
     @Rule
@@ -74,17 +82,22 @@ public class GradleIncrementalCompilationTest {
     private List<String> buildCompileArgs() {
         // Make Gradle use the temporary build folder by overriding the buildDir property
         String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getRoot().getAbsolutePath();
-        File rootDirectory = new File( "../" );
 
         // Inject the path to the folder containing the mapstruct-processor JAR
-        String jarDirectoryArg = "-PmapstructRootPath=" + rootDirectory.getAbsolutePath();
+        String jarDirectoryArg = "-PmapstructRootPath=" + ROOT_PATH.toString();
         return Arrays.asList( COMPILE_TASK_NAME, buildDirPropertyArg, jarDirectoryArg );
+    }
+
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        ROOT_PATH = Paths.get( System.getProperty( "mapstruct_root", "." ) ).toAbsolutePath();
     }
 
     @Before
     public void setup() throws IOException {
         // Copy test project files to the temp dir
-        FileUtils.copyDirectory( new File( PROJECT_DIR ), testProjectDir.getRoot() );
+        Path gradleProjectPath = ROOT_PATH.resolve( PROJECT_DIR );
+        FileUtils.copyDirectory( gradleProjectPath.toFile(), testProjectDir.getRoot() );
         compileArgs = buildCompileArgs();
         sourceDirectory = new File( testProjectDir.getRoot(), "src/main/java" );
         runner = GradleRunner.create().withGradleVersion( gradleVersion ).withProjectDir( testProjectDir.getRoot() );
