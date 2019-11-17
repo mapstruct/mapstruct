@@ -21,43 +21,32 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith( Parameterized.class )
 public class GradleIncrementalCompilationTest {
     private static String PROJECT_DIR = "src/test/resources/gradleIncrementalCompilationTest";
     private static String COMPILE_TASK_NAME = "compileJava";
-    private static String GRADLE_DISTRIBUTION_VERSION = "5.0";
 
     @Rule
     public final TemporaryFolder testBuildDir = new TemporaryFolder();
     @Rule
     public final TemporaryFolder testProjectDir = new TemporaryFolder();
-    private GradleRunner runner;
-    // The source file to change
-    private File targetFile; 
-    // Gradle compile task arguments
-    private List<String> compileArgs; 
 
-    @Before
-    public void setup() throws IOException {
-        // Copy test project files to the temp dir
-        FileUtils.copyDirectory( new File( PROJECT_DIR ), testProjectDir.getRoot() );
-        buildCompileArgs();
-        File sourceDirectory = new File( testProjectDir.getRoot(), "src/main/java" );
-        targetFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/model/Target.java" );
-        runner = GradleRunner
-                             .create()
-                             .withGradleVersion( GRADLE_DISTRIBUTION_VERSION )
-                             .withProjectDir( testProjectDir.getRoot() );
+    private String gradleVersion;
+    private GradleRunner runner;
+    private File sourceDirectory;
+    private List<String> compileArgs; // Gradle compile task arguments
+
+    public GradleIncrementalCompilationTest(String gradleVersion) {
+        this.gradleVersion = gradleVersion;
     }
 
-    private void buildCompileArgs() {
-        // Make Gradle use the temporary build folder by overriding the buildDir property
-        String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getRoot().getAbsolutePath();
-        File rootDirectory = new File("../");
-        
-        // Inject the path to the folder containing the mapstruct-processor JAR
-        String jarDirectoryArg = "-PmapstructRootPath=" + rootDirectory.getAbsolutePath();
-        compileArgs = Arrays.asList( COMPILE_TASK_NAME, buildDirPropertyArg, jarDirectoryArg);
+    @Parameters( name = "Gradle {0}" )
+    public static List<String> gradleVersions() {
+        return Arrays.asList( "5.0", "6.0" );
     }
 
     private void replaceInFile(File file, CharSequence target, CharSequence replacement) throws IOException {
@@ -82,31 +71,71 @@ public class GradleIncrementalCompilationTest {
             containsString( String.format( "Incremental compilation of %d classes completed", recompiledCount ) ) );
     }
 
+    private List<String> buildCompileArgs() {
+        // Make Gradle use the temporary build folder by overriding the buildDir property
+        String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getRoot().getAbsolutePath();
+        File rootDirectory = new File( "../" );
+
+        // Inject the path to the folder containing the mapstruct-processor JAR
+        String jarDirectoryArg = "-PmapstructRootPath=" + rootDirectory.getAbsolutePath();
+        return Arrays.asList( COMPILE_TASK_NAME, buildDirPropertyArg, jarDirectoryArg );
+    }
+
+    @Before
+    public void setup() throws IOException {
+        // Copy test project files to the temp dir
+        FileUtils.copyDirectory( new File( PROJECT_DIR ), testProjectDir.getRoot() );
+        compileArgs = buildCompileArgs();
+        sourceDirectory = new File( testProjectDir.getRoot(), "src/main/java" );
+        runner = GradleRunner.create().withGradleVersion( gradleVersion ).withProjectDir( testProjectDir.getRoot() );
+    }
+
+    @Test
+    public void testBuildSucceeds() throws IOException {
+        // Make sure the test build setup actually compiles
+        BuildResult buildResult = getRunner().build();
+        assertCompileOutcome( buildResult, SUCCESS );
+    }
+
     @Test
     public void testUpToDate() throws IOException {
-        BuildResult result = getRunner().build();
-        System.out.println( result.getOutput() );
-        assertCompileOutcome( result, SUCCESS );
-
+        getRunner().build();
         BuildResult secondBuildResult = getRunner().build();
         assertCompileOutcome( secondBuildResult, UP_TO_DATE );
     }
 
     @Test
-    public void testChangedFile() throws IOException {
-        BuildResult result = getRunner( "--info" ).build();
-        System.out.println( result.getOutput() );
-        assertCompileOutcome( result, SUCCESS );
-
-        System.out.println( "### SECOND BUILD FOLLOWS\n" );
-
+    public void testChangeConstant() throws IOException {
+        getRunner().build();
         // Change return value in class Target
-        replaceInFile( targetFile, "original", "change" );
-
+        File targetFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/model/Target.java" );
+        replaceInFile( targetFile, "original", "changed" );
         BuildResult secondBuildResult = getRunner( "--info" ).build();
-        System.out.println( secondBuildResult.getOutput() );
 
         // 3 classes should be recompiled: Target -> TestMapper -> TestMapperImpl
         assertRecompiled( secondBuildResult, 3 );
+    }
+
+    @Test
+    public void testChangeTargetField() throws IOException {
+        getRunner().build();
+        // Change target field in mapper interface
+        File mapperFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/lib/TestMapper.java" );
+        replaceInFile( mapperFile, "field", "otherField" );
+        BuildResult secondBuildResult = getRunner( "--info" ).build();
+
+        // 2 classes should be recompiled: TestMapper -> TestMapperImpl
+        assertRecompiled( secondBuildResult, 2 );
+    }
+
+    @Test
+    public void testChangeUnrelatedFile() throws IOException {
+        getRunner().build();
+        File unrelatedFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/lib/UnrelatedComponent.java" );
+        replaceInFile( unrelatedFile, "true", "false" );
+        BuildResult secondBuildResult = getRunner( "--info" ).build();
+
+        // Only the UnrelatedComponent class should be recompiled
+        assertRecompiled( secondBuildResult, 1 );
     }
 }
