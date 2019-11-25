@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Iterator;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
