@@ -24,7 +24,7 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.2.0.Final</version>
+    <version>1.2.1.Final</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
