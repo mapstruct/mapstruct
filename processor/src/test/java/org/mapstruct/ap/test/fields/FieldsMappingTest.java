@@ -41,6 +41,7 @@ public class FieldsMappingTest {
         source.normalInt = 4;
         source.normalList = Lists.newArrayList( 10, 11, 12 );
         source.fieldOnlyWithGetter = 20;
+        source.packagePrivatefield = "cool";
 
         Target target = SourceTargetMapper.INSTANCE.toSource( source );
 
@@ -52,6 +53,7 @@ public class FieldsMappingTest {
         assertThat( target.privateFinalList ).containsOnly( 3, 4, 5 );
         // +21 from the source getter and append 11 on the setter from the target
         assertThat( target.fieldWithMethods ).isEqualTo( "4111" );
+        assertThat( target.packagePrivatefield ).isEqualTo( "cool" );
     }
 
     @Test
@@ -63,6 +65,7 @@ public class FieldsMappingTest {
         target.normalList = Lists.newArrayList( "10", "11", "12" );
         target.privateFinalList = Lists.newArrayList( 10, 11, 12 );
         target.fieldWithMethods = "20";
+        target.packagePrivatefield = "cool";
 
         Source source = SourceTargetMapper.INSTANCE.toSource( target );
 
@@ -74,5 +77,6 @@ public class FieldsMappingTest {
         assertThat( source.getPrivateFinalList() ).containsOnly( 3, 4, 5, 10, 11, 12 );
         // 23 is appended on the target getter
         assertThat( source.fieldOnlyWithGetter ).isEqualTo( 2023 );
+        assertThat( source.packagePrivatefield ).isEqualTo( "cool" );
     }
 }

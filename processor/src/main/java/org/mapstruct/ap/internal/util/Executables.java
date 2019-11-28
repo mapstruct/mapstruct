@@ -77,7 +77,7 @@ public class Executables {
 
     public static boolean isGetterMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
-        return executable != null && isPublic( method ) &&
+        return executable != null && isMappableAccessor( method ) &&
             executable.getParameters().isEmpty() &&
             ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.GETTER;
     }
@@ -92,7 +92,7 @@ public class Executables {
      */
     public static boolean isFieldAccessor(Accessor accessor) {
         ExecutableElement executable = accessor.getExecutable();
-        return executable == null && isPublic( accessor ) && isNotStatic( accessor );
+        return executable == null && isMappableAccessor( accessor ) && isNotStatic( accessor );
     }
 
     public static boolean isPresenceCheckMethod(Accessor method) {
@@ -101,7 +101,7 @@ public class Executables {
         }
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isMappableAccessor( method )
             && executable.getParameters().isEmpty()
             && ( executable.getReturnType().getKind() == TypeKind.BOOLEAN ||
             "java.lang.Boolean".equals( getQualifiedName( executable.getReturnType() ) ) )
@@ -111,7 +111,7 @@ public class Executables {
     public static boolean isSetterMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isMappableAccessor( method )
             && executable.getParameters().size() == 1
             && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER;
     }
@@ -119,13 +119,29 @@ public class Executables {
     public static boolean isAdderMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
+            && isMappableAccessor( method )
             && executable.getParameters().size() == 1
             && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.ADDER;
     }
 
     private static boolean isPublic(Accessor method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
+    }
+
+    private static boolean isPackagePrivate(Accessor method) {
+        return !isPublic( method ) && !isProtected( method ) && !isPrivate( method );
+    }
+
+    private static boolean isMappableAccessor(Accessor method) {
+        return isPublic( method ) || isPackagePrivate( method );
+    }
+
+    private static boolean isPrivate(Accessor method) {
+        return method.getModifiers().contains( Modifier.PRIVATE );
+    }
+
+    private static boolean isProtected(Accessor method) {
+        return method.getModifiers().contains( Modifier.PROTECTED );
     }
 
     private static boolean isNotStatic(Accessor accessor) {

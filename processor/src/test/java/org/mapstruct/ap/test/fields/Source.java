@@ -33,6 +33,7 @@ public class Source {
     public final List<Integer> finalList = Arrays.asList( 1, 2, 3 );
     public List<Integer> normalList;
     public Integer fieldOnlyWithGetter;
+    String packagePrivatefield;
     // CHECKSTYLE:ON
 
     private final List<Integer> privateFinalList = new ArrayList<Integer>( Arrays.asList( 3, 4, 5 ) );

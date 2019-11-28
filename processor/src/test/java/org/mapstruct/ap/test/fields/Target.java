@@ -32,6 +32,7 @@ public class Target {
     public List<String> normalList;
     public List<Integer> privateFinalList;
     public String fieldWithMethods;
+    String packagePrivatefield;
     // CHECKSTYLE:ON
 
     public String getFieldWithMethods() {
