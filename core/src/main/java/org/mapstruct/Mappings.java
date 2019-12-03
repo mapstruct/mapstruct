@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  * @author Gunnar Morling
  */
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Mappings {
 
     /**
