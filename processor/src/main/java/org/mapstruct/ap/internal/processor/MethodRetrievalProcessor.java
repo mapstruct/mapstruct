@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -56,6 +59,11 @@ import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutabl
  * @author Gunnar Morling
  */
 public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
+
+    private static final String JAVA_LANG_ANNOTATION_PGK = "java.lang.annotation";
+    private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
+    private static final String MAPPING_FQN = "org.mapstruct.Mapping";
+    private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
@@ -243,7 +251,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setParameters( parameters )
             .setReturnType( returnType )
             .setExceptionTypes( exceptionTypes )
-            .setMappings( getMappings( method ) )
+            .setMappings( getMappings( method, method, new LinkedHashSet<>(), new HashSet<>() ) )
             .setIterableMapping(
                 IterableMapping.fromPrism(
                     IterableMappingPrism.getInstanceOn( method ),
@@ -492,24 +500,50 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * method.
      *
      * @param method The method of interest
+     * @param element Element of interest: method, or (meta) annotation
+     * @param mappings LinkedSet of mappings found so far
      *
      * @return The mappings for the given method, keyed by target property name
      */
-    private Set<Mapping> getMappings(ExecutableElement method) {
-        Set<Mapping> mappings = new LinkedHashSet<>(  );
+    private Set<Mapping> getMappings(ExecutableElement method, Element element, Set<Mapping> mappings,
+                                     Set<Element> handledElements) {
 
-        MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
-        MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
-
-        if ( mappingAnnotation != null ) {
-            mappings.add( Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils ) );
+        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+            Element lElement = annotationMirror.getAnnotationType().asElement();
+            if ( isAnnotation( lElement, MAPPING_FQN ) ) {
+                // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( element );
+                Mapping.addFromMappingPrism( mappingAnnotation, method, messager, typeUtils, mappings );
+            }
+            else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
+                // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( element );
+                Mapping.addFromMappingsPrism( mappingsAnnotation, method, messager, typeUtils, mappings );
+            }
+            else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
+                && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
+                && !handledElements.contains( lElement )
+            ) {
+                // recur over annotation mirrors
+                handledElements.add( lElement );
+                getMappings( method, lElement, mappings, handledElements );
+            }
         }
-
-        if ( mappingsAnnotation != null ) {
-            mappings.addAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
-        }
-
         return mappings;
+    }
+
+    private boolean isAnnotationInPackage(Element element, String packageFQN ) {
+        if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
+            return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
+        }
+        return false;
+    }
+
+    private boolean isAnnotation(Element element, String annotationFQN) {
+        if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
+            return annotationFQN.equals( ( (TypeElement) element ).getQualifiedName().toString() );
+        }
+        return false;
     }
 
     /**
