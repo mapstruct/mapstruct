@@ -92,36 +92,25 @@ public class Mapping {
         return mappings.stream().filter( mapping -> mapping.targetName.equals( targetName ) ).findAny().orElse( null );
     }
 
-    public static Set<Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
-                                                 FormattingMessager messager, Types typeUtils) {
-        Set<Mapping> mappings = new LinkedHashSet<>();
+    public static void addFromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
+                                            FormattingMessager messager, Types typeUtils, Set<Mapping> mappings) {
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
-            if ( mapping != null ) {
-                if ( mappings.contains( mapping ) ) {
-                    messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
-                }
-                else {
-                    mappings.add( mapping );
-                }
-            }
+            addFromMappingPrism( mappingPrism, method, messager, typeUtils, mappings );
         }
-
-        return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
-        FormattingMessager messager, Types typeUtils) {
+    public static void addFromMappingPrism(MappingPrism mappingPrism, ExecutableElement method,
+                                           FormattingMessager messager, Types typeUtils, Set<Mapping> mappings) {
 
-        if (!isConsistent( mappingPrism, element, messager  ) ) {
-            return null;
+        if (!isConsistent( mappingPrism, method, messager  ) ) {
+            return;
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
         String constant = mappingPrism.values.constant() == null ? null : mappingPrism.constant();
-        String expression = getExpression( mappingPrism, element, messager );
-        String defaultExpression = getDefaultExpression( mappingPrism, element, messager );
+        String expression = getExpression( mappingPrism, method, messager );
+        String defaultExpression = getDefaultExpression( mappingPrism, method, messager );
         String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
         String numberFormat = mappingPrism.values.numberFormat() == null ? null : mappingPrism.numberFormat();
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
@@ -136,7 +125,7 @@ public class Mapping {
             numberFormat,
             mappingPrism.mirror,
             mappingPrism.values.dateFormat(),
-            element
+            method
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mappingPrism.qualifiedBy(),
@@ -155,7 +144,7 @@ public class Mapping {
                 ? null
                 : NullValuePropertyMappingStrategyPrism.valueOf( mappingPrism.nullValuePropertyMappingStrategy() );
 
-        return new Mapping(
+        Mapping mapping = new Mapping(
             source,
             constant,
             expression,
@@ -174,6 +163,13 @@ public class Mapping {
             nullValuePropertyMappingStrategy,
             null
         );
+
+        if ( mappings.contains( mapping ) ) {
+            messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
+        }
+        else {
+            mappings.add( mapping );
+        }
     }
 
    public static Mapping forIgnore( String targetName) {

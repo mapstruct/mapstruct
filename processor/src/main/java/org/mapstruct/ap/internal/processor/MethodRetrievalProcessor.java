@@ -62,6 +62,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private static final String JAVA_LANG_ANNOTATION_PGK = "java.lang.annotation";
     private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
+    private static final String MAPPING_FQN = "org.mapstruct.Mapping";
+    private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
@@ -506,35 +508,40 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private Set<Mapping> getMappings(ExecutableElement method, Element element, Set<Mapping> mappings,
                                      Set<Element> handledElements) {
 
-        MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( element );
-        MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( element );
-
-        if ( mappingAnnotation != null ) {
-            mappings.add( Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils ) );
-        }
-
-        if ( mappingsAnnotation != null ) {
-            mappings.addAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
-        }
-
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-            // recur over annotation mirrors
             Element lElement = annotationMirror.getAnnotationType().asElement();
-            if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
+            if ( isAnnotation( lElement, MAPPING_FQN ) ) {
+                // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( element );
+                Mapping.addFromMappingPrism( mappingAnnotation, method, messager, typeUtils, mappings );
+            }
+            else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
+                // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( element );
+                Mapping.addFromMappingsPrism( mappingsAnnotation, method, messager, typeUtils, mappings );
+            }
+            else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
                 && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
                 && !handledElements.contains( lElement )
             ) {
+                // recur over annotation mirrors
                 handledElements.add( lElement );
                 getMappings( method, lElement, mappings, handledElements );
             }
         }
-
         return mappings;
     }
 
-    private boolean isAnnotationInPackage(Element element, String packageName ) {
+    private boolean isAnnotationInPackage(Element element, String packageFQN ) {
         if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
-            return packageName.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
+            return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
+        }
+        return false;
+    }
+
+    private boolean isAnnotation(Element element, String annotationFQN) {
+        if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
+            return annotationFQN.equals( ( (TypeElement) element ).getQualifiedName().toString() );
         }
         return false;
     }
