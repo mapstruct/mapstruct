@@ -126,7 +126,7 @@ MapStruct takes all public properties of the source and target types into accoun
 
 [[mapping-composition]]
 === Mapping Composition (experimental)
-MapStruct supports the use of meta annotations. The `@Mapping` annotation can be defined with `@Target` `ElementType#ANNOTATION_TYPE`. This will allow `@Mapping` to be used on other (user defined) annotations for re-use purposes. For example:
+MapStruct supports the use of meta annotations. The `@Mapping` annotation supports now `@Target` with `ElementType#ANNOTATION_TYPE` in addition to `ElementType#METHOD`. This allows `@Mapping` to be used on other (user defined) annotations for re-use purposes. For example:
 
 ====
 [source, java, linenums]
