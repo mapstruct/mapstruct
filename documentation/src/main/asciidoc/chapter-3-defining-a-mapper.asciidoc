@@ -162,8 +162,11 @@ public interface StorageMapper {
 ====
 
 Still, they do have some properties in common. The `@ToEntity` assumes both target beans `ShelveEntity` and `BoxEntity` have properties: `"id"`, `"creationDate"` and `"name"`. It furthermore assumes that the source beans `ShelveDto` and `BoxDto` always have a property `"groupName"`. This concept is also known as "duck-typing". In other words, if it quacks like duck, walks like a duck its probably a duck.
+
 This feature is still experimental. Error messages are not mature yet: the method on which the problem occurs is displayed, as well as the concerned values in the `@Mapping` annotation. However, the composition aspect is not visible. The messages are "as if" the `@Mapping` would be present on the concerned method directly.
-Therefore, the user should use this feature with care, especially when uncertain when a property is always present. A more typesafe (but also more verbose) way would be to define base classes / interfaces on the target bean and the source bean and use `@InheritConfiguration` to achieve the same result (see <<mapping-configuration-inheritance>>).
+Therefore, the user should use this feature with care, especially when uncertain when a property is always present.
+
+A more typesafe (but also more verbose) way would be to define base classes / interfaces on the target bean and the source bean and use `@InheritConfiguration` to achieve the same result (see <<mapping-configuration-inheritance>>).
 
 [[adding-custom-methods]]
 === Adding custom methods to mappers
