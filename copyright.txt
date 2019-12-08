@@ -2,6 +2,7 @@
 ============
 
 Alexandr Shalugin - https://github.com/shalugin
+Amine Touzani - https://github.com/ttzn
 Andreas Gudian - https://github.com/agudian
 Andrei Arlou - https://github.com/Captain1653
 Andres Jose Sebastian Rincon Gonzalez - https://github.com/stianrincon

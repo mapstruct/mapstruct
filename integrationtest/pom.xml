@@ -24,6 +24,19 @@
         <mapstruct.version>${project.version}</mapstruct.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+    
+    <repositories>
+        <repository>
+            <id>gradle</id>
+            <url>https://repo.gradle.org/gradle/libs-releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Testing -->
@@ -40,6 +53,24 @@
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.gradle</groupId>
+            <artifactId>gradle-test-kit</artifactId>
+            <version>5.6.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.gradle</groupId>
+            <artifactId>gradle-tooling-api</artifactId>
+            <version>5.6.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+if (!project.hasProperty('mapstructRootPath'))
+    throw new IllegalArgumentException("Missing required property: mapstructRootPath")
+
+repositories {
+    jcenter()
+    mavenLocal()
+    flatDir {
+        dirs "${mapstructRootPath}/processor/target"
+        dirs "${mapstructRootPath}/core/target"
+    }    
+}
+
+// Extract version and artifactId values
+def apPom = new XmlParser().parse(file("${mapstructRootPath}/processor/pom.xml"))
+ext.apArtifactId = apPom.artifactId[0].text()
+ext.apVersion = apPom.parent[0].version[0].text()
+
+def libPom = new XmlParser().parse(file("${mapstructRootPath}/core/pom.xml"))
+ext.libArtifactId = libPom.artifactId[0].text()
+ext.libVersion = libPom.parent[0].version[0].text()
+
+dependencies {
+    annotationProcessor name: "${apArtifactId}-${apVersion}"
+    implementation name: "${libArtifactId}-${libVersion}"
+}
