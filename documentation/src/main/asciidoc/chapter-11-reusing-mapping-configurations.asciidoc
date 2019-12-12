@@ -78,13 +78,15 @@ If multiple methods qualify, the method from which to inherit the configuration 
 
 Configurations are inherited transitively. So if method `C` defines a mapping `@Mapping( target = "x", ignore = true)`, `B` defines a mapping `@Mapping( target = "y", ignore = true)`, then if `A` inherits from `B` inherits from `C`, `A` will inherit mappings for both property `x` and `y`.
 
-Expressions and constants are excluded (silently ignored) in `@InheritInverseConfiguration`.
+`@Mapping#expression`, `@Mapping#defaultExpression`, `@Mapping#defaultValue` and `@Mapping#constant` are excluded (silently ignored) in `@InheritInverseConfiguration`.
+
+`@Mapping#ignore` is only applied when `@Mapping#source` is also present in `@InheritInverseConfiguration`.
 
 Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2 release. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
 [NOTE]
 ====
-`@InheritConfiguration` or `@InheritInverseConfiguration` cannot refer to methods in a used mapper.
+`@InheritInverseConfiguration` cannot refer to methods in a used mapper.
 ====
 
 [[shared-configurations]]
