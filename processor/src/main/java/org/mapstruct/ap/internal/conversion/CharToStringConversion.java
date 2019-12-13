@@ -21,6 +21,6 @@ public class CharToStringConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "<SOURCE>.charAt( 0 )";
+        return "<SOURCE>.length() == 0 ? '\0' : <SOURCE>.charAt( 0 )";
     }
 }
