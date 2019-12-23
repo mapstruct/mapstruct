@@ -73,8 +73,6 @@ import java.lang.annotation.Target;
  * // no need to specify a mapping with ignore for "engineClass": specifying source above will assume
  * Car carDtoToCar(CarDto carDto);
  * }
- *
- *
  * </code></pre>
  * @author Sjaak Derksen
  */
