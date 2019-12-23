@@ -87,8 +87,12 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key" );
 
-            SelectionCriteria keyCriteria =
-                            SelectionCriteria.forMappingMethods( keySelectionParameters, null, false );
+            SelectionCriteria keyCriteria = SelectionCriteria.forMappingMethods(
+                keySelectionParameters,
+                method.getOptions().getMapMapping().getKeyMappingControl( ctx.getElementUtils() ),
+                null,
+                false
+            );
 
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -130,8 +134,11 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
                     "map value" );
 
-            SelectionCriteria valueCriteria =
-                            SelectionCriteria.forMappingMethods( valueSelectionParameters, null, false );
+            SelectionCriteria valueCriteria = SelectionCriteria.forMappingMethods(
+                valueSelectionParameters,
+                method.getOptions().getMapMapping().getValueMappingControl( ctx.getElementUtils() ),
+                null,
+                false );
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,

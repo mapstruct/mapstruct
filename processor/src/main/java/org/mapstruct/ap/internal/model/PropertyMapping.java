@@ -31,6 +31,8 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
+import org.mapstruct.ap.internal.model.source.MappingControl;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -154,6 +156,7 @@ public class PropertyMapping extends ModelElement {
         private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
+        private MappingControl mappingControl;
         private MappingReferences forgeMethodWithMappingReferences;
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
@@ -216,6 +219,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMappingBuilder options(DelegatingOptions options) {
+            this.mappingControl = options.getMappingControl( ctx.getElementUtils() );
             this.nvcs = options.getNullValueCheckStrategy();
             if ( method.isUpdateMethod() ) {
                 this.nvpms = options.getNullValuePropertyMappingStrategy();
@@ -242,9 +246,11 @@ public class PropertyMapping extends ModelElement {
                 preferUpdateMethods = method.getMappingTargetParameter() != null;
             }
 
-            SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
-                            targetPropertyName,
-                            preferUpdateMethods
+            SelectionCriteria criteria = SelectionCriteria.forMappingMethods(
+                selectionParameters,
+                mappingControl,
+                targetPropertyName,
+                preferUpdateMethods
             );
 
             // forge a method instead of resolving one when there are mapping options.
@@ -741,6 +747,7 @@ public class PropertyMapping extends ModelElement {
 
         private String constantExpression;
         private FormattingParameters formattingParameters;
+        private MappingControl mappingControl;
         private SelectionParameters selectionParameters;
 
         ConstantMappingBuilder() {
@@ -759,6 +766,11 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
             this.selectionParameters = selectionParameters;
+            return this;
+        }
+
+        public ConstantMappingBuilder options(MappingOptions options) {
+            this.mappingControl = options.getMappingControl( ctx.getElementUtils() );
             return this;
         }
 
@@ -783,7 +795,8 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = ctx.getTypeFactory().getTypeForLiteral( baseForLiteral );
 
             SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
-                            targetPropertyName,
+                mappingControl,
+                targetPropertyName,
                             method.getMappingTargetParameter() != null
             );
 

@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -99,6 +100,14 @@ public class IterableMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
             .orElse( next().getNullValueMappingStrategy() );
+    }
+
+    public MappingControl getElementMappingControl(Elements elementUtils) {
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::elementMappingControl )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( mc -> MappingControl.fromTypeMirror( mc, elementUtils ) )
+            .orElse( next().getMappingControl( elementUtils ) );
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.List;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.model.source.MappingControl;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
@@ -28,9 +29,13 @@ public class SelectionCriteria {
     private boolean preferUpdateMapping;
     private final boolean objectFactoryRequired;
     private final boolean lifecycleCallbackRequired;
+    private final boolean allowDirect;
+    private final boolean allowTypeConversion;
+    private final boolean allowByMappingMethod;
+    private final boolean allow2Steps;
 
-    public SelectionCriteria(SelectionParameters selectionParameters, String targetPropertyName,
-                             boolean preferUpdateMapping, boolean objectFactoryRequired,
+    public SelectionCriteria(SelectionParameters selectionParameters, MappingControl mappingControl,
+                             String targetPropertyName, boolean preferUpdateMapping, boolean objectFactoryRequired,
                              boolean lifecycleCallbackRequired) {
         if ( selectionParameters != null ) {
             qualifiers.addAll( selectionParameters.getQualifiers() );
@@ -41,6 +46,18 @@ public class SelectionCriteria {
         else {
             this.qualifyingResultType = null;
             sourceRHS = null;
+        }
+        if ( mappingControl != null ) {
+            this.allowDirect = mappingControl.allowDirect();
+            this.allowTypeConversion = mappingControl.allowTypeConversion();
+            this.allowByMappingMethod = mappingControl.allowByMappingMethod();
+            this.allow2Steps = mappingControl.allowBy2Steps();
+        }
+        else {
+            this.allowDirect = true;
+            this.allowTypeConversion = true;
+            this.allowByMappingMethod = true;
+            this.allow2Steps = true;
         }
         this.targetPropertyName = targetPropertyName;
         this.preferUpdateMapping = preferUpdateMapping;
@@ -94,17 +111,41 @@ public class SelectionCriteria {
         return !qualifiedByNames.isEmpty() || !qualifiers.isEmpty();
     }
 
+    public boolean isAllowDirect() {
+        return allowDirect;
+    }
+
+    public boolean isAllowTypeConversion() {
+        return allowTypeConversion;
+    }
+
+    public boolean isAllowByMappingMethod() {
+        return allowByMappingMethod;
+    }
+
+    public boolean isAllow2Steps() {
+        return allow2Steps;
+    }
+
     public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
+                                                      MappingControl mappingControl,
                                                       String targetPropertyName, boolean preferUpdateMapping) {
 
-        return new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false, false );
+        return new SelectionCriteria(
+            selectionParameters,
+            mappingControl,
+            targetPropertyName,
+            preferUpdateMapping,
+            false,
+            false
+        );
     }
 
     public static SelectionCriteria forFactoryMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, false, true, false );
+        return new SelectionCriteria( selectionParameters, null, null, false, true, false );
     }
 
     public static SelectionCriteria forLifecycleMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, false, false, true );
+        return new SelectionCriteria( selectionParameters, null, null, false, false, true );
     }
 }

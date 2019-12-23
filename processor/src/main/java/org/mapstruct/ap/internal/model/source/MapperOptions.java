@@ -11,6 +11,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -157,6 +158,13 @@ public class MapperOptions extends DelegatingOptions {
     @Override
     public BuilderGem getBuilder() {
         return mapper.builder().hasValue() ? mapper.builder().get() : next().getBuilder();
+    }
+
+    @Override
+    public MappingControl getMappingControl(Elements elementUtils) {
+        return mapper.mappingControl().hasValue() ?
+            MappingControl.fromTypeMirror( mapper.mappingControl().getDefaultValue(), elementUtils ) :
+            next().getMappingControl( elementUtils );
     }
 
     // @Mapper specific

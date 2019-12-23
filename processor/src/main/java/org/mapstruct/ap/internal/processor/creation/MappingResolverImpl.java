@@ -177,15 +177,19 @@ public class MappingResolverImpl implements MappingResolver {
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
 
+            Assignment referencedMethod;
+
             // first simple mapping method
-            Assignment referencedMethod = resolveViaMethod( sourceType, targetType, false );
-            if ( referencedMethod != null ) {
-                referencedMethod.setAssignment( sourceRHS );
-                return referencedMethod;
+            if ( allowMappingMethod() ) {
+                referencedMethod = resolveViaMethod( sourceType, targetType, false );
+                if ( referencedMethod != null ) {
+                    referencedMethod.setAssignment( sourceRHS );
+                    return referencedMethod;
+                }
             }
 
             // then direct assignable
-            if ( !hasQualfiers() ) {
+            if ( allowDirect() && !hasQualfiers() ) {
                 if (  sourceType.isAssignableTo( targetType ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
                     Assignment simpleAssignment = sourceRHS;
@@ -206,23 +210,31 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then type conversion
-            if ( !hasQualfiers() ) {
-                ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
-                if ( conversion != null ) {
-                    conversion.reportMessageWhenNarrowing( messager, this );
-                    conversion.getAssignment().setAssignment( sourceRHS );
-                    return conversion.getAssignment();
+            if ( allowTypeConversion() ) {
+                if ( !hasQualfiers() ) {
+                    ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
+                    if ( conversion != null ) {
+                        conversion.reportMessageWhenNarrowing( messager, this );
+                        conversion.getAssignment().setAssignment( sourceRHS );
+                        return conversion.getAssignment();
+                    }
+                }
+
+                // TODO: should we distinguish builtIn from typeConversion, what does the documentation say?
+                // check for a built-in method
+                if ( !hasQualfiers() ) {
+                    Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
+                    if ( builtInMethod != null ) {
+                        builtInMethod.setAssignment( sourceRHS );
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return builtInMethod;
+                    }
                 }
             }
 
-            // check for a built-in method
-            if (!hasQualfiers() ) {
-                Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
-                if ( builtInMethod != null ) {
-                    builtInMethod.setAssignment( sourceRHS );
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return builtInMethod;
-                }
+            // stop here, if we don't allow 2 steps.
+            if ( !allow2Steps() ) {
+                return null;
             }
 
             // 2 step method, first: method(method(source))
@@ -268,6 +280,22 @@ public class MappingResolverImpl implements MappingResolver {
 
         private boolean hasQualfiers() {
             return selectionCriteria != null && selectionCriteria.hasQualfiers();
+        }
+
+        private boolean allowDirect() {
+            return selectionCriteria != null && selectionCriteria.isAllowDirect();
+        }
+
+        private boolean allowTypeConversion() {
+            return selectionCriteria != null && selectionCriteria.isAllowTypeConversion();
+        }
+
+        private boolean allowMappingMethod() {
+            return selectionCriteria != null && selectionCriteria.isAllowByMappingMethod();
+        }
+
+        private boolean allow2Steps() {
+            return selectionCriteria != null && selectionCriteria.isAllow2Steps();
         }
 
         private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {

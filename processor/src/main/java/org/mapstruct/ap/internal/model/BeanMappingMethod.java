@@ -577,6 +577,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .targetPropertyName( targetPropertyName )
                     .formattingParameters( mapping.getFormattingParameters() )
                     .selectionParameters( mapping.getSelectionParameters() )
+                    .options( mapping )
                     .existingVariableNames( existingVariableNames )
                     .dependsOn( mapping.getDependsOn() )
                     .mirror( mapping.getMirror() )
