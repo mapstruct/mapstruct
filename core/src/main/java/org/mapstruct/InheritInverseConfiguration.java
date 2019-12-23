@@ -21,9 +21,12 @@ import java.lang.annotation.Target;
  * <p>
  * If more than one matching inverse method exists, the name of the method to inherit the configuration from must be
  * specified via {@link #name()}
+ * <p>
+ * {@link Mapping#expression()}, {@link Mapping#constant()}, {@link Mapping#defaultExpression()} and
+ * {@link Mapping#defaultValue()} are not inverse inherited
  *
  * <p>
- * <strong>Example</strong>
+ * <strong>Examples</strong>
  * </p>
  * <pre><code class='java'>
  * &#64;Mapper
@@ -56,7 +59,21 @@ import java.lang.annotation.Target;
  *      }
  * }
  * </code></pre>
+ * <p>
+ * <pre><code class='java'>
+ * &#64;Mapper
+ * public interface CarMapper {
  *
+ * &#64;Mapping( target = "seatCount", source = "numberOfSeats")
+ * &#64;Mapping( target = "enginePower", source = "engineClass", ignore=true) // NOTE: source specified as well
+ * CarDto carToDto(Car car);
+ *
+ * &#64;InheritInverseConfiguration
+ * &#64;Mapping(target = "numberOfSeats", ignore = true)
+ * // no need to specify a mapping with ignore for "engineClass": specifying source above will assume
+ * Car carDtoToCar(CarDto carDto);
+ * }
+ * </code></pre>
  * @author Sjaak Derksen
  */
 @Target(ElementType.METHOD)

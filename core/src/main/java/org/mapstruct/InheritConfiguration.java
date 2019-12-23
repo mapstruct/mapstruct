@@ -18,6 +18,10 @@ import java.lang.annotation.Target;
  * If no method can be identified unambiguously as configuration source (i.e. several candidate methods with matching
  * source and target type exist), the name of the method to inherit from must be specified via {@link #name()}.
  * <p>
+ * {@link Mapping#expression()}, {@link Mapping#constant()}, {@link Mapping#defaultExpression()} and
+ * {@link Mapping#defaultValue()} are not inverse inherited
+ *
+ * <p>
  * A typical use case is annotating an update method so it inherits all mappings from a corresponding "standard" mapping
  * method:
  *
