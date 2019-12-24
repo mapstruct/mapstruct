@@ -21,65 +21,60 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Gunnar Morling
  */
-public class IterableMappingOptions {
+public class IterableMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
-    private final AnnotationMirror mirror;
-    private final NullValueMappingStrategyPrism nullValueMappingStrategy;
+    private final IterableMappingPrism prism;
 
-    public static IterableMappingOptions fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
+    public static IterableMappingOptions fromPrism(IterableMappingPrism prism,
+                                                   MapperOptions mappperOptions, ExecutableElement method,
                                                    FormattingMessager messager, Types typeUtils) {
-        if ( iterableMapping == null ) {
-            return null;
-        }
 
-        boolean elementTargetTypeIsDefined = !TypeKind.VOID.equals( iterableMapping.elementTargetType().getKind() );
-
-        NullValueMappingStrategyPrism nullValueMappingStrategy =
-            iterableMapping.values.nullValueMappingStrategy() == null
-                            ? null
-                            : NullValueMappingStrategyPrism.valueOf( iterableMapping.nullValueMappingStrategy() );
-
-        if ( !elementTargetTypeIsDefined
-            && iterableMapping.dateFormat().isEmpty()
-            && iterableMapping.numberFormat().isEmpty()
-            && iterableMapping.qualifiedBy().isEmpty()
-            && iterableMapping.qualifiedByName().isEmpty()
-            && ( nullValueMappingStrategy == null ) ) {
-
-            messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
+        if ( prism == null || !isConsistent( prism, method, messager ) ) {
+            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mappperOptions );
+            return options;
         }
 
         SelectionParameters selection = new SelectionParameters(
-            iterableMapping.qualifiedBy(),
-            iterableMapping.qualifiedByName(),
-            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
+            prism.qualifiedBy(),
+            prism.qualifiedByName(),
+            TypeKind.VOID != prism.elementTargetType().getKind() ? prism.elementTargetType() : null,
             typeUtils
         );
 
         FormattingParameters formatting = new FormattingParameters(
-            iterableMapping.dateFormat(),
-            iterableMapping.numberFormat(),
-            iterableMapping.mirror,
-            iterableMapping.values.dateFormat(),
+            prism.dateFormat(),
+            prism.numberFormat(),
+            prism.mirror,
+            prism.values.dateFormat(),
             method
         );
 
-        return new IterableMappingOptions( formatting,
-            selection,
-            iterableMapping.mirror,
-            nullValueMappingStrategy
-        );
+        IterableMappingOptions options = new IterableMappingOptions( formatting, selection, prism, mappperOptions );
+        return options;
+    }
+
+    private static boolean isConsistent(IterableMappingPrism prism, ExecutableElement method,
+                                        FormattingMessager messager) {
+        if ( prism.dateFormat().isEmpty()
+            && prism.numberFormat().isEmpty()
+            && prism.qualifiedBy().isEmpty()
+            && prism.qualifiedByName().isEmpty()
+            && TypeKind.VOID == prism.elementTargetType().getKind()
+            && null == prism.values.nullValueMappingStrategy() ) {
+            messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
+            return false;
+        }
+        return true;
     }
 
     private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                                   AnnotationMirror mirror, NullValueMappingStrategyPrism nvms) {
-
+                                   IterableMappingPrism prism, DelegatingOptions next ) {
+        super( next );
         this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;
-        this.mirror = mirror;
-        this.nullValueMappingStrategy = nvms;
+        this.prism = prism;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -91,10 +86,19 @@ public class IterableMappingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mirror;
+        return null == prism ? null : prism.mirror;
     }
 
+    @Override
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return nullValueMappingStrategy;
+        return null == prism || null == prism.values.nullValueMappingStrategy() ?
+            next().getNullValueMappingStrategy()
+            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
     }
+
+    @Override
+    public boolean hasAnnotation() {
+        return prism != null;
+    }
+
 }

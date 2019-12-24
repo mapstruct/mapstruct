@@ -22,14 +22,14 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.ValueMapping;
+import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * A {@link ValueMappingMethod} which maps one value type to another, optionally configured by one or more
- * {@link ValueMapping}s. For now, only enum-to-enum mapping is supported.
+ * {@link ValueMappingOptions}s. For now, only enum-to-enum mapping is supported.
  *
  * @author Sjaak Derksen
  */
@@ -57,7 +57,7 @@ public class ValueMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder valueMappings(List<ValueMapping> valueMappings) {
+        public Builder valueMappings(List<ValueMappingOptions> valueMappings) {
             this.valueMappings = new ValueMappings( valueMappings );
             return this;
         }
@@ -111,7 +111,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             // Start to fill the mappings with the defined value mappings
-            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
+            for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 String target =
                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
@@ -164,7 +164,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             // Start to fill the mappings with the defined valuemappings
-            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
+            for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 String target =
                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
@@ -193,7 +193,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             // Start to fill the mappings with the defined valuemappings
-            for ( ValueMapping valueMapping : valueMappings.regularValueMappings ) {
+            for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 String target =
                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
@@ -227,7 +227,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             boolean foundIncorrectMapping = false;
 
-            for ( ValueMapping mappedConstant : valueMappings.regularValueMappings ) {
+            for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
 
                 if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
@@ -277,7 +277,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             boolean foundIncorrectMapping = false;
 
-            for ( ValueMapping mappedConstant : valueMappings.regularValueMappings ) {
+            for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
                 if ( !NULL.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
@@ -321,18 +321,18 @@ public class ValueMappingMethod extends MappingMethod {
 
     private static class ValueMappings {
 
-        List<ValueMapping> regularValueMappings = new ArrayList<>();
-        ValueMapping defaultTarget = null;
+        List<ValueMappingOptions> regularValueMappings = new ArrayList<>();
+        ValueMappingOptions defaultTarget = null;
         String defaultTargetValue = null;
-        ValueMapping nullTarget = null;
+        ValueMappingOptions nullTarget = null;
         String nullValueTarget = null;
         boolean hasMapAnyUnmapped = false;
         boolean hasMapAnyRemaining = false;
         boolean hasDefaultValue = false;
 
-        ValueMappings(List<ValueMapping> valueMappings) {
+        ValueMappings(List<ValueMappingOptions> valueMappings) {
 
-            for ( ValueMapping valueMapping : valueMappings ) {
+            for ( ValueMappingOptions valueMapping : valueMappings ) {
                 if ( ANY_REMAINING.equals( valueMapping.getSource() ) ) {
                     defaultTarget = valueMapping;
                     defaultTargetValue = getValue( defaultTarget );
@@ -355,7 +355,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
         }
 
-        String getValue(ValueMapping valueMapping) {
+        String getValue(ValueMappingOptions valueMapping) {
             return NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
         }
     }

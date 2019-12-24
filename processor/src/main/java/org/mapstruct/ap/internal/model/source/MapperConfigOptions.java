@@ -6,61 +6,31 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 
-import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
-import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
-public class MapperOptions extends DelegatingOptions {
+public class MapperConfigOptions extends DelegatingOptions {
 
-    private final MapperPrism prism;
-    private final DeclaredType mapperConfigType;
+    private final MapperConfigPrism prism;
 
-    public static MapperOptions getInstanceOn(TypeElement typeElement, Options options) {
-        MapperPrism prism = MapperPrism.getInstanceOn( typeElement );
-        MapperOptions mapperAnnotation;
-        DelegatingOptions defaults = new DefaultOptions( prism, options );
-        DeclaredType mapperConfigType;
-        if ( prism.values.config() != null && prism.config().getKind() == TypeKind.DECLARED ) {
-            mapperConfigType = (DeclaredType) prism.config();
-        }
-        else {
-            mapperConfigType = null;
-        }
-        if ( mapperConfigType != null ) {
-            Element mapperConfigElement = mapperConfigType.asElement();
-            MapperConfigPrism configPrism = MapperConfigPrism.getInstanceOn( mapperConfigElement );
-            MapperConfigOptions mapperConfigAnnotation = new MapperConfigOptions( configPrism, defaults );
-            mapperAnnotation = new MapperOptions( prism, mapperConfigType, mapperConfigAnnotation );
-        }
-        else {
-            mapperAnnotation = new MapperOptions( prism, null, defaults );
-        }
-        return mapperAnnotation;
-    }
-
-    private MapperOptions(MapperPrism prism, DeclaredType mapperConfigType, DelegatingOptions next) {
+    MapperConfigOptions(MapperConfigPrism prism, DelegatingOptions next ) {
         super( next );
         this.prism = prism;
-        this.mapperConfigType = mapperConfigType;
     }
 
     @Override
     public String implementationName() {
-        return null == prism.values.implementationName() ? next().implementationName() : prism.implementationName();
+        return null == prism.values.implementationName() ? next().implementationName() :
+            prism.implementationName();
     }
 
     @Override
@@ -120,8 +90,6 @@ public class MapperOptions extends DelegatingOptions {
             next().isDisableSubMappingMethodsGeneration() : prism.disableSubMappingMethodsGeneration();
     }
 
-    // @Mapping, @BeanMapping
-
     @Override
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
         return null == prism.values.collectionMappingStrategy() ?
@@ -155,27 +123,9 @@ public class MapperOptions extends DelegatingOptions {
         return null == prism.values.builder() ? next().getBuilderPrism() : prism.builder();
     }
 
-    // @Mapper specific
-
-    public DeclaredType mapperConfigType() {
-        return mapperConfigType;
-    }
-
-    public boolean hasMapperConfig() {
-        return mapperConfigType != null;
-    }
-
-    public boolean isValid() {
-        return prism.isValid;
-    }
-
-    public AnnotationMirror getAnnotationMirror() {
-        return prism.mirror;
-    }
-
     @Override
     public boolean hasAnnotation() {
-        return true;
+        return prism != null;
     }
 
 }

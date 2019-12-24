@@ -20,6 +20,9 @@ import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAnd
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
+import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -27,18 +30,13 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
-import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
+import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
@@ -46,10 +44,10 @@ import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
+import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
 
@@ -111,7 +109,7 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
+            BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
             this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builderPrism );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
@@ -160,7 +158,6 @@ public class PropertyMapping extends ModelElement {
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
         private NullValueCheckStrategyPrism nvcs;
-        private NullValueMappingStrategyPrism nvms;
         private NullValuePropertyMappingStrategyPrism nvpms;
 
         PropertyMappingBuilder() {
@@ -218,34 +215,15 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder nullValueCheckStrategy(NullValueCheckStrategyPrism nvcs ) {
-            this.nvcs = nvcs;
-            return this;
-        }
-
-        public PropertyMappingBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyPrism nvpms ) {
-            this.nvpms = nvpms;
+        public PropertyMappingBuilder options(DelegatingOptions options) {
+            this.nvcs = options.getNullValueCheckStrategy();
+            if ( method.isUpdateMethod() ) {
+                this.nvpms = options.getNullValuePropertyMappingStrategy();
+            }
             return this;
         }
 
         public PropertyMapping build() {
-
-            MapperOptions mapperConfiguration = method.getMapperConfiguration();
-            BeanMappingOptions beanMapping = method.getMappingOptions().getBeanMapping();
-
-            // null value check strategy (determine true value based on hierarchy)
-            NullValueCheckStrategyPrism nvcsBean = beanMapping != null ? beanMapping.getNullValueCheckStrategy() : null;
-            this.nvcs = mapperConfiguration.getNullValueCheckStrategy( nvcsBean, nvcs );
-
-            // null value mapping strategy
-            this.nvms = mapperConfiguration.getNullValueMappingStrategy();
-
-            // for update methods: determine null value property mapping strategy (determine value based on hierarchy)
-            if ( method.isUpdateMethod() ) {
-                NullValuePropertyMappingStrategyPrism nvpmsBean =
-                    beanMapping != null ? beanMapping.getNullValuePropertyMappingStrategy() : null;
-                this.nvpms = mapperConfiguration.getNullValuePropertyMappingStrategy( nvpmsBean, nvpms );
-            }
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );

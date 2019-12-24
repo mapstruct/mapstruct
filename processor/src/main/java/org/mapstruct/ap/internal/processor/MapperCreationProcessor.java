@@ -40,7 +40,7 @@ import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.model.source.MapperOptions;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -56,7 +56,6 @@ import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
@@ -93,8 +92,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
 
-        MapperOptions mapperConfig = MapperOptions.getInstanceOn( mapperTypeElement );
-        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
+        MapperOptions mapperOptions = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
+        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperOptions );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
             typeFactory,
@@ -118,7 +117,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mapperReferences
         );
         this.mappingContext = ctx;
-        return getMapper( mapperTypeElement, mapperConfig, sourceModel );
+        return getMapper( mapperTypeElement, mapperOptions, sourceModel );
     }
 
     @Override
@@ -126,11 +125,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return 1000;
     }
 
-    private List<MapperReference> initReferencedMappers(TypeElement element, MapperOptions mapperConfig) {
+    private List<MapperReference> initReferencedMappers(TypeElement element, MapperOptions mapperAnnotation) {
         List<MapperReference> result = new LinkedList<>();
         List<String> variableNames = new LinkedList<>();
 
-        for ( TypeMirror usedMapper : mapperConfig.uses() ) {
+        for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
@@ -145,9 +144,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return result;
     }
 
-    private Mapper getMapper(TypeElement element, MapperOptions mapperConfig, List<SourceMethod> methods) {
+    private Mapper getMapper(TypeElement element, MapperOptions mapperOptions, List<SourceMethod> methods) {
 
-        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperOptions, methods );
         mappingMethods.addAll( mappingContext.getUsedSupportedMappings() );
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
 
@@ -168,13 +167,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .constructorFragments(  constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods, mapperConfig.implementationName(),
-                mapperConfig.implementationPackage() ) )
+            .decorator( getDecorator( element, methods, mapperOptions.implementationName(),
+                mapperOptions.implementationPackage(), getExtraImports( element, mapperOptions ) ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
-            .extraImports( getExtraImports( element ) )
-            .implName( mapperConfig.implementationName() )
-            .implPackage( mapperConfig.implementationPackage() )
+            .extraImports( getExtraImports( element, mapperOptions ) )
+            .implName( mapperOptions.implementationName() )
+            .implPackage( mapperOptions.implementationPackage() )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -186,7 +185,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
-                                   String implPackage) {
+                                   String implPackage, SortedSet<Type> extraImports) {
         DecoratedWithPrism decoratorPrism = DecoratedWithPrism.getInstanceOn( element );
 
         if ( decoratorPrism == null ) {
@@ -248,31 +247,30 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .versionInformation( versionInformation )
             .implName( implName )
             .implPackage( implPackage )
-            .extraImports( getExtraImports( element ) )
+            .extraImports( extraImports )
             .build();
 
         return decorator;
     }
 
-    private SortedSet<Type> getExtraImports(TypeElement element) {
+    private SortedSet<Type> getExtraImports(TypeElement element,  MapperOptions mapperOptions) {
         SortedSet<Type> extraImports = new TreeSet<>();
 
-        MapperOptions mapperConfiguration = MapperOptions.getInstanceOn( element );
 
-        for ( TypeMirror extraImport : mapperConfiguration.imports() ) {
+        for ( TypeMirror extraImport : mapperOptions.imports() ) {
             Type type = typeFactory.getType( extraImport );
             extraImports.add( type );
         }
 
         // Add original package if a dest package has been set
-        if ( !"default".equals( mapperConfiguration.implementationPackage() ) ) {
+        if ( !"default".equals( mapperOptions.implementationPackage() ) ) {
             extraImports.add( typeFactory.getType( element ) );
         }
 
         return extraImports;
     }
 
-    private List<MappingMethod> getMappingMethods(MapperOptions mapperConfig, List<SourceMethod> methods) {
+    private List<MappingMethod> getMappingMethods(MapperOptions mapperAnnotation, List<SourceMethod> methods) {
         List<MappingMethod> mappingMethods = new ArrayList<>();
 
         for ( SourceMethod method : methods ) {
@@ -280,14 +278,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-            mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<>() );
+            mergeInheritedOptions( method, mapperAnnotation, methods, new ArrayList<>() );
 
-            MappingMethodOptions mappingOptions = method.getMappingOptions();
+            MappingMethodOptions mappingOptions = method.getOptions();
 
             boolean hasFactoryMethod = false;
 
             if ( method.isIterableMapping() ) {
                 this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
+
+
                 IterableMappingMethod iterableMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
@@ -360,7 +360,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
+                BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
@@ -387,16 +387,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
-                                                                                MappingMethodOptions mappingOptions, ContainerMappingMethodBuilder<?, M> builder) {
+             MappingMethodOptions mappingMethodOptions, ContainerMappingMethodBuilder<?, M> builder) {
 
         FormattingParameters formattingParameters = null;
         SelectionParameters selectionParameters = null;
-        NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
-        if ( mappingOptions.getIterableMapping() != null ) {
-            formattingParameters = mappingOptions.getIterableMapping().getFormattingParameters();
-            selectionParameters = mappingOptions.getIterableMapping().getSelectionParameters();
-            nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
+        if ( mappingMethodOptions.getIterableMapping() != null ) {
+            formattingParameters = mappingMethodOptions.getIterableMapping().getFormattingParameters();
+            selectionParameters = mappingMethodOptions.getIterableMapping().getSelectionParameters();
         }
 
         return builder
@@ -404,7 +402,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .method( method )
             .formattingParameters( formattingParameters )
             .selectionParameters( selectionParameters )
-            .nullValueMappingStrategy( nullValueMappingStrategy )
             .build();
     }
 
@@ -424,7 +421,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         initializingMethods.add( method );
 
-        MappingMethodOptions mappingOptions = method.getMappingOptions();
+        MappingMethodOptions mappingOptions = method.getOptions();
         List<SourceMethod> applicableReversePrototypeMethods = method.getApplicableReversePrototypeMethods();
 
         SourceMethod inverseTemplateMethod =
@@ -571,7 +568,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                      MapperOptions mapperConfig,
                                                      List<SourceMethod> initializingMethods) {
         if ( resultMethod != null ) {
-            if ( !resultMethod.getMappingOptions().isFullyInitialized() ) {
+            if ( !resultMethod.getOptions().isFullyInitialized() ) {
                 mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods );
             }
 

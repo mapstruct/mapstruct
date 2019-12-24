@@ -6,14 +6,12 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
-import org.mapstruct.ap.internal.util.MapperOptions;
 
 /**
  * This interface makes available common method properties and a matching method There are 2 known implementors:
@@ -165,12 +163,6 @@ public interface Method {
     Type getDefiningType();
 
     /**
-     *
-     * @return the mapper config when this method needs to be implemented
-     */
-    MapperOptions getMapperConfiguration();
-
-    /**
      * @return {@code true}, if the method represents a mapping lifecycle callback (Before/After mapping method)
      */
     boolean isLifecycleCallbackMethod();
@@ -185,7 +177,7 @@ public interface Method {
      *
      * @return the mapping options for this method
      */
-    MappingMethodOptions getMappingOptions();
+    MappingMethodOptions getOptions();
 
     /**
      *

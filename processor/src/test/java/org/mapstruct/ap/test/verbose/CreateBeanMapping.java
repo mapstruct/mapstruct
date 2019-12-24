@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.verbose;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( config = CreateBeanMappingConfig.class )
 public interface CreateBeanMapping {
 
     CreateBeanMapping INSTANCE = Mappers.getMapper( CreateBeanMapping.class );

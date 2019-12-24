@@ -78,7 +78,7 @@ public class SourceReference extends AbstractReference {
             this.sourceAnnotationValue = mapping.getSourceAnnotationValue();
             if ( mapping.getInheritContext() != null ) {
                 isForwarded = mapping.getInheritContext().isForwarded();
-                templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+                templateMethod = mapping.getInheritContext().getTemplateMethod();
             }
             return this;
         }

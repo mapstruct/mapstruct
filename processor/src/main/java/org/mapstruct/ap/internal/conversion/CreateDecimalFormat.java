@@ -52,7 +52,7 @@ public class CreateDecimalFormat extends HelperMethod {
     }
 
     @Override
-    public MappingMethodOptions getMappingOptions() {
+    public MappingMethodOptions getOptions() {
         return MappingMethodOptions.empty();
     }
 }

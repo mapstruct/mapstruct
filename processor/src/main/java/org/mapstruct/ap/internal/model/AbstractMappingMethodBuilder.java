@@ -8,7 +8,7 @@ package org.mapstruct.ap.internal.model;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
@@ -54,12 +54,12 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             sourceRHS.getSourceErrorMessagePart() );
 
         ForgedMethod forgedMethod = forElementMapping( name, sourceType, targetType, method, forgedHistory, true );
+        BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
 
         return createForgedAssignment(
-                        sourceRHS,
-                        ctx.getTypeFactory()
-                           .builderTypeFor( targetType, BeanMappingOptions.builderPrismFor( method ) ),
-                        forgedMethod
+            sourceRHS,
+            ctx.getTypeFactory().builderTypeFor( targetType, builderPrism ),
+            forgedMethod
         );
     }
 

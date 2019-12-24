@@ -21,93 +21,91 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Gunnar Morling
  */
-public class MapMappingOptions {
+public class MapMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters keySelectionParameters;
     private final SelectionParameters valueSelectionParameters;
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
-    private final AnnotationMirror mirror;
-    private final NullValueMappingStrategyPrism nullValueMappingStrategy;
+    private final MapMappingPrism prism;
 
-    public static MapMappingOptions fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
+    public static MapMappingOptions fromPrism(MapMappingPrism prism, MapperOptions mapperOptions,
+                                              ExecutableElement method,
                                               FormattingMessager messager, Types typeUtils) {
-        if ( mapMapping == null ) {
-            return null;
-        }
 
-        NullValueMappingStrategyPrism nullValueMappingStrategy =
-            mapMapping.values.nullValueMappingStrategy() == null
-                            ? null
-                            : NullValueMappingStrategyPrism.valueOf( mapMapping.nullValueMappingStrategy() );
-
-
-        boolean keyTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.keyTargetType().getKind() );
-        boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
-        if ( mapMapping.keyDateFormat().isEmpty()
-            && mapMapping.keyNumberFormat().isEmpty()
-            && mapMapping.keyQualifiedBy().isEmpty()
-            && mapMapping.keyQualifiedByName().isEmpty()
-            && mapMapping.valueDateFormat().isEmpty()
-            && mapMapping.valueNumberFormat().isEmpty()
-            && mapMapping.valueQualifiedBy().isEmpty()
-            && mapMapping.valueQualifiedByName().isEmpty()
-            && !keyTargetTypeIsDefined
-            && !valueTargetTypeIsDefined
-            && ( nullValueMappingStrategy == null ) ) {
-
-            messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
+        if ( prism == null || !isConsistent( prism, method, messager ) ) {
+            MapMappingOptions options = new MapMappingOptions( null, null, null, null, null, mapperOptions );
+            return options;
         }
 
         SelectionParameters keySelection = new SelectionParameters(
-            mapMapping.keyQualifiedBy(),
-            mapMapping.keyQualifiedByName(),
-            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
+            prism.keyQualifiedBy(),
+            prism.keyQualifiedByName(),
+            TypeKind.VOID != prism.keyTargetType().getKind() ? prism.keyTargetType() : null,
             typeUtils
         );
 
         SelectionParameters valueSelection = new SelectionParameters(
-            mapMapping.valueQualifiedBy(),
-            mapMapping.valueQualifiedByName(),
-            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
+            prism.valueQualifiedBy(),
+            prism.valueQualifiedByName(),
+            TypeKind.VOID != prism.valueTargetType().getKind() ? prism.valueTargetType() : null,
             typeUtils
         );
 
         FormattingParameters keyFormatting = new FormattingParameters(
-            mapMapping.keyDateFormat(),
-            mapMapping.keyNumberFormat(),
-            mapMapping.mirror,
-            mapMapping.values.keyDateFormat(),
+            prism.keyDateFormat(),
+            prism.keyNumberFormat(),
+            prism.mirror,
+            prism.values.keyDateFormat(),
             method
         );
 
         FormattingParameters valueFormatting = new FormattingParameters(
-            mapMapping.valueDateFormat(),
-            mapMapping.valueNumberFormat(),
-            mapMapping.mirror,
-            mapMapping.values.valueDateFormat(),
+            prism.valueDateFormat(),
+            prism.valueNumberFormat(),
+            prism.mirror,
+            prism.values.valueDateFormat(),
             method
         );
 
-        return new MapMappingOptions(
+        MapMappingOptions options = new MapMappingOptions(
             keyFormatting,
             keySelection,
             valueFormatting,
             valueSelection,
-            mapMapping.mirror,
-            nullValueMappingStrategy
+            prism,
+            mapperOptions
         );
+        return options;
+    }
+
+    private static boolean isConsistent(MapMappingPrism prism, ExecutableElement method, FormattingMessager messager) {
+        if ( prism.keyDateFormat().isEmpty()
+            && prism.keyNumberFormat().isEmpty()
+            && prism.keyQualifiedBy().isEmpty()
+            && prism.keyQualifiedByName().isEmpty()
+            && prism.valueDateFormat().isEmpty()
+            && prism.valueNumberFormat().isEmpty()
+            && prism.valueQualifiedBy().isEmpty()
+            && prism.valueQualifiedByName().isEmpty()
+            && TypeKind.VOID == prism.keyTargetType().getKind()
+            && TypeKind.VOID == prism.valueTargetType().getKind()
+            && null == prism.values.nullValueMappingStrategy() ) {
+            messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
+            return false;
+        }
+        return true;
     }
 
     private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
-                              FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters, AnnotationMirror mirror,
-                              NullValueMappingStrategyPrism nvms ) {
+                              FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters,
+                              MapMappingPrism prism, DelegatingOptions next ) {
+        super( next );
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
         this.valueFormattingParameters = valueFormatting;
         this.valueSelectionParameters = valueSelectionParameters;
-        this.mirror = mirror;
-        this.nullValueMappingStrategy = nvms;
+        this.prism = prism;
     }
 
     public FormattingParameters getKeyFormattingParameters() {
@@ -127,11 +125,19 @@ public class MapMappingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mirror;
+        return null == prism ? null : prism.mirror;
     }
 
+    @Override
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return nullValueMappingStrategy;
+        return null == prism || null == prism.values.nullValueMappingStrategy() ?
+            next().getNullValueMappingStrategy()
+            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    }
+
+    @Override
+    public boolean hasAnnotation() {
+        return prism != null;
     }
 
 }

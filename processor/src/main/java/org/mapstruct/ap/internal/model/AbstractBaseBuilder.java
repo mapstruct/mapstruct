@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import javax.lang.model.element.AnnotationMirror;
+
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
@@ -13,7 +14,6 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -60,8 +60,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     }
 
     private boolean isDisableSubMappingMethodsGeneration() {
-        MapperOptions configuration = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
-        return configuration.isDisableSubMappingMethodsGeneration();
+        return  method.getOptions().getMapper().isDisableSubMappingMethodsGeneration();
     }
 
     /**
@@ -86,7 +85,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
             forgedMappingMethod = new ValueMappingMethod.Builder()
                 .method( forgedMethod )
-                .valueMappings( forgedMethod.getMappingOptions().getValueMappings() )
+                .valueMappings( forgedMethod.getOptions().getValueMappings() )
                 .mappingContext( ctx )
                 .build();
         }

@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -19,9 +17,10 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Builder that can be used to build {@link ContainerMappingMethod}(s).
@@ -36,7 +35,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     private SelectionParameters selectionParameters;
     private FormattingParameters formattingParameters;
-    private NullValueMappingStrategyPrism nullValueMappingStrategy;
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
 
@@ -52,11 +50,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     public B selectionParameters(SelectionParameters selectionParameters) {
         this.selectionParameters = selectionParameters;
-        return myself;
-    }
-
-    public B nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
-        this.nullValueMappingStrategy = nullValueMappingStrategy;
         return myself;
     }
 
@@ -122,10 +115,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         assignment = getWrapper( assignment, method );
 
         // mapNullToDefault
-        boolean mapNullToDefault = false;
-        if ( method.getMapperConfiguration() != null ) {
-            mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
-        }
+        boolean mapNullToDefault = method.getOptions()
+            .getIterableMapping()
+            .getNullValueMappingStrategy()
+            .isReturnDefault();
 
         MethodReference factoryMethod = null;
         if ( !method.isUpdateMethod() ) {

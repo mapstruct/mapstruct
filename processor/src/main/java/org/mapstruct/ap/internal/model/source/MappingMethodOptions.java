@@ -25,22 +25,28 @@ import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTa
  * @author Andreas Gudian
  */
 public class MappingMethodOptions {
-    private static final MappingMethodOptions EMPTY = new MappingMethodOptions( Collections.emptySet(),
+    private static final MappingMethodOptions EMPTY = new MappingMethodOptions(
+        null,
+        Collections.emptySet(),
         null,
         null,
         null,
         Collections.emptyList()
     );
 
+    private MapperOptions mapper;
     private Set<MappingOptions> mappings;
     private IterableMappingOptions iterableMapping;
     private MapMappingOptions mapMapping;
     private BeanMappingOptions beanMapping;
-    private List<ValueMapping> valueMappings;
+    private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
 
-    public MappingMethodOptions(Set<MappingOptions> mappings, IterableMappingOptions iterableMapping, MapMappingOptions mapMapping,
-                                BeanMappingOptions beanMapping, List<ValueMapping> valueMappings ) {
+    public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
+                                IterableMappingOptions iterableMapping,
+                                MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
+                                List<ValueMappingOptions> valueMappings) {
+        this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
@@ -58,8 +64,8 @@ public class MappingMethodOptions {
     }
 
     /**
-     * @return the {@link MappingOptions}s configured for this method, keyed by target property name. Only for enum mapping
-     * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
+     * @return the {@link MappingOptions}s configured for this method, keyed by target property name. Only for enum
+     * mapping methods a target will be mapped by several sources.
      */
     public Set<MappingOptions> getMappings() {
         return mappings;
@@ -77,7 +83,7 @@ public class MappingMethodOptions {
         return beanMapping;
     }
 
-    public List<ValueMapping> getValueMappings() {
+    public List<ValueMappingOptions> getValueMappings() {
         return valueMappings;
     }
 
@@ -93,8 +99,12 @@ public class MappingMethodOptions {
         this.beanMapping = beanMapping;
     }
 
-    public void setValueMappings(List<ValueMapping> valueMappings) {
+    public void setValueMappings(List<ValueMappingOptions> valueMappings) {
         this.valueMappings = valueMappings;
+    }
+
+    public MapperOptions getMapper() {
+        return mapper;
     }
 
     /**
@@ -117,34 +127,35 @@ public class MappingMethodOptions {
      * @param method the source method
      */
     public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
-        MappingMethodOptions inherited = templateMethod.getMappingOptions();
-        if ( null != inherited ) {
-            if ( getIterableMapping() == null && inherited.getIterableMapping() != null) {
-                setIterableMapping( inherited.getIterableMapping() );
+        MappingMethodOptions templateOptions = templateMethod.getOptions();
+        if ( null != templateOptions ) {
+            if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
+                setIterableMapping( templateOptions.getIterableMapping() );
             }
 
-            if ( getMapMapping() == null && inherited.getMapMapping() != null) {
-                setMapMapping( inherited.getMapMapping() );
+            if ( !getMapMapping().hasAnnotation() && templateOptions.getMapMapping().hasAnnotation() ) {
+                setMapMapping( templateOptions.getMapMapping() );
             }
 
-            if ( getBeanMapping() == null && inherited.getBeanMapping() != null ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( inherited.getBeanMapping() ) );
+            if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
+                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
             }
 
             if ( getValueMappings() == null ) {
-                if ( inherited.getValueMappings() != null ) {
+                if ( templateOptions.getValueMappings() != null ) {
                     // there were no mappings, so the inherited mappings are the new ones
-                    setValueMappings( inherited.getValueMappings() );
+                    setValueMappings( templateOptions.getValueMappings() );
                 }
                 else {
                     setValueMappings( Collections.emptyList() );
                 }
             }
             else {
-                if ( inherited.getValueMappings() != null ) {
+                if ( templateOptions.getValueMappings() != null ) {
                     // iff there are also inherited mappings, we inverse and add them.
-                    for ( ValueMapping inheritedValueMapping : inherited.getValueMappings() ) {
-                        ValueMapping valueMapping = isInverse ? inheritedValueMapping.inverse() : inheritedValueMapping;
+                    for ( ValueMappingOptions inheritedValueMapping : templateOptions.getValueMappings() ) {
+                        ValueMappingOptions valueMapping =
+                            isInverse ? inheritedValueMapping.inverse() : inheritedValueMapping;
                         if ( valueMapping != null
                             && !getValueMappings().contains(  valueMapping ) ) {
                             getValueMappings().add( valueMapping );
@@ -154,14 +165,14 @@ public class MappingMethodOptions {
             }
 
             Set<MappingOptions> newMappings = new LinkedHashSet<>();
-            for ( MappingOptions mapping : inherited.getMappings() ) {
+            for ( MappingOptions mapping : templateOptions.getMappings() ) {
                 if ( isInverse ) {
                     if ( mapping.canInverse() ) {
-                        newMappings.add( mapping.copyForInverseInheritance( templateMethod ) );
+                        newMappings.add( mapping.copyForInverseInheritance( templateMethod, getBeanMapping() ) );
                     }
                 }
                 else {
-                    newMappings.add( mapping.copyForForwardInheritance( templateMethod ) );
+                    newMappings.add( mapping.copyForForwardInheritance( templateMethod, getBeanMapping() ) );
                 }
             }
 
@@ -174,12 +185,12 @@ public class MappingMethodOptions {
     }
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
-        CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+        CollectionMappingStrategyPrism cms = method.getOptions().getMapper().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
-                            writeType,
-                            BeanMappingOptions.builderPrismFor( method )
+                writeType,
+                method.getOptions().getBeanMapping().getBuilderPrism()
             );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );

@@ -32,11 +32,11 @@ public class VerboseTest {
     @Test
     @DisabledOnCompiler( Compiler.ECLIPSE )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(CreateBeanMapping.class)
+    @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^MapStruct: Using accessor naming strategy:.*DefaultAccessorNamingStrategy.*$")
     @ExpectedNote("^MapStruct: Using builder provider:.*DefaultBuilderProvider.*$")
     @ExpectedNote("^ MapStruct: processing:.*.CreateBeanMapping.*$")
-    @ExpectedNote("^ MapStruct: applying mapper configuration:.*MapperConfiguration.*$")
+    @ExpectedNote("^ MapStruct: applying mapper configuration:.*CreateBeanMappingConfig.*$")
     public void testGeneralMessages() {
     }
 
@@ -45,11 +45,11 @@ public class VerboseTest {
     @WithServiceImplementation(provides = BuilderProvider.class, value = ImmutablesBuilderProvider.class)
     @WithServiceImplementation(provides = AccessorNamingStrategy.class, value = ImmutablesAccessorNamingStrategy.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(CreateBeanMapping.class)
+    @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^MapStruct: Using accessor naming strategy:.*ImmutablesAccessorNamingStrategy.*$")
     @ExpectedNote("^MapStruct: Using builder provider:.*ImmutablesBuilderProvider.*$")
     @ExpectedNote("^ MapStruct: processing:.*.CreateBeanMapping.*$")
-    @ExpectedNote("^ MapStruct: applying mapper configuration:.*MapperConfiguration.*$")
+    @ExpectedNote("^ MapStruct: applying mapper configuration:.*CreateBeanMappingConfig.*$")
     public void testGeneralWithOtherSPI() {
     }
 
@@ -58,7 +58,7 @@ public class VerboseTest {
     @WithServiceImplementation(provides = AstModifyingAnnotationProcessor.class,
         value = AstModifyingAnnotationProcessorSaysNo.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(CreateBeanMapping.class)
+    @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^MapStruct: referred types not available \\(yet\\), deferring mapper:.*CreateBeanMapping.*$")
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(
@@ -75,7 +75,7 @@ public class VerboseTest {
     @Test
     @DisabledOnCompiler( Compiler.ECLIPSE )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
-    @WithClasses(CreateBeanMapping.class)
+    @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^- MapStruct: creating bean mapping method implementation for.*$")
     @ExpectedNote("^-- MapStruct: creating property mapping.*$")
     public void testCreateBeanMapping() {
