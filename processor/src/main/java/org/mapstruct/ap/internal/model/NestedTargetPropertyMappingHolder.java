@@ -272,7 +272,8 @@ public class NestedTargetPropertyMappingHolder {
                                                    boolean forceUpdateMethod) {
             if ( !sourceParameterMappings.isEmpty() ) {
                 // The source parameter mappings have no mappings, the source name is actually the parameter itself
-                MappingReferences nonNestedRefs = new MappingReferences( Collections.emptySet(), false, true );
+                MappingReferences nonNestedRefs =
+                    new MappingReferences( Collections.emptySet(), false, true );
                 SourceReference reference = new SourceReference.BuilderFromProperty()
                     .sourceParameter( sourceParameter )
                     .name( targetProperty.getName() )
@@ -294,8 +295,8 @@ public class NestedTargetPropertyMappingHolder {
         }
 
         /**
-         * The target references are popped. The {@code List<}{@link MappingOptions}{@code >} are keyed on the unique first
-         * entries of the target references.
+         * The target references are popped. The {@code List<}{@link MappingOptions}{@code >} are keyed on the unique
+         * first entries of the target references.
          *
          * <p>
          * <p>
@@ -503,8 +504,8 @@ public class NestedTargetPropertyMappingHolder {
          *
          *
          *
-         * @param entryByParam the entry of a {@link Parameter} and it's associated {@link MappingOptions}(s) that need to
-         * be used for grouping on popped source references
+         * @param entryByParam the entry of a {@link Parameter} and it's associated {@link MappingOptions}(s) that need
+         *                     to be used for grouping on popped source references
          * @param singleTargetReferences the single target references that match the source mappings
          *
          * @return the Grouped Source References
@@ -638,6 +639,7 @@ public class NestedTargetPropertyMappingHolder {
                 .forgeMethodWithMappingReferences( mappingReferences )
                 .forceUpdateMethod( forceUpdateMethod )
                 .forgedNamedBased( false )
+                .options( method.getOptions().getBeanMapping() )
                 .build();
         }
 

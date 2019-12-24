@@ -24,7 +24,7 @@ import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
-import org.mapstruct.ap.internal.util.MapperOptions;
+import org.mapstruct.ap.internal.model.source.MapperOptions;
 
 /**
  * An {@link ModelElementProcessor} which converts the given {@link Mapper} object into an annotation based component
@@ -42,10 +42,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        MapperOptions mapperConfiguration = MapperOptions.getInstanceOn( mapperTypeElement );
+        MapperOptions mapperAnnotation = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
 
-        String componentModel = mapperConfiguration.componentModel( context.getOptions() );
-        InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy( context.getOptions() );
+        String componentModel = mapperAnnotation.componentModel();
+        InjectionStrategyPrism injectionStrategy = mapperAnnotation.getInjectionStrategy();
 
         if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
             return mapper;

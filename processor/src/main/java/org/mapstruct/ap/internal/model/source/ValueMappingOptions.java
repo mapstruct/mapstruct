@@ -24,7 +24,7 @@ import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED
  *
  * @author Sjaak Derksen
  */
-public class ValueMapping {
+public class ValueMappingOptions {
 
     private final String source;
     private final String target;
@@ -33,11 +33,11 @@ public class ValueMapping {
     private final AnnotationValue targetAnnotationValue;
 
     public static void fromMappingsPrism(ValueMappingsPrism mappingsAnnotation, ExecutableElement method,
-        FormattingMessager messager, List<ValueMapping> mappings) {
+        FormattingMessager messager, List<ValueMappingOptions> mappings) {
 
         boolean anyFound = false;
         for ( ValueMappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            ValueMapping mapping = fromMappingPrism( mappingPrism );
+            ValueMappingOptions mapping = fromMappingPrism( mappingPrism );
             if ( mapping != null ) {
 
                 if ( !mappings.contains( mapping ) ) {
@@ -69,14 +69,14 @@ public class ValueMapping {
         }
     }
 
-    public static ValueMapping fromMappingPrism( ValueMappingPrism mappingPrism ) {
+    public static ValueMappingOptions fromMappingPrism(ValueMappingPrism mappingPrism ) {
 
-        return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
+        return new ValueMappingOptions( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );
     }
 
-    private ValueMapping(String source, String target, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
-        AnnotationValue targetAnnotationValue ) {
+    private ValueMappingOptions(String source, String target, AnnotationMirror mirror,
+                                AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue ) {
         this.source = source;
         this.target = target;
         this.mirror = mirror;
@@ -110,10 +110,10 @@ public class ValueMapping {
         return targetAnnotationValue;
     }
 
-    public ValueMapping inverse() {
-        ValueMapping result;
+    public ValueMappingOptions inverse() {
+        ValueMappingOptions result;
         if ( !(ANY_REMAINING.equals( source ) || ANY_UNMAPPED.equals( source ) ) ) {
-            result = new ValueMapping(
+            result = new ValueMappingOptions(
                 target,
                 source,
                 mirror,
@@ -141,7 +141,7 @@ public class ValueMapping {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        final ValueMapping other = (ValueMapping) obj;
+        final ValueMappingOptions other = (ValueMappingOptions) obj;
         return Objects.equals( this.source, other.source );
     }
 }

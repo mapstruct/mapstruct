@@ -12,6 +12,16 @@ package org.mapstruct.ap.internal.prism;
  */
 public enum NullValueMappingStrategyPrism {
 
-    RETURN_NULL,
-    RETURN_DEFAULT;
+    RETURN_NULL( false ),
+    RETURN_DEFAULT( true );
+
+    private final boolean returnDefault;
+
+    NullValueMappingStrategyPrism(boolean returnDefault) {
+        this.returnDefault = returnDefault;
+    }
+
+    public boolean isReturnDefault() {
+        return returnDefault;
+    }
 }

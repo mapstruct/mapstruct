@@ -20,7 +20,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
@@ -49,8 +48,7 @@ public class SourceMethod implements Method {
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
-    private final MapperOptions config;
-    private final MappingMethodOptions mappingOptions;
+    private final MappingMethodOptions mappingMethodOptions;
     private final List<SourceMethod> prototypeMethods;
     private final Type mapperToImplement;
 
@@ -83,9 +81,9 @@ public class SourceMethod implements Method {
         private BeanMappingOptions beanMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
-        private MapperOptions mapperConfig = null;
+        private MapperOptions mapper = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
-        private List<ValueMapping> valueMappings;
+        private List<ValueMappingOptions> valueMappings;
         private ParameterProvidedMethods contextProvidedMethods;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
@@ -113,27 +111,27 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMappings(Set<MappingOptions> mappings) {
+        public Builder setMappingOptions(Set<MappingOptions> mappings) {
             this.mappings = mappings;
             return this;
         }
 
-        public Builder setIterableMapping(IterableMappingOptions iterableMapping) {
+        public Builder setIterableMappingOptions(IterableMappingOptions iterableMapping) {
             this.iterableMapping = iterableMapping;
             return this;
         }
 
-        public Builder setMapMapping(MapMappingOptions mapMapping) {
+        public Builder setMapMappingOptions(MapMappingOptions mapMapping) {
             this.mapMapping = mapMapping;
             return this;
         }
 
-        public Builder setBeanMapping(BeanMappingOptions beanMapping) {
+        public Builder setBeanMappingOptions(BeanMappingOptions beanMapping) {
             this.beanMapping = beanMapping;
             return this;
         }
 
-        public Builder setValueMappings(List<ValueMapping> valueMappings) {
+        public Builder setValueMappingOptionss(List<ValueMappingOptions> valueMappings) {
             this.valueMappings = valueMappings;
             return this;
         }
@@ -148,8 +146,8 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMapperConfiguration(MapperOptions mapperConfig) {
-            this.mapperConfig = mapperConfig;
+        public Builder setMapper(MapperOptions mapper) {
+            this.mapper = mapper;
             return this;
         }
 
@@ -174,14 +172,14 @@ public class SourceMethod implements Method {
                 mappings = Collections.emptySet();
             }
 
-            MappingMethodOptions mappingOptions =
-                    new MappingMethodOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+            MappingMethodOptions mappingMethodOptions =
+                new MappingMethodOptions( mapper, mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
-            return new SourceMethod( this, mappingOptions );
+            return new SourceMethod( this, mappingMethodOptions );
         }
     }
 
-    private SourceMethod(Builder builder, MappingMethodOptions mappingOptions) {
+    private SourceMethod(Builder builder, MappingMethodOptions mappingMethodOptions) {
         this.declaringMapper = builder.declaringMapper;
         this.executable = builder.executable;
         this.parameters = builder.parameters;
@@ -189,7 +187,7 @@ public class SourceMethod implements Method {
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
-        this.mappingOptions = mappingOptions;
+        this.mappingMethodOptions = mappingMethodOptions;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
@@ -202,7 +200,6 @@ public class SourceMethod implements Method {
 
         this.typeUtils = builder.typeUtils;
         this.typeFactory = builder.typeFactory;
-        this.config = builder.mapperConfig;
         this.prototypeMethods = builder.prototypeMethods;
         this.mapperToImplement = builder.definingType;
     }
@@ -360,7 +357,7 @@ public class SourceMethod implements Method {
     public boolean isValueMapping() {
 
         if ( isValueMapping == null ) {
-            isValueMapping = isEnumMapping( this ) && mappingOptions.getMappings().isEmpty();
+            isValueMapping = isEnumMapping( this ) && mappingMethodOptions.getMappings().isEmpty();
         }
         return isValueMapping;
     }
@@ -463,8 +460,8 @@ public class SourceMethod implements Method {
     }
 
     @Override
-    public MappingMethodOptions getMappingOptions() {
-        return mappingOptions;
+    public MappingMethodOptions getOptions() {
+        return mappingMethodOptions;
     }
 
     @Override
@@ -480,11 +477,6 @@ public class SourceMethod implements Method {
     @Override
     public Type getDefiningType() {
         return mapperToImplement;
-    }
-
-    @Override
-    public MapperOptions getMapperConfiguration() {
-        return config;
     }
 
     @Override

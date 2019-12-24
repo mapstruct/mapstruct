@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.io.IOException;
-
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
@@ -15,7 +14,7 @@ import javax.tools.StandardLocation;
 import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.ServicesEntry;
-import org.mapstruct.ap.internal.util.MapperOptions;
+import org.mapstruct.ap.internal.model.source.MapperOptions;
 import org.mapstruct.ap.internal.writer.ModelWriter;
 
 /**
@@ -37,7 +36,7 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
         }
         else {
             String componentModel =
-                MapperOptions.getInstanceOn( mapperTypeElement ).componentModel( context.getOptions() );
+                MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() ).componentModel( );
 
             spiGenerationNeeded = "default".equals( componentModel );
         }

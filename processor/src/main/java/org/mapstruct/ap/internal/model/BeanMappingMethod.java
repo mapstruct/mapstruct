@@ -37,14 +37,11 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
-import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -121,7 +118,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         public BeanMappingMethod build() {
 
-            BeanMappingOptions beanMapping = method.getMappingOptions().getBeanMapping();
+            BeanMappingOptions beanMapping = method.getOptions().getBeanMapping();
             SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
 
             /* the return type that needs to be constructed (new or factorized), so for instance: */
@@ -161,7 +158,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
 
-            CollectionMappingStrategyPrism cms = this.method.getMapperConfiguration().getCollectionMappingStrategy();
+            CollectionMappingStrategyPrism cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
 
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
@@ -216,9 +213,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             reportErrorForUnmappedSourcePropertiesIfRequired();
 
             // mapNullToDefault
-            NullValueMappingStrategyPrism nullValueMappingStrategy =
-                beanMapping != null ? beanMapping.getNullValueMappingStrategy() : null;
-            boolean mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
+            boolean mapNullToDefault = method.getOptions()
+                .getBeanMapping()
+                .getNullValueMappingStrategy()
+                .isReturnDefault();
 
             // sort
             sortPropertyMappingsByDependencies();
@@ -388,7 +386,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( resultType.isAbstract() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    method.getMappingOptions().getBeanMapping().getMirror(),
+                    method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_ABSTRACT,
                     resultType,
                     method.getResultType()
@@ -398,7 +396,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    method.getMappingOptions().getBeanMapping().getMirror(),
+                    method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_NOT_ASSIGNABLE,
                     resultType,
                     method.getResultType()
@@ -408,7 +406,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else if ( !resultType.hasEmptyAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    method.getMappingOptions().getBeanMapping().getMirror(),
+                    method.getOptions().getBeanMapping().getMirror(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                     resultType
                 );
@@ -630,8 +628,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .defaultValue( mapping.getDefaultValue() )
                         .defaultJavaExpression( mapping.getDefaultJavaExpression() )
                         .mirror( mapping.getMirror() )
-                        .nullValueCheckStrategy( mapping.getNullValueCheckStrategy() )
-                        .nullValuePropertyMappingStrategy( mapping.getNullValuePropertyMappingStrategy() )
+                        .options( mapping )
                         .build();
                     handledTargets.add( targetPropertyName );
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -732,6 +729,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                               .sourceReference( sourceRef )
                                                               .existingVariableNames( existingVariableNames )
                                                               .forgeMethodWithMappingReferences( mappingRefs )
+                                                              .options( method.getOptions().getBeanMapping() )
                                                               .build();
 
                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -777,6 +775,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .sourceReference( sourceRef )
                             .existingVariableNames( existingVariableNames )
                             .forgeMethodWithMappingReferences( mappingRefs )
+                            .options( method.getOptions().getBeanMapping() )
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -828,15 +827,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyPrism.IGNORE;
             }
-            MappingMethodOptions mappingOptions = method.getMappingOptions();
-            if ( mappingOptions.getBeanMapping() != null &&
-                mappingOptions.getBeanMapping().getReportingPolicy() != null ) {
-                return mappingOptions.getBeanMapping().getReportingPolicy();
-            }
-
-            MapperOptions mapperSettings = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
-
-            return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
+            return method.getOptions().getMapper().unmappedTargetPolicy();
         }
 
         private void reportErrorForUnmappedTargetPropertiesIfRequired() {
@@ -917,9 +908,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyPrism.IGNORE;
             }
-            MapperOptions mapperSettings = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
-
-            return mapperSettings.unmappedSourcePolicy();
+            return method.getOptions().getMapper().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {

@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
@@ -19,7 +19,6 @@ import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -28,197 +27,125 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Sjaak Derksen
  */
-public class BeanMappingOptions {
+public class BeanMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
-    private final NullValueMappingStrategyPrism nullValueMappingStrategy;
-    private final NullValueCheckStrategyPrism nullValueCheckStrategy;
-    private final ReportingPolicyPrism reportingPolicy;
-    private final boolean ignoreByDefault;
-    private final List<String> ignoreUnmappedSourceProperties;
-    private final BuilderPrism builder;
-    private final NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy;
-
-    private final AnnotationMirror mirror;
+    private final BeanMappingPrism prism;
 
     /**
      * creates a mapping for inheritance. Will set
-     * - ignoreByDefault to false.
-     * - resultType to null
      *
      * @return new mapping
      */
     public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
-        return new BeanMappingOptions(
+        BeanMappingOptions options =  new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
-            beanMapping.nullValueMappingStrategy,
-            beanMapping.nullValuePropertyMappingStrategy,
-            beanMapping.nullValueCheckStrategy,
-            beanMapping.reportingPolicy,
-            beanMapping.ignoreByDefault,
-            beanMapping.ignoreUnmappedSourceProperties,
-            beanMapping.builder,
-            beanMapping.mirror
+            beanMapping.prism,
+            beanMapping
         );
+        return options;
     }
 
-    public static class Builder {
-
-        private BeanMappingPrism prism;
-        private ExecutableElement method;
-        private FormattingMessager messager;
-        private Types typeUtils;
-        private TypeFactory typeFactory;
-
-        public Builder beanMappingPrism(BeanMappingPrism beanMappingPrism) {
-            this.prism = beanMappingPrism;
-            return this;
+    public static BeanMappingOptions getInstanceOn(BeanMappingPrism prism, MapperOptions mapperOptions,
+                                                   ExecutableElement method, FormattingMessager messager,
+                                                   Types typeUtils, TypeFactory typeFactory
+    ) {
+        if ( prism == null || !isConsistent( prism, method, messager ) ) {
+            BeanMappingOptions options = new BeanMappingOptions( null, null, mapperOptions );
+            return options;
         }
 
-        public Builder method(ExecutableElement method) {
-            this.method = method;
-            return this;
-        }
+        Objects.requireNonNull( method );
+        Objects.requireNonNull( messager );
+        Objects.requireNonNull( method );
+        Objects.requireNonNull( typeUtils );
+        Objects.requireNonNull( typeFactory );
 
-        public Builder messager(FormattingMessager messager) {
-            this.messager = messager;
-            return this;
-        }
+        SelectionParameters selectionParameters = new SelectionParameters(
+            prism.qualifiedBy(),
+            prism.qualifiedByName(),
+            TypeKind.VOID != prism.resultType().getKind() ? prism.resultType() : null,
+            typeUtils
+        );
 
-        public Builder typeUtils(Types typeUtils) {
-            this.typeUtils = typeUtils;
-            return this;
-        }
-
-        public Builder typeFactory(TypeFactory typeFactory) {
-            this.typeFactory = typeFactory;
-            return this;
-        }
-
-        public BeanMappingOptions build() {
-
-            if ( prism == null ) {
-                return null;
-            }
-
-            Objects.requireNonNull( method );
-            Objects.requireNonNull( messager );
-            Objects.requireNonNull( method );
-            Objects.requireNonNull( typeUtils );
-            Objects.requireNonNull( typeFactory );
-
-            boolean resultTypeIsDefined = !TypeKind.VOID.equals( prism.resultType().getKind() );
-
-            NullValueMappingStrategyPrism nullValueMappingStrategy =
-                null == prism.values.nullValueMappingStrategy()
-                    ? null
-                    : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
-
-            NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy =
-                null == prism.values.nullValuePropertyMappingStrategy()
-                    ? null
-                    :
-                    NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
-
-            NullValueCheckStrategyPrism nullValueCheckStrategy =
-                null == prism.values.nullValueCheckStrategy()
-                    ? null
-                    : NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
-
-            boolean ignoreByDefault = prism.ignoreByDefault();
-            BuilderPrism builderMapping = null;
-            if ( prism.values.builder() != null ) {
-                builderMapping = prism.builder();
-            }
-
-            if ( !resultTypeIsDefined && prism.qualifiedBy().isEmpty() &&
-                prism.qualifiedByName().isEmpty()
-                && prism.ignoreUnmappedSourceProperties().isEmpty()
-                && ( nullValueMappingStrategy == null ) && ( nullValuePropertyMappingStrategy == null )
-                && ( nullValueCheckStrategy == null ) && !ignoreByDefault && builderMapping == null ) {
-
-                messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
-            }
-
-            SelectionParameters cmp = new SelectionParameters(
-                prism.qualifiedBy(),
-                prism.qualifiedByName(),
-                resultTypeIsDefined ? prism.resultType() : null,
-                typeUtils
-            );
-
-            //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
-            return new BeanMappingOptions(
-                cmp,
-                nullValueMappingStrategy,
-                nullValuePropertyMappingStrategy,
-                nullValueCheckStrategy,
-                null,
-                ignoreByDefault,
-                prism.ignoreUnmappedSourceProperties(),
-                builderMapping,
-                prism.mirror
-            );
-        }
+        //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
+        BeanMappingOptions options = new BeanMappingOptions( selectionParameters, prism, mapperOptions );
+        return options;
     }
 
-    private BeanMappingOptions(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
-                               NullValuePropertyMappingStrategyPrism nvpms, NullValueCheckStrategyPrism nvcs,
-                               ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault,
-                               List<String> ignoreUnmappedSourceProperties, BuilderPrism builder,
-                               AnnotationMirror mirror) {
+    private static boolean isConsistent(BeanMappingPrism prism, ExecutableElement method,
+                                        FormattingMessager messager) {
+        if ( TypeKind.VOID == prism.resultType().getKind()
+            && prism.qualifiedBy().isEmpty()
+            && prism.qualifiedByName().isEmpty()
+            && prism.ignoreUnmappedSourceProperties().isEmpty()
+            && null == prism.values.nullValueCheckStrategy()
+            && null == prism.values.nullValuePropertyMappingStrategy()
+            && null == prism.values.nullValueMappingStrategy()
+            && null == prism.values.ignoreByDefault()
+            && null == prism.values.builder() ) {
+
+            messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
+            return false;
+        }
+        return true;
+    }
+
+    private BeanMappingOptions(SelectionParameters selectionParameters, BeanMappingPrism prism,
+                               DelegatingOptions next) {
+        super( next );
         this.selectionParameters = selectionParameters;
-        this.nullValueMappingStrategy = nvms;
-        this.nullValuePropertyMappingStrategy = nvpms;
-        this.nullValueCheckStrategy = nvcs;
-        this.reportingPolicy = reportingPolicy;
-        this.ignoreByDefault = ignoreByDefault;
-        this.ignoreUnmappedSourceProperties = ignoreUnmappedSourceProperties;
-        this.builder = builder;
-        this.mirror = mirror;
+        this.prism = prism;
     }
+
+    // @Mapping, @BeanMapping
+
+    @Override
+    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
+        return null == prism || null == prism.values.nullValueCheckStrategy() ?
+            next().getNullValueCheckStrategy()
+            : NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
+        return null == prism || null == prism.values.nullValuePropertyMappingStrategy() ?
+            next().getNullValuePropertyMappingStrategy()
+            : NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
+    }
+
+    @Override
+    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+        return null == prism || null == prism.values.nullValueMappingStrategy() ?
+            next().getNullValueMappingStrategy()
+            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    }
+
+    @Override
+    public BuilderPrism getBuilderPrism() {
+        return null == prism || null == prism.values.builder() ? next().getBuilderPrism() : prism.builder();
+    }
+
+    // @BeanMapping specific
 
     public SelectionParameters getSelectionParameters() {
         return selectionParameters;
     }
 
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return nullValueMappingStrategy;
-    }
-
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
-        return nullValuePropertyMappingStrategy;
-    }
-
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        return nullValueCheckStrategy;
-    }
-
-    public ReportingPolicyPrism getReportingPolicy() {
-        return reportingPolicy;
-    }
-
     public boolean isignoreByDefault() {
-        return ignoreByDefault;
+        return null == prism ? false : prism.ignoreByDefault();
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
-        return ignoreUnmappedSourceProperties;
+        return null == prism ? Collections.emptyList() : prism.ignoreUnmappedSourceProperties();
     }
 
     public AnnotationMirror getMirror() {
-        return mirror;
+        return null == prism ? null : prism.mirror;
     }
 
-    /**
-     * derives the builder prism given the options and configuration
-     * @param method containing mandatory configuration and the mapping options (optionally containing a beanmapping)
-     * @return null if BuilderPrism not exist
-     */
-    public static BuilderPrism builderPrismFor(Method method) {
-        return method.getMapperConfiguration()
-                     .getBuilderPrism( Optional.ofNullable( method.getMappingOptions().getBeanMapping() )
-                                               .map( b -> b.builder )
-                                               .orElse( null ) );
+    @Override
+    public boolean hasAnnotation() {
+        return prism != null;
     }
 }

@@ -35,7 +35,7 @@ public class MappingReferences {
         Set<MappingReference> references = new LinkedHashSet<>();
         List<MappingReference> targetThisReferences = new ArrayList<>(  );
 
-        for ( MappingOptions mapping : sourceMethod.getMappingOptions().getMappings() ) {
+        for ( MappingOptions mapping : sourceMethod.getOptions().getMappings() ) {
 
             // handle source reference
             SourceReference sourceReference = new SourceReference.BuilderFromMapping().mapping( mapping )

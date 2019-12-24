@@ -18,7 +18,6 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -234,11 +233,6 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public Type getDefiningType() {
-        return null;
-    }
-
-    @Override
-    public MapperOptions getMapperConfiguration() {
         return null;
     }
 

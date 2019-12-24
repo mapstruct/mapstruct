@@ -664,7 +664,7 @@ public class MappingResolverImpl implements MappingResolver {
         void reportMessageWhenNarrowing(FormattingMessager messager, ResolvingAttempt attempt) {
 
             if ( NativeTypes.isNarrowing( sourceType.getFullyQualifiedName(), targetType.getFullyQualifiedName() ) ) {
-                ReportingPolicyPrism policy = attempt.mappingMethod.getMapperConfiguration().typeConversionPolicy();
+                ReportingPolicyPrism policy = attempt.mappingMethod.getOptions().getMapper().typeConversionPolicy();
                 if ( policy == ReportingPolicyPrism.WARN ) {
                     report( messager, attempt, Message.CONVERSION_LOSSY_WARNING );
                 }

@@ -19,7 +19,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -255,11 +254,6 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public MapperOptions getMapperConfiguration() {
-        return null;
-    }
-
-    @Override
     public boolean isLifecycleCallbackMethod() {
         return false;
     }
@@ -270,7 +264,7 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public MappingMethodOptions getMappingOptions() {
+    public MappingMethodOptions getOptions() {
         return MappingMethodOptions.empty();
     }
 

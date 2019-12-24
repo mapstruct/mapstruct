@@ -177,10 +177,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             }
 
             // mapNullToDefault
-            boolean mapNullToDefault = false;
-            if ( method.getMapperConfiguration() != null ) {
-                mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
-            }
+            boolean mapNullToDefault =
+                method.getOptions().getMapMapping().getNullValueMappingStrategy().isReturnDefault();
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {

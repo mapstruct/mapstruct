@@ -12,14 +12,13 @@ import java.util.List;
 import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
-import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
-import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -323,11 +322,6 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public MapperOptions getMapperConfiguration() {
-        return basedOn.getMapperConfiguration();
-    }
-
-    @Override
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
     }
@@ -343,8 +337,8 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public MappingMethodOptions getMappingOptions() {
-        return basedOn.getMappingOptions();
+    public MappingMethodOptions getOptions() {
+        return basedOn.getOptions();
     }
 
     public MappingReferences getMappingReferences() {

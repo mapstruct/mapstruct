@@ -18,7 +18,6 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
@@ -87,7 +86,7 @@ public class TargetReference extends AbstractReference {
         public Builder mapping(MappingOptions mapping) {
             if ( mapping.getInheritContext() != null ) {
                 this.isReversed = mapping.getInheritContext().isReversed();
-                this.templateMethod = mapping.getInheritContext().getInheritedFromMethod();
+                this.templateMethod = mapping.getInheritContext().getTemplateMethod();
             }
             this.isIgnored = mapping.isIgnored();
             this.targetName = mapping.getTargetName();
@@ -162,7 +161,7 @@ public class TargetReference extends AbstractReference {
         private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
 
             // initialize
-            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+            CollectionMappingStrategyPrism cms = method.getOptions().getMapper().getCollectionMappingStrategy();
             List<PropertyEntry> targetEntries = new ArrayList<>();
             Type nextType = type;
 
@@ -203,7 +202,7 @@ public class TargetReference extends AbstractReference {
                         );
                     }
                     else {
-                        BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
+                        BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
                         builderType = typeFactory.builderTypeFor( nextType, builderPrism );
                         propertyEntry = PropertyEntry.forTargetReference( fullName,
                                         targetReadAccessor,
@@ -271,7 +270,7 @@ public class TargetReference extends AbstractReference {
                 return type;
             }
             else {
-                BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
+                BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
                 return typeFactory.effectiveResultTypeFor( type, builderPrism );
             }
         }
