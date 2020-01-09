@@ -349,7 +349,7 @@ In the `@Mapper` annotation at the `CarMapper` interface reference the `DateMapp
 [subs="verbatim,attributes"]
 ----
 @Mapper(uses=DateMapper.class)
-public class CarMapper {
+public interface CarMapper {
 
     CarDto carToCarDto(Car car);
 }
