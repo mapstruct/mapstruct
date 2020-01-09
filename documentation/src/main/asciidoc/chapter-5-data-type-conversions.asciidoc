@@ -256,10 +256,10 @@ This means that it is possible for MapStruct not to report unmapped target prope
 [[invoking-custom-mapping-method]]
 === Invoking custom mapping method
 
-Sometimes mappings are not straightforward, and some fields should be mapped using plain java code, while mapping latter of them is covered by generated method.
+Sometimes mappings are not straightforward, and some fields should be mapped using plain java code, while mapping the others of them is covered by generated method.
 
-Let's see if there is a properties `length`, `width` and `height` in `FishTank`, and `VolumeDto` inner object, which contains `volume` and `description` fields in `FishTankWithVolumeDto`.
-We could convert rest of the fields using mappings defined inside `@Mapper` annotations, however it requires implementing method to create `VolumeDto`.
+Let's see if there are properties `length`, `width` and `height` in `FishTank`, and `VolumeDto` inner object, which contains `volume` and `description` fields in `FishTankWithVolumeDto`.
+We could convert the remainder of the fields using mappings defined defined by means of @Mapping annotations, however it requires implementing method to create `VolumeDto`.
 This could be done by just creating a method which takes `FishTank` instance as a parameter, and returns a `VolumeDto`.
 
 .Manually implemented mapping method
@@ -289,15 +289,16 @@ public class VolumeDto {
 }
 
 @Mapper
-public class FishTankMapperWithVolume {
+public abstract class FishTankMapperWithVolume {
 
     @Mapping(target = "fish.kind", source = "fish.type")
     @Mapping(target = "material.materialType", source = "material")
     @Mapping(target = "quality.document", source = "quality.report")
-    FishTankWithVolumeDto map( FishTank source );
+    @Mapping(target = "volume", source = "source")
+    abstract FishTankWithVolumeDto map(FishTank source);
 
     VolumeDto mapVolume(FishTank source) {
-        int volume = soruce.length * source.width * source.height;
+        int volume = source.length * source.width * source.height;
         String desc = volume < 100 ? "Small" : "Large";
         return new VolumeDto(volume, desc);
     }
@@ -305,7 +306,7 @@ public class FishTankMapperWithVolume {
 ----
 ====
 
-Note that no `@Mapping` annotation is needed, mapper will use `mapVolume` while calling `map` method.
+Note that there is `@Mapping` annotation where `source` parameter equied to `"source"`, it should be same as parameter name in `map(FishTank source)` method.
 
 
 [[invoking-other-mappers]]
