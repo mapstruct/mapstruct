@@ -291,9 +291,9 @@ public class VolumeDto {
 @Mapper
 public abstract class FishTankMapperWithVolume {
 
-    @Mapping(target = "fish.kind", source = "fish.type")
-    @Mapping(target = "material.materialType", source = "material")
-    @Mapping(target = "quality.document", source = "quality.report")
+    @Mapping(target = "fish.kind", source = "source.fish.type")
+    @Mapping(target = "material.materialType", source = "source.material")
+    @Mapping(target = "quality.document", source = "source.quality.report")
     @Mapping(target = "volume", source = "source")
     abstract FishTankWithVolumeDto map(FishTank source);
 
@@ -306,7 +306,7 @@ public abstract class FishTankMapperWithVolume {
 ----
 ====
 
-Note that there is `@Mapping` annotation where `source` parameter equied to `"source"`, it should be same as parameter name in `map(FishTank source)` method.
+Note the `@Mapping` annotation where `source` field is equal to `"source"`, indicating the parameter name `source` itself in the method `map(FishTank source)` in stead of a (target) property in `FishTank`. 
 
 
 [[invoking-other-mappers]]
