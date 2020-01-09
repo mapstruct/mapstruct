@@ -253,6 +253,62 @@ This means that it is possible for MapStruct not to report unmapped target prope
 ====
 
 
+[[invoking-custom-mapping-method]]
+=== Invoking custom mapping method
+
+Sometimes mappings are not straightforward and some fields require custom logic.
+
+The example below demonstrates how the properties `length`, `width` and `height` in `FishTank` can be mapped to the `VolumeDto` bean, which is a member of `FishTankWithVolumeDto`. `VolumeDto` contains the properties `volume` and `description`. Custom logic is achieved by defining a method which takes `FishTank` instance as a parameter and returns a `VolumeDto`. MapStruct will take the entire parameter `source` and generate code to call the custom method `mapVolume` in order to map the `FishTank` object to the target property `volume`.
+
+The remainder of the fields could be mapped the regular way: using mappings defined defined by means of `@Mapping` annotations.
+
+.Manually implemented mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class FishTank {
+    Fish fish;
+    String material;
+    Quality quality;
+    int length;
+    int width;
+    int height;
+}
+
+public class FishTankWithVolumeDto {
+    FishDto fish;
+    MaterialDto material;
+    QualityDto quality;
+    VolumeDto volume;
+}
+
+public class VolumeDto {
+    int volume;
+    String description;
+}
+
+@Mapper
+public abstract class FishTankMapperWithVolume {
+
+    @Mapping(target = "fish.kind", source = "source.fish.type")
+    @Mapping(target = "material.materialType", source = "source.material")
+    @Mapping(target = "quality.document", source = "source.quality.report")
+    @Mapping(target = "volume", source = "source")
+    abstract FishTankWithVolumeDto map(FishTank source);
+
+    VolumeDto mapVolume(FishTank source) {
+        int volume = source.length * source.width * source.height;
+        String desc = volume < 100 ? "Small" : "Large";
+        return new VolumeDto(volume, desc);
+    }
+}
+----
+====
+
+Note the `@Mapping` annotation where `source` field is equal to `"source"`, indicating the parameter name `source` itself in the method `map(FishTank source)` in stead of a (target) property in `FishTank`. 
+
+
 [[invoking-other-mappers]]
 === Invoking other mappers
 
@@ -293,7 +349,7 @@ In the `@Mapper` annotation at the `CarMapper` interface reference the `DateMapp
 [subs="verbatim,attributes"]
 ----
 @Mapper(uses=DateMapper.class)
-public class CarMapper {
+public interface CarMapper {
 
     CarDto carToCarDto(Car car);
 }
