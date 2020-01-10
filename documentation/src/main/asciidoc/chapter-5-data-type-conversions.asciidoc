@@ -306,7 +306,7 @@ public abstract class FishTankMapperWithVolume {
 ----
 ====
 
-Note the `@Mapping` annotation where `source` field is equal to `"source"`, indicating the parameter name `source` itself in the method `map(FishTank source)` in stead of a (target) property in `FishTank`. 
+Note the `@Mapping` annotation where `source` field is equal to `"source"`, indicating the parameter name `source` itself in the method `map(FishTank source)` instead of a (target) property in `FishTank`. 
 
 
 [[invoking-other-mappers]]
