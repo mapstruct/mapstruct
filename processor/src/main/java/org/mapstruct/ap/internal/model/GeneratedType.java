@@ -288,8 +288,15 @@ public abstract class GeneratedType extends ModelElement {
             }
 
             if ( typeToAdd.getPackageName().equals( packageName ) ) {
-                if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
-                    return false;
+                if ( typeToAdd.getTypeElement() != null ) {
+                    if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
+                        return false;
+                    }
+                }
+                else if ( typeToAdd.getComponentType() != null ) {
+                    if ( !typeToAdd.getComponentType().getTypeElement().getNestingKind().isNested() ) {
+                        return false;
+                    }
                 }
             }
         }
