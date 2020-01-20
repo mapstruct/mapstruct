@@ -3,17 +3,17 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.internal.gem;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
 /**
- * Prism for the enum {@link org.mapstruct.ReportingPolicy}.
+ * Gem for the enum {@link org.mapstruct.ReportingPolicy}.
  *
  * @author Gunnar Morling
  */
-public enum ReportingPolicyPrism {
+public enum ReportingPolicyGem {
 
     IGNORE( null, false, false ),
     WARN( Kind.WARNING, true, false ),
@@ -23,7 +23,7 @@ public enum ReportingPolicyPrism {
     private final boolean requiresReport;
     private final boolean failsBuild;
 
-    ReportingPolicyPrism(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
+    ReportingPolicyGem(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
         this.requiresReport = requiresReport;
         this.diagnosticKind = diagnosticKind;
         this.failsBuild = failsBuild;

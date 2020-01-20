@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.internal.option;
 
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 /**
  * The options passed to the code generator.
@@ -16,14 +16,14 @@ import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 public class Options {
     private final boolean suppressGeneratorTimestamp;
     private final boolean suppressGeneratorVersionComment;
-    private final ReportingPolicyPrism unmappedTargetPolicy;
+    private final ReportingPolicyGem unmappedTargetPolicy;
     private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
     private final String defaultInjectionStrategy;
     private final boolean verbose;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
-                   ReportingPolicyPrism unmappedTargetPolicy,
+                   ReportingPolicyGem unmappedTargetPolicy,
                    String defaultComponentModel, String defaultInjectionStrategy,
                    boolean alwaysGenerateSpi, boolean verbose) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
@@ -43,7 +43,7 @@ public class Options {
         return suppressGeneratorVersionComment;
     }
 
-    public ReportingPolicyPrism getUnmappedTargetPolicy() {
+    public ReportingPolicyGem getUnmappedTargetPolicy() {
         return unmappedTargetPolicy;
     }
 

@@ -39,7 +39,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.prism.BuilderPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.Extractor;
@@ -517,8 +517,8 @@ public class TypeFactory {
         return null;
     }
 
-    private BuilderInfo findBuilder(TypeMirror type, BuilderPrism builderPrism, boolean report) {
-        if ( builderPrism != null && builderPrism.disableBuilder() ) {
+    private BuilderInfo findBuilder(TypeMirror type, BuilderGem.Builder builderGem, boolean report) {
+        if ( builderGem != null && builderGem.disableBuilder().get() ) {
             return null;
         }
         try {
@@ -631,17 +631,17 @@ public class TypeFactory {
         return true;
     }
 
-    public BuilderType builderTypeFor( Type type, BuilderPrism builderPrism ) {
+    public BuilderType builderTypeFor( Type type, BuilderGem.Builder builder ) {
         if ( type != null ) {
-            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, true );
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builder, true );
             return BuilderType.create( builderInfo, type, this, this.typeUtils );
         }
         return null;
     }
 
-    public Type effectiveResultTypeFor( Type type, BuilderPrism builderPrism ) {
+    public Type effectiveResultTypeFor( Type type, BuilderGem.Builder builder ) {
         if ( type != null ) {
-            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builderPrism, false );
+            BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builder, false );
             BuilderType builderType = BuilderType.create( builderInfo, type, this, this.typeUtils );
             return builderType != null ? builderType.getBuilder() : type;
         }

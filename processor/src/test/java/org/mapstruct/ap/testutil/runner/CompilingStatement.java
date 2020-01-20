@@ -144,6 +144,7 @@ abstract class CompilingStatement extends Statement {
                 "freemarker",
                 "javax.inject",
                 "spring-context",
+                "annotations-api",
                 "joda-time" };
 
         return filterBootClassPath( whitelist );

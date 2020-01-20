@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
+        <org.mapstruct.annotations.version>0.5.0-SNAPSHOT</org.mapstruct.annotations.version>
         <!-- We can't go to 3.0.0-M2 as it has a regression. See https://issues.apache.org/jira/browse/MENFORCER-306 -->
         <org.apache.maven.plugins.enforcer.version>3.0.0-M1</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.0.0-M3</org.apache.maven.plugins.surefire.version>
@@ -109,9 +109,14 @@
                 <version>19.0</version>
             </dependency>
             <dependency>
-                <groupId>com.jolira</groupId>
-                <artifactId>hickory</artifactId>
-                <version>${com.jolira.hickory.version}</version>
+                <groupId>org.mapstruct.annotations</groupId>
+                <artifactId>annotations-api</artifactId>
+                <version>${org.mapstruct.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct.annotations</groupId>
+                <artifactId>annotations-processor</artifactId>
+                <version>${org.mapstruct.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

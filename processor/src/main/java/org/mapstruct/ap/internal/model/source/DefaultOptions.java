@@ -10,35 +10,35 @@ import java.util.Set;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
+import org.mapstruct.ap.internal.gem.MapperGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 public class DefaultOptions extends DelegatingOptions {
 
-    private final MapperPrism prism;
+    private final MapperGem.Mapper mapper;
     private final Options options;
 
-    DefaultOptions(MapperPrism prism, Options options) {
+    DefaultOptions(MapperGem.Mapper mapper, Options options) {
         super( null );
-        this.prism = prism;
+        this.mapper = mapper;
         this.options = options;
     }
 
     @Override
     public String implementationName() {
-        return prism.implementationName();
+        return mapper.implementationName().getDefaultValue();
     }
 
     @Override
     public String implementationPackage() {
-        return prism.implementationPackage();
+        return mapper.implementationPackage().getDefaultValue();
     }
 
     @Override
@@ -52,21 +52,21 @@ public class DefaultOptions extends DelegatingOptions {
     }
 
     @Override
-    public ReportingPolicyPrism unmappedTargetPolicy() {
+    public ReportingPolicyGem unmappedTargetPolicy() {
         if ( options.getUnmappedTargetPolicy() != null ) {
             return options.getUnmappedTargetPolicy();
         }
-        return ReportingPolicyPrism.valueOf( prism.unmappedTargetPolicy() );
+        return ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().getDefaultValue() );
     }
 
     @Override
-    public ReportingPolicyPrism unmappedSourcePolicy() {
-        return ReportingPolicyPrism.valueOf( prism.unmappedSourcePolicy() );
+    public ReportingPolicyGem unmappedSourcePolicy() {
+        return ReportingPolicyGem.valueOf( mapper.unmappedSourcePolicy().getDefaultValue() );
     }
 
     @Override
-    public ReportingPolicyPrism typeConversionPolicy() {
-        return ReportingPolicyPrism.valueOf( prism.typeConversionPolicy() );
+    public ReportingPolicyGem typeConversionPolicy() {
+        return ReportingPolicyGem.valueOf( mapper.typeConversionPolicy().getDefaultValue() );
     }
 
     @Override
@@ -74,46 +74,47 @@ public class DefaultOptions extends DelegatingOptions {
         if ( options.getDefaultComponentModel() != null ) {
             return options.getDefaultComponentModel();
         }
-        return prism.componentModel();
+        return mapper.componentModel().getDefaultValue();
     }
 
     @Override
-    public MappingInheritanceStrategyPrism getMappingInheritanceStrategy() {
-        return MappingInheritanceStrategyPrism.valueOf( prism.mappingInheritanceStrategy() );
+    public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
+        return MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().getDefaultValue() );
     }
 
     @Override
-    public InjectionStrategyPrism getInjectionStrategy() {
+    public InjectionStrategyGem getInjectionStrategy() {
         if ( options.getDefaultInjectionStrategy() != null ) {
-            return InjectionStrategyPrism.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
+            return InjectionStrategyGem.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
         }
-        return InjectionStrategyPrism.valueOf( prism.injectionStrategy() );
+        return InjectionStrategyGem.valueOf( mapper.injectionStrategy().getDefaultValue() );
     }
 
     @Override
     public Boolean isDisableSubMappingMethodsGeneration() {
-        return prism.disableSubMappingMethodsGeneration();
+        return mapper.disableSubMappingMethodsGeneration().getDefaultValue();
     }
 
     // BeanMapping and Mapping
 
-    public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
-        return CollectionMappingStrategyPrism.valueOf( prism.collectionMappingStrategy() );
+    public CollectionMappingStrategyGem getCollectionMappingStrategy() {
+        return CollectionMappingStrategyGem.valueOf( mapper.collectionMappingStrategy().getDefaultValue() );
     }
 
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        return NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
+    public NullValueCheckStrategyGem getNullValueCheckStrategy() {
+        return NullValueCheckStrategyGem.valueOf( mapper.nullValueCheckStrategy().getDefaultValue() );
     }
 
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
-        return NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return NullValuePropertyMappingStrategyGem.valueOf(
+            mapper.nullValuePropertyMappingStrategy().getDefaultValue() );
     }
 
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
+        return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().getDefaultValue() );
     }
 
-    public BuilderPrism getBuilderPrism() {
+    public BuilderGem.Builder getBuilder() {
         // TODO: I realized this is not correct, however it needs to be null in order to keep downward compatibility
         // but assuming a default @Builder will make testcases fail. Not having a default means that you need to
         // specify this mandatory on @MappingConfig and @Mapper.

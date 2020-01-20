@@ -13,146 +13,150 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
-import org.mapstruct.ap.internal.prism.MapperConfigPrism;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
+import org.mapstruct.ap.internal.gem.MapperConfigGem;
+import org.mapstruct.ap.internal.gem.MapperGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 public class MapperOptions extends DelegatingOptions {
 
-    private final MapperPrism prism;
+    private final MapperGem.Mapper mapper;
     private final DeclaredType mapperConfigType;
 
     public static MapperOptions getInstanceOn(TypeElement typeElement, Options options) {
-        MapperPrism prism = MapperPrism.getInstanceOn( typeElement );
+        MapperGem.Mapper mapper = MapperGem.instanceOn( typeElement );
         MapperOptions mapperAnnotation;
-        DelegatingOptions defaults = new DefaultOptions( prism, options );
+        DelegatingOptions defaults = new DefaultOptions( mapper, options );
         DeclaredType mapperConfigType;
-        if ( prism.values.config() != null && prism.config().getKind() == TypeKind.DECLARED ) {
-            mapperConfigType = (DeclaredType) prism.config();
+        if ( mapper.config().hasValue() && mapper.config().getValue().getKind() == TypeKind.DECLARED ) {
+            mapperConfigType = (DeclaredType) mapper.config().get();
         }
         else {
             mapperConfigType = null;
         }
         if ( mapperConfigType != null ) {
             Element mapperConfigElement = mapperConfigType.asElement();
-            MapperConfigPrism configPrism = MapperConfigPrism.getInstanceOn( mapperConfigElement );
-            MapperConfigOptions mapperConfigAnnotation = new MapperConfigOptions( configPrism, defaults );
-            mapperAnnotation = new MapperOptions( prism, mapperConfigType, mapperConfigAnnotation );
+            MapperConfigGem.MapperConfig mapperConfig = MapperConfigGem.instanceOn( mapperConfigElement );
+            MapperConfigOptions mapperConfigAnnotation = new MapperConfigOptions( mapperConfig, defaults );
+            mapperAnnotation = new MapperOptions( mapper, mapperConfigType, mapperConfigAnnotation );
         }
         else {
-            mapperAnnotation = new MapperOptions( prism, null, defaults );
+            mapperAnnotation = new MapperOptions( mapper, null, defaults );
         }
         return mapperAnnotation;
     }
 
-    private MapperOptions(MapperPrism prism, DeclaredType mapperConfigType, DelegatingOptions next) {
+    private MapperOptions(MapperGem.Mapper mapper, DeclaredType mapperConfigType, DelegatingOptions next) {
         super( next );
-        this.prism = prism;
+        this.mapper = mapper;
         this.mapperConfigType = mapperConfigType;
     }
 
     @Override
     public String implementationName() {
-        return null == prism.values.implementationName() ? next().implementationName() : prism.implementationName();
+        return mapper.implementationName().hasValue() ? mapper.implementationName().get() : next().implementationName();
     }
 
     @Override
     public String implementationPackage() {
-        return null == prism.values.implementationPackage() ? next().implementationPackage() :
-            prism.implementationPackage();
+        return mapper.implementationPackage().hasValue() ? mapper.implementationPackage().get() :
+            next().implementationPackage();
     }
 
     @Override
     public Set<DeclaredType> uses() {
-        return toDeclaredTypes( prism.uses(), next().uses() );
+        return toDeclaredTypes( mapper.uses().get(), next().uses() );
     }
 
     @Override
     public Set<DeclaredType> imports() {
-        return toDeclaredTypes( prism.imports(), next().imports() );
+        return toDeclaredTypes( mapper.imports().get(), next().imports() );
     }
 
     @Override
-    public ReportingPolicyPrism unmappedTargetPolicy() {
-        return null == prism.values.unmappedTargetPolicy() ? next().unmappedTargetPolicy() :
-            ReportingPolicyPrism.valueOf( prism.unmappedTargetPolicy() );
+    public ReportingPolicyGem unmappedTargetPolicy() {
+        return mapper.unmappedTargetPolicy().hasValue() ?
+            ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().get() ) : next().unmappedTargetPolicy();
+
     }
 
     @Override
-    public ReportingPolicyPrism unmappedSourcePolicy() {
-        return null == prism.values.unmappedSourcePolicy() ? next().unmappedSourcePolicy() :
-        ReportingPolicyPrism.valueOf( prism.unmappedSourcePolicy() );
+    public ReportingPolicyGem unmappedSourcePolicy() {
+        return mapper.unmappedSourcePolicy().hasValue() ?
+            ReportingPolicyGem.valueOf( mapper.unmappedSourcePolicy().get() ) : next().unmappedSourcePolicy();
     }
 
     @Override
-    public ReportingPolicyPrism typeConversionPolicy() {
-        return null == prism.values.typeConversionPolicy() ? next().typeConversionPolicy() :
-        ReportingPolicyPrism.valueOf( prism.typeConversionPolicy() );
+    public ReportingPolicyGem typeConversionPolicy() {
+        return mapper.typeConversionPolicy().hasValue() ?
+            ReportingPolicyGem.valueOf( mapper.typeConversionPolicy().get() ) : next().typeConversionPolicy();
     }
 
     @Override
     public String componentModel() {
-        return null == prism.values.componentModel() ? next().componentModel() : prism.componentModel();
+        return mapper.componentModel().hasValue() ? mapper.componentModel().get() : next().componentModel();
     }
 
     @Override
-    public MappingInheritanceStrategyPrism getMappingInheritanceStrategy() {
-        return null == prism.values.mappingInheritanceStrategy() ? next().getMappingInheritanceStrategy() :
-            MappingInheritanceStrategyPrism.valueOf( prism.mappingInheritanceStrategy() );
+    public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
+        return mapper.mappingInheritanceStrategy().hasValue() ?
+            MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().get() ) :
+            next().getMappingInheritanceStrategy();
     }
 
     @Override
-    public InjectionStrategyPrism getInjectionStrategy() {
-        return null == prism.values.injectionStrategy() ? next().getInjectionStrategy() :
-            InjectionStrategyPrism.valueOf( prism.injectionStrategy() );
+    public InjectionStrategyGem getInjectionStrategy() {
+        return mapper.injectionStrategy().hasValue() ?
+            InjectionStrategyGem.valueOf( mapper.injectionStrategy().get() ) :
+            next().getInjectionStrategy();
     }
 
     @Override
     public Boolean isDisableSubMappingMethodsGeneration() {
-        return null == prism.values.disableSubMappingMethodsGeneration() ?
-            next().isDisableSubMappingMethodsGeneration() : prism.disableSubMappingMethodsGeneration();
+        return mapper.disableSubMappingMethodsGeneration().hasValue() ?
+            mapper.disableSubMappingMethodsGeneration().get() :
+            next().isDisableSubMappingMethodsGeneration();
     }
 
     // @Mapping, @BeanMapping
 
     @Override
-    public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
-        return null == prism.values.collectionMappingStrategy() ?
-            next().getCollectionMappingStrategy()
-            : CollectionMappingStrategyPrism.valueOf( prism.collectionMappingStrategy() );
+    public CollectionMappingStrategyGem getCollectionMappingStrategy() {
+        return mapper.collectionMappingStrategy().hasValue() ?
+            CollectionMappingStrategyGem.valueOf( mapper.collectionMappingStrategy().get() ) :
+            next().getCollectionMappingStrategy();
     }
 
     @Override
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        return null == prism.values.nullValueCheckStrategy() ?
-            next().getNullValueCheckStrategy()
-            : NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
+    public NullValueCheckStrategyGem getNullValueCheckStrategy() {
+        return mapper.nullValueCheckStrategy().hasValue() ?
+            NullValueCheckStrategyGem.valueOf( mapper.nullValueCheckStrategy().get() ) :
+            next().getNullValueCheckStrategy();
     }
 
     @Override
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
-        return null == prism.values.nullValuePropertyMappingStrategy() ?
-            next().getNullValuePropertyMappingStrategy()
-            : NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return mapper.nullValuePropertyMappingStrategy().hasValue() ?
+            NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValuePropertyMappingStrategy().get() ) :
+            next().getNullValuePropertyMappingStrategy();
     }
 
     @Override
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return null == prism.values.nullValueMappingStrategy() ?
-            next().getNullValueMappingStrategy()
-            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
+        return mapper.nullValueMappingStrategy().hasValue() ?
+            NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() ) :
+            next().getNullValueMappingStrategy();
     }
 
     @Override
-    public BuilderPrism getBuilderPrism() {
-        return null == prism.values.builder() ? next().getBuilderPrism() : prism.builder();
+    public BuilderGem.Builder getBuilder() {
+        return mapper.builder().hasValue() ? mapper.builder().get() : next().getBuilder();
     }
 
     // @Mapper specific
@@ -166,11 +170,11 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     public boolean isValid() {
-        return prism.isValid;
+        return mapper.isValid();
     }
 
     public AnnotationMirror getAnnotationMirror() {
-        return prism.mirror;
+        return mapper.mirror();
     }
 
     @Override

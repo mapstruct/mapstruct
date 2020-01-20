@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -19,8 +18,8 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.prism.NamedPrism;
-import org.mapstruct.ap.internal.prism.QualifierPrism;
+import org.mapstruct.ap.internal.gem.NamedGem;
+import org.mapstruct.ap.internal.gem.QualifierGem;
 
 /**
  * This selector selects a best match based on qualifier annotations.
@@ -117,8 +116,8 @@ public class QualifierSelector implements MethodSelector {
                             // Match! we have an annotation which has the @Qualifer marker ( could be @Named as well )
                             if ( typeUtils.isSameType( qualifierAnnotationType, namedAnnotationTypeMirror ) ) {
                                 // Match! its an @Named, so do the additional check on name.
-                                NamedPrism namedPrism = NamedPrism.getInstance( qualifierAnnotationMirror );
-                                if ( namedPrism.value() != null && qualfiedByNames.contains( namedPrism.value() ) ) {
+                                NamedGem.Named named = NamedGem.instanceOn( qualifierAnnotationMirror );
+                                if ( named.value().hasValue() && qualfiedByNames.contains( named.value().get() ) ) {
                                     // Match! its an @Name and the value matches as well. Oh boy.
                                     matchingQualifierCounter++;
                                 }
@@ -168,7 +167,7 @@ public class QualifierSelector implements MethodSelector {
 
     private void addOnlyWhenQualifier( Set<AnnotationMirror> annotationSet, AnnotationMirror candidate ) {
         // only add the candidate annotation when the candidate itself has the annotation 'Qualifier'
-        if ( QualifierPrism.getInstanceOn( candidate.getAnnotationType().asElement() ) != null ) {
+        if ( QualifierGem.instanceOn( candidate.getAnnotationType().asElement() ) != null ) {
             annotationSet.add( candidate );
         }
     }

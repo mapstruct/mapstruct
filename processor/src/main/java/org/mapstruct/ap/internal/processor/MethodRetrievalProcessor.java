@@ -34,14 +34,14 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.prism.BeanMappingPrism;
-import org.mapstruct.ap.internal.prism.IterableMappingPrism;
-import org.mapstruct.ap.internal.prism.MapMappingPrism;
-import org.mapstruct.ap.internal.prism.MappingPrism;
-import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
-import org.mapstruct.ap.internal.prism.ValueMappingPrism;
-import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
+import org.mapstruct.ap.internal.gem.IterableMappingGem;
+import org.mapstruct.ap.internal.gem.MapMappingGem;
+import org.mapstruct.ap.internal.gem.MappingGem;
+import org.mapstruct.ap.internal.gem.MappingsGem;
+import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.ValueMappingGem;
+import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
@@ -247,7 +247,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             retrieveContextProvidedMethods( contextParameters, mapperToImplement, mapperOptions );
 
         BeanMappingOptions beanMappingOptions = BeanMappingOptions.getInstanceOn(
-            BeanMappingPrism.getInstanceOn( method ),
+            BeanMappingGem.instanceOn( method ),
             mapperOptions,
             method,
             messager,
@@ -257,16 +257,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         Set<MappingOptions> mappingOptions =
             getMappings( method, method, beanMappingOptions, new LinkedHashSet<>(), new HashSet<>() );
 
-        IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromPrism(
-            IterableMappingPrism.getInstanceOn( method ),
+        IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromGem(
+            IterableMappingGem.instanceOn( method ),
             mapperOptions,
             method,
             messager,
             typeUtils
         );
 
-        MapMappingOptions mapMappingOptions = MapMappingOptions.fromPrism(
-            MapMappingPrism.getInstanceOn( method ),
+        MapMappingOptions mapMappingOptions = MapMappingOptions.fromGem(
+            MapMappingGem.instanceOn( method ),
             mapperOptions,
             method,
             messager,
@@ -359,7 +359,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean hasFactoryAnnotation(ExecutableElement method) {
-        return ObjectFactoryPrism.getInstanceOn( method ) != null;
+        return ObjectFactoryGem.instanceOn( method ) != null;
     }
 
     private boolean isVoid(Type returnType) {
@@ -514,25 +514,25 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @param method The method of interest
      * @param element Element of interest: method, or (meta) annotation
      * @param beanMapping options coming from bean mapping method
-     * @param mappings LinkedSet of mappings found so far
+     * @param mappingOptions LinkedSet of mappings found so far
      *
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, Element element,
-                                            BeanMappingOptions beanMapping, Set<MappingOptions> mappings,
+                                            BeanMappingOptions beanMapping, Set<MappingOptions> mappingOptions,
                                             Set<Element> handledElements) {
 
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
             Element lElement = annotationMirror.getAnnotationType().asElement();
             if ( isAnnotation( lElement, MAPPING_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingPrism mappingPrism = MappingPrism.getInstanceOn( element );
-                MappingOptions.addInstance( mappingPrism, method, beanMapping, messager, typeUtils, mappings );
+                MappingGem.Mapping mapping = MappingGem.instanceOn( element );
+                MappingOptions.addInstance( mapping, method, beanMapping, messager, typeUtils, mappingOptions );
             }
             else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingsPrism mappingsPrism = MappingsPrism.getInstanceOn( element );
-                MappingOptions.addInstances( mappingsPrism, method, beanMapping, messager, typeUtils, mappings );
+                MappingsGem.Mappings mappings = MappingsGem.instanceOn( element );
+                MappingOptions.addInstances( mappings, method, beanMapping, messager, typeUtils, mappingOptions );
             }
             else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
                 && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
@@ -540,10 +540,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             ) {
                 // recur over annotation mirrors
                 handledElements.add( lElement );
-                getMappings( method, lElement, beanMapping, mappings, handledElements );
+                getMappings( method, lElement, beanMapping, mappingOptions, handledElements );
             }
         }
-        return mappings;
+        return mappingOptions;
     }
 
     private boolean isAnnotationInPackage(Element element, String packageFQN ) {
@@ -571,18 +571,18 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<ValueMappingOptions> getValueMappings(ExecutableElement method) {
         List<ValueMappingOptions> valueMappings = new ArrayList<>();
 
-        ValueMappingPrism mappingAnnotation = ValueMappingPrism.getInstanceOn( method );
-        ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );
+        ValueMappingGem.ValueMapping mappingAnnotation = ValueMappingGem.instanceOn( method );
+        ValueMappingsGem.ValueMappings mappingsAnnotation = ValueMappingsGem.instanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingPrism( mappingAnnotation );
+            ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingGem( mappingAnnotation );
             if ( valueMapping != null ) {
                 valueMappings.add( valueMapping );
             }
         }
 
         if ( mappingsAnnotation != null ) {
-            ValueMappingOptions.fromMappingsPrism( mappingsAnnotation, method, messager, valueMappings );
+            ValueMappingOptions.fromMappingsGem( mappingsAnnotation, method, messager, valueMappings );
         }
 
         return valueMappings;

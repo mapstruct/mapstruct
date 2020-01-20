@@ -5,16 +5,10 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_REMAINING;
-import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED;
-import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.NULL;
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -23,9 +17,14 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.prism.BeanMappingPrism;
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.NULL;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link ValueMappingMethod} which maps one value type to another, optionally configured by one or more
@@ -212,11 +211,11 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
-            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
-            if ( beanMappingPrism != null ) {
-                List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
-                List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
-                TypeMirror resultType = beanMappingPrism.resultType();
+            BeanMappingGem.BeanMapping beanMapping = BeanMappingGem.instanceOn( method.getExecutable() );
+            if ( beanMapping != null ) {
+                List<TypeMirror> qualifiers = beanMapping.qualifiedBy().get();
+                List<String> qualifyingNames = beanMapping.qualifiedByName().get();
+                TypeMirror resultType = beanMapping.resultType().get();
                 return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
             }
             return null;

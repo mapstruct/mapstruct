@@ -3,15 +3,15 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.internal.gem;
 
 
 /**
- * Prism for the enum {@link org.mapstruct.NullValueCheckStrategy}
+ * Gem for the enum {@link org.mapstruct.NullValueCheckStrategy}
  *
  * @author Sean Huang
  */
-public enum NullValueCheckStrategyPrism {
+public enum NullValueCheckStrategyGem {
 
     ON_IMPLICIT_CONVERSION,
     ALWAYS;

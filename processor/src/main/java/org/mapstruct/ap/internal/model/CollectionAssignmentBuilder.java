@@ -15,15 +15,15 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
 /**
  * A builder that is used for creating an assignment to a collection.
@@ -61,8 +61,8 @@ public class CollectionAssignmentBuilder {
     private AccessorType targetAccessorType;
     private Assignment assignment;
     private SourceRHS sourceRHS;
-    private NullValueCheckStrategyPrism nvcs;
-    private NullValuePropertyMappingStrategyPrism nvpms;
+    private NullValueCheckStrategyGem nvcs;
+    private NullValuePropertyMappingStrategyGem nvpms;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -114,12 +114,12 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
-    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyPrism nvcs ) {
+    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyGem nvcs ) {
         this.nvcs = nvcs;
         return this;
     }
 
-    public CollectionAssignmentBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyPrism nvpms ) {
+    public CollectionAssignmentBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyGem nvpms ) {
         this.nvpms = nvpms;
         return this;
     }
@@ -127,8 +127,8 @@ public class CollectionAssignmentBuilder {
     public Assignment build() {
         Assignment result = assignment;
 
-        CollectionMappingStrategyPrism cms = method.getOptions().getMapper().getCollectionMappingStrategy();
-        boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE || targetReadAccessor == null;
+        CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+        boolean targetImmutable = cms == CollectionMappingStrategyGem.TARGET_IMMUTABLE || targetReadAccessor == null;
 
         if ( targetAccessorType == AccessorType.SETTER || targetAccessorType == AccessorType.FIELD ) {
 
@@ -169,7 +169,7 @@ public class CollectionAssignmentBuilder {
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
-                nvcs == NullValueCheckStrategyPrism.ALWAYS ) {
+                nvcs == NullValueCheckStrategyGem.ALWAYS ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,

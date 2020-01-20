@@ -20,8 +20,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -161,7 +161,7 @@ public class TargetReference extends AbstractReference {
         private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
 
             // initialize
-            CollectionMappingStrategyPrism cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+            CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
             List<PropertyEntry> targetEntries = new ArrayList<>();
             Type nextType = type;
 
@@ -202,8 +202,8 @@ public class TargetReference extends AbstractReference {
                         );
                     }
                     else {
-                        BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
-                        builderType = typeFactory.builderTypeFor( nextType, builderPrism );
+                        BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                        builderType = typeFactory.builderTypeFor( nextType, builder );
                         propertyEntry = PropertyEntry.forTargetReference( fullName,
                                         targetReadAccessor,
                                         targetWriteAccessor,
@@ -270,8 +270,8 @@ public class TargetReference extends AbstractReference {
                 return type;
             }
             else {
-                BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
-                return typeFactory.effectiveResultTypeFor( type, builderPrism );
+                BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                return typeFactory.effectiveResultTypeFor( type, builder );
             }
         }
 

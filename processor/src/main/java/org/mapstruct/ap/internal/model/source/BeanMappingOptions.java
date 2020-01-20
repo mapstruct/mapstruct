@@ -8,17 +8,18 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.BeanMappingPrism;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -30,7 +31,7 @@ import org.mapstruct.ap.internal.util.Message;
 public class BeanMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
-    private final BeanMappingPrism prism;
+    private final Optional<BeanMappingGem.BeanMapping> beanMapping;
 
     /**
      * creates a mapping for inheritance. Will set
@@ -40,18 +41,18 @@ public class BeanMappingOptions extends DelegatingOptions {
     public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
         BeanMappingOptions options =  new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
-            beanMapping.prism,
+            beanMapping.beanMapping,
             beanMapping
         );
         return options;
     }
 
-    public static BeanMappingOptions getInstanceOn(BeanMappingPrism prism, MapperOptions mapperOptions,
+    public static BeanMappingOptions getInstanceOn(BeanMappingGem.BeanMapping beanMapping, MapperOptions mapperOptions,
                                                    ExecutableElement method, FormattingMessager messager,
                                                    Types typeUtils, TypeFactory typeFactory
     ) {
-        if ( prism == null || !isConsistent( prism, method, messager ) ) {
-            BeanMappingOptions options = new BeanMappingOptions( null, null, mapperOptions );
+        if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
+            BeanMappingOptions options = new BeanMappingOptions( null, Optional.empty(), mapperOptions );
             return options;
         }
 
@@ -62,28 +63,32 @@ public class BeanMappingOptions extends DelegatingOptions {
         Objects.requireNonNull( typeFactory );
 
         SelectionParameters selectionParameters = new SelectionParameters(
-            prism.qualifiedBy(),
-            prism.qualifiedByName(),
-            TypeKind.VOID != prism.resultType().getKind() ? prism.resultType() : null,
+            beanMapping.qualifiedBy().get(),
+            beanMapping.qualifiedByName().get(),
+            beanMapping.resultType().getValue(),
             typeUtils
         );
 
         //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
-        BeanMappingOptions options = new BeanMappingOptions( selectionParameters, prism, mapperOptions );
+        BeanMappingOptions options = new BeanMappingOptions(
+            selectionParameters,
+            Optional.ofNullable( beanMapping ),
+            mapperOptions
+        );
         return options;
     }
 
-    private static boolean isConsistent(BeanMappingPrism prism, ExecutableElement method,
+    private static boolean isConsistent(BeanMappingGem.BeanMapping gem, ExecutableElement method,
                                         FormattingMessager messager) {
-        if ( TypeKind.VOID == prism.resultType().getKind()
-            && prism.qualifiedBy().isEmpty()
-            && prism.qualifiedByName().isEmpty()
-            && prism.ignoreUnmappedSourceProperties().isEmpty()
-            && null == prism.values.nullValueCheckStrategy()
-            && null == prism.values.nullValuePropertyMappingStrategy()
-            && null == prism.values.nullValueMappingStrategy()
-            && null == prism.values.ignoreByDefault()
-            && null == prism.values.builder() ) {
+        if ( !gem.resultType().hasValue()
+            && !gem.qualifiedBy().hasValue()
+            && !gem.qualifiedByName().hasValue()
+            && !gem.ignoreUnmappedSourceProperties().hasValue()
+            && !gem.nullValueCheckStrategy().hasValue()
+            && !gem.nullValuePropertyMappingStrategy().hasValue()
+            && !gem.nullValueMappingStrategy().hasValue()
+            && !gem.ignoreByDefault().hasValue()
+            && !gem.builder().hasValue() ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
             return false;
@@ -91,39 +96,49 @@ public class BeanMappingOptions extends DelegatingOptions {
         return true;
     }
 
-    private BeanMappingOptions(SelectionParameters selectionParameters, BeanMappingPrism prism,
+    private BeanMappingOptions(SelectionParameters selectionParameters,
+                               Optional<BeanMappingGem.BeanMapping> beanMapping,
                                DelegatingOptions next) {
         super( next );
         this.selectionParameters = selectionParameters;
-        this.prism = prism;
+        this.beanMapping = beanMapping;
     }
 
     // @Mapping, @BeanMapping
 
     @Override
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        return null == prism || null == prism.values.nullValueCheckStrategy() ?
-            next().getNullValueCheckStrategy()
-            : NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
+    public NullValueCheckStrategyGem getNullValueCheckStrategy() {
+        return beanMapping.map( BeanMappingGem.BeanMapping::nullValueCheckStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValueCheckStrategyGem::valueOf )
+            .orElse( next().getNullValueCheckStrategy() );
     }
 
     @Override
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
-        return null == prism || null == prism.values.nullValuePropertyMappingStrategy() ?
-            next().getNullValuePropertyMappingStrategy()
-            : NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return beanMapping.map( BeanMappingGem.BeanMapping::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValuePropertyMappingStrategy() );
     }
 
     @Override
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return null == prism || null == prism.values.nullValueMappingStrategy() ?
-            next().getNullValueMappingStrategy()
-            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
+        return beanMapping.map( BeanMappingGem.BeanMapping::nullValueMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValueMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueMappingStrategy() );
     }
 
     @Override
-    public BuilderPrism getBuilderPrism() {
-        return null == prism || null == prism.values.builder() ? next().getBuilderPrism() : prism.builder();
+    public BuilderGem.Builder getBuilder() {
+        return beanMapping.map( BeanMappingGem.BeanMapping::builder )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .orElse( next().getBuilder() );
     }
 
     // @BeanMapping specific
@@ -133,19 +148,23 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public boolean isignoreByDefault() {
-        return null == prism ? false : prism.ignoreByDefault();
+        return beanMapping.map( BeanMappingGem.BeanMapping::ignoreByDefault )
+            .map( GemValue::get )
+            .orElse( false );
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
-        return null == prism ? Collections.emptyList() : prism.ignoreUnmappedSourceProperties();
+        return beanMapping.map( BeanMappingGem.BeanMapping::ignoreUnmappedSourceProperties )
+            .map( GemValue::get )
+            .orElse( Collections.emptyList() );
     }
 
     public AnnotationMirror getMirror() {
-        return null == prism ? null : prism.mirror;
+        return beanMapping.map( BeanMappingGem.BeanMapping::mirror ).orElse( null );
     }
 
     @Override
     public boolean hasAnnotation() {
-        return prism != null;
+        return beanMapping.isPresent();
     }
 }

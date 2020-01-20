@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
-
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
@@ -16,7 +15,7 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
+import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -29,7 +28,7 @@ public class Decorator extends GeneratedType {
     public static class Builder extends GeneratedTypeBuilder<Builder> {
 
         private TypeElement mapperElement;
-        private DecoratedWithPrism decoratorPrism;
+        private DecoratedWithGem.DecoratedWith decorator;
 
         private boolean hasDelegateConstructor;
         private String implName;
@@ -44,8 +43,8 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
-        public Builder decoratorPrism(DecoratedWithPrism decoratorPrism) {
-            this.decoratorPrism = decoratorPrism;
+        public Builder decoratedWith(DecoratedWithGem.DecoratedWith decoratedGem) {
+            this.decorator = decoratedGem;
             return this;
         }
 
@@ -68,7 +67,7 @@ public class Decorator extends GeneratedType {
             String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
                 Mapper.getFlatName( mapperElement ) );
 
-            Type decoratorType = typeFactory.getType( decoratorPrism.value() );
+            Type decoratorType = typeFactory.getType( decorator.value().get() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
                 implementationName,
                 implementationName + "_",

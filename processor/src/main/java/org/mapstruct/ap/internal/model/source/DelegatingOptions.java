@@ -12,14 +12,14 @@ import java.util.stream.Collectors;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 /**
  * Chain Of Responsibility Pattern.
@@ -50,15 +50,15 @@ public abstract class DelegatingOptions {
         return next.imports();
     }
 
-    public ReportingPolicyPrism unmappedTargetPolicy() {
+    public ReportingPolicyGem unmappedTargetPolicy() {
         return next.unmappedTargetPolicy();
     }
 
-    public ReportingPolicyPrism unmappedSourcePolicy() {
+    public ReportingPolicyGem unmappedSourcePolicy() {
         return next.unmappedSourcePolicy();
     }
 
-    public ReportingPolicyPrism typeConversionPolicy() {
+    public ReportingPolicyGem typeConversionPolicy() {
         return next.typeConversionPolicy();
     }
 
@@ -66,11 +66,11 @@ public abstract class DelegatingOptions {
         return next.componentModel();
     }
 
-    public MappingInheritanceStrategyPrism getMappingInheritanceStrategy() {
+    public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return next.getMappingInheritanceStrategy();
     }
 
-    public InjectionStrategyPrism getInjectionStrategy() {
+    public InjectionStrategyGem getInjectionStrategy() {
         return next.getInjectionStrategy();
     }
 
@@ -80,24 +80,24 @@ public abstract class DelegatingOptions {
 
     // BeanMapping and Mapping
 
-    public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
+    public CollectionMappingStrategyGem getCollectionMappingStrategy() {
         return next.getCollectionMappingStrategy();
     }
 
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
+    public NullValueCheckStrategyGem getNullValueCheckStrategy() {
         return next.getNullValueCheckStrategy();
     }
 
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
         return next.getNullValuePropertyMappingStrategy();
     }
 
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
         return next.getNullValueMappingStrategy();
     }
 
-    public BuilderPrism getBuilderPrism() {
-        return next.getBuilderPrism();
+    public BuilderGem.Builder getBuilder() {
+        return next.getBuilder();
     }
 
     DelegatingOptions next() {

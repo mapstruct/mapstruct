@@ -3,16 +3,16 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.internal.gem;
 
 /**
- * Prism for the enum {@link org.mapstruct.MappingConstants}
+ * Gem for the enum {@link org.mapstruct.MappingConstants}
  *
  * @author Sjaak Derksen
  */
-public final class MappingConstantsPrism {
+public final class MappingConstantsGem {
 
-    private MappingConstantsPrism() {
+    private MappingConstantsGem() {
     }
 
     public static final String NULL = "<NULL>";

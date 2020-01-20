@@ -46,13 +46,13 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
-import org.mapstruct.ap.internal.prism.InheritConfigurationPrism;
-import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.DecoratedWithGem;
+import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
+import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
+import org.mapstruct.ap.internal.gem.MapperGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -132,7 +132,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
-                MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
                 typeFactory,
                 variableNames
             );
@@ -186,16 +186,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
                                    String implPackage, SortedSet<Type> extraImports) {
-        DecoratedWithPrism decoratorPrism = DecoratedWithPrism.getInstanceOn( element );
+        DecoratedWithGem.DecoratedWith decoratedWith = DecoratedWithGem.instanceOn( element );
 
-        if ( decoratorPrism == null ) {
+        if ( decoratedWith == null ) {
             return null;
         }
 
-        TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
+        TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratedWith.value().get() );
 
         if ( !typeUtils.isAssignable( decoratorElement.asType(), element.asType() ) ) {
-            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_NO_SUBTYPE );
+            messager.printMessage( element, decoratedWith.mirror(), Message.DECORATOR_NO_SUBTYPE );
         }
 
         List<MappingMethod> mappingMethods = new ArrayList<>( methods.size() );
@@ -233,14 +233,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         if ( !hasDelegateConstructor && !hasDefaultConstructor ) {
-            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_CONSTRUCTOR );
+            messager.printMessage( element, decoratedWith.mirror(), Message.DECORATOR_CONSTRUCTOR );
         }
 
         Decorator decorator = new Decorator.Builder()
             .elementUtils( elementUtils )
             .typeFactory( typeFactory )
             .mapperElement( element )
-            .decoratorPrism( decoratorPrism )
+            .decoratedWith( decoratedWith )
             .methods( mappingMethods )
             .hasDelegateConstructor( hasDelegateConstructor )
             .options( options )
@@ -305,7 +305,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 FormattingParameters keyFormattingParameters = null;
                 SelectionParameters valueSelectionParameters = null;
                 FormattingParameters valueFormattingParameters = null;
-                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
+                NullValueMappingStrategyGem nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getMapMapping() != null ) {
                     keySelectionParameters = mappingOptions.getMapMapping().getKeySelectionParameters();
@@ -360,12 +360,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
-                BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-                BeanMappingMethod beanMappingMethod = builder
+                BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
+                BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builderPrism ) )
+                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builder ) )
                     .build();
 
                 if ( beanMappingMethod != null ) {
@@ -448,7 +448,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         // apply auto inherited options
-        MappingInheritanceStrategyPrism inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
+        MappingInheritanceStrategyGem inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
         if ( inheritanceStrategy.isAutoInherit() ) {
 
             // but.. there should not be an @InheritedConfiguration
@@ -511,11 +511,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                   List<SourceMethod> initializingMethods,
                                                   MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
-        InheritInverseConfigurationPrism inversePrism = InheritInverseConfigurationPrism.getInstanceOn(
-            method.getExecutable()
-        );
+        InheritInverseConfigurationGem.InheritInverseConfiguration inverseConfiguration =
+            InheritInverseConfigurationGem.instanceOn( method.getExecutable() );
 
-        if ( inversePrism != null ) {
+        if ( inverseConfiguration != null ) {
 
             // method is configured as being inverse method, collect candidates
             List<SourceMethod> candidates = new ArrayList<>();
@@ -525,7 +524,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            String name = inversePrism.name();
+            String name = inverseConfiguration.name().get();
             if ( candidates.size() == 1 ) {
                 // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
                 if ( name.isEmpty() ) {
@@ -535,7 +534,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = candidates.get( 0 );
                 }
                 else {
-                    reportErrorWhenNonMatchingName( candidates.get( 0 ), method, inversePrism );
+                    reportErrorWhenNonMatchingName( candidates.get( 0 ), method, inverseConfiguration );
                 }
             }
             else if ( candidates.size() > 1 ) {
@@ -552,10 +551,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = nameFilteredcandidates.get( 0 );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
-                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inversePrism );
+                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inverseConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousReverseMapping( candidates, method, inversePrism );
+                    reportErrorWhenAmbigousReverseMapping( candidates, method, inverseConfiguration );
                 }
             }
         }
@@ -588,11 +587,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                   List<SourceMethod> initializingMethods,
                                                   MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
-        InheritConfigurationPrism forwardPrism = InheritConfigurationPrism.getInstanceOn(
-            method.getExecutable()
-        );
+        InheritConfigurationGem.InheritConfiguration inheritConfiguration =
+            InheritConfigurationGem.instanceOn( method.getExecutable() );
 
-        if ( forwardPrism != null ) {
+        if ( inheritConfiguration != null ) {
 
             List<SourceMethod> candidates = new ArrayList<>();
             for ( SourceMethod oneMethod : rawMethods ) {
@@ -602,7 +600,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            String name = forwardPrism.name();
+            String name = inheritConfiguration.name().get();
             if ( candidates.size() == 1 ) {
                 // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
                 SourceMethod sourceMethod = first( candidates );
@@ -613,7 +611,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = sourceMethod;
                 }
                 else {
-                    reportErrorWhenNonMatchingName( sourceMethod, method, forwardPrism );
+                    reportErrorWhenNonMatchingName( sourceMethod, method, inheritConfiguration );
                 }
             }
             else if ( candidates.size() > 1 ) {
@@ -630,10 +628,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = first( nameFilteredcandidates );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
-                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, forwardPrism );
+                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inheritConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousMapping( candidates, method, forwardPrism );
+                    reportErrorWhenAmbigousMapping( candidates, method, inheritConfiguration );
                 }
             }
         }
@@ -642,17 +640,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
-                                                       InheritInverseConfigurationPrism inversePrism) {
+                   InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }
 
-        String name = inversePrism.name();
+        String name = inverseGem.name().get();
         if ( name.isEmpty() ) {
             messager.printMessage( method.getExecutable(),
-                inversePrism.mirror,
+                inverseGem.mirror(),
                 Message.INHERITINVERSECONFIGURATION_DUPLICATES,
                 Strings.join( candidateNames, "(), " )
 
@@ -660,7 +658,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
         else {
             messager.printMessage( method.getExecutable(),
-                inversePrism.mirror,
+                inverseGem.mirror(),
                 Message.INHERITINVERSECONFIGURATION_INVALID_NAME,
                 Strings.join( candidateNames, "(), " ),
                 name
@@ -670,40 +668,40 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
-                                                  InheritInverseConfigurationPrism inversePrism) {
+          InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
 
         messager.printMessage( method.getExecutable(),
-            inversePrism.mirror,
+            inverseGem.mirror(),
             Message.INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES,
-            inversePrism.name(),
+            inverseGem.name().get(),
             Strings.join( candidates, ", " )
 
         );
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                                InheritInverseConfigurationPrism inversePrism) {
+                                            InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
 
         messager.printMessage( method.getExecutable(),
-            inversePrism.mirror,
+            inverseGem.mirror(),
             Message.INHERITINVERSECONFIGURATION_NO_NAME_MATCH,
-            inversePrism.name(),
+            inverseGem.name().get(),
             onlyCandidate.getName()
         );
     }
 
     private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
-                                                InheritConfigurationPrism prism) {
+                                                InheritConfigurationGem.InheritConfiguration gem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }
 
-        String name = prism.name();
+        String name = gem.name().get();
         if ( name.isEmpty() ) {
             messager.printMessage( method.getExecutable(),
-                prism.mirror,
+                gem.mirror(),
                 Message.INHERITCONFIGURATION_DUPLICATES,
                 Strings.join( candidateNames, "(), " )
             );
@@ -711,7 +709,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         else {
             messager.printMessage(
                 method.getExecutable(),
-                prism.mirror,
+                gem.mirror(),
                 Message.INHERITCONFIGURATION_INVALIDNAME,
                 Strings.join( candidateNames, "(), " ),
                 name
@@ -720,25 +718,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
-                                                  InheritConfigurationPrism prism) {
+                                                  InheritConfigurationGem.InheritConfiguration gem) {
 
         messager.printMessage(
             method.getExecutable(),
-            prism.mirror,
+            gem.mirror(),
             Message.INHERITCONFIGURATION_DUPLICATE_MATCHES,
-            prism.name(),
+            gem.name().get(),
             Strings.join( candidates, ", " )
         );
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                                InheritConfigurationPrism prims) {
+                                                InheritConfigurationGem.InheritConfiguration gem) {
 
         messager.printMessage(
             method.getExecutable(),
-            prims.mirror,
+            gem.mirror(),
             Message.INHERITCONFIGURATION_NO_NAME_MATCH,
-            prims.name(),
+            gem.name().get(),
             onlyCandidate.getName()
         );
     }

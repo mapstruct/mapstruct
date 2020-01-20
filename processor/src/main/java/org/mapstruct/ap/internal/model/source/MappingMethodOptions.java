@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
@@ -185,12 +185,12 @@ public class MappingMethodOptions {
     }
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
-        CollectionMappingStrategyPrism cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+        CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
                 writeType,
-                method.getOptions().getBeanMapping().getBuilderPrism()
+                method.getOptions().getBeanMapping().getBuilder()
             );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );

@@ -10,7 +10,7 @@ import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -34,14 +34,14 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        BuilderPrism builderMapping = method.getOptions().getBeanMapping().getBuilderPrism();
-        if ( builderMapping == null && buildMethods.size() == 1 ) {
+        BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+        if ( builder == null && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }
         else {
             String buildMethodPattern = DEFAULT_BUILD_METHOD_NAME;
-            if ( builderMapping != null ) {
-                buildMethodPattern = builderMapping.buildMethod();
+            if ( builder != null ) {
+                buildMethodPattern = builder.buildMethod().get();
             }
             for ( ExecutableElement buildMethod : buildMethods ) {
                 String methodName = buildMethod.getSimpleName().toString();
@@ -50,7 +50,7 @@ public class BuilderFinisherMethodResolver {
                 }
             }
 
-            if ( builderMapping == null ) {
+            if ( builder == null ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT,
@@ -63,7 +63,7 @@ public class BuilderFinisherMethodResolver {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    builderMapping.mirror,
+                    builder.mirror(),
                     Message.BUILDER_NO_BUILD_METHOD_FOUND,
                     buildMethodPattern,
                     builderType.getBuilder(),

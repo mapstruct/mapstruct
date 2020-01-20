@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -18,11 +19,13 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.prism.MappingPrism;
-import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.MappingGem;
+import org.mapstruct.ap.internal.gem.MappingGem.Mapping;
+import org.mapstruct.ap.internal.gem.MappingsGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -49,7 +52,7 @@ public class MappingOptions extends DelegatingOptions {
 
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
-    private final MappingPrism prism;
+    private final Optional<MappingGem.Mapping> mapping;
 
     private final InheritContext inheritContext;
 
@@ -86,70 +89,70 @@ public class MappingOptions extends DelegatingOptions {
             .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
-    public static void addInstances(MappingsPrism prism, ExecutableElement method,
+    public static void addInstances(MappingsGem.Mappings gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions,
                                     FormattingMessager messager, Types typeUtils,
                                     Set<MappingOptions> mappings) {
 
-        for ( MappingPrism mappingPrism : prism.value() ) {
-            addInstance( mappingPrism, method, beanMappingOptions, messager, typeUtils, mappings );
+        for ( MappingGem.Mapping mapping : gem.value().getValue() ) {
+            addInstance( mapping, method, beanMappingOptions, messager, typeUtils, mappings );
         }
     }
 
-    public static void addInstance(MappingPrism prism, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                                   FormattingMessager messager, Types typeUtils, Set<MappingOptions> mappings) {
+    public static void addInstance(MappingGem.Mapping mapping, ExecutableElement method,
+                                   BeanMappingOptions beanMappingOptions, FormattingMessager messager, Types typeUtils,
+                                   Set<MappingOptions> mappings) {
 
-        if ( !isConsistent( prism, method, messager ) ) {
+        if ( !isConsistent( mapping, method, messager ) ) {
             return;
         }
 
-        String source = prism.source().isEmpty() ? null : prism.source();
-        String constant = prism.values.constant() == null ? null : prism.constant();
-        String expression = getExpression( prism, method, messager );
-        String defaultExpression = getDefaultExpression( prism, method, messager );
-        String dateFormat = prism.values.dateFormat() == null ? null : prism.dateFormat();
-        String numberFormat = prism.values.numberFormat() == null ? null : prism.numberFormat();
-        String defaultValue = prism.values.defaultValue() == null ? null : prism.defaultValue();
+        String source = mapping.source().getValue();
+        String constant = mapping.constant().getValue();
+        String expression = getExpression( mapping, method, messager );
+        String defaultExpression = getDefaultExpression( mapping, method, messager );
+        String dateFormat = mapping.dateFormat().getValue();
+        String numberFormat = mapping.numberFormat().getValue();
+        String defaultValue = mapping.defaultValue().getValue();
 
-        boolean resultTypeIsDefined = prism.values.resultType() != null;
-        Set<String> dependsOn = prism.dependsOn() != null ?
-            new LinkedHashSet( prism.dependsOn() ) :
+        Set<String> dependsOn = mapping.dependsOn().hasValue() ?
+            new LinkedHashSet( mapping.dependsOn().getValue() ) :
             Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
             numberFormat,
-            prism.mirror,
-            prism.values.dateFormat(),
+            mapping.mirror(),
+            mapping.dateFormat().getAnnotationValue(),
             method
         );
         SelectionParameters selectionParams = new SelectionParameters(
-            prism.qualifiedBy(),
-            prism.qualifiedByName(),
-            resultTypeIsDefined ? prism.resultType() : null,
+            mapping.qualifiedBy().get(),
+            mapping.qualifiedByName().get(),
+            mapping.resultType().getValue(),
             typeUtils
         );
 
         MappingOptions options = new MappingOptions(
-            prism.target(),
-            prism.values.target(),
+            mapping.target().getValue(),
+            mapping.target().getAnnotationValue(),
             source,
-            prism.values.source(),
+            mapping.source().getAnnotationValue(),
             constant,
             expression,
             defaultExpression,
             defaultValue,
-            prism.ignore(),
+            mapping.ignore().get(),
             formattingParam,
             selectionParams,
             dependsOn,
-            prism,
+            Optional.ofNullable( mapping ),
             null,
             beanMappingOptions
         );
 
         if ( mappings.contains( options ) ) {
-            messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, prism.target() );
+            messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mapping.target().get() );
         }
         else {
             mappings.add( options );
@@ -170,72 +173,68 @@ public class MappingOptions extends DelegatingOptions {
             null,
             null,
             Collections.emptySet(),
-            null,
+            Optional.empty(),
             null,
             null
         );
     }
 
-    private static boolean isConsistent(MappingPrism prism, ExecutableElement method,
+    private static boolean isConsistent(MappingGem.Mapping gem, ExecutableElement method,
                                         FormattingMessager messager) {
 
-        if ( prism.target().isEmpty() ) {
+        if ( !gem.target().hasValue() ) {
             messager.printMessage(
                 method,
-                prism.mirror,
-                prism.values.target(),
+                gem.mirror(),
+                gem.target().getAnnotationValue(),
                 Message.PROPERTYMAPPING_EMPTY_TARGET
             );
             return false;
         }
 
         Message message = null;
-        if ( !prism.source().isEmpty() && prism.values.constant() != null ) {
+        if ( gem.source().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
-        else if ( !prism.source().isEmpty() && prism.values.expression() != null ) {
+        else if ( gem.source().hasValue() && gem.expression().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
-        else if ( prism.values.expression() != null && prism.values.constant() != null ) {
+        else if (gem.expression().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
-        else if ( prism.values.expression() != null && prism.values.defaultValue() != null ) {
+        else if ( gem.expression().hasValue() && gem.defaultValue().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
-        else if ( prism.values.constant() != null && prism.values.defaultValue() != null ) {
+        else if ( gem.constant().hasValue() && gem.defaultValue().hasValue() ) {
             message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED;
         }
-        else if ( prism.values.expression() != null && prism.values.defaultExpression() != null ) {
+        else if ( gem.expression().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
-        else if ( prism.values.constant() != null && prism.values.defaultExpression() != null ) {
+        else if ( gem.constant().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
-        else if ( prism.values.defaultValue() != null && prism.values.defaultExpression() != null ) {
+        else if ( gem.defaultValue().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
-        else if ( prism.values.expression() != null
-            && ( prism.values.qualifiedByName() != null || prism.values.qualifiedBy() != null ) ) {
+        else if ( gem.expression().hasValue()
+            && ( gem.qualifiedByName().hasValue() || gem.qualifiedBy().hasValue() ) ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED;
         }
-        else if ( prism.values.nullValuePropertyMappingStrategy() != null
-            && prism.values.defaultValue() != null ) {
+        else if ( gem.nullValuePropertyMappingStrategy().hasValue() && gem.defaultValue().hasValue() ) {
             message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS;
         }
-        else if ( prism.values.nullValuePropertyMappingStrategy() != null
-            && prism.values.constant() != null ) {
+        else if ( gem.nullValuePropertyMappingStrategy().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_CONSTANT_VALUE_AND_NVPMS;
         }
-        else if ( prism.values.nullValuePropertyMappingStrategy() != null
-            && prism.values.expression() != null ) {
+        else if ( gem.nullValuePropertyMappingStrategy().hasValue() && gem.expression().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS;
         }
-        else if ( prism.values.nullValuePropertyMappingStrategy() != null
-            && prism.values.defaultExpression() != null ) {
+        else if ( gem.nullValuePropertyMappingStrategy().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS;
         }
-        else if ( prism.values.nullValuePropertyMappingStrategy() != null
-            && prism.ignore() != null && prism.ignore() ) {
+        else if ( gem.nullValuePropertyMappingStrategy().hasValue()
+            && gem.ignore().hasValue() && gem.ignore().getValue() ) {
             message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
         }
 
@@ -243,7 +242,7 @@ public class MappingOptions extends DelegatingOptions {
             return true;
         }
         else {
-            messager.printMessage( method, prism.mirror, message );
+            messager.printMessage( method, gem.mirror(), message );
             return false;
         }
     }
@@ -261,7 +260,7 @@ public class MappingOptions extends DelegatingOptions {
                            FormattingParameters formattingParameters,
                            SelectionParameters selectionParameters,
                            Set<String> dependsOn,
-                           MappingPrism prism,
+                           Optional<MappingGem.Mapping> mapping,
                            InheritContext inheritContext,
                            DelegatingOptions next
     ) {
@@ -278,21 +277,23 @@ public class MappingOptions extends DelegatingOptions {
         this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;
         this.dependsOn = dependsOn;
-        this.prism = prism;
+        this.mapping = mapping;
         this.inheritContext = inheritContext;
     }
 
-    private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
+    private static String getExpression(MappingGem.Mapping mapping, ExecutableElement element,
                                         FormattingMessager messager) {
-        if ( mappingPrism.expression().isEmpty() ) {
+        if ( !mapping.expression().hasValue() ) {
             return null;
         }
 
-        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.expression() );
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mapping.expression().get() );
 
         if ( !javaExpressionMatcher.matches() ) {
             messager.printMessage(
-                element, mappingPrism.mirror, mappingPrism.values.expression(),
+                element,
+                mapping.mirror(),
+                mapping.expression().getAnnotationValue(),
                 Message.PROPERTYMAPPING_INVALID_EXPRESSION
             );
             return null;
@@ -301,17 +302,19 @@ public class MappingOptions extends DelegatingOptions {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private static String getDefaultExpression(MappingPrism mappingPrism, ExecutableElement element,
+    private static String getDefaultExpression(MappingGem.Mapping mapping, ExecutableElement element,
                                         FormattingMessager messager) {
-        if ( mappingPrism.defaultExpression().isEmpty() ) {
+        if ( !mapping.defaultExpression().hasValue() ) {
             return null;
         }
 
-        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.defaultExpression() );
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mapping.defaultExpression().get() );
 
         if ( !javaExpressionMatcher.matches() ) {
             messager.printMessage(
-                element, mappingPrism.mirror, mappingPrism.values.defaultExpression(),
+                element,
+                mapping.mirror(),
+                mapping.defaultExpression().getAnnotationValue(),
                 Message.PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION
             );
             return null;
@@ -371,11 +374,11 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return prism == null ? null : prism.mirror;
+        return mapping.map( Mapping::mirror ).orElse( null );
     }
 
     public AnnotationValue getDependsOnAnnotationValue() {
-        return prism == null ? null : prism.values.dependsOn();
+        return mapping.map( Mapping::dependsOn ).map( GemValue::getAnnotationValue ).orElse( null );
     }
 
     public Set<String> getDependsOn() {
@@ -387,17 +390,21 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     @Override
-    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
-        return null == prism || null == prism.values.nullValueCheckStrategy() ?
-            next().getNullValueCheckStrategy()
-            : NullValueCheckStrategyPrism.valueOf( prism.nullValueCheckStrategy() );
+    public NullValueCheckStrategyGem getNullValueCheckStrategy() {
+        return mapping.map( Mapping::nullValueCheckStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValueCheckStrategyGem::valueOf )
+            .orElse( next().getNullValueCheckStrategy() );
     }
 
     @Override
-    public NullValuePropertyMappingStrategyPrism getNullValuePropertyMappingStrategy() {
-        return null == prism || null == prism.values.nullValuePropertyMappingStrategy() ?
-            next().getNullValuePropertyMappingStrategy()
-            : NullValuePropertyMappingStrategyPrism.valueOf( prism.nullValuePropertyMappingStrategy() );
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return mapping.map( Mapping::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValuePropertyMappingStrategy() );
     }
 
     /**
@@ -426,7 +433,7 @@ public class MappingOptions extends DelegatingOptions {
             formattingParameters,
             selectionParameters,
             Collections.emptySet(),
-            prism,
+            mapping,
             new InheritContext( true, false, templateMethod ),
             beanMappingOptions
         );
@@ -454,7 +461,7 @@ public class MappingOptions extends DelegatingOptions {
             formattingParameters,
             selectionParameters,
             dependsOn,
-            prism,
+            mapping,
             new InheritContext( false, true, templateMethod ),
             beanMappingOptions
         );
@@ -492,7 +499,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public boolean hasAnnotation() {
-        return prism != null;
+        return mapping.isPresent();
     }
 
 }

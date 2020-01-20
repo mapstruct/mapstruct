@@ -18,8 +18,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.internal.prism.AfterMappingPrism;
-import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
+import org.mapstruct.ap.internal.gem.AfterMappingGem;
+import org.mapstruct.ap.internal.gem.BeforeMappingGem;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
@@ -233,7 +233,7 @@ public class Executables {
      * @return {@code true}, if the executable element is a method annotated with {@code @AfterMapping}
      */
     public static boolean isAfterMappingMethod(ExecutableElement executableElement) {
-        return AfterMappingPrism.getInstanceOn( executableElement ) != null;
+        return AfterMappingGem.instanceOn( executableElement ) != null;
     }
 
     /**
@@ -241,6 +241,6 @@ public class Executables {
      * @return {@code true}, if the executable element is a method annotated with {@code @BeforeMapping}
      */
     public static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
-        return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
+        return BeforeMappingGem.instanceOn( executableElement ) != null;
     }
 }

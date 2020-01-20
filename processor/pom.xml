@@ -32,18 +32,10 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
-
-        <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
-        these dependencies are not required at runtime, only for prism generation
-        and tests -->
-        <!-- Using optional as well due to IntelliJ picking up the dependency
-         and running the hickory processor in projects using the mapstruct-processor.
-         This happens only when the processor is defined in the maven-compiler annotationProcessorPaths -->
         <dependency>
-            <groupId>com.jolira</groupId>
-            <artifactId>hickory</artifactId>
+            <groupId>org.mapstruct.annotations</groupId>
+            <artifactId>annotations-api</artifactId>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -227,9 +219,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <annotationProcessors>
-                        <annotationProcessor>net.java.dev.hickory.prism.internal.PrismGenerator</annotationProcessor>
-                    </annotationProcessors>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct.annotations</groupId>
+                            <artifactId>annotations-processor</artifactId>
+                            <version>${org.mapstruct.annotations.version}</version>
+                        </path>
+                        <!-- other annotation processors -->
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>

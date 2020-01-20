@@ -20,7 +20,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -42,7 +42,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         private FormattingParameters keyFormattingParameters;
         private FormattingParameters valueFormattingParameters;
-        private NullValueMappingStrategyPrism nullValueMappingStrategy;
+        private NullValueMappingStrategyGem nullValueMappingStrategy;
         private SelectionParameters keySelectionParameters;
         private SelectionParameters valueSelectionParameters;
 
@@ -70,7 +70,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
+        public Builder nullValueMappingStrategy(NullValueMappingStrategyGem nullValueMappingStrategy) {
             this.nullValueMappingStrategy = nullValueMappingStrategy;
             return this;
         }

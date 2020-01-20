@@ -34,9 +34,9 @@ import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.prism.BuilderPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
@@ -48,8 +48,8 @@ import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_NULL;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -109,8 +109,8 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            BuilderPrism builderPrism = method.getOptions().getBeanMapping().getBuilderPrism();
-            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builderPrism );
+            BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builder );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
         }
@@ -157,8 +157,8 @@ public class PropertyMapping extends ModelElement {
         private MappingReferences forgeMethodWithMappingReferences;
         private boolean forceUpdateMethod;
         private boolean forgedNamedBased = true;
-        private NullValueCheckStrategyPrism nvcs;
-        private NullValuePropertyMappingStrategyPrism nvpms;
+        private NullValueCheckStrategyGem nvcs;
+        private NullValuePropertyMappingStrategyGem nvpms;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );

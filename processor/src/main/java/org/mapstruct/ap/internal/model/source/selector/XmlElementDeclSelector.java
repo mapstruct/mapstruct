@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -17,8 +16,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.prism.XmlElementDeclPrism;
-import org.mapstruct.ap.internal.prism.XmlElementRefPrism;
+import org.mapstruct.ap.internal.gem.XmlElementDeclGem;
 
 /**
  * Finds the {@link javax.xml.bind.annotation.XmlElementRef} annotation on a field (of the mapping result type or its
@@ -46,9 +44,9 @@ public class XmlElementDeclSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                          List<SelectedMethod<T>> methods,
-                                                                          List<Type> sourceTypes, Type targetType,
-                                                                          SelectionCriteria criteria) {
+                                                                         List<SelectedMethod<T>> methods,
+                                                                         List<Type> sourceTypes, Type targetType,
+                                                                         SelectionCriteria criteria) {
 
         List<SelectedMethod<T>> nameMatches = new ArrayList<>();
         List<SelectedMethod<T>> scopeMatches = new ArrayList<>();
@@ -62,14 +60,15 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
 
             SourceMethod candidateMethod = (SourceMethod) candidate.getMethod();
-            XmlElementDeclPrism xmlElementDecl = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
+            XmlElementDeclGem.XmlElementDecl xmlElementDecl =
+                XmlElementDeclGem.instanceOn( candidateMethod.getExecutable() );
 
             if ( xmlElementDecl == null ) {
                 continue;
             }
 
-            String name = xmlElementDecl.name();
-            TypeMirror scope = xmlElementDecl.scope();
+            String name = xmlElementDecl.name().get();
+            TypeMirror scope = xmlElementDecl.scope().get();
 
             boolean nameIsSetAndMatches = name != null && name.equals( xmlElementRefInfo.nameValue() );
             boolean scopeIsSetAndMatches =
@@ -140,9 +139,9 @@ public class XmlElementDeclSelector implements MethodSelector {
             for ( Element enclosed : currentElement.getEnclosedElements() ) {
                 if ( enclosed.getKind().equals( ElementKind.FIELD )
                     && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
-                    XmlElementRefPrism xmlElementRef = XmlElementRefPrism.getInstanceOn( enclosed );
+                    XmlElementDeclGem.XmlElementDecl xmlElementRef = XmlElementDeclGem.instanceOn( enclosed );
                     if ( xmlElementRef != null ) {
-                        return new XmlElementRefInfo( xmlElementRef.name(), currentMirror );
+                        return new XmlElementRefInfo( xmlElementRef.name().get(), currentMirror );
                     }
                 }
             }
