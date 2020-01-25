@@ -145,7 +145,7 @@ from the root of the project directory. To skip the distribution module, run
     
 ## Importing into IDE
 
-MapStruct uses the hickory annotation processor to generate mapping prisms for it's own annotations.
+MapStruct uses the gem annotation processor to generate mapping gems for it's own annotations.
 Therefore for seamless integration within an IDE annotation processing needs to be enabled.
 
 ### IntelliJ 

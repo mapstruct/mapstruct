@@ -292,7 +292,7 @@
                             specified as patterns within a source folder, so we can't exclude generated-sources
                             altogether
                         -->
-                        <excludes>**/*Prism.java,*/itest/jaxb/xsd/*</excludes>
+                        <excludes>**/*Gem.java,*/itest/jaxb/xsd/*</excludes>
                     </configuration>
                     <dependencies>
                         <dependency>
@@ -381,7 +381,7 @@
                     <version>${org.apache.maven.plugins.javadoc.version}</version>
                     <configuration>
                         <quiet>true</quiet>
-                        <excludePackageNames>org.mapstruct.ap.internal.prism;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
+                        <excludePackageNames>org.mapstruct.ap.internal.gem;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
                         <source>8</source>
                     </configuration>
                 </plugin>
