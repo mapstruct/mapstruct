@@ -24,8 +24,8 @@ import static org.mapstruct.ap.internal.model.source.Mapping.getMappingTargetNam
  *
  * @author Andreas Gudian
  */
-public class MappingOptions {
-    private static final MappingOptions EMPTY = new MappingOptions( Collections.emptySet(),
+public class MappingMethodOptions {
+    private static final MappingMethodOptions EMPTY = new MappingMethodOptions( Collections.emptySet(),
         null,
         null,
         null,
@@ -33,14 +33,14 @@ public class MappingOptions {
     );
 
     private Set<Mapping> mappings;
-    private IterableMapping iterableMapping;
-    private MapMapping mapMapping;
-    private BeanMapping beanMapping;
+    private IterableMappingOptions iterableMapping;
+    private MapMappingOptions mapMapping;
+    private BeanMappingOptions beanMapping;
     private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
 
-    public MappingOptions(Set<Mapping> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping, List<ValueMapping> valueMappings ) {
+    public MappingMethodOptions(Set<Mapping> mappings, IterableMappingOptions iterableMapping, MapMappingOptions mapMapping,
+                                BeanMappingOptions beanMapping, List<ValueMapping> valueMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
@@ -53,7 +53,7 @@ public class MappingOptions {
      *
      * @return empty mapping options
      */
-    public static MappingOptions empty() {
+    public static MappingMethodOptions empty() {
         return EMPTY;
     }
 
@@ -65,15 +65,15 @@ public class MappingOptions {
         return mappings;
     }
 
-    public IterableMapping getIterableMapping() {
+    public IterableMappingOptions getIterableMapping() {
         return iterableMapping;
     }
 
-    public MapMapping getMapMapping() {
+    public MapMappingOptions getMapMapping() {
         return mapMapping;
     }
 
-    public BeanMapping getBeanMapping() {
+    public BeanMappingOptions getBeanMapping() {
         return beanMapping;
     }
 
@@ -81,15 +81,15 @@ public class MappingOptions {
         return valueMappings;
     }
 
-    public void setIterableMapping(IterableMapping iterableMapping) {
+    public void setIterableMapping(IterableMappingOptions iterableMapping) {
         this.iterableMapping = iterableMapping;
     }
 
-    public void setMapMapping(MapMapping mapMapping) {
+    public void setMapMapping(MapMappingOptions mapMapping) {
         this.mapMapping = mapMapping;
     }
 
-    public void setBeanMapping(BeanMapping beanMapping) {
+    public void setBeanMapping(BeanMappingOptions beanMapping) {
         this.beanMapping = beanMapping;
     }
 
@@ -117,7 +117,7 @@ public class MappingOptions {
      * @param method the source method
      */
     public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
-        MappingOptions inherited = templateMethod.getMappingOptions();
+        MappingMethodOptions inherited = templateMethod.getMappingOptions();
         if ( null != inherited ) {
             if ( getIterableMapping() == null && inherited.getIterableMapping() != null) {
                 setIterableMapping( inherited.getIterableMapping() );
@@ -128,7 +128,7 @@ public class MappingOptions {
             }
 
             if ( getBeanMapping() == null && inherited.getBeanMapping() != null ) {
-                setBeanMapping( BeanMapping.forInheritance( inherited.getBeanMapping() ) );
+                setBeanMapping( BeanMappingOptions.forInheritance( inherited.getBeanMapping() ) );
             }
 
             if ( getValueMappings() == null ) {
@@ -179,7 +179,7 @@ public class MappingOptions {
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
                             writeType,
-                            BeanMapping.builderPrismFor( method )
+                            BeanMappingOptions.builderPrismFor( method )
             );
         }
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );

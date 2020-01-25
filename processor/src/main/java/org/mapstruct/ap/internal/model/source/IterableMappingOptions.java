@@ -21,15 +21,15 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Gunnar Morling
  */
-public class IterableMapping {
+public class IterableMappingOptions {
 
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
     private final AnnotationMirror mirror;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
-    public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
-        FormattingMessager messager, Types typeUtils) {
+    public static IterableMappingOptions fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
+                                                   FormattingMessager messager, Types typeUtils) {
         if ( iterableMapping == null ) {
             return null;
         }
@@ -66,15 +66,15 @@ public class IterableMapping {
             method
         );
 
-        return new IterableMapping( formatting,
+        return new IterableMappingOptions( formatting,
             selection,
             iterableMapping.mirror,
             nullValueMappingStrategy
         );
     }
 
-    private IterableMapping(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-        AnnotationMirror mirror, NullValueMappingStrategyPrism nvms) {
+    private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
+                                   AnnotationMirror mirror, NullValueMappingStrategyPrism nvms) {
 
         this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;

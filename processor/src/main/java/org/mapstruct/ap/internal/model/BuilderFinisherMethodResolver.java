@@ -9,7 +9,7 @@ import java.util.Collection;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.util.Message;
@@ -35,7 +35,7 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        BuilderPrism builderMapping = BeanMapping.builderPrismFor( method );
+        BuilderPrism builderMapping = BeanMappingOptions.builderPrismFor( method );
         if ( builderMapping == null && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }

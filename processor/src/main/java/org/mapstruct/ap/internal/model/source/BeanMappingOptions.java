@@ -28,7 +28,7 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Sjaak Derksen
  */
-public class BeanMapping {
+public class BeanMappingOptions {
 
     private final SelectionParameters selectionParameters;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
@@ -48,8 +48,8 @@ public class BeanMapping {
      *
      * @return new mapping
      */
-    public static BeanMapping forInheritance(BeanMapping beanMapping) {
-        return new BeanMapping(
+    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
+        return new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
             beanMapping.nullValueMappingStrategy,
             beanMapping.nullValuePropertyMappingStrategy,
@@ -95,7 +95,7 @@ public class BeanMapping {
             return this;
         }
 
-        public BeanMapping build() {
+        public BeanMappingOptions build() {
 
             if ( prism == null ) {
                 return null;
@@ -148,7 +148,7 @@ public class BeanMapping {
             );
 
             //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
-            return new BeanMapping(
+            return new BeanMappingOptions(
                 cmp,
                 nullValueMappingStrategy,
                 nullValuePropertyMappingStrategy,
@@ -162,11 +162,11 @@ public class BeanMapping {
         }
     }
 
-    private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
-                        NullValuePropertyMappingStrategyPrism nvpms, NullValueCheckStrategyPrism nvcs,
-                        ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault,
-                        List<String> ignoreUnmappedSourceProperties, BuilderPrism builder,
-                        AnnotationMirror mirror) {
+    private BeanMappingOptions(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
+                               NullValuePropertyMappingStrategyPrism nvpms, NullValueCheckStrategyPrism nvcs,
+                               ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault,
+                               List<String> ignoreUnmappedSourceProperties, BuilderPrism builder,
+                               AnnotationMirror mirror) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
         this.nullValuePropertyMappingStrategy = nvpms;

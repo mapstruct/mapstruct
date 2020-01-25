@@ -20,7 +20,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
@@ -31,7 +31,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * type.
  * <p>
  * A method can either be configured by itself or by another method for the inverse mapping direction (the appropriate
- * setter on {@link MappingOptions} will be called in this case).
+ * setter on {@link MappingMethodOptions} will be called in this case).
  *
  * @author Gunnar Morling
  */
@@ -49,8 +49,8 @@ public class SourceMethod implements Method {
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
-    private final MapperConfiguration config;
-    private final MappingOptions mappingOptions;
+    private final MapperOptions config;
+    private final MappingMethodOptions mappingOptions;
     private final List<SourceMethod> prototypeMethods;
     private final Type mapperToImplement;
 
@@ -78,12 +78,12 @@ public class SourceMethod implements Method {
         private Type returnType = null;
         private List<Type> exceptionTypes;
         private Set<Mapping> mappings;
-        private IterableMapping iterableMapping = null;
-        private MapMapping mapMapping = null;
-        private BeanMapping beanMapping = null;
+        private IterableMappingOptions iterableMapping = null;
+        private MapMappingOptions mapMapping = null;
+        private BeanMappingOptions beanMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
-        private MapperConfiguration mapperConfig = null;
+        private MapperOptions mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
         private ParameterProvidedMethods contextProvidedMethods;
@@ -118,17 +118,17 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setIterableMapping(IterableMapping iterableMapping) {
+        public Builder setIterableMapping(IterableMappingOptions iterableMapping) {
             this.iterableMapping = iterableMapping;
             return this;
         }
 
-        public Builder setMapMapping(MapMapping mapMapping) {
+        public Builder setMapMapping(MapMappingOptions mapMapping) {
             this.mapMapping = mapMapping;
             return this;
         }
 
-        public Builder setBeanMapping(BeanMapping beanMapping) {
+        public Builder setBeanMapping(BeanMappingOptions beanMapping) {
             this.beanMapping = beanMapping;
             return this;
         }
@@ -148,7 +148,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMapperConfiguration(MapperConfiguration mapperConfig) {
+        public Builder setMapperConfiguration(MapperOptions mapperConfig) {
             this.mapperConfig = mapperConfig;
             return this;
         }
@@ -174,14 +174,14 @@ public class SourceMethod implements Method {
                 mappings = Collections.emptySet();
             }
 
-            MappingOptions mappingOptions =
-                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+            MappingMethodOptions mappingOptions =
+                    new MappingMethodOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
             return new SourceMethod( this, mappingOptions );
         }
     }
 
-    private SourceMethod(Builder builder, MappingOptions mappingOptions) {
+    private SourceMethod(Builder builder, MappingMethodOptions mappingOptions) {
         this.declaringMapper = builder.declaringMapper;
         this.executable = builder.executable;
         this.parameters = builder.parameters;
@@ -463,7 +463,7 @@ public class SourceMethod implements Method {
     }
 
     @Override
-    public MappingOptions getMappingOptions() {
+    public MappingMethodOptions getMappingOptions() {
         return mappingOptions;
     }
 
@@ -483,7 +483,7 @@ public class SourceMethod implements Method {
     }
 
     @Override
-    public MapperConfiguration getMapperConfiguration() {
+    public MapperOptions getMapperConfiguration() {
         return config;
     }
 

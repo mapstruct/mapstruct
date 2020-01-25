@@ -26,9 +26,9 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
-import org.mapstruct.ap.internal.model.source.IterableMapping;
-import org.mapstruct.ap.internal.model.source.MapMapping;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.model.source.IterableMappingOptions;
+import org.mapstruct.ap.internal.model.source.MapMappingOptions;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -45,7 +45,7 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 
 import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
@@ -81,7 +81,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperOptions mapperConfig = MapperOptions.getInstanceOn( mapperTypeElement );
 
         if ( mapperConfig != null ) {
             this.messager.note( 0, Message.CONFIG_NOTE, mapperConfig.getClass().getName() );
@@ -104,7 +104,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private List<SourceMethod> retrievePrototypeMethods(TypeElement mapperTypeElement,
-            MapperConfiguration mapperConfig) {
+            MapperOptions mapperConfig) {
         if ( mapperConfig.config() == null ) {
             return Collections.emptyList();
         }
@@ -149,7 +149,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return All mapping methods declared by the given type
      */
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
-                                               MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
+                                               MapperOptions mapperConfig, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
@@ -186,7 +186,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private SourceMethod getMethod(TypeElement usedMapper,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement,
-                                   MapperConfiguration mapperConfig,
+                                   MapperOptions mapperConfig,
                                    List<SourceMethod> prototypeMethods) {
 
         ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
@@ -219,7 +219,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
             List<Parameter> parameters,
             boolean containsTargetTypeParameter,
-            MapperConfiguration mapperConfig,
+            MapperOptions mapperConfig,
             List<SourceMethod> prototypeMethods,
             TypeElement mapperToImplement) {
         Type returnType = typeFactory.getReturnType( methodType );
@@ -253,16 +253,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setExceptionTypes( exceptionTypes )
             .setMappings( getMappings( method, method, new LinkedHashSet<>(), new HashSet<>() ) )
             .setIterableMapping(
-                IterableMapping.fromPrism(
+                IterableMappingOptions.fromPrism(
                     IterableMappingPrism.getInstanceOn( method ),
                     method,
                     messager,
                     typeUtils
                 ) )
             .setMapMapping(
-                MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
+                MapMappingOptions.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
             .setBeanMapping(
-                new BeanMapping.Builder()
+                new BeanMappingOptions.Builder()
                     .beanMappingPrism( BeanMappingPrism.getInstanceOn( method ) )
                     .messager( messager )
                     .method( method )
@@ -280,7 +280,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private ParameterProvidedMethods retrieveContextProvidedMethods(
-            List<Parameter> contextParameters, TypeElement mapperToImplement, MapperConfiguration mapperConfig) {
+            List<Parameter> contextParameters, TypeElement mapperToImplement, MapperOptions mapperConfig) {
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
         for ( Parameter contextParam : contextParameters ) {
