@@ -31,7 +31,7 @@ import org.mapstruct.tools.gem.GemValue;
 public class BeanMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
-    private final Optional<BeanMappingGem> beanMapping;
+    private final BeanMappingGem beanMapping;
 
     /**
      * creates a mapping for inheritance. Will set
@@ -52,7 +52,7 @@ public class BeanMappingOptions extends DelegatingOptions {
                                                    Types typeUtils, TypeFactory typeFactory
     ) {
         if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
-            BeanMappingOptions options = new BeanMappingOptions( null, Optional.empty(), mapperOptions );
+            BeanMappingOptions options = new BeanMappingOptions( null, null, mapperOptions );
             return options;
         }
 
@@ -72,7 +72,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
         BeanMappingOptions options = new BeanMappingOptions(
             selectionParameters,
-            Optional.ofNullable( beanMapping ),
+            beanMapping,
             mapperOptions
         );
         return options;
@@ -97,7 +97,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     private BeanMappingOptions(SelectionParameters selectionParameters,
-                               Optional<BeanMappingGem> beanMapping,
+                               BeanMappingGem beanMapping,
                                DelegatingOptions next) {
         super( next );
         this.selectionParameters = selectionParameters;
@@ -108,7 +108,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueCheckStrategyGem getNullValueCheckStrategy() {
-        return beanMapping.map( BeanMappingGem::nullValueCheckStrategy )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValueCheckStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueCheckStrategyGem::valueOf )
@@ -117,7 +117,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
-        return beanMapping.map( BeanMappingGem::nullValuePropertyMappingStrategy )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValuePropertyMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
@@ -126,7 +126,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return beanMapping.map( BeanMappingGem::nullValueMappingStrategy )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
@@ -135,7 +135,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public BuilderGem getBuilder() {
-        return beanMapping.map( BeanMappingGem::builder )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::builder )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .orElse( next().getBuilder() );
@@ -148,23 +148,23 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public boolean isignoreByDefault() {
-        return beanMapping.map( BeanMappingGem::ignoreByDefault )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::ignoreByDefault )
             .map( GemValue::get )
             .orElse( false );
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
-        return beanMapping.map( BeanMappingGem::ignoreUnmappedSourceProperties )
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::ignoreUnmappedSourceProperties )
             .map( GemValue::get )
             .orElse( Collections.emptyList() );
     }
 
     public AnnotationMirror getMirror() {
-        return beanMapping.map( BeanMappingGem::mirror ).orElse( null );
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::mirror ).orElse( null );
     }
 
     @Override
     public boolean hasAnnotation() {
-        return beanMapping.isPresent();
+        return beanMapping != null;
     }
 }

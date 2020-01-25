@@ -26,14 +26,14 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
-    private final Optional<IterableMappingGem> iterableMapping;
+    private final IterableMappingGem iterableMapping;
 
     public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
                                                  MapperOptions mappperOptions, ExecutableElement method,
                                                  FormattingMessager messager, Types typeUtils) {
 
         if ( iterableMapping == null || !isConsistent( iterableMapping, method, messager ) ) {
-            IterableMappingOptions options = new IterableMappingOptions( null, null, Optional.empty(), mappperOptions );
+            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mappperOptions );
             return options;
         }
 
@@ -53,7 +53,7 @@ public class IterableMappingOptions extends DelegatingOptions {
         );
 
         IterableMappingOptions options =
-            new IterableMappingOptions( formatting, selection, Optional.ofNullable( iterableMapping ), mappperOptions );
+            new IterableMappingOptions( formatting, selection, iterableMapping, mappperOptions );
         return options;
     }
 
@@ -72,7 +72,7 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                                   Optional<IterableMappingGem> iterableMapping,
+                                   IterableMappingGem iterableMapping,
                                    DelegatingOptions next) {
         super( next );
         this.formattingParameters = formattingParameters;
@@ -89,12 +89,12 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return iterableMapping.map( IterableMappingGem::mirror ).orElse( null );
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::mirror ).orElse( null );
     }
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return iterableMapping.map( IterableMappingGem::nullValueMappingStrategy )
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
@@ -103,7 +103,7 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     @Override
     public boolean hasAnnotation() {
-        return iterableMapping.isPresent();
+        return iterableMapping != null;
     }
 
 }

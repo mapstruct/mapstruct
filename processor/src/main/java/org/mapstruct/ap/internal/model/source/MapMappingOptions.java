@@ -28,7 +28,7 @@ public class MapMappingOptions extends DelegatingOptions {
     private final SelectionParameters valueSelectionParameters;
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
-    private final Optional<MapMappingGem> mapMapping;
+    private final MapMappingGem mapMapping;
 
     public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
                                             ExecutableElement method, FormattingMessager messager, Types typeUtils) {
@@ -39,7 +39,7 @@ public class MapMappingOptions extends DelegatingOptions {
                 null,
                 null,
                 null,
-                Optional.empty(),
+                null,
                 mapperOptions
             );
             return options;
@@ -80,7 +80,7 @@ public class MapMappingOptions extends DelegatingOptions {
             keySelection,
             valueFormatting,
             valueSelection,
-            Optional.ofNullable( mapMapping ),
+            mapMapping,
             mapperOptions
         );
         return options;
@@ -107,7 +107,7 @@ public class MapMappingOptions extends DelegatingOptions {
 
     private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
                               FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters,
-                              Optional<MapMappingGem> mapMapping, DelegatingOptions next ) {
+                              MapMappingGem mapMapping, DelegatingOptions next ) {
         super( next );
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
@@ -133,12 +133,12 @@ public class MapMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mapMapping.map( MapMappingGem::mirror ).orElse( null );
+        return Optional.ofNullable( mapMapping ).map( MapMappingGem::mirror ).orElse( null );
     }
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return mapMapping.map( MapMappingGem::nullValueMappingStrategy )
+        return Optional.ofNullable( mapMapping ).map( MapMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
@@ -147,7 +147,7 @@ public class MapMappingOptions extends DelegatingOptions {
 
     @Override
     public boolean hasAnnotation() {
-        return mapMapping.isPresent();
+        return mapMapping != null;
     }
 
 }

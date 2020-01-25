@@ -51,7 +51,7 @@ public class MappingOptions extends DelegatingOptions {
 
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
-    private final Optional<MappingGem> mapping;
+    private final MappingGem mapping;
 
     private final InheritContext inheritContext;
 
@@ -145,7 +145,7 @@ public class MappingOptions extends DelegatingOptions {
             formattingParam,
             selectionParams,
             dependsOn,
-            Optional.ofNullable( mapping ),
+            mapping,
             null,
             beanMappingOptions
         );
@@ -172,7 +172,7 @@ public class MappingOptions extends DelegatingOptions {
             null,
             null,
             Collections.emptySet(),
-            Optional.empty(),
+            null,
             null,
             null
         );
@@ -259,7 +259,7 @@ public class MappingOptions extends DelegatingOptions {
                            FormattingParameters formattingParameters,
                            SelectionParameters selectionParameters,
                            Set<String> dependsOn,
-                           Optional<MappingGem> mapping,
+                           MappingGem mapping,
                            InheritContext inheritContext,
                            DelegatingOptions next
     ) {
@@ -373,11 +373,14 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mapping.map( MappingGem::mirror ).orElse( null );
+        return Optional.ofNullable( mapping ).map( MappingGem::mirror ).orElse( null );
     }
 
     public AnnotationValue getDependsOnAnnotationValue() {
-        return mapping.map( MappingGem::dependsOn ).map( GemValue::getAnnotationValue ).orElse( null );
+        return Optional.ofNullable( mapping )
+            .map( MappingGem::dependsOn )
+            .map( GemValue::getAnnotationValue )
+            .orElse( null );
     }
 
     public Set<String> getDependsOn() {
@@ -390,7 +393,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueCheckStrategyGem getNullValueCheckStrategy() {
-        return mapping.map( MappingGem::nullValueCheckStrategy )
+        return Optional.ofNullable( mapping ).map( MappingGem::nullValueCheckStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueCheckStrategyGem::valueOf )
@@ -399,7 +402,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
-        return mapping.map( MappingGem::nullValuePropertyMappingStrategy )
+        return Optional.ofNullable( mapping ).map( MappingGem::nullValuePropertyMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
@@ -498,7 +501,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public boolean hasAnnotation() {
-        return mapping.isPresent();
+        return mapping != null;
     }
 
 }
