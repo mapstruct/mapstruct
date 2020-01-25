@@ -18,7 +18,7 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -72,7 +72,7 @@ public class SourceReference extends AbstractReference {
             return this;
         }
 
-        public BuilderFromMapping mapping(Mapping mapping) {
+        public BuilderFromMapping mapping(MappingOptions mapping) {
             this.sourceName = mapping.getSourceName();
             this.annotationMirror = mapping.getMirror();
             this.sourceAnnotationValue = mapping.getSourceAnnotationValue();

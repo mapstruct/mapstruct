@@ -29,7 +29,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.IterableMappingOptions;
 import org.mapstruct.ap.internal.model.source.MapMappingOptions;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
@@ -505,20 +505,20 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by target property name
      */
-    private Set<Mapping> getMappings(ExecutableElement method, Element element, Set<Mapping> mappings,
-                                     Set<Element> handledElements) {
+    private Set<MappingOptions> getMappings(ExecutableElement method, Element element, Set<MappingOptions> mappings,
+                                            Set<Element> handledElements) {
 
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
             Element lElement = annotationMirror.getAnnotationType().asElement();
             if ( isAnnotation( lElement, MAPPING_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
                 MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( element );
-                Mapping.addFromMappingPrism( mappingAnnotation, method, messager, typeUtils, mappings );
+                MappingOptions.addFromMappingPrism( mappingAnnotation, method, messager, typeUtils, mappings );
             }
             else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
                 MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( element );
-                Mapping.addFromMappingsPrism( mappingsAnnotation, method, messager, typeUtils, mappings );
+                MappingOptions.addFromMappingsPrism( mappingsAnnotation, method, messager, typeUtils, mappings );
             }
             else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
                 && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )

@@ -7,26 +7,26 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Objects;
 
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 
 /**
- * Represents the intermediate (nesting) state of the {@link Mapping} in this class.
+ * Represents the intermediate (nesting) state of the {@link MappingOptions} in this class.
  */
 public class MappingReference {
 
-    private Mapping mapping;
+    private MappingOptions mapping;
 
     private TargetReference targetReference;
 
     private SourceReference sourceReference;
 
-    public MappingReference(Mapping mapping, TargetReference targetReference, SourceReference sourceReference) {
+    public MappingReference(MappingOptions mapping, TargetReference targetReference, SourceReference sourceReference) {
         this.mapping = mapping;
         this.targetReference = targetReference;
         this.sourceReference = sourceReference;
     }
 
-    public Mapping getMapping() {
+    public MappingOptions getMapping() {
         return mapping;
     }
 

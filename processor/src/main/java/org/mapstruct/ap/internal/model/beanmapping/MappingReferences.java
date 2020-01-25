@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
@@ -35,7 +35,7 @@ public class MappingReferences {
         Set<MappingReference> references = new LinkedHashSet<>();
         List<MappingReference> targetThisReferences = new ArrayList<>(  );
 
-        for ( Mapping mapping : sourceMethod.getMappingOptions().getMappings() ) {
+        for ( MappingOptions mapping : sourceMethod.getMappingOptions().getMappings() ) {
 
             // handle source reference
             SourceReference sourceReference = new SourceReference.BuilderFromMapping().mapping( mapping )
@@ -139,7 +139,7 @@ public class MappingReferences {
      * @return
      */
     private static boolean isValidWhenInversed(MappingReference mappingRef) {
-        Mapping mapping = mappingRef.getMapping();
+        MappingOptions mapping = mappingRef.getMapping();
         if ( mapping.getInheritContext() != null && mapping.getInheritContext().isReversed() ) {
             return mappingRef.getTargetReference().isValid() && ( mappingRef.getSourceReference() == null ||
                 mappingRef.getSourceReference().isValid() );
