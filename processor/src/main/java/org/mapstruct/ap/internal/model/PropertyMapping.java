@@ -109,7 +109,7 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+            BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
             this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builder );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;

@@ -20,9 +20,9 @@ import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 public class MapperConfigOptions extends DelegatingOptions {
 
-    private final MapperConfigGem.MapperConfig mapperConfig;
+    private final MapperConfigGem mapperConfig;
 
-    MapperConfigOptions(MapperConfigGem.MapperConfig mapperConfig, DelegatingOptions next ) {
+    MapperConfigOptions(MapperConfigGem mapperConfig, DelegatingOptions next ) {
         super( next );
         this.mapperConfig = mapperConfig;
     }
@@ -125,7 +125,7 @@ public class MapperConfigOptions extends DelegatingOptions {
     }
 
     @Override
-    public BuilderGem.Builder getBuilder() {
+    public BuilderGem getBuilder() {
         return mapperConfig.builder().hasValue() ? mapperConfig.builder().get() : next().getBuilder();
     }
 

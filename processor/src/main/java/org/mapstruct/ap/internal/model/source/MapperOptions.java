@@ -26,11 +26,11 @@ import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 public class MapperOptions extends DelegatingOptions {
 
-    private final MapperGem.Mapper mapper;
+    private final MapperGem mapper;
     private final DeclaredType mapperConfigType;
 
     public static MapperOptions getInstanceOn(TypeElement typeElement, Options options) {
-        MapperGem.Mapper mapper = MapperGem.instanceOn( typeElement );
+        MapperGem mapper = MapperGem.instanceOn( typeElement );
         MapperOptions mapperAnnotation;
         DelegatingOptions defaults = new DefaultOptions( mapper, options );
         DeclaredType mapperConfigType;
@@ -42,7 +42,7 @@ public class MapperOptions extends DelegatingOptions {
         }
         if ( mapperConfigType != null ) {
             Element mapperConfigElement = mapperConfigType.asElement();
-            MapperConfigGem.MapperConfig mapperConfig = MapperConfigGem.instanceOn( mapperConfigElement );
+            MapperConfigGem mapperConfig = MapperConfigGem.instanceOn( mapperConfigElement );
             MapperConfigOptions mapperConfigAnnotation = new MapperConfigOptions( mapperConfig, defaults );
             mapperAnnotation = new MapperOptions( mapper, mapperConfigType, mapperConfigAnnotation );
         }
@@ -52,7 +52,7 @@ public class MapperOptions extends DelegatingOptions {
         return mapperAnnotation;
     }
 
-    private MapperOptions(MapperGem.Mapper mapper, DeclaredType mapperConfigType, DelegatingOptions next) {
+    private MapperOptions(MapperGem mapper, DeclaredType mapperConfigType, DelegatingOptions next) {
         super( next );
         this.mapper = mapper;
         this.mapperConfigType = mapperConfigType;
@@ -155,7 +155,7 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
-    public BuilderGem.Builder getBuilder() {
+    public BuilderGem getBuilder() {
         return mapper.builder().hasValue() ? mapper.builder().get() : next().getBuilder();
     }
 

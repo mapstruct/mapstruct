@@ -34,7 +34,7 @@ public class BuilderFinisherMethodResolver {
             return null;
         }
 
-        BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
         if ( builder == null && buildMethods.size() == 1 ) {
             return MethodReference.forMethodCall( first( buildMethods ).getSimpleName().toString() );
         }

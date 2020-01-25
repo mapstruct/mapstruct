@@ -10,12 +10,12 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents an iterable mapping as configured via {@code @IterableMapping}.
@@ -26,9 +26,9 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
-    private final Optional<IterableMappingGem.IterableMapping> iterableMapping;
+    private final Optional<IterableMappingGem> iterableMapping;
 
-    public static IterableMappingOptions fromGem(IterableMappingGem.IterableMapping iterableMapping,
+    public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
                                                  MapperOptions mappperOptions, ExecutableElement method,
                                                  FormattingMessager messager, Types typeUtils) {
 
@@ -57,7 +57,7 @@ public class IterableMappingOptions extends DelegatingOptions {
         return options;
     }
 
-    private static boolean isConsistent(IterableMappingGem.IterableMapping gem, ExecutableElement method,
+    private static boolean isConsistent(IterableMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.dateFormat().hasValue()
             && !gem.numberFormat().hasValue()
@@ -72,7 +72,7 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                                   Optional<IterableMappingGem.IterableMapping> iterableMapping,
+                                   Optional<IterableMappingGem> iterableMapping,
                                    DelegatingOptions next) {
         super( next );
         this.formattingParameters = formattingParameters;
@@ -89,12 +89,12 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return iterableMapping.map( IterableMappingGem.IterableMapping::mirror ).orElse( null );
+        return iterableMapping.map( IterableMappingGem::mirror ).orElse( null );
     }
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return iterableMapping.map( IterableMappingGem.IterableMapping::nullValueMappingStrategy )
+        return iterableMapping.map( IterableMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )

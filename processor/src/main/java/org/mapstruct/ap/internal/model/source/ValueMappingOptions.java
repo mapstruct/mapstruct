@@ -32,11 +32,11 @@ public class ValueMappingOptions {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static void fromMappingsGem(ValueMappingsGem.ValueMappings mappingsGem, ExecutableElement method,
+    public static void fromMappingsGem(ValueMappingsGem mappingsGem, ExecutableElement method,
                                        FormattingMessager messager, List<ValueMappingOptions> mappings) {
 
         boolean anyFound = false;
-        for ( ValueMappingGem.ValueMapping mappingGem : mappingsGem.value().get() ) {
+        for ( ValueMappingGem mappingGem : mappingsGem.value().get() ) {
             ValueMappingOptions mapping = fromMappingGem( mappingGem );
             if ( mapping != null ) {
 
@@ -69,7 +69,7 @@ public class ValueMappingOptions {
         }
     }
 
-    public static ValueMappingOptions fromMappingGem(ValueMappingGem.ValueMapping mapping ) {
+    public static ValueMappingOptions fromMappingGem(ValueMappingGem mapping ) {
 
         return new ValueMappingOptions( mapping.source().get(), mapping.target().get(), mapping.mirror(),
             mapping.source().getAnnotationValue(), mapping.target().getAnnotationValue() );

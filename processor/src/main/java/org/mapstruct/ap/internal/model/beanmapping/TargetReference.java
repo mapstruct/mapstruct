@@ -202,7 +202,7 @@ public class TargetReference extends AbstractReference {
                         );
                     }
                     else {
-                        BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
                         builderType = typeFactory.builderTypeFor( nextType, builder );
                         propertyEntry = PropertyEntry.forTargetReference( fullName,
                                         targetReadAccessor,
@@ -270,7 +270,7 @@ public class TargetReference extends AbstractReference {
                 return type;
             }
             else {
-                BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
                 return typeFactory.effectiveResultTypeFor( type, builder );
             }
         }

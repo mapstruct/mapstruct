@@ -517,7 +517,7 @@ public class TypeFactory {
         return null;
     }
 
-    private BuilderInfo findBuilder(TypeMirror type, BuilderGem.Builder builderGem, boolean report) {
+    private BuilderInfo findBuilder(TypeMirror type, BuilderGem builderGem, boolean report) {
         if ( builderGem != null && builderGem.disableBuilder().get() ) {
             return null;
         }
@@ -631,7 +631,7 @@ public class TypeFactory {
         return true;
     }
 
-    public BuilderType builderTypeFor( Type type, BuilderGem.Builder builder ) {
+    public BuilderType builderTypeFor( Type type, BuilderGem builder ) {
         if ( type != null ) {
             BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builder, true );
             return BuilderType.create( builderInfo, type, this, this.typeUtils );
@@ -639,7 +639,7 @@ public class TypeFactory {
         return null;
     }
 
-    public Type effectiveResultTypeFor( Type type, BuilderGem.Builder builder ) {
+    public Type effectiveResultTypeFor( Type type, BuilderGem builder ) {
         if ( type != null ) {
             BuilderInfo builderInfo = findBuilder( type.getTypeMirror(), builder, false );
             BuilderType builderType = BuilderType.create( builderInfo, type, this, this.typeUtils );

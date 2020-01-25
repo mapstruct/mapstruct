@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.mapstruct.annotations.version>0.5.0-SNAPSHOT</org.mapstruct.annotations.version>
+        <org.mapstruct.gem.version>0.5.0-SNAPSHOT</org.mapstruct.gem.version>
         <!-- We can't go to 3.0.0-M2 as it has a regression. See https://issues.apache.org/jira/browse/MENFORCER-306 -->
         <org.apache.maven.plugins.enforcer.version>3.0.0-M1</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.0.0-M3</org.apache.maven.plugins.surefire.version>
@@ -109,14 +109,14 @@
                 <version>19.0</version>
             </dependency>
             <dependency>
-                <groupId>org.mapstruct.annotations</groupId>
-                <artifactId>annotations-api</artifactId>
-                <version>${org.mapstruct.annotations.version}</version>
+                <groupId>org.mapstruct.tools.gem</groupId>
+                <artifactId>gem-api</artifactId>
+                <version>${org.mapstruct.gem.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.mapstruct.annotations</groupId>
-                <artifactId>annotations-processor</artifactId>
-                <version>${org.mapstruct.annotations.version}</version>
+                <groupId>org.mapstruct.tools.gem</groupId>
+                <artifactId>gem-processor</artifactId>
+                <version>${org.mapstruct.gem.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

@@ -186,7 +186,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
                                    String implPackage, SortedSet<Type> extraImports) {
-        DecoratedWithGem.DecoratedWith decoratedWith = DecoratedWithGem.instanceOn( element );
+        DecoratedWithGem decoratedWith = DecoratedWithGem.instanceOn( element );
 
         if ( decoratedWith == null ) {
             return null;
@@ -360,7 +360,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+                BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
                 BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
@@ -511,7 +511,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                   List<SourceMethod> initializingMethods,
                                                   MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
-        InheritInverseConfigurationGem.InheritInverseConfiguration inverseConfiguration =
+        InheritInverseConfigurationGem inverseConfiguration =
             InheritInverseConfigurationGem.instanceOn( method.getExecutable() );
 
         if ( inverseConfiguration != null ) {
@@ -587,7 +587,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                   List<SourceMethod> initializingMethods,
                                                   MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
-        InheritConfigurationGem.InheritConfiguration inheritConfiguration =
+        InheritConfigurationGem inheritConfiguration =
             InheritConfigurationGem.instanceOn( method.getExecutable() );
 
         if ( inheritConfiguration != null ) {
@@ -640,7 +640,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
-                   InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
+                   InheritInverseConfigurationGem inverseGem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
@@ -668,7 +668,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
-          InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
+          InheritInverseConfigurationGem inverseGem) {
 
         messager.printMessage( method.getExecutable(),
             inverseGem.mirror(),
@@ -680,7 +680,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                            InheritInverseConfigurationGem.InheritInverseConfiguration inverseGem) {
+                                            InheritInverseConfigurationGem inverseGem) {
 
         messager.printMessage( method.getExecutable(),
             inverseGem.mirror(),
@@ -691,7 +691,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
-                                                InheritConfigurationGem.InheritConfiguration gem) {
+                                                InheritConfigurationGem gem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
@@ -718,7 +718,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
-                                                  InheritConfigurationGem.InheritConfiguration gem) {
+                                                  InheritConfigurationGem gem) {
 
         messager.printMessage(
             method.getExecutable(),
@@ -730,7 +730,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                                InheritConfigurationGem.InheritConfiguration gem) {
+                                                InheritConfigurationGem gem) {
 
         messager.printMessage(
             method.getExecutable(),

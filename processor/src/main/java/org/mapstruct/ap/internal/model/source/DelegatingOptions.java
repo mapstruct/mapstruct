@@ -96,7 +96,7 @@ public abstract class DelegatingOptions {
         return next.getNullValueMappingStrategy();
     }
 
-    public BuilderGem.Builder getBuilder() {
+    public BuilderGem getBuilder() {
         return next.getBuilder();
     }
 

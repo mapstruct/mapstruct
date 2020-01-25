@@ -211,7 +211,7 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
-            BeanMappingGem.BeanMapping beanMapping = BeanMappingGem.instanceOn( method.getExecutable() );
+            BeanMappingGem beanMapping = BeanMappingGem.instanceOn( method.getExecutable() );
             if ( beanMapping != null ) {
                 List<TypeMirror> qualifiers = beanMapping.qualifiedBy().get();
                 List<String> qualifyingNames = beanMapping.qualifiedByName().get();

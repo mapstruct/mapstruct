@@ -33,8 +33,8 @@
             <artifactId>freemarker</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mapstruct.annotations</groupId>
-            <artifactId>annotations-api</artifactId>
+            <groupId>org.mapstruct.tools.gem</groupId>
+            <artifactId>gem-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -221,9 +221,9 @@
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
-                            <groupId>org.mapstruct.annotations</groupId>
-                            <artifactId>annotations-processor</artifactId>
-                            <version>${org.mapstruct.annotations.version}</version>
+                            <groupId>org.mapstruct.tools.gem</groupId>
+                            <artifactId>gem-processor</artifactId>
+                            <version>${org.mapstruct.gem.version}</version>
                         </path>
                         <!-- other annotation processors -->
                     </annotationProcessorPaths>

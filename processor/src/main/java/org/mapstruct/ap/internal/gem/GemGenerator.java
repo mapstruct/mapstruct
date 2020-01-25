@@ -29,7 +29,7 @@ import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
-import org.mapstruct.annotations.GemDefinition;
+import org.mapstruct.tools.gem.GemDefinition;
 
 /**
  * Triggers the generation of ge  types using <a href="https://java.net/projects/hickory">Hickory</a>.

@@ -54,7 +54,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             sourceRHS.getSourceErrorMessagePart() );
 
         ForgedMethod forgedMethod = forElementMapping( name, sourceType, targetType, method, forgedHistory, true );
-        BuilderGem.Builder builder = method.getOptions().getBeanMapping().getBuilder();
+        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
 
         return createForgedAssignment(
             sourceRHS,

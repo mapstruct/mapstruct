@@ -10,12 +10,12 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents a map mapping as configured via {@code @MapMapping}.
@@ -28,9 +28,9 @@ public class MapMappingOptions extends DelegatingOptions {
     private final SelectionParameters valueSelectionParameters;
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
-    private final Optional<MapMappingGem.MapMapping> mapMapping;
+    private final Optional<MapMappingGem> mapMapping;
 
-    public static MapMappingOptions fromGem(MapMappingGem.MapMapping mapMapping, MapperOptions mapperOptions,
+    public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
                                             ExecutableElement method, FormattingMessager messager, Types typeUtils) {
 
         if ( mapMapping == null || !isConsistent( mapMapping, method, messager ) ) {
@@ -86,7 +86,7 @@ public class MapMappingOptions extends DelegatingOptions {
         return options;
     }
 
-    private static boolean isConsistent(MapMappingGem.MapMapping gem, ExecutableElement method,
+    private static boolean isConsistent(MapMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.keyDateFormat().hasValue()
             && !gem.keyNumberFormat().hasValue()
@@ -107,7 +107,7 @@ public class MapMappingOptions extends DelegatingOptions {
 
     private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
                               FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters,
-                              Optional<MapMappingGem.MapMapping> mapMapping, DelegatingOptions next ) {
+                              Optional<MapMappingGem> mapMapping, DelegatingOptions next ) {
         super( next );
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
@@ -133,12 +133,12 @@ public class MapMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mapMapping.map( MapMappingGem.MapMapping::mirror ).orElse( null );
+        return mapMapping.map( MapMappingGem::mirror ).orElse( null );
     }
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return mapMapping.map( MapMappingGem.MapMapping::nullValueMappingStrategy )
+        return mapMapping.map( MapMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )

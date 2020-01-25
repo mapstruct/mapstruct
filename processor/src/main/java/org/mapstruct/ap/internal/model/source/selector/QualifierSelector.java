@@ -116,7 +116,7 @@ public class QualifierSelector implements MethodSelector {
                             // Match! we have an annotation which has the @Qualifer marker ( could be @Named as well )
                             if ( typeUtils.isSameType( qualifierAnnotationType, namedAnnotationTypeMirror ) ) {
                                 // Match! its an @Named, so do the additional check on name.
-                                NamedGem.Named named = NamedGem.instanceOn( qualifierAnnotationMirror );
+                                NamedGem named = NamedGem.instanceOn( qualifierAnnotationMirror );
                                 if ( named.value().hasValue() && qualfiedByNames.contains( named.value().get() ) ) {
                                     // Match! its an @Name and the value matches as well. Oh boy.
                                     matchingQualifierCounter++;

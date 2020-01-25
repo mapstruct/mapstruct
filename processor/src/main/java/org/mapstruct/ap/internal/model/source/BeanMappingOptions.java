@@ -13,7 +13,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -22,6 +21,7 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents an bean mapping as configured via {@code @BeanMapping}.
@@ -31,7 +31,7 @@ import org.mapstruct.ap.internal.util.Message;
 public class BeanMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
-    private final Optional<BeanMappingGem.BeanMapping> beanMapping;
+    private final Optional<BeanMappingGem> beanMapping;
 
     /**
      * creates a mapping for inheritance. Will set
@@ -47,7 +47,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
-    public static BeanMappingOptions getInstanceOn(BeanMappingGem.BeanMapping beanMapping, MapperOptions mapperOptions,
+    public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
                                                    ExecutableElement method, FormattingMessager messager,
                                                    Types typeUtils, TypeFactory typeFactory
     ) {
@@ -78,7 +78,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
-    private static boolean isConsistent(BeanMappingGem.BeanMapping gem, ExecutableElement method,
+    private static boolean isConsistent(BeanMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.resultType().hasValue()
             && !gem.qualifiedBy().hasValue()
@@ -97,7 +97,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     private BeanMappingOptions(SelectionParameters selectionParameters,
-                               Optional<BeanMappingGem.BeanMapping> beanMapping,
+                               Optional<BeanMappingGem> beanMapping,
                                DelegatingOptions next) {
         super( next );
         this.selectionParameters = selectionParameters;
@@ -108,7 +108,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueCheckStrategyGem getNullValueCheckStrategy() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::nullValueCheckStrategy )
+        return beanMapping.map( BeanMappingGem::nullValueCheckStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueCheckStrategyGem::valueOf )
@@ -117,7 +117,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::nullValuePropertyMappingStrategy )
+        return beanMapping.map( BeanMappingGem::nullValuePropertyMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
@@ -126,7 +126,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::nullValueMappingStrategy )
+        return beanMapping.map( BeanMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
@@ -134,8 +134,8 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     @Override
-    public BuilderGem.Builder getBuilder() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::builder )
+    public BuilderGem getBuilder() {
+        return beanMapping.map( BeanMappingGem::builder )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .orElse( next().getBuilder() );
@@ -148,19 +148,19 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public boolean isignoreByDefault() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::ignoreByDefault )
+        return beanMapping.map( BeanMappingGem::ignoreByDefault )
             .map( GemValue::get )
             .orElse( false );
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::ignoreUnmappedSourceProperties )
+        return beanMapping.map( BeanMappingGem::ignoreUnmappedSourceProperties )
             .map( GemValue::get )
             .orElse( Collections.emptyList() );
     }
 
     public AnnotationMirror getMirror() {
-        return beanMapping.map( BeanMappingGem.BeanMapping::mirror ).orElse( null );
+        return beanMapping.map( BeanMappingGem::mirror ).orElse( null );
     }
 
     @Override

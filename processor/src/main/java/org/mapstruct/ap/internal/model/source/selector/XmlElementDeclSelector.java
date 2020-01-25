@@ -60,7 +60,7 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
 
             SourceMethod candidateMethod = (SourceMethod) candidate.getMethod();
-            XmlElementDeclGem.XmlElementDecl xmlElementDecl =
+            XmlElementDeclGem xmlElementDecl =
                 XmlElementDeclGem.instanceOn( candidateMethod.getExecutable() );
 
             if ( xmlElementDecl == null ) {
@@ -139,7 +139,7 @@ public class XmlElementDeclSelector implements MethodSelector {
             for ( Element enclosed : currentElement.getEnclosedElements() ) {
                 if ( enclosed.getKind().equals( ElementKind.FIELD )
                     && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
-                    XmlElementDeclGem.XmlElementDecl xmlElementRef = XmlElementDeclGem.instanceOn( enclosed );
+                    XmlElementDeclGem xmlElementRef = XmlElementDeclGem.instanceOn( enclosed );
                     if ( xmlElementRef != null ) {
                         return new XmlElementRefInfo( xmlElementRef.name().get(), currentMirror );
                     }

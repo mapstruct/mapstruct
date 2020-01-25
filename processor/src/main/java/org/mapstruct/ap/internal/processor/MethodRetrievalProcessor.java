@@ -526,12 +526,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             Element lElement = annotationMirror.getAnnotationType().asElement();
             if ( isAnnotation( lElement, MAPPING_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingGem.Mapping mapping = MappingGem.instanceOn( element );
+                MappingGem mapping = MappingGem.instanceOn( element );
                 MappingOptions.addInstance( mapping, method, beanMapping, messager, typeUtils, mappingOptions );
             }
             else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingsGem.Mappings mappings = MappingsGem.instanceOn( element );
+                MappingsGem mappings = MappingsGem.instanceOn( element );
                 MappingOptions.addInstances( mappings, method, beanMapping, messager, typeUtils, mappingOptions );
             }
             else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
@@ -571,8 +571,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<ValueMappingOptions> getValueMappings(ExecutableElement method) {
         List<ValueMappingOptions> valueMappings = new ArrayList<>();
 
-        ValueMappingGem.ValueMapping mappingAnnotation = ValueMappingGem.instanceOn( method );
-        ValueMappingsGem.ValueMappings mappingsAnnotation = ValueMappingsGem.instanceOn( method );
+        ValueMappingGem mappingAnnotation = ValueMappingGem.instanceOn( method );
+        ValueMappingsGem mappingsAnnotation = ValueMappingsGem.instanceOn( method );
 
         if ( mappingAnnotation != null ) {
             ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingGem( mappingAnnotation );

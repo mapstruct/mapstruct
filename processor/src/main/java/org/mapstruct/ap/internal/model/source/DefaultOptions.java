@@ -22,10 +22,10 @@ import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 public class DefaultOptions extends DelegatingOptions {
 
-    private final MapperGem.Mapper mapper;
+    private final MapperGem mapper;
     private final Options options;
 
-    DefaultOptions(MapperGem.Mapper mapper, Options options) {
+    DefaultOptions(MapperGem mapper, Options options) {
         super( null );
         this.mapper = mapper;
         this.options = options;
@@ -114,7 +114,7 @@ public class DefaultOptions extends DelegatingOptions {
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().getDefaultValue() );
     }
 
-    public BuilderGem.Builder getBuilder() {
+    public BuilderGem getBuilder() {
         // TODO: I realized this is not correct, however it needs to be null in order to keep downward compatibility
         // but assuming a default @Builder will make testcases fail. Not having a default means that you need to
         // specify this mandatory on @MappingConfig and @Mapper.

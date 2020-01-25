@@ -28,7 +28,7 @@ public class Decorator extends GeneratedType {
     public static class Builder extends GeneratedTypeBuilder<Builder> {
 
         private TypeElement mapperElement;
-        private DecoratedWithGem.DecoratedWith decorator;
+        private DecoratedWithGem decorator;
 
         private boolean hasDelegateConstructor;
         private String implName;
@@ -43,7 +43,7 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
-        public Builder decoratedWith(DecoratedWithGem.DecoratedWith decoratedGem) {
+        public Builder decoratedWith(DecoratedWithGem decoratedGem) {
             this.decorator = decoratedGem;
             return this;
         }

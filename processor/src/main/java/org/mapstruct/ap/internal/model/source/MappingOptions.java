@@ -19,15 +19,14 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.annotations.GemValue;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MappingGem;
-import org.mapstruct.ap.internal.gem.MappingGem.Mapping;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping} (no intermediate state).
@@ -52,7 +51,7 @@ public class MappingOptions extends DelegatingOptions {
 
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
-    private final Optional<MappingGem.Mapping> mapping;
+    private final Optional<MappingGem> mapping;
 
     private final InheritContext inheritContext;
 
@@ -89,17 +88,17 @@ public class MappingOptions extends DelegatingOptions {
             .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
-    public static void addInstances(MappingsGem.Mappings gem, ExecutableElement method,
+    public static void addInstances(MappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions,
                                     FormattingMessager messager, Types typeUtils,
                                     Set<MappingOptions> mappings) {
 
-        for ( MappingGem.Mapping mapping : gem.value().getValue() ) {
+        for ( MappingGem mapping : gem.value().getValue() ) {
             addInstance( mapping, method, beanMappingOptions, messager, typeUtils, mappings );
         }
     }
 
-    public static void addInstance(MappingGem.Mapping mapping, ExecutableElement method,
+    public static void addInstance(MappingGem mapping, ExecutableElement method,
                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager, Types typeUtils,
                                    Set<MappingOptions> mappings) {
 
@@ -179,7 +178,7 @@ public class MappingOptions extends DelegatingOptions {
         );
     }
 
-    private static boolean isConsistent(MappingGem.Mapping gem, ExecutableElement method,
+    private static boolean isConsistent(MappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
 
         if ( !gem.target().hasValue() ) {
@@ -260,7 +259,7 @@ public class MappingOptions extends DelegatingOptions {
                            FormattingParameters formattingParameters,
                            SelectionParameters selectionParameters,
                            Set<String> dependsOn,
-                           Optional<MappingGem.Mapping> mapping,
+                           Optional<MappingGem> mapping,
                            InheritContext inheritContext,
                            DelegatingOptions next
     ) {
@@ -281,7 +280,7 @@ public class MappingOptions extends DelegatingOptions {
         this.inheritContext = inheritContext;
     }
 
-    private static String getExpression(MappingGem.Mapping mapping, ExecutableElement element,
+    private static String getExpression(MappingGem mapping, ExecutableElement element,
                                         FormattingMessager messager) {
         if ( !mapping.expression().hasValue() ) {
             return null;
@@ -302,7 +301,7 @@ public class MappingOptions extends DelegatingOptions {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private static String getDefaultExpression(MappingGem.Mapping mapping, ExecutableElement element,
+    private static String getDefaultExpression(MappingGem mapping, ExecutableElement element,
                                         FormattingMessager messager) {
         if ( !mapping.defaultExpression().hasValue() ) {
             return null;
@@ -374,11 +373,11 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return mapping.map( Mapping::mirror ).orElse( null );
+        return mapping.map( MappingGem::mirror ).orElse( null );
     }
 
     public AnnotationValue getDependsOnAnnotationValue() {
-        return mapping.map( Mapping::dependsOn ).map( GemValue::getAnnotationValue ).orElse( null );
+        return mapping.map( MappingGem::dependsOn ).map( GemValue::getAnnotationValue ).orElse( null );
     }
 
     public Set<String> getDependsOn() {
@@ -391,7 +390,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public NullValueCheckStrategyGem getNullValueCheckStrategy() {
-        return mapping.map( Mapping::nullValueCheckStrategy )
+        return mapping.map( MappingGem::nullValueCheckStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueCheckStrategyGem::valueOf )
@@ -400,7 +399,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @Override
     public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
-        return mapping.map( Mapping::nullValuePropertyMappingStrategy )
+        return mapping.map( MappingGem::nullValuePropertyMappingStrategy )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
