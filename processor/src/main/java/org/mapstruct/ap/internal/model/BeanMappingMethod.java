@@ -36,7 +36,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -536,7 +536,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             PropertyMapping propertyMapping = null;
 
             TargetReference targetRef = mappingRef.getTargetReference();
-            Mapping mapping = mappingRef.getMapping();
+            MappingOptions mapping = mappingRef.getMapping();
             PropertyEntry targetProperty = first( targetRef.getPropertyEntries() );
             String targetPropertyName = targetProperty.getName();
 

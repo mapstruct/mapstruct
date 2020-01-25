@@ -77,7 +77,7 @@ public class SourceMethod implements Method {
         private List<Parameter> parameters;
         private Type returnType = null;
         private List<Type> exceptionTypes;
-        private Set<Mapping> mappings;
+        private Set<MappingOptions> mappings;
         private IterableMappingOptions iterableMapping = null;
         private MapMappingOptions mapMapping = null;
         private BeanMappingOptions beanMapping = null;
@@ -113,7 +113,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMappings(Set<Mapping> mappings) {
+        public Builder setMappings(Set<MappingOptions> mappings) {
             this.mappings = mappings;
             return this;
         }

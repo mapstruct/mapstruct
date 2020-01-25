@@ -31,7 +31,7 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Gunnar Morling
  */
-public class Mapping {
+public class MappingOptions {
 
     private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
 
@@ -81,19 +81,19 @@ public class Mapping {
         }
     }
 
-    public static Set<String> getMappingTargetNamesBy(Predicate<Mapping> predicate, Set<Mapping> mappings) {
+    public static Set<String> getMappingTargetNamesBy(Predicate<MappingOptions> predicate, Set<MappingOptions> mappings) {
         return mappings.stream()
                        .filter( predicate )
-                       .map( Mapping::getTargetName )
+                       .map( MappingOptions::getTargetName )
                        .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
-    public static Mapping getMappingByTargetName(String targetName, Set<Mapping> mappings) {
+    public static MappingOptions getMappingByTargetName(String targetName, Set<MappingOptions> mappings) {
         return mappings.stream().filter( mapping -> mapping.targetName.equals( targetName ) ).findAny().orElse( null );
     }
 
     public static void addFromMappingsPrism(MappingsPrism mappingsAnnotation, ExecutableElement method,
-                                            FormattingMessager messager, Types typeUtils, Set<Mapping> mappings) {
+                                            FormattingMessager messager, Types typeUtils, Set<MappingOptions> mappings) {
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
             addFromMappingPrism( mappingPrism, method, messager, typeUtils, mappings );
@@ -101,7 +101,7 @@ public class Mapping {
     }
 
     public static void addFromMappingPrism(MappingPrism mappingPrism, ExecutableElement method,
-                                           FormattingMessager messager, Types typeUtils, Set<Mapping> mappings) {
+                                           FormattingMessager messager, Types typeUtils, Set<MappingOptions> mappings) {
 
         if (!isConsistent( mappingPrism, method, messager  ) ) {
             return;
@@ -144,7 +144,7 @@ public class Mapping {
                 ? null
                 : NullValuePropertyMappingStrategyPrism.valueOf( mappingPrism.nullValuePropertyMappingStrategy() );
 
-        Mapping mapping = new Mapping(
+        MappingOptions mapping = new MappingOptions(
             source,
             constant,
             expression,
@@ -172,8 +172,8 @@ public class Mapping {
         }
     }
 
-   public static Mapping forIgnore( String targetName) {
-        return new Mapping(
+   public static MappingOptions forIgnore(String targetName) {
+        return new MappingOptions(
             null,
             null,
             null,
@@ -267,14 +267,14 @@ public class Mapping {
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
-    private Mapping(String sourceName, String constant, String javaExpression, String defaultJavaExpression,
-                    String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
-                    FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                    AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
-                    NullValueCheckStrategyPrism nullValueCheckStrategy,
-                    NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy,
-                    InheritContext inheritContext) {
+    private MappingOptions(String sourceName, String constant, String javaExpression, String defaultJavaExpression,
+                           String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
+                           AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+                           FormattingParameters formattingParameters, SelectionParameters selectionParameters,
+                           AnnotationValue dependsOnAnnotationValue, Set<String> dependsOn,
+                           NullValueCheckStrategyPrism nullValueCheckStrategy,
+                           NullValuePropertyMappingStrategyPrism nullValuePropertyMappingStrategy,
+                           InheritContext inheritContext) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -421,9 +421,9 @@ public class Mapping {
         return constant == null && javaExpression == null && !( isIgnored && sourceName == null );
     }
 
-    public Mapping copyForInverseInheritance(SourceMethod method ) {
+    public MappingOptions copyForInverseInheritance(SourceMethod method ) {
 
-        return new Mapping(
+        return new MappingOptions(
             sourceName != null ? targetName : null,
             null, // constant
             null, // expression
@@ -450,8 +450,8 @@ public class Mapping {
      *
      * @return the copy
      */
-    public Mapping copyForForwardInheritance( SourceMethod method ) {
-        return new Mapping(
+    public MappingOptions copyForForwardInheritance(SourceMethod method ) {
+        return new MappingOptions(
             sourceName,
             constant,
             javaExpression,
@@ -485,7 +485,7 @@ public class Mapping {
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        Mapping mapping = (Mapping) o;
+        MappingOptions mapping = (MappingOptions) o;
         return targetName.equals( mapping.targetName );
     }
 

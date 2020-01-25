@@ -17,7 +17,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
-import static org.mapstruct.ap.internal.model.source.Mapping.getMappingTargetNamesBy;
+import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
 
 /**
  * Encapsulates all options specifiable on a mapping method
@@ -32,14 +32,14 @@ public class MappingMethodOptions {
         Collections.emptyList()
     );
 
-    private Set<Mapping> mappings;
+    private Set<MappingOptions> mappings;
     private IterableMappingOptions iterableMapping;
     private MapMappingOptions mapMapping;
     private BeanMappingOptions beanMapping;
     private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
 
-    public MappingMethodOptions(Set<Mapping> mappings, IterableMappingOptions iterableMapping, MapMappingOptions mapMapping,
+    public MappingMethodOptions(Set<MappingOptions> mappings, IterableMappingOptions iterableMapping, MapMappingOptions mapMapping,
                                 BeanMappingOptions beanMapping, List<ValueMapping> valueMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -58,10 +58,10 @@ public class MappingMethodOptions {
     }
 
     /**
-     * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
+     * @return the {@link MappingOptions}s configured for this method, keyed by target property name. Only for enum mapping
      * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
      */
-    public Set<Mapping> getMappings() {
+    public Set<MappingOptions> getMappings() {
         return mappings;
     }
 
@@ -153,8 +153,8 @@ public class MappingMethodOptions {
                 }
             }
 
-            Set<Mapping> newMappings = new LinkedHashSet<>();
-            for ( Mapping mapping : inherited.getMappings() ) {
+            Set<MappingOptions> newMappings = new LinkedHashSet<>();
+            for ( MappingOptions mapping : inherited.getMappings() ) {
                 if ( isInverse ) {
                     if ( mapping.canInverse() ) {
                         newMappings.add( mapping.copyForInverseInheritance( templateMethod ) );
@@ -191,25 +191,25 @@ public class MappingMethodOptions {
 
         for ( String targetPropertyName : writeAccessors.keySet() ) {
             if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
-                Mapping mapping = Mapping.forIgnore( targetPropertyName );
+                MappingOptions mapping = MappingOptions.forIgnore( targetPropertyName );
                 mappings.add( mapping );
             }
         }
     }
 
-    private void filterNestedTargetIgnores( Set<Mapping> mappings) {
+    private void filterNestedTargetIgnores( Set<MappingOptions> mappings) {
 
         // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
-        Set<String> ignored = getMappingTargetNamesBy( Mapping::isIgnored, mappings );
+        Set<String> ignored = getMappingTargetNamesBy( MappingOptions::isIgnored, mappings );
         mappings.removeIf( m -> isToBeIgnored( ignored, m ) );
     }
 
-    private boolean isToBeIgnored(Set<String> ignored, Mapping mapping) {
+    private boolean isToBeIgnored(Set<String> ignored, MappingOptions mapping) {
         String[] propertyEntries = getPropertyEntries( mapping );
         return propertyEntries.length > 1 && ignored.contains( propertyEntries[ 0 ] );
     }
 
-    private String[] getPropertyEntries( Mapping mapping ) {
+    private String[] getPropertyEntries( MappingOptions mapping ) {
         return mapping.getTargetName().split( "\\." );
     }
 

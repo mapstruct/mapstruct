@@ -21,7 +21,7 @@ import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -294,7 +294,7 @@ public class NestedTargetPropertyMappingHolder {
         }
 
         /**
-         * The target references are popped. The {@code List<}{@link Mapping}{@code >} are keyed on the unique first
+         * The target references are popped. The {@code List<}{@link MappingOptions}{@code >} are keyed on the unique first
          * entries of the target references.
          *
          * <p>
@@ -503,7 +503,7 @@ public class NestedTargetPropertyMappingHolder {
          *
          *
          *
-         * @param entryByParam the entry of a {@link Parameter} and it's associated {@link Mapping}(s) that need to
+         * @param entryByParam the entry of a {@link Parameter} and it's associated {@link MappingOptions}(s) that need to
          * be used for grouping on popped source references
          * @param singleTargetReferences the single target references that match the source mappings
          *

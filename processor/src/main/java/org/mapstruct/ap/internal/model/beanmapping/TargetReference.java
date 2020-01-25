@@ -19,7 +19,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
-import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
@@ -84,7 +84,7 @@ public class TargetReference extends AbstractReference {
             return this;
         }
 
-        public Builder mapping(Mapping mapping) {
+        public Builder mapping(MappingOptions mapping) {
             if ( mapping.getInheritContext() != null ) {
                 this.isReversed = mapping.getInheritContext().isReversed();
                 this.templateMethod = mapping.getInheritContext().getInheritedFromMethod();
