@@ -35,16 +35,16 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -121,7 +121,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         public BeanMappingMethod build() {
 
-            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            BeanMappingOptions beanMapping = method.getMappingOptions().getBeanMapping();
             SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
 
             /* the return type that needs to be constructed (new or factorized), so for instance: */
@@ -828,13 +828,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyPrism.IGNORE;
             }
-            MappingOptions mappingOptions = method.getMappingOptions();
+            MappingMethodOptions mappingOptions = method.getMappingOptions();
             if ( mappingOptions.getBeanMapping() != null &&
                 mappingOptions.getBeanMapping().getReportingPolicy() != null ) {
                 return mappingOptions.getBeanMapping().getReportingPolicy();
             }
 
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperOptions mapperSettings = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
 
             return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
         }
@@ -917,7 +917,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyPrism.IGNORE;
             }
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperOptions mapperSettings = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
 
             return mapperSettings.unmappedSourcePolicy();
         }

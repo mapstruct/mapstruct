@@ -16,10 +16,10 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -255,7 +255,7 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public MapperConfiguration getMapperConfiguration() {
+    public MapperOptions getMapperConfiguration() {
         return null;
     }
 
@@ -270,8 +270,8 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public MappingOptions getMappingOptions() {
-        return MappingOptions.empty();
+    public MappingMethodOptions getMappingOptions() {
+        return MappingMethodOptions.empty();
     }
 
     public BuiltInFieldReference getFieldReference() {

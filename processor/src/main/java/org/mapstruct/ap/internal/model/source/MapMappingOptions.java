@@ -21,7 +21,7 @@ import org.mapstruct.ap.internal.util.Message;
  *
  * @author Gunnar Morling
  */
-public class MapMapping {
+public class MapMappingOptions {
 
     private final SelectionParameters keySelectionParameters;
     private final SelectionParameters valueSelectionParameters;
@@ -30,8 +30,8 @@ public class MapMapping {
     private final AnnotationMirror mirror;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
-    public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
-        FormattingMessager messager, Types typeUtils) {
+    public static MapMappingOptions fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
+                                              FormattingMessager messager, Types typeUtils) {
         if ( mapMapping == null ) {
             return null;
         }
@@ -89,7 +89,7 @@ public class MapMapping {
             method
         );
 
-        return new MapMapping(
+        return new MapMappingOptions(
             keyFormatting,
             keySelection,
             valueFormatting,
@@ -99,9 +99,9 @@ public class MapMapping {
         );
     }
 
-    private MapMapping(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
-        FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters, AnnotationMirror mirror,
-        NullValueMappingStrategyPrism nvms ) {
+    private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
+                              FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters, AnnotationMirror mirror,
+                              NullValueMappingStrategyPrism nvms ) {
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
         this.valueFormattingParameters = valueFormatting;

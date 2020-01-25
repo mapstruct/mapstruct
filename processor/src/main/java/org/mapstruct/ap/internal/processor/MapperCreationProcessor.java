@@ -40,8 +40,8 @@ import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -56,7 +56,7 @@ import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
@@ -93,7 +93,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperOptions mapperConfig = MapperOptions.getInstanceOn( mapperTypeElement );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
@@ -126,7 +126,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return 1000;
     }
 
-    private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfiguration mapperConfig) {
+    private List<MapperReference> initReferencedMappers(TypeElement element, MapperOptions mapperConfig) {
         List<MapperReference> result = new LinkedList<>();
         List<String> variableNames = new LinkedList<>();
 
@@ -145,7 +145,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return result;
     }
 
-    private Mapper getMapper(TypeElement element, MapperConfiguration mapperConfig, List<SourceMethod> methods) {
+    private Mapper getMapper(TypeElement element, MapperOptions mapperConfig, List<SourceMethod> methods) {
 
         List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
         mappingMethods.addAll( mappingContext.getUsedSupportedMappings() );
@@ -257,7 +257,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private SortedSet<Type> getExtraImports(TypeElement element) {
         SortedSet<Type> extraImports = new TreeSet<>();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element );
+        MapperOptions mapperConfiguration = MapperOptions.getInstanceOn( element );
 
         for ( TypeMirror extraImport : mapperConfiguration.imports() ) {
             Type type = typeFactory.getType( extraImport );
@@ -272,7 +272,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return extraImports;
     }
 
-    private List<MappingMethod> getMappingMethods(MapperConfiguration mapperConfig, List<SourceMethod> methods) {
+    private List<MappingMethod> getMappingMethods(MapperOptions mapperConfig, List<SourceMethod> methods) {
         List<MappingMethod> mappingMethods = new ArrayList<>();
 
         for ( SourceMethod method : methods ) {
@@ -282,7 +282,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<>() );
 
-            MappingOptions mappingOptions = method.getMappingOptions();
+            MappingMethodOptions mappingOptions = method.getMappingOptions();
 
             boolean hasFactoryMethod = false;
 
@@ -360,7 +360,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
+                BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
@@ -387,7 +387,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
-        MappingOptions mappingOptions, ContainerMappingMethodBuilder<?, M> builder) {
+                                                                                MappingMethodOptions mappingOptions, ContainerMappingMethodBuilder<?, M> builder) {
 
         FormattingParameters formattingParameters = null;
         SelectionParameters selectionParameters = null;
@@ -408,7 +408,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .build();
     }
 
-    private void mergeInheritedOptions(SourceMethod method, MapperConfiguration mapperConfig,
+    private void mergeInheritedOptions(SourceMethod method, MapperOptions mapperConfig,
                                        List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods) {
         if ( initializingMethods.contains( method ) ) {
             // cycle detected
@@ -424,7 +424,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         initializingMethods.add( method );
 
-        MappingOptions mappingOptions = method.getMappingOptions();
+        MappingMethodOptions mappingOptions = method.getMappingOptions();
         List<SourceMethod> applicableReversePrototypeMethods = method.getApplicableReversePrototypeMethods();
 
         SourceMethod inverseTemplateMethod =
@@ -512,7 +512,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      */
     private SourceMethod getInverseTemplateMethod(List<SourceMethod> rawMethods, SourceMethod method,
                                                   List<SourceMethod> initializingMethods,
-                                                  MapperConfiguration mapperConfig) {
+                                                  MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
         InheritInverseConfigurationPrism inversePrism = InheritInverseConfigurationPrism.getInstanceOn(
             method.getExecutable()
@@ -568,7 +568,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private SourceMethod extractInitializedOptions(SourceMethod resultMethod,
                                                      List<SourceMethod> rawMethods,
-                                                     MapperConfiguration mapperConfig,
+                                                     MapperOptions mapperConfig,
                                                      List<SourceMethod> initializingMethods) {
         if ( resultMethod != null ) {
             if ( !resultMethod.getMappingOptions().isFullyInitialized() ) {
@@ -589,7 +589,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      */
     private SourceMethod getForwardTemplateMethod(List<SourceMethod> rawMethods, SourceMethod method,
                                                   List<SourceMethod> initializingMethods,
-                                                  MapperConfiguration mapperConfig) {
+                                                  MapperOptions mapperConfig) {
         SourceMethod resultMethod = null;
         InheritConfigurationPrism forwardPrism = InheritConfigurationPrism.getInstanceOn(
             method.getExecutable()

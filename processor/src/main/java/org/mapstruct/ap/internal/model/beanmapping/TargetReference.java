@@ -18,7 +18,7 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.BuilderPrism;
@@ -203,7 +203,7 @@ public class TargetReference extends AbstractReference {
                         );
                     }
                     else {
-                        BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
+                        BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
                         builderType = typeFactory.builderTypeFor( nextType, builderPrism );
                         propertyEntry = PropertyEntry.forTargetReference( fullName,
                                         targetReadAccessor,
@@ -271,7 +271,7 @@ public class TargetReference extends AbstractReference {
                 return type;
             }
             else {
-                BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
+                BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
                 return typeFactory.effectiveResultTypeFor( type, builderPrism );
             }
         }

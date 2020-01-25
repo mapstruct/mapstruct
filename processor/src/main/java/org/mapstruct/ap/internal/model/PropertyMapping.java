@@ -27,7 +27,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.BeanMapping;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
@@ -38,7 +38,7 @@ import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
@@ -111,7 +111,7 @@ public class PropertyMapping extends ModelElement {
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
-            BuilderPrism builderPrism = BeanMapping.builderPrismFor( method );
+            BuilderPrism builderPrism = BeanMappingOptions.builderPrismFor( method );
             this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builderPrism );
             this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
             return (T) this;
@@ -230,8 +230,8 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMapping build() {
 
-            MapperConfiguration mapperConfiguration = method.getMapperConfiguration();
-            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            MapperOptions mapperConfiguration = method.getMapperConfiguration();
+            BeanMappingOptions beanMapping = method.getMappingOptions().getBeanMapping();
 
             // null value check strategy (determine true value based on hierarchy)
             NullValueCheckStrategyPrism nvcsBean = beanMapping != null ? beanMapping.getNullValueCheckStrategy() : null;

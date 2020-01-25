@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.internal.model.source;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,17 +36,17 @@ import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
  *
  * @author Sjaak Derksen
  */
-public class MapperConfiguration {
+public class MapperOptions {
 
     private final MapperPrism mapperPrism;
     private final MapperConfigPrism mapperConfigPrism;
     private final DeclaredType config;
 
-    public static MapperConfiguration getInstanceOn(Element e) {
-        return new MapperConfiguration( MapperPrism.getInstanceOn( e ) );
+    public static MapperOptions getInstanceOn(Element e) {
+        return new MapperOptions( MapperPrism.getInstanceOn( e ) );
     }
 
-    private MapperConfiguration(MapperPrism mapperPrism) {
+    private MapperOptions(MapperPrism mapperPrism) {
         this.mapperPrism = mapperPrism;
 
         if ( mapperPrism.values.config() != null ) {

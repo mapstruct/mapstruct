@@ -14,7 +14,7 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
+import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 
 /**
  * HelperMethod that creates a {@link java.text.DecimalFormat}
@@ -52,7 +52,7 @@ public class CreateDecimalFormat extends HelperMethod {
     }
 
     @Override
-    public MappingOptions getMappingOptions() {
-        return MappingOptions.empty();
+    public MappingMethodOptions getMappingOptions() {
+        return MappingMethodOptions.empty();
     }
 }

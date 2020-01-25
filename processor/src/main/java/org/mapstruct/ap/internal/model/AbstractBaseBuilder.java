@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.MapperOptions;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -60,7 +60,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     }
 
     private boolean isDisableSubMappingMethodsGeneration() {
-        MapperConfiguration configuration = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+        MapperOptions configuration = MapperOptions.getInstanceOn( ctx.getMapperTypeElement() );
         return configuration.isDisableSubMappingMethodsGeneration();
     }
 
