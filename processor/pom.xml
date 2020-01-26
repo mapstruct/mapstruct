@@ -176,6 +176,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.freemarker:*</include>
+                                    <include>org.mapstruct.tools.gem:gem-api</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -185,11 +186,23 @@
                                         <exclude>META-INF/*.*</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.mapstruct.tools.gem:gem-api</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.*</exclude>
+                                        <exclude>**/GemDefinition.class</exclude>
+                                        <exclude>**/GemDefinitions.class</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>freemarker</pattern>
                                     <shadedPattern>org.mapstruct.ap.shaded.freemarker</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mapstruct.tools.gem</pattern>
+                                    <shadedPattern>org.mapstruct.ap.shaded.org.mapstruct.tools.gem</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
