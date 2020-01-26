@@ -35,7 +35,6 @@
         <dependency>
             <groupId>org.mapstruct.tools.gem</groupId>
             <artifactId>gem-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -174,6 +173,11 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.freemarker:*</include>
+                                </includes>
+                            </artifactSet>
                             <filters>
                                 <filter>
                                     <artifact>org.freemarker:freemarker</artifact>
