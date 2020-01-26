@@ -13,6 +13,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.gem.XmlElementRefGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -139,7 +140,7 @@ public class XmlElementDeclSelector implements MethodSelector {
             for ( Element enclosed : currentElement.getEnclosedElements() ) {
                 if ( enclosed.getKind().equals( ElementKind.FIELD )
                     && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
-                    XmlElementDeclGem xmlElementRef = XmlElementDeclGem.instanceOn( enclosed );
+                    XmlElementRefGem xmlElementRef = XmlElementRefGem.instanceOn( enclosed );
                     if ( xmlElementRef != null ) {
                         return new XmlElementRefInfo( xmlElementRef.name().get(), currentMirror );
                     }
