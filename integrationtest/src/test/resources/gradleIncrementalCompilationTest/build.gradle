@@ -15,11 +15,6 @@ repositories {
 }
 
 // Extract version and artifactId values
-def parentPom = new XmlParser().parse(file("${mapstructRootPath}/parent/pom.xml"))
-// The gemVersion is needed because the processor is resolved directly via flat dir
-// and not via its pom.xml
-ext.gemVersion = parentPom.properties.'org.mapstruct.gem.version'.text()
-
 def apPom = new XmlParser().parse(file("${mapstructRootPath}/processor/pom.xml"))
 ext.apArtifactId = apPom.artifactId[0].text()
 ext.apVersion = apPom.parent[0].version[0].text()
@@ -30,6 +25,5 @@ ext.libVersion = libPom.parent[0].version[0].text()
 
 dependencies {
     annotationProcessor name: "${apArtifactId}-${apVersion}"
-    annotationProcessor "org.mapstruct.tools.gem:gem-api:${gemVersion}"
     implementation name: "${libArtifactId}-${libVersion}"
 }
