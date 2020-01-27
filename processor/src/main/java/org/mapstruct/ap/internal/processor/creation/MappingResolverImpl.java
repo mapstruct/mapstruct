@@ -43,7 +43,7 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -664,11 +664,11 @@ public class MappingResolverImpl implements MappingResolver {
         void reportMessageWhenNarrowing(FormattingMessager messager, ResolvingAttempt attempt) {
 
             if ( NativeTypes.isNarrowing( sourceType.getFullyQualifiedName(), targetType.getFullyQualifiedName() ) ) {
-                ReportingPolicyPrism policy = attempt.mappingMethod.getOptions().getMapper().typeConversionPolicy();
-                if ( policy == ReportingPolicyPrism.WARN ) {
+                ReportingPolicyGem policy = attempt.mappingMethod.getOptions().getMapper().typeConversionPolicy();
+                if ( policy == ReportingPolicyGem.WARN ) {
                     report( messager, attempt, Message.CONVERSION_LOSSY_WARNING );
                 }
-                else if ( policy == ReportingPolicyPrism.ERROR ) {
+                else if ( policy == ReportingPolicyGem.ERROR ) {
                     report( messager, attempt, Message.CONVERSION_LOSSY_ERROR );
                 }
             }

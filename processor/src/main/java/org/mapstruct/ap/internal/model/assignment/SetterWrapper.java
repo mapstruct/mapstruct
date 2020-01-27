@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.IGNORE;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 
 /**
  * Wraps the assignment in a target setter.
@@ -92,8 +92,8 @@ public class SetterWrapper extends AssignmentWrapper {
      *
      * @return include a null check
      */
-    public static boolean doSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvcs,
-                                            NullValuePropertyMappingStrategyPrism nvpms, Type targetType) {
+    public static boolean doSourceNullCheck(Assignment rhs, NullValueCheckStrategyGem nvcs,
+                                            NullValuePropertyMappingStrategyGem nvpms, Type targetType) {
         return !rhs.isSourceReferenceParameter()
             && !rhs.getSourceType().isPrimitive()
             && (ALWAYS == nvcs

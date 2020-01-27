@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.IGNORE;
-import static org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValuePropertyMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
@@ -41,8 +41,8 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     public ExistingInstanceSetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
         Type targetType,
-        NullValueCheckStrategyPrism nvcs,
-        NullValuePropertyMappingStrategyPrism nvpms,
+        NullValueCheckStrategyGem nvcs,
+        NullValuePropertyMappingStrategyGem nvpms,
         TypeFactory typeFactory,
         boolean fieldAssignment) {
 

@@ -5,16 +5,17 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.prism.IterableMappingPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.IterableMappingGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents an iterable mapping as configured via {@code @IterableMapping}.
@@ -25,44 +26,45 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
-    private final IterableMappingPrism prism;
+    private final IterableMappingGem iterableMapping;
 
-    public static IterableMappingOptions fromPrism(IterableMappingPrism prism,
-                                                   MapperOptions mappperOptions, ExecutableElement method,
-                                                   FormattingMessager messager, Types typeUtils) {
+    public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
+                                                 MapperOptions mappperOptions, ExecutableElement method,
+                                                 FormattingMessager messager, Types typeUtils) {
 
-        if ( prism == null || !isConsistent( prism, method, messager ) ) {
+        if ( iterableMapping == null || !isConsistent( iterableMapping, method, messager ) ) {
             IterableMappingOptions options = new IterableMappingOptions( null, null, null, mappperOptions );
             return options;
         }
 
         SelectionParameters selection = new SelectionParameters(
-            prism.qualifiedBy(),
-            prism.qualifiedByName(),
-            TypeKind.VOID != prism.elementTargetType().getKind() ? prism.elementTargetType() : null,
+            iterableMapping.qualifiedBy().get(),
+            iterableMapping.qualifiedByName().get(),
+            iterableMapping.elementTargetType().getValue(),
             typeUtils
         );
 
         FormattingParameters formatting = new FormattingParameters(
-            prism.dateFormat(),
-            prism.numberFormat(),
-            prism.mirror,
-            prism.values.dateFormat(),
+            iterableMapping.dateFormat().get(),
+            iterableMapping.numberFormat().get(),
+            iterableMapping.mirror(),
+            iterableMapping.dateFormat().getAnnotationValue(),
             method
         );
 
-        IterableMappingOptions options = new IterableMappingOptions( formatting, selection, prism, mappperOptions );
+        IterableMappingOptions options =
+            new IterableMappingOptions( formatting, selection, iterableMapping, mappperOptions );
         return options;
     }
 
-    private static boolean isConsistent(IterableMappingPrism prism, ExecutableElement method,
+    private static boolean isConsistent(IterableMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
-        if ( prism.dateFormat().isEmpty()
-            && prism.numberFormat().isEmpty()
-            && prism.qualifiedBy().isEmpty()
-            && prism.qualifiedByName().isEmpty()
-            && TypeKind.VOID == prism.elementTargetType().getKind()
-            && null == prism.values.nullValueMappingStrategy() ) {
+        if ( !gem.dateFormat().hasValue()
+            && !gem.numberFormat().hasValue()
+            && !gem.qualifiedBy().hasValue()
+            && !gem.qualifiedByName().hasValue()
+            && !gem.elementTargetType().hasValue()
+            && !gem.nullValueMappingStrategy().hasValue() ) {
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -70,11 +72,12 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                                   IterableMappingPrism prism, DelegatingOptions next ) {
+                                   IterableMappingGem iterableMapping,
+                                   DelegatingOptions next) {
         super( next );
         this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;
-        this.prism = prism;
+        this.iterableMapping = iterableMapping;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -86,19 +89,21 @@ public class IterableMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return null == prism ? null : prism.mirror;
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::mirror ).orElse( null );
     }
 
     @Override
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return null == prism || null == prism.values.nullValueMappingStrategy() ?
-            next().getNullValueMappingStrategy()
-            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::nullValueMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValueMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueMappingStrategy() );
     }
 
     @Override
     public boolean hasAnnotation() {
-        return prism != null;
+        return iterableMapping != null;
     }
 
 }

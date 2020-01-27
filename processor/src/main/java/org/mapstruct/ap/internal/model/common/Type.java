@@ -29,7 +29,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Fields;
@@ -536,7 +536,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -554,15 +554,15 @@ public class Type extends ModelElement implements Comparable<Type> {
             // A target access is in general a setter method on the target object. However, in case of collections,
             // the current target accessor can also be a getter method.
             // The following if block, checks if the target accessor should be overruled by an add method.
-            if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
-                || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED
-                || cmStrategy == CollectionMappingStrategyPrism.TARGET_IMMUTABLE ) {
+            if ( cmStrategy == CollectionMappingStrategyGem.SETTER_PREFERRED
+                || cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED
+                || cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ) {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;
                 if ( candidate.getAccessorType() == AccessorType.SETTER
                     // ok, the current accessor is a setter. So now the strategy determines what to use
-                    && cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+                    && cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED ) {
                     adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
                 else if ( candidate.getAccessorType() == AccessorType.GETTER ) {

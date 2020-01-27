@@ -32,18 +32,9 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
-
-        <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
-        these dependencies are not required at runtime, only for prism generation
-        and tests -->
-        <!-- Using optional as well due to IntelliJ picking up the dependency
-         and running the hickory processor in projects using the mapstruct-processor.
-         This happens only when the processor is defined in the maven-compiler annotationProcessorPaths -->
         <dependency>
-            <groupId>com.jolira</groupId>
-            <artifactId>hickory</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <groupId>org.mapstruct.tools.gem</groupId>
+            <artifactId>gem-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -182,6 +173,12 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.freemarker:*</include>
+                                    <include>org.mapstruct.tools.gem:gem-api</include>
+                                </includes>
+                            </artifactSet>
                             <filters>
                                 <filter>
                                     <artifact>org.freemarker:freemarker</artifact>
@@ -189,11 +186,23 @@
                                         <exclude>META-INF/*.*</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.mapstruct.tools.gem:gem-api</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.*</exclude>
+                                        <exclude>**/GemDefinition.class</exclude>
+                                        <exclude>**/GemDefinitions.class</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>freemarker</pattern>
                                     <shadedPattern>org.mapstruct.ap.shaded.freemarker</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mapstruct.tools.gem</pattern>
+                                    <shadedPattern>org.mapstruct.ap.shaded.org.mapstruct.tools.gem</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -227,9 +236,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <annotationProcessors>
-                        <annotationProcessor>net.java.dev.hickory.prism.internal.PrismGenerator</annotationProcessor>
-                    </annotationProcessors>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct.tools.gem</groupId>
+                            <artifactId>gem-processor</artifactId>
+                            <version>${org.mapstruct.gem.version}</version>
+                        </path>
+                        <!-- other annotation processors -->
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>

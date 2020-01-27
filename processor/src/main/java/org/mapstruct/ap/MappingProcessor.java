@@ -34,8 +34,8 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.MapperGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
@@ -66,8 +66,8 @@ import static javax.lang.model.element.ElementKind.CLASS;
  * <li>if no error occurred, write out the model into Java source files</li>
  * </ul>
  * <p>
- * For reading annotation attributes, prisms as generated with help of the <a
- * href="https://java.net/projects/hickory">Hickory</a> tool are used. These prisms allow a comfortable access to
+ * For reading annotation attributes, gems as generated with help of the <a
+ * href="https://java.net/projects/hickory">Hickory</a> tool are used. These gems allow a comfortable access to
  * annotations and their attributes without depending on their class objects.
  * <p>
  * The creation of Java source files is done using the <a href="http://freemarker.org/"> FreeMarker</a> template engine.
@@ -137,7 +137,7 @@ public class MappingProcessor extends AbstractProcessor {
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
-            unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
+            unmappedTargetPolicy != null ? ReportingPolicyGem.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
             processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
             Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
@@ -236,7 +236,7 @@ public class MappingProcessor extends AbstractProcessor {
 
                     // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
                     // annotations unknown to the compiler, even though they are not declared Mappers
-                    if ( mapperTypeElement != null && MapperPrism.getInstanceOn( mapperTypeElement ) != null ) {
+                    if ( mapperTypeElement != null && MapperGem.instanceOn( mapperTypeElement ) != null ) {
                         mapperTypes.add( mapperTypeElement );
                     }
                 }

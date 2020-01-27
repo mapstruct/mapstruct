@@ -23,7 +23,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.model.source.MapperOptions;
 
 /**
@@ -45,7 +45,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         MapperOptions mapperAnnotation = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
 
         String componentModel = mapperAnnotation.componentModel();
-        InjectionStrategyPrism injectionStrategy = mapperAnnotation.getInjectionStrategy();
+        InjectionStrategyGem injectionStrategy = mapperAnnotation.getInjectionStrategy();
 
         if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
             return mapper;
@@ -74,14 +74,14 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
 
-        if ( injectionStrategy == InjectionStrategyPrism.CONSTRUCTOR ) {
+        if ( injectionStrategy == InjectionStrategyGem.CONSTRUCTOR ) {
             buildConstructors( mapper );
         }
 
         return mapper;
     }
 
-    protected void adjustDecorator(Mapper mapper, InjectionStrategyPrism injectionStrategy) {
+    protected void adjustDecorator(Mapper mapper, InjectionStrategyGem injectionStrategy) {
         Decorator decorator = mapper.getDecorator();
 
         for ( Annotation typeAnnotation : getDecoratorAnnotations() ) {
@@ -220,15 +220,15 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     /**
      * @param originalReference the reference to be replaced
      * @param annotations the list of annotations
-     * @param injectionStrategyPrism strategy for injection
+     * @param injectionStrategy strategy for injection
      * @return the mapper reference replacing the original one
      */
     protected Field replacementMapperReference(Field originalReference, List<Annotation> annotations,
-                                                         InjectionStrategyPrism injectionStrategyPrism) {
+                                                         InjectionStrategyGem injectionStrategy) {
         boolean finalField =
-            injectionStrategyPrism == InjectionStrategyPrism.CONSTRUCTOR && !additionalPublicEmptyConstructor();
+            injectionStrategy == InjectionStrategyGem.CONSTRUCTOR && !additionalPublicEmptyConstructor();
 
-        boolean includeAnnotationsOnField = injectionStrategyPrism == InjectionStrategyPrism.FIELD;
+        boolean includeAnnotationsOnField = injectionStrategy == InjectionStrategyGem.FIELD;
 
         return new AnnotationMapperReference(
             originalReference.getType(),

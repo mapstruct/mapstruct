@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.VariableElement;
 
-import org.mapstruct.ap.internal.prism.ContextPrism;
-import org.mapstruct.ap.internal.prism.MappingTargetPrism;
-import org.mapstruct.ap.internal.prism.TargetTypePrism;
+import org.mapstruct.ap.internal.gem.ContextGem;
+import org.mapstruct.ap.internal.gem.MappingTargetGem;
+import org.mapstruct.ap.internal.gem.TargetTypeGem;
 import org.mapstruct.ap.internal.util.Collections;
 
 /**
@@ -117,9 +117,9 @@ public class Parameter extends ModelElement {
         return new Parameter(
             element.getSimpleName().toString(),
             parameterType,
-            MappingTargetPrism.getInstanceOn( element ) != null,
-            TargetTypePrism.getInstanceOn( element ) != null,
-            ContextPrism.getInstanceOn( element ) != null,
+            MappingTargetGem.instanceOn( element ) != null,
+            TargetTypeGem.instanceOn( element ) != null,
+            ContextGem.instanceOn( element ) != null,
             isVarArgs
         );
     }

@@ -10,8 +10,8 @@
         <!-- the annotation processor may not use the annotations or enums specified in org.mapstruct directly... -->
         <disallow pkg="org.mapstruct" exact-match="true" />
 
-        <subpackage name="internal.prism">
-            <!-- ... with exception to the package org.mapstruct.ap.internal.prism -->
+        <subpackage name="internal.gem">
+            <!-- ... with exception to the package org.mapstruct.ap.internal.gem -->
             <allow pkg=".*" regex="true" /> 
         </subpackage>
         <subpackage name="test">

@@ -5,16 +5,17 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.prism.MapMappingPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.gem.MapMappingGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * Represents a map mapping as configured via {@code @MapMapping}.
@@ -27,44 +28,50 @@ public class MapMappingOptions extends DelegatingOptions {
     private final SelectionParameters valueSelectionParameters;
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
-    private final MapMappingPrism prism;
+    private final MapMappingGem mapMapping;
 
-    public static MapMappingOptions fromPrism(MapMappingPrism prism, MapperOptions mapperOptions,
-                                              ExecutableElement method,
-                                              FormattingMessager messager, Types typeUtils) {
+    public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
+                                            ExecutableElement method, FormattingMessager messager, Types typeUtils) {
 
-        if ( prism == null || !isConsistent( prism, method, messager ) ) {
-            MapMappingOptions options = new MapMappingOptions( null, null, null, null, null, mapperOptions );
+        if ( mapMapping == null || !isConsistent( mapMapping, method, messager ) ) {
+            MapMappingOptions options = new MapMappingOptions(
+                null,
+                null,
+                null,
+                null,
+                null,
+                mapperOptions
+            );
             return options;
         }
 
         SelectionParameters keySelection = new SelectionParameters(
-            prism.keyQualifiedBy(),
-            prism.keyQualifiedByName(),
-            TypeKind.VOID != prism.keyTargetType().getKind() ? prism.keyTargetType() : null,
+            mapMapping.keyQualifiedBy().get(),
+            mapMapping.keyQualifiedByName().get(),
+            mapMapping.keyTargetType().getValue(),
             typeUtils
         );
 
         SelectionParameters valueSelection = new SelectionParameters(
-            prism.valueQualifiedBy(),
-            prism.valueQualifiedByName(),
-            TypeKind.VOID != prism.valueTargetType().getKind() ? prism.valueTargetType() : null,
+            mapMapping.valueQualifiedBy().get(),
+            mapMapping.valueQualifiedByName().get(),
+            mapMapping.valueTargetType().getValue(),
             typeUtils
         );
 
         FormattingParameters keyFormatting = new FormattingParameters(
-            prism.keyDateFormat(),
-            prism.keyNumberFormat(),
-            prism.mirror,
-            prism.values.keyDateFormat(),
+            mapMapping.keyDateFormat().get(),
+            mapMapping.keyNumberFormat().get(),
+            mapMapping.mirror(),
+            mapMapping.keyDateFormat().getAnnotationValue(),
             method
         );
 
         FormattingParameters valueFormatting = new FormattingParameters(
-            prism.valueDateFormat(),
-            prism.valueNumberFormat(),
-            prism.mirror,
-            prism.values.valueDateFormat(),
+            mapMapping.valueDateFormat().get(),
+            mapMapping.valueNumberFormat().get(),
+            mapMapping.mirror(),
+            mapMapping.valueDateFormat().getAnnotationValue(),
             method
         );
 
@@ -73,24 +80,25 @@ public class MapMappingOptions extends DelegatingOptions {
             keySelection,
             valueFormatting,
             valueSelection,
-            prism,
+            mapMapping,
             mapperOptions
         );
         return options;
     }
 
-    private static boolean isConsistent(MapMappingPrism prism, ExecutableElement method, FormattingMessager messager) {
-        if ( prism.keyDateFormat().isEmpty()
-            && prism.keyNumberFormat().isEmpty()
-            && prism.keyQualifiedBy().isEmpty()
-            && prism.keyQualifiedByName().isEmpty()
-            && prism.valueDateFormat().isEmpty()
-            && prism.valueNumberFormat().isEmpty()
-            && prism.valueQualifiedBy().isEmpty()
-            && prism.valueQualifiedByName().isEmpty()
-            && TypeKind.VOID == prism.keyTargetType().getKind()
-            && TypeKind.VOID == prism.valueTargetType().getKind()
-            && null == prism.values.nullValueMappingStrategy() ) {
+    private static boolean isConsistent(MapMappingGem gem, ExecutableElement method,
+                                        FormattingMessager messager) {
+        if ( !gem.keyDateFormat().hasValue()
+            && !gem.keyNumberFormat().hasValue()
+            && !gem.keyQualifiedBy().hasValue()
+            && !gem.keyQualifiedByName().hasValue()
+            && !gem.valueDateFormat().hasValue()
+            && !gem.valueNumberFormat().hasValue()
+            && !gem.valueQualifiedBy().hasValue()
+            && !gem.valueQualifiedByName().hasValue()
+            && !gem.keyTargetType().hasValue()
+            && !gem.valueTargetType().hasValue()
+            && !gem.nullValueMappingStrategy().hasValue() ) {
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -99,13 +107,13 @@ public class MapMappingOptions extends DelegatingOptions {
 
     private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
                               FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters,
-                              MapMappingPrism prism, DelegatingOptions next ) {
+                              MapMappingGem mapMapping, DelegatingOptions next ) {
         super( next );
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
         this.valueFormattingParameters = valueFormatting;
         this.valueSelectionParameters = valueSelectionParameters;
-        this.prism = prism;
+        this.mapMapping = mapMapping;
     }
 
     public FormattingParameters getKeyFormattingParameters() {
@@ -125,19 +133,21 @@ public class MapMappingOptions extends DelegatingOptions {
     }
 
     public AnnotationMirror getMirror() {
-        return null == prism ? null : prism.mirror;
+        return Optional.ofNullable( mapMapping ).map( MapMappingGem::mirror ).orElse( null );
     }
 
     @Override
-    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
-        return null == prism || null == prism.values.nullValueMappingStrategy() ?
-            next().getNullValueMappingStrategy()
-            : NullValueMappingStrategyPrism.valueOf( prism.nullValueMappingStrategy() );
+    public NullValueMappingStrategyGem getNullValueMappingStrategy() {
+        return Optional.ofNullable( mapMapping ).map( MapMappingGem::nullValueMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValueMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueMappingStrategy() );
     }
 
     @Override
     public boolean hasAnnotation() {
-        return prism != null;
+        return mapMapping != null;
     }
 
 }

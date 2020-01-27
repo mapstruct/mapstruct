@@ -11,13 +11,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
-import org.mapstruct.ap.internal.prism.ValueMappingPrism;
-import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
+import org.mapstruct.ap.internal.gem.ValueMappingGem;
+import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
-import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_REMAINING;
-import static org.mapstruct.ap.internal.prism.MappingConstantsPrism.ANY_UNMAPPED;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
 
 /**
  * Represents the mapping between one value constant and another.
@@ -32,12 +32,12 @@ public class ValueMappingOptions {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static void fromMappingsPrism(ValueMappingsPrism mappingsAnnotation, ExecutableElement method,
-        FormattingMessager messager, List<ValueMappingOptions> mappings) {
+    public static void fromMappingsGem(ValueMappingsGem mappingsGem, ExecutableElement method,
+                                       FormattingMessager messager, List<ValueMappingOptions> mappings) {
 
         boolean anyFound = false;
-        for ( ValueMappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            ValueMappingOptions mapping = fromMappingPrism( mappingPrism );
+        for ( ValueMappingGem mappingGem : mappingsGem.value().get() ) {
+            ValueMappingOptions mapping = fromMappingGem( mappingGem );
             if ( mapping != null ) {
 
                 if ( !mappings.contains( mapping ) ) {
@@ -46,10 +46,10 @@ public class ValueMappingOptions {
                 else {
                     messager.printMessage(
                         method,
-                        mappingPrism.mirror,
-                        mappingPrism.values.target(),
+                        mappingGem.mirror(),
+                        mappingGem.target().getAnnotationValue(),
                         Message.VALUEMAPPING_DUPLICATE_SOURCE,
-                        mappingPrism.source()
+                        mappingGem.source().get()
                     );
                 }
                 if ( ANY_REMAINING.equals( mapping.source )
@@ -57,10 +57,10 @@ public class ValueMappingOptions {
                     if ( anyFound ) {
                         messager.printMessage(
                             method,
-                            mappingPrism.mirror,
-                            mappingPrism.values.target(),
+                            mappingGem.mirror(),
+                            mappingGem.target().getAnnotationValue(),
                             Message.VALUEMAPPING_ANY_AREADY_DEFINED,
-                            mappingPrism.source()
+                            mappingGem.source().get()
                         );
                     }
                     anyFound = true;
@@ -69,10 +69,10 @@ public class ValueMappingOptions {
         }
     }
 
-    public static ValueMappingOptions fromMappingPrism(ValueMappingPrism mappingPrism ) {
+    public static ValueMappingOptions fromMappingGem(ValueMappingGem mapping ) {
 
-        return new ValueMappingOptions( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
-            mappingPrism.values.source(), mappingPrism.values.target() );
+        return new ValueMappingOptions( mapping.source().get(), mapping.target().get(), mapping.mirror(),
+            mapping.source().getAnnotationValue(), mapping.target().getAnnotationValue() );
     }
 
     private ValueMappingOptions(String source, String target, AnnotationMirror mirror,

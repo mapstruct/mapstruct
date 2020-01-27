@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.prism;
+package org.mapstruct.ap.test.gem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,53 +18,53 @@ import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 /**
- * Test for manually created prisms on enumeration types
+ * Test for manually created gems on enumeration types
  *
  * @author Andreas Gudian
  */
-public class EnumPrismsTest {
+public class EnumGemsTest {
     @Test
-    public void collectionMappingStrategyPrismIsCorrect() {
+    public void collectionMappingStrategyGemIsCorrect() {
         assertThat( namesOf( CollectionMappingStrategy.values() ) ).isEqualTo(
-            namesOf( CollectionMappingStrategyPrism.values() ) );
+            namesOf( CollectionMappingStrategyGem.values() ) );
     }
 
     @Test
-    public void mappingInheritanceStrategyPrismIsCorrect() {
+    public void mappingInheritanceStrategyGemIsCorrect() {
         assertThat( namesOf( MappingInheritanceStrategy.values() ) ).isEqualTo(
-            namesOf( MappingInheritanceStrategyPrism.values() ) );
+            namesOf( MappingInheritanceStrategyGem.values() ) );
     }
 
     @Test
-    public void nullValueCheckStrategyPrismIsCorrect() {
+    public void nullValueCheckStrategyGemIsCorrect() {
         assertThat( namesOf( NullValueCheckStrategy.values() ) ).isEqualTo(
-            namesOf( NullValueCheckStrategyPrism.values() ) );
+            namesOf( NullValueCheckStrategyGem.values() ) );
     }
 
     @Test
-    public void nullValueMappingStrategyPrismIsCorrect() {
+    public void nullValueMappingStrategyGemIsCorrect() {
         assertThat( namesOf( NullValueMappingStrategy.values() ) ).isEqualTo(
-            namesOf( NullValueMappingStrategyPrism.values() ) );
+            namesOf( NullValueMappingStrategyGem.values() ) );
     }
 
     @Test
-    public void reportingPolicyPrismIsCorrect() {
+    public void reportingPolicyGemIsCorrect() {
         assertThat( namesOf( ReportingPolicy.values() ) ).isEqualTo(
-            namesOf( ReportingPolicyPrism.values() ) );
+            namesOf( ReportingPolicyGem.values() ) );
     }
 
     @Test
-    public void injectionStrategyPrismIsCorrect() {
+    public void injectionStrategyGemIsCorrect() {
         assertThat( namesOf( InjectionStrategy.values() ) ).isEqualTo(
-            namesOf( InjectionStrategyPrism.values() ) );
+            namesOf( InjectionStrategyGem.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

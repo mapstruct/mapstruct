@@ -40,8 +40,8 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -158,7 +158,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
 
-            CollectionMappingStrategyPrism cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
+            CollectionMappingStrategyGem cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
 
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
@@ -823,9 +823,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return null;
         }
 
-        private ReportingPolicyPrism getUnmappedTargetPolicy() {
+        private ReportingPolicyGem getUnmappedTargetPolicy() {
             if ( mappingReferences.isForForgedMethods() ) {
-                return ReportingPolicyPrism.IGNORE;
+                return ReportingPolicyGem.IGNORE;
             }
             return method.getOptions().getMapper().unmappedTargetPolicy();
         }
@@ -833,7 +833,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private void reportErrorForUnmappedTargetPropertiesIfRequired() {
 
             // fetch settings from element to implement
-            ReportingPolicyPrism unmappedTargetPolicy = getUnmappedTargetPolicy();
+            ReportingPolicyGem unmappedTargetPolicy = getUnmappedTargetPolicy();
 
             if ( method instanceof ForgedMethod && targetProperties.isEmpty() ) {
                 //TODO until we solve 1140 we report this error when the target properties are empty
@@ -904,15 +904,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private ReportingPolicyPrism getUnmappedSourcePolicy() {
+        private ReportingPolicyGem getUnmappedSourcePolicy() {
             if ( mappingReferences.isForForgedMethods() ) {
-                return ReportingPolicyPrism.IGNORE;
+                return ReportingPolicyGem.IGNORE;
             }
             return method.getOptions().getMapper().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
-            ReportingPolicyPrism unmappedSourcePolicy = getUnmappedSourcePolicy();
+            ReportingPolicyGem unmappedSourcePolicy = getUnmappedSourcePolicy();
 
             if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
 

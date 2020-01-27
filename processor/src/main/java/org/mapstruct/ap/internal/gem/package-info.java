@@ -5,7 +5,7 @@
  */
 /**
  * <p>
- * This package contains the generated prism types for accessing the MapStruct annotations in a comfortable way.
+ * This package contains the generated gem types for accessing the MapStruct annotations in a comfortable way.
  * </p>
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.internal.gem;
