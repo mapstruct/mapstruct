@@ -21,13 +21,13 @@ public class MappingControl {
     private static final String JAVA_LANG_ANNOTATION_PGK = "java.lang.annotation";
     private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
     private static final String ALLOW_DIRECT_FQN = "org.mapstruct.control.AllowDirect";
-    private static final String ALLOW_TYPE_CONVERSION_FQN = "org.mapstruct.control.AllowTypeConversion";
-    private static final String ALLOW_BY_MAPPING_METHOD_FQN = "org.mapstruct.control.AllowByMappingMethod";
-    private static final String ALLOW_BY_2_STEPS = "org.mapstruct.control.AllowBy2Steps";
+    private static final String ALLOW_CONVERSION_FQN = "org.mapstruct.control.AllowBuiltInConversion";
+    private static final String ALLOW_MAPPING_METHOD_FQN = "org.mapstruct.control.AllowMappingMethod";
+    private static final String ALLOW_2_STEPS_FQN = "org.mapstruct.control.AllowComplexMapping";
 
     private boolean allowDirect = false;
     private boolean allowTypeConversion = false;
-    private boolean allowByMappingMethod = false;
+    private boolean allowMappingMethod = false;
     private boolean allow2Steps = false;
 
     public static MappingControl fromTypeMirror(TypeMirror mirror, Elements elementUtils) {
@@ -49,8 +49,8 @@ public class MappingControl {
         return allowTypeConversion;
     }
 
-    public boolean allowByMappingMethod() {
-        return allowByMappingMethod;
+    public boolean allowMappingMethod() {
+        return allowMappingMethod;
     }
 
     public boolean allowBy2Steps() {
@@ -65,13 +65,13 @@ public class MappingControl {
             if ( isAnnotation( lElement, ALLOW_DIRECT_FQN ) ) {
                 control.allowDirect = true;
             }
-            else if ( isAnnotation( lElement, ALLOW_TYPE_CONVERSION_FQN ) ) {
+            else if ( isAnnotation( lElement, ALLOW_CONVERSION_FQN ) ) {
                 control.allowTypeConversion = true;
             }
-            else if ( isAnnotation( lElement, ALLOW_BY_MAPPING_METHOD_FQN ) ) {
-                control.allowByMappingMethod = true;
+            else if ( isAnnotation( lElement, ALLOW_MAPPING_METHOD_FQN ) ) {
+                control.allowMappingMethod = true;
             }
-            else if ( isAnnotation( lElement, ALLOW_BY_2_STEPS ) ) {
+            else if ( isAnnotation( lElement, ALLOW_2_STEPS_FQN ) ) {
                 control.allow2Steps = true;
             }
             else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK, elementUtils )

@@ -20,7 +20,7 @@ import org.mapstruct.util.Experimental;
 @Retention(RetentionPolicy.CLASS)
 @Experimental
 @AllowDirect
-@AllowTypeConversion
-@AllowByMappingMethod
-public @interface OneStepOnly {
+@AllowBuiltInConversion
+@AllowMappingMethod
+public @interface NoComplexMapping {
 }

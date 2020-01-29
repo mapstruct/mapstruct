@@ -30,8 +30,8 @@ public class SelectionCriteria {
     private final boolean objectFactoryRequired;
     private final boolean lifecycleCallbackRequired;
     private final boolean allowDirect;
-    private final boolean allowTypeConversion;
-    private final boolean allowByMappingMethod;
+    private final boolean allowConversion;
+    private final boolean allowMappingMethod;
     private final boolean allow2Steps;
 
     public SelectionCriteria(SelectionParameters selectionParameters, MappingControl mappingControl,
@@ -49,14 +49,14 @@ public class SelectionCriteria {
         }
         if ( mappingControl != null ) {
             this.allowDirect = mappingControl.allowDirect();
-            this.allowTypeConversion = mappingControl.allowTypeConversion();
-            this.allowByMappingMethod = mappingControl.allowByMappingMethod();
+            this.allowConversion = mappingControl.allowTypeConversion();
+            this.allowMappingMethod = mappingControl.allowMappingMethod();
             this.allow2Steps = mappingControl.allowBy2Steps();
         }
         else {
             this.allowDirect = true;
-            this.allowTypeConversion = true;
-            this.allowByMappingMethod = true;
+            this.allowConversion = true;
+            this.allowMappingMethod = true;
             this.allow2Steps = true;
         }
         this.targetPropertyName = targetPropertyName;
@@ -115,12 +115,12 @@ public class SelectionCriteria {
         return allowDirect;
     }
 
-    public boolean isAllowTypeConversion() {
-        return allowTypeConversion;
+    public boolean isAllowConversion() {
+        return allowConversion;
     }
 
-    public boolean isAllowByMappingMethod() {
-        return allowByMappingMethod;
+    public boolean isAllowMappingMethod() {
+        return allowMappingMethod;
     }
 
     public boolean isAllow2Steps() {

@@ -21,6 +21,6 @@ import org.mapstruct.util.Experimental;
  */
 @Retention(RetentionPolicy.CLASS)
 @Experimental
-@AllowByMappingMethod
+@AllowMappingMethod
 public @interface DeepClone {
 }

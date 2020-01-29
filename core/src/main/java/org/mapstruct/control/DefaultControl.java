@@ -20,8 +20,8 @@ import org.mapstruct.util.Experimental;
 @Retention(RetentionPolicy.CLASS)
 @Experimental
 @AllowDirect
-@AllowTypeConversion
-@AllowByMappingMethod
-@AllowBy2Steps
+@AllowBuiltInConversion
+@AllowMappingMethod
+@AllowComplexMapping
 public @interface DefaultControl {
 }

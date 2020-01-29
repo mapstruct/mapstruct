@@ -25,5 +25,5 @@ import org.mapstruct.util.Experimental;
 @Retention(RetentionPolicy.CLASS)
 @Target( ElementType.ANNOTATION_TYPE )
 @Experimental
-public @interface AllowByMappingMethod {
+public @interface AllowMappingMethod {
 }

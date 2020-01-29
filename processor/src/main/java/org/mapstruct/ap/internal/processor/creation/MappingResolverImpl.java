@@ -210,7 +210,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then type conversion
-            if ( allowTypeConversion() ) {
+            if ( allowConversion() ) {
                 if ( !hasQualfiers() ) {
                     ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
                     if ( conversion != null ) {
@@ -286,12 +286,12 @@ public class MappingResolverImpl implements MappingResolver {
             return selectionCriteria != null && selectionCriteria.isAllowDirect();
         }
 
-        private boolean allowTypeConversion() {
-            return selectionCriteria != null && selectionCriteria.isAllowTypeConversion();
+        private boolean allowConversion() {
+            return selectionCriteria != null && selectionCriteria.isAllowConversion();
         }
 
         private boolean allowMappingMethod() {
-            return selectionCriteria != null && selectionCriteria.isAllowByMappingMethod();
+            return selectionCriteria != null && selectionCriteria.isAllowMappingMethod();
         }
 
         private boolean allow2Steps() {
