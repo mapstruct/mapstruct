@@ -133,7 +133,7 @@ public class MapperConfigOptions extends DelegatingOptions {
     @Override
     public MappingControl getMappingControl(Elements elementUtils) {
         return mapperConfig.mappingControl().hasValue() ?
-            MappingControl.fromTypeMirror( mapperConfig.mappingControl().getDefaultValue(), elementUtils ) :
+            MappingControl.fromTypeMirror( mapperConfig.mappingControl().getValue(), elementUtils ) :
             next().getMappingControl( elementUtils );
     }
 

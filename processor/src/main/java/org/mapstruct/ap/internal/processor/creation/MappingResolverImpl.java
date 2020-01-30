@@ -189,8 +189,8 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then direct assignable
-            if ( allowDirect() && !hasQualfiers() ) {
-                if (  sourceType.isAssignableTo( targetType ) ||
+            if ( !hasQualfiers() ) {
+                if ( ( sourceType.isAssignableTo( targetType ) && allowDirect( sourceType, targetType ) ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
                     Assignment simpleAssignment = sourceRHS;
                     return simpleAssignment;
@@ -232,33 +232,30 @@ public class MappingResolverImpl implements MappingResolver {
                 }
             }
 
-            // stop here, if we don't allow 2 steps.
-            if ( !allow2Steps() ) {
-                return null;
-            }
+            if ( allow2Steps() ) {
+                // 2 step method, first: method(method(source))
+                referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
+                if ( referencedMethod != null ) {
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return referencedMethod;
+                }
 
-            // 2 step method, first: method(method(source))
-            referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
-            if ( referencedMethod != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return referencedMethod;
-            }
+                // 2 step method, then: method(conversion(source))
+                referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
+                if ( referencedMethod != null ) {
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return referencedMethod;
+                }
 
-            // 2 step method, then: method(conversion(source))
-            referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
-            if ( referencedMethod != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return referencedMethod;
-            }
+                // stop here when looking for update methods.
+                selectionCriteria.setPreferUpdateMapping( false );
 
-            // stop here when looking for update methods.
-            selectionCriteria.setPreferUpdateMapping( false );
-
-            // 2 step method, finally: conversion(method(source))
-            ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
-            if ( conversion != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return conversion.getAssignment();
+                // 2 step method, finally: conversion(method(source))
+                ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
+                if ( conversion != null ) {
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return conversion.getAssignment();
+                }
             }
 
             if ( hasQualfiers() ) {
@@ -270,7 +267,8 @@ public class MappingResolverImpl implements MappingResolver {
                         Strings.join( selectionCriteria.getQualifiedByNames(), ", " )
                 );
             }
-            else {
+            else if ( allowMappingMethod() ) {
+                // only forge if we would allow mapping method
                 return forger.get();
             }
 
@@ -282,7 +280,11 @@ public class MappingResolverImpl implements MappingResolver {
             return selectionCriteria != null && selectionCriteria.hasQualfiers();
         }
 
-        private boolean allowDirect() {
+        private boolean allowDirect( Type sourceType, Type targetType ) {
+            if ( sourceType.isPrimitive() || targetType.isPrimitive()
+                || sourceType.isJavaLangType() || targetType.isJavaLangType() ) {
+                return true;
+            }
             return selectionCriteria != null && selectionCriteria.isAllowDirect();
         }
 

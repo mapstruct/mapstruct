@@ -286,6 +286,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
     }
 
+    public boolean isJavaLangType() {
+        return "java.lang".equals( packageName );
+    }
+
     /**
      * Whether this type is a sub-type of {@link java.util.stream.Stream}.
      *

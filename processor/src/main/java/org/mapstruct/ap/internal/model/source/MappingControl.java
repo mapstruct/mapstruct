@@ -33,7 +33,7 @@ public class MappingControl {
     public static MappingControl fromTypeMirror(TypeMirror mirror, Elements elementUtils) {
         MappingControl mappingControl = new MappingControl();
         if ( TypeKind.DECLARED == mirror.getKind() ) {
-            resolveControls( mappingControl, ( (DeclaredType) mirror ).asElement(), new HashSet<>(), elementUtils );
+            resolveControl( mappingControl, ( (DeclaredType) mirror ).asElement(), new HashSet<>(), elementUtils );
         }
         return mappingControl;
     }
@@ -57,31 +57,36 @@ public class MappingControl {
         return allow2Steps;
     }
 
+    private static void resolveControl(MappingControl control, Element element, Set<Element> handledElements,
+                                        Elements elementUtils) {
+        if ( isAnnotation( element, ALLOW_DIRECT_FQN ) ) {
+            control.allowDirect = true;
+        }
+        else if ( isAnnotation( element, ALLOW_CONVERSION_FQN ) ) {
+            control.allowTypeConversion = true;
+        }
+        else if ( isAnnotation( element, ALLOW_MAPPING_METHOD_FQN ) ) {
+            control.allowMappingMethod = true;
+        }
+        else if ( isAnnotation( element, ALLOW_2_STEPS_FQN ) ) {
+            control.allow2Steps = true;
+        }
+        else if ( !isAnnotationInPackage( element, JAVA_LANG_ANNOTATION_PGK, elementUtils )
+            && !isAnnotationInPackage( element, ORG_MAPSTRUCT_PKG, elementUtils )
+            && !handledElements.contains( element )
+        ) {
+            // recur over annotation mirrors
+            handledElements.add( element );
+            resolveControls( control, element, handledElements, elementUtils );
+        }
+    }
+
     private static void resolveControls(MappingControl control, Element element, Set<Element> handledElements,
                                         Elements elementUtils) {
 
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
             Element lElement = annotationMirror.getAnnotationType().asElement();
-            if ( isAnnotation( lElement, ALLOW_DIRECT_FQN ) ) {
-                control.allowDirect = true;
-            }
-            else if ( isAnnotation( lElement, ALLOW_CONVERSION_FQN ) ) {
-                control.allowTypeConversion = true;
-            }
-            else if ( isAnnotation( lElement, ALLOW_MAPPING_METHOD_FQN ) ) {
-                control.allowMappingMethod = true;
-            }
-            else if ( isAnnotation( lElement, ALLOW_2_STEPS_FQN ) ) {
-                control.allow2Steps = true;
-            }
-            else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK, elementUtils )
-                && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG, elementUtils )
-                && !handledElements.contains( lElement )
-            ) {
-                // recur over annotation mirrors
-                handledElements.add( lElement );
-                resolveControls( control, lElement, handledElements, elementUtils );
-            }
+            resolveControl( control, lElement, handledElements, elementUtils );
         }
     }
 
