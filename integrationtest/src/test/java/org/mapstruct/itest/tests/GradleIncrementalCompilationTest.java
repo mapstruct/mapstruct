@@ -5,12 +5,6 @@
  */
 package org.mapstruct.itest.tests;
 
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
-import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,40 +18,40 @@ import org.apache.commons.io.FileUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized.Parameters;
+
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
+import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * <p>This is supposed to be run from the mapstruct root project folder.
  * Otherwise, use <code>-Dmapstruct_root=path_to_project</code>.
  */
-@RunWith( Parameterized.class )
+@DisabledForJreRange(min = JRE.JAVA_11)
 public class GradleIncrementalCompilationTest {
     private static Path rootPath;
     private static String projectDir = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
     private static String compileTaskName = "compileJava";
 
-    @Rule
-    public final TemporaryFolder testBuildDir = new TemporaryFolder();
-    @Rule
-    public final TemporaryFolder testProjectDir = new TemporaryFolder();
+    @TempDir
+    File testBuildDir;
+    @TempDir
+    File testProjectDir;
 
-    private String gradleVersion;
     private GradleRunner runner;
     private File sourceDirectory;
     private List<String> compileArgs; // Gradle compile task arguments
 
-    public GradleIncrementalCompilationTest(String gradleVersion) {
-        this.gradleVersion = gradleVersion;
-    }
-
-    @Parameters( name = "Gradle {0}" )
+    @Parameters(name = "Gradle {0}")
     public static List<String> gradleVersions() {
         return Arrays.asList( "5.0", "6.0" );
     }
@@ -81,49 +75,62 @@ public class GradleIncrementalCompilationTest {
         assertCompileOutcome( result, recompiledCount > 0 ? SUCCESS : UP_TO_DATE );
         assertThat(
             result.getOutput(),
-            containsString( String.format( "Incremental compilation of %d classes completed", recompiledCount ) ) );
+            containsString( String.format( "Incremental compilation of %d classes completed", recompiledCount ) )
+        );
     }
 
     private List<String> buildCompileArgs() {
         // Make Gradle use the temporary build folder by overriding the buildDir property
-        String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getRoot().getAbsolutePath();
+        String buildDirPropertyArg = "-PbuildDir=" + testBuildDir.getAbsolutePath();
 
         // Inject the path to the folder containing the mapstruct-processor JAR
         String jarDirectoryArg = "-PmapstructRootPath=" + rootPath.toString();
         return Arrays.asList( compileTaskName, buildDirPropertyArg, jarDirectoryArg );
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass() throws Exception {
         rootPath = Paths.get( System.getProperty( "mapstruct_root", "." ) ).toAbsolutePath();
     }
 
-    @Before
-    public void setup() throws IOException {
+    public void setup(String gradleVersion) throws IOException {
+        if ( !testBuildDir.exists() ) {
+            testBuildDir.mkdirs();
+        }
+
+        if ( !testProjectDir.exists() ) {
+            testProjectDir.mkdirs();
+        }
         // Copy test project files to the temp dir
         Path gradleProjectPath = rootPath.resolve( projectDir );
-        FileUtils.copyDirectory( gradleProjectPath.toFile(), testProjectDir.getRoot() );
+        FileUtils.copyDirectory( gradleProjectPath.toFile(), testProjectDir );
         compileArgs = buildCompileArgs();
-        sourceDirectory = new File( testProjectDir.getRoot(), "src/main/java" );
-        runner = GradleRunner.create().withGradleVersion( gradleVersion ).withProjectDir( testProjectDir.getRoot() );
+        sourceDirectory = new File( testProjectDir, "src/main/java" );
+        runner = GradleRunner.create().withGradleVersion( gradleVersion ).withProjectDir( testProjectDir );
     }
 
-    @Test
-    public void testBuildSucceeds() throws IOException {
+    @ParameterizedTest
+    @MethodSource("gradleVersions")
+    public void testBuildSucceeds(String gradleVersion) throws IOException {
+        setup( gradleVersion );
         // Make sure the test build setup actually compiles
         BuildResult buildResult = getRunner().build();
         assertCompileOutcome( buildResult, SUCCESS );
     }
 
-    @Test
-    public void testUpToDate() throws IOException {
+    @ParameterizedTest
+    @MethodSource("gradleVersions")
+    public void testUpToDate(String gradleVersion) throws IOException {
+        setup( gradleVersion );
         getRunner().build();
         BuildResult secondBuildResult = getRunner().build();
         assertCompileOutcome( secondBuildResult, UP_TO_DATE );
     }
 
-    @Test
-    public void testChangeConstant() throws IOException {
+    @ParameterizedTest
+    @MethodSource("gradleVersions")
+    public void testChangeConstant(String gradleVersion) throws IOException {
+        setup( gradleVersion );
         getRunner().build();
         // Change return value in class Target
         File targetFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/model/Target.java" );
@@ -134,8 +141,10 @@ public class GradleIncrementalCompilationTest {
         assertRecompiled( secondBuildResult, 3 );
     }
 
-    @Test
-    public void testChangeTargetField() throws IOException {
+    @ParameterizedTest
+    @MethodSource("gradleVersions")
+    public void testChangeTargetField(String gradleVersion) throws IOException {
+        setup( gradleVersion );
         getRunner().build();
         // Change target field in mapper interface
         File mapperFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/lib/TestMapper.java" );
@@ -146,8 +155,10 @@ public class GradleIncrementalCompilationTest {
         assertRecompiled( secondBuildResult, 2 );
     }
 
-    @Test
-    public void testChangeUnrelatedFile() throws IOException {
+    @ParameterizedTest
+    @MethodSource("gradleVersions")
+    public void testChangeUnrelatedFile(String gradleVersion) throws IOException {
+        setup( gradleVersion );
         getRunner().build();
         File unrelatedFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/lib/UnrelatedComponent.java" );
         replaceInFile( unrelatedFile, "true", "false" );
