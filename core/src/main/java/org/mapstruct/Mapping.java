@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.mapstruct.control.DefaultControl;
+import org.mapstruct.control.MappingControl;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
@@ -403,12 +403,12 @@ public @interface Mapping {
      *
      * @since 1.4
      *
-     * @see org.mapstruct.control.AllowDirect
-     * @see org.mapstruct.control.AllowMappingMethod
-     * @see org.mapstruct.control.AllowBuiltInConversion
-     * @see org.mapstruct.control.AllowComplexMapping
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
      */
-    Class<? extends Annotation> mappingControl() default DefaultControl.class;
+    Class<? extends Annotation> mappingControl() default MappingControl.class;
+
 
 
 }

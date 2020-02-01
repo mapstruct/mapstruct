@@ -11,7 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.mapstruct.control.DefaultControl;
+import org.mapstruct.control.MappingControl;
 import org.mapstruct.factory.Mappers;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
@@ -291,10 +291,9 @@ public @interface Mapper {
      *
      * @since 1.4
      *
-     * @see org.mapstruct.control.AllowDirect
-     * @see org.mapstruct.control.AllowMappingMethod
-     * @see org.mapstruct.control.AllowBuiltInConversion
-     * @see org.mapstruct.control.AllowComplexMapping
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
      */
-    Class<? extends Annotation> mappingControl() default DefaultControl.class;
+    Class<? extends Annotation> mappingControl() default MappingControl.class;
 }

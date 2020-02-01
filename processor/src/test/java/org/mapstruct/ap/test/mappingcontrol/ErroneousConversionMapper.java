@@ -6,10 +6,9 @@
 package org.mapstruct.ap.test.mappingcontrol;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.control.AllowDirect;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(mappingControl = AllowDirect.class)
+@Mapper(mappingControl = UseDirect.class)
 public interface ErroneousConversionMapper {
 
     ErroneousConversionMapper INSTANCE = Mappers.getMapper( ErroneousConversionMapper.class );

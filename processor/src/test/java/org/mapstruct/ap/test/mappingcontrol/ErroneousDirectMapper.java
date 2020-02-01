@@ -7,10 +7,9 @@ package org.mapstruct.ap.test.mappingcontrol;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.control.AllowComplexMapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(mappingControl = AllowComplexMapping.class)
+@Mapper(mappingControl = UseComplex.class)
 public interface ErroneousDirectMapper {
 
     ErroneousDirectMapper INSTANCE = Mappers.getMapper( ErroneousDirectMapper.class );

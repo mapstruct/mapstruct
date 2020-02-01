@@ -5,20 +5,14 @@
  */
 package org.mapstruct.control;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.mapstruct.util.Experimental;
-
-/**
- * Clones a source type to a target type (assuming source and target are of the same type).
- *
- * @author Sjaak Derksen
- *
- * @since 1.4
- */
 @Retention(RetentionPolicy.CLASS)
-@Experimental
-@MappingControl( MappingControl.Use.MAPPING_METHOD )
-public @interface DeepClone {
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface MappingControls {
+
+    MappingControl[] value();
 }

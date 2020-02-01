@@ -10,11 +10,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.mapstruct.control.DefaultControl;
+import org.mapstruct.control.MappingControl;
 
 /**
  * Configures the mapping between two map types, e.g. Map&lt;String, String&gt; and Map&lt;Long, Date&gt;.
@@ -177,12 +177,12 @@ public @interface MapMapping {
      *
      * @since 1.4
 
-     * @see org.mapstruct.control.AllowDirect
-     * @see org.mapstruct.control.AllowMappingMethod
-     * @see org.mapstruct.control.AllowBuiltInConversion
-     * @see org.mapstruct.control.AllowComplexMapping
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
      */
-    Class<? extends Annotation> keyMappingControl() default DefaultControl.class;
+    Class<? extends Annotation> keyMappingControl() default MappingControl.class;
+
 
     /**
      * Allows detailed control over the value mapping process.
@@ -191,10 +191,10 @@ public @interface MapMapping {
      *
      * @since 1.4
      *
-     * @see org.mapstruct.control.AllowDirect
-     * @see org.mapstruct.control.AllowMappingMethod
-     * @see org.mapstruct.control.AllowBuiltInConversion
-     * @see org.mapstruct.control.AllowComplexMapping
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
      */
-    Class<? extends Annotation> valueMappingControl() default DefaultControl.class;
+    Class<? extends Annotation> valueMappingControl() default MappingControl.class;
+
 }

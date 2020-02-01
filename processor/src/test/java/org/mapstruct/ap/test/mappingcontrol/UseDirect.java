@@ -3,25 +3,16 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.control;
+package org.mapstruct.ap.test.mappingcontrol;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.mapstruct.control.MappingControl;
 import org.mapstruct.util.Experimental;
 
-/**
- * Controls the mapping, allows for a direct mapping from source type to target type
- *
- * @author Sjaak Derksen
- *
- * @since 1.4
- */
 @Retention(RetentionPolicy.CLASS)
 @Experimental
-@AllowDirect
-@AllowBuiltInConversion
-@AllowMappingMethod
-@AllowComplexMapping
-public @interface DefaultControl {
+@MappingControl( MappingControl.Use.DIRECT )
+public @interface UseDirect {
 }

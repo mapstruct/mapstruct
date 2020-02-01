@@ -19,8 +19,8 @@ import org.mapstruct.util.Experimental;
  */
 @Retention(RetentionPolicy.CLASS)
 @Experimental
-@AllowDirect
-@AllowBuiltInConversion
-@AllowMappingMethod
+@MappingControl( MappingControl.Use.DIRECT )
+@MappingControl( MappingControl.Use.BUILT_IN_CONVERSION )
+@MappingControl( MappingControl.Use.MAPPING_METHOD )
 public @interface NoComplexMapping {
 }

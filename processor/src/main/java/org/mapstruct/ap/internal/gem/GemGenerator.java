@@ -29,13 +29,8 @@ import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
-import org.mapstruct.control.AllowComplexMapping;
-import org.mapstruct.control.AllowMappingMethod;
-import org.mapstruct.control.AllowDirect;
-import org.mapstruct.control.AllowBuiltInConversion;
-import org.mapstruct.control.DeepClone;
-import org.mapstruct.control.DefaultControl;
-import org.mapstruct.control.NoComplexMapping;
+import org.mapstruct.control.MappingControl;
+import org.mapstruct.control.MappingControls;
 import org.mapstruct.tools.gem.GemDefinition;
 
 /**
@@ -65,13 +60,8 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(Context.class)
 @GemDefinition(Builder.class)
 
-@GemDefinition(AllowComplexMapping.class)
-@GemDefinition(AllowMappingMethod.class)
-@GemDefinition(AllowDirect.class)
-@GemDefinition(AllowBuiltInConversion.class)
-@GemDefinition(DeepClone.class)
-@GemDefinition(DefaultControl.class)
-@GemDefinition(NoComplexMapping.class)
+@GemDefinition(MappingControl.class)
+@GemDefinition(MappingControls.class)
 
 // external types
 @GemDefinition(XmlElementDecl.class)

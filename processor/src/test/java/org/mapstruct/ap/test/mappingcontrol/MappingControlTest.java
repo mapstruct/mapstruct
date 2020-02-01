@@ -24,7 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     CoolBeerDTO.class,
     ShelveDTO.class,
     Fridge.class,
-    FridgeDTO.class
+    FridgeDTO.class,
+    UseDirect.class,
+    UseComplex.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class MappingControlTest {
@@ -73,7 +75,7 @@ public class MappingControlTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDirectMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 18,
+                line = 17,
                 messageRegExp = "Can't map property \".*\\.ShelveDTO shelve\" to \".*\\.ShelveDTO shelve\".*"
             )
         })
@@ -98,7 +100,7 @@ public class MappingControlTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 18,
+                line = 17,
                 messageRegExp = "Can't map property \".*\\.ShelveDTO shelve\" to \"int beerCount\".*"
             )
         })
@@ -123,7 +125,7 @@ public class MappingControlTest {
         diagnostics = {
             @Diagnostic(type = ErroneousConversionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 17,
+                line = 16,
                 messageRegExp = "Can't map property \".*\\.String beerCount\" to \"int beerCount\".*"
             )
         })
@@ -148,7 +150,7 @@ public class MappingControlTest {
         diagnostics = {
             @Diagnostic(type = ErroneousComplexMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 18,
+                line = 17,
                 messageRegExp = "Can't map property \".*\\.ShelveDTO shelve\" to \"int beerCount\".*"
             )
         })

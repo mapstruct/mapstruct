@@ -10,11 +10,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.mapstruct.control.DefaultControl;
+import org.mapstruct.control.MappingControl;
 
 /**
  * Configures the mapping between two iterable like types, e.g. {@code List<String>} and {@code List<Date>}.
@@ -131,10 +131,10 @@ public @interface IterableMapping {
      *
      * @since 1.4
      *
-     * @see org.mapstruct.control.AllowDirect
-     * @see org.mapstruct.control.AllowMappingMethod
-     * @see org.mapstruct.control.AllowBuiltInConversion
-     * @see org.mapstruct.control.AllowComplexMapping
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
      */
-    Class<? extends Annotation> elementMappingControl() default DefaultControl.class;
+    Class<? extends Annotation> elementMappingControl() default MappingControl.class;
+
 }

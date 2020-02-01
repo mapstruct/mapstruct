@@ -16,14 +16,16 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
+import org.mapstruct.ap.internal.gem.MappingControlGem;
+import org.mapstruct.ap.internal.gem.MappingControlUseGem;
+import org.mapstruct.ap.internal.gem.MappingControlsGem;
+
 public class MappingControl {
 
     private static final String JAVA_LANG_ANNOTATION_PGK = "java.lang.annotation";
     private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
-    private static final String ALLOW_DIRECT_FQN = "org.mapstruct.control.AllowDirect";
-    private static final String ALLOW_CONVERSION_FQN = "org.mapstruct.control.AllowBuiltInConversion";
-    private static final String ALLOW_MAPPING_METHOD_FQN = "org.mapstruct.control.AllowMappingMethod";
-    private static final String ALLOW_2_STEPS_FQN = "org.mapstruct.control.AllowComplexMapping";
+    private static final String MAPPING_CONTROL_FQN = "org.mapstruct.control.MappingControl";
+    private static final String MAPPING_CONTROLS_FQN = "org.mapstruct.control.MappingControls";
 
     private boolean allowDirect = false;
     private boolean allowTypeConversion = false;
@@ -33,7 +35,7 @@ public class MappingControl {
     public static MappingControl fromTypeMirror(TypeMirror mirror, Elements elementUtils) {
         MappingControl mappingControl = new MappingControl();
         if ( TypeKind.DECLARED == mirror.getKind() ) {
-            resolveControl( mappingControl, ( (DeclaredType) mirror ).asElement(), new HashSet<>(), elementUtils );
+            resolveControls( mappingControl, ( (DeclaredType) mirror ).asElement(), new HashSet<>(), elementUtils );
         }
         return mappingControl;
     }
@@ -57,36 +59,46 @@ public class MappingControl {
         return allow2Steps;
     }
 
-    private static void resolveControl(MappingControl control, Element element, Set<Element> handledElements,
-                                        Elements elementUtils) {
-        if ( isAnnotation( element, ALLOW_DIRECT_FQN ) ) {
-            control.allowDirect = true;
-        }
-        else if ( isAnnotation( element, ALLOW_CONVERSION_FQN ) ) {
-            control.allowTypeConversion = true;
-        }
-        else if ( isAnnotation( element, ALLOW_MAPPING_METHOD_FQN ) ) {
-            control.allowMappingMethod = true;
-        }
-        else if ( isAnnotation( element, ALLOW_2_STEPS_FQN ) ) {
-            control.allow2Steps = true;
-        }
-        else if ( !isAnnotationInPackage( element, JAVA_LANG_ANNOTATION_PGK, elementUtils )
-            && !isAnnotationInPackage( element, ORG_MAPSTRUCT_PKG, elementUtils )
-            && !handledElements.contains( element )
-        ) {
-            // recur over annotation mirrors
-            handledElements.add( element );
-            resolveControls( control, element, handledElements, elementUtils );
+    private static void resolveControls(MappingControl control, Element element, Set<Element> handledElements,
+                                       Elements elementUtils) {
+        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+            Element lElement = annotationMirror.getAnnotationType().asElement();
+            if ( isAnnotation( lElement, MAPPING_CONTROL_FQN ) ) {
+                determineMappingControl( control, MappingControlGem.instanceOn( element ) );
+            }
+            else if ( isAnnotation( lElement, MAPPING_CONTROLS_FQN ) ) {
+                MappingControlsGem.instanceOn( element )
+                    .value()
+                    .get()
+                    .forEach( m -> determineMappingControl( control, m ) );
+            }
+            else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK, elementUtils )
+                && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG, elementUtils )
+                && !handledElements.contains( lElement )
+            ) {
+                // recur over annotation mirrors
+                handledElements.add( lElement );
+                resolveControls( control, lElement, handledElements, elementUtils );
+            }
         }
     }
 
-    private static void resolveControls(MappingControl control, Element element, Set<Element> handledElements,
-                                        Elements elementUtils) {
-
-        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-            Element lElement = annotationMirror.getAnnotationType().asElement();
-            resolveControl( control, lElement, handledElements, elementUtils );
+    private static void determineMappingControl(MappingControl in, MappingControlGem gem) {
+        MappingControlUseGem use = MappingControlUseGem.valueOf( gem.value().get() );
+        switch ( use ) {
+            case DIRECT:
+                in.allowDirect = true;
+                break;
+            case MAPPING_METHOD:
+                in.allowMappingMethod = true;
+                break;
+            case BUILT_IN_CONVERSION:
+                in.allowTypeConversion = true;
+                break;
+            case COMPLEX_MAPPING:
+                in.allow2Steps = true;
+                break;
+            default:
         }
     }
 
