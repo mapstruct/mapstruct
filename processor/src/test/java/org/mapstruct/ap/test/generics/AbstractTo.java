@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.generics;
 
-
 /**
  * @author Andreas Gudian
  */

@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod;
 
-
 /**
  * @author Remo Meier
  */

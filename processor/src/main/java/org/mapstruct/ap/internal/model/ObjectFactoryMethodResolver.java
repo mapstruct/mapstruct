@@ -50,8 +50,6 @@ public class ObjectFactoryMethodResolver {
         return getFactoryMethod( method, method.getResultType(), selectionParameters, ctx );
     }
 
-
-
     /**
      * returns a no arg factory method
      *

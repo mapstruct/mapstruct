@@ -7,6 +7,8 @@
 <!-- Based on sun_checks.xml from the CheckStyle distribution -->
 
 <module name="Checker">
+
+    <property name="cacheFile" value="${checkstyle.cache.file}"/>
     <!--
         If you set the basedir property below, then all reported file
         names will be relative to the specified directory. See
@@ -55,8 +57,6 @@
     </module>
 
     <module name="TreeWalker">
-
-        <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
         <!-- Checks for Naming Conventions.                  -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->

@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties._target;
 
-
 /**
  * @author Sjaak Derksen
  */

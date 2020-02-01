@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod;
 
 import org.mapstruct.ObjectFactory;
 
-
 /**
  * @author Remo Meier
  */

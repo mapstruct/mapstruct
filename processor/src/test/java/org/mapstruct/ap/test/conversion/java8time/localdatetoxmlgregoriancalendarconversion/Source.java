@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalend
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * @author Andreas Gudian
  */

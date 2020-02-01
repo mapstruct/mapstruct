@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.nestedsourceproperties.source;
 
 import java.util.List;
 
-
 /**
  * @author Sjaak Derksen
  */

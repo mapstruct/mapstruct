@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._513;
 
-
 /**
  *
  * @author Sjaak Derksen

@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.collection.adder.source;
 
-
 /**
  * @author Sjaak Derksen
  */

@@ -73,7 +73,6 @@ public final class LifecycleMethodResolver {
                         existingVariableNames );
     }
 
-
     /**
      * @param method the method to obtain the beforeMapping methods for
      * @param selectionParameters method selectionParameters
