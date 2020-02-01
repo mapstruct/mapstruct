@@ -31,7 +31,6 @@ public class PetMapper {
         .put( 3L, "cat" )
         .put( 4L, "dog" ).build();
 
-
     /**
      * method to be used when using an adder
      *

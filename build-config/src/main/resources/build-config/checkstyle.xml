@@ -15,6 +15,8 @@
         <property name="basedir" value="${basedir}"/>
     -->
 
+    <property name="cacheFile" value="${checkstyle.cache.file}"/>
+
     <!-- Checks that each Java package has a Javadoc file used for commenting. -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage       -->
     <!--
@@ -28,6 +30,13 @@
     <module name="Translation"/>
 
     <module name="FileLength"/>
+
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="fileExtensions" value="java" />
+    </module>
+
+    <module name="SuppressWithPlainTextCommentFilter"/>
 
     <!-- Following interprets the header file as regular expressions. -->
     <!-- <module name="RegexpHeader"/>                                -->
@@ -59,8 +68,6 @@
     </module>
 
     <module name="TreeWalker">
-
-        <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
         <module name="SuppressWarningsHolder"/>
 
@@ -115,9 +122,6 @@
 
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
-        <module name="LineLength">
-            <property name="max" value="120"/>
-        </module>
         <module name="MethodLength"/>
         <module name="ParameterNumber">
             <property name="max" value="10"/>

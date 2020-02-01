@@ -177,8 +177,6 @@ public abstract class HelperMethod implements Method {
         return true;
     }
 
-
-
     /**
      * There's currently only one parameter foreseen instead of a list of parameter
      *

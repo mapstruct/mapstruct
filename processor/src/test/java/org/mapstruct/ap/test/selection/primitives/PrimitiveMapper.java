@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.selection.primitives;
 
-
 /**
  * @author Sjaak Derksen
  *

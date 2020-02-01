@@ -176,7 +176,6 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         );
     }
 
-
     /**
      * Removes duplicate constructor parameter annotations. If an annotation is already present on the constructor, it
      * does not have be defined on the constructor parameter, too. For example, for CDI, the javax.inject.Inject

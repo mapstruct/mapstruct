@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
-
 /**
  * @author Sjaak Derksen
  */

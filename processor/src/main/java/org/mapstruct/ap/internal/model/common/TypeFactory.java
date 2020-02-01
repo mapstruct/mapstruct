@@ -145,7 +145,6 @@ public class TypeFactory {
         return getType( typeElement, isLiteral );
     }
 
-
     /**
      * Determines if the type with the given full qualified name is part of the classpath
      *
@@ -596,7 +595,6 @@ public class TypeFactory {
 
         return typeMirror;
     }
-
 
     /**
      * Whether the given type is ready to be processed or not. It can be processed if it is not of kind

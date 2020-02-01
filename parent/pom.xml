@@ -28,7 +28,7 @@
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.26.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>8.18</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>8.29</com.puppycrawl.tools.checkstyle.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
         <assertj.version>3.11.1</assertj.version>
@@ -278,7 +278,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>

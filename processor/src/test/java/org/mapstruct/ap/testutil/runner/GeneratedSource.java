@@ -57,7 +57,6 @@ public class GeneratedSource implements TestRule {
         GeneratedSource.compilingStatement.remove();
     }
 
-
     /**
      * Adds more mappers that need to be compared.
      *

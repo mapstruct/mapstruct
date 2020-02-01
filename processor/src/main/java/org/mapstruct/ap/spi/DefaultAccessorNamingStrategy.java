@@ -86,7 +86,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
-
     /**
      * Returns {@code true} when the {@link ExecutableElement} is a setter method. A setter starts with 'set'. The
      * remainder of the name is supposed to reflect the property name.

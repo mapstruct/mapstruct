@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.a;
 
 import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar;
 
-
 /**
  * @author Sjaak Derksen
  */

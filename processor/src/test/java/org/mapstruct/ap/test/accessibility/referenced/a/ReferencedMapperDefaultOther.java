@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.accessibility.referenced.a;
 import org.mapstruct.ap.test.accessibility.referenced.ReferencedSource;
 import org.mapstruct.ap.test.accessibility.referenced.ReferencedTarget;
 
-
 /**
  *
  * @author Sjaak Derksen

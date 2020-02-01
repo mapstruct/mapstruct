@@ -45,7 +45,6 @@ public abstract class SimpleConversion implements ConversionProvider {
         return Collections.emptyList();
     }
 
-
     /**
      * Returns the conversion string from source to target. The placeholder {@code <SOURCE>} can be used to represent a
      * reference to the source value.

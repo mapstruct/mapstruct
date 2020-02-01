@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.nullcheck;
 
-
 /**
  * @author Sjaak Derksen
  */

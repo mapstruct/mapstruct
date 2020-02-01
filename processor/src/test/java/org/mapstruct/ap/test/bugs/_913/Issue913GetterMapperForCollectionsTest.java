@@ -198,8 +198,6 @@ public class Issue913GetterMapperForCollectionsTest {
         assertThat( domain2.getLongs() ).isEmpty();
     }
 
-
-
     /**
      * These assert check if non-null and default mapping is working as expected.
      *

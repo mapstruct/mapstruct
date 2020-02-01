@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
-
 /**
  *
  * @author Sjaak Derksen
