@@ -165,6 +165,11 @@ public @interface BeanMapping {
      * @return the mapping control
      *
      * @since 1.4
+     *
+     * @see org.mapstruct.control.AllowDirect
+     * @see org.mapstruct.control.AllowMappingMethod
+     * @see org.mapstruct.control.AllowBuiltInConversion
+     * @see org.mapstruct.control.AllowComplexMapping
      */
     Class<? extends Annotation> mappingControl() default DefaultControl.class;
 

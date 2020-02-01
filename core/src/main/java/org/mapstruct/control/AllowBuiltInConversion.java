@@ -16,7 +16,7 @@ import org.mapstruct.util.Experimental;
  * Controls the mapping, allows for type conversion from source type to target type
  *
  * Type conversions are typically suppored directly in Java. The "toString()" is such an example,
- * which allows for mapping for instance a  {@link java.lang.Number}type to a {@link java.lang.String}.
+ * which allows for mapping for instance a  {@link java.lang.Number} type to a {@link java.lang.String}.
  *
  * Please refer to the MapStruct guide for more info.
  *

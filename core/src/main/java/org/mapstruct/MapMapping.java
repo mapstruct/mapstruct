@@ -171,20 +171,30 @@ public @interface MapMapping {
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
-     * Allows detailed control over the mapping process.
+     * Allows detailed control over the key mapping process.
      *
      * @return the mapping control
      *
      * @since 1.4
+
+     * @see org.mapstruct.control.AllowDirect
+     * @see org.mapstruct.control.AllowMappingMethod
+     * @see org.mapstruct.control.AllowBuiltInConversion
+     * @see org.mapstruct.control.AllowComplexMapping
      */
     Class<? extends Annotation> keyMappingControl() default DefaultControl.class;
 
     /**
-     * Allows detailed control over the mapping process.
+     * Allows detailed control over the value mapping process.
      *
      * @return the mapping control
      *
      * @since 1.4
+     *
+     * @see org.mapstruct.control.AllowDirect
+     * @see org.mapstruct.control.AllowMappingMethod
+     * @see org.mapstruct.control.AllowBuiltInConversion
+     * @see org.mapstruct.control.AllowComplexMapping
      */
     Class<? extends Annotation> valueMappingControl() default DefaultControl.class;
 }

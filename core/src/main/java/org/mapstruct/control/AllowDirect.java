@@ -18,7 +18,7 @@ import org.mapstruct.util.Experimental;
  * This means if source type and target type are of the same type, MapStruct will not perform
  * any mappings anymore and assign the target to the source direct.
  *
- * An exception are types from the package {@link java.lang}, which will be mapped always directly.
+ * An exception are types from the package {@link java}, which will be mapped always directly.
  *
  * @author Sjaak Derksen
  *

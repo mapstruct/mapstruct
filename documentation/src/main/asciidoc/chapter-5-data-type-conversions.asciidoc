@@ -145,12 +145,10 @@ That way it is possible to map arbitrary deep object graphs. When mapping from e
 
 When generating the implementation of a mapping method, MapStruct will apply the following routine for each attribute pair in the source and target object:
 
-["arabic", start=1]
 . If source and target attribute have the same type, the value will be simply copied *direct* from source to target. If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target attribute.
 . If source and target attribute type differ, check whether there is another *mapping method* which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
 . If no such method exists MapStruct will look whether a *built-in conversion* for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
 . If no such method exists MapStruct will apply *complex* conversions:
-["loweralpha"]
 .. mapping method, the result mapped by mapping method, like this: `target = method1( method2( source ) )`
 .. built-in conversion, the result mapped by mapping method, like this: `target = method( conversion( source ) )`
 .. mapping method, the result mapped by build-in conversion, like this: `target = conversion( method( source ) )`

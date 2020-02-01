@@ -220,7 +220,6 @@ public class MappingResolverImpl implements MappingResolver {
                     }
                 }
 
-                // TODO: should we distinguish builtIn from typeConversion, what does the documentation say?
                 // check for a built-in method
                 if ( !hasQualfiers() ) {
                     Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );

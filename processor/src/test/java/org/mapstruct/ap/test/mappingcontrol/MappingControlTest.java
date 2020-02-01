@@ -41,7 +41,7 @@ public class MappingControlTest {
 
         assertThat( out ).isNotNull();
         assertThat( out.getShelve() ).isNotNull();
-        assertThat( out.getShelve() ).isEqualTo( in.getShelve() );
+        assertThat( out.getShelve() ).isSameAs( in.getShelve() );
     }
 
     /**
@@ -56,8 +56,8 @@ public class MappingControlTest {
 
         assertThat( out ).isNotNull();
         assertThat( out.getShelve() ).isNotNull();
-        assertThat( out.getShelve() ).isNotEqualTo( in.getShelve() );
-        assertThat( out.getShelve().getCoolBeer() ).isNotEqualTo( in.getShelve().getCoolBeer() );
+        assertThat( out.getShelve() ).isNotSameAs( in.getShelve() );
+        assertThat( out.getShelve().getCoolBeer() ).isNotSameAs( in.getShelve().getCoolBeer() );
         assertThat( out.getShelve().getCoolBeer().getBeerCount() ).isEqualTo( "5" );
     }
 
