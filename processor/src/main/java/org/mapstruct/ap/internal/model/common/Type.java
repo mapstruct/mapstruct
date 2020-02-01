@@ -287,7 +287,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isJavaLangType() {
-        return "java".equals( packageName );
+        return packageName != null && packageName.startsWith( "java." );
     }
 
     /**
