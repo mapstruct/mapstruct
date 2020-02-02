@@ -11,7 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import org.mapstruct.util.Experimental;
 
 /**
- * Controls the mapping, allows for a direct mapping from source type to target type
+ * Disables complex mappings, mappings that require 2 mapping means (method, built-in conversion) to constitute
+ * a mapping from source to target.
+ *
+ * @see MappingControl.Use#COMPLEX_MAPPING
  *
  * @author Sjaak Derksen
  *

@@ -155,10 +155,8 @@ When generating the implementation of a mapping method, MapStruct will apply the
 . If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes.
 . If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
 
-[NOTE]
-====
-A mapping control can be defined on all levels (`@MappingConfig`, `@Mapper`, `@BeanMapping`, `@Mapping`), the latter taking precedence over the former, like this @Mapper( mappingControl = @NoComplexMapping )`. `@IterableMapping` and `@MapMapping` work similar as `@Mapping`. MappingControl is experimental from MapStruct 1.4.
-====
+A mapping control (`MappingControl`) can be defined on all levels (`@MappingConfig`, `@Mapper`, `@BeanMapping`, `@Mapping`), the latter taking precedence over the former. For example: `@Mapper( mappingControl = NoComplexMapping.class )` takes precedence over `@MapperConfig( mappingControl = DeepClone.class )`. `@IterableMapping` and `@MapMapping` work similar as `@Mapping`. MappingControl is experimental from MapStruct 1.4.
+`MappingControl` has an enum that corresponds to the first 4 options above: `MappingControl.Use#DIRECT`, `MappingControl.Use#MAPPING_METHOD`, `MappingControl.Use#BUILT_IN_CONVERSION` and `MappingControl.Use#COMPLEX_MAPPING` the presence of which allows the user to switch *on* a option. The absence of an enum switches *off* a mapping option. Default they are all present enabling all mapping options.
 
 [NOTE]
 ====
