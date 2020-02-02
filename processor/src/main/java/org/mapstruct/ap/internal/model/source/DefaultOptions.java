@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Collections;
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -119,6 +120,11 @@ public class DefaultOptions extends DelegatingOptions {
         // but assuming a default @Builder will make testcases fail. Not having a default means that you need to
         // specify this mandatory on @MappingConfig and @Mapper.
         return null;
+    }
+
+    @Override
+    public MappingControl getMappingControl(Elements elementUtils) {
+        return MappingControl.fromTypeMirror( mapper.mappingControl().getDefaultValue(), elementUtils );
     }
 
     @Override

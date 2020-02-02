@@ -177,16 +177,20 @@ public class MappingResolverImpl implements MappingResolver {
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
 
+            Assignment referencedMethod;
+
             // first simple mapping method
-            Assignment referencedMethod = resolveViaMethod( sourceType, targetType, false );
-            if ( referencedMethod != null ) {
-                referencedMethod.setAssignment( sourceRHS );
-                return referencedMethod;
+            if ( allowMappingMethod() ) {
+                referencedMethod = resolveViaMethod( sourceType, targetType, false );
+                if ( referencedMethod != null ) {
+                    referencedMethod.setAssignment( sourceRHS );
+                    return referencedMethod;
+                }
             }
 
             // then direct assignable
             if ( !hasQualfiers() ) {
-                if (  sourceType.isAssignableTo( targetType ) ||
+                if ( ( sourceType.isAssignableTo( targetType ) && allowDirect( sourceType, targetType ) ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
                     Assignment simpleAssignment = sourceRHS;
                     return simpleAssignment;
@@ -206,47 +210,51 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then type conversion
-            if ( !hasQualfiers() ) {
-                ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
+            if ( allowConversion() ) {
+                if ( !hasQualfiers() ) {
+                    ConversionAssignment conversion = resolveViaConversion( sourceType, targetType );
+                    if ( conversion != null ) {
+                        conversion.reportMessageWhenNarrowing( messager, this );
+                        conversion.getAssignment().setAssignment( sourceRHS );
+                        return conversion.getAssignment();
+                    }
+                }
+
+                // check for a built-in method
+                if ( !hasQualfiers() ) {
+                    Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
+                    if ( builtInMethod != null ) {
+                        builtInMethod.setAssignment( sourceRHS );
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return builtInMethod;
+                    }
+                }
+            }
+
+            if ( allow2Steps() ) {
+                // 2 step method, first: method(method(source))
+                referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
+                if ( referencedMethod != null ) {
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return referencedMethod;
+                }
+
+                // 2 step method, then: method(conversion(source))
+                referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
+                if ( referencedMethod != null ) {
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
+                    return referencedMethod;
+                }
+
+                // stop here when looking for update methods.
+                selectionCriteria.setPreferUpdateMapping( false );
+
+                // 2 step method, finally: conversion(method(source))
+                ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
                 if ( conversion != null ) {
-                    conversion.reportMessageWhenNarrowing( messager, this );
-                    conversion.getAssignment().setAssignment( sourceRHS );
+                    usedSupportedMappings.addAll( supportingMethodCandidates );
                     return conversion.getAssignment();
                 }
-            }
-
-            // check for a built-in method
-            if (!hasQualfiers() ) {
-                Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
-                if ( builtInMethod != null ) {
-                    builtInMethod.setAssignment( sourceRHS );
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return builtInMethod;
-                }
-            }
-
-            // 2 step method, first: method(method(source))
-            referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
-            if ( referencedMethod != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return referencedMethod;
-            }
-
-            // 2 step method, then: method(conversion(source))
-            referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
-            if ( referencedMethod != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return referencedMethod;
-            }
-
-            // stop here when looking for update methods.
-            selectionCriteria.setPreferUpdateMapping( false );
-
-            // 2 step method, finally: conversion(method(source))
-            ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
-            if ( conversion != null ) {
-                usedSupportedMappings.addAll( supportingMethodCandidates );
-                return conversion.getAssignment();
             }
 
             if ( hasQualfiers() ) {
@@ -258,7 +266,8 @@ public class MappingResolverImpl implements MappingResolver {
                         Strings.join( selectionCriteria.getQualifiedByNames(), ", " )
                 );
             }
-            else {
+            else if ( allowMappingMethod() ) {
+                // only forge if we would allow mapping method
                 return forger.get();
             }
 
@@ -268,6 +277,26 @@ public class MappingResolverImpl implements MappingResolver {
 
         private boolean hasQualfiers() {
             return selectionCriteria != null && selectionCriteria.hasQualfiers();
+        }
+
+        private boolean allowDirect( Type sourceType, Type targetType ) {
+            if ( sourceType.isPrimitive() || targetType.isPrimitive()
+                || sourceType.isJavaLangType() || targetType.isJavaLangType() ) {
+                return true;
+            }
+            return selectionCriteria != null && selectionCriteria.isAllowDirect();
+        }
+
+        private boolean allowConversion() {
+            return selectionCriteria != null && selectionCriteria.isAllowConversion();
+        }
+
+        private boolean allowMappingMethod() {
+            return selectionCriteria != null && selectionCriteria.isAllowMappingMethod();
+        }
+
+        private boolean allow2Steps() {
+            return selectionCriteria != null && selectionCriteria.isAllow2Steps();
         }
 
         private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {

@@ -5,11 +5,13 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.control.MappingControl;
 import org.mapstruct.factory.Mappers;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
@@ -255,4 +257,19 @@ public @interface MapperConfig {
      * @since 1.3
      */
     Builder builder() default @Builder;
+
+    /**
+     * Allows detailed control over the mapping process.
+     *
+     * @return the mapping control
+     *
+     * @since 1.4
+     *
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
+     */
+    Class<? extends Annotation> mappingControl() default MappingControl.class;
+
 }
+

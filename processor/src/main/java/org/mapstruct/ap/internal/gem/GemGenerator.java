@@ -29,6 +29,8 @@ import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
+import org.mapstruct.control.MappingControl;
+import org.mapstruct.control.MappingControls;
 import org.mapstruct.tools.gem.GemDefinition;
 
 /**
@@ -57,6 +59,9 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(ValueMappings.class)
 @GemDefinition(Context.class)
 @GemDefinition(Builder.class)
+
+@GemDefinition(MappingControl.class)
+@GemDefinition(MappingControls.class)
 
 // external types
 @GemDefinition(XmlElementDecl.class)

@@ -15,6 +15,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.mapstruct.control.MappingControl;
+
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
@@ -393,5 +395,20 @@ public @interface Mapping {
      */
     NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy()
         default NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * Allows detailed control over the mapping process.
+     *
+     * @return the mapping control
+     *
+     * @since 1.4
+     *
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
+     */
+    Class<? extends Annotation> mappingControl() default MappingControl.class;
+
+
 
 }

@@ -10,9 +10,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.mapstruct.control.MappingControl;
 
 /**
  * Configures the mapping between two iterable like types, e.g. {@code List<String>} and {@code List<Date>}.
@@ -121,4 +123,18 @@ public @interface IterableMapping {
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * Allows detailed control over the mapping process.
+     *
+     * @return the mapping control
+     *
+     * @since 1.4
+     *
+     * @see org.mapstruct.control.DeepClone
+     * @see org.mapstruct.control.NoComplexMapping
+     * @see org.mapstruct.control.MappingControl
+     */
+    Class<? extends Annotation> elementMappingControl() default MappingControl.class;
+
 }

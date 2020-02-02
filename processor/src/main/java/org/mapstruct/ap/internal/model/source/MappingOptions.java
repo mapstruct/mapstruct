@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.tools.gem.GemValue;
@@ -407,6 +408,15 @@ public class MappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
             .orElse( next().getNullValuePropertyMappingStrategy() );
+    }
+
+    @Override
+    public MappingControl getMappingControl(Elements elementUtils) {
+        return Optional.ofNullable( mapping ).map( MappingGem::mappingControl )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( mc -> MappingControl.fromTypeMirror( mc, elementUtils ) )
+            .orElse( next().getMappingControl( elementUtils ) );
     }
 
     /**

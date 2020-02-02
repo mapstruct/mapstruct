@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -139,6 +140,15 @@ public class BeanMappingOptions extends DelegatingOptions {
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .orElse( next().getBuilder() );
+    }
+
+    @Override
+    public MappingControl getMappingControl(Elements elementUtils) {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::mappingControl )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( mc -> MappingControl.fromTypeMirror( mc, elementUtils ) )
+            .orElse( next().getMappingControl( elementUtils ) );
     }
 
     // @BeanMapping specific

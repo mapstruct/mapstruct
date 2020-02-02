@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -98,6 +99,10 @@ public abstract class DelegatingOptions {
 
     public BuilderGem getBuilder() {
         return next.getBuilder();
+    }
+
+    public MappingControl getMappingControl(Elements elementUtils) {
+        return next.getMappingControl( elementUtils );
     }
 
     DelegatingOptions next() {
