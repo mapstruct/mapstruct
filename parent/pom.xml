@@ -582,7 +582,6 @@
                         <exclude>copyright.txt</exclude>
                         <exclude>**/LICENSE.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/travis-settings.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>**/forbidden-apis.txt</exclude>

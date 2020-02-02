@@ -30,6 +30,7 @@ import static org.mapstruct.itest.testutil.extension.ProcessorTestTemplateInvoca
 
 /**
  * @author Filip Hrisafov
+ * @author Andreas Gudian
  */
 public class ProcessorInvocationInterceptor implements InvocationInterceptor {
 
@@ -80,8 +81,6 @@ public class ProcessorInvocationInterceptor implements InvocationInterceptor {
             configureProcessor( verifier );
 
             verifier.addCliOption( "-Dcompiler-source-target-version=" + sourceTargetVersion() );
-
-            verifier.addCliOption( "-Dmapstruct-artifact-id=mapstruct" );
 
             if ( Boolean.getBoolean( SYS_PROP_DEBUG ) ) {
                 originalOut.print( "Processor Integration Test: " );

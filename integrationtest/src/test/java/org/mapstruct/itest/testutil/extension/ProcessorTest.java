@@ -18,6 +18,15 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
+ * Declares the content of the integration test.
+ * <p />
+ * {@link #baseDir()} must be a path in the classpath that contains the maven module to run as integration test. The
+ * integration test module should contain at least one test class. The integration test passes, if
+ * {@code mvn clean test} finishes successfully.
+ * <p />
+ * {@link #processorTypes()} configures the variants to execute the integration tests with. See
+ * {@link ProcessorType}.
+ *
  * @author Filip Hrisafov
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
