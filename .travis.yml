@@ -1,6 +1,6 @@
 language: java
 install: true
-script: mvn clean install -DprocessorIntegrationTest.toolchainsFile=etc/toolchains-travis-jenkins.xml -B -V
+script: mvn clean install -B -V
 
 matrix:
   include:
@@ -9,20 +9,14 @@ matrix:
       - mvn jacoco:report && bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
     dist: trusty
   - jdk: openjdk11
-    # Only run the processor and its dependencies
-    # The integration tests are using the maven toolchain and that is not yet ready for Java 11
     # There is an issue with the documentation so skip it
-    script: mvn -B -V clean install -pl processor -am
+    script: mvn -B -V clean install -DskipDistribution=true
   - jdk: openjdk13
-    # Only run the processor and its dependencies
-    # The integration tests are using the maven toolchain and that is not yet ready for Java 11
     # There is an issue with the documentation so skip it
-    script: mvn -B -V clean install -pl processor -am
-    # Only run the processor and its dependencies
-    # The integration tests are using the maven toolchain and that is not yet ready for Java EA
+    script: mvn -B -V clean install -DskipDistribution=true
     # There is an issue with the documentation so skip it
   - jdk: openjdk-ea
-    script: mvn -B -V clean install -pl processor -am
+    script: mvn -B -V clean install -DskipDistribution=true
   allow_failures:
     - jdk: openjdk-ea
 deploy:

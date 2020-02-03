@@ -24,9 +24,6 @@
 
     <properties>
         <mapstruct.version>${mapstruct.version}</mapstruct.version>
-        <mapstruct-artifact-id>mapstruct</mapstruct-artifact-id>
-        <toolchain-jdk-version></toolchain-jdk-version>
-        <toolchain-jdk-vendor></toolchain-jdk-vendor>
         <compiler-id></compiler-id>
         <compiler-source-target-version></compiler-source-target-version>
         <!-- As Mapstruct has java 6 requirement we need to use AssertJ 1.x which is compatible with java 6 -->
@@ -137,7 +134,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>\${mapstruct-artifact-id}</artifactId>
+            <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -163,19 +160,6 @@
                 <configuration>
                     <source>\${compiler-source-target-version}</source>
                     <target>\${compiler-source-target-version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-toolchains-plugin</artifactId>
-                <version>1.0</version>
-                <configuration>
-                    <toolchains>
-                        <jdk>
-                            <version>\${toolchain-jdk-version}</version>
-                            <vendor>\${toolchain-jdk-vendor}</vendor>
-                        </jdk>
-                    </toolchains>
                 </configuration>
             </plugin>
             <plugin>

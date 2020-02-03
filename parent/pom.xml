@@ -29,6 +29,7 @@
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.26.0</org.eclipse.tycho.compiler-jdt.version>
         <com.puppycrawl.tools.checkstyle.version>8.29</com.puppycrawl.tools.checkstyle.version>
+        <org.junit.jupiter.version>5.6.0</org.junit.jupiter.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
         <assertj.version>3.11.1</assertj.version>
@@ -129,6 +130,14 @@
                 <version>${com.puppycrawl.tools.checkstyle.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${org.junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- CDI, Weld, Arquillian -->
             <dependency>
                 <groupId>javax.enterprise</groupId>
@@ -189,7 +198,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.18</version>
+                <version>1.18.10</version>
             </dependency>
             <dependency>
                 <groupId>org.immutables</groupId>
@@ -573,12 +582,12 @@
                         <exclude>copyright.txt</exclude>
                         <exclude>**/LICENSE.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/travis-settings.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>**/forbidden-apis.txt</exclude>
                         <exclude>**/checkstyle-for-generated-sources.xml</exclude>
                         <exclude>**/nb-configuration.xml</exclude>
+                        <exclude>**/junit-platform.properties</exclude>
                         <exclude>maven-settings.xml</exclude>
                         <exclude>readme.md</exclude>
                         <exclude>CONTRIBUTING.md</exclude>
