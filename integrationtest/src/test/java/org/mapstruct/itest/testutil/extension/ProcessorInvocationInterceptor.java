@@ -187,8 +187,8 @@ public class ProcessorInvocationInterceptor implements InvocationInterceptor {
         }
         else if ( CURRENT_VERSION == JRE.OTHER ) {
             try {
-                // Extracting the major version is done with code from 
-                // org.junit.jupiter.api.condition.JRE when determing the current version
+                // Extracting the major version is done with code from
+                // org.junit.jupiter.api.condition.JRE when determining the current version
 
                 // java.lang.Runtime.version() is a static method available on Java 9+
                 // that returns an instance of java.lang.Runtime.Version which has the
