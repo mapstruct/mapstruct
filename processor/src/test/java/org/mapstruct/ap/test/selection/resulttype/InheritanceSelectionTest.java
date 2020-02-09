@@ -11,14 +11,12 @@ import java.util.List;
 import java.util.Map;
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,10 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Apple.class,
     AppleDto.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritanceSelectionTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { ConflictingFruitFactory.class, ErroneousFruitMapper.class, Banana.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -58,7 +55,7 @@ public class InheritanceSelectionTest {
     }
 
     @IssueKey("1283")
-    @Test
+    @ProcessorTest
     @WithClasses( { ErroneousResultTypeNoEmptyConstructorMapper.class, Banana.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -72,7 +69,7 @@ public class InheritanceSelectionTest {
     public void testResultTypeHasNoSuitableEmptyConstructor() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { ConflictingFruitFactory.class, ResultTypeSelectingFruitMapper.class, Banana.class } )
     public void testResultTypeBasedFactoryMethodSelection() {
 
@@ -83,7 +80,7 @@ public class InheritanceSelectionTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("434")
     @WithClasses( { ResultTypeConstructingFruitMapper.class } )
     public void testResultTypeBasedConstructionOfResult() {
@@ -94,7 +91,7 @@ public class InheritanceSelectionTest {
         assertThat( fruit.getType() ).isEqualTo( "constructed-by-constructor" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("657")
     @WithClasses( { ResultTypeConstructingFruitInterfaceMapper.class } )
     public void testResultTypeBasedConstructionOfResultForInterface() {
@@ -105,7 +102,7 @@ public class InheritanceSelectionTest {
         assertThat( fruit.getType() ).isEqualTo( "constructed-by-constructor" );
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -122,7 +119,7 @@ public class InheritanceSelectionTest {
     public void testResultTypeBasedConstructionOfResultForInterfaceErroneous() {
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -137,7 +134,7 @@ public class InheritanceSelectionTest {
     public void testResultTypeBasedConstructionOfResultNonAssignable() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("433")
     @WithClasses( {
         FruitFamilyMapper.class,
@@ -161,7 +158,7 @@ public class InheritanceSelectionTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("433")
     @WithClasses( {
         FruitFamilyMapper.class,
@@ -183,7 +180,7 @@ public class InheritanceSelectionTest {
         assertThat( result.get( 0 ).getType() ).isEqualTo( "AppleDto" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("433")
     @WithClasses( {
         FruitFamilyMapper.class,

@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._289;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/289.
@@ -27,10 +25,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
         SourceElement.class,
         TargetElement.class
     } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue289Test {
 
-    @Test
+    @ProcessorTest
     public void shouldLeaveEmptyTargetSetWhenSourceIsNullAndGetterOnlyForCreateMethod() {
 
         Source source = new Source();
@@ -41,7 +38,7 @@ public class Issue289Test {
         assertThat( target.getCollection() ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldLeaveEmptyTargetSetWhenSourceIsNullAndGetterOnlyForUpdateMethod() {
 
         Source source = new Source();
@@ -54,7 +51,7 @@ public class Issue289Test {
         assertThat( target.getCollection() ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldLeaveNullTargetSetWhenSourceIsNullForCreateMethod() {
 
         Source source = new Source();

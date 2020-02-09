@@ -5,12 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * All these test cases test the possible combinations in the GetterMapperForCollections.
@@ -19,7 +18,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  *
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     DomainWithoutSetter.class,
     Dto.class,
@@ -36,7 +34,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForCreate() {
 
         Dto dto = new Dto();
@@ -52,7 +50,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForUpdate() {
 
         Dto dto = new Dto();
@@ -70,7 +68,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForUpdateWithReturn() {
 
         Dto dto = new Dto();
@@ -92,7 +90,7 @@ public class Issue913GetterMapperForCollectionsTest {
      *
      * However, for plain mappings (strings to strings) the result will be null.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForCreate() {
 
         Dto dto = new Dto();
@@ -110,7 +108,7 @@ public class Issue913GetterMapperForCollectionsTest {
      *
      * However, for plain mappings (strings to strings) the result will be null.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdate() {
 
         Dto dto = new Dto();
@@ -131,7 +129,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * However, for plain mappings (strings to strings) the result will be null.
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdateWithReturn() {
 
         Dto dto = new Dto();
@@ -151,7 +149,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * Test create method ICW presence checker
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForCreateWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -166,7 +164,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * Test update method ICW presence checker
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -182,7 +180,7 @@ public class Issue913GetterMapperForCollectionsTest {
      * Test update with return method ICW presence checker
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithReturnWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();

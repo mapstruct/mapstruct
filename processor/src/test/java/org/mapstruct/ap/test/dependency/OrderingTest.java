@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.dependency;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.Mapping;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ordering mapped attributes by means of {@link Mapping#dependsOn()}.
@@ -23,10 +21,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses({ Person.class, PersonDto.class, Address.class, AddressDto.class, AddressMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class OrderingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("304")
     public void shouldApplyChainOfDependencies() {
         Address source = new Address();
@@ -40,7 +37,7 @@ public class OrderingTest {
         assertThat( target.getFullName() ).isEqualTo( "Bob J. McRobb" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("304")
     public void shouldApplySeveralDependenciesConfiguredForOneProperty() {
         Person source = new Person();
@@ -54,7 +51,7 @@ public class OrderingTest {
         assertThat( target.getFullName() ).isEqualTo( "Bob J. McRobb" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("304")
     @WithClasses(ErroneousAddressMapperWithCyclicDependency.class)
     @ExpectedCompilationOutcome(
@@ -71,7 +68,7 @@ public class OrderingTest {
     public void shouldReportErrorIfDependenciesContainCycle() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("304")
     @WithClasses(ErroneousAddressMapperWithUnknownPropertyInDependsOn.class)
     @ExpectedCompilationOutcome(

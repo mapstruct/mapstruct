@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1375;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,11 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Issue1375Mapper.class
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey( "1375" )
 public class Issue1375Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCorrectMapperWhenIntermediaryReadAccessorIsMissing() {
 
         Target target = Issue1375Mapper.INSTANCE.map( new Source( "test value" ) );

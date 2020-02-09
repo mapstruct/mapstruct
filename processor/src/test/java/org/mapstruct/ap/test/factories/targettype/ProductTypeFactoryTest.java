@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.factories.targettype;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Remo Meier
  */
 @WithClasses( { Foo9Base.class, Foo9Child.class, Bar9Base.class, Bar9Child.class, Bar9Factory.class,
     TargetTypeFactoryTestMapper.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class ProductTypeFactoryTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryTwoCreateBaseClassDueToTargetType() {
         Foo9Base foo9 = new Foo9Base();
         foo9.setProp( "foo9" );
@@ -32,7 +29,7 @@ public class ProductTypeFactoryTest {
         assertThat( bar9.getSomeTypeProp() ).isEqualTo( "FOO9" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryTwoCreateChildClassDueToTargetType() {
         Foo9Child foo9 = new Foo9Child();
         foo9.setProp( "foo9" );

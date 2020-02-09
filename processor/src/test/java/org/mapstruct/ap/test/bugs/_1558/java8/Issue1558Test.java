@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1558.java8;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
@@ -20,11 +18,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Car.class,
     Car2.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1558")
 public class Issue1558Test {
 
-    @Test
+    @ProcessorTest
     public void testShouldCompile() {
         Car2 car = new Car2();
         Car target = CarMapper.INSTANCE.toCar( car );

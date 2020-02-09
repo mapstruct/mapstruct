@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.conversion.erroneous;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -22,7 +20,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Target.class
 })
 @IssueKey("725")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InvalidDateFormatTest {
 
     @WithClasses({
@@ -79,7 +76,7 @@ public class InvalidDateFormatTest {
                 line = 43,
                 messageRegExp = "Given date format \"qwertz\" is invalid. Message: \"Illegal pattern character 'q'\"")
         })
-    @Test
+    @ProcessorTest
     public void shouldFailWithInvalidDateFormats() {
     }
 }

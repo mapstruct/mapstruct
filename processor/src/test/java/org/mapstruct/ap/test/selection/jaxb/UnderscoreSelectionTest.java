@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.jaxb.underscores.ObjectFactory;
 import org.mapstruct.ap.test.selection.jaxb.underscores.SubType;
 import org.mapstruct.ap.test.selection.jaxb.underscores.SuperType;
 import org.mapstruct.ap.test.selection.jaxb.underscores.UnderscoreMapper;
 import org.mapstruct.ap.test.selection.jaxb.underscores.UnderscoreType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Ensure factory method selection works for classes generated from schemas using element names with underscores
@@ -25,10 +23,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey( "726" )
 @WithClasses( { UnderscoreType.class, ObjectFactory.class, SuperType.class, SubType.class, UnderscoreMapper.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class UnderscoreSelectionTest {
 
-    @Test
+    @ProcessorTest
     public void selectingUnderscorePropertiesWorks() {
         SubType target = UnderscoreMapper.INSTANCE.map( createSource() );
         assertThat( target.getInheritedUnderscore().getValue() ).isEqualTo( "hi" );

@@ -11,15 +11,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DatatypeFactory;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarFactorizedProperty;
 import org.mapstruct.ap.test.builtin.mapper.ToXmlGregCalMapper;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     DateProperty.class
 
 } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DatatypeFactoryTest {
 
-    @Test
+    @ProcessorTest
     public void testNoConflictsWithOwnDatatypeFactory() throws ParseException {
 
         DateProperty source1 = new DateProperty();

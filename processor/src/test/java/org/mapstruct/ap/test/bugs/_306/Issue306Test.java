@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._306;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/306.
@@ -17,10 +15,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey( "306" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue306Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue306Mapper.class, Source.class, Target.class } )
     public void shouldForgeNewIterableMappingMethod() {
     }

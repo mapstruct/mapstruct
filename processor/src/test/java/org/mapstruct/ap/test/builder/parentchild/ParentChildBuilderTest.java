@@ -8,10 +8,8 @@ package org.mapstruct.ap.test.builder.parentchild;
 import java.util.ArrayList;
 
 import org.assertj.core.api.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,10 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     ImmutableParent.class,
     ParentChildMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ParentChildBuilderTest {
 
-    @Test
+    @ProcessorTest
     public void testParentChildBuilderMapper() {
         final MutableParent parent = new MutableParent();
         parent.setCount( 4 );

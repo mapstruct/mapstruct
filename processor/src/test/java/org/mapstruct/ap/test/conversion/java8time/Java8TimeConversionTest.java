@@ -17,23 +17,34 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for conversions to/from Java 8 date and time types.
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("121")
 public class Java8TimeConversionTest {
 
-    @Test
+    private TimeZone originalTimeZone;
+
+    @BeforeEach
+    void setUp() {
+        originalTimeZone = TimeZone.getDefault();
+    }
+
+    @AfterEach
+    void tearDown() {
+        TimeZone.setDefault( originalTimeZone );
+    }
+
+    @ProcessorTest
     public void testDateTimeToString() {
         Source src = new Source();
         src.setZonedDateTime( ZonedDateTime.of( java.time.LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) ) );
@@ -42,7 +53,7 @@ public class Java8TimeConversionTest {
         assertThat( target.getZonedDateTime() ).isEqualTo( "01.01.2014 00:00 UTC" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateTimeToString() {
         Source src = new Source();
         src.setLocalDateTime( LocalDateTime.of( 2014, 1, 1, 0, 0 ) );
@@ -51,7 +62,7 @@ public class Java8TimeConversionTest {
         assertThat( target.getLocalDateTime() ).isEqualTo( "01.01.2014 00:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateToString() {
         Source src = new Source();
         src.setLocalDate( LocalDate.of( 2014, 1, 1 ) );
@@ -60,7 +71,7 @@ public class Java8TimeConversionTest {
         assertThat( target.getLocalDate() ).isEqualTo( "01.01.2014" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalTimeToString() {
         Source src = new Source();
         src.setLocalTime( LocalTime.of( 0, 0 ) );
@@ -69,7 +80,7 @@ public class Java8TimeConversionTest {
         assertThat( target.getLocalTime() ).isEqualTo( "00:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void testSourceToTargetMappingForStrings() {
         Source src = new Source();
         src.setLocalTime( LocalTime.of( 0, 0 ) );
@@ -95,7 +106,7 @@ public class Java8TimeConversionTest {
         assertThat( target.getLocalTime() ).isEqualTo( "00:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToDateTime() {
         String dateTimeAsString = "01.01.2014 00:00 UTC";
         Target target = new Target();
@@ -108,7 +119,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getZonedDateTime() ).isEqualTo( sourceDateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalDateTime() {
         String dateTimeAsString = "01.01.2014 00:00";
         Target target = new Target();
@@ -121,7 +132,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalDateTime() ).isEqualTo( sourceDateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalDate() {
         String dateTimeAsString = "01.01.2014";
         Target target = new Target();
@@ -134,7 +145,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalDate() ).isEqualTo( sourceDate );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalTime() {
         String dateTimeAsString = "00:00";
         Target target = new Target();
@@ -147,7 +158,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalTime() ).isEqualTo( sourceTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testTargetToSourceNullMapping() {
         Target target = new Target();
         Source src = SourceTargetMapper.INSTANCE.targetToSource( target );
@@ -159,7 +170,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalTime() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testTargetToSourceMappingForStrings() {
         Target target = new Target();
 
@@ -184,7 +195,7 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalTime() ).isEqualTo( LocalTime.of( 0, 0 ) );
     }
 
-    @Test
+    @ProcessorTest
     public void testCalendarMapping() {
         Source source = new Source();
         ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
@@ -209,7 +220,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForCalendarConversion() ).isEqualTo( dateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testZonedDateTimeToDateMapping() {
         TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
         Source source = new Source();
@@ -234,7 +245,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForDateConversionWithZonedDateTime() ).isEqualTo( dateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testInstantToDateMapping() {
         Instant instant = Instant.ofEpochMilli( 1539366615000L );
 
@@ -249,7 +260,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForDateConversionWithInstant() ).isEqualTo( instant );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateTimeToDateMapping() {
         TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
@@ -275,7 +286,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForDateConversionWithLocalDateTime() ).isEqualTo( dateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateToDateMapping() {
         TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
@@ -299,7 +310,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForDateConversionWithLocalDate() ).isEqualTo( localDate );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateToSqlDateMapping() {
         TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
@@ -323,7 +334,7 @@ public class Java8TimeConversionTest {
         assertThat( source.getForSqlDateConversionWithLocalDate() ).isEqualTo( localDate );
     }
 
-    @Test
+    @ProcessorTest
     public void testInstantToStringMapping() {
         Source source = new Source();
         source.setForInstantConversionWithString( Instant.ofEpochSecond( 42L ) );
@@ -333,7 +344,7 @@ public class Java8TimeConversionTest {
         assertThat( periodString ).isEqualTo( "1970-01-01T00:00:42Z" );
     }
 
-    @Test
+    @ProcessorTest
     public void testInstantToStringNullMapping() {
         Source source = new Source();
         source.setForInstantConversionWithString( null );
@@ -343,7 +354,7 @@ public class Java8TimeConversionTest {
         assertThat( periodString ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToInstantMapping() {
         Target target = new Target();
         target.setForInstantConversionWithString( "1970-01-01T00:00:00.000Z" );
@@ -353,7 +364,7 @@ public class Java8TimeConversionTest {
         assertThat( instant ).isEqualTo( Instant.EPOCH );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToInstantNullMapping() {
         Target target = new Target();
         target.setForInstantConversionWithString( null );
@@ -363,7 +374,7 @@ public class Java8TimeConversionTest {
         assertThat( instant ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testPeriodToStringMapping() {
         Source source = new Source();
         source.setForPeriodConversionWithString( Period.ofDays( 42 ) );
@@ -373,7 +384,7 @@ public class Java8TimeConversionTest {
         assertThat( periodString ).isEqualTo( "P42D" );
     }
 
-    @Test
+    @ProcessorTest
     public void testPeriodToStringNullMapping() {
         Source source = new Source();
         source.setForPeriodConversionWithString( null );
@@ -383,7 +394,7 @@ public class Java8TimeConversionTest {
         assertThat( periodString ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToPeriodMapping() {
         Target target = new Target();
         target.setForPeriodConversionWithString( "P1Y2M3D" );
@@ -393,7 +404,7 @@ public class Java8TimeConversionTest {
         assertThat( period ).isEqualTo( Period.of( 1, 2, 3 ) );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToPeriodNullMapping() {
         Target target = new Target();
         target.setForPeriodConversionWithString( null );
@@ -403,7 +414,7 @@ public class Java8TimeConversionTest {
         assertThat( period ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testDurationToStringMapping() {
         Source source = new Source();
         source.setForDurationConversionWithString( Duration.ofMinutes( 42L ) );
@@ -413,7 +424,7 @@ public class Java8TimeConversionTest {
         assertThat( durationString ).isEqualTo( "PT42M" );
     }
 
-    @Test
+    @ProcessorTest
     public void testDurationToStringNullMapping() {
         Source source = new Source();
         source.setForDurationConversionWithString( null );
@@ -423,7 +434,7 @@ public class Java8TimeConversionTest {
         assertThat( durationString ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToDurationMapping() {
         Target target = new Target();
         target.setForDurationConversionWithString( "PT20.345S" );
@@ -433,7 +444,7 @@ public class Java8TimeConversionTest {
         assertThat( duration ).isEqualTo( Duration.ofSeconds( 20L, 345000000L ) );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToDurationNullMapping() {
         Target target = new Target();
         target.setForDurationConversionWithString( null );

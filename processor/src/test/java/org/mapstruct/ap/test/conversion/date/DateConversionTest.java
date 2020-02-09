@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.date;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -16,15 +14,16 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
-import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests application of format strings for conversions between strings and dates.
@@ -37,16 +36,23 @@ import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
     SourceTargetMapper.class
 })
 @IssueKey("43")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DateConversionTest {
 
-    @Before
+    private Locale originalLocale;
+
+    @BeforeEach
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
     }
 
-    @Test
-    @DisabledOnCompiler(Compiler.JDK11)
+    @AfterEach
+    void tearDown() {
+        Locale.setDefault( originalLocale );
+    }
+
+    @ProcessorTest
+    @EnabledOnJre(JRE.JAVA_8)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversions() {
         Source source = new Source();
@@ -60,8 +66,8 @@ public class DateConversionTest {
         assertThat( target.getAnotherDate() ).isEqualTo( "14.02.13 00:00" );
     }
 
-    @Test
-    @EnabledOnCompiler(Compiler.JDK11)
+    @ProcessorTest
+    @EnabledForJreRange(min = JRE.JAVA_11)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionsJdk11() {
         Source source = new Source();
@@ -75,8 +81,8 @@ public class DateConversionTest {
         assertThat( target.getAnotherDate() ).isEqualTo( "14.02.13, 00:00" );
     }
 
-    @Test
-    @DisabledOnCompiler(Compiler.JDK11)
+    @ProcessorTest
+    @EnabledOnJre(JRE.JAVA_8)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionInReverseMapping() {
         Target target = new Target();
@@ -92,8 +98,8 @@ public class DateConversionTest {
         );
     }
 
-    @Test
-    @EnabledOnCompiler(Compiler.JDK11)
+    @ProcessorTest
+    @EnabledForJreRange(min = JRE.JAVA_11)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionInReverseMappingJdk11() {
         Target target = new Target();
@@ -109,7 +115,7 @@ public class DateConversionTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionForIterableMethod() {
         List<Date> dates = Arrays.asList(
             new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
@@ -123,7 +129,7 @@ public class DateConversionTest {
         assertThat( stringDates ).containsExactly( "06.07.2013", "14.02.2013", "11.04.2013" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionForArrayMethod() {
         List<Date> dates = Arrays.asList(
             new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
@@ -137,7 +143,7 @@ public class DateConversionTest {
         assertThat( stringDates ).isEqualTo( new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" } );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionForReverseIterableMethod() {
         List<String> stringDates = Arrays.asList( "06.07.2013", "14.02.2013", "11.04.2013" );
 
@@ -151,7 +157,7 @@ public class DateConversionTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionForReverseArrayMethod() {
         String[] stringDates = new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" };
 
@@ -165,7 +171,7 @@ public class DateConversionTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionForReverseArrayArrayMethod() {
          Date[] dates = new Date[]{
             new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
@@ -178,7 +184,7 @@ public class DateConversionTest {
         assertThat( stringDates ).isEqualTo( new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" } );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDateConversionForReverseArrayArrayMethod() {
 
         String[] stringDates = new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" };
@@ -193,7 +199,7 @@ public class DateConversionTest {
     }
 
     @IssueKey("858")
-    @Test
+    @ProcessorTest
     public void shouldApplyDateToSqlConversion() {
         GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );
         GregorianCalendar sqlDate = new GregorianCalendar( 2016, Calendar.AUGUST, 23, 21, 35, 35 );
@@ -215,7 +221,7 @@ public class DateConversionTest {
     }
 
     @IssueKey("858")
-    @Test
+    @ProcessorTest
     public void shouldApplySqlToDateConversion() {
         Target target = new Target();
         GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );

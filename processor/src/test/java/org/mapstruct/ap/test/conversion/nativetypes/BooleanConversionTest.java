@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     BooleanSource.class,
     BooleanTarget.class,
     BooleanMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class BooleanConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyBooleanConversion() {
         BooleanSource source = new BooleanSource();
         source.setB( true );
@@ -34,7 +31,7 @@ public class BooleanConversionTest {
         assertThat( target.getBool() ).isEqualTo( Boolean.TRUE );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseBooleanConversion() {
         BooleanTarget target = new BooleanTarget();
         target.setB( Boolean.TRUE );
@@ -47,7 +44,7 @@ public class BooleanConversionTest {
         assertThat( source.getBool() ).isEqualTo( true );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "229" )
     public void wrapperToPrimitiveIsNullSafe() {
         BooleanTarget target = new BooleanTarget();

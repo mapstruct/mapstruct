@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.accessibility;
 
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+
 import static java.lang.reflect.Modifier.isPrivate;
 import static java.lang.reflect.Modifier.isProtected;
 import static java.lang.reflect.Modifier.isPublic;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for different accessibility modifiers
@@ -22,10 +20,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Andreas Gudian
  */
 @WithClasses({ Source.class, Target.class, DefaultSourceTargetMapperAbstr.class, DefaultSourceTargetMapperIfc.class })
-@RunWith( AnnotationProcessorTestRunner.class )
 public class AccessibilityTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("103")
     public void testGeneratedModifiersFromAbstractClassAreCorrect() throws Exception {
         Class<?> defaultFromAbstract = loadForMapper( DefaultSourceTargetMapperAbstr.class );
@@ -37,7 +34,7 @@ public class AccessibilityTest {
         assertTrue( isDefault( modifiersFor( defaultFromAbstract, "defaultSourceToTarget" ) ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("103")
     public void testGeneratedModifiersFromInterfaceAreCorrect() throws Exception {
         Class<?> defaultFromIfc = loadForMapper( DefaultSourceTargetMapperIfc.class );

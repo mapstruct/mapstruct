@@ -5,38 +5,36 @@
  */
 package org.mapstruct.ap.test.nestedproperties.simple;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Sebastian Hasait
  */
 @WithClasses({ SourceRoot.class, SourceProps.class, TargetObject.class })
 @IssueKey("407")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleNestedPropertiesTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testNull() {
         TargetObject targetObject = SimpleMapper.MAPPER.toTargetObject( null );
 
-        assertNull( targetObject );
+        assertThat( targetObject ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testViaNull() {
         SourceRoot sourceRoot = new SourceRoot();
@@ -57,7 +55,7 @@ public class SimpleNestedPropertiesTest {
         assertNull( targetObject.getStringValue() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testFilled() {
         SourceRoot sourceRoot = new SourceRoot();

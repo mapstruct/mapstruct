@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._1797;
 
 import java.util.EnumSet;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1797")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Customer.class,
     CustomerDto.class,
@@ -27,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1797Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyMapEnumSetToEnumSet() {
 
         Customer customer = new Customer( EnumSet.of( Customer.Type.ONE ) );

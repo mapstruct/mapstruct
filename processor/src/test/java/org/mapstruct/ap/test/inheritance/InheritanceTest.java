@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.inheritance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for propagation of attributes inherited from super types.
@@ -19,10 +17,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses({ SourceBase.class, SourceExt.class, TargetBase.class, TargetExt.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritanceTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("17")
     public void shouldMapAttributeFromSuperType() {
         SourceExt source = createSource();
@@ -32,7 +29,7 @@ public class InheritanceTest {
         assertResult( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldMapAttributeFromSuperTypeUsingTargetParameter() {
         SourceExt source = createSource();
@@ -43,7 +40,7 @@ public class InheritanceTest {
         assertResult( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldMapAttributeFromSuperTypeUsingReturnedTargetParameter() {
         SourceExt source = createSource();
@@ -71,7 +68,7 @@ public class InheritanceTest {
         return source;
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("17")
     public void shouldReverseMapAttributeFromSuperType() {
         TargetExt target = new TargetExt();

@@ -5,16 +5,11 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.named;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
@@ -28,8 +23,11 @@ import org.mapstruct.ap.test.selection.qualifier.handwritten.PlotWords;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  *
@@ -43,10 +41,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SomeOtherMapper.class,
     NonQualifierAnnotated.class
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class NamedTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Titles.class,
         Facts.class,
@@ -84,7 +81,7 @@ public class NamedTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         MovieFactoryMapper.class,
         ReleaseFactory.class,

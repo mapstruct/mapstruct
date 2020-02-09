@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.generics.genericsupertype;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Gunnar Morling
@@ -24,10 +22,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     MapperBase.class,
     VesselSearchResultMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class MapperWithGenericSuperClassTest {
 
-    @Test
+    @ProcessorTest
     public void canCreateImplementationForMapperWithGenericSuperClass() {
         Vessel vessel = new Vessel();
         vessel.setName( "Pacific Queen" );

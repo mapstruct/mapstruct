@@ -5,16 +5,10 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.collection.adder._target.AdderUsageObserver;
 import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder._target.OutdoorPet;
@@ -34,9 +28,14 @@ import org.mapstruct.ap.test.collection.adder.source.Source2;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.test.collection.adder.source.SourceWithPets;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Sjaak Derksen
@@ -70,18 +69,17 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     Source2Target2Mapper.class,
     Foo.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         SourceTargetMapper.class,
         SourceTargetMapperStrategyDefault.class,
         SourceTargetMapperStrategySetterPreferred.class
     );
 
     @IssueKey("241")
-    @Test
+    @ProcessorTest
     public void testAdd() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -95,28 +93,30 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test(expected = DogException.class)
+    @ProcessorTest
     public void testAddWithExceptionInThrowsClause() throws DogException {
         AdderUsageObserver.setUsed( false );
 
         Source source = new Source();
         source.setPets( Arrays.asList( "dog" ) );
 
-        SourceTargetMapper.INSTANCE.toTarget( source );
+        assertThatThrownBy(  () -> SourceTargetMapper.INSTANCE.toTarget( source ) )
+            .isInstanceOf( DogException.class );
     }
 
-    @Test(expected = RuntimeException.class)
+    @ProcessorTest
     public void testAddWithExceptionNotInThrowsClause() throws DogException {
         AdderUsageObserver.setUsed( false );
 
         Source source = new Source();
         source.setPets( Arrays.asList( "cat" ) );
 
-        SourceTargetMapper.INSTANCE.toTarget( source );
+        assertThatThrownBy( () -> SourceTargetMapper.INSTANCE.toTarget( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
     @IssueKey("241")
-    @Test
+    @ProcessorTest
     public void testAddWithExistingTarget() {
         AdderUsageObserver.setUsed( false );
 
@@ -134,7 +134,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testShouldUseDefaultStrategy() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -148,7 +148,7 @@ public class AdderTest {
         assertFalse( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testShouldPreferSetterStrategyButThereIsNone() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -162,7 +162,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testShouldPreferHumanSingular() {
 
         AdderUsageObserver.setUsed( false );
@@ -177,7 +177,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testShouldFallBackToDaliSingularInAbsenseOfHumanSingular() {
         AdderUsageObserver.setUsed( false );
 
@@ -191,7 +191,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testAddReverse() {
         AdderUsageObserver.setUsed( false );
 
@@ -204,7 +204,7 @@ public class AdderTest {
         assertThat( target.getPets().get( 0 ) ).isEqualTo( "cat" );
     }
 
-    @Test
+    @ProcessorTest
     public void testAddOnlyGetter() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -218,7 +218,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test
+    @ProcessorTest
     public void testAddViaTargetType() {
         AdderUsageObserver.setUsed( false );
 
@@ -234,7 +234,7 @@ public class AdderTest {
     }
 
     @IssueKey("242")
-    @Test
+    @ProcessorTest
     public void testSingleElementSource() {
         AdderUsageObserver.setUsed( false );
 
@@ -249,7 +249,7 @@ public class AdderTest {
     }
 
     @IssueKey( "310" )
-    @Test
+    @ProcessorTest
     public void testMissingImport() {
         generatedSource.addComparisonToFixtureFor( Source2Target2Mapper.class );
 
@@ -262,7 +262,7 @@ public class AdderTest {
     }
 
     @IssueKey("1478")
-    @Test
+    @ProcessorTest
     public void useIterationNameFromSource() {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperWithDifferentProperties.class );
 

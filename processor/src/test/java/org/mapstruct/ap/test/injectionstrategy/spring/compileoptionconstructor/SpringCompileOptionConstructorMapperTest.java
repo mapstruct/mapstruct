@@ -10,22 +10,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomerSpringCompileOptionConstructorMapper.class,
     GenderSpringCompileOptionConstructorMapper.class
 } )
-@RunWith(AnnotationProcessorTestRunner.class)
 @ProcessorOption( name = "mapstruct.defaultInjectionStrategy", value = "constructor")
 @ComponentScan(basePackageClasses = CustomerSpringCompileOptionConstructorMapper.class)
 @Configuration
@@ -61,38 +58,38 @@ public class SpringCompileOptionConstructorMapperTest {
 
     private static TimeZone originalTimeZone;
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Autowired
     private CustomerRecordSpringCompileOptionConstructorMapper customerRecordMapper;
     private ConfigurableApplicationContext context;
 
-    @BeforeClass
+    @BeforeAll
     public static void setDefaultTimeZoneToCet() {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreOriginalTimeZone() {
         TimeZone.setDefault( originalTimeZone );
     }
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConvertToTarget() throws Exception {
         // given
         CustomerEntity customerEntity = new CustomerEntity();
@@ -119,7 +116,7 @@ public class SpringCompileOptionConstructorMapperTest {
         return sdf.parse( date );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConstructorInjectionFromCompileOption() {
         generatedSource.forMapper( CustomerSpringCompileOptionConstructorMapper.class )
             .content()

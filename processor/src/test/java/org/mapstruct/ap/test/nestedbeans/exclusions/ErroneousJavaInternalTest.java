@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.nestedbeans.exclusions;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -22,7 +20,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Target.class,
     ErroneousJavaInternalMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1154")
 public class ErroneousJavaInternalTest {
 
@@ -52,7 +49,7 @@ public class ErroneousJavaInternalTest {
                     ".*List<.*String> nestedMyType\\.deepNestedType\\.types\"\\. Consider to declare/implement a " +
                     "mapping method: \".*List<.*String> map\\(.*List<.*MyType> value\\)\"\\.")
         })
-    @Test
+    @ProcessorTest
     public void shouldNotNestIntoJavaPackageObjects() {
     }
 }

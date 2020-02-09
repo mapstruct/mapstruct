@@ -9,13 +9,11 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,13 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1523")
 public class Issue1523Test {
 
     private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
 
-    @BeforeClass
+    @BeforeAll
     public static void before() {
         // we want to test that the timezone will correctly be used in mapped XMLGregorianCalendar and not the
         // default one, so we must ensure that we use a different timezone than the default one -> set the default
@@ -46,13 +43,13 @@ public class Issue1523Test {
         TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() {
         // revert the changed default TZ
         TimeZone.setDefault( DEFAULT_TIMEZONE );
     }
 
-    @Test
+    @ProcessorTest
     public void testThatCorrectTimeZoneWillBeUsedInTarget() {
         Source source = new Source();
         // default one was explicitly set to UTC, thus +01:00 is a different one

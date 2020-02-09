@@ -5,13 +5,12 @@
  */
 package org.mapstruct.ap.test.nullcheck;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Test for correct handling of null checks.
@@ -28,10 +27,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NullCheckTest {
 
-    @Test(expected = NullPointerException.class)
+    @ProcessorTest
     @IssueKey("214")
     public void shouldThrowNullptrWhenCustomMapperIsInvoked() {
 
@@ -40,10 +38,11 @@ public class NullCheckTest {
         source.setSomeInteger( 7 );
         source.setSomeLong( 2L );
 
-        SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        assertThatThrownBy( () -> SourceTargetMapper.INSTANCE.sourceToTarget( source ) )
+            .isInstanceOf( NullPointerException.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("214")
     public void shouldSurroundTypeConversionWithNullCheck() {
 
@@ -58,7 +57,7 @@ public class NullCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("214")
     public void shouldSurroundArrayListConstructionWithNullCheck() {
 
@@ -72,7 +71,7 @@ public class NullCheckTest {
         assertThat( target.getSomeList() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("237")
     public void shouldSurroundConversionPassedToMappingMethodWithNullCheck() {
 
@@ -86,7 +85,7 @@ public class NullCheckTest {
         assertThat( target.getSomeInteger() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("231")
     public void shouldSurroundConversionFromWrappedPassedToMappingMethodWithPrimitiveArgWithNullCheck() {
 

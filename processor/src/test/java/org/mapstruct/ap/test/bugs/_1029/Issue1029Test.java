@@ -7,26 +7,23 @@ package org.mapstruct.ap.test.bugs._1029;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Verifies that read-only properties can be explicitly mentioned as {@code ignored=true} without raising an error.
  *
  * @author Andreas Gudian
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses(ErroneousIssue1029Mapper.class)
 @IssueKey("1029")
 public class Issue1029Test {
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(kind = Kind.WARNING, line = 26, type = ErroneousIssue1029Mapper.class,
             messageRegExp = "Unmapped target properties: \"knownProp, lastUpdated, computedMapping\"\\."),

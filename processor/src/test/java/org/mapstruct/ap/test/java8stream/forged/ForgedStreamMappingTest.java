@@ -5,21 +5,19 @@
  */
 package org.mapstruct.ap.test.java8stream.forged;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for mappings between collection and stream types,
@@ -27,13 +25,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author Filip Hrisafov
  */
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ForgedStreamMappingTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({ StreamMapper.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethod() {
 
@@ -56,7 +53,7 @@ public class ForgedStreamMappingTest {
             .doesNotContain( "Stream.empty()" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousStreamNonMappableStreamMapper.class,
         ErroneousNonMappableStreamSource.class,
@@ -76,7 +73,7 @@ public class ForgedStreamMappingTest {
     public void shouldGenerateNonMappableMethodForSetMapping() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ StreamMapper.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethodReturnNullOnNullSource() {
 
@@ -94,7 +91,7 @@ public class ForgedStreamMappingTest {
         assertThat( source2.getFooStream3() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ StreamMapperNullValueMappingReturnDefault.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethodReturnEmptyOnNullSource() {
 

@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,13 +20,14 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 @WithClasses({
     Source.class,
@@ -38,14 +36,13 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     TargetFoo.class,
     SourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DefaultCollectionImplementationTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource()
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource()
         .addComparisonToFixtureFor( SourceTargetMapper.class );
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForConcurrentMap() {
         ConcurrentMap<String, TargetFoo> target =
@@ -54,7 +51,7 @@ public class DefaultCollectionImplementationTest {
         assertResultMap( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForConcurrentNavigableMap() {
         ConcurrentNavigableMap<String, TargetFoo> target =
@@ -63,7 +60,7 @@ public class DefaultCollectionImplementationTest {
         assertResultMap( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForMap() {
         Map<String, TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooMap( createSourceFooMap() );
@@ -71,7 +68,7 @@ public class DefaultCollectionImplementationTest {
         assertResultMap( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForNavigableMap() {
         NavigableMap<String, TargetFoo> target =
@@ -80,7 +77,7 @@ public class DefaultCollectionImplementationTest {
         assertResultMap( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSortedMap() {
         SortedMap<String, TargetFoo> target =
@@ -89,7 +86,7 @@ public class DefaultCollectionImplementationTest {
         assertResultMap( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForNaviableSet() {
         NavigableSet<TargetFoo> target =
@@ -98,7 +95,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForCollection() {
         Collection<TargetFoo> target =
@@ -107,7 +104,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForIterable() {
         Iterable<TargetFoo> target =
@@ -116,7 +113,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForList() {
         List<TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( createSourceFooList() );
@@ -124,7 +121,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSet() {
         Set<TargetFoo> target =
@@ -133,7 +130,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSortedSet() {
         SortedSet<TargetFoo> target =
@@ -142,7 +139,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldUseTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<>();
@@ -154,7 +151,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldUseAndReturnTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<>();
@@ -166,7 +163,7 @@ public class DefaultCollectionImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("92")
     public void shouldUseDefaultImplementationForListWithoutSetter() {
         Source source = new Source();

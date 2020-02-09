@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.bugs._1273;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @IssueKey( "1273" )
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( { EntityMapperReturnDefault.class, EntityMapperReturnNull.class, Dto.class, Entity.class } )
 public class Issue1273Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyMapCollectionWithNullValueMappingStrategyReturnDefault() {
         EntityMapperReturnDefault entityMapper = Mappers.getMapper( EntityMapperReturnDefault.class );
 
@@ -29,7 +26,7 @@ public class Issue1273Test {
         assertThat( dto.getLongs() ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyMapCollectionWithNullValueMappingStrategyReturnNull() {
         EntityMapperReturnNull entityMapper = Mappers.getMapper( EntityMapperReturnNull.class );
 

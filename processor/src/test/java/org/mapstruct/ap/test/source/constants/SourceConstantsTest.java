@@ -5,32 +5,28 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
 
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SourceConstantsTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("187, 305")
     @WithClasses({
         Source.class,
@@ -57,7 +53,7 @@ public class SourceConstantsTest {
         assertThat( target.getCountry() ).isEqualTo( CountryEnum.THE_NETHERLANDS );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("187")
     @WithClasses({
         Source.class,
@@ -76,7 +72,7 @@ public class SourceConstantsTest {
         assertThat( target.getPropertyThatShouldBeMapped() ).isEqualTo( "SomeProperty" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("187")
     @WithClasses({
         Source.class,
@@ -102,7 +98,7 @@ public class SourceConstantsTest {
     public void errorOnSourceAndConstant() throws ParseException {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("187")
     @WithClasses({
         Source.class,
@@ -129,7 +125,7 @@ public class SourceConstantsTest {
     public void errorOnConstantAndExpression() throws ParseException {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("187")
     @WithClasses({
         Source.class,
@@ -155,7 +151,7 @@ public class SourceConstantsTest {
     public void errorOnSourceAndExpression() throws ParseException {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("255")
     @WithClasses({
         Source1.class,
@@ -177,7 +173,7 @@ public class SourceConstantsTest {
         assertThat( target.getSomeConstant() ).isEqualTo( "stringConstant" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("700")
     @WithClasses({
         Source.class,
@@ -204,7 +200,7 @@ public class SourceConstantsTest {
     public void errorOnNonExistingEnumConstant() throws ParseException {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("1401")
     @WithClasses({
         Source.class,

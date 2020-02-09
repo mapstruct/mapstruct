@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.ignore.expand;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ignoring properties during the mapping.
@@ -25,10 +23,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     FlattenedToolBox.class,
     ToolBoxMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class IgnorePropertyTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("1392")
     public void shouldIgnoreAll() {
         FlattenedToolBox toolboxSource = new FlattenedToolBox();

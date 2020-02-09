@@ -7,26 +7,23 @@ package org.mapstruct.ap.test.collection.erroneous;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.NoProperties;
 import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for illegal mappings between collection types, iterable and non-iterable types etc.
  *
  * @author Gunnar Morling
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousCollectionMappingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     @WithClasses({ ErroneousCollectionToNonCollectionMapper.class })
     @ExpectedCompilationOutcome(
@@ -45,7 +42,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailToGenerateImplementationBetweenCollectionAndNonCollection() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("729")
     @WithClasses({ ErroneousCollectionToPrimitivePropertyMapper.class, Source.class, Target.class })
     @ExpectedCompilationOutcome(
@@ -62,7 +59,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailToGenerateImplementationBetweenCollectionAndPrimitive() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("417")
     @WithClasses({ EmptyItererableMappingMapper.class })
     @ExpectedCompilationOutcome(
@@ -78,7 +75,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnEmptyIterableAnnotation() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("417")
     @WithClasses({ EmptyMapMappingMapper.class })
     @ExpectedCompilationOutcome(
@@ -95,7 +92,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnEmptyMapAnnotation() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("459")
     @WithClasses({ ErroneousCollectionNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
@@ -112,7 +109,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnNoElementMappingFound() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousCollectionNoElementMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(
@@ -129,7 +126,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnNoElementMappingFoundWithDisabledAuto() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("459")
     @WithClasses({ ErroneousCollectionNoKeyMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
@@ -147,7 +144,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnNoKeyMappingFound() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousCollectionNoKeyMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(
@@ -163,7 +160,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnNoKeyMappingFoundWithDisabledAuto() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("459")
     @WithClasses({ ErroneousCollectionNoValueMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
@@ -181,7 +178,7 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailOnNoValueMappingFound() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousCollectionNoValueMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(

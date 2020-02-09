@@ -5,27 +5,24 @@
  */
 package org.mapstruct.ap.test.inheritance.attribute;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for setting an attribute where the target attribute of a super-type.
  *
  * @author Gunnar Morling
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AttributeInheritanceTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void shouldMapAttributeFromSuperType() {
         Source source = new Source();
@@ -36,7 +33,7 @@ public class AttributeInheritanceTest {
         assertThat( target.getFoo().toString() ).isEqualTo( "Bob" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, ErroneousTargetSourceMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.nonvoidsetter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for using non-void setters (fluent style) in the target.
@@ -19,10 +17,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses({ Actor.class, ActorDto.class, ActorMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NonVoidSettersTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("353")
     public void shouldMapAttributeWithoutSetterInSourceType() {
         ActorDto target = ActorMapper.INSTANCE.actorToActorDto( new Actor( 3, "Hickory Black" ) );

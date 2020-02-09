@@ -8,14 +8,12 @@ package org.mapstruct.ap.test.nullvaluepropertymapping;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  */
 @IssueKey("1306")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Address.class,
     Customer.class,
@@ -34,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class NullValuePropertyMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(CustomerMapper.class)
     public void testStrategyAppliedOnForgedMethod() {
 
@@ -56,31 +53,31 @@ public class NullValuePropertyMappingTest {
         assertThat( userDTO.getDetails() ).containsExactly( "green hair" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ NvpmsConfig.class, CustomerNvpmsOnConfigMapper.class })
     public void testHierarchyIgnoreOnConfig() {
         testConfig( CustomerNvpmsOnConfigMapper.INSTANCE::map );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(CustomerNvpmsOnMapperMapper.class)
     public void testHierarchyIgnoreOnMapping() {
         testConfig( CustomerNvpmsOnMapperMapper.INSTANCE::map );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(CustomerNvpmsOnBeanMappingMethodMapper.class)
     public void testHierarchyIgnoreOnBeanMappingMethod() {
         testConfig( CustomerNvpmsOnBeanMappingMethodMapper.INSTANCE::map );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(CustomerNvpmsPropertyMappingMapper.class)
     public void testHierarchyIgnoreOnPropertyMappingMethod() {
         testConfig( CustomerNvpmsPropertyMappingMapper.INSTANCE::map );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(CustomerDefaultMapper.class)
     public void testStrategyDefaultAppliedOnForgedMethod() {
 
@@ -102,7 +99,7 @@ public class NullValuePropertyMappingTest {
         assertThat( userDTO.getDetails() ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousCustomerMapper1.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -118,7 +115,7 @@ public class NullValuePropertyMappingTest {
     public void testBothDefaultValueAndNvpmsDefined() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousCustomerMapper2.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -134,7 +131,7 @@ public class NullValuePropertyMappingTest {
     public void testBothExpressionAndNvpmsDefined() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousCustomerMapper3.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -150,7 +147,7 @@ public class NullValuePropertyMappingTest {
     public void testBothDefaultExpressionAndNvpmsDefined() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousCustomerMapper4.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -166,7 +163,7 @@ public class NullValuePropertyMappingTest {
     public void testBothConstantAndNvpmsDefined() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousCustomerMapper5.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

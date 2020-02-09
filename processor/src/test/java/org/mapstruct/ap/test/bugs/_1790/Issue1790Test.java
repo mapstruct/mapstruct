@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1790;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1790")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1790Config.class,
     Issue1790Mapper.class,
@@ -26,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1790Test {
 
-    @Test
+    @ProcessorTest
     public void shouldProperlyApplyNullValuePropertyMappingStrategyWhenInheriting() {
         Target target = new Target();
         target.setName( "My name is set" );

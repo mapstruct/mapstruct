@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._1170;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
 import org.assertj.core.api.ListAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._1170._target.Target;
 import org.mapstruct.ap.test.bugs._1170.source.Source;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Cornelius Dirmeier
@@ -27,11 +25,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     AdderSourceTargetMapper.class,
     PetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
 
     @IssueKey("1170")
-    @Test
+    @ProcessorTest
     public void testWildcardAdder() {
         Source source = new Source();
         source.addWithoutWildcard( "mouse" );
@@ -51,7 +48,7 @@ public class AdderTest {
     }
 
     @IssueKey("1170")
-    @Test
+    @ProcessorTest
     public void testWildcardAdderTargetToSource() {
         Target target = new Target();
         target.addWithoutWildcard( 2L );

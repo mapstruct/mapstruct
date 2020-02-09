@@ -5,17 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._2001;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("2001")
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
     Entity.class,
     EntityExtra.class,
@@ -25,7 +22,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 } )
 public class Issue2001Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
     }

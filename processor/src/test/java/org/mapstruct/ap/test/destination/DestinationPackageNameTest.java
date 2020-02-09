@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.destination;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
 @IssueKey( "556" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DestinationPackageNameTest {
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationPackageNameMapper.class })
     public void shouldGenerateInRightPackage() {
         DestinationPackageNameMapper instance = DestinationPackageNameMapper.INSTANCE;
@@ -27,7 +24,7 @@ public class DestinationPackageNameTest {
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationPackageNameMapperWithSuffix.class })
     public void shouldGenerateInRightPackageWithSuffix() {
         DestinationPackageNameMapperWithSuffix instance = DestinationPackageNameMapperWithSuffix.INSTANCE;
@@ -35,7 +32,7 @@ public class DestinationPackageNameTest {
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperWithSuffixMyImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationPackageNameMapperConfig.class, DestinationPackageNameMapperWithConfig.class })
     public void shouldGenerateRightSuffixWithConfig() {
         DestinationPackageNameMapperWithConfig instance = DestinationPackageNameMapperWithConfig.INSTANCE;
@@ -43,7 +40,7 @@ public class DestinationPackageNameTest {
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperWithConfigImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationPackageNameMapperConfig.class, DestinationPackageNameMapperWithConfigOverride.class })
     public void shouldGenerateRightSuffixWithConfigOverride() {
         DestinationPackageNameMapperWithConfigOverride instance =
@@ -54,7 +51,7 @@ public class DestinationPackageNameTest {
                 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationPackageNameMapperDecorated.class, DestinationPackageNameMapperDecorator.class })
     public void shouldGenerateRightSuffixWithDecorator() {
         DestinationPackageNameMapperDecorated instance = DestinationPackageNameMapperDecorated.INSTANCE;

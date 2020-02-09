@@ -5,20 +5,18 @@
  */
 package org.mapstruct.ap.test.source.manysourcearguments;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for propagation of attribute without setter in source and getter in
@@ -27,15 +25,14 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @IssueKey("31")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ManySourceArgumentsTest {
 
-    @Before
+    @BeforeEach
     public void reset() {
         ReferencedMapper.setBeforeMappingCalled( false );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -58,7 +55,7 @@ public class ManySourceArgumentsTest {
         assertThat( ReferencedMapper.isBeforeMappingCalled() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -80,7 +77,7 @@ public class ManySourceArgumentsTest {
         assertThat( ReferencedMapper.isBeforeMappingCalled() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -100,7 +97,7 @@ public class ManySourceArgumentsTest {
         assertThat( deliveryAddress.getStreet() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -114,7 +111,7 @@ public class ManySourceArgumentsTest {
         assertThat( deliveryAddress ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -135,7 +132,7 @@ public class ManySourceArgumentsTest {
     }
 
     @IssueKey( "1593" )
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Person.class,
         Address.class,
@@ -157,7 +154,7 @@ public class ManySourceArgumentsTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSourceTargetMapper.class, Address.class, DeliveryAddress.class })
     @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "IGNORE")
     @ExpectedCompilationOutcome(
@@ -179,7 +176,7 @@ public class ManySourceArgumentsTest {
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousSourceTargetMapper2.class,
         Address.class,

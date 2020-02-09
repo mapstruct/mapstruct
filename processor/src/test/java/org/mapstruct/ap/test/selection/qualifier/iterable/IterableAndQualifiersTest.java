@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.iterable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -32,10 +30,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     TopologyFeatureEntity.class,
     TopologyMapper.class
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class IterableAndQualifiersTest {
 
-    @Test
+    @ProcessorTest
     public void testGenerationBasedOnQualifier() {
 
         TopologyDto topologyDto1 = new TopologyDto();

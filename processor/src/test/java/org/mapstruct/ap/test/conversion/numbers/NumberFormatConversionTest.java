@@ -5,12 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -18,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -27,15 +26,22 @@ import static org.assertj.core.api.Assertions.entry;
         Target.class,
         SourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NumberFormatConversionTest {
 
-    @Before
+    private Locale originalLocale;
+
+    @BeforeEach
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.ENGLISH );
     }
 
-    @Test
+    @AfterEach
+    public void tearDown() {
+        Locale.setDefault( originalLocale );
+    }
+
+    @ProcessorTest
     public void shouldApplyStringConversions() {
         Source source = new Source();
         source.setI( 1 );
@@ -76,7 +82,7 @@ public class NumberFormatConversionTest {
         assertThat( target.getBigInteger1() ).isEqualTo( "1.23456789E12" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseStringConversions() {
         Target target = new Target();
         target.setI( "1.00" );
@@ -117,7 +123,7 @@ public class NumberFormatConversionTest {
         assertThat( source.getBigInteger1() ).isEqualTo( new BigInteger( "1234567890000" ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionsToIterables() {
 
         List<String> target = SourceTargetMapper.INSTANCE.sourceToTarget( Arrays.asList( 2f ) );
@@ -130,7 +136,7 @@ public class NumberFormatConversionTest {
         assertThat( source ).isEqualTo( Arrays.asList( 2.00f ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversionsToMaps() {
 
         Map<Float, Float> source1 = new HashMap<>();

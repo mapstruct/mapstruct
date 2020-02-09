@@ -7,14 +7,12 @@ package org.mapstruct.ap.test.builder.simple;
 
 import java.util.Arrays;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 
@@ -24,13 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
     SimpleMutablePerson.class,
     SimpleImmutablePerson.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleImmutableBuilderTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SimpleBuilderMapper.class })
     public void testSimpleImmutableBuilderHappyPath() {
         SimpleBuilderMapper mapper = Mappers.getMapper( SimpleBuilderMapper.class );
@@ -50,7 +47,7 @@ public class SimpleImmutableBuilderTest {
         assertThat( targetObject.getChildren() ).contains( "Alice", "Tom" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSimpleBuilderMapper.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(

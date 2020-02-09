@@ -9,9 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.updatemethods.BossDto;
 import org.mapstruct.ap.test.updatemethods.BossEntity;
 import org.mapstruct.ap.test.updatemethods.CompanyDto;
@@ -25,8 +23,8 @@ import org.mapstruct.ap.test.updatemethods.EmployeeEntity;
 import org.mapstruct.ap.test.updatemethods.SecretaryDto;
 import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  */
 @IssueKey("160")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     OrganizationMapper1.class,
     ExternalMapper.class,
@@ -57,14 +54,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class ExternalSelectionTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         OrganizationMapper1.class,
         ExternalMapper.class,
         DepartmentMapper.class
     );
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OrganizationMapper1.class
     })
@@ -76,7 +73,7 @@ public class ExternalSelectionTest {
         OrganizationMapper1.INSTANCE.toCompanyEntity( dto, entity );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OrganizationMapper3.class
     })
@@ -89,7 +86,7 @@ public class ExternalSelectionTest {
         OrganizationMapper3.INSTANCE.toBossEntity( dto, entity );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OrganizationMapper2.class
     })
@@ -101,7 +98,7 @@ public class ExternalSelectionTest {
         OrganizationMapper2.INSTANCE.toCompanyEntity( dto, entity );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "487" )
     public void shouldSelectGeneratedExternalMapperForIterablesAndMaps() {
 

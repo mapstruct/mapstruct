@@ -5,15 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._1826;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1826")
 @WithClasses({
         SourceParent.class,
@@ -23,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1826Test {
 
-  @Test
+  @ProcessorTest
   public void testNestedPropertyMappingChecksForNull() {
     SourceParent sourceParent = new SourceParent();
     sourceParent.setSourceChild( null );

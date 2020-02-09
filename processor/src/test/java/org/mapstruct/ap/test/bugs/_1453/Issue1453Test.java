@@ -7,12 +7,10 @@ package org.mapstruct.ap.test.bugs._1453;
 
 import java.util.Arrays;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1453")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Auction.class,
     AuctionDto.class,
@@ -31,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1453Test {
 
-    @Rule
-    public GeneratedSource source = new GeneratedSource().addComparisonToFixtureFor( Issue1453Mapper.class );
+    @RegisterExtension
+    final GeneratedSource source = new GeneratedSource().addComparisonToFixtureFor( Issue1453Mapper.class );
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCorrectCode() {
 
         AuctionDto target = Issue1453Mapper.INSTANCE.map( new Auction(

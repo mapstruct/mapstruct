@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.bugs._971;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("971")
 public class Issue971Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ CollectionSource.class, CollectionTarget.class, Issue971CollectionMapper.class })
     public void shouldCompileForCollections() {   }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ MapSource.class, MapTarget.class, Issue971MapMapper.class })
     public void shouldCompileForMaps() {   }
 }

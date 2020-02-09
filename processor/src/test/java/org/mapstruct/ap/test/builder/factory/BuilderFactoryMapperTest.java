@@ -5,17 +5,14 @@
  */
 package org.mapstruct.ap.test.builder.factory;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     BuilderFactoryMapper.class,
     BuilderImplicitFactoryMapper.class,
@@ -24,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class BuilderFactoryMapperTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUseBuilderFactory() {
         Person person = BuilderFactoryMapper.INSTANCE.map( new PersonDto( "Filip" ) );
 
@@ -32,7 +29,7 @@ public class BuilderFactoryMapperTest {
         assertThat( person.getSource() ).isEqualTo( "Factory with @ObjectFactory" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseImplicitBuilderFactory() {
         Person person = BuilderImplicitFactoryMapper.INSTANCE.map( new PersonDto( "Filip" ) );
 

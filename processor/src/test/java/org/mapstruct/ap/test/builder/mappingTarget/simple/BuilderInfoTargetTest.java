@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,13 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
     SimpleImmutableTarget.class,
     SimpleBuilderMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class BuilderInfoTargetTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     public void testSimpleImmutableBuilderHappyPath() {
         SimpleMutableSource source = new SimpleMutableSource();
         source.setAge( 3 );
@@ -39,7 +36,7 @@ public class BuilderInfoTargetTest {
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
     }
 
-    @Test
+    @ProcessorTest
     public void testMutableTargetWithBuilder() {
         SimpleMutableSource source = new SimpleMutableSource();
         source.setAge( 20 );
@@ -50,7 +47,7 @@ public class BuilderInfoTargetTest {
         assertThat( target.getSource() ).isEqualTo( "Builder" );
     }
 
-    @Test
+    @ProcessorTest
     public void testUpdateMutableWithBuilder() {
         SimpleMutableSource source = new SimpleMutableSource();
         source.setAge( 20 );
@@ -69,7 +66,7 @@ public class BuilderInfoTargetTest {
         assertThat( target.getSource() ).isEqualTo( "Empty constructor" );
     }
 
-    @Test
+    @ProcessorTest
     public void updatingTargetWithNoSettersShouldNotFail() {
 
         SimpleMutableSource source = new SimpleMutableSource();

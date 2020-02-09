@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.collection.iterabletononiterable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class IterableToNonIterableMappingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapStringListToStringUsingCustomMapper() {
         Source source = new Source();
@@ -32,7 +29,7 @@ public class IterableToNonIterableMappingTest {
         assertThat( target.publicNames ).isEqualTo( "Alice-Bob-Jim" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapStringListToStringUsingCustomMapper() {
         Target target = new Target();

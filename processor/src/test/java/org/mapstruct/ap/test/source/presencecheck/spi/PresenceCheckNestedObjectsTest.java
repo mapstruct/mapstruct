@@ -5,13 +5,10 @@
  */
 package org.mapstruct.ap.test.source.presencecheck.spi;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Test for correct handling of source presence checks for nested objects.
@@ -25,10 +22,9 @@ import static org.junit.Assert.assertFalse;
     SoccerTeamTargetWithPresenceCheck.class,
     Referee.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckNestedObjectsTest {
 
-    @Test
+    @ProcessorTest
     public void testNestedWithSourcesAbsentOnNestingLevel() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();
@@ -42,7 +38,7 @@ public class PresenceCheckNestedObjectsTest {
         SoccerTeamTargetWithPresenceCheck target = SoccerTeamMapperNestedObjects.INSTANCE.mapNested( soccerTeamSource );
 
         assertThat( target.getGoalKeeperName() ).isNull();
-        assertFalse( target.hasGoalKeeperName() );
+        assertThat( target.hasGoalKeeperName() ).isFalse();
         assertThat( target.getReferee() ).isNotNull();
         assertThat( target.getReferee().getName() ).isNull();
 

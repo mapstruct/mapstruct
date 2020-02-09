@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.inheritfromconfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     BaseVehicleDto.class,
     BaseVehicleEntity.class,
@@ -35,7 +32,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("168")
 public class InheritFromConfigTest {
 
-    @Test
+    @ProcessorTest
     public void autoInheritedMappingIsApplied() {
         CarDto carDto = newTestDto();
 
@@ -44,7 +41,7 @@ public class InheritFromConfigTest {
         assertEntity( carEntity );
     }
 
-    @Test
+    @ProcessorTest
     public void autoInheritedMappingIsAppliedForMappingTarget() {
         CarDto carDto = newTestDto();
         CarEntity carEntity = new CarEntity();
@@ -54,7 +51,7 @@ public class InheritFromConfigTest {
         assertEntity( carEntity );
     }
 
-    @Test
+    @ProcessorTest
     public void autoInheritedMappingIsAppliedForMappingTargetWithTwoStepInheritance() {
         CarDto carDto = newTestDto();
         CarEntity carEntity = new CarEntity();
@@ -77,7 +74,7 @@ public class InheritFromConfigTest {
         return carDto;
     }
 
-    @Test
+    @ProcessorTest
     public void autoInheritedMappingIsOverriddenAtMethodLevel() {
         CarDto carDto = newTestDto();
 
@@ -88,7 +85,7 @@ public class InheritFromConfigTest {
         assertThat( carEntity.getAuditTrail() ).isEqualTo( "fixed" );
     }
 
-    @Test
+    @ProcessorTest
     public void autoInheritedMappingIsAppliedInReverse() {
         CarEntity carEntity = new CarEntity();
         carEntity.setColor( "red" );
@@ -100,7 +97,7 @@ public class InheritFromConfigTest {
         assertThat( carDto.getId() ).isEqualTo( 42L );
     }
 
-    @Test
+    @ProcessorTest
     public void explicitInheritedMappingIsAppliedInReverse() {
         CarEntity carEntity = new CarEntity();
         carEntity.setColor( "red" );
@@ -112,7 +109,7 @@ public class InheritFromConfigTest {
         assertThat( carDto.getId() ).isEqualTo( 42L );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1065" )
     @WithClasses({ CarMapperReverseWithExplicitInheritance.class } )
     public void explicitInheritedMappingIsAppliedInReverseDirectlyFromConfig() {
@@ -127,7 +124,7 @@ public class InheritFromConfigTest {
         assertThat( carDto.getId() ).isEqualTo( 42L );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1255" )
     @WithClasses({ CarMapperReverseWithAutoInheritance.class, AutoInheritedReverseConfig.class } )
     public void autoInheritedMappingIsAppliedInReverseDirectlyFromConfig() {
@@ -142,7 +139,7 @@ public class InheritFromConfigTest {
         assertThat( carDto.getId() ).isEqualTo( 42L );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1255" )
     @WithClasses({ CarMapperAllWithAutoInheritance.class, AutoInheritedAllConfig.class } )
     public void autoInheritedMappingIsAppliedInForwardAndReverseDirectlyFromConfig() {
@@ -156,7 +153,7 @@ public class InheritFromConfigTest {
         assertThat( carDto.getId() ).isEqualTo( carDto2.getId() );
     }
 
-    @Test
+    @ProcessorTest
     public void explicitInheritedMappingWithTwoLevelsIsOverriddenAtMethodLevel() {
         CarDto carDto = newTestDto();
 
@@ -167,7 +164,7 @@ public class InheritFromConfigTest {
         assertThat( carEntity.getAuditTrail() ).isEqualTo( "fixed" );
     }
 
-    @Test
+    @ProcessorTest
     public void explicitInheritedMappingIsApplied() {
         CarDto carDto = newTestDto();
 
@@ -176,7 +173,7 @@ public class InheritFromConfigTest {
         assertEntity( carEntity );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         DriverDto.class,
         CarWithDriverEntity.class,
@@ -195,7 +192,7 @@ public class InheritFromConfigTest {
         assertThat( carWithDriverEntity.getDriverName() ).isEqualTo( "Malcroft" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Erroneous1Mapper.class, Erroneous1Config.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -228,7 +225,7 @@ public class InheritFromConfigTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Erroneous2Mapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -247,7 +244,7 @@ public class InheritFromConfigTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1255" )
     @WithClasses({ ErroneousMapperAutoInheritance.class, AutoInheritedReverseConfig.class } )
     @ExpectedCompilationOutcome(
@@ -261,7 +258,7 @@ public class InheritFromConfigTest {
     )
     public void erroneousWrongReverseConfigInherited() { }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1255" )
     @WithClasses({ ErroneousMapperReverseWithAutoInheritance.class, AutoInheritedConfig.class } )
     @ExpectedCompilationOutcome(
@@ -275,7 +272,7 @@ public class InheritFromConfigTest {
     )
     public void erroneousWrongConfigInherited() { }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1255" )
     @WithClasses({ Erroneous3Mapper.class, Erroneous3Config.class } )
     @ExpectedCompilationOutcome(

@@ -10,11 +10,9 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,11 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1569")
 public class Issue1569Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCorrectMapping() {
         Source source = new Source();
         Date date = Date.from( LocalDate.of( 2018, Month.AUGUST, 5 ).atTime( 20, 30 ).toInstant( ZoneOffset.UTC ) );

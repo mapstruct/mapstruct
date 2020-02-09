@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._611;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Tillmann Gaida
  */
 @IssueKey("611")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     SomeClass.class,
     SomeOtherClass.class
@@ -26,7 +23,7 @@ public class Issue611Test {
     /**
      * Checks if an implementation of a nested mapper can be loaded at all.
      */
-    @Test
+    @ProcessorTest
     public void mapperIsFound() {
         assertThat( SomeClass.InnerMapper.INSTANCE ).isNotNull();
     }
@@ -35,7 +32,7 @@ public class Issue611Test {
      * Checks if an implementation of a nested mapper can be loaded which is nested into an already
      * nested class.
      */
-    @Test
+    @ProcessorTest
     public void mapperNestedInsideNestedClassIsFound() {
         assertThat( SomeClass.SomeInnerClass.InnerMapper.INSTANCE ).isNotNull();
     }
@@ -44,7 +41,7 @@ public class Issue611Test {
      * Checks if it is possible to load two mapper implementations which have equal simple names
      * in the same package.
      */
-    @Test
+    @ProcessorTest
     public void rightMapperIsFound() {
         SomeClass.InnerMapper.Source source1 = new SomeClass.InnerMapper.Source();
         SomeOtherClass.InnerMapper.Source source2 = new SomeOtherClass.InnerMapper.Source();

@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.factories.assignment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Remo Meier
  */
 @WithClasses( { Bar5.class, Foo5A.class, Foo5B.class, Bar6.class, Foo6A.class, Foo6B.class, Bar7.class, Foo7A.class,
     Foo7B.class, Bar5Factory.class, Bar6Factory.class, Bar7Factory.class, ParameterAssignmentFactoryTestMapper.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class ParameterAssigmentFactoryTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryMethodWithMultipleParams() {
         Foo5A foo5a = new Foo5A();
         foo5a.setPropB( "foo5a" );
@@ -38,7 +35,7 @@ public class ParameterAssigmentFactoryTest {
         assertThat( bar5.getSomeTypeProp1() ).isEqualTo( "foo5b" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryMethodWithFirstParamsOfMappingMethod() {
         Foo6A foo6a = new Foo6A();
         foo6a.setPropB( "foo6a" );
@@ -54,7 +51,7 @@ public class ParameterAssigmentFactoryTest {
         assertThat( bar6.getSomeTypeProp0() ).isEqualTo( "FOO6A" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryMethodWithSecondParamsOfMappingMethod() {
         Foo7A foo7a = new Foo7A();
         foo7a.setPropB( "foo7a" );

@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._405;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/405.
@@ -17,10 +15,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey( "405" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue405Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { EntityFactory.class, Person.class, People.class, PersonMapper.class } )
     public void shouldGenerateFactoryCorrectMethodForIterables() {
     }

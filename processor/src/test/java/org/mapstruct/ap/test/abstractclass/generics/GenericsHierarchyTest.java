@@ -5,19 +5,16 @@
  */
 package org.mapstruct.ap.test.abstractclass.generics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("644,687,688")
 @WithClasses({
     AbstractAnimal.class,
@@ -33,7 +30,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class GenericsHierarchyTest {
 
-    @Test
+    @ProcessorTest
     public void determinesAnimalKeyGetter() {
         AbstractAnimal source = new Elephant();
 
@@ -47,7 +44,7 @@ public class GenericsHierarchyTest {
         assertThat( target.getAnimalKey().typeParameterIsResolvedToKeyOfAllBeings() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void determinesKeyOfAllBeingsGetter() {
         AbstractHuman source = new Child();
 
@@ -60,7 +57,7 @@ public class GenericsHierarchyTest {
         assertThat( target.getKeyOfAllBeings().typeParameterIsResolvedToKeyOfAllBeings() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     public void determinesItemCSourceSetter() {
         Target target = new Target();
 
@@ -72,7 +69,7 @@ public class GenericsHierarchyTest {
         assertThat( source.getKey().typeParameterIsResolvedToAnimalKey() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     public void determinesItemBSourceSetter() {
         Target target = new Target();
 

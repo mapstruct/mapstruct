@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.decorator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Calendar;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the application of decorators.
@@ -32,10 +29,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     AddressDto.class
 })
 @IssueKey("163")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DecoratorTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonMapper.class,
         PersonMapperDecorator.class
@@ -56,7 +52,7 @@ public class DecoratorTest {
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonMapper.class,
         PersonMapperDecorator.class
@@ -73,7 +69,7 @@ public class DecoratorTest {
         assertThat( addressDto.getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonMapper.class,
         PersonMapperDecorator.class
@@ -91,7 +87,7 @@ public class DecoratorTest {
         assertThat( address.getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         AnotherPersonMapper.class,
         AnotherPersonMapperDecorator.class
@@ -112,7 +108,7 @@ public class DecoratorTest {
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         YetAnotherPersonMapper.class,
         YetAnotherPersonMapperDecorator.class
@@ -135,7 +131,7 @@ public class DecoratorTest {
     }
 
     @IssueKey("173")
-    @Test
+    @ProcessorTest
     @WithClasses({
         Person2Mapper.class,
         Person2MapperDecorator.class,
@@ -171,7 +167,7 @@ public class DecoratorTest {
         assertThat( personDto.getSportsClub().getName() ).isEqualTo( "SC Duckburg" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousPersonMapper.class,
         ErroneousPersonMapperDecorator.class

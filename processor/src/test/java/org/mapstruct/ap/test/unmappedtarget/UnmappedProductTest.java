@@ -5,19 +5,17 @@
  */
 package org.mapstruct.ap.test.unmappedtarget;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests expected diagnostics for unmapped target properties.
@@ -25,10 +23,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @IssueKey("35")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class UnmappedProductTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
@@ -54,7 +51,7 @@ public class UnmappedProductTest {
         assertThat( target.getBar() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, ErroneousStrictSourceTargetMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -72,7 +69,7 @@ public class UnmappedProductTest {
     public void shouldRaiseErrorDueToUnsetTargetProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "ERROR")
     @ExpectedCompilationOutcome(

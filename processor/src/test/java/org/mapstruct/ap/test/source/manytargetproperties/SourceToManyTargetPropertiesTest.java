@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.source.manytargetproperties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -26,10 +24,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class,
     TimeAndFormatMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SourceToManyTargetPropertiesTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("94")
     public void shouldMapSameSourcePropertyToSeveralTargetProperties() {
         Source source = new Source();
@@ -42,7 +39,7 @@ public class SourceToManyTargetPropertiesTest {
         assertThat( target.getName2() ).isEqualTo( "Bob" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("94")
     public void shouldMapSameSourcePropertyToSeveralTargetPropertiesInvokingOtherMapper() throws ParseException {
         Source source = new Source();

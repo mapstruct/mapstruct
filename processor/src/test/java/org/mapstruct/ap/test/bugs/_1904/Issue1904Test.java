@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.bugs._1904;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("1904")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1904Mapper.class,
 })
@@ -30,7 +27,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 )
 public class Issue1904Test {
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(
             type = Issue1904Mapper.class,

@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -31,10 +29,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Measurable.class,
     Holder.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractClassTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("64")
     public void shouldCreateImplementationOfAbstractMethod() {
         Source source = new Source();
@@ -42,7 +39,7 @@ public class AbstractClassTest {
         assertResult( SourceTargetMapper.INSTANCE.sourceToTarget( source ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("165")
     public void shouldCreateImplementationOfMethodFromSuper() {
         Source source = new Source();
@@ -50,7 +47,7 @@ public class AbstractClassTest {
         assertResult( SourceTargetMapper.INSTANCE.sourceToTargetFromBaseMapper( source ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("165")
     public void shouldCreateImplementationOfMethodFromInterface() {
         Source source = new Source();

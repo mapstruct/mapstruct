@@ -5,14 +5,11 @@
  */
 package org.mapstruct.ap.test.nestedmethodcall;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -20,12 +17,13 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the nested invocation of mapping methods.
@@ -33,17 +31,24 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey("134")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedMappingMethodInvocationTest {
 
     public static final QName QNAME = new QName( "dont-care" );
 
-    @Before
+    private Locale originalLocale;
+
+    @BeforeEach
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
     }
 
-    @Test
+    @AfterEach
+    void tearDown() {
+        Locale.setDefault( originalLocale );
+    }
+
+    @ProcessorTest
     @WithClasses( {
         OrderTypeToOrderDtoMapper.class,
         OrderDto.class,
@@ -64,7 +69,7 @@ public class NestedMappingMethodInvocationTest {
         assertThat( target.getOrderDetails().getDescription() ).containsExactly( "elem1", "elem2" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         SourceTypeTargetDtoMapper.class,
         SourceType.class,
@@ -80,7 +85,7 @@ public class NestedMappingMethodInvocationTest {
         assertThat( target.getDate() ).isEqualTo( new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         SourceTypeTargetDtoMapper.class,
         SourceType.class,

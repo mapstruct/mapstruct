@@ -7,19 +7,16 @@ package org.mapstruct.ap.test.conversion.java8time;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.conversion.java8time.localdatetimetoxmlgregoriancalendarconversion.SourceTargetMapper;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.test.conversion.java8time.localdatetimetoxmlgregoriancalendarconversion.Source;
+import org.mapstruct.ap.test.conversion.java8time.localdatetimetoxmlgregoriancalendarconversion.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.localdatetimetoxmlgregoriancalendarconversion.Target;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andrei Arlou
  */
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class LocalDateTimeToXMLGregorianCalendarConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldNullCheckOnConversionToTarget() {
         Target target = SourceTargetMapper.INSTANCE.toTarget( new Source() );
 
@@ -38,7 +34,7 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         assertThat( target.getLocalDateTime() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNullCheckOnConversionToSource() {
         Source source = SourceTargetMapper.INSTANCE.toSource( new Target() );
 
@@ -46,7 +42,7 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         assertThat( source.getXmlGregorianCalendar() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithNanoseconds()
                                                 throws DatatypeConfigurationException {
         LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50, 9000000 );
@@ -64,7 +60,7 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         assertThat( source.getXmlGregorianCalendar() ).isEqualTo( expectedCalendar );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithSeconds()
                                                 throws DatatypeConfigurationException {
         LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30, 50 );
@@ -82,7 +78,7 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         assertThat( source.getXmlGregorianCalendar() ).isEqualTo( expectedCalendar );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapLocalDateTimeToXmlGregorianCalendarCorrectlyWithMinutes()
                                                 throws DatatypeConfigurationException {
         LocalDateTime localDateTime = LocalDateTime.of( 1994, Calendar.MARCH, 5, 11, 30 );
@@ -100,7 +96,7 @@ public class LocalDateTimeToXMLGregorianCalendarConversionTest {
         assertThat( source.getXmlGregorianCalendar() ).isEqualTo( expectedCalendar );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapXmlGregorianCalendarToLocalDateTimeCorrectly() throws DatatypeConfigurationException {
         XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
             .newXMLGregorianCalendar( 1994, Calendar.MARCH, 5, 11, 30, 50, 500,

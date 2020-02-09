@@ -5,19 +5,17 @@
  */
 package org.mapstruct.ap.test.references;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * @author Andreas Gudian
@@ -28,9 +26,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SourceTargetMapper.class, Target.class, BaseType.class, SomeType.class, SomeOtherType.class,
     GenericWrapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ReferencedMapperTest {
-    @Test
+    @ProcessorTest
     public void referencedMappersAreInstatiatedCorrectly() {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( createSource() );
 
@@ -55,7 +52,7 @@ public class ReferencedMapperTest {
         return source;
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "136" )
     public void shouldUseGenericFactoryForIterable() {
         List<SomeType> result = SourceTargetMapper.INSTANCE.fromStringList( Arrays.asList( "foo1", "foo2" ) );
@@ -63,7 +60,7 @@ public class ReferencedMapperTest {
         assertThat( result ).extracting( "value" ).containsExactly( "foo1", "foo2" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "136" )
     public void shouldUseGenericFactoryForMap() {
         Map<String, String> source = new HashMap<>();
@@ -77,7 +74,7 @@ public class ReferencedMapperTest {
             entry( new SomeType( "foo2" ), new SomeOtherType( "bar2" ) ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "136" )
     @WithClasses({ SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class })
     public void shouldMapPrimitivesWithCustomMapper() {

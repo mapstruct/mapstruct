@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._1799;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,10 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class,
 })
 @IssueKey("1799")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue1799Test {
 
-    @Test
+    @ProcessorTest
     public void fluentJavaBeanStyleSettersShouldWork() {
         Target target = Issue1799Mapper.INSTANCE.map( new Source( new Date( 150 ), "Switzerland" ) );
 

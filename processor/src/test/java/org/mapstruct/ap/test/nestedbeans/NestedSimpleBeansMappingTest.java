@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.assertj.core.groups.Tuple;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,17 +31,16 @@ import static org.assertj.core.api.Assertions.tuple;
     UserDtoMapperSmart.class,
     UserDtoUpdateMapperSmart.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSimpleBeansMappingTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         UserDtoMapperClassic.class,
         UserDtoMapperSmart.class,
         UserDtoUpdateMapperSmart.class
     );
 
-    @Test
+    @ProcessorTest
     public void shouldHaveAllFields() {
         // If this test fails that means something new was added to the structure of the User/UserDto.
         // Make sure that the other tests are also updated (the new field is asserted)
@@ -68,7 +65,7 @@ public class NestedSimpleBeansMappingTest {
         assertThat( RoofDto.class ).hasOnlyDeclaredFields( roofFields );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapNestedBeans() {
 
         User user = TestData.createUser();
@@ -80,7 +77,7 @@ public class NestedSimpleBeansMappingTest {
         assertUserDto( smartMapping, user );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapUpdateNestedBeans() {
 
         User user = TestData.createUser();

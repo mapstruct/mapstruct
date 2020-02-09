@@ -8,11 +8,9 @@ package org.mapstruct.ap.test.java8stream.context;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WithClasses({ StreamContext.class, StreamWithContextMapper.class })
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StreamWithContextTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyAfterMapping() {
         Stream<String> stringStream = StreamWithContextMapper.INSTANCE.intStreamToStringStream(
             Stream.of( 1, 2, 3, 5 ) );
@@ -32,7 +29,7 @@ public class StreamWithContextTest {
         assertThat( stringStream ).containsOnly( "1", "2" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyBeforeMappingOnArray() {
         Integer[] integers = new Integer[] { 1, 3 };
         Stream<Integer> stringStream = StreamWithContextMapper.INSTANCE.arrayToStream( integers );
@@ -40,7 +37,7 @@ public class StreamWithContextTest {
         assertThat( stringStream ).containsOnly( 30, 3 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyBeforeAndAfterMappingOnCollection() {
         Collection<String> stringsStream = StreamWithContextMapper.INSTANCE.streamToCollection(
             Stream.of( 10, 20, 40 ) );

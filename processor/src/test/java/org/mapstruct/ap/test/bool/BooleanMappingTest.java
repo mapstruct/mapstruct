@@ -5,12 +5,10 @@
  */
 package org.mapstruct.ap.test.bool;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Person.class,
@@ -19,10 +17,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     PersonMapper.class,
     YesNoMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class BooleanMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldMapBooleanPropertyWithIsPrefixedGetter() {
         //given
         Person person = new Person();
@@ -35,7 +32,7 @@ public class BooleanMappingTest {
         assertThat( personDto.getMarried() ).isEqualTo( "true" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapBooleanPropertyPreferringGetPrefixedGetterOverIsPrefixedGetter() {
         //given
         Person person = new Person();
@@ -48,7 +45,7 @@ public class BooleanMappingTest {
         assertThat( personDto.getEngaged() ).isEqualTo( "true" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapBooleanPropertyWithPropertyMappingMethod() {
         // given
         Person person = new Person();

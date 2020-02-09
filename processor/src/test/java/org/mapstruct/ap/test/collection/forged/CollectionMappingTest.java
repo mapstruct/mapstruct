@@ -5,24 +5,19 @@
  */
 package org.mapstruct.ap.test.collection.forged;
 
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Map;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.google.common.collect.ImmutableMap;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import com.google.common.collect.ImmutableMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for mappings between collection types,
@@ -30,10 +25,9 @@ import com.google.common.collect.ImmutableMap;
  * @author Sjaak Derksen
  */
 @IssueKey( "4" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethod() {
 
@@ -52,7 +46,7 @@ public class CollectionMappingTest {
         assertThat( source2.publicFooSet ).isEqualTo( Collections.asSet( "3", "4" ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
     public void shouldForgeNewMapMappingMethod() {
 
@@ -74,7 +68,7 @@ public class CollectionMappingTest {
         assertThat( source2.publicBarMap ).isEqualTo( source.publicBarMap );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousCollectionNonMappableSetMapper.class,
         ErroneousNonMappableSetSource.class,
         ErroneousNonMappableSetTarget.class,
@@ -94,7 +88,7 @@ public class CollectionMappingTest {
     public void shouldGenerateNonMappleMethodForSetMapping() {
     }
 
-   @Test
+   @ProcessorTest
     @WithClasses({ ErroneousCollectionNonMappableMapMapper.class,
         ErroneousNonMappableMapSource.class,
         ErroneousNonMappableMapTarget.class,
@@ -121,7 +115,7 @@ public class CollectionMappingTest {
     public void shouldGenerateNonMappleMethodForMapMapping() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "640" )
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethodReturnNullOnNullSource() {
@@ -141,7 +135,7 @@ public class CollectionMappingTest {
         assertThat( source2.publicFooSet ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "640" )
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
     public void shouldForgeNewMapMappingMethodReturnNullOnNullSource() {
@@ -161,7 +155,7 @@ public class CollectionMappingTest {
         assertThat( source2.publicBarMap ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "640" )
     @WithClasses({ CollectionMapperNullValueMappingReturnDefault.class, Source.class, Target.class })
     public void shouldForgeNewIterableMappingMethodReturnEmptyOnNullSource() {
@@ -183,7 +177,7 @@ public class CollectionMappingTest {
         assertThat( source2.publicBarMap ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "640" )
     @WithClasses({ CollectionMapperNullValueMappingReturnDefault.class, Source.class, Target.class })
     public void shouldForgeNewMapMappingMethodReturnEmptyOnNullSource() {

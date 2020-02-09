@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._1482;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     ValueWrapper.class
 })
 @IssueKey(value = "1482")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue1482Test {
 
-    @Test
+    @ProcessorTest
     public void testForward() {
 
         Source source = new Source();
@@ -44,7 +41,7 @@ public class Issue1482Test {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testReverse() {
 
         Target target = new Target();

@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.callbacks;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,34 +12,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for callback methods that are defined using {@link BeforeMapping} / {@link AfterMapping}
  *
  * @author Andreas Gudian
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( { ClassContainingCallbacks.class, Invocation.class, Source.class, Target.class, SourceTargetMapper.class,
     SourceTargetCollectionMapper.class, BaseMapper.class, Qualified.class,
     SourceEnum.class, TargetEnum.class })
 @IssueKey("14")
 public class CallbackMethodTest {
 
-    @Before
+    @BeforeEach
     public void reset() {
         ClassContainingCallbacks.reset();
         BaseMapper.reset();
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForBeanMappingCalled() {
         SourceTargetMapper.INSTANCE.sourceToTarget( createSource() );
 
@@ -49,7 +46,7 @@ public class CallbackMethodTest {
         assertBeanMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForBeanMappingWithResultParamCalled() {
         SourceTargetMapper.INSTANCE.sourceToTarget( createSource(), createEmptyTarget() );
 
@@ -57,7 +54,7 @@ public class CallbackMethodTest {
         assertBeanMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForIterableMappingCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget( Arrays.asList( createSource() ) );
 
@@ -65,7 +62,7 @@ public class CallbackMethodTest {
         assertIterableMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForIterableMappingWithResultParamCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget(
             Arrays.asList( createSource() ), new ArrayList<>() );
@@ -74,7 +71,7 @@ public class CallbackMethodTest {
         assertIterableMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForMapMappingCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget( toMap( "foo", createSource() ) );
 
@@ -82,7 +79,7 @@ public class CallbackMethodTest {
         assertMapMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForMapMappingWithResultParamCalled() {
         SourceTargetCollectionMapper.INSTANCE.sourceToTarget(
             toMap( "foo", createSource() ),
@@ -92,7 +89,7 @@ public class CallbackMethodTest {
         assertMapMappingInvocations( BaseMapper.getInvocations() );
     }
 
-    @Test
+    @ProcessorTest
     public void qualifiersAreEvaluatedCorrectly() {
         Source source = createSource();
         Target target = SourceTargetMapper.INSTANCE.qualifiedSourceToTarget( source );
@@ -109,7 +106,7 @@ public class CallbackMethodTest {
         assertQualifiedInvocations( BaseMapper.getInvocations(), sourceList, targetList );
     }
 
-    @Test
+    @ProcessorTest
     public void callbackMethodsForEnumMappingCalled() {
         SourceEnum source = SourceEnum.B;
         TargetEnum target = SourceTargetMapper.INSTANCE.toTargetEnum( source );

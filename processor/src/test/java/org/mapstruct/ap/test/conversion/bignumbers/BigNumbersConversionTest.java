@@ -5,35 +5,28 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import org.junit.Rule;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests conversions between {@link BigInteger} and numbers as well as String.
  *
  * @author Gunnar Morling
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class BigNumbersConversionTest {
 
-   private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     @IssueKey("21")
     @WithClasses({ BigIntegerSource.class, BigIntegerTarget.class, BigIntegerMapper.class })
     public void shouldApplyBigIntegerConversions() {
@@ -70,7 +63,7 @@ public class BigNumbersConversionTest {
         assertThat( target.getString() ).isEqualTo( "13" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("21")
     @WithClasses({ BigIntegerSource.class, BigIntegerTarget.class, BigIntegerMapper.class })
     public void shouldApplyReverseBigIntegerConversions() {
@@ -107,7 +100,7 @@ public class BigNumbersConversionTest {
         assertThat( source.getString() ).isEqualTo( new BigInteger( "13" ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("21")
     @WithClasses({ BigDecimalSource.class, BigDecimalTarget.class, BigDecimalMapper.class })
     public void shouldApplyBigDecimalConversions() {
@@ -146,7 +139,7 @@ public class BigNumbersConversionTest {
         assertThat( target.getBigInteger() ).isEqualTo( new BigInteger( "14" ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("21")
     @WithClasses({ BigDecimalSource.class, BigDecimalTarget.class, BigDecimalMapper.class })
     public void shouldApplyReverseBigDecimalConversions() {
@@ -185,10 +178,10 @@ public class BigNumbersConversionTest {
         assertThat( source.getBigInteger() ).isEqualTo( new BigDecimal( "14" ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("1009")
     @WithClasses({ BigIntegerSource.class, BigIntegerTarget.class, BigIntegerMapper.class })
     public void shouldNotGenerateCreateDecimalFormatMethod() {
-        getGeneratedSource().forMapper( BigIntegerMapper.class ).content().doesNotContain( "createDecimalFormat" );
+        generatedSource.forMapper( BigIntegerMapper.class ).content().doesNotContain( "createDecimalFormat" );
     }
 }

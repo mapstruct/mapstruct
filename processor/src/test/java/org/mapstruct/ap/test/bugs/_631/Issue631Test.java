@@ -7,22 +7,19 @@ package org.mapstruct.ap.test.bugs._631;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue631Test {
 
-    @Test
+    @ProcessorTest
     @IssueKey("631")
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

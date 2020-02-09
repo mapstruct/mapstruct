@@ -5,11 +5,7 @@
  */
 package org.mapstruct.ap.test.nestedbeans.mixed;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.nestedbeans.mixed._target.FishDto;
 import org.mapstruct.ap.test.nestedbeans.mixed._target.FishTankDto;
 import org.mapstruct.ap.test.nestedbeans.mixed._target.FishTankWithNestedDocumentDto;
@@ -30,9 +26,11 @@ import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterPlant;
 import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQuality;
 import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQualityReport;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -64,18 +62,17 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     FishTankMapperWithDocument.class
 })
 @IssueKey("1057")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AutomappingAndNestedTest {
 
-    @Rule
-    public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         FishTankMapper.class,
         FishTankMapperConstant.class,
         FishTankMapperExpression.class,
         FishTankMapperWithDocument.class
     );
 
-    @Test
+    @ProcessorTest
     public void shouldAutomapAndHandleSourceAndTargetPropertyNesting() {
 
         // -- prepare
@@ -117,7 +114,7 @@ public class AutomappingAndNestedTest {
             .isEqualTo( source.getQuality().getReport().getOrganisationName() );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldAutomapAndHandleSourceAndTargetPropertyNestingReverse() {
 
         // -- prepare
@@ -156,7 +153,7 @@ public class AutomappingAndNestedTest {
             .isEqualTo( source.getQuality().getReport().getVerdict() );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldAutomapAndHandleSourceAndTargetPropertyNestingAndConstant() {
 
         // -- prepare
@@ -185,7 +182,7 @@ public class AutomappingAndNestedTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void shouldAutomapAndHandleSourceAndTargetPropertyNestingAndExpresion() {
 
         // -- prepare
@@ -210,7 +207,7 @@ public class AutomappingAndNestedTest {
         assertThat( target.getQuality().getReport().getOrganisation().getName() ).isEqualTo( "Dunno" );
     }
 
-   @Test
+   @ProcessorTest
     public void shouldAutomapIntermediateLevelAndMapConstant() {
 
         // -- prepare

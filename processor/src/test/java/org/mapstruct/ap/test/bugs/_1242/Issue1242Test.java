@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1242;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests that if multiple factory methods are applicable but only one of them has a source parameter, the one with the
@@ -24,7 +22,6 @@ import org.mapstruct.factory.Mappers;
  * @author Andreas Gudian
  */
 @IssueKey("1242")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1242Mapper.class,
     SourceA.class,
@@ -34,7 +31,7 @@ import org.mapstruct.factory.Mappers;
     TargetFactories.class
 })
 public class Issue1242Test {
-    @Test
+    @ProcessorTest
     public void factoryMethodWithSourceParamIsChosen() {
         SourceA sourceA = new SourceA();
         sourceA.setB( new SourceB() );
@@ -51,7 +48,7 @@ public class Issue1242Test {
         assertThat( targetA.getB().getPassedViaConstructor() ).isEqualTo( "created by factory" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousIssue1242MapperMultipleSources.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {

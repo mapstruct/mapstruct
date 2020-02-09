@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1148;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Entity.class,
     Issue1148Mapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1148")
 public class Issue1148Test {
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsNestedSource() {
         Entity.Dto dto = new Entity.Dto();
         dto.nestedDto = new Entity.NestedDto( 30 );
@@ -35,7 +32,7 @@ public class Issue1148Test {
         assertThat( entity.getId2() ).isEqualTo( 40 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsNestedTarget() {
         Entity.Dto dto = new Entity.Dto();
         dto.recipientId = 10;
@@ -51,7 +48,7 @@ public class Issue1148Test {
         assertThat( entity.getSender().nestedClient.id ).isEqualTo( 20 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsSymmetric() {
         Entity.Dto dto = new Entity.Dto();
         dto.sameLevel = new Entity.ClientDto(new Entity.NestedDto( 30 ));
@@ -67,7 +64,7 @@ public class Issue1148Test {
         assertThat( entity.client2.nestedClient.id ).isEqualTo( 40 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsHalfSymmetric() {
         Entity.Dto dto = new Entity.Dto();
         dto.level = new Entity.ClientDto(new Entity.NestedDto( 80 ));
@@ -81,7 +78,7 @@ public class Issue1148Test {
         assertThat( entity.nested2.id ).isEqualTo( 90 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsNestedSourceMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.nestedDto = new Entity.NestedDto( 30 );
@@ -93,7 +90,7 @@ public class Issue1148Test {
         assertThat( entity.getId2() ).isEqualTo( 40 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsNestedTargetMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.recipientId = 10;
@@ -110,7 +107,7 @@ public class Issue1148Test {
         assertThat( entity.getSender().nestedClient.id ).isEqualTo( 20 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsSymmetricMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.sameLevel = new Entity.ClientDto(new Entity.NestedDto( 30 ));
@@ -127,7 +124,7 @@ public class Issue1148Test {
         assertThat( entity.client2.nestedClient.id ).isEqualTo( 40 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseSameMethodForDifferentMappingsHalfSymmetricMultiple() {
         Entity.Dto dto1 = new Entity.Dto();
         dto1.level = new Entity.ClientDto(new Entity.NestedDto( 80 ));

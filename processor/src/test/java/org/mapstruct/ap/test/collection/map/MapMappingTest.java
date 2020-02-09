@@ -5,21 +5,19 @@
  */
 package org.mapstruct.ap.test.collection.map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.collection.map.other.ImportedType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Test for implementation of {@code Map} mapping methods.
@@ -28,10 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({ SourceTargetMapper.class, CustomNumberMapper.class, Source.class, Target.class, ImportedType.class })
 @IssueKey("44")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class MapMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldCreateMapMethodImplementation() {
         Map<Long, Date> values = new HashMap<>();
         values.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
@@ -47,7 +44,7 @@ public class MapMappingTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldCreateReverseMapMethodImplementation() {
         Map<String, String> values = createStringStringMap();
 
@@ -56,7 +53,7 @@ public class MapMappingTest {
         assertResult( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldCreateMapMethodImplementationWithTargetParameter() {
         Map<String, String> values = createStringStringMap();
@@ -69,7 +66,7 @@ public class MapMappingTest {
         assertResult( target );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("19")
     public void shouldCreateMapMethodImplementationWithReturnedTargetParameter() {
         Map<String, String> values = createStringStringMap();
@@ -101,7 +98,7 @@ public class MapMappingTest {
         return values;
     }
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeMapMethodImplementationForMapTypedProperty() {
         Map<Long, Date> values = new HashMap<>();
         values.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
@@ -130,7 +127,7 @@ public class MapMappingTest {
             );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeReverseMapMethodImplementationForMapTypedProperty() {
         Map<String, String> values = createStringStringMap();
 
@@ -164,7 +161,7 @@ public class MapMappingTest {
         return values;
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("87")
     public void shouldCreateMapMethodImplementationWithoutConversionOrElementMappingMethod() {
         Map<Integer, Integer> values = createIntIntMap();

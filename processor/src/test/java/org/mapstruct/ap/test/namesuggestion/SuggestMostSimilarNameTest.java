@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.namesuggestion;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonAgeMapper;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonGarageWrongSourceMapper;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonGarageWrongTargetMapper;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonNameMapper;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Person.class, PersonDto.class, Garage.class, GarageDto.class, ColorRgb.class, ColorRgbDto.class
 })
 public class SuggestMostSimilarNameTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonAgeMapper.class
     })
@@ -39,7 +36,7 @@ public class SuggestMostSimilarNameTest {
     public void testAgeSuggestion() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonNameMapper.class
     })
@@ -55,7 +52,7 @@ public class SuggestMostSimilarNameTest {
     public void testNameSuggestion() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonGarageWrongTargetMapper.class
     })
@@ -75,7 +72,7 @@ public class SuggestMostSimilarNameTest {
     public void testGarageTargetSuggestion() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         PersonGarageWrongSourceMapper.class
     })

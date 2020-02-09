@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.xml.bind.annotation.XmlElementDecl;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.jaxb.test1.OrderType;
 import org.mapstruct.ap.test.selection.jaxb.test2.ObjectFactory;
 import org.mapstruct.ap.test.selection.jaxb.test2.OrderShippingDetailsType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the selection of JAXB mapping and factory methods based on the "name" and "scope" attributes
@@ -30,10 +28,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     OrderDto.class, OrderShippingDetailsDto.class, OrderType.class, OrderShippingDetailsType.class,
     OrderMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class JaxbFactoryMethodSelectionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldMatchOnNameAndOrScope() {
         OrderType target = OrderMapper.INSTANCE.targetToSource( createSource() );
 

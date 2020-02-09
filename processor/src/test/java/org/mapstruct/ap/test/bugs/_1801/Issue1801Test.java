@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1801;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
@@ -15,10 +13,10 @@ import org.mapstruct.ap.test.bugs._1801.domain.Item;
 import org.mapstruct.ap.test.bugs._1801.dto.ImmutableItemDTO;
 import org.mapstruct.ap.test.bugs._1801.dto.ItemDTO;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithServiceImplementations;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     ItemDTO.class,
     ImmutableItemDTO.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1801")
 @WithServiceImplementations( {
     @WithServiceImplementation( provides = BuilderProvider.class, value = Issue1801BuilderProvider.class),
@@ -40,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1801Test {
 
-    @Test
+    @ProcessorTest
     public void shouldIncludeBuildeType() {
 
         ItemDTO item = ImmutableItemDTO.builder().id( "test" ).build();

@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._1338;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.atIndex;
@@ -19,7 +17,6 @@ import static org.assertj.core.api.Assertions.atIndex;
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1338")
 @WithClasses({
     Issue1338Mapper.class,
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.atIndex;
 })
 public class Issue1338Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseAdder() {
         Source source = new Source();
         source.setProperties( Arrays.asList( "first", "second" ) );

@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.naming;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,11 +12,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Test for naming of variables/members which conflict with keywords or parameter names.
@@ -28,10 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({ SourceTargetMapper.class, While.class, Break.class, Source.class })
 @IssueKey("53")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class VariableNamingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateImplementationsOfMethodsWithProblematicVariableNmes() {
         Source source = new Source();
 
