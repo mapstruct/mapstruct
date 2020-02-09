@@ -24,7 +24,7 @@
         <org.mapstruct.gem.version>1.0.0.Alpha1</org.mapstruct.gem.version>
         <!-- We can't go to 3.0.0-M2 as it has a regression. See https://issues.apache.org/jira/browse/MENFORCER-306 -->
         <org.apache.maven.plugins.enforcer.version>3.0.0-M1</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>3.0.0-M3</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.surefire.version>3.0.0-M4</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.26.0</org.eclipse.tycho.compiler-jdt.version>

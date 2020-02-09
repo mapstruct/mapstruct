@@ -14,16 +14,16 @@ import org.codehaus.plexus.compiler.CompilerException;
 import org.codehaus.plexus.compiler.CompilerResult;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.eclipse.tycho.compiler.jdt.JDTCompiler;
-import org.junit.runners.model.FrameworkMethod;
 import org.mapstruct.ap.MappingProcessor;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 
 /**
- * Statement that uses the Eclipse JDT compiler to compile.
+ * Extension that uses the Eclipse JDT compiler to compile.
  *
  * @author Andreas Gudian
+ * @author Filip Hrisafov
  */
-class EclipseCompilingStatement extends CompilingStatement {
+class EclipseCompilingExtension extends CompilingExtension {
 
     private static final List<String> ECLIPSE_COMPILER_CLASSPATH = buildEclipseCompilerClasspath();
 
@@ -33,8 +33,8 @@ class EclipseCompilingStatement extends CompilingStatement {
             .withPaths( PROCESSOR_CLASSPATH )
             .withOriginOf( ClassLoaderExecutor.class );
 
-    EclipseCompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
-        super( method, compilationCache );
+    EclipseCompilingExtension() {
+        super( Compiler.ECLIPSE );
     }
 
     @Override
@@ -139,10 +139,5 @@ class EclipseCompilingStatement extends CompilingStatement {
                 "plexus-component-annotations" };
 
         return filterBootClassPath( whitelist );
-    }
-
-    @Override
-    protected String getPathSuffix() {
-        return "_eclipse";
     }
 }
