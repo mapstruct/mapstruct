@@ -84,7 +84,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
+            <version>3.8.1</version>
             <configuration>
                 <source>1.8</source>
                 <target>1.8</target>
