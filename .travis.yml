@@ -14,6 +14,9 @@ matrix:
   - jdk: openjdk13
     # There is an issue with the documentation so skip it
     script: mvn -B -V clean install -DskipDistribution=true
+  - jdk: openjdk14
+    # There is an issue with the documentation so skip it
+    script: mvn -B -V clean install -DskipDistribution=true
     # There is an issue with the documentation so skip it
   - jdk: openjdk-ea
     script: mvn -B -V clean install -DskipDistribution=true
