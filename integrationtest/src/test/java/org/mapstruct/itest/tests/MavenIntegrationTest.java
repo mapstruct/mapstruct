@@ -5,6 +5,8 @@
  */
 package org.mapstruct.itest.tests;
 
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mapstruct.itest.testutil.extension.ProcessorTest;
@@ -97,6 +99,13 @@ public class MavenIntegrationTest {
         ProcessorTest.ProcessorType.JAVAC
     })
     void protobufBuilderTest() {
+    }
+
+    @ProcessorTest(baseDir = "recordsTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    @EnabledForJreRange(min = JRE.JAVA_14)
+    void recordsTest() {
     }
 
     @ProcessorTest(baseDir = "simpleTest")

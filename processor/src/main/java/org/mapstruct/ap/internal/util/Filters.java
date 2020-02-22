@@ -5,11 +5,16 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
@@ -30,8 +35,28 @@ import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
  * Filter methods for working with {@link Element} collections.
  *
  * @author Gunnar Morling
+ * @author Filip Hrisafov
  */
 public class Filters {
+
+    private static final Method RECORD_COMPONENTS_METHOD;
+    private static final Method RECORD_COMPONENT_ACCESSOR_METHOD;
+
+    static {
+        Method recordComponentsMethod;
+        Method recordComponentAccessorMethod;
+        try {
+            recordComponentsMethod = TypeElement.class.getMethod( "getRecordComponents" );
+            recordComponentAccessorMethod = Class.forName( "javax.lang.model.element.RecordComponentElement" )
+                .getMethod( "getAccessor" );
+        }
+        catch ( NoSuchMethodException | ClassNotFoundException e ) {
+            recordComponentsMethod = null;
+            recordComponentAccessorMethod = null;
+        }
+        RECORD_COMPONENTS_METHOD = recordComponentsMethod;
+        RECORD_COMPONENT_ACCESSOR_METHOD = recordComponentAccessorMethod;
+    }
 
     private final AccessorNamingUtils accessorNaming;
     private final Types typeUtils;
@@ -48,6 +73,33 @@ public class Filters {
             .filter( accessorNaming::isGetterMethod )
             .map( method ->  new ExecutableElementAccessor( method, getReturnType( method ), GETTER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
+    }
+
+    public Map<String, Accessor> recordsIn(TypeElement typeElement) {
+        if ( RECORD_COMPONENTS_METHOD == null || RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
+            return java.util.Collections.emptyMap();
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            List<Element> recordComponents = (List<Element>) RECORD_COMPONENTS_METHOD.invoke( typeElement );
+            Map<String, Accessor> recordAccessors = new LinkedHashMap<>();
+            for ( Element recordComponent : recordComponents ) {
+                ExecutableElement recordExecutableElement =
+                    (ExecutableElement) RECORD_COMPONENT_ACCESSOR_METHOD.invoke( recordComponent );
+                recordAccessors.put(
+                    recordComponent.getSimpleName().toString(),
+                    new ExecutableElementAccessor( recordExecutableElement,
+                        getReturnType( recordExecutableElement ),
+                        GETTER
+                    )
+                );
+            }
+
+            return recordAccessors;
+        }
+        catch ( IllegalAccessException | InvocationTargetException e ) {
+            return java.util.Collections.emptyMap();
+        }
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {

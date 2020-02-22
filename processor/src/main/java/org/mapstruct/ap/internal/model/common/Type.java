@@ -498,6 +498,11 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
+            Map<String, Accessor> recordAccessors = filters.recordsIn( typeElement );
+            for ( Map.Entry<String, Accessor> recordEntry : recordAccessors.entrySet() ) {
+                modifiableGetters.putIfAbsent( recordEntry.getKey(), recordEntry.getValue() );
+            }
+
             List<Accessor> fieldsList = filters.fieldsIn( getAllFields() );
             for ( Accessor field : fieldsList ) {
                 String propertyName = getPropertyName( field );
