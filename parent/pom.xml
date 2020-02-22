@@ -81,8 +81,8 @@
     </issueManagement>
 
     <ciManagement>
-        <system>Travis CI</system>
-        <url>https://travis-ci.org/mapstruct/mapstruct</url>
+        <system>Github Actions</system>
+        <url>https://github.com/mapstruct/mapstruct/actions</url>
     </ciManagement>
 
     <mailingLists>
@@ -430,7 +430,6 @@
                     <version>${org.apache.maven.plugins.surefire.version}</version>
                     <configuration>
                         <forkCount>${forkCount}</forkCount>
-                        <!-- Travis build workaround -->
                         <argLine>-Xms1024m -Xmx3072m</argLine>
                     </configuration>
                 </plugin>
@@ -577,12 +576,13 @@
                     <strictCheck>true</strictCheck>
                     <excludes>
                         <exclude>**/.idea/**</exclude>
+                        <exclude>**/.mvn/**</exclude>
                         <exclude>**/build-config/checkstyle.xml</exclude>
                         <exclude>**/build-config/import-control.xml</exclude>
                         <exclude>copyright.txt</exclude>
                         <exclude>**/LICENSE.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/travis-settings.xml</exclude>
+                        <exclude>**/ci-settings.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>**/forbidden-apis.txt</exclude>
                         <exclude>**/checkstyle-for-generated-sources.xml</exclude>
@@ -596,6 +596,7 @@
                         <exclude>.factorypath</exclude>
                         <exclude>.checkstyle</exclude>
                         <exclude>*.yml</exclude>
+                        <exclude>mvnw*</exclude>
                         <exclude>**/*.asciidoc</exclude>
                         <exclude>**/binding.xjb</exclude>
                     </excludes>

@@ -1,0 +1,66 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+  SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
+jobs:
+  test_jdk:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [11, 12, 13, 14-ea, 15-ea]
+    name: 'Linux JDK ${{ matrix.java }}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: 'Test'
+        run: ./mvnw -V -B --no-transfer-progress install -DskipDistribution=true
+  linux:
+    name: 'Linux JDK 8'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+      - name: 'Set up JDK 8'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: 'Test'
+        run: ./mvnw -V -B --no-transfer-progress install
+      - name: 'Generate coverage report'
+        run: ./mvnw jacoco:report
+      - name: 'Upload coverage to Codecov'
+        uses: codecov/codecov-action@v1
+      - name: 'Publish Snapshots'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'mapstruct/mapstruct'
+        run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
+  windows:
+    name: 'Windows'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Set up JDK 8'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: 'Test'
+        run: ./mvnw -V -B --no-transfer-progress install
+  mac:
+    name: 'Mac OS'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Set up JDK 8'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: 'Test'
+        run: ./mvnw -V -B --no-transfer-progress install

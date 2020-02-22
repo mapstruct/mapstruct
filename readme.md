@@ -4,7 +4,7 @@
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
-[![Build Status](https://img.shields.io/travis/mapstruct/mapstruct.svg)](https://travis-ci.org/mapstruct/mapstruct)
+[![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=master)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amaster+workflow%3ACI)
 [![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct)
 [![Gitter](https://img.shields.io/gitter/room/mapstruct/mapstruct.svg)](https://gitter.im/mapstruct/mapstruct-users)
 [![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/context:java)
@@ -164,7 +164,7 @@ Make sure that you have the [m2e_apt](https://marketplace.eclipse.org/content/m2
 * [Downloads](https://sourceforge.net/projects/mapstruct/files/)
 * [Issue tracker](https://github.com/mapstruct/mapstruct/issues)
 * [User group](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users)
-* [CI build](https://travis-ci.org/mapstruct/mapstruct/)
+* [CI build](https://github.com/mapstruct/mapstruct/actions/)
 
 ## Licensing
 
