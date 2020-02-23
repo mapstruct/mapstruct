@@ -20,6 +20,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,9 +39,17 @@ public class NestedMappingMethodInvocationTest {
 
     public static final QName QNAME = new QName( "dont-care" );
 
+    private Locale originalLocale;
+
     @Before
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault( originalLocale );
     }
 
     @Test

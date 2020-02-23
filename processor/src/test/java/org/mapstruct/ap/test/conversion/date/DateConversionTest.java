@@ -16,6 +16,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,9 +41,17 @@ import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class DateConversionTest {
 
+    private Locale originalLocale;
+
     @Before
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault( originalLocale );
     }
 
     @Test

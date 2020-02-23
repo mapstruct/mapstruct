@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -32,6 +34,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("121")
 public class Java8TimeConversionTest {
+
+    private TimeZone originalTimeZone;
+
+    @Before
+    public void setUp() {
+        originalTimeZone = TimeZone.getDefault();
+    }
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault( originalTimeZone );
+    }
 
     @Test
     public void testDateTimeToString() {
