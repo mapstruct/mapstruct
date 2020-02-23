@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +31,17 @@ import static org.assertj.core.api.Assertions.entry;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NumberFormatConversionTest {
 
+    private Locale originalLocale;
+
     @Before
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.ENGLISH );
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault( originalLocale );
     }
 
     @Test

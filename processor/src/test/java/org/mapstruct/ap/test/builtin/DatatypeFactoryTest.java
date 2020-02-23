@@ -10,7 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
@@ -33,6 +36,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 @RunWith(AnnotationProcessorTestRunner.class)
 public class DatatypeFactoryTest {
+
+    private TimeZone originalTimeZone;
+
+    @Before
+    public void setUp() {
+        originalTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
+    }
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault( originalTimeZone );
+    }
 
     @Test
     public void testNoConflictsWithOwnDatatypeFactory() throws ParseException {

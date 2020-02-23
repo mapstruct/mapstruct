@@ -16,6 +16,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +37,17 @@ import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
 @IssueKey("75")
 public class JodaConversionTest {
 
+    private Locale originalLocale;
+
     @Before
     public void setDefaultLocale() {
+        originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault( originalLocale );
     }
 
     @Test
