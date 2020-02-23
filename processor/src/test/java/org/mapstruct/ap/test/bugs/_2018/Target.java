@@ -10,6 +10,7 @@ package org.mapstruct.ap.test.bugs._2018;
  */
 public class Target {
 
+    // CHECKSTYLE:OFF
     private String some_value;
 
     public String getSome_value() {
@@ -19,4 +20,5 @@ public class Target {
     public void setSome_value(String some_value) {
         this.some_value = some_value;
     }
+    // CHECKSTYLE:ON
 }
