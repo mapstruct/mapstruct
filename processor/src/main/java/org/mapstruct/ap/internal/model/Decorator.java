@@ -125,7 +125,22 @@ public class Decorator extends GeneratedType {
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importTypes = super.getImportTypes();
-        addIfImportRequired( importTypes, decoratorType );
+        // DecoratorType needs special handling in case it is nested
+        // calling addIfImportRequired is not the most correct approach since it would
+        // lead to checking if the type is to be imported and that would be false
+        // since the Decorator is a nested class within the Mapper.
+        // However, when generating the Decorator this is not needed,
+        // because the Decorator is a top level class itself
+        // In a nutshell creating the Decorator should have its own ProcessorContext, but it doesn't
+        if ( decoratorType.getPackageName().equalsIgnoreCase( getPackageName() ) ) {
+            if ( decoratorType.getTypeElement() != null &&
+                decoratorType.getTypeElement().getNestingKind().isNested() ) {
+                importTypes.add( decoratorType );
+            }
+        }
+        else {
+            importTypes.add( decoratorType );
+        }
         return importTypes;
     }
 
