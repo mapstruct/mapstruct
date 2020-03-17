@@ -35,12 +35,13 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.ValueMappingUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -58,6 +59,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Elements elementUtils;
     private final TypeFactory typeFactory;
     private final AccessorNamingUtils accessorNaming;
+    private final ValueMappingUtils valueMappingUtils;
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
@@ -104,6 +106,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 AccessorNamingUtils accessorNaming,
+                ValueMappingUtils valueMappingUtils,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
@@ -112,12 +115,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
-                boolean isLiteral ) {
+                boolean isLiteral) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.typeFactory = typeFactory;
         this.accessorNaming = accessorNaming;
+        this.valueMappingUtils = valueMappingUtils;
 
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
@@ -392,6 +396,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             elementUtils,
             typeFactory,
             accessorNaming,
+            valueMappingUtils,
             typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
@@ -434,6 +439,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             elementUtils,
             typeFactory,
             accessorNaming,
+            valueMappingUtils,
             declaredType,
             (TypeElement) declaredType.asElement(),
             bounds,
@@ -635,12 +641,22 @@ public class Type extends ModelElement implements Comparable<Type> {
         return allFields;
     }
 
-    private String getPropertyName(Accessor accessor ) {
+    private String getPropertyName(Accessor accessor) {
         if ( accessor.getAccessorType() == AccessorType.FIELD ) {
             return accessorNaming.getPropertyName( (VariableElement) accessor.getElement() );
         }
         else {
             return accessorNaming.getPropertyName( (ExecutableElement) accessor.getElement() );
+        }
+    }
+
+    public String getMappedEnumValue(String enumValue) {
+
+        if ( isEnumType ) {
+            return valueMappingUtils.getEnumValue( this.typeElement, enumValue );
+        }
+        else {
+            return enumValue;
         }
     }
 

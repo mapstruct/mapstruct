@@ -9,15 +9,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -122,10 +123,23 @@ public class ValueMappingMethod extends MappingMethod {
 
                 // get all target constants
                 List<String> targetConstants = method.getReturnType().getEnumConstants();
+                List<String> mappedTargetConstants = targetConstants.stream()
+                    .map( e -> targetType.getMappedEnumValue( e ) )
+                    .collect( Collectors.toList() );
                 for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
-                    if ( targetConstants.contains( sourceConstant ) ) {
-                        mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
-                        unmappedSourceConstants.remove( sourceConstant );
+                    String mappedSourceConstant = sourceType.getMappedEnumValue( sourceConstant );
+                    for ( int i = 0; i < mappedTargetConstants.size(); i++ ) {
+                        if ( mappedTargetConstants.get( i ).equals( mappedSourceConstant ) ) {
+                            if ( sourceConstant.equals( mappedSourceConstant ) ) {
+                                // The standard enum value
+                                mappings.add( new MappingEntry( sourceConstant, targetConstants.get( i ) ) );
+                            }
+                            else {
+                                // The mapped enum value
+                                mappings.add( new MappingEntry( sourceConstant, mappedTargetConstants.get( i ) ) );
+                            }
+                            unmappedSourceConstants.remove( sourceConstant );
+                        }
                     }
                 }
 

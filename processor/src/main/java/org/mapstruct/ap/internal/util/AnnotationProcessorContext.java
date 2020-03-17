@@ -19,6 +19,8 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
+import org.mapstruct.ap.spi.DefaultEnumValueMappingStrategy;
+import org.mapstruct.ap.spi.EnumValueMappingStrategy;
 import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
@@ -35,9 +37,11 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
+    private EnumValueMappingStrategy enumValueMappingStrategy;
     private boolean initialized;
 
     private AccessorNamingUtils accessorNaming;
+    private ValueMappingUtils valueMappingUtils;
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
@@ -45,7 +49,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean verbose) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
-                findAstModifyingAnnotationProcessors() );
+            findAstModifyingAnnotationProcessors() );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -66,6 +70,8 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
         AccessorNamingStrategy defaultAccessorNamingStrategy;
         BuilderProvider defaultBuilderProvider;
+        EnumValueMappingStrategy defaultEnumValueMappingStrategy = new DefaultEnumValueMappingStrategy();
+
         if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
             defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
             defaultBuilderProvider = new ImmutablesBuilderProvider();
@@ -102,6 +108,16 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
+        this.enumValueMappingStrategy = Services.get( EnumValueMappingStrategy.class, defaultEnumValueMappingStrategy );
+        this.enumValueMappingStrategy.init( this );
+        if ( verbose ) {
+            messager.printMessage(
+                Diagnostic.Kind.NOTE,
+                "MapStruct: Using enum value mapping strategy: "
+                    + this.enumValueMappingStrategy.getClass().getCanonicalName()
+            );
+        }
+        this.valueMappingUtils = new ValueMappingUtils( enumValueMappingStrategy );
         this.initialized = true;
     }
 
@@ -109,7 +125,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         List<AstModifyingAnnotationProcessor> processors = new ArrayList<>();
 
         ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
-                AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
+            AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
         for ( AstModifyingAnnotationProcessor astModifyingAnnotationProcessor : loader ) {
@@ -146,5 +162,10 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     public BuilderProvider getBuilderProvider() {
         initialize();
         return builderProvider;
+    }
+
+    public ValueMappingUtils getEnumValueMappingStrategy() {
+        initialize();
+        return valueMappingUtils;
     }
 }
