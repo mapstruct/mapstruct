@@ -125,7 +125,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         List<AstModifyingAnnotationProcessor> processors = new ArrayList<>();
 
         ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
-            AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
+                AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
         for ( AstModifyingAnnotationProcessor astModifyingAnnotationProcessor : loader ) {
@@ -164,7 +164,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         return builderProvider;
     }
 
-    public ValueMappingUtils getEnumValueMappingStrategy() {
+    public ValueMappingUtils getValueMappingUtils() {
         initialize();
         return valueMappingUtils;
     }

@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 

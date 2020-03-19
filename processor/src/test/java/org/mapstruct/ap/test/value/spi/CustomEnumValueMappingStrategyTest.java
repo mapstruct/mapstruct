@@ -27,7 +27,6 @@ public class CustomEnumValueMappingStrategyTest {
     @Test
     public void shouldApplyCustomEnumMappingStrategy() {
         // Enum 2 enum
-
         // Check forward
         assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromCheeseType( CheeseType.BRIE ) );
 
@@ -49,6 +48,5 @@ public class CustomEnumValueMappingStrategyTest {
         assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseTypePostfixed( "BRIE" ) );
         assertEquals( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseTypePostfixed( null ) );
         assertEquals( CheeseType.BRIE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseType( "BRIE" ) );
-
     }
 }
