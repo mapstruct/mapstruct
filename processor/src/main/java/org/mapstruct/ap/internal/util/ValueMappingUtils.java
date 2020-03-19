@@ -5,26 +5,29 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import org.mapstruct.ap.spi.EnumValueMappingStrategy;
+import org.mapstruct.ap.spi.EnumConstantNamingStrategy;
 
 import javax.lang.model.element.TypeElement;
 
+/**
+ * Wrapper class for the EnumConstantNamingStrategy
+ */
 public class ValueMappingUtils {
-    public ValueMappingUtils(EnumValueMappingStrategy enumValueMappingStrategy) {
-        this.enumValueMappingStrategy = enumValueMappingStrategy;
+    private final EnumConstantNamingStrategy enumConstantNamingStrategy;
+
+    public ValueMappingUtils(EnumConstantNamingStrategy enumConstantNamingStrategy) {
+        this.enumConstantNamingStrategy = enumConstantNamingStrategy;
     }
 
-    private final EnumValueMappingStrategy enumValueMappingStrategy;
-
-    public String getEnumValue(TypeElement type, String enumValue) {
-        return enumValueMappingStrategy.getEnumValue( type, enumValue );
+    public String getEnumConstant(TypeElement enumType, String enumConstant) {
+        return enumConstantNamingStrategy.getEnumConstant( enumType, enumConstant );
     }
 
-    public boolean isMapToNull(TypeElement type, String enumValue) {
-        return enumValueMappingStrategy.isMapToNull( type, enumValue );
+    public boolean isMapEnumConstantToNull(TypeElement enumType, String enumConstant) {
+        return enumConstantNamingStrategy.isMapEnumConstantToNull( enumType, enumConstant );
     }
 
-    public String getDefaultEnumValue(TypeElement type) {
-        return enumValueMappingStrategy.getDefaultEnumValue( type );
+    public String getDefaultEnumConstant(TypeElement enumType) {
+        return enumConstantNamingStrategy.getDefaultEnumConstant( enumType );
     }
 }

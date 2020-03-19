@@ -8,11 +8,11 @@ package org.mapstruct.ap.spi;
 import javax.lang.model.element.TypeElement;
 
 /**
- * A service provider interface for the mapping between different enum value naming strategies
+ * A service provider interface for the mapping between different enum constants
  *
  * @author Arne Seime
  */
-public interface EnumValueMappingStrategy {
+public interface EnumConstantNamingStrategy {
 
     /**
      * Initializes the enum value mapping strategy
@@ -30,15 +30,15 @@ public interface EnumValueMappingStrategy {
      * @param enumConstant enum constant
      * @return true if this should be mapped to null in all cases
      */
-    boolean isMapToNull(TypeElement enumType, String enumConstant);
+    boolean isMapEnumConstantToNull(TypeElement enumType, String enumConstant);
 
     /**
-     * Return enum value to use if source is null
+     * Return default enum constant to use if source is null
      *
      * @param enumType the enum
      * @return enum value or null if there is no designated enum constant
      */
-    String getDefaultEnumValue(TypeElement enumType);
+    String getDefaultEnumConstant(TypeElement enumType);
 
     /**
      * Map enum constant to the value use for matching
@@ -47,6 +47,6 @@ public interface EnumValueMappingStrategy {
      * @param enumConstant constant to transform
      * @return the transformed constant - or or original value from parameter is no transformation is needed. Never return null
      */
-    String getEnumValue(TypeElement enumType, String enumConstant);
+    String getEnumConstant(TypeElement enumType, String enumConstant);
 
 }

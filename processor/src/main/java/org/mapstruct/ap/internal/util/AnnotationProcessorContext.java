@@ -19,8 +19,8 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
-import org.mapstruct.ap.spi.DefaultEnumValueMappingStrategy;
-import org.mapstruct.ap.spi.EnumValueMappingStrategy;
+import org.mapstruct.ap.spi.DefaultEnumConstantNamingStrategy;
+import org.mapstruct.ap.spi.EnumConstantNamingStrategy;
 import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
@@ -37,7 +37,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
-    private EnumValueMappingStrategy enumValueMappingStrategy;
+    private EnumConstantNamingStrategy enumConstantNamingStrategy;
     private boolean initialized;
 
     private AccessorNamingUtils accessorNaming;
@@ -70,7 +70,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
         AccessorNamingStrategy defaultAccessorNamingStrategy;
         BuilderProvider defaultBuilderProvider;
-        EnumValueMappingStrategy defaultEnumValueMappingStrategy = new DefaultEnumValueMappingStrategy();
+        EnumConstantNamingStrategy defaultEnumConstantNamingStrategy = new DefaultEnumConstantNamingStrategy();
 
         if ( elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN ) != null ) {
             defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
@@ -108,16 +108,18 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
-        this.enumValueMappingStrategy = Services.get( EnumValueMappingStrategy.class, defaultEnumValueMappingStrategy );
-        this.enumValueMappingStrategy.init( this );
+        this.enumConstantNamingStrategy = Services.get( EnumConstantNamingStrategy.class,
+            defaultEnumConstantNamingStrategy
+        );
+        this.enumConstantNamingStrategy.init( this );
         if ( verbose ) {
             messager.printMessage(
                 Diagnostic.Kind.NOTE,
                 "MapStruct: Using enum value mapping strategy: "
-                    + this.enumValueMappingStrategy.getClass().getCanonicalName()
+                    + this.enumConstantNamingStrategy.getClass().getCanonicalName()
             );
         }
-        this.valueMappingUtils = new ValueMappingUtils( enumValueMappingStrategy );
+        this.valueMappingUtils = new ValueMappingUtils( enumConstantNamingStrategy );
         this.initialized = true;
     }
 

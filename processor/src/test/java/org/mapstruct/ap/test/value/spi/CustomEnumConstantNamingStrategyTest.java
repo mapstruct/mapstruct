@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.value.spi;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.spi.EnumConstantNamingStrategy;
 import org.mapstruct.ap.test.value.spi.dto.CheeseTypePostfixed;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
@@ -16,14 +17,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * Test do demonstrate the usage of custom implementations of {@link org.mapstruct.ap.spi.EnumValueMappingStrategy}.
+ * Test do demonstrate the usage of custom implementations of {@link EnumConstantNamingStrategy}.
  *
  * @author Arne Seime
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ CheeseTypePostfixed.class, CheeseType.class, CheeseTypeMapper.class })
-@WithServiceImplementation(CustomEnumValueMappingStrategy.class)
-public class CustomEnumValueMappingStrategyTest {
+@WithServiceImplementation(CustomEnumConstantNamingStrategy.class)
+public class CustomEnumConstantNamingStrategyTest {
     @Test
     public void shouldApplyCustomEnumMappingStrategy() {
         // Enum 2 enum
