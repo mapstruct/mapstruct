@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.EnumConstantNamingStrategy;
 import org.mapstruct.ap.test.value.spi.dto.CheeseTypePostfixed;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Arne Seime
  */
+@IssueKey( "1220" )
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ CheeseTypePostfixed.class, CheeseType.class, CheeseTypeMapper.class })
 @WithServiceImplementation(CustomEnumConstantNamingStrategy.class)
