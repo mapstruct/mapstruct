@@ -14,7 +14,7 @@ public interface CheeseTypeMapper {
 
     CheeseTypeMapper INSTANCE = Mappers.getMapper( CheeseTypeMapper.class );
 
-    CheeseTypePostfixed map(CheeseType source);
+    CheeseTypePostfixed mapToPostfixed(CheeseType source);
 
-    CheeseType map(CheeseTypePostfixed source);
+    CheeseType mapFromPostfixed(CheeseTypePostfixed source);
 }

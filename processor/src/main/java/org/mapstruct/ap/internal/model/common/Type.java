@@ -651,12 +651,29 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public String getMappedEnumValue(String enumValue) {
-
         if ( isEnumType ) {
             return valueMappingUtils.getEnumValue( this.typeElement, enumValue );
         }
         else {
             return enumValue;
+        }
+    }
+
+    public boolean isMapToNull(String enumValue) {
+        if ( isEnumType ) {
+            return valueMappingUtils.isMapToNull( this.typeElement, enumValue );
+        }
+        else {
+            return false;
+        }
+    }
+
+    public String getDefaultEnumValue() {
+        if ( isEnumType ) {
+            return valueMappingUtils.getDefaultEnumValue( this.typeElement );
+        }
+        else {
+            return null;
         }
     }
 
@@ -1099,5 +1116,4 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         return trimmedClassName;
     }
-
 }

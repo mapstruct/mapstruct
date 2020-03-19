@@ -13,6 +13,7 @@ import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test do demonstrate the usage of custom implementations of {@link org.mapstruct.ap.spi.EnumValueMappingStrategy}.
@@ -25,10 +26,17 @@ import static org.junit.Assert.assertEquals;
 public class CustomEnumValueMappingStrategyTest {
     @Test
     public void shouldApplyCustomEnumMappingStrategy() {
-        CheeseTypePostfixed mappedCheese = CheeseTypeMapper.INSTANCE.map( CheeseType.BRIE );
-        assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, mappedCheese );
+        // Check forward
+        assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapToPostfixed( CheeseType.BRIE ) );
 
-        CheeseType unmappedCheese = CheeseTypeMapper.INSTANCE.map( CheeseTypePostfixed.BRIE_CHEESE_TYPE );
-        assertEquals( CheeseType.BRIE, unmappedCheese );
+        // And back again
+        assertEquals( CheeseType.BRIE, CheeseTypeMapper.INSTANCE.mapFromPostfixed( CheeseTypePostfixed.BRIE_CHEESE_TYPE ) );
+
+        // Null
+        assertNull( CheeseTypeMapper.INSTANCE.mapFromPostfixed( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE ) );
+
+        // Default value
+        assertEquals( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapToPostfixed( null ) );
+
     }
 }

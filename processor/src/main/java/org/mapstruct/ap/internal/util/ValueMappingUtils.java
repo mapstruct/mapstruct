@@ -19,4 +19,12 @@ public class ValueMappingUtils {
     public String getEnumValue(TypeElement type, String enumValue) {
         return enumValueMappingStrategy.getEnumValue( type, enumValue );
     }
+
+    public boolean isMapToNull(TypeElement type, String enumValue) {
+        return enumValueMappingStrategy.isMapToNull( type, enumValue );
+    }
+
+    public String getDefaultEnumValue(TypeElement type) {
+        return enumValueMappingStrategy.getDefaultEnumValue( type );
+    }
 }

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.value.spi.dto;
 
 public enum CheeseTypePostfixed {
+    DEFAULT_CHEESE_TYPE,
     BRIE_CHEESE_TYPE,
-    ROQUEFORT_CHEESE_TYPE
+    ROQUEFORT_CHEESE_TYPE,
 }

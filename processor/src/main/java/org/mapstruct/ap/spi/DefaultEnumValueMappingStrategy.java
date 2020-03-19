@@ -8,8 +8,19 @@ package org.mapstruct.ap.spi;
 import javax.lang.model.element.TypeElement;
 
 public class DefaultEnumValueMappingStrategy implements EnumValueMappingStrategy {
+
     @Override
-    public String getEnumValue(TypeElement enumType, String enumValue) {
-        return enumValue;
+    public String getEnumValue(TypeElement enumType, String enumConstant) {
+        return enumConstant;
+    }
+
+    @Override
+    public boolean isMapToNull(TypeElement enumType, String enumConstant) {
+        return false;
+    }
+
+    @Override
+    public String getDefaultEnumValue(TypeElement enumType) {
+        return null;
     }
 }

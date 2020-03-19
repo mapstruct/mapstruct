@@ -118,6 +118,19 @@ public class ValueMappingMethod extends MappingMethod {
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
+            if ( valueMappings.nullTarget == null ) {
+                // If no null value target is defined, use from SPI
+                valueMappings.nullValueTarget = targetType.getDefaultEnumValue();
+            }
+
+            // Ask SPI for any enum values that should always be ignored
+            for ( String unmappedSourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
+                if ( sourceType.isMapToNull( unmappedSourceConstant ) ) {
+                    mappings.add( new MappingEntry( unmappedSourceConstant, null ) );
+                    unmappedSourceConstants.remove( unmappedSourceConstant );
+                }
+            }
+
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
 
@@ -129,19 +142,27 @@ public class ValueMappingMethod extends MappingMethod {
                 for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
                     String mappedSourceConstant = sourceType.getMappedEnumValue( sourceConstant );
                     for ( int i = 0; i < mappedTargetConstants.size(); i++ ) {
-                        if ( mappedTargetConstants.get( i ).equals( mappedSourceConstant ) ) {
+
+                        String currentTargetConstant = mappedTargetConstants.get( i );
+                        if ( currentTargetConstant != null &&
+                            currentTargetConstant.equals( mappedSourceConstant ) ) {
                             if ( sourceConstant.equals( mappedSourceConstant ) ) {
                                 // The standard enum value
                                 mappings.add( new MappingEntry( sourceConstant, targetConstants.get( i ) ) );
                             }
                             else {
                                 // The mapped enum value
-                                mappings.add( new MappingEntry( sourceConstant, mappedTargetConstants.get( i ) ) );
+                                mappings.add( new MappingEntry(
+                                    sourceConstant,
+                                    currentTargetConstant
+                                ) );
                             }
                             unmappedSourceConstants.remove( sourceConstant );
                         }
+
                     }
                 }
+
 
                 if ( valueMappings.defaultTarget == null && !unmappedSourceConstants.isEmpty() ) {
                     String sourceErrorMessage = "source";
