@@ -36,7 +36,7 @@ import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.ValueMappingUtils;
+import org.mapstruct.ap.internal.util.ValueNamingUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
@@ -59,7 +59,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Elements elementUtils;
     private final TypeFactory typeFactory;
     private final AccessorNamingUtils accessorNaming;
-    private final ValueMappingUtils valueMappingUtils;
+    private final ValueNamingUtils valueNamingUtils;
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
@@ -106,7 +106,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 AccessorNamingUtils accessorNaming,
-                ValueMappingUtils valueMappingUtils,
+                ValueNamingUtils valueNamingUtils,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
@@ -115,13 +115,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
-                boolean isLiteral ) {
+                boolean isLiteral) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.typeFactory = typeFactory;
         this.accessorNaming = accessorNaming;
-        this.valueMappingUtils = valueMappingUtils;
+        this.valueNamingUtils = valueNamingUtils;
 
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
@@ -396,7 +396,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             elementUtils,
             typeFactory,
             accessorNaming,
-            valueMappingUtils,
+            valueNamingUtils,
             typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
@@ -439,7 +439,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             elementUtils,
             typeFactory,
             accessorNaming,
-            valueMappingUtils,
+            valueNamingUtils,
             declaredType,
             (TypeElement) declaredType.asElement(),
             bounds,
@@ -650,27 +650,27 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
 
-    public String getMappedEnumValue(String enumValue) {
+    public String getRenamedEnumConstant(String enumConstant) {
         if ( isEnumType ) {
-            return valueMappingUtils.getEnumConstant( this.typeElement, enumValue );
+            return valueNamingUtils.renameEnumConstant( this.typeElement, enumConstant );
         }
         else {
-            return enumValue;
+            return enumConstant;
         }
     }
 
-    public boolean isMapToNull(String enumValue) {
+    public boolean isMapEnumConstantToNull(String enumConstant) {
         if ( isEnumType ) {
-            return valueMappingUtils.isMapEnumConstantToNull( this.typeElement, enumValue );
+            return valueNamingUtils.isMapEnumConstantToNull( this.typeElement, enumConstant );
         }
         else {
             return false;
         }
     }
 
-    public String getDefaultEnumValue() {
+    public String getDefaultEnumConstant() {
         if ( isEnumType ) {
-            return valueMappingUtils.getDefaultEnumConstant( this.typeElement );
+            return valueNamingUtils.getDefaultEnumConstant( this.typeElement );
         }
         else {
             return null;

@@ -270,7 +270,7 @@ public class TypeFactory {
         return new Type(
             typeUtils, elementUtils, this,
             roundContext.getAnnotationProcessorContext().getAccessorNaming(),
-            roundContext.getAnnotationProcessorContext().getValueMappingUtils(),
+            roundContext.getAnnotationProcessorContext().getValueNamingUtils(),
             mirror,
             typeElement,
             getTypeParameters( mirror, false ),
@@ -489,7 +489,7 @@ public class TypeFactory {
                 elementUtils,
                 this,
                 roundContext.getAnnotationProcessorContext().getAccessorNaming(),
-                roundContext.getAnnotationProcessorContext().getValueMappingUtils(),
+                roundContext.getAnnotationProcessorContext().getValueNamingUtils(),
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )

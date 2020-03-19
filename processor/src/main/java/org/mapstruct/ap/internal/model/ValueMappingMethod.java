@@ -120,12 +120,12 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( valueMappings.nullTarget == null ) {
                 // If no null value target is defined, use from SPI
-                valueMappings.nullValueTarget = targetType.getDefaultEnumValue();
+                valueMappings.nullValueTarget = targetType.getDefaultEnumConstant();
             }
 
             // Ask SPI for any enum values that should always be ignored
             for ( String unmappedSourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
-                if ( sourceType.isMapToNull( unmappedSourceConstant ) ) {
+                if ( sourceType.isMapEnumConstantToNull( unmappedSourceConstant ) ) {
                     mappings.add( new MappingEntry( unmappedSourceConstant, null ) );
                     unmappedSourceConstants.remove( unmappedSourceConstant );
                 }
@@ -136,17 +136,16 @@ public class ValueMappingMethod extends MappingMethod {
 
                 // get all target constants
                 List<String> targetConstants = method.getReturnType().getEnumConstants();
-                List<String> mappedTargetConstants = targetConstants.stream()
-                    .map( e -> targetType.getMappedEnumValue( e ) )
+                List<String> renamedTargetConstants = targetConstants.stream()
+                    .map( e -> targetType.getRenamedEnumConstant( e ) )
                     .collect( Collectors.toList() );
                 for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
-                    String mappedSourceConstant = sourceType.getMappedEnumValue( sourceConstant );
-                    for ( int i = 0; i < mappedTargetConstants.size(); i++ ) {
+                    String renamedSourceConstant = sourceType.getRenamedEnumConstant( sourceConstant );
+                    for ( int i = 0; i < renamedTargetConstants.size(); i++ ) {
 
-                        String currentTargetConstant = mappedTargetConstants.get( i );
-                        if ( currentTargetConstant != null &&
-                            currentTargetConstant.equals( mappedSourceConstant ) ) {
-                            if ( sourceConstant.equals( mappedSourceConstant ) ) {
+                        String currentRenamedTargetConstant = renamedTargetConstants.get( i );
+                        if ( currentRenamedTargetConstant.equals( renamedSourceConstant ) ) {
+                            if ( sourceConstant.equals( renamedSourceConstant ) ) {
                                 // The standard enum value
                                 mappings.add( new MappingEntry( sourceConstant, targetConstants.get( i ) ) );
                             }
@@ -154,7 +153,7 @@ public class ValueMappingMethod extends MappingMethod {
                                 // The mapped enum value
                                 mappings.add( new MappingEntry(
                                     sourceConstant,
-                                    currentTargetConstant
+                                    currentRenamedTargetConstant
                                 ) );
                             }
                             unmappedSourceConstants.remove( sourceConstant );
@@ -207,7 +206,7 @@ public class ValueMappingMethod extends MappingMethod {
 
              // Ask SPI for any enum values that should always be ignored
              for ( String unmappedSourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
-                 if ( sourceType.isMapToNull( unmappedSourceConstant ) ) {
+                 if ( sourceType.isMapEnumConstantToNull( unmappedSourceConstant ) ) {
                      mappings.add( new MappingEntry( unmappedSourceConstant, null ) );
                      unmappedSourceConstants.remove( unmappedSourceConstant );
                  }
@@ -220,7 +219,7 @@ public class ValueMappingMethod extends MappingMethod {
                  for ( String sourceConstant : unmappedSourceConstants ) {
                      mappings.add( new MappingEntry(
                          sourceConstant,
-                         sourceType.getMappedEnumValue( sourceConstant )
+                         sourceType.getRenamedEnumConstant( sourceConstant )
                      ) );
                  }
              }
@@ -239,7 +238,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( valueMappings.nullTarget == null ) {
                 // If no null value target is defined, use from SPI
-                valueMappings.nullValueTarget = targetType.getDefaultEnumValue();
+                valueMappings.nullValueTarget = targetType.getDefaultEnumConstant();
             }
 
             // Start to fill the mappings with the defined valuemappings
@@ -252,12 +251,14 @@ public class ValueMappingMethod extends MappingMethod {
 
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
-                List<String> mappedTargetConstants = unmappedTargetConstants.stream()
-                    .map( e -> targetType.getMappedEnumValue( e ) )
+                List<String> renamedTargetConstants = unmappedTargetConstants.stream()
+                    .map( e -> targetType.getRenamedEnumConstant( e ) )
                     .collect( Collectors.toList() );
-                for ( int i = 0; i < mappedTargetConstants.size(); i++ ) {
-                    mappings.add( new MappingEntry( mappedTargetConstants.get( i ),
-                        unmappedTargetConstants.get( i ) ) );
+                for ( int i = 0; i < renamedTargetConstants.size(); i++ ) {
+                    mappings.add( new MappingEntry(
+                        renamedTargetConstants.get( i ),
+                        unmappedTargetConstants.get( i )
+                    ) );
                 }
                 unmappedTargetConstants.clear(); // All empty
             }

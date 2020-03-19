@@ -12,14 +12,14 @@ import javax.lang.model.element.TypeElement;
 /**
  * Wrapper class for the EnumConstantNamingStrategy
  */
-public class ValueMappingUtils {
+public class ValueNamingUtils {
     private final EnumConstantNamingStrategy enumConstantNamingStrategy;
 
-    public ValueMappingUtils(EnumConstantNamingStrategy enumConstantNamingStrategy) {
+    public ValueNamingUtils(EnumConstantNamingStrategy enumConstantNamingStrategy) {
         this.enumConstantNamingStrategy = enumConstantNamingStrategy;
     }
 
-    public String getEnumConstant(TypeElement enumType, String enumConstant) {
+    public String renameEnumConstant(TypeElement enumType, String enumConstant) {
         return enumConstantNamingStrategy.getEnumConstant( enumType, enumConstant );
     }
 

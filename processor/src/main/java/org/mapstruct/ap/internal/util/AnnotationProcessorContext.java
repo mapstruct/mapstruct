@@ -41,7 +41,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private boolean initialized;
 
     private AccessorNamingUtils accessorNaming;
-    private ValueMappingUtils valueMappingUtils;
+    private ValueNamingUtils valueNamingUtils;
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
@@ -119,7 +119,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
                     + this.enumConstantNamingStrategy.getClass().getCanonicalName()
             );
         }
-        this.valueMappingUtils = new ValueMappingUtils( enumConstantNamingStrategy );
+        this.valueNamingUtils = new ValueNamingUtils( enumConstantNamingStrategy );
         this.initialized = true;
     }
 
@@ -166,8 +166,8 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         return builderProvider;
     }
 
-    public ValueMappingUtils getValueMappingUtils() {
+    public ValueNamingUtils getValueNamingUtils() {
         initialize();
-        return valueMappingUtils;
+        return valueNamingUtils;
     }
 }
