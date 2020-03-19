@@ -6,6 +6,8 @@
 package org.mapstruct.ap.test.value.spi;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ValueMapping;
 import org.mapstruct.ap.test.value.spi.dto.CheeseTypePostfixed;
 import org.mapstruct.factory.Mappers;
 
@@ -14,7 +16,17 @@ public interface CheeseTypeMapper {
 
     CheeseTypeMapper INSTANCE = Mappers.getMapper( CheeseTypeMapper.class );
 
-    CheeseTypePostfixed mapToPostfixed(CheeseType source);
+    CheeseTypePostfixed mapFromCheeseType(CheeseType source);
 
-    CheeseType mapFromPostfixed(CheeseTypePostfixed source);
+    CheeseType mapFromCheeseTypePostfixed(CheeseTypePostfixed source);
+
+    String mapToStringFromPostfixed(CheeseTypePostfixed source);
+
+    String mapToFromCheeseType(CheeseType source);
+
+    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
+    CheeseTypePostfixed mapFromStringToCheeseTypePostfixed(String source);
+
+    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
+    CheeseType mapFromStringToCheeseType(String source);
 }

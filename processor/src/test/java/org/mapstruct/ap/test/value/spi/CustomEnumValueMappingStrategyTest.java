@@ -26,17 +26,29 @@ import static org.junit.Assert.assertNull;
 public class CustomEnumValueMappingStrategyTest {
     @Test
     public void shouldApplyCustomEnumMappingStrategy() {
+        // Enum 2 enum
+
         // Check forward
-        assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapToPostfixed( CheeseType.BRIE ) );
+        assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromCheeseType( CheeseType.BRIE ) );
 
         // And back again
-        assertEquals( CheeseType.BRIE, CheeseTypeMapper.INSTANCE.mapFromPostfixed( CheeseTypePostfixed.BRIE_CHEESE_TYPE ) );
+        assertEquals( CheeseType.BRIE, CheeseTypeMapper.INSTANCE.mapFromCheeseTypePostfixed( CheeseTypePostfixed.BRIE_CHEESE_TYPE ) );
 
         // Null
-        assertNull( CheeseTypeMapper.INSTANCE.mapFromPostfixed( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE ) );
+        assertNull( CheeseTypeMapper.INSTANCE.mapFromCheeseTypePostfixed( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE ) );
 
         // Default value
-        assertEquals( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapToPostfixed( null ) );
+        assertEquals( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromCheeseType( null ) );
+
+        // Enum 2 string
+        assertEquals( "BRIE", CheeseTypeMapper.INSTANCE.mapToStringFromPostfixed( CheeseTypePostfixed.BRIE_CHEESE_TYPE ) );
+        assertEquals( null, CheeseTypeMapper.INSTANCE.mapToStringFromPostfixed( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE ) );
+        assertEquals( "BRIE", CheeseTypeMapper.INSTANCE.mapToFromCheeseType( CheeseType.BRIE ) );
+
+        // String 2 enum
+        assertEquals( CheeseTypePostfixed.BRIE_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseTypePostfixed( "BRIE" ) );
+        assertEquals( CheeseTypePostfixed.DEFAULT_CHEESE_TYPE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseTypePostfixed( null ) );
+        assertEquals( CheeseType.BRIE, CheeseTypeMapper.INSTANCE.mapFromStringToCheeseType( "BRIE" ) );
 
     }
 }

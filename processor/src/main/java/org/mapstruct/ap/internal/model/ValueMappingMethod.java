@@ -197,33 +197,49 @@ public class ValueMappingMethod extends MappingMethod {
                 return mappings;
             }
 
-            // Start to fill the mappings with the defined valuemappings
-            for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
-                String target =
-                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
-                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
-                unmappedSourceConstants.remove( valueMapping.getSource() );
-            }
+             // Start to fill the mappings with the defined valuemappings
+             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
+                 String target =
+                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
+                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                 unmappedSourceConstants.remove( valueMapping.getSource() );
+             }
 
-            // add mappings based on name
-            if ( !valueMappings.hasMapAnyUnmapped ) {
+             // Ask SPI for any enum values that should always be ignored
+             for ( String unmappedSourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
+                 if ( sourceType.isMapToNull( unmappedSourceConstant ) ) {
+                     mappings.add( new MappingEntry( unmappedSourceConstant, null ) );
+                     unmappedSourceConstants.remove( unmappedSourceConstant );
+                 }
+             }
 
-                // all remaining constants are mapped
-                for ( String sourceConstant : unmappedSourceConstants ) {
-                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
-                }
-            }
-            return mappings;
+             // add mappings based on name
+             if ( !valueMappings.hasMapAnyUnmapped ) {
+
+                 // all remaining constants are mapped
+                 for ( String sourceConstant : unmappedSourceConstants ) {
+                     mappings.add( new MappingEntry(
+                         sourceConstant,
+                         sourceType.getMappedEnumValue( sourceConstant )
+                     ) );
+                 }
+             }
+             return mappings;
         }
 
         private List<MappingEntry> stringToEnumMapping(Method method, Type targetType ) {
 
             List<MappingEntry> mappings = new ArrayList<>();
-            List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            List<String> unmappedTargetConstants = new ArrayList<>( targetType.getEnumConstants() );
+            boolean targetErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             boolean mandatoryMissing = !reportErrorIfAnyRemainingOrAnyUnMappedMissing( method );
-            if ( sourceErrorOccurred || mandatoryMissing ) {
+            if ( targetErrorOccurred || mandatoryMissing ) {
                 return mappings;
+            }
+
+            if ( valueMappings.nullTarget == null ) {
+                // If no null value target is defined, use from SPI
+                valueMappings.nullValueTarget = targetType.getDefaultEnumValue();
             }
 
             // Start to fill the mappings with the defined valuemappings
@@ -231,16 +247,19 @@ public class ValueMappingMethod extends MappingMethod {
                 String target =
                     NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
                 mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
-                unmappedSourceConstants.remove( valueMapping.getSource() );
+                unmappedTargetConstants.remove( valueMapping.getSource() );
             }
 
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
-
-                // all remaining constants are mapped
-                for ( String sourceConstant : unmappedSourceConstants ) {
-                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                List<String> mappedTargetConstants = unmappedTargetConstants.stream()
+                    .map( e -> targetType.getMappedEnumValue( e ) )
+                    .collect( Collectors.toList() );
+                for ( int i = 0; i < mappedTargetConstants.size(); i++ ) {
+                    mappings.add( new MappingEntry( mappedTargetConstants.get( i ),
+                        unmappedTargetConstants.get( i ) ) );
                 }
+                unmappedTargetConstants.clear(); // All empty
             }
             return mappings;
         }
