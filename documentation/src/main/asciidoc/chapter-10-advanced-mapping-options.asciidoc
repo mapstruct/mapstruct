@@ -227,7 +227,7 @@ The source presence checker name can be changed in the MapStruct service provide
 [NOTE]
 ====
 Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
-null check, regardless the value of the `NullValueheckStrategy` to avoid addition of `null` to the target collection or map.
+null check, regardless the value of the `NullValueCheckStrategy` to avoid addition of `null` to the target collection or map.
 ====
 [[exceptions]]
 === Exceptions
