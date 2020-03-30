@@ -4,7 +4,7 @@ This chapter describes several advanced options which allow to fine-tune the beh
 [[default-values-and-constants]]
 === Default values and constants
 
-Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values. When the target type is a primitive or a boxed type, the String value is taken literal. Bit / octal / decimal / hex patterns are allowed in such case as long as they are a valid literal.
+Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values. When the target type is a primitive or a boxed type, the String value is taken literal. Bit / octal / decimal / hex patterns are allowed in such a case as long as they are a valid literal.
 In all other cases, constant or default values are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
 
 A mapping with a constant must not include a reference to a source property. The following example shows some mappings using default values and constants:
@@ -108,7 +108,7 @@ public interface SourceTargetMapper {
 ----
 ====
 
-The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation ((see <<expressions>>).
+The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation (see <<expressions>>).
 
 [[determining-result-type]]
 === Determining the result type
@@ -189,8 +189,8 @@ The strategy works in a hierarchical fashion. Setting `Mapping#nullValueProperty
 
 [NOTE]
 ====
-Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
-null check, regardless the value of the `NullValuePropertyMappingStrategy` to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor (see `CollectionMappingStrategy`), MapStruct will always generate a source property
+null check, regardless of the value of the `NullValuePropertyMappingStrategy`, to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
 ====
 
 [TIP]
@@ -209,7 +209,7 @@ MapStruct offers control over when to generate a `null` check. By default (`null
 .. calling another type conversion and subsequently calling the setter on the target.
 .. calling a mapping method and subsequently calling the setter on the target.
 
-First calling a mapping method on the source property is not protected by a null check. Therefor generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
+First calling a mapping method on the source property is not protected by a null check. Therefore generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
 
 The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
 
@@ -227,7 +227,7 @@ The source presence checker name can be changed in the MapStruct service provide
 [NOTE]
 ====
 Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
-null check, regardless the value of the `NullValueheckStrategy` to avoid addition of `null` to the target collection or map.
+null check, regardless the value of the `NullValueCheckStrategy` to avoid addition of `null` to the target collection or map.
 ====
 [[exceptions]]
 === Exceptions
