@@ -156,4 +156,11 @@ public class MavenIntegrationTest {
     void usesTypeGenerationTestEclipse() {
     }
 
+    /**
+     * Tests usage of MapStruct with faulty provider of AstModifyingAnnotationProcessor.
+     */
+    @ProcessorTest(baseDir = "faultyAstModifyingAnnotationProcessorTest")
+    void faultyAstModifyingProcessor() {
+    }
+
 }

@@ -1,0 +1,7 @@
+# Copyright MapStruct Authors.
+#
+# Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+org.mapstruct.itest.faultyAstModifyingProcessor.UnknownAstModifyingProcessor
+org.mapstruct.itest.faultyAstModifyingProcessor.AstModifyingProcessorSaysYes
+org.mapstruct.itest.faultyAstModifyingProcessor.FaultyAstModifyingProcessor
+org.mapstruct.itest.faultyAstModifyingProcessor.FaultyStaticAstModifyingProcessor
