@@ -5,7 +5,10 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -45,7 +48,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean verbose) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
-                findAstModifyingAnnotationProcessors() );
+            findAstModifyingAnnotationProcessors( messager ) );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -105,18 +108,84 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         this.initialized = true;
     }
 
-    private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
+    private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors(Messager messager) {
         List<AstModifyingAnnotationProcessor> processors = new ArrayList<>();
 
         ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
                 AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
-        for ( AstModifyingAnnotationProcessor astModifyingAnnotationProcessor : loader ) {
-            processors.add( astModifyingAnnotationProcessor );
+        // Lombok packages an AstModifyingAnnotationProcessor as part of their jar
+        // this leads to problems within Eclipse when lombok is used as an agent
+        // Therefore we are wrapping this into an iterator that can handle exceptions by ignoring
+        // the faulty processor
+        Iterator<AstModifyingAnnotationProcessor> loaderIterator = new FaultyDelegatingIterator(
+            messager,
+            loader.iterator()
+        );
+
+        while ( loaderIterator.hasNext() ) {
+            AstModifyingAnnotationProcessor processor = loaderIterator.next();
+            if ( processor != null ) {
+                processors.add( processor );
+            }
         }
 
         return processors;
+    }
+
+    private static class FaultyDelegatingIterator implements Iterator<AstModifyingAnnotationProcessor> {
+
+        private final Messager messager;
+        private final Iterator<AstModifyingAnnotationProcessor> delegate;
+
+        private FaultyDelegatingIterator(Messager messager,
+            Iterator<AstModifyingAnnotationProcessor> delegate) {
+            this.messager = messager;
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean hasNext() {
+            // Check the delegate maximum of 5 times
+            // before returning false
+            int failures = 5;
+            while ( failures > 0 ) {
+                try {
+                    return delegate.hasNext();
+                }
+                catch ( Throwable t ) {
+                    failures--;
+                    logFailure( t );
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public AstModifyingAnnotationProcessor next() {
+            try {
+                return delegate.next();
+            }
+            catch ( Throwable t ) {
+                logFailure( t );
+                return null;
+            }
+        }
+
+        private void logFailure(Throwable t) {
+            StringWriter sw = new StringWriter();
+            t.printStackTrace( new PrintWriter( sw ) );
+
+            String reportableStacktrace = sw.toString().replace( System.lineSeparator(), "  " );
+
+            messager.printMessage(
+                Diagnostic.Kind.WARNING,
+                "Failed to read AstModifyingAnnotationProcessor. Reading next processor. Reason: " +
+                    reportableStacktrace
+            );
+        }
     }
 
     @Override
