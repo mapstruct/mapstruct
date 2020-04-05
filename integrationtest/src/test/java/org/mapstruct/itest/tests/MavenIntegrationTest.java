@@ -130,4 +130,10 @@ public class MavenIntegrationTest {
     void targetTypeGenerationTest() {
     }
 
+    @ProcessorTest(baseDir = "moduleInfoTest")
+    @EnabledForJreRange(min = JRE.JAVA_11)
+    void moduleInfoTest() {
+
+    }
+
 }
