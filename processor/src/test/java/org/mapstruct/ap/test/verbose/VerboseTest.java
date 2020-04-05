@@ -30,7 +30,10 @@ import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
 public class VerboseTest {
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^MapStruct: Using accessor naming strategy:.*DefaultAccessorNamingStrategy.*$")
@@ -41,7 +44,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @WithServiceImplementation(provides = BuilderProvider.class, value = ImmutablesBuilderProvider.class)
     @WithServiceImplementation(provides = AccessorNamingStrategy.class, value = ImmutablesAccessorNamingStrategy.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
@@ -54,7 +60,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @WithServiceImplementation(provides = AstModifyingAnnotationProcessor.class,
         value = AstModifyingAnnotationProcessorSaysNo.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
@@ -73,7 +82,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses({ CreateBeanMapping.class, CreateBeanMappingConfig.class })
     @ExpectedNote("^- MapStruct: creating bean mapping method implementation for.*$")
@@ -82,7 +94,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(SelectBeanMapping.class)
     @ExpectedNote("^- MapStruct: creating bean mapping method implementation for.*$")
@@ -91,7 +106,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(ValueMapping.class)
     @ExpectedNote("^- MapStruct: creating value mapping method implementation for.*$")
@@ -99,7 +117,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(CreateIterableMapping.class)
     @ExpectedNote("^- MapStruct: creating iterable mapping method implementation for.*$")
@@ -108,7 +129,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(SelectIterableMapping.class)
     @ExpectedNote("^- MapStruct: creating iterable mapping method implementation for.*$")
@@ -117,7 +141,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(SelectStreamMapping.class)
     @ExpectedNote("^- MapStruct: creating stream mapping method implementation for.*$")
@@ -125,7 +152,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(CreateMapMapping.class)
     @ExpectedNote("^- MapStruct: creating map mapping method implementation for.*$")
@@ -135,7 +165,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses(SelectMapMapping.class)
     @ExpectedNote("^- MapStruct: creating map mapping method implementation for.*$")

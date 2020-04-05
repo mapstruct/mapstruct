@@ -55,7 +55,10 @@ public class DateConversionTest {
     }
 
     @Test
-    @DisabledOnCompiler(Compiler.JDK11)
+    @DisabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversions() {
         Source source = new Source();
@@ -70,7 +73,10 @@ public class DateConversionTest {
     }
 
     @Test
-    @EnabledOnCompiler(Compiler.JDK11)
+    @EnabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionsJdk11() {
         Source source = new Source();
@@ -85,7 +91,10 @@ public class DateConversionTest {
     }
 
     @Test
-    @DisabledOnCompiler(Compiler.JDK11)
+    @DisabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionInReverseMapping() {
         Target target = new Target();
@@ -102,7 +111,10 @@ public class DateConversionTest {
     }
 
     @Test
-    @EnabledOnCompiler(Compiler.JDK11)
+    @EnabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void shouldApplyDateFormatForConversionInReverseMappingJdk11() {
         Target target = new Target();

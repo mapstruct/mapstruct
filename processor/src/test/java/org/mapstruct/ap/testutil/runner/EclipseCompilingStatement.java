@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.SourceVersion;
+
 import org.codehaus.plexus.compiler.CompilerConfiguration;
 import org.codehaus.plexus.compiler.CompilerException;
 import org.codehaus.plexus.compiler.CompilerResult;
@@ -108,9 +110,10 @@ class EclipseCompilingStatement extends CompilingStatement {
             config.setGeneratedSourcesDirectory( new File( sourceOutputDir ) );
             config.setAnnotationProcessors( new String[] { MappingProcessor.class.getName() } );
             config.setSourceFiles( sourceFiles );
+            String version = getSourceVersion();
             config.setShowWarnings( false );
-            config.setSourceVersion( "1.8" );
-            config.setTargetVersion( "1.8" );
+            config.setSourceVersion( version );
+            config.setTargetVersion( version );
 
             for ( String option : compilationRequest.getProcessorOptions() ) {
                 config.addCompilerCustomArgument( option, null );
@@ -128,13 +131,22 @@ class EclipseCompilingStatement extends CompilingStatement {
                 sourceDir,
                 compilerResult );
         }
+
+        private static String getSourceVersion() {
+            SourceVersion latest = SourceVersion.latest();
+            if ( latest == SourceVersion.RELEASE_8 ) {
+                return "1.8";
+            }
+            return "11";
+        }
+
     }
 
     private static List<String> buildEclipseCompilerClasspath() {
         String[] whitelist =
             new String[] {
                 "tycho-compiler",
-                "org.eclipse.jdt.",
+                "ecj",
                 "plexus-compiler-api",
                 "plexus-component-annotations" };
 

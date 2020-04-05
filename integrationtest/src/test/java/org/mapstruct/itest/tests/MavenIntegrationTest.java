@@ -36,8 +36,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "freeBuilderBuilderTest", processorTypes = {
-        ProcessorTest.ProcessorType.JAVAC,
-        ProcessorTest.ProcessorType.ECLIPSE_JDT
+        ProcessorTest.ProcessorType.JAVAC
     })
     void freeBuilderBuilderTest() {
     }
