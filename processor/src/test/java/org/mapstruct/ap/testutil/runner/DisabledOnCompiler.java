@@ -22,5 +22,5 @@ public @interface DisabledOnCompiler {
     /**
      * @return The compiler to use.
      */
-    Compiler value();
+    Compiler[] value();
 }

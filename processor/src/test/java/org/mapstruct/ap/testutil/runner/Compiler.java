@@ -10,5 +10,5 @@ package org.mapstruct.ap.testutil.runner;
  *
  */
 public enum Compiler {
-    JDK, JDK11, ECLIPSE;
+    JDK, JDK11, ECLIPSE, ECLIPSE11;
 }

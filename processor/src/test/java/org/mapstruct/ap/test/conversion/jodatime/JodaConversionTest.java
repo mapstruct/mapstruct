@@ -87,7 +87,10 @@ public class JodaConversionTest {
     }
 
     @Test
-    @DisabledOnCompiler(Compiler.JDK11)
+    @DisabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void testSourceToTargetMappingForStrings() {
         Source src = new Source();
@@ -115,7 +118,10 @@ public class JodaConversionTest {
     }
 
     @Test
-    @EnabledOnCompiler(Compiler.JDK11)
+    @EnabledOnCompiler({
+        Compiler.JDK11,
+        Compiler.ECLIPSE11
+    })
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void testSourceToTargetMappingForStringsJdk11() {
         Source src = new Source();

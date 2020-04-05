@@ -74,7 +74,10 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
             // Current tycho-compiler-jdt (0.26.0) is not compatible with Java 11
             // Updating to latest version 1.3.0 fails some tests
             // Once https://github.com/mapstruct/mapstruct/pull/1587 is resolved we can remove this line
-            return Arrays.asList( new InnerAnnotationProcessorRunner( klass, Compiler.JDK11 ) );
+            return Arrays.asList(
+                new InnerAnnotationProcessorRunner( klass, Compiler.JDK11 ),
+                new InnerAnnotationProcessorRunner( klass, Compiler.ECLIPSE11 )
+            );
         }
 
         return Arrays.asList(

@@ -68,12 +68,20 @@ class InnerAnnotationProcessorRunner extends BlockJUnit4ClassRunner {
     protected boolean isIgnoredForCompiler(FrameworkMethod child) {
         EnabledOnCompiler enabledOnCompiler = child.getAnnotation( EnabledOnCompiler.class );
         if ( enabledOnCompiler != null ) {
-            return enabledOnCompiler.value() != compiler;
+            for ( Compiler value : enabledOnCompiler.value() ) {
+                if ( value != compiler ) {
+                    return true;
+                }
+            }
         }
 
         DisabledOnCompiler disabledOnCompiler = child.getAnnotation( DisabledOnCompiler.class );
         if ( disabledOnCompiler != null ) {
-            return disabledOnCompiler.value() == compiler;
+            for ( Compiler value : disabledOnCompiler.value() ) {
+                if ( value == compiler ) {
+                    return true;
+                }
+            }
         }
 
         return false;

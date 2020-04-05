@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.Compiler;
+import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
 
 /**
  * @author Andreas Gudian
@@ -34,6 +36,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class GenericsHierarchyTest {
 
     @Test
+    // Disabled due to a bug in the Eclipse compiler (https://bugs.eclipse.org/bugs/show_bug.cgi?id=540101)
+    // See https://github.com/mapstruct/mapstruct/issues/1553 and https://github.com/mapstruct/mapstruct/pull/1587
+    // for more information
+    @DisabledOnCompiler( {
+        Compiler.ECLIPSE,
+        Compiler.ECLIPSE11
+    } )
     public void determinesAnimalKeyGetter() {
         AbstractAnimal source = new Elephant();
 
