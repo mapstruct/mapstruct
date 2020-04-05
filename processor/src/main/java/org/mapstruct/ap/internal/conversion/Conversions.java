@@ -184,9 +184,8 @@ public class Conversions {
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
-        register( Date.class, Time.class, new DateToSqlTimeConversion() );
-        register( Date.class, java.sql.Date.class, new DateToSqlDateConversion() );
-        register( Date.class, Timestamp.class, new DateToSqlTimestampConversion() );
+
+        registerJavaTimeSqlConversions();
 
         // java.util.Currency <~> String
         register( Currency.class, String.class, new CurrencyToStringConversion() );
@@ -227,13 +226,26 @@ public class Conversions {
         register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( LocalDateTime.class, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( LocalDate.class, Date.class, new JavaLocalDateToDateConversion() );
-        register( LocalDate.class, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
         register( Instant.class, Date.class, new JavaInstantToDateConversion() );
 
     }
 
+    private void registerJavaTimeSqlConversions() {
+        if ( isJavaSqlAvailable() ) {
+            register( LocalDate.class, java.sql.Date.class, new JavaLocalDateToSqlDateConversion() );
+
+            register( Date.class, Time.class, new DateToSqlTimeConversion() );
+            register( Date.class, java.sql.Date.class, new DateToSqlDateConversion() );
+            register( Date.class, Timestamp.class, new DateToSqlTimestampConversion() );
+        }
+    }
+
     private boolean isJodaTimeAvailable() {
         return typeFactory.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
+    }
+
+    private boolean isJavaSqlAvailable() {
+        return typeFactory.isTypeAvailable( "java.sql.Date" );
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
