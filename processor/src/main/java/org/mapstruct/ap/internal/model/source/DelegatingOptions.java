@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -21,6 +20,7 @@ import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
+import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 /**
  * Chain Of Responsibility Pattern.
@@ -110,9 +110,18 @@ public abstract class DelegatingOptions {
     }
 
     protected Set<DeclaredType> toDeclaredTypes(List<TypeMirror> in, Set<DeclaredType> next) {
-        Set result = in.stream()
-            .map( DeclaredType.class::cast )
-            .collect( Collectors.toCollection( LinkedHashSet::new ) );
+        Set<DeclaredType> result = new LinkedHashSet<>();
+        for ( TypeMirror typeMirror : in ) {
+            if ( typeMirror == null ) {
+                // When a class used in uses or imports is created by another annotation processor
+                // then javac will not return correct TypeMirror with TypeKind#ERROR, but rather a string "<error>"
+                // the gem tools would return a null TypeMirror in that case.
+                // Therefore throw TypeHierarchyErroneousException so we can postpone the generation of the mapper
+                throw new TypeHierarchyErroneousException( typeMirror );
+            }
+
+            result.add( (DeclaredType) typeMirror );
+        }
         result.addAll( next );
         return result;
     }

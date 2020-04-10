@@ -135,4 +135,25 @@ public class MavenIntegrationTest {
 
     }
 
+    /**
+     * Tests usage of MapStruct with another processor that generates the uses type of a mapper.
+     */
+    @ProcessorTest(baseDir = "usesTypeGenerationTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    void usesTypeGenerationTest() {
+    }
+
+    /**
+     * Tests usage of MapStruct with another processor that generates the uses type of a mapper.
+     */
+    @ProcessorTest(baseDir = "usesTypeGenerationTest", processorTypes = {
+        ProcessorTest.ProcessorType.ECLIPSE_JDT
+    })
+    @EnabledForJreRange(min = JRE.JAVA_11)
+    // For some reason the second run with eclipse does not load the ModelElementProcessor(s) on java 8,
+    // therefore we run this only on Java 11
+    void usesTypeGenerationTestEclipse() {
+    }
+
 }
