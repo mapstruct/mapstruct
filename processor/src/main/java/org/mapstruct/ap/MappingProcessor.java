@@ -29,6 +29,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
@@ -177,7 +178,8 @@ public class MappingProcessor extends AbstractProcessor {
                     erroneousElementName = ( (QualifiedNameable) erroneousElement ).getQualifiedName().toString();
                 }
                 else {
-                    erroneousElementName = erroneousElement.getSimpleName().toString();
+                    erroneousElementName =
+                        erroneousElement != null ? erroneousElement.getSimpleName().toString() : null;
                 }
 
                 // When running on Java 8 we need to fetch the deferredMapperElement again.
@@ -265,9 +267,10 @@ public class MappingProcessor extends AbstractProcessor {
                 processMapperTypeElement( context, mapperElement );
             }
             catch ( TypeHierarchyErroneousException thie ) {
-                Element erroneousElement = roundContext.getAnnotationProcessorContext()
+                TypeMirror erroneousType = thie.getType();
+                Element erroneousElement = erroneousType != null ? roundContext.getAnnotationProcessorContext()
                     .getTypeUtils()
-                    .asElement( thie.getType() );
+                    .asElement( erroneousType ) : null;
                 if ( options.isVerbose() ) {
                     processingEnv.getMessager().printMessage(
                         Kind.NOTE, "MapStruct: referred types not available (yet), deferring mapper: "
