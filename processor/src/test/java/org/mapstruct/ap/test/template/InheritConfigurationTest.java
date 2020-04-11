@@ -122,13 +122,13 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
                 line = 43,
-                messageRegExp = "Several matching methods exist: forwardCreate\\(\\), "
-                    + "forwardCreate1\\(\\). Specify a name explicitly."),
+                message = "Several matching methods exist: forwardCreate(), "
+                    + "forwardCreate1(). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
                 line = 44,
-                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
-                    + "expressionProp, nestedResultProp\"")
+                message = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                    + "expressionProp, nestedResultProp\".")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodError() {
@@ -142,13 +142,13 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
                 line = 43,
-                messageRegExp = "None of the candidates forwardCreate\\(\\), forwardCreate1\\(\\) matches given "
+                message = "None of the candidates forwardCreate(), forwardCreate1() matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
                 line = 44,
-                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
-                    + "expressionProp, nestedResultProp\"")
+                message = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                    + "expressionProp, nestedResultProp\".")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
@@ -162,13 +162,16 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
                 line = 43,
-                messageRegExp = "Given name \"forwardCreate\" matches several candidate methods: "
-                    + ".*forwardCreate.*, .*forwardCreate.*"),
+                message = "Given name \"forwardCreate\" matches several candidate methods: org.mapstruct.ap.test" +
+                    ".template.Target forwardCreate(org.mapstruct.ap.test.template.Source source), void forwardCreate" +
+                    "(org.mapstruct.ap.test.template.Source source, @MappingTarget org.mapstruct.ap.test.template" +
+                    ".Target target)."),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 44,
-                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
-                        + "expressionProp, nestedResultProp\"")        }
+                message = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, expressionProp, " +
+                    "nestedResultProp\".")
+        }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
     }
@@ -181,13 +184,12 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
                 line = 34,
-                messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
-                    + "\"forwardCreate\"."),
+                message = "Given name \"blah\" does not match the only candidate. Did you mean: \"forwardCreate\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
-                        kind = Kind.WARNING,
+                kind = Kind.WARNING,
                 line = 35,
-                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
-                    + "expressionProp, nestedResultProp\"")
+                message = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, expressionProp, " +
+                    "nestedResultProp\".")
         }
     )
     public void shouldAdviseOnSpecifyingCorrectName() {

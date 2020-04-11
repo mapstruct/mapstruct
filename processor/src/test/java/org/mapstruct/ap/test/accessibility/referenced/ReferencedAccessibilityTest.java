@@ -38,9 +38,9 @@ public class ReferencedAccessibilityTest {
             @Diagnostic(type = SourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 22,
-                messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
-                    ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
-                    ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
+                message = "Unmapped target property: \"bar\". Mapping from property \"org.mapstruct.ap" +
+                    ".test.accessibility.referenced.ReferencedSource referencedSource\" to \"org.mapstruct" +
+                    ".ap.test.accessibility.referenced.ReferencedTarget referencedTarget\".")
         }
     )
     public void shouldNotBeAbleToAccessPrivateMethodInReferenced() {
@@ -66,9 +66,9 @@ public class ReferencedAccessibilityTest {
             @Diagnostic(type = SourceTargetMapperDefaultOther.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 24,
-                messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
-                    ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
-                    ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
+                message = "Unmapped target property: \"bar\". Mapping from property \"org.mapstruct.ap" +
+                    ".test.accessibility.referenced.ReferencedSource referencedSource\" to \"org.mapstruct" +
+                    ".ap.test.accessibility.referenced.ReferencedTarget referencedTarget\".")
         }
     )
     public void shouldNotBeAbleToAccessDefaultMethodInReferencedInOtherPackage() {
@@ -89,9 +89,9 @@ public class ReferencedAccessibilityTest {
             @Diagnostic(type = AbstractSourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 23,
-                messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
-                    ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
-                    ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
+                message = "Unmapped target property: \"bar\". Mapping from property \"org.mapstruct.ap" +
+                    ".test.accessibility.referenced.ReferencedSource referencedSource\" to \"org.mapstruct" +
+                    ".ap.test.accessibility.referenced.ReferencedTarget referencedTarget\".")
         }
     )
     public void shouldNotBeAbleToAccessPrivateMethodInBase() {

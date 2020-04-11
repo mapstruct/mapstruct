@@ -166,15 +166,15 @@ public class ManySourceArgumentsTest {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "Several possible source properties for target property \"street\"."),
+                message = "Several possible source properties for target property \"street\"."),
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "Several possible source properties for target property \"zipCode\"."),
+                message = "Several possible source properties for target property \"zipCode\"."),
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "Several possible source properties for target property \"description\".")
+                message = "Several possible source properties for target property \"description\".")
     })
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }
@@ -193,8 +193,8 @@ public class ManySourceArgumentsTest {
                 type = ErroneousSourceTargetMapper2.class,
                 kind = Kind.ERROR,
                 line = 15,
-                messageRegExp = "Method has no source parameter named \"houseNo\"\\." +
-                    " Method source parameters are: \"address, person\"\\."
+                message = "Method has no source parameter named \"houseNo\"." +
+                    " Method source parameters are: \"address, person\"."
             )
         }
     )

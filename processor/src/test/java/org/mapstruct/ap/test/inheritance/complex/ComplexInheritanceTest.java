@@ -69,11 +69,13 @@ public class ComplexInheritanceTest {
             kind = Kind.ERROR,
             type = ErroneousSourceCompositeTargetCompositeMapper.class,
             line = 19,
-            messageRegExp =
-                "Ambiguous mapping methods found for mapping property "
-                    + "\"org.mapstruct.ap.test.inheritance.complex.SourceExt prop1\" to .*Reference: "
-                    + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
-                    + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)"))
+            message = "Ambiguous mapping methods found for mapping property \"org.mapstruct.ap.test.inheritance" +
+                ".complex.SourceExt prop1\" to org.mapstruct.ap.test.inheritance.complex.Reference: org.mapstruct.ap" +
+                ".test.inheritance.complex.Reference org.mapstruct.ap.test.inheritance.complex" +
+                ".AdditionalMappingHelper.asReference(org.mapstruct.ap.test.inheritance.complex.SourceBase source), " +
+                "org.mapstruct.ap.test.inheritance.complex.Reference org.mapstruct.ap.test.inheritance.complex" +
+                ".AdditionalMappingHelper.asReference(org.mapstruct.ap.test.inheritance.complex.AdditionalFooSource " +
+                "source)."))
     public void ambiguousMappingMethodsReportError() {
     }
 

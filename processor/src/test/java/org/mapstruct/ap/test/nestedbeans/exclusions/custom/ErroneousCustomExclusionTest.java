@@ -33,9 +33,11 @@ public class ErroneousCustomExclusionTest {
             @Diagnostic(type = ErroneousCustomExclusionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                messageRegExp = "Can't map property \".*NestedSource nested\" to \".*NestedTarget nested\"\\. " +
-                    "Consider to declare/implement a mapping method: \".*NestedTarget map\\(.*NestedSource value\\)" +
-                    "\"\\.")
+                message = "Can't map property \"org.mapstruct.ap.test.nestedbeans.exclusions.custom.Source" +
+                    ".NestedSource nested\" to \"org.mapstruct.ap.test.nestedbeans.exclusions.custom.Target" +
+                    ".NestedTarget nested\". Consider to declare/implement a mapping method: \"org.mapstruct.ap.test" +
+                    ".nestedbeans.exclusions.custom.Target.NestedTarget map(org.mapstruct.ap.test.nestedbeans" +
+                    ".exclusions.custom.Source.NestedSource value)\".")
         }
     )
     @Test

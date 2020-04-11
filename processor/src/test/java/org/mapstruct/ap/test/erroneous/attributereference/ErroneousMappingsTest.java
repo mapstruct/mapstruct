@@ -34,26 +34,26 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 20,
-                messageRegExp = "Target property \"foo\" must not be mapped more than once"),
+                message = "Target property \"foo\" must not be mapped more than once."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "No property named \"bar\" exists in source parameter\\(s\\)\\. " +
+                message = "No property named \"bar\" exists in source parameter(s). " +
                     "Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                messageRegExp = "Unknown property \"bar\" in result type " +
+                message = "Unknown property \"bar\" in result type " +
                     "org.mapstruct.ap.test.erroneous.attributereference.Target. Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "No property named \"source1.foo\" exists in source parameter\\(s\\)\\. " +
+                message = "No property named \"source1.foo\" exists in source parameter(s). " +
                     "Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.WARNING,
                 line = 26,
-                messageRegExp = "Unmapped target property: \"bar\"")
+                message = "Unmapped target property: \"bar\".")
         }
     )
     public void shouldFailToGenerateMappings() {
@@ -67,7 +67,7 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "The type of parameter \"source\" has no property named \"foobar\"")
+                message = "The type of parameter \"source\" has no property named \"foobar\".")
         }
     )
     public void shouldFailToGenerateMappingsErrorOnMandatoryParameterName() {
@@ -81,7 +81,7 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.ERROR,
                 line = 19,
-                messageRegExp = "Target property \"foo\" must not be mapped more than once" )
+                message = "Target property \"foo\" must not be mapped more than once." )
         }
     )
     public void shouldFailToGenerateMappingsErrorOnDuplicateTarget() {

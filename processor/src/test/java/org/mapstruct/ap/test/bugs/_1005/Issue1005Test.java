@@ -35,7 +35,8 @@ public class Issue1005Test {
             @Diagnostic(type = Issue1005ErroneousAbstractResultTypeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                messageRegExp = "The result type .*\\.AbstractEntity may not be an abstract class nor interface.")
+                message = "The result type org.mapstruct.ap.test.bugs._1005.AbstractEntity may not be an " +
+                    "abstract class nor interface.")
         })
     public void shouldFailDueToAbstractResultType() {
     }
@@ -47,8 +48,9 @@ public class Issue1005Test {
             @Diagnostic(type = Issue1005ErroneousAbstractReturnTypeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                messageRegExp = "The return type .*\\.AbstractEntity is an abstract class or interface. Provide a non" +
-                    " abstract / non interface result type or a factory method.")
+                message =
+                    "The return type org.mapstruct.ap.test.bugs._1005.AbstractEntity is an abstract class or " +
+                        "interface. Provide a non abstract / non interface result type or a factory method.")
         })
     public void shouldFailDueToAbstractReturnType() {
     }
@@ -60,7 +62,8 @@ public class Issue1005Test {
             @Diagnostic(type = Issue1005ErroneousInterfaceResultTypeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                messageRegExp = "The result type .*\\.HasPrimaryKey may not be an abstract class nor interface.")
+                message = "The result type org.mapstruct.ap.test.bugs._1005.HasPrimaryKey may not be an " +
+                    "abstract class nor interface.")
         })
     public void shouldFailDueToInterfaceResultType() {
     }
@@ -72,8 +75,9 @@ public class Issue1005Test {
             @Diagnostic(type = Issue1005ErroneousInterfaceReturnTypeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                messageRegExp = "The return type .*\\.HasKey is an abstract class or interface. Provide a non " +
-                    "abstract / non interface result type or a factory method.")
+                message =
+                    "The return type org.mapstruct.ap.test.bugs._1005.HasKey is an abstract class or interface. " +
+                        "Provide a non abstract / non interface result type or a factory method.")
         })
     public void shouldFailDueToInterfaceReturnType() {
     }

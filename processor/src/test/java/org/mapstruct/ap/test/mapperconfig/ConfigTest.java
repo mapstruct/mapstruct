@@ -58,7 +58,7 @@ public class ConfigTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperWarn.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING, line = 24,
-                messageRegExp = "Unmapped target property: \"noFoo\"")
+                message = "Unmapped target property: \"noFoo\".")
         })
     public void shouldUseWARNViaMapper() {
     }
@@ -69,7 +69,7 @@ public class ConfigTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperErroneous.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR, line = 20,
-                messageRegExp = "Unmapped target property: \"noFoo\"")
+                message = "Unmapped target property: \"noFoo\".")
         })
     public void shouldUseERRORViaMapperConfig() {
     }

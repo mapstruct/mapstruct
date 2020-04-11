@@ -24,9 +24,13 @@ public class Issue590Test {
 
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = { @Diagnostic(type = ErroneousSourceTargetMapper.class,
-            kind = Kind.ERROR,
-            messageRegExp = "Can't map property \"java\\.lang\\.String prop\" to \"[^ ]+ prop\"") })
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
+                kind = Kind.ERROR,
+                message = "Can't map property \"java.lang.String prop\" to \"java.util.logging.XMLFormatter " +
+                    "prop\". Consider to declare/implement a mapping method: \"java.util.logging.XMLFormatter map" +
+                    "(java.lang.String value)\".")
+        })
     public void showsCantMapPropertyError() {
 
     }

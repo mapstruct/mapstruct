@@ -30,18 +30,18 @@ public class AmbiguousAnnotatedFactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                messageRegExp = "Ambiguous factory methods found for creating "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar: "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar "
-                        + "createBar\\(org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Foo foo\\), "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar "
-                        + ".*AmbiguousBarFactory.createBar\\(org.mapstruct.ap.test.erroneous."
-                    + "ambiguousannotatedfactorymethod.Foo foo\\)."),
+                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.Bar: org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.Bar createBar(org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.Foo foo), org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.Bar org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.AmbiguousBarFactory.createBar(org.mapstruct.ap.test.erroneous" +
+                    ".ambiguousannotatedfactorymethod.Foo foo)."),
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                messageRegExp = ".*\\.ambiguousannotatedfactorymethod.Bar does not have an accessible parameterless " +
-                    "constructor\\.")
+                message = "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar does not have an " +
+                    "accessible parameterless constructor.")
 
         }
     )

@@ -33,26 +33,26 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 14,
-                messageRegExp = "Can't map property \"boolean foo\" to \"int foo\". Consider to declare/implement a "
-                        + "mapping method: \"int map\\(boolean value\\)\"."),
+                message = "Can't map property \"boolean foo\" to \"int foo\". Consider to declare/implement a "
+                        + "mapping method: \"int map(boolean value)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "Can't map property \"int foo\" to \"boolean foo\". Consider to declare/implement a "
-                        + "mapping method: \"boolean map\\(int value\\)\"."),
+                message = "Can't map property \"int foo\" to \"boolean foo\". Consider to declare/implement a "
+                        + "mapping method: \"boolean map(int value)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                messageRegExp = "Can't generate mapping method with primitive return type\\."),
+                message = "Can't generate mapping method with primitive return type."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 20,
-                messageRegExp = "Can't generate mapping method with primitive parameter type\\."),
+                message = "Can't generate mapping method with primitive parameter type."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp =
-                    "Can't generate mapping method that has a parameter annotated with @TargetType\\.")
+                message =
+                    "Can't generate mapping method that has a parameter annotated with @TargetType.")
         }
     )
     public void shouldFailToGenerateMappings() {

@@ -150,13 +150,13 @@ public class JavaExpressionTest {
             @Diagnostic(type = ErroneousSourceTargetMapperExpressionAndQualifiers.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18,
-                messageRegExp = "Expression and a qualifier both defined in @Mapping," +
+                message = "Expression and a qualifier both defined in @Mapping," +
                     " either define an expression or a qualifier."
             ),
             @Diagnostic(type = ErroneousSourceTargetMapperExpressionAndQualifiers.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                messageRegExp = "Expression and a qualifier both defined in @Mapping," +
+                message = "Expression and a qualifier both defined in @Mapping," +
                     " either define an expression or a qualifier."
             )
         }

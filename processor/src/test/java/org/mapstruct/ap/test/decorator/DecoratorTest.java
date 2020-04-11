@@ -182,7 +182,7 @@ public class DecoratorTest {
             @Diagnostic(type = ErroneousPersonMapper.class,
                 kind = Kind.ERROR,
                 line = 14,
-                messageRegExp = "Specified decorator type is no subtype of the annotated mapper type")
+                message = "Specified decorator type is no subtype of the annotated mapper type.")
         }
     )
     public void shouldRaiseErrorInCaseWrongDecoratorTypeIsGiven() {

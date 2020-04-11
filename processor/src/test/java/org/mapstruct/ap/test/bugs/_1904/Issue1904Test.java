@@ -36,13 +36,12 @@ public class Issue1904Test {
             type = Issue1904Mapper.class,
             kind = javax.tools.Diagnostic.Kind.ERROR,
             line = 14,
-            messageRegExp = ".*No implementation was created for Issue1904Mapper due to having a problem in the " +
-                "erroneous element .*\\.CarManualDto. Hint: this often means that some other annotation processor " +
-                "was supposed to process the erroneous element. You can also enable MapStruct verbose mode by " +
-                "setting -Amapstruct.verbose=true as a compilation argument."
+            message = "No implementation was created for Issue1904Mapper due to having a problem in the erroneous " +
+                "element org.mapstruct.ap.test.bugs._1904.Issue1904Mapper.CarManualDto. Hint: this often means that " +
+                "some other annotation processor was supposed to process the erroneous element. You can also enable " +
+                "MapStruct verbose mode by setting -Amapstruct.verbose=true as a compilation argument."
         )
     })
     public void shouldHaveCompilationErrorIfMapperCouldNotBeCreated() {
-
     }
 }

@@ -29,12 +29,12 @@ public class Issue1029Test {
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(kind = Kind.WARNING, line = 26, type = ErroneousIssue1029Mapper.class,
-            messageRegExp = "Unmapped target properties: \"knownProp, lastUpdated, computedMapping\"\\."),
+            message = "Unmapped target properties: \"knownProp, lastUpdated, computedMapping\"."),
         @Diagnostic(kind = Kind.WARNING, line = 37, type = ErroneousIssue1029Mapper.class,
-            messageRegExp = "Unmapped target property: \"lastUpdated\"\\."),
+            message = "Unmapped target property: \"lastUpdated\"."),
         @Diagnostic(kind = Kind.ERROR, line = 42, type = ErroneousIssue1029Mapper.class,
-            messageRegExp = "Unknown property \"unknownProp\" in result type " +
-                "org.mapstruct.ap.test.bugs._1029.ErroneousIssue1029Mapper.Deck\\. Did you mean \"knownProp\"?")
+            message = "Unknown property \"unknownProp\" in result type " +
+                "org.mapstruct.ap.test.bugs._1029.ErroneousIssue1029Mapper.Deck. Did you mean \"knownProp\"?")
     })
     public void reportsProperWarningsAndError() {
     }

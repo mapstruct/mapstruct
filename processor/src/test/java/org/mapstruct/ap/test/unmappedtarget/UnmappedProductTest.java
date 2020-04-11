@@ -36,11 +36,11 @@ public class UnmappedProductTest {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
                 line = 16,
-                messageRegExp = "Unmapped target property: \"bar\""),
+                message = "Unmapped target property: \"bar\"."),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
                 line = 18,
-                messageRegExp = "Unmapped target property: \"qux\"")
+                message = "Unmapped target property: \"qux\".")
         }
     )
     public void shouldLeaveUnmappedTargetPropertyUnset() {
@@ -62,11 +62,11 @@ public class UnmappedProductTest {
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "Unmapped target property: \"bar\""),
+                message = "Unmapped target property: \"bar\"."),
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 19,
-                messageRegExp = "Unmapped target property: \"qux\"")
+                message = "Unmapped target property: \"qux\".")
         }
     )
     public void shouldRaiseErrorDueToUnsetTargetProperty() {
@@ -81,11 +81,11 @@ public class UnmappedProductTest {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
-                messageRegExp = "Unmapped target property: \"bar\""),
+                message = "Unmapped target property: \"bar\"."),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                messageRegExp = "Unmapped target property: \"qux\"")
+                message = "Unmapped target property: \"qux\".")
         }
     )
     public void shouldRaiseErrorDueToUnsetTargetPropertyWithPolicySetViaProcessorOption() {

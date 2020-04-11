@@ -7,10 +7,12 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.Collection;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -22,6 +24,19 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 public class BuilderFinisherMethodResolver {
 
     private static final String DEFAULT_BUILD_METHOD_NAME = "build";
+
+    private static final Extractor<ExecutableElement, String> EXECUTABLE_ELEMENT_NAME_EXTRACTOR =
+        executableElement -> {
+            StringBuilder sb = new StringBuilder( executableElement.getSimpleName() );
+
+            sb.append( '(' );
+            for ( VariableElement parameter : executableElement.getParameters() ) {
+                sb.append( parameter );
+            }
+
+            sb.append( ')' );
+            return sb.toString();
+        };
 
     private BuilderFinisherMethodResolver() {
     }
@@ -57,7 +72,7 @@ public class BuilderFinisherMethodResolver {
                     buildMethodPattern,
                     builderType.getBuilder(),
                     builderType.getBuildingType(),
-                    Strings.join( buildMethods, ", " )
+                    Strings.join( buildMethods, ", ", EXECUTABLE_ELEMENT_NAME_EXTRACTOR )
                 );
             }
             else {
@@ -68,7 +83,7 @@ public class BuilderFinisherMethodResolver {
                     buildMethodPattern,
                     builderType.getBuilder(),
                     builderType.getBuildingType(),
-                    Strings.join( buildMethods, ", " )
+                    Strings.join( buildMethods, ", ", EXECUTABLE_ELEMENT_NAME_EXTRACTOR )
                 );
             }
         }

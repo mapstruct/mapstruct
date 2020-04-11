@@ -155,48 +155,50 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                messageRegExp = "No read accessor found for property \"company\" in target type.")
+                message = "No read accessor found for property \"company\" in target type.")
         }
    )
     public void testShouldFailOnPropertyMappingNoPropertyGetter() { }
 
     @Test
-    @WithClasses( {
+    @WithClasses({
         ErroneousOrganizationMapper2.class,
         OrganizationWithoutTypeGetterEntity.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 23,
-                messageRegExp = "No read accessor found for property \"type\" in target type."),
+                message = "No read accessor found for property \"type\" in target type."),
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible parameterless " +
-                    "constructor\\.")
+                message = "org.mapstruct.ap.test.updatemethods.DepartmentEntity does not have an accessible " +
+                    "parameterless constructor.")
 
         })
-    public void testShouldFailOnConstantMappingNoPropertyGetter() { }
+    public void testShouldFailOnConstantMappingNoPropertyGetter() {
+    }
 
     @Test
-    @WithClasses( {
+    @WithClasses({
         CompanyMapper1.class,
         DepartmentInBetween.class,
         UnmappableCompanyDto.class,
         UnmappableDepartmentDto.class
 
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = {
             @Diagnostic(type = CompanyMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 23,
-                messageRegExp = "Unmapped target property: \"employees\"\\. Mapping from property \"" +
-                    ".*UnmappableDepartmentDto department\" to \".*DepartmentEntity department.")
+                message = "Unmapped target property: \"employees\". Mapping from property \"org.mapstruct.ap.test" +
+                    ".updatemethods.UnmappableDepartmentDto department\" to \"org.mapstruct.ap.test.updatemethods" +
+                    ".DepartmentEntity department\".")
         }
     )
     public void testShouldNotUseTwoNestedUpdateMethods() {

@@ -38,20 +38,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InheritanceSelectionTest {
 
     @Test
-    @WithClasses( { ConflictingFruitFactory.class, ErroneousFruitMapper.class, Banana.class } )
+    @WithClasses({ ConflictingFruitFactory.class, ErroneousFruitMapper.class, Banana.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "Ambiguous factory methods found for creating .*Fruit: "
-                    + ".*Apple .*ConflictingFruitFactory\\.createApple\\(\\), "
-                    + ".*Banana .*ConflictingFruitFactory\\.createBanana\\(\\)\\."),
+                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.selection.resulttype" +
+                    ".Fruit: org.mapstruct.ap.test.selection.resulttype.Apple org.mapstruct.ap.test.selection" +
+                    ".resulttype.ConflictingFruitFactory.createApple(), org.mapstruct.ap.test.selection.resulttype" +
+                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana()."),
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = ".*Fruit does not have an accessible parameterless constructor\\.")
+                message = "org.mapstruct.ap.test.selection.resulttype.Fruit does not have an accessible parameterless" +
+                    " constructor.")
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {
@@ -59,14 +61,15 @@ public class InheritanceSelectionTest {
 
     @IssueKey("1283")
     @Test
-    @WithClasses( { ErroneousResultTypeNoEmptyConstructorMapper.class, Banana.class } )
+    @WithClasses({ ErroneousResultTypeNoEmptyConstructorMapper.class, Banana.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousResultTypeNoEmptyConstructorMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                messageRegExp = ".*\\.resulttype\\.Banana does not have an accessible parameterless constructor\\.")
+                message = "org.mapstruct.ap.test.selection.resulttype.Banana does not have an accessible " +
+                    "parameterless constructor.")
         }
     )
     public void testResultTypeHasNoSuitableEmptyConstructor() {
@@ -112,8 +115,8 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ResultTypeConstructingFruitInterfaceErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "The return type .*\\.IsFruit is an abstract class or interface. Provide a non " +
-                    "abstract / non interface result type or a factory method."
+                message = "The return type org.mapstruct.ap.test.selection.resulttype.IsFruit is an abstract class or" +
+                    " interface. Provide a non abstract / non interface result type or a factory method."
             )
         }
     )
@@ -129,11 +132,12 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousFruitMapper2.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp = ".*\\.Banana not assignable to: .*\\.Apple.")
+                message = "org.mapstruct.ap.test.selection.resulttype.Banana not assignable to: org.mapstruct.ap.test" +
+                    ".selection.resulttype.Apple.")
         }
     )
     @IssueKey("434")
-    @WithClasses( { ErroneousFruitMapper2.class, Banana.class } )
+    @WithClasses({ ErroneousFruitMapper2.class, Banana.class })
     public void testResultTypeBasedConstructionOfResultNonAssignable() {
     }
 

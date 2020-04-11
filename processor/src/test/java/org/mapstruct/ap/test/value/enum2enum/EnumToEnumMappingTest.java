@@ -217,7 +217,7 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
                 line = 27,
-                messageRegExp = "Source value mapping: \"EXTRA\" cannot be mapped more than once\\.")
+                message = "Source value mapping: \"EXTRA\" cannot be mapped more than once.")
         }
     )
     public void shouldRaiseErrorIfSameSourceEnumConstantIsMappedTwice() {
@@ -231,12 +231,12 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
                 line = 26,
-                messageRegExp = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.value.OrderType\\."),
+                message = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.value.OrderType."),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
                 line = 27,
-                messageRegExp = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.value." +
-                    "ExternalOrderType\\.")
+                message = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.value." +
+                    "ExternalOrderType.")
         }
     )
     public void shouldRaiseErrorIfUnknownEnumConstantsAreSpecifiedInMapping() {
@@ -250,8 +250,8 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
-                    "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
+                message = "The following constants from the source enum have no corresponding constant in the " +
+                    "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL.")
         }
     )
     public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {
@@ -265,7 +265,7 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperDuplicateANY.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once\\." )
+                message = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." )
         }
     )
     public void shouldRaiseErrorIfMappingsContainDuplicateANY() {

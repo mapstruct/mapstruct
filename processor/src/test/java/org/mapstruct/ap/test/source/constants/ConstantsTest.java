@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +15,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -70,31 +70,38 @@ public class ConstantsTest {
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 25,
-                messageRegExp = "^.*only 'true' or 'false' are supported\\.$"),
+                message = "Can't map \"java.lang.String \"zz\"\" to \"boolean booleanValue\". Reason: only 'true' or " +
+                    "'false' are supported."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 26,
-                messageRegExp = "^.*invalid character literal\\.$"),
+                message = "Can't map \"java.lang.String \"'ba'\"\" to \"char charValue\". Reason: invalid character " +
+                    "literal."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 27,
-                messageRegExp = "^.*Value out of range. Value:\"200\" Radix:10\\.$"),
-           @Diagnostic(type = ErroneousConstantMapper.class,
+                message = "Can't map \"java.lang.String \"200\"\" to \"byte byteValue\". Reason: Value out of range. " +
+                    "Value:\"200\" Radix:10."),
+            @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 28,
-                messageRegExp = "^.*integer number too large.$"),
-           @Diagnostic(type = ErroneousConstantMapper.class,
+                message = "Can't map \"java.lang.String \"0xFFFF_FFFF_FFFF\"\" to \"int intValue\". Reason: integer " +
+                    "number too large."),
+            @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                messageRegExp = "^.*L/l mandatory for long types.$"),
-           @Diagnostic(type = ErroneousConstantMapper.class,
+                message = "Can't map \"java.lang.String \"1\"\" to \"long longValue\". Reason: L/l mandatory for long" +
+                    " types."),
+            @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 30,
-                messageRegExp = "^.*improperly placed underscores.$"),
-          @Diagnostic(type = ErroneousConstantMapper.class,
+                message = "Can't map \"java.lang.String \"1.40e-_45f\"\" to \"float floatValue\". Reason: improperly " +
+                    "placed underscores."),
+            @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 31,
-                messageRegExp = "^.*floating point number too small.$")
+                message = "Can't map \"java.lang.String \"1e-137000\"\" to \"double doubleValue\". Reason: floating " +
+                    "point number too small.")
         }
     )
     public void miscellaneousDetailMessages() {

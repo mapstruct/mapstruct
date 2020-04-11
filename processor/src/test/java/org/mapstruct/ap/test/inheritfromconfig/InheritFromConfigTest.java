@@ -203,29 +203,28 @@ public class InheritFromConfigTest {
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
-                    + " to select one of them explicitly:"
-                    + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
-                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
+                message = "More than one configuration prototype method is applicable. Use @InheritConfiguration to " +
+                    "select one of them explicitly: org.mapstruct.ap.test.inheritfromconfig.BaseVehicleEntity " +
+                    "baseDtoToEntity(org.mapstruct.ap.test.inheritfromconfig.BaseVehicleDto dto), org.mapstruct.ap" +
+                    ".test.inheritfromconfig.BaseVehicleEntity anythingToEntity(java.lang.Object anyting)."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
                 line = 23,
-                messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\."),
+                message = "Unmapped target properties: \"primaryKey, auditTrail\"."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
-                    + " to select one of them explicitly:"
-                    + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
-                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
+                message = "More than one configuration prototype method is applicable. Use @InheritConfiguration to " +
+                    "select one of them explicitly: org.mapstruct.ap.test.inheritfromconfig.BaseVehicleEntity " +
+                    "baseDtoToEntity(org.mapstruct.ap.test.inheritfromconfig.BaseVehicleDto dto), org.mapstruct.ap" +
+                    ".test.inheritfromconfig.BaseVehicleEntity anythingToEntity(java.lang.Object anyting)."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
                 line = 29,
-                messageRegExp = "Unmapped target property: \"primaryKey\"\\.")
+                message = "Unmapped target property: \"primaryKey\".")
         }
     )
     public void erroneous1MultiplePrototypeMethodsMatch() {
-
     }
 
     @Test
@@ -236,15 +235,16 @@ public class InheritFromConfigTest {
             @Diagnostic(type = Erroneous2Mapper.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp = "Cycle detected while evaluating inherited configurations. Inheritance path:"
-                    + " .*CarEntity toCarEntity1\\(.*CarDto carDto\\)"
-                    + " -> .*CarEntity toCarEntity2\\(.*CarDto carDto\\)"
-                    + " -> void toCarEntity3\\(.*CarDto carDto, @MappingTarget .*CarEntity entity\\)"
-                    + " -> .*CarEntity toCarEntity1\\(.*CarDto carDto\\)")
+                message = "Cycle detected while evaluating inherited configurations. Inheritance path: org.mapstruct" +
+                    ".ap.test.inheritfromconfig.CarEntity toCarEntity1(org.mapstruct.ap.test.inheritfromconfig.CarDto" +
+                    " carDto) -> org.mapstruct.ap.test.inheritfromconfig.CarEntity toCarEntity2(org.mapstruct.ap.test" +
+                    ".inheritfromconfig.CarDto carDto) -> void toCarEntity3(org.mapstruct.ap.test.inheritfromconfig" +
+                    ".CarDto carDto, @MappingTarget org.mapstruct.ap.test.inheritfromconfig.CarEntity entity) -> org" +
+                    ".mapstruct.ap.test.inheritfromconfig.CarEntity toCarEntity1(org.mapstruct.ap.test" +
+                    ".inheritfromconfig.CarDto carDto)")
         }
     )
     public void erroneous2InheritanceCycle() {
-
     }
 
     @Test
@@ -256,7 +256,7 @@ public class InheritFromConfigTest {
             @Diagnostic(type = ErroneousMapperAutoInheritance.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\.")
+                message = "Unmapped target properties: \"primaryKey, auditTrail\".")
         }
     )
     public void erroneousWrongReverseConfigInherited() { }
@@ -270,28 +270,32 @@ public class InheritFromConfigTest {
             @Diagnostic(type = ErroneousMapperReverseWithAutoInheritance.class,
                 kind = Kind.ERROR,
                 line = 23,
-                messageRegExp = "Unmapped target property: \"id\"\\.")
+                message = "Unmapped target property: \"id\".")
         }
     )
     public void erroneousWrongConfigInherited() { }
 
     @Test
-    @IssueKey( "1255" )
-    @WithClasses({ Erroneous3Mapper.class, Erroneous3Config.class } )
+    @IssueKey("1255")
+    @WithClasses({ Erroneous3Mapper.class, Erroneous3Config.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Erroneous3Mapper.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp = "More than one configuration prototype method is applicable. "
-                    + "Use @InheritInverseConfiguration.*"),
+                message = "More than one configuration prototype method is applicable. Use " +
+                    "@InheritInverseConfiguration to select one of them explicitly: org.mapstruct.ap.test" +
+                    ".inheritfromconfig.BaseVehicleEntity baseDtoToEntity(org.mapstruct.ap.test.inheritfromconfig" +
+                    ".BaseVehicleDto dto), org.mapstruct.ap.test.inheritfromconfig.BaseVehicleEntity baseDtoToEntity2" +
+                    "(org.mapstruct.ap.test.inheritfromconfig.BaseVehicleDto dto)."),
             @Diagnostic(type = Erroneous3Mapper.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp = "Unmapped target property: \"id\"\\.")
+                message = "Unmapped target property: \"id\".")
         }
     )
-    public void erroneousDuplicateReverse() { }
+    public void erroneousDuplicateReverse() {
+    }
 
 }
