@@ -75,7 +75,8 @@ public class CollectionMappingTest {
     }
 
     @Test
-    @WithClasses({ ErroneousCollectionNonMappableSetMapper.class,
+    @WithClasses({
+        ErroneousCollectionNonMappableSetMapper.class,
         ErroneousNonMappableSetSource.class,
         ErroneousNonMappableSetTarget.class,
         Foo.class,
@@ -87,8 +88,10 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableSetMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "No target bean properties found: can't map Collection element \".* nonMappableSet\" "
-                                + "to \".* nonMappableSet\". Consider to declare/implement a mapping method: .*." ),
+                message = "No target bean properties found: can't map Collection element \"org.mapstruct.ap" +
+                    ".test.collection.forged.Foo nonMappableSet\" to \"org.mapstruct.ap.test.collection.forged.Bar " +
+                    "nonMappableSet\". Consider to declare/implement a mapping method: \"org.mapstruct.ap.test" +
+                    ".collection.forged.Bar map(org.mapstruct.ap.test.collection.forged.Foo value)\"."),
         }
     )
     public void shouldGenerateNonMappleMethodForSetMapping() {
@@ -107,15 +110,17 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "No target bean properties found: can't map Map key \".* nonMappableMap\\{:key\\}\" "
-                                + "to \".* "
-                                + "nonMappableMap\\{:key\\}\". Consider to declare/implement a mapping method: .*." ),
+                message = "No target bean properties found: can't map Map key \"org.mapstruct.ap.test" +
+                    ".collection.forged.Foo nonMappableMap{:key}\" to \"org.mapstruct.ap.test.collection.forged.Bar " +
+                    "nonMappableMap{:key}\". Consider to declare/implement a mapping method: \"org.mapstruct.ap" +
+                    ".test.collection.forged.Bar map(org.mapstruct.ap.test.collection.forged.Foo value)\"."),
             @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "No target bean properties found: can't map Map value \".* "
-                                + "nonMappableMap\\{:value\\}\" to \".* nonMappableMap\\{:value\\}\". "
-                                + "Consider to declare/implement a mapping method: .*." ),
+                message = "No target bean properties found: can't map Map value \"org.mapstruct.ap.test" +
+                    ".collection.forged.Foo nonMappableMap{:value}\" to \"org.mapstruct.ap.test.collection.forged.Bar" +
+                    " nonMappableMap{:value}\". Consider to declare/implement a mapping method: \"org.mapstruct.ap" +
+                    ".test.collection.forged.Bar map(org.mapstruct.ap.test.collection.forged.Foo value)\"."),
         }
     )
     public void shouldGenerateNonMappleMethodForMapMapping() {

@@ -49,8 +49,8 @@ public class StringToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 28,
-                messageRegExp = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of " +
-                    "type String to an enum type" )
+                message = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of " +
+                    "type String to an enum type." )
         }
     )
     public void shouldRaiseErrorWhenUsingAnyRemaining() {

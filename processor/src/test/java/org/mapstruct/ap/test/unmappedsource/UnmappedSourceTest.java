@@ -35,11 +35,11 @@ public class UnmappedSourceTest {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
                 line = 20,
-                messageRegExp = "Unmapped source property: \"qux\""),
+                message = "Unmapped source property: \"qux\"."),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
                 line = 22,
-                messageRegExp = "Unmapped source property: \"bar\"")
+                message = "Unmapped source property: \"bar\".")
         }
     )
     public void shouldLeaveUnmappedSourcePropertyUnset() {
@@ -61,11 +61,11 @@ public class UnmappedSourceTest {
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 20,
-                messageRegExp = "Unmapped source property: \"qux\""),
+                message = "Unmapped source property: \"qux\"."),
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 22,
-                messageRegExp = "Unmapped source property: \"bar\"")
+                message = "Unmapped source property: \"bar\".")
         }
     )
     public void shouldRaiseErrorDueToUnsetSourceProperty() {

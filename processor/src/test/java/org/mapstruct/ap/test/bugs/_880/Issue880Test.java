@@ -41,7 +41,7 @@ public class Issue880Test {
         value = CompilationResult.SUCCEEDED,
         diagnostics = @Diagnostic(kind = Kind.WARNING,
             type = UsesConfigFromAnnotationMapper.class, line = 16,
-            messageRegExp = "Unmapped target property: \"core\"\\."))
+            message = "Unmapped target property: \"core\"."))
     public void compilationSucceedsAndAppliesCorrectComponentModel() {
         generatedSource.forMapper( UsesConfigFromAnnotationMapper.class ).containsNoImportFor( Component.class );
 

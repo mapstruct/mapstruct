@@ -29,17 +29,20 @@ public class DiagnosticDescriptor {
     private final Long line;
     private final Long alternativeLine;
     private final String message;
+    private final String messageRegex;
 
-    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, String message) {
-        this( sourceFileName, kind, line, null, message );
+    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, String message, String messageRegex) {
+        this( sourceFileName, kind, line, null, message, messageRegex );
     }
 
-    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, Long alternativeLine, String message) {
+    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, Long alternativeLine, String message,
+        String messageRegex) {
         this.sourceFileName = sourceFileName;
         this.kind = kind;
         this.line = line;
         this.alternativeLine = alternativeLine;
         this.message = message;
+        this.messageRegex = messageRegex;
     }
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
@@ -51,6 +54,7 @@ public class DiagnosticDescriptor {
             diagnostic.kind(),
             diagnostic.line() != -1 ? diagnostic.line() : null,
             diagnostic.alternativeLine() != -1 ? diagnostic.alternativeLine() : null,
+            diagnostic.message(),
             diagnostic.messageRegExp()
         );
     }
@@ -61,7 +65,8 @@ public class DiagnosticDescriptor {
             getSourceName( sourceDir, diagnostic ),
             diagnostic.getKind(),
             diagnostic.getLineNumber(),
-            diagnostic.getMessage( null )
+            diagnostic.getMessage( null ),
+            null
         );
     }
 
@@ -73,7 +78,9 @@ public class DiagnosticDescriptor {
             removeSourceDirPrefix( sourceDir, compilerMessage.getFile() ),
             toJavaxKind( compilerMessage.getKind() ),
             Long.valueOf( compilerMessage.getStartLine() ),
-            message );
+            message,
+            null
+            );
     }
 
     private static Kind toJavaxKind(CompilerMessage.Kind kind) {
@@ -149,6 +156,10 @@ public class DiagnosticDescriptor {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getMessageRegex() {
+        return messageRegex;
     }
 
     @Override

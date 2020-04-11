@@ -33,7 +33,7 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonAgeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = ".*Did you mean \"age\"\\?")
+                message = "No property named \"agee\" exists in source parameter(s). Did you mean \"age\"?")
         }
     )
     public void testAgeSuggestion() {
@@ -49,7 +49,8 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonNameMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = ".*Did you mean \"fullName\"\\?")
+                message = "Unknown property \"fulName\" in result type org.mapstruct.ap.test.namesuggestion.Person. " +
+                    "Did you mean \"fullName\"?")
         }
     )
     public void testNameSuggestion() {
@@ -65,11 +66,13 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = "Unknown property \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
+                message = "Unknown property \"garage.colour.rgb\" in result type org.mapstruct.ap.test.namesuggestion" +
+                    ".Person. Did you mean \"garage.color\"?"),
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                messageRegExp = "Unknown property \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
+                message = "Unknown property \"garage.colour\" in result type org.mapstruct.ap.test.namesuggestion" +
+                    ".Person. Did you mean \"garage.color\"?")
         }
     )
     public void testGarageTargetSuggestion() {
@@ -85,11 +88,13 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 21,
-                messageRegExp = "No property named \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
+                message = "No property named \"garage.colour.rgb\" exists in source parameter(s). Did you mean " +
+                    "\"garage.color\"?"),
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 28,
-                messageRegExp = "No property named \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
+                message = "No property named \"garage.colour\" exists in source parameter(s). Did you mean \"garage" +
+                    ".color\"?")
         }
     )
     public void testGarageSourceSuggestion() {

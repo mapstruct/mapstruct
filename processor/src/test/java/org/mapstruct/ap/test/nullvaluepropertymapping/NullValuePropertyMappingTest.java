@@ -111,7 +111,7 @@ public class NullValuePropertyMappingTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
-                messageRegExp = "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                message = "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define a defaultValue or an nullValuePropertyMappingStrategy.")
         }
     )
@@ -127,7 +127,7 @@ public class NullValuePropertyMappingTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
-                messageRegExp = "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                message = "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define an expression or an nullValuePropertyMappingStrategy.")
         }
     )
@@ -143,7 +143,7 @@ public class NullValuePropertyMappingTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
-                messageRegExp = "DefaultExpression and nullValuePropertyMappingStrategy are both defined in " +
+                message = "DefaultExpression and nullValuePropertyMappingStrategy are both defined in " +
                     "@Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy.")
         }
     )
@@ -159,7 +159,7 @@ public class NullValuePropertyMappingTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
-                messageRegExp = "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                message = "Constant and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define a constant or an nullValuePropertyMappingStrategy.")
         }
     )
@@ -175,7 +175,7 @@ public class NullValuePropertyMappingTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 alternativeLine = 22, // Javac wrong error reporting on repeatable annotations JDK-8042710
-                messageRegExp = "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
+                message = "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, " +
                     "either define ignore or an nullValuePropertyMappingStrategy.")
         }
     )

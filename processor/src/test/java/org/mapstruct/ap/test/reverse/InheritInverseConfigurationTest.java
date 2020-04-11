@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.reverse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -21,6 +19,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -61,12 +61,12 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
                 line = 38,
-                messageRegExp = "Several matching inverse methods exist: forward\\(\\), "
-                    + "forwardNotToReverse\\(\\). Specify a name explicitly."),
+                message = "Several matching inverse methods exist: forward(), "
+                    + "forwardNotToReverse(). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
                 line = 43,
-                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+                message = "Unmapped target properties: \"stringPropX, integerPropX\".")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodError() {
@@ -80,12 +80,12 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
                 line = 38,
-                messageRegExp = "None of the candidates forward\\(\\), forwardNotToReverse\\(\\) matches given "
+                message = "None of the candidates forward(), forwardNotToReverse() matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
                 line = 43,
-                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+                message = "Unmapped target properties: \"stringPropX, integerPropX\".")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
@@ -99,12 +99,14 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
                 line = 39,
-                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.+\\), "
-                    + ".*forward\\(.+\\)"),
+                message = "Given name \"forward\" matches several candidate methods: org.mapstruct.ap.test.reverse" +
+                    ".Target forward(org.mapstruct.ap.test.reverse.Source source), org.mapstruct.ap.test.reverse" +
+                    ".Target forward(org.mapstruct.ap.test.reverse.Source source, @MappingTarget org.mapstruct.ap" +
+                    ".test.reverse.Target target)."),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 44,
-                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+                message = "Unmapped target properties: \"stringPropX, integerPropX\".")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
@@ -118,12 +120,11 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
                 line = 31,
-                messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
-                    + "\"forward\"."),
+                message = "Given name \"blah\" does not match the only candidate. Did you mean: \"forward\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.WARNING,
                 line = 36,
-                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+                message = "Unmapped target properties: \"stringPropX, integerPropX\".")
         }
     )
     public void shouldAdviseOnSpecifyingCorrectName() {

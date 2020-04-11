@@ -41,7 +41,7 @@ public class ContextParameterErroneousTest {
             kind = Kind.ERROR,
             line = 20,
             type = ErroneousNodeMapperWithNonUniqueContextTypes.class,
-            messageRegExp = "The types of @Context parameters must be unique"))
+            message = "The types of @Context parameters must be unique."))
     public void reportsNonUniqueContextParamType() {
     }
 }

@@ -87,7 +87,7 @@ public class WildCardTest {
                 @Diagnostic( type = ErroneousIterableSuperBoundSourceMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 20,
-                        messageRegExp = "Can't generate mapping method for a wildcard super bound source." )
+                        message = "Can't generate mapping method for a wildcard super bound source." )
             }
     )
     public void shouldFailOnSuperBoundSource() {
@@ -101,7 +101,7 @@ public class WildCardTest {
                 @Diagnostic( type = ErroneousIterableExtendsBoundTargetMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 20,
-                        messageRegExp = "Can't generate mapping method for a wildcard extends bound result." )
+                        message = "Can't generate mapping method for a wildcard extends bound result." )
             }
     )
     public void shouldFailOnExtendsBoundTarget() {
@@ -115,7 +115,7 @@ public class WildCardTest {
             @Diagnostic(type = ErroneousIterableTypeVarBoundMapperOnMethod.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 20,
-                        messageRegExp = "Can't generate mapping method for a generic type variable target." )
+                        message = "Can't generate mapping method for a generic type variable target." )
             }
     )
     public void shouldFailOnTypeVarSource() {
@@ -129,7 +129,7 @@ public class WildCardTest {
                 @Diagnostic( type = ErroneousIterableTypeVarBoundMapperOnMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 20,
-                        messageRegExp = "Can't generate mapping method for a generic type variable source." )
+                        message = "Can't generate mapping method for a generic type variable source." )
             }
     )
     public void shouldFailOnTypeVarTarget() {

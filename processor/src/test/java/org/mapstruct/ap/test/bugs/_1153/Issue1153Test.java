@@ -27,19 +27,19 @@ public class Issue1153Test {
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = "Property \"readOnly\" has no write accessor in " +
-                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\."),
+                message = "Property \"readOnly\" has no write accessor in " +
+                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target."),
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                messageRegExp = "Property \"nestedTarget.readOnly\" has no write accessor in " +
-                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\."),
+                message = "Property \"nestedTarget.readOnly\" has no write accessor in " +
+                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target."),
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 23,
-                messageRegExp = "Unknown property \"nestedTarget2.writable2\" in result type " +
-                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\. " +
-                    "Did you mean \"nestedTarget2\\.writable\"")
+                message = "Unknown property \"nestedTarget2.writable2\" in result type " +
+                    "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target. " +
+                    "Did you mean \"nestedTarget2.writable\"?")
         })
     @Test
     public void shouldReportErrorsCorrectly() {

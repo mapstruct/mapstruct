@@ -40,23 +40,17 @@ public class MultipleBuilderMapperTest {
                 type = ErroneousMoreThanOneBuildMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = "No build method \"build\" found in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
-                    "for \".*\\.multiple\\.build\\.Process\"\\. " +
-                    "Found methods: " +
-                    "\".*wrongCreate\\(\\) ?, " +
-                    ".*create\\(\\) ?\"\\. " +
-                    "Consider to add @Builder in order to select the correct build method."
+                message = "No build method \"build\" found in \"org.mapstruct.ap.test.builder.multiple.build.Process" +
+                    ".Builder\" for \"org.mapstruct.ap.test.builder.multiple.build.Process\". Found methods: " +
+                    "\"wrongCreate(), create()\". Consider to add @Builder in order to select the correct build method."
             ),
             @Diagnostic(
                 type = ErroneousMoreThanOneBuildMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 21,
-                messageRegExp = "No build method \"missingBuild\" found " +
-                    "in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
-                    "for \".*\\.multiple\\.build\\.Process\"\\. " +
-                    "Found methods: " +
-                    "\".*wrongCreate\\(\\) ?, " +
-                    ".*create\\(\\) ?\"\\."
+                message = "No build method \"missingBuild\" found in \"org.mapstruct.ap.test.builder.multiple.build" +
+                    ".Process.Builder\" for \"org.mapstruct.ap.test.builder.multiple.build.Process\". Found methods: " +
+                    "\"wrongCreate(), create()\"."
             )
         })
     @Test
@@ -72,12 +66,10 @@ public class MultipleBuilderMapperTest {
                 type = ErroneousMoreThanOneBuildMethodWithMapperDefinedMappingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18,
-                messageRegExp =
-                    "No build method \"mapperBuild\" found in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
-                    "for \".*\\.multiple\\.build\\.Process\"\\. " +
-                    "Found methods: " +
-                    "\".*wrongCreate\\(\\) ?, " +
-                        ".*create\\(\\) ?\"\\."
+                message =
+                    "No build method \"mapperBuild\" found in \"org.mapstruct.ap.test.builder.multiple.build.Process" +
+                        ".Builder\" for \"org.mapstruct.ap.test.builder.multiple.build.Process\". Found methods: " +
+                        "\"wrongCreate(), create()\"."
             )
         })
     @Test
@@ -118,11 +110,9 @@ public class MultipleBuilderMapperTest {
                 type = Case.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 11,
-                messageRegExp = "More than one builder creation method for \".*\\.multiple\\.builder.Case\"\\. " +
-                    "Found methods: " +
-                    "\".*wrongBuilder\\(\\) ?, " +
-                    ".*builder\\(\\) ?\"\\. " +
-                    "Builder will not be used\\. Consider implementing a custom BuilderProvider SPI\\."
+                message = "More than one builder creation method for \"org.mapstruct.ap.test.builder.multiple.builder" +
+                    ".Case\". Found methods: \"wrongBuilder(), builder()\". Builder will not be used. Consider " +
+                    "implementing a custom BuilderProvider SPI."
             )
         })
     @Test

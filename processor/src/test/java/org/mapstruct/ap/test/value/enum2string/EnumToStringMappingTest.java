@@ -50,8 +50,8 @@ public class EnumToStringMappingTest {
             @Diagnostic(type = ErroneousOrderMapperUsingAnyRemaining.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 26,
-                messageRegExp = "\"<ANY_REMAINING>\" can only be used on targets of type enum and not for " +
-                    "java\\.lang\\.String\\.")
+                message = "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for " +
+                    "java.lang.String.")
         }
     )
     public void shouldRaiseErrorWhenUsingAnyRemaining() {

@@ -311,14 +311,26 @@ abstract class CompilingStatement extends Statement {
                 assertThat( actual.getLine() ).isEqualTo( expected.getLine() );
             }
             assertThat( actual.getKind() ).isEqualTo( expected.getKind() );
-            assertThat( actual.getMessage() ).describedAs(
-                String.format(
-                    "Unexpected message for diagnostic %s:%s %s",
-                    actual.getSourceFileName(),
-                    actual.getLine(),
-                    actual.getKind()
-                )
-            ).matches( "(?ms).*" + expected.getMessage() + ".*" );
+            if ( expected.getMessage() != null && !expected.getMessage().isEmpty() ) {
+                assertThat( actual.getMessage() ).describedAs(
+                    String.format(
+                        "Unexpected message for diagnostic %s:%s %s",
+                        actual.getSourceFileName(),
+                        actual.getLine(),
+                        actual.getKind()
+                    )
+                ).isEqualTo( expected.getMessage() );
+            }
+            else {
+                assertThat( actual.getMessage() ).describedAs(
+                    String.format(
+                        "Unexpected message for diagnostic %s:%s %s",
+                        actual.getSourceFileName(),
+                        actual.getLine(),
+                        actual.getKind()
+                    )
+                ).matches( "(?ms).*" + expected.getMessage() + ".*" );
+            }
         }
     }
 

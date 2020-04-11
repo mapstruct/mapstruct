@@ -46,6 +46,14 @@ public @interface Diagnostic {
     long alternativeLine() default -1;
 
     /**
+     * A message matching the exact expected message of the diagnostic.
+     *
+     * @return A message matching the exact expected message of the
+     *         diagnostic.
+     */
+    String message() default "";
+
+    /**
      * A regular expression matching the expected message of the diagnostic.
      * Wild-cards matching any character (".*") will be added to the beginning
      * and end of the given expression when applying it.

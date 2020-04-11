@@ -46,11 +46,12 @@ public class Issue1457Test {
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = @Diagnostic(
-            messageRegExp =
-                "Lifecycle method has multiple matching parameters \\(e\\. g\\. same type\\), in this case " +
-                    "please ensure to name the parameters in the lifecycle and mapping method identical\\. This " +
-                    "lifecycle method will not be used for the mapping method '.*\\.TargetBook mapBook\\(" +
-                    ".*\\.SourceBook sourceBook, .*\\.String authorFirstName, .*\\.String authorLastName\\)'\\.",
+            message =
+                "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to " +
+                    "name the parameters in the lifecycle and mapping method identical. This lifecycle method will " +
+                    "not be used for the mapping method 'org.mapstruct.ap.test.bugs._1457.TargetBook mapBook(org" +
+                    ".mapstruct.ap.test.bugs._1457.SourceBook sourceBook, java.lang.String authorFirstName, java.lang" +
+                    ".String authorLastName)'.",
             kind = javax.tools.Diagnostic.Kind.WARNING,
             line = 43
         )
@@ -108,16 +109,16 @@ public class Issue1457Test {
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = @Diagnostic(
-            messageRegExp =
-                "Lifecycle method has multiple matching parameters \\(e\\. g\\. same type\\), in this case " +
-                    "please ensure to name the parameters in the lifecycle and mapping method identical\\. This " +
-                    "lifecycle method will not be used for the mapping method '.*\\.TargetBook mapBook\\(" +
-                    ".*\\.SourceBook sourceBook, .*\\.String authorFirstName, .*\\.String authorLastName\\)'\\.",
+            message =
+                "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to " +
+                    "name the parameters in the lifecycle and mapping method identical. This lifecycle method will " +
+                    "not be used for the mapping method 'org.mapstruct.ap.test.bugs._1457.TargetBook mapBook(org" +
+                    ".mapstruct.ap.test.bugs._1457.SourceBook sourceBook, java.lang.String authorFirstName, java.lang" +
+                    ".String authorLastName)'.",
             kind = javax.tools.Diagnostic.Kind.WARNING,
             line = 22
         )
     )
     public void testMapperWithoutMatchingParameterNames() {
-
     }
 }

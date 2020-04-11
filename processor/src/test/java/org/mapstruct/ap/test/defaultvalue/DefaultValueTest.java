@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.defaultvalue;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.defaultvalue.other.Continent;
@@ -17,19 +15,21 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@IssueKey( "600" )
-@RunWith( AnnotationProcessorTestRunner.class )
-@WithClasses( {
-        CountryEntity.class,
-        CountryDts.class,
-        Continent.class
-} )
+import static org.assertj.core.api.Assertions.assertThat;
+
+@IssueKey("600")
+@RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses({
+    CountryEntity.class,
+    CountryDts.class,
+    Continent.class
+})
 public class DefaultValueTest {
     @Test
-    @WithClasses( {
-            Region.class,
-            CountryMapper.class
-    } )
+    @WithClasses({
+        Region.class,
+        CountryMapper.class
+    })
     /**
      * Checks:
      * <ul>
@@ -56,10 +56,10 @@ public class DefaultValueTest {
     }
 
     @Test
-    @WithClasses( {
-            Region.class,
-            CountryMapper.class
-    } )
+    @WithClasses({
+        Region.class,
+        CountryMapper.class
+    })
     public void shouldIgnoreDefaultValue() {
         CountryEntity countryEntity = new CountryEntity();
         countryEntity.setCode( "US" );
@@ -77,10 +77,10 @@ public class DefaultValueTest {
     }
 
     @Test
-    @WithClasses( {
-            Region.class,
-            CountryMapper.class
-    } )
+    @WithClasses({
+        Region.class,
+        CountryMapper.class
+    })
     public void shouldHandleUpdateMethodsFromDtsToEntity() {
         CountryEntity countryEntity = new CountryEntity();
         CountryDts countryDts = new CountryDts();
@@ -95,10 +95,10 @@ public class DefaultValueTest {
     }
 
     @Test
-    @WithClasses( {
-            Region.class,
-            CountryMapper.class
-    } )
+    @WithClasses({
+        Region.class,
+        CountryMapper.class
+    })
     public void shouldHandleUpdateMethodsFromEntityToEntity() {
         CountryEntity source = new CountryEntity();
         CountryEntity target = new CountryEntity();
@@ -114,45 +114,49 @@ public class DefaultValueTest {
     }
 
     @Test
-    @WithClasses( {
-            ErroneousMapper.class,
-            Region.class,
-    } )
+    @WithClasses({
+        ErroneousMapper.class,
+        Region.class,
+    })
     @ExpectedCompilationOutcome(
-            value = CompilationResult.FAILED,
-            diagnostics = {
-                    @Diagnostic( type = ErroneousMapper.class,
-                            kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 18,
-                            messageRegExp = "Constant and default value are both defined in @Mapping,"
-                                    + " either define a defaultValue or a constant." ),
-                    @Diagnostic(type = ErroneousMapper.class,
-                            kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 20,
-                            messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 18,
+                message = "Constant and default value are both defined in @Mapping, either define a defaultValue or a" +
+                    " constant."),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
+                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
+                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+        }
     )
     public void errorOnDefaultValueAndConstant() {
     }
 
     @Test
-    @WithClasses( {
-            ErroneousMapper2.class,
-            Region.class,
-    } )
+    @WithClasses({
+        ErroneousMapper2.class,
+        Region.class,
+    })
     @ExpectedCompilationOutcome(
-            value = CompilationResult.FAILED,
-            diagnostics = {
-                    @Diagnostic( type = ErroneousMapper2.class,
-                            kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 18,
-                            messageRegExp = "Expression and default value are both defined in @Mapping,"
-                                    + " either define a defaultValue or an expression." ),
-                    @Diagnostic(type = ErroneousMapper2.class,
-                            kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 20,
-                            messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper2.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 18,
+                message = "Expression and default value are both defined in @Mapping, either define a defaultValue or" +
+                    " an expression."),
+            @Diagnostic(type = ErroneousMapper2.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
+                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
+                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+        }
     )
     public void errorOnDefaultValueAndExpression() {
     }

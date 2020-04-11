@@ -70,8 +70,11 @@ public class ForgedStreamMappingTest {
             @Diagnostic(type = ErroneousStreamNonMappableStreamMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                messageRegExp = "No target bean properties found: can't map Stream element \".* nonMappableStream\" "
-                                + "to \".* nonMappableStream\". Consider to declare/implement a mapping method: .*." ) }
+                message = "No target bean properties found: can't map Stream element \"org.mapstruct.ap.test" +
+                    ".java8stream.forged.Foo nonMappableStream\" to \"org.mapstruct.ap.test.java8stream.forged.Bar " +
+                    "nonMappableStream\". Consider to declare/implement a mapping method: \"org.mapstruct.ap.test" +
+                    ".java8stream.forged.Bar map(org.mapstruct.ap.test.java8stream.forged.Foo value)\".")
+        }
     )
     public void shouldGenerateNonMappableMethodForSetMapping() {
     }

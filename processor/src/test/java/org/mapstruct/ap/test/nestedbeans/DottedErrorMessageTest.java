@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.nestedbeans;
 
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseCollectionElementPropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepListMapper;
@@ -14,21 +13,38 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepMapKeyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepMapValueMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseValuePropertyMapper;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Car;
+import org.mapstruct.ap.test.nestedbeans.unmappable.CarDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Cat;
+import org.mapstruct.ap.test.nestedbeans.unmappable.CatDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Color;
+import org.mapstruct.ap.test.nestedbeans.unmappable.ColorDto;
 import org.mapstruct.ap.test.nestedbeans.unmappable.Computer;
 import org.mapstruct.ap.test.nestedbeans.unmappable.ComputerDto;
 import org.mapstruct.ap.test.nestedbeans.unmappable.Dictionary;
 import org.mapstruct.ap.test.nestedbeans.unmappable.DictionaryDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.ExternalRoofType;
 import org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWord;
 import org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWordDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Cat;
-import org.mapstruct.ap.test.nestedbeans.unmappable.CatDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.House;
+import org.mapstruct.ap.test.nestedbeans.unmappable.HouseDto;
 import org.mapstruct.ap.test.nestedbeans.unmappable.Info;
 import org.mapstruct.ap.test.nestedbeans.unmappable.InfoDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Roof;
+import org.mapstruct.ap.test.nestedbeans.unmappable.RoofDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.RoofType;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
+import org.mapstruct.ap.test.nestedbeans.unmappable.User;
+import org.mapstruct.ap.test.nestedbeans.unmappable.UserDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Wheel;
+import org.mapstruct.ap.test.nestedbeans.unmappable.WheelDto;
+import org.mapstruct.ap.test.nestedbeans.unmappable.Word;
+import org.mapstruct.ap.test.nestedbeans.unmappable.WordDto;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableCollectionElementPropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableDeepListMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableDeepMapKeyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableDeepMapValueMapper;
+import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableEnumMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableValuePropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.ignore.UnmappableIgnoreCollectionElementPropertyMapper;
@@ -43,23 +59,6 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapKe
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapValueMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnValuePropertyMapper;
-import org.mapstruct.ap.test.nestedbeans.unmappable.UserDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.User;
-import org.mapstruct.ap.test.nestedbeans.unmappable.WheelDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Wheel;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Car;
-import org.mapstruct.ap.test.nestedbeans.unmappable.CarDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.ExternalRoofType;
-import org.mapstruct.ap.test.nestedbeans.unmappable.House;
-import org.mapstruct.ap.test.nestedbeans.unmappable.HouseDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Color;
-import org.mapstruct.ap.test.nestedbeans.unmappable.ColorDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Roof;
-import org.mapstruct.ap.test.nestedbeans.unmappable.RoofType;
-import org.mapstruct.ap.test.nestedbeans.unmappable.RoofDto;
-import org.mapstruct.ap.test.nestedbeans.unmappable.erroneous.UnmappableDeepNestingMapper;
-import org.mapstruct.ap.test.nestedbeans.unmappable.Word;
-import org.mapstruct.ap.test.nestedbeans.unmappable.WordDto;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
@@ -100,8 +99,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"rgb\"\\. Mapping from " + PROPERTY +
-                    " \".*Color house\\.roof\\.color\" to \".*ColorDto house\\.roof\\.color\"\\.")
+                message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Color house.roof.color\" to \"org.mapstruct.ap" +
+                    ".test.nestedbeans.unmappable.ColorDto house.roof.color\".")
         }
     )
     public void testDeepNestedBeans() {
@@ -117,8 +117,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"left\"\\. Mapping from " + COLLECTION_ELEMENT +
-                    " \".*Wheel car\\.wheels\" to \".*WheelDto car\\.wheels\"\\.")
+                message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Wheel car.wheels\" to \"org.mapstruct.ap.test" +
+                    ".nestedbeans.unmappable.WheelDto car.wheels\".")
         }
     )
     public void testIterables() {
@@ -134,8 +135,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_KEY +
-                    " \".*Word dictionary\\.wordMap\\{:key\\}\" to \".*WordDto dictionary\\.wordMap\\{:key\\}\"\\.")
+                message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Word dictionary.wordMap{:key}\" to \"org" +
+                    ".mapstruct.ap.test.nestedbeans.unmappable.WordDto dictionary.wordMap{:key}\".")
         }
     )
     public void testMapKeys() {
@@ -151,9 +153,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_VALUE +
-                    " \".*ForeignWord dictionary\\.wordMap\\{:value\\}\" " +
-                    "to \".*ForeignWordDto dictionary\\.wordMap\\{:value\\}\"\\.")
+                message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWord dictionary.wordMap{:value}\" " +
+                    "to \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWordDto dictionary.wordMap{:value}\".")
         }
     )
     public void testMapValues() {
@@ -169,8 +171,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
-                    " \".*Info computers\\[\\].info\" to \".*InfoDto computers\\[\\].info\"\\.")
+                message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info computers[].info\" to \"org.mapstruct.ap" +
+                    ".test.nestedbeans.unmappable.InfoDto computers[].info\".")
         }
     )
     public void testCollectionElementProperty() {
@@ -186,8 +189,9 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
-                    " \".*Info catNameMap\\{:value\\}.info\" to \".*InfoDto catNameMap\\{:value\\}.info\"\\.")
+                message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info catNameMap{:value}.info\" to \"org" +
+                    ".mapstruct.ap.test.nestedbeans.unmappable.InfoDto catNameMap{:value}.info\".")
         }
     )
     public void testMapValueProperty() {
@@ -203,9 +207,12 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = UnmappableEnumMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 25,
-                messageRegExp = "The following constants from the property \".*RoofType house\\.roof\\.type\" enum " +
-                    "have no corresponding constant in the \".*ExternalRoofType house\\.roof\\.type\" enum and must " +
-                    "be be mapped via adding additional mappings: NORMAL\\."
+                message =
+                    "The following constants from the property \"org.mapstruct.ap.test.nestedbeans.unmappable" +
+                        ".RoofType house.roof.type\" enum " +
+                        "have no corresponding constant in the \"org.mapstruct.ap.test.nestedbeans.unmappable" +
+                        ".ExternalRoofType house.roof.type\" enum and must " +
+                        "be be mapped via adding additional mappings: NORMAL."
             )
         }
     )
@@ -227,34 +234,39 @@ public class DottedErrorMessageTest {
             @Diagnostic(type = BaseDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"rgb\"\\. Mapping from " + PROPERTY +
-                    " \".*Color house\\.roof\\.color\" to \".*ColorDto house\\.roof\\.color\"\\."),
+                message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Color house.roof.color\" to \"org.mapstruct.ap" +
+                    ".test.nestedbeans.unmappable.ColorDto house.roof.color\"."),
             @Diagnostic(type = BaseDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"left\"\\. Mapping from " + COLLECTION_ELEMENT +
-                    " \".*Wheel car\\.wheels\" to \".*WheelDto car\\.wheels\"\\."),
+                message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Wheel car.wheels\" to \"org.mapstruct.ap.test" +
+                    ".nestedbeans.unmappable.WheelDto car.wheels\"."),
             @Diagnostic(type = BaseDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_KEY +
-                    " \".*Word dictionary\\.wordMap\\{:key\\}\" to \".*WordDto dictionary\\.wordMap\\{:key\\}\"\\."),
+                message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Word dictionary.wordMap{:key}\" to \"org" +
+                    ".mapstruct.ap.test.nestedbeans.unmappable.WordDto dictionary.wordMap{:key}\"."),
             @Diagnostic(type = BaseDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_VALUE +
-                    " \".*ForeignWord dictionary\\.wordMap\\{:value\\}\" " +
-                    "to \".*ForeignWordDto dictionary\\.wordMap\\{:value\\}\"\\."),
+                message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWord dictionary.wordMap{:value}\" " +
+                    "to \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWordDto dictionary.wordMap{:value}\"."),
             @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
-                    " \".*Info computers\\[\\].info\" to \".*InfoDto computers\\[\\].info\"\\."),
+                message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info computers[].info\" to \"org.mapstruct.ap" +
+                    ".test.nestedbeans.unmappable.InfoDto computers[].info\"."),
             @Diagnostic(type = BaseValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
-                messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
-                    " \".*Info catNameMap\\{:value\\}.info\" to \".*InfoDto catNameMap\\{:value\\}.info\"\\.")
+                message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
+                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info catNameMap{:value}.info\" to \"org" +
+                    ".mapstruct.ap.test.nestedbeans.unmappable.InfoDto catNameMap{:value}.info\".")
         }
     )
     public void testWarnUnmappedTargetProperties() {

@@ -91,12 +91,12 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "Source and constant are both defined in @Mapping, either define a source or a "
-                    + "constant"),
+                message = "Source and constant are both defined in @Mapping, either define a source or a "
+                    + "constant."),
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.WARNING,
                 line = 30,
-                messageRegExp = "Unmapped target property: \"integerConstant\"")
+                message = "Unmapped target property: \"integerConstant\".")
         }
     )
     public void errorOnSourceAndConstant() throws ParseException {
@@ -117,13 +117,13 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp =
+                message =
                     "Expression and constant are both defined in @Mapping, either define an expression or a "
-                        + "constant"),
+                        + "constant."),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
                 line = 30,
-                messageRegExp = "Unmapped target property: \"integerConstant\"")
+                message = "Unmapped target property: \"integerConstant\".")
         }
     )
     public void errorOnConstantAndExpression() throws ParseException {
@@ -144,12 +144,12 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "Source and expression are both defined in @Mapping, either define a source or an "
-                    + "expression"),
+                message = "Source and expression are both defined in @Mapping, either define a source or an "
+                    + "expression."),
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,
                 line = 30,
-                messageRegExp = "Unmapped target property: \"integerConstant\"")
+                message = "Unmapped target property: \"integerConstant\".")
         }
     )
     public void errorOnSourceAndExpression() throws ParseException {
@@ -192,13 +192,13 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = "^Constant \"DENMARK\" doesn't exist in enum type org.mapstruct.ap.test.source."
-                    + "constants.CountryEnum for property \"country\".$"),
+                message = "Constant \"DENMARK\" doesn't exist in enum type org.mapstruct.ap.test.source."
+                    + "constants.CountryEnum for property \"country\"."),
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = "^Can't map \"java.lang.String \"DENMARK\"\" to \"org.mapstruct.ap.test.source."
-                    + "constants.CountryEnum country\".$")
+                message = "Can't map \"java.lang.String \"DENMARK\"\" to \"org.mapstruct.ap.test.source."
+                    + "constants.CountryEnum country\".")
         }
     )
     public void errorOnNonExistingEnumConstant() throws ParseException {
@@ -219,8 +219,8 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper6.class,
                 kind = Kind.ERROR,
                 line = 25,
-                messageRegExp = "^.*Can't map \"java.lang.String \"3001\"\" to \"java.lang.Long "
-                    + "longWrapperConstant\".*$")
+                message = "Can't map \"java.lang.String \"3001\"\" to \"java.lang.Long "
+                    + "longWrapperConstant\". Reason: L/l mandatory for long types.")
         }
     )
     public void cannotMapIntConstantToLong() throws ParseException {

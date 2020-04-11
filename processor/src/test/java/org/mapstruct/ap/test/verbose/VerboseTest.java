@@ -60,10 +60,10 @@ public class VerboseTest {
     }
 
     @Test
-    @DisabledOnCompiler( {
+    @DisabledOnCompiler({
         Compiler.ECLIPSE,
         Compiler.ECLIPSE11
-    } )
+    })
     @WithServiceImplementation(provides = AstModifyingAnnotationProcessor.class,
         value = AstModifyingAnnotationProcessorSaysNo.class)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
@@ -74,8 +74,10 @@ public class VerboseTest {
             type = CreateBeanMapping.class,
             kind = javax.tools.Diagnostic.Kind.ERROR,
             line = 12,
-            messageRegExp = ".*No implementation was created for CreateBeanMapping due to having a problem in the " +
-                "erroneous element .*"
+            message = "No implementation was created for CreateBeanMapping due to having a problem in the erroneous " +
+                "element java.util.ArrayList. Hint: this often means that some other annotation processor was " +
+                "supposed to process the erroneous element. You can also enable MapStruct verbose mode by setting " +
+                "-Amapstruct.verbose=true as a compilation argument."
         )
     })
     public void testDeferred() {

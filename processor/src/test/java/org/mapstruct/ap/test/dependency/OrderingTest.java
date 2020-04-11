@@ -63,8 +63,8 @@ public class OrderingTest {
             @Diagnostic(type = ErroneousAddressMapperWithCyclicDependency.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): lastName -> middleName -> "
-                    + "firstName -> lastName"
+                message = "Cycle(s) between properties given via dependsOn(): lastName -> middleName -> "
+                    + "firstName -> lastName."
             )
         }
     )
@@ -80,7 +80,7 @@ public class OrderingTest {
             @Diagnostic(type = ErroneousAddressMapperWithUnknownPropertyInDependsOn.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                messageRegExp = "\"doesnotexist\" is no property of the method return type"
+                message = "\"doesnotexist\" is no property of the method return type."
             )
         }
     )

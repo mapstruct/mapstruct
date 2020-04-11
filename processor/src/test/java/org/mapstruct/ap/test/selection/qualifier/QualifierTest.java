@@ -91,10 +91,10 @@ public class QualifierTest {
     }
 
     @Test
-    @WithClasses( {
+    @WithClasses({
         YetAnotherMapper.class,
         ErroneousMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -102,17 +102,16 @@ public class QualifierTest {
                 type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp =
-                "No qualifying method found for qualifiers: "
-                + "org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated and "
-                + "/ or qualifying names: .*"),
+                message =
+                    "No qualifying method found for qualifiers: org.mapstruct.ap.test.selection.qualifier.annotation" +
+                        ".NonQualifierAnnotated and / or qualifying names: "),
             @Diagnostic(
                 type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp =
-                    "Can't map property \"java.lang.String title\" to \"java.lang.String title\". "
-                    + "Consider to declare/implement a mapping method: \"java.lang.String map(java.lang.String value)*")
+                message =
+                    "Can't map property \"java.lang.String title\" to \"java.lang.String title\". Consider to " +
+                        "declare/implement a mapping method: \"java.lang.String map(java.lang.String value)\".")
         }
     )
     public void shouldNotProduceMatchingMethod() {
@@ -174,23 +173,24 @@ public class QualifierTest {
     }
 
     @Test
-    @IssueKey( "342")
-    @WithClasses( {
+    @IssueKey("342")
+    @WithClasses({
         ErroneousMovieFactoryMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "'nullValueMappingStrategy', 'nullValuePropertyMappingStrategy', 'resultType' and " +
+                message = "'nullValueMappingStrategy', 'nullValuePropertyMappingStrategy', 'resultType' and " +
                     "'qualifiedBy' are undefined in @BeanMapping, define at least one of them."),
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
                 line = 24,
-                messageRegExp = "The return type .*\\.AbstractEntry is an abstract class or interface. Provide a non " +
-                    "abstract / non interface result type or a factory method.")
+                message = "The return type org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry is an " +
+                    "abstract class or interface. Provide a non abstract / non interface result type or a factory " +
+                    "method.")
         }
     )
     public void testEmptyBeanMapping() {

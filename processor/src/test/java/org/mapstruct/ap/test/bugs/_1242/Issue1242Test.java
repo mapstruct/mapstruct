@@ -58,16 +58,19 @@ public class Issue1242Test {
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                messageRegExp = "Ambiguous factory methods found for creating .*TargetB:"
-                    + " .*TargetB anotherTargetBCreator\\(.*SourceB source\\),"
-                    + " .*TargetB .*TargetFactories\\.createTargetB\\(.*SourceB source,"
-                    + " @TargetType .*Class<.*TargetB> clazz\\),"
-                    + " .*TargetB .*TargetFactories\\.createTargetB\\(@TargetType java.lang.Class<.*TargetB> clazz\\),"
-                    + " .*TargetB .*TargetFactories\\.createTargetB\\(\\)."),
+                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.bugs._1242.TargetB: org" +
+                    ".mapstruct.ap.test.bugs._1242.TargetB anotherTargetBCreator(org.mapstruct.ap.test.bugs._1242" +
+                    ".SourceB source), org.mapstruct.ap.test.bugs._1242.TargetB org.mapstruct.ap.test.bugs._1242" +
+                    ".TargetFactories.createTargetB(org.mapstruct.ap.test.bugs._1242.SourceB source, @TargetType java" +
+                    ".lang.Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
+                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB(@TargetType java.lang" +
+                    ".Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
+                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB()."),
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                messageRegExp = ".*TargetB does not have an accessible parameterless constructor\\.")
+                message = "org.mapstruct.ap.test.bugs._1242.TargetB does not have an accessible parameterless " +
+                    "constructor.")
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {
     }
