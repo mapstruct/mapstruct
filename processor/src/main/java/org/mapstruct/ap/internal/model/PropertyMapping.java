@@ -94,21 +94,9 @@ public class PropertyMapping extends ModelElement {
             return super.method( sourceMethod );
         }
 
-        public T targetProperty(PropertyEntry targetProp) {
-            this.targetReadAccessor = targetProp.getReadAccessor();
-            this.targetWriteAccessor = targetProp.getWriteAccessor();
-            this.targetType = targetProp.getType();
-            this.targetBuilderType = targetProp.getBuilderType();
-            this.targetWriteAccessorType = targetWriteAccessor.getAccessorType();
-            return (T) this;
-        }
-
-        public T targetReadAccessor(Accessor targetReadAccessor) {
+        public T target(String targetPropertyName, Accessor targetReadAccessor, Accessor targetWriteAccessor) {
+            this.targetPropertyName = targetPropertyName;
             this.targetReadAccessor = targetReadAccessor;
-            return (T) this;
-        }
-
-        public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetType = ctx.getTypeFactory().getType( targetWriteAccessor.getAccessedType() );
             BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
@@ -119,11 +107,6 @@ public class PropertyMapping extends ModelElement {
 
         T mirror(AnnotationMirror mirror) {
             this.positionHint = mirror;
-            return (T) this;
-        }
-
-        public T targetPropertyName(String targetPropertyName) {
-            this.targetPropertyName = targetPropertyName;
             return (T) this;
         }
 
@@ -326,6 +309,11 @@ public class PropertyMapping extends ModelElement {
          * Report that a mapping could not be created.
          */
         private void reportCannotCreateMapping() {
+            if ( forgeMethodWithMappingReferences != null && ctx.isErroneous() ) {
+                // If we arrived here, there is an error it means that we couldn't forge a mapping method
+                // so skip the cannot create mapping
+                return;
+            }
             if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
                 // The history that is part of the ForgedMethod misses the information from the current right hand
                 // side. Therefore we need to extract the most relevant history and use that in the error reporting.
@@ -363,9 +351,7 @@ public class PropertyMapping extends ModelElement {
                     .existingVariableNames( existingVariableNames )
                     .mappingContext( ctx )
                     .sourceMethod( method )
-                    .targetPropertyName( targetPropertyName )
-                    .targetReadAccessor( targetReadAccessor )
-                    .targetWriteAccessor( targetWriteAccessor )
+                    .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                     .build();
                 return build.getAssignment();
             }
@@ -378,9 +364,7 @@ public class PropertyMapping extends ModelElement {
                     .existingVariableNames( existingVariableNames )
                     .mappingContext( ctx )
                     .sourceMethod( method )
-                    .targetPropertyName( targetPropertyName )
-                    .targetReadAccessor( targetReadAccessor )
-                    .targetWriteAccessor( targetWriteAccessor )
+                    .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                     .build();
                 return build.getAssignment();
             }

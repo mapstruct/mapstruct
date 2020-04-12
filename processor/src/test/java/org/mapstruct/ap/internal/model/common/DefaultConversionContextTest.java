@@ -161,5 +161,9 @@ public class DefaultConversionContextTest {
             return lastKindPrinted;
         }
 
+        @Override
+        public boolean isErroneous() {
+            return false;
+        }
     }
 }

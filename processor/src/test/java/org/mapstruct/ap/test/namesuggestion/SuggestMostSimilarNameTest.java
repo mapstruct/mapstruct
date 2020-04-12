@@ -66,13 +66,21 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                message = "Unknown property \"garage.colour.rgb\" in result type org.mapstruct.ap.test.namesuggestion" +
-                    ".Person. Did you mean \"garage.color\"?"),
+                message = "Unknown property \"colour\" in type org.mapstruct.ap.test.namesuggestion.Garage for target" +
+                    " name \"garage.colour.rgb\". Did you mean \"garage.color\"?"),
+            @Diagnostic(type = PersonGarageWrongTargetMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 20,
+                messageRegExp = "Unmapped target properties: \"fullName, fullAge\"\\."),
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                message = "Unknown property \"garage.colour\" in result type org.mapstruct.ap.test.namesuggestion" +
-                    ".Person. Did you mean \"garage.color\"?")
+                message = "Unknown property \"colour\" in type org.mapstruct.ap.test.namesuggestion.Garage for" +
+                    " target name \"garage.colour\". Did you mean \"garage.color\"?"),
+            @Diagnostic(type = PersonGarageWrongTargetMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 23,
+                messageRegExp = "Unmapped target properties: \"fullName, fullAge\"\\."),
         }
     )
     public void testGarageTargetSuggestion() {

@@ -368,10 +368,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builder ) )
                     .build();
 
+                // We can consider that the bean mapping method can always be constructed. If there is a problem
+                // it would have been reported in its build
+                hasFactoryMethod = true;
                 if ( beanMappingMethod != null ) {
-                    // We can consider that the bean mapping method can always be constructed. If there is a problem
-                    // it would have been reported in its build
-                    hasFactoryMethod = true;
                     mappingMethods.add( beanMappingMethod );
                 }
             }

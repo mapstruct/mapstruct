@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -29,8 +30,11 @@ public class MappingReferences {
         return EMPTY;
     }
 
-    public static MappingReferences forSourceMethod(SourceMethod sourceMethod, FormattingMessager messager,
-                                                    TypeFactory typeFactory) {
+    public static MappingReferences forSourceMethod(SourceMethod sourceMethod,
+        Type targetType,
+        Set<String> targetProperties,
+        FormattingMessager messager,
+        TypeFactory typeFactory) {
 
         Set<MappingReference> references = new LinkedHashSet<>();
         List<MappingReference> targetThisReferences = new ArrayList<>(  );
@@ -49,6 +53,8 @@ public class MappingReferences {
                                                                            .method( sourceMethod )
                                                                            .messager( messager )
                                                                            .typeFactory( typeFactory )
+                                                                           .targetProperties( targetProperties )
+                                                                           .targetType( targetType )
                                                                            .build();
 
             // add when inverse is also valid
@@ -121,7 +127,7 @@ public class MappingReferences {
 
         for ( MappingReference mappingRef : mappingReferences ) {
             TargetReference targetReference = mappingRef.getTargetReference();
-            if ( targetReference.isValid() && targetReference.isNested()) {
+            if ( targetReference.isNested()) {
                 return true;
             }
 
@@ -141,7 +147,7 @@ public class MappingReferences {
     private static boolean isValidWhenInversed(MappingReference mappingRef) {
         MappingOptions mapping = mappingRef.getMapping();
         if ( mapping.getInheritContext() != null && mapping.getInheritContext().isReversed() ) {
-            return mappingRef.getTargetReference().isValid() && ( mappingRef.getSourceReference() == null ||
+            return ( mappingRef.getSourceReference() == null ||
                 mappingRef.getSourceReference().isValid() );
         }
         return true;

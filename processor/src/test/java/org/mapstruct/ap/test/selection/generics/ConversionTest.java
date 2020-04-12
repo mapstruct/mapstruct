@@ -172,10 +172,7 @@ public class ConversionTest {
     })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 16, message = "org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper<org.mapstruct.ap.test" +
-            ".selection.generics.TypeA> does not have an accessible parameterless constructor."),
-        @Diagnostic(type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 16, message =
+            line = 17, message =
             "No target bean properties found: can't map property \"org.mapstruct.ap.test.NoProperties "
                 + "foo.wrapped\" to"
                 + " \"org.mapstruct.ap.test.selection.generics.TypeA "

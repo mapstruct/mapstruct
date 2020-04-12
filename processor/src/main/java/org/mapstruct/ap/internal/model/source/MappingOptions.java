@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -50,6 +51,7 @@ public class MappingOptions extends DelegatingOptions {
     private final boolean isIgnored;
     private final Set<String> dependsOn;
 
+    private final Element element;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
     private final MappingGem mapping;
@@ -135,6 +137,7 @@ public class MappingOptions extends DelegatingOptions {
 
         MappingOptions options = new MappingOptions(
             mapping.target().getValue(),
+            method,
             mapping.target().getAnnotationValue(),
             source,
             mapping.source().getAnnotationValue(),
@@ -162,6 +165,7 @@ public class MappingOptions extends DelegatingOptions {
    public static MappingOptions forIgnore(String targetName) {
         return new MappingOptions(
             targetName,
+            null,
             null,
             null,
             null,
@@ -249,6 +253,7 @@ public class MappingOptions extends DelegatingOptions {
 
     @SuppressWarnings("checkstyle:parameternumber")
     private MappingOptions(String targetName,
+                           Element element,
                            AnnotationValue targetAnnotationValue,
                            String sourceName,
                            AnnotationValue sourceAnnotationValue,
@@ -266,6 +271,7 @@ public class MappingOptions extends DelegatingOptions {
     ) {
         super( next );
         this.targetName = targetName;
+        this.element = element;
         this.targetAnnotationValue = targetAnnotationValue;
         this.sourceName = sourceName;
         this.sourceAnnotationValue = sourceAnnotationValue;
@@ -377,6 +383,10 @@ public class MappingOptions extends DelegatingOptions {
         return Optional.ofNullable( mapping ).map( MappingGem::mirror ).orElse( null );
     }
 
+    public Element getElement() {
+        return element;
+    }
+
     public AnnotationValue getDependsOnAnnotationValue() {
         return Optional.ofNullable( mapping )
             .map( MappingGem::dependsOn )
@@ -434,6 +444,7 @@ public class MappingOptions extends DelegatingOptions {
 
         MappingOptions mappingOptions = new MappingOptions(
             sourceName != null ? sourceName : targetName,
+            templateMethod.getExecutable(),
             targetAnnotationValue,
             sourceName != null ? targetName : null,
             sourceAnnotationValue,
@@ -462,6 +473,7 @@ public class MappingOptions extends DelegatingOptions {
                                                     BeanMappingOptions beanMappingOptions ) {
         MappingOptions mappingOptions = new MappingOptions(
             targetName,
+            templateMethod.getExecutable(),
             targetAnnotationValue,
             sourceName,
             sourceAnnotationValue,

@@ -80,11 +80,7 @@ public class MappingReference {
     }
 
     public boolean isValid( ) {
-        boolean result = false;
-        if ( targetReference.isValid() ) {
-             result = sourceReference != null ? sourceReference.isValid() : true;
-        }
-        return result;
+        return sourceReference == null || sourceReference.isValid();
     }
 
     @Override
