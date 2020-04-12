@@ -21,8 +21,12 @@ import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -37,13 +41,13 @@ public class NestedTargetPropertyMappingHolder {
     private final List<Parameter> processedSourceParameters;
     private final Set<String> handledTargets;
     private final List<PropertyMapping> propertyMappings;
-    private final Map<PropertyEntry, Set<MappingReference>> unprocessedDefinedTarget;
+    private final Map<String, Set<MappingReference>> unprocessedDefinedTarget;
     private final boolean errorOccurred;
 
     public NestedTargetPropertyMappingHolder(
         List<Parameter> processedSourceParameters, Set<String> handledTargets,
         List<PropertyMapping> propertyMappings,
-        Map<PropertyEntry, Set<MappingReference>> unprocessedDefinedTarget, boolean errorOccurred) {
+        Map<String, Set<MappingReference>> unprocessedDefinedTarget, boolean errorOccurred) {
         this.processedSourceParameters = processedSourceParameters;
         this.handledTargets = handledTargets;
         this.propertyMappings = propertyMappings;
@@ -75,7 +79,7 @@ public class NestedTargetPropertyMappingHolder {
     /**
      * @return a map of all the unprocessed defined targets that can be applied to name forged base methods
      */
-    public Map<PropertyEntry, Set<MappingReference>> getUnprocessedDefinedTarget() {
+    public Map<String, Set<MappingReference>> getUnprocessedDefinedTarget() {
         return unprocessedDefinedTarget;
     }
 
@@ -94,6 +98,9 @@ public class NestedTargetPropertyMappingHolder {
         private Set<String> existingVariableNames;
         private List<PropertyMapping> propertyMappings;
         private Set<String> handledTargets;
+        private Map<String, Accessor> targetPropertiesWriteAccessors;
+        private Type targetType;
+        private boolean errorOccurred;
 
         public Builder mappingReferences(MappingReferences mappingReferences) {
             this.mappingReferences = mappingReferences;
@@ -115,6 +122,16 @@ public class NestedTargetPropertyMappingHolder {
             return this;
         }
 
+        public Builder targetPropertiesWriteAccessors(Map<String, Accessor> targetPropertiesWriteAccessors) {
+            this.targetPropertiesWriteAccessors = targetPropertiesWriteAccessors;
+            return this;
+        }
+
+        public Builder targetPropertyType(Type targetType) {
+            this.targetType = targetType;
+            return this;
+        }
+
         public NestedTargetPropertyMappingHolder build() {
             List<Parameter> processedSourceParameters = new ArrayList<>();
             handledTargets = new HashSet<>();
@@ -123,11 +140,11 @@ public class NestedTargetPropertyMappingHolder {
             // first we group by the first property in the target properties and for each of those
             // properties we get the new mappings as if the first property did not exist.
             GroupedTargetReferences groupedByTP = groupByTargetReferences( );
-            Map<PropertyEntry, Set<MappingReference>> unprocessedDefinedTarget = new LinkedHashMap<>();
+            Map<String, Set<MappingReference>> unprocessedDefinedTarget = new LinkedHashMap<>();
 
-            for ( Map.Entry<PropertyEntry, Set<MappingReference>> entryByTP :
+            for ( Map.Entry<String, Set<MappingReference>> entryByTP :
                 groupedByTP.poppedTargetReferences.entrySet() ) {
-                PropertyEntry targetProperty = entryByTP.getKey();
+                String targetProperty = entryByTP.getKey();
                 //Now we are grouping the already popped mappings by the source parameter(s) of the method
                 GroupedBySourceParameters groupedBySourceParam = groupBySourceParameter(
                     entryByTP.getValue(),
@@ -188,7 +205,7 @@ public class NestedTargetPropertyMappingHolder {
                             .type( sourceEntry.getType() )
                             .readAccessor( sourceEntry.getReadAccessor() )
                             .presenceChecker( sourceEntry.getPresenceChecker() )
-                            .name( targetProperty.getName() )
+                            .name( targetProperty )
                             .build();
 
                         // If we have multiple source parameters that are mapped to the target reference, or
@@ -205,7 +222,7 @@ public class NestedTargetPropertyMappingHolder {
                             propertyMappings.add( propertyMapping );
                         }
 
-                        handledTargets.add( entryByTP.getKey().getName() );
+                        handledTargets.add( entryByTP.getKey() );
                     }
 
                     // For the nonNested mappings (assymetric) Mappings we also forge mappings
@@ -216,7 +233,7 @@ public class NestedTargetPropertyMappingHolder {
                             new MappingReferences( groupedSourceReferences.nonNested, true );
                         SourceReference reference = new SourceReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
-                            .name( targetProperty.getName() )
+                            .name( targetProperty )
                             .build();
 
                         boolean forceUpdateMethodForNonNested =
@@ -236,7 +253,7 @@ public class NestedTargetPropertyMappingHolder {
                             propertyMappings.add( propertyMapping );
                         }
 
-                        handledTargets.add( entryByTP.getKey().getName() );
+                        handledTargets.add( entryByTP.getKey() );
                     }
 
                     handleSourceParameterMappings(
@@ -255,7 +272,7 @@ public class NestedTargetPropertyMappingHolder {
                 handledTargets,
                 propertyMappings,
                 unprocessedDefinedTarget,
-                groupedByTP.errorOccurred
+                errorOccurred
             );
         }
 
@@ -268,7 +285,7 @@ public class NestedTargetPropertyMappingHolder {
          * @param forceUpdateMethod whether we need to force an update method
          */
         private void handleSourceParameterMappings(Set<MappingReference> sourceParameterMappings,
-                                                   PropertyEntry targetProperty, Parameter sourceParameter,
+                                                   String targetProperty, Parameter sourceParameter,
                                                    boolean forceUpdateMethod) {
             if ( !sourceParameterMappings.isEmpty() ) {
                 // The source parameter mappings have no mappings, the source name is actually the parameter itself
@@ -276,7 +293,7 @@ public class NestedTargetPropertyMappingHolder {
                     new MappingReferences( Collections.emptySet(), false, true );
                 SourceReference reference = new SourceReference.BuilderFromProperty()
                     .sourceParameter( sourceParameter )
-                    .name( targetProperty.getName() )
+                    .name( targetProperty )
                     .build();
 
                 PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
@@ -290,7 +307,7 @@ public class NestedTargetPropertyMappingHolder {
                     propertyMappings.add( propertyMapping );
                 }
 
-                handledTargets.add( targetProperty.getName() );
+                handledTargets.add( targetProperty );
             }
         }
 
@@ -340,16 +357,11 @@ public class NestedTargetPropertyMappingHolder {
          */
         private GroupedTargetReferences groupByTargetReferences( ) {
             // group all mappings based on the top level name before popping
-            Map<PropertyEntry, Set<MappingReference>> mappingsKeyedByProperty = new LinkedHashMap<>();
-            Map<PropertyEntry, Set<MappingReference>> singleTargetReferences = new LinkedHashMap<>();
-            boolean errorOccurred = false;
+            Map<String, Set<MappingReference>> mappingsKeyedByProperty = new LinkedHashMap<>();
+            Map<String, Set<MappingReference>> singleTargetReferences = new LinkedHashMap<>();
             for ( MappingReference mapping : mappingReferences.getMappingReferences() )  {
                 TargetReference targetReference = mapping.getTargetReference();
-                if ( !targetReference.isValid() ) {
-                    errorOccurred = true;
-                    continue;
-                }
-                PropertyEntry property = first( targetReference.getPropertyEntries() );
+                String property = first( targetReference.getPropertyEntries() );
                 MappingReference newMapping = mapping.popTargetReference();
                 if ( newMapping != null ) {
                     // group properties on current name.
@@ -362,7 +374,7 @@ public class NestedTargetPropertyMappingHolder {
                 }
             }
 
-            return new GroupedTargetReferences( mappingsKeyedByProperty, singleTargetReferences, errorOccurred );
+            return new GroupedTargetReferences( mappingsKeyedByProperty, singleTargetReferences );
         }
 
         /**
@@ -625,14 +637,45 @@ public class NestedTargetPropertyMappingHolder {
         }
 
         private PropertyMapping createPropertyMappingForNestedTarget(MappingReferences mappingReferences,
-                                                                     PropertyEntry targetProperty,
+                                                                     String targetPropertyName,
                                                                      SourceReference sourceReference,
                                                                      boolean forceUpdateMethod) {
+
+            Accessor targetWriteAccessor = targetPropertiesWriteAccessors.get( targetPropertyName );
+            Accessor targetReadAccessor = targetType.getPropertyReadAccessors().get( targetPropertyName );
+            if ( targetWriteAccessor == null ) {
+                Set<String> readAccessors = targetType.getPropertyReadAccessors().keySet();
+                String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
+
+                for ( MappingReference mappingReference : mappingReferences.getMappingReferences() ) {
+                    MappingOptions mapping = mappingReference.getMapping();
+                    List<String> pathProperties = new ArrayList<>( mappingReference.getTargetReference()
+                        .getPathProperties() );
+                    if ( !pathProperties.isEmpty() ) {
+                        pathProperties.set( pathProperties.size() - 1, mostSimilarProperty );
+                    }
+
+                    mappingContext.getMessager()
+                        .printMessage(
+                            mapping.getElement(),
+                            mapping.getMirror(),
+                            mapping.getTargetAnnotationValue(),
+                            Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE,
+                            targetPropertyName,
+                            targetType,
+                            mapping.getTargetName(),
+                            Strings.join( pathProperties, "." )
+                        );
+                }
+
+                errorOccurred = true;
+                return null;
+            }
+
             return new PropertyMapping.PropertyMappingBuilder()
                 .mappingContext( mappingContext )
                 .sourceMethod( method )
-                .targetProperty( targetProperty )
-                .targetPropertyName( targetProperty.getName() )
+                .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                 .sourceReference( sourceReference )
                 .existingVariableNames( existingVariableNames )
                 .dependsOn( mappingReferences.collectNestedDependsOn() )
@@ -685,21 +728,19 @@ public class NestedTargetPropertyMappingHolder {
      * references (target references that were not nested).
      */
     private static class GroupedTargetReferences {
-        private final Map<PropertyEntry, Set<MappingReference>> poppedTargetReferences;
-        private final Map<PropertyEntry, Set<MappingReference>> singleTargetReferences;
-        private final boolean errorOccurred;
+        private final Map<String, Set<MappingReference>> poppedTargetReferences;
+        private final Map<String, Set<MappingReference>> singleTargetReferences;
 
-        private GroupedTargetReferences(Map<PropertyEntry, Set<MappingReference>> poppedTargetReferences,
-            Map<PropertyEntry, Set<MappingReference>> singleTargetReferences, boolean errorOccurred) {
+        private GroupedTargetReferences(Map<String, Set<MappingReference>> poppedTargetReferences,
+            Map<String, Set<MappingReference>> singleTargetReferences) {
             this.poppedTargetReferences = poppedTargetReferences;
             this.singleTargetReferences = singleTargetReferences;
-            this.errorOccurred = errorOccurred;
         }
 
         @Override
         public String toString() {
             return "GroupedTargetReferences{" + "poppedTargetReferences=" + poppedTargetReferences
-                + ", singleTargetReferences=" + singleTargetReferences + ", errorOccurred=" + errorOccurred + '}';
+                + ", singleTargetReferences=" + singleTargetReferences + "}";
         }
     }
 

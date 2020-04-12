@@ -240,4 +240,8 @@ public class MappingBuilderContext {
     private boolean canGenerateAutoSubMappingFor(Type type) {
         return type.getTypeElement() != null && !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getTypeElement() );
     }
+
+    public boolean isErroneous() {
+        return messager.isErroneous();
+    }
 }

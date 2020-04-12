@@ -75,4 +75,6 @@ public interface FormattingMessager {
      * @param args the arguments
      */
     void note(int level, Message log, Object... args);
+
+    boolean isErroneous();
 }

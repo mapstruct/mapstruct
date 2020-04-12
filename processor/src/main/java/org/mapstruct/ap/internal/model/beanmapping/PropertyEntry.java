@@ -7,55 +7,33 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Arrays;
 
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
- * A PropertyEntry contains information on the name, readAccessor (for source), readAccessor and writeAccessor
- * (for targets) and return type of a property.
+ * A PropertyEntry contains information on the name, readAccessor and presenceCheck (for source)
+ * and return type of a property.
  */
 public class PropertyEntry {
 
     private final String[] fullName;
     private final Accessor readAccessor;
-    private final Accessor writeAccessor;
     private final Accessor presenceChecker;
     private final Type type;
-    private final BuilderType builderType;
 
     /**
      * Constructor used to create {@link TargetReference} property entries from a mapping
      *
      * @param fullName
      * @param readAccessor
-     * @param writeAccessor
      * @param type
      */
-    private PropertyEntry(String[] fullName, Accessor readAccessor, Accessor writeAccessor,
-                          Accessor presenceChecker, Type type, BuilderType builderType) {
+    private PropertyEntry(String[] fullName, Accessor readAccessor, Accessor presenceChecker, Type type) {
         this.fullName = fullName;
         this.readAccessor = readAccessor;
-        this.writeAccessor = writeAccessor;
         this.presenceChecker = presenceChecker;
         this.type = type;
-        this.builderType = builderType;
-    }
-
-    /**
-     * Constructor used to create {@link TargetReference} property entries
-     *
-     * @param fullName name of the property (dot separated)
-     * @param readAccessor its read accessor
-     * @param writeAccessor its write accessor
-     * @param type type of the property
-     * @param builderType the builder for the type
-     * @return the property entry for given parameters.
-     */
-    public static PropertyEntry forTargetReference(String[] fullName, Accessor readAccessor,
-                                                   Accessor writeAccessor, Type type, BuilderType builderType ) {
-        return new PropertyEntry( fullName, readAccessor, writeAccessor, null, type, builderType );
     }
 
     /**
@@ -69,7 +47,7 @@ public class PropertyEntry {
      */
     public static PropertyEntry forSourceReference(String[] name, Accessor readAccessor,
                                                    Accessor presenceChecker, Type type) {
-        return new PropertyEntry( name, readAccessor, null, presenceChecker, type, null );
+        return new PropertyEntry( name, readAccessor, presenceChecker, type );
     }
 
     public String getName() {
@@ -80,10 +58,6 @@ public class PropertyEntry {
         return readAccessor;
     }
 
-    public Accessor getWriteAccessor() {
-        return writeAccessor;
-    }
-
     public Accessor getPresenceChecker() {
         return presenceChecker;
     }
@@ -92,22 +66,8 @@ public class PropertyEntry {
         return type;
     }
 
-    public BuilderType getBuilderType() {
-        return builderType;
-    }
-
     public String getFullName() {
         return Strings.join( Arrays.asList(  fullName ), "." );
-    }
-
-    public PropertyEntry pop() {
-        if ( fullName.length > 1 ) {
-            String[] newFullName = Arrays.copyOfRange( fullName, 1, fullName.length );
-            return new PropertyEntry(newFullName, readAccessor, writeAccessor, presenceChecker, type, builderType );
-        }
-        else {
-            return null;
-        }
     }
 
     @Override

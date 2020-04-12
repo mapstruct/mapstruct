@@ -167,6 +167,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             }
         }
 
+        @Override
         public boolean isErroneous() {
             return isErroneous;
         }
