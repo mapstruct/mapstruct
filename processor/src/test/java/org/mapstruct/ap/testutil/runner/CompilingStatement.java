@@ -329,7 +329,7 @@ abstract class CompilingStatement extends Statement {
                         actual.getLine(),
                         actual.getKind()
                     )
-                ).matches( "(?ms).*" + expected.getMessage() + ".*" );
+                ).matches( "(?ms).*" + expected.getMessageRegex() + ".*" );
             }
         }
     }
