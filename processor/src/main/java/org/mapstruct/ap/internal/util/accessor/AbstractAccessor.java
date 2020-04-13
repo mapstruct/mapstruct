@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 
 /**
  * This is an abstract implementation of an {@link Accessor} that provides the common implementation.
@@ -25,8 +24,8 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
     }
 
     @Override
-    public Name getSimpleName() {
-        return element.getSimpleName();
+    public String getSimpleName() {
+        return element.getSimpleName().toString();
     }
 
     @Override
