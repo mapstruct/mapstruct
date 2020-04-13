@@ -33,7 +33,7 @@ public interface Accessor {
     /**
      * @return the simple name of the accessor
      */
-    Name getSimpleName();
+    String getSimpleName();
 
     /**
      * @return the set of modifiers that the accessor has

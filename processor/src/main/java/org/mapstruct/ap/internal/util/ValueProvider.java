@@ -45,7 +45,7 @@ public class ValueProvider {
         if ( accessor == null ) {
             return null;
         }
-        String value = accessor.getSimpleName().toString();
+        String value = accessor.getSimpleName();
         if ( accessor.getAccessorType() != AccessorType.FIELD ) {
             value += "()";
         }

@@ -150,7 +150,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             this.safeName = safeName;
             this.readAccessorName = ValueProvider.of( entry.getReadAccessor() ).getValue();
             if ( entry.getPresenceChecker() != null ) {
-                this.presenceCheckerName = entry.getPresenceChecker().getSimpleName().toString();
+                this.presenceCheckerName = entry.getPresenceChecker().getSimpleName();
             }
             else {
                 this.presenceCheckerName = null;

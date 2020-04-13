@@ -273,7 +273,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 targetPropertyName,
                 rightHandSide.getSourceParameterName(),
-                targetWriteAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
                 assignment,
@@ -869,7 +869,7 @@ public class PropertyMapping extends ModelElement {
 
             return new PropertyMapping(
                 targetPropertyName,
-                targetWriteAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
                 assignment,
@@ -934,7 +934,7 @@ public class PropertyMapping extends ModelElement {
 
             return new PropertyMapping(
                 targetPropertyName,
-                targetWriteAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
                 assignment,
