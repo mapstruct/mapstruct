@@ -721,30 +721,33 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     sourceRef = getSourceRef( method.getSourceParameters().get( 0 ), targetPropertyName );
                 }
 
-                if ( sourceRef.isValid() ) {
+                if ( sourceRef != null ) {
+                    // sourceRef == null is not considered an error here
+                    if ( sourceRef.isValid() ) {
 
-                    // targetProperty == null can occur: we arrived here because we want as many errors
-                    // as possible before we stop analysing
-                    propertyMapping = new PropertyMappingBuilder()
-                        .mappingContext( ctx )
-                        .sourceMethod( method )
-                        .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
-                        .sourcePropertyName( mapping.getSourceName() )
-                        .sourceReference( sourceRef )
-                        .selectionParameters( mapping.getSelectionParameters() )
-                        .formattingParameters( mapping.getFormattingParameters() )
-                        .existingVariableNames( existingVariableNames )
-                        .dependsOn( mapping.getDependsOn() )
-                        .defaultValue( mapping.getDefaultValue() )
-                        .defaultJavaExpression( mapping.getDefaultJavaExpression() )
-                        .mirror( mapping.getMirror() )
-                        .options( mapping )
-                        .build();
-                    handledTargets.add( targetPropertyName );
-                    unprocessedSourceParameters.remove( sourceRef.getParameter() );
-                }
-                else {
-                    errorOccured = true;
+                        // targetProperty == null can occur: we arrived here because we want as many errors
+                        // as possible before we stop analysing
+                        propertyMapping = new PropertyMappingBuilder()
+                            .mappingContext( ctx )
+                            .sourceMethod( method )
+                            .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
+                            .sourcePropertyName( mapping.getSourceName() )
+                            .sourceReference( sourceRef )
+                            .selectionParameters( mapping.getSelectionParameters() )
+                            .formattingParameters( mapping.getFormattingParameters() )
+                            .existingVariableNames( existingVariableNames )
+                            .dependsOn( mapping.getDependsOn() )
+                            .defaultValue( mapping.getDefaultValue() )
+                            .defaultJavaExpression( mapping.getDefaultJavaExpression() )
+                            .mirror( mapping.getMirror() )
+                            .options( mapping )
+                            .build();
+                        handledTargets.add( targetPropertyName );
+                        unprocessedSourceParameters.remove( sourceRef.getParameter() );
+                    }
+                    else {
+                        errorOccured = true;
+                    }
                 }
             }
             // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
