@@ -18,7 +18,7 @@ public interface Issue2077ErroneousMapper {
 
     Issue2077ErroneousMapper INSTANCE = Mappers.getMapper( Issue2077ErroneousMapper.class );
 
-    @Mapping(target = "s1")
+    @Mapping(target = "s1", defaultValue = "xyz" )
     Target map(String source);
 
     class Target {
