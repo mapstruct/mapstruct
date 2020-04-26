@@ -107,6 +107,14 @@ public class MavenIntegrationTest {
     void recordsTest() {
     }
 
+    @ProcessorTest(baseDir = "kotlinDataTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    }, forkJvm = true)
+    // We have to fork the jvm because there is an NPE in com.intellij.openapi.util.SystemInfo.getRtVersion
+    // and the kotlin-maven-plugin uses that. See also https://youtrack.jetbrains.com/issue/IDEA-238907
+    void kotlinDataTest() {
+    }
+
     @ProcessorTest(baseDir = "simpleTest")
     void simpleTest() {
     }

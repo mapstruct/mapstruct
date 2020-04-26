@@ -13,9 +13,9 @@ import javax.lang.model.type.TypeMirror;
  *
  * @author Filip Hrisafov
  */
-public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
+public class FieldElementAccessor extends AbstractAccessor<VariableElement> {
 
-    public VariableElementAccessor(VariableElement element) {
+    public FieldElementAccessor(VariableElement element) {
         super( element );
     }
 

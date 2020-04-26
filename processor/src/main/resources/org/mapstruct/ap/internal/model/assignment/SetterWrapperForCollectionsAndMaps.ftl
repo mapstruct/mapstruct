@@ -9,5 +9,5 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.sourceLocalVarAssignment/>
 <@lib.handleExceptions>
-  ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
+  <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
 </@lib.handleExceptions>

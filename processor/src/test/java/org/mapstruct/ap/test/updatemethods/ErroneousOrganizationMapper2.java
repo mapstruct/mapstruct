@@ -34,4 +34,11 @@ public interface ErroneousOrganizationMapper2 {
     })
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
+    class DepartmentEntity extends org.mapstruct.ap.test.updatemethods.DepartmentEntity {
+
+        private DepartmentEntity() {
+            super( null );
+        }
+    }
+
 }

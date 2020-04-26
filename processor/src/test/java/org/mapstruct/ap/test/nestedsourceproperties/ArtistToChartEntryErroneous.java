@@ -28,9 +28,22 @@ public interface ArtistToChartEntryErroneous {
         @Mapping(target = "city", ignore = true),
         @Mapping(target = "position", source = "position")
     } )
-    ChartEntry forward(Integer position);
+    ChartEntry forward(ChartPosition position);
 
     @InheritInverseConfiguration
-    Integer reverse(ChartEntry position);
+    ChartPosition reverse(ChartEntry position);
+
+    class ChartPosition {
+
+        private final int position;
+
+        private ChartPosition(int position) {
+            this.position = position;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+    }
 
 }

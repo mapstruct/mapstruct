@@ -90,14 +90,16 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> allMethods = null;
     private List<VariableElement> allFields = null;
+    private List<Element> recordComponents = null;
 
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
     private List<Accessor> alternativeTargetAccessors = null;
+    private Map<String, Accessor> constructorAccessors = null;
 
     private Type boundingBase = null;
 
-    private Boolean hasEmptyAccessibleConstructor;
+    private Boolean hasAccessibleConstructor;
 
     private final Filters filters;
 
@@ -288,6 +290,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isJavaLangType() {
         return packageName != null && packageName.startsWith( "java." );
+    }
+
+    public boolean isRecord() {
+        return typeElement.getKind().name().equals( "RECORD" );
     }
 
     /**
@@ -498,7 +504,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            Map<String, Accessor> recordAccessors = filters.recordsIn( typeElement );
+            Map<String, Accessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
             for ( Map.Entry<String, Accessor> recordEntry : recordAccessors.entrySet() ) {
                 modifiableGetters.putIfAbsent( recordEntry.getKey(), recordEntry.getValue() );
             }
@@ -600,6 +606,14 @@ public class Type extends ModelElement implements Comparable<Type> {
         return result;
     }
 
+    public List<Element> getRecordComponents() {
+        if ( recordComponents == null ) {
+            recordComponents = filters.recordComponentsIn( typeElement );
+        }
+
+        return recordComponents;
+    }
+
     private Type determinePreferredType(Accessor readAccessor) {
         if ( readAccessor != null ) {
             return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
@@ -613,7 +627,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return parameter.getType();
         }
         else if ( candidate.getAccessorType() == AccessorType.GETTER
-                        || candidate.getAccessorType() == AccessorType.FIELD ) {
+                        || candidate.getAccessorType().isFieldAssignment() ) {
             return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
         }
         return null;
@@ -636,11 +650,12 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private String getPropertyName(Accessor accessor ) {
-        if ( accessor.getAccessorType() == AccessorType.FIELD ) {
-            return accessorNaming.getPropertyName( (VariableElement) accessor.getElement() );
+        Element accessorElement = accessor.getElement();
+        if ( accessorElement instanceof ExecutableElement ) {
+            return accessorNaming.getPropertyName( (ExecutableElement) accessorElement );
         }
         else {
-            return accessorNaming.getPropertyName( (ExecutableElement) accessor.getElement() );
+            return accessor.getSimpleName();
         }
     }
 
@@ -1009,20 +1024,18 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
-    public boolean hasEmptyAccessibleConstructor() {
-
-        if ( this.hasEmptyAccessibleConstructor == null ) {
-            hasEmptyAccessibleConstructor = false;
+    public boolean hasAccessibleConstructor() {
+        if ( hasAccessibleConstructor == null ) {
+            hasAccessibleConstructor = false;
             List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
             for ( ExecutableElement constructor : constructors ) {
-                if ( !constructor.getModifiers().contains( Modifier.PRIVATE )
-                    && constructor.getParameters().isEmpty() ) {
-                    hasEmptyAccessibleConstructor = true;
+                if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                    hasAccessibleConstructor = true;
                     break;
                 }
             }
         }
-        return hasEmptyAccessibleConstructor;
+        return hasAccessibleConstructor;
     }
 
     /**

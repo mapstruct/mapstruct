@@ -130,7 +130,7 @@ public class CollectionAssignmentBuilder {
         CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
         boolean targetImmutable = cms == CollectionMappingStrategyGem.TARGET_IMMUTABLE || targetReadAccessor == null;
 
-        if ( targetAccessorType == AccessorType.SETTER || targetAccessorType == AccessorType.FIELD ) {
+        if ( targetAccessorType == AccessorType.SETTER || targetAccessorType.isFieldAssignment() ) {
 
             if ( result.isCallingUpdateMethod() && !targetImmutable ) {
 
@@ -149,7 +149,7 @@ public class CollectionAssignmentBuilder {
                     result,
                     method.getThrownTypes(),
                     factoryMethod,
-                    targetAccessorType == AccessorType.FIELD,
+                    targetAccessorType.isFieldAssignment(),
                     targetType,
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
@@ -165,7 +165,7 @@ public class CollectionAssignmentBuilder {
                     nvcs,
                     nvpms,
                     ctx.getTypeFactory(),
-      targetAccessorType == AccessorType.FIELD
+                    targetAccessorType.isFieldAssignment()
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
@@ -176,16 +176,18 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-      targetAccessorType == AccessorType.FIELD
+                    targetAccessorType.isFieldAssignment()
                 );
             }
             else {
+                //TODO init default value
+
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
                 result = new SetterWrapperForCollectionsAndMaps(
                     result,
                     method.getThrownTypes(),
                     targetType,
-      targetAccessorType == AccessorType.FIELD
+                    targetAccessorType.isFieldAssignment()
                 );
             }
         }
@@ -203,7 +205,7 @@ public class CollectionAssignmentBuilder {
                 result,
                 method.getThrownTypes(),
                 targetType,
-  targetAccessorType == AccessorType.FIELD
+                targetAccessorType.isFieldAssignment()
             );
         }
 

@@ -12,7 +12,7 @@ public class Source {
 
     private String source;
 
-    public Source(String source) {
+    private Source(String source) {
         this.source = source;
     }
 

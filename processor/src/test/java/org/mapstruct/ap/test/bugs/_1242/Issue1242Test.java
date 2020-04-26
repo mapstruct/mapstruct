@@ -65,12 +65,7 @@ public class Issue1242Test {
                     ".lang.Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
                     ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB(@TargetType java.lang" +
                     ".Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
-                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB()."),
-            @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 20,
-                message = "org.mapstruct.ap.test.bugs._1242.TargetB does not have an accessible parameterless " +
-                    "constructor.")
+                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB().")
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {
     }

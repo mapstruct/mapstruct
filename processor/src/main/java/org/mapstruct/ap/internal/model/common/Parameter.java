@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.gem.ContextGem;
@@ -23,6 +24,7 @@ import org.mapstruct.ap.internal.util.Collections;
  */
 public class Parameter extends ModelElement {
 
+    private final Element element;
     private final String name;
     private final String originalName;
     private final Type type;
@@ -32,8 +34,20 @@ public class Parameter extends ModelElement {
 
     private final boolean varArgs;
 
+    private Parameter(Element element, Type type, boolean varArgs) {
+        this.element = element;
+        this.name = element.getSimpleName().toString();
+        this.originalName = name;
+        this.type = type;
+        this.mappingTarget = MappingTargetGem.instanceOn( element ) != null;
+        this.targetType = TargetTypeGem.instanceOn( element ) != null;
+        this.mappingContext = ContextGem.instanceOn( element ) != null;
+        this.varArgs = varArgs;
+    }
+
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
                       boolean varArgs) {
+        this.element = null;
         this.name = name;
         this.originalName = name;
         this.type = type;
@@ -45,6 +59,10 @@ public class Parameter extends ModelElement {
 
     public Parameter(String name, Type type) {
         this( name, type, false, false, false, false );
+    }
+
+    public Element getElement() {
+        return element;
     }
 
     public String getName() {
@@ -115,11 +133,8 @@ public class Parameter extends ModelElement {
 
     public static Parameter forElementAndType(VariableElement element, Type parameterType, boolean isVarArgs) {
         return new Parameter(
-            element.getSimpleName().toString(),
+            element,
             parameterType,
-            MappingTargetGem.instanceOn( element ) != null,
-            TargetTypeGem.instanceOn( element ) != null,
-            ContextGem.instanceOn( element ) != null,
             isVarArgs
         );
     }

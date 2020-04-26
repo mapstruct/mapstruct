@@ -22,4 +22,17 @@ public class RecordsTest {
         assertThat( customer.getName() ).isEqualTo( "Kermit" );
         assertThat( customer.getMail() ).isEqualTo( "kermit@test.com" );
     }
+
+    @Test
+    public void shouldMapIntoRecord() {
+        CustomerEntity entity = new CustomerEntity();
+        entity.setName( "Kermit" );
+        entity.setMail( "kermit@test.com" );
+
+        CustomerDto customer = CustomerMapper.INSTANCE.toRecord( entity );
+
+        assertThat( customer ).isNotNull();
+        assertThat( customer.name() ).isEqualTo( "Kermit" );
+        assertThat( customer.email() ).isEqualTo( "kermit@test.com" );
+    }
 }

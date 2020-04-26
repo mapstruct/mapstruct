@@ -8,18 +8,26 @@ package org.mapstruct.ap.internal.model;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -33,6 +41,7 @@ import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
@@ -41,15 +50,20 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.ParameterElementAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
+import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGIOUS_CONSTRUCTORS;
+import static org.mapstruct.ap.internal.util.Message.GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -61,7 +75,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
+    private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
     private final List<PropertyMapping> constantMappings;
+    private final List<PropertyMapping> constructorConstantMappings;
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
@@ -73,6 +89,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
+        private Map<String, Accessor> unprocessedConstructorProperties;
         private Map<String, Accessor> unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> targetProperties;
@@ -82,6 +99,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
 
         private MappingReferences mappingReferences;
+        private MethodReference factoryMethod;
+        private boolean hasFactoryMethod;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -125,15 +144,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /*  3) or the builder whenever the return type is immutable */
             Type returnTypeToConstruct = null;
 
-            /* factory or builder method to construct the returnTypeToConstruct */
-            MethodReference factoryMethod = null;
-
             // determine which return type to construct
             boolean cannotConstructReturnType = false;
             if ( !method.getReturnType().isVoid() ) {
                 Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
                 if ( returnTypeImpl != null ) {
-                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
@@ -143,7 +159,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
                 else if ( isBuilderRequired() ) {
                     returnTypeImpl = returnTypeBuilder.getBuilder();
-                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
@@ -153,7 +169,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
                 else if ( !method.isUpdateMethod() ) {
                     returnTypeImpl = method.getReturnType();
-                    factoryMethod = getFactoryMethod( returnTypeImpl, selectionParameters );
+                    initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
@@ -171,13 +187,39 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
 
+            existingVariableNames.addAll( method.getParameterNames() );
+
             CollectionMappingStrategyGem cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
 
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
-            this.targetProperties = accessors.keySet();
+            this.targetProperties = new LinkedHashSet<>( accessors.keySet() );
 
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
+
+            if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
+                ConstructorAccessor constructorAccessor = getConstructorAccessor( resultTypeToMap );
+                if ( constructorAccessor != null ) {
+
+                    this.unprocessedConstructorProperties = constructorAccessor.constructorAccessors;
+
+                    factoryMethod = MethodReference.forConstructorInvocation(
+                        resultTypeToMap,
+                        constructorAccessor.parameterBindings
+                    );
+
+                }
+                else {
+                    this.unprocessedConstructorProperties = new LinkedHashMap<>();
+                }
+
+                this.targetProperties.addAll( this.unprocessedConstructorProperties.keySet() );
+                this.unprocessedTargetProperties.putAll( this.unprocessedConstructorProperties );
+            }
+            else {
+                unprocessedConstructorProperties = new LinkedHashMap<>();
+            }
+
             this.unprocessedSourceProperties = new LinkedHashMap<>();
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
@@ -191,7 +233,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     unprocessedSourceProperties.put( entry.getKey(), entry.getValue() );
                 }
             }
-            existingVariableNames.addAll( method.getParameterNames() );
 
             // get bean mapping (when specified as annotation )
             if ( beanMapping != null ) {
@@ -222,6 +263,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // Process the unprocessed defined targets
             handleUnprocessedDefinedTargets();
+
+            // Initialize unprocessed constructor properties
+            handleUnmappedConstructorProperties();
 
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
@@ -364,6 +408,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                     if ( propertyMapping != null ) {
                         unprocessedTargetProperties.remove( propertyName );
+                        unprocessedConstructorProperties.remove( propertyName );
                         unprocessedSourceProperties.remove( propertyName );
                         iterator.remove();
                         propertyMappings.add( propertyMapping );
@@ -372,6 +417,28 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
+        }
+
+        private void handleUnmappedConstructorProperties() {
+            for ( Entry<String, Accessor> entry : unprocessedConstructorProperties.entrySet() ) {
+                Accessor accessor = entry.getValue();
+                Type accessedType = ctx.getTypeFactory()
+                    .getType( accessor.getAccessedType() );
+                String targetPropertyName = entry.getKey();
+
+                propertyMappings.add( new JavaExpressionMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .javaExpression( accessedType.getNull() )
+                    .existingVariableNames( existingVariableNames )
+                    .target( targetPropertyName, null, accessor )
+                    .dependsOn( Collections.emptySet() )
+                    .mirror( null )
+                    .build()
+                );
+            }
+
+            unprocessedConstructorProperties.clear();
         }
 
         /**
@@ -434,7 +501,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 );
                 error = false;
             }
-            else if ( !resultType.hasEmptyAccessibleConstructor() ) {
+            else if ( !resultType.hasAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
@@ -456,7 +523,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 );
                 error = false;
             }
-            else if ( !returnType.hasEmptyAccessibleConstructor() ) {
+            else if ( !returnType.hasAccessibleConstructor() ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
@@ -470,20 +537,225 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         /**
          * Find a factory method for a return type or for a builder.
          * @param returnTypeImpl the return type implementation to construct
-         * @param selectionParameters
+         * @param @selectionParameters
          * @return
          */
-        private MethodReference getFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
-            MethodReference factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method,
-                            returnTypeImpl,
-                            selectionParameters,
-                            ctx
-            );
-            if ( factoryMethod == null && returnTypeBuilder != null ) {
-                factoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod( method, returnTypeBuilder );
+        private void initializeFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
+            List<SelectedMethod<SourceMethod>> matchingFactoryMethods =
+                ObjectFactoryMethodResolver.getMatchingFactoryMethods(
+                    method,
+                    returnTypeImpl,
+                    selectionParameters,
+                    ctx
+                );
+
+            if ( matchingFactoryMethods.isEmpty() ) {
+                if ( factoryMethod == null && returnTypeBuilder != null ) {
+                    factoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod( method, returnTypeBuilder );
+                    hasFactoryMethod = factoryMethod != null;
+                }
+            }
+            else if ( matchingFactoryMethods.size() == 1 ) {
+                factoryMethod = ObjectFactoryMethodResolver.getFactoryMethodReference(
+                    method,
+                    first( matchingFactoryMethods ),
+                    ctx
+                );
+                hasFactoryMethod = true;
+            }
+            else {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
+                    returnTypeImpl,
+                    Strings.join( matchingFactoryMethods, ", " )
+                );
+                hasFactoryMethod = true;
+            }
+        }
+
+        private ConstructorAccessor getConstructorAccessor(Type type) {
+
+            if ( type.isRecord() ) {
+                // If the type is a record then just get the record components and use then
+                List<Element> recordComponents = type.getRecordComponents();
+                List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
+                Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
+                for ( Element recordComponent : recordComponents ) {
+                    String parameterName = recordComponent.getSimpleName().toString();
+                    Accessor accessor = createConstructorAccessor( recordComponent, parameterName );
+                    constructorAccessors.put(
+                        parameterName,
+                        accessor
+                    );
+
+                    parameterBindings.add( ParameterBinding.fromTypeAndName(
+                        ctx.getTypeFactory().getType( recordComponent.asType() ),
+                        accessor.getSimpleName()
+                    ) );
+                }
+                return new ConstructorAccessor( parameterBindings, constructorAccessors );
             }
 
-            return factoryMethod;
+            List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
+                .getEnclosedElements() );
+
+            ExecutableElement defaultConstructor = null;
+            List<ExecutableElement> accessibleConstructors = new ArrayList<>( constructors.size() );
+
+            for ( ExecutableElement constructor : constructors ) {
+                if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                    continue;
+                }
+
+                if ( constructor.getParameters().isEmpty() ) {
+                    defaultConstructor = constructor;
+                }
+                else {
+                    accessibleConstructors.add( constructor );
+                }
+            }
+
+            if ( defaultConstructor != null ) {
+                return null;
+            }
+
+            if ( accessibleConstructors.isEmpty() ) {
+                return null;
+            }
+
+            ExecutableElement constructor = null;
+            if ( accessibleConstructors.size() > 1 ) {
+
+                for ( ExecutableElement accessibleConstructor : accessibleConstructors ) {
+                    for ( AnnotationMirror annotationMirror : accessibleConstructor.getAnnotationMirrors() ) {
+                        if ( annotationMirror.getAnnotationType()
+                            .asElement()
+                            .getSimpleName()
+                            .contentEquals( "Default" ) ) {
+                            constructor = accessibleConstructor;
+                            break;
+                        }
+                    }
+                }
+
+                if ( constructor == null ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        GENERAL_AMBIGIOUS_CONSTRUCTORS,
+                        type,
+                        Strings.join( constructors, ", " )
+                    );
+                    return null;
+                }
+            }
+            else {
+                constructor = accessibleConstructors.get( 0 );
+            }
+
+            List<Parameter> constructorParameters = ctx.getTypeFactory()
+                .getParameters( (DeclaredType) type.getTypeMirror(), constructor );
+
+
+            List<String> constructorProperties = null;
+            for ( AnnotationMirror annotationMirror : constructor.getAnnotationMirrors() ) {
+                if ( annotationMirror.getAnnotationType()
+                    .asElement()
+                    .getSimpleName()
+                    .contentEquals( "ConstructorProperties" ) ) {
+                    for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror
+                        .getElementValues()
+                        .entrySet() ) {
+                        if ( entry.getKey().getSimpleName().contentEquals( "value" ) ) {
+                            constructorProperties = getArrayValues( entry.getValue() );
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if ( constructorProperties == null ) {
+                Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
+                List<ParameterBinding> parameterBindings = new ArrayList<>( constructorParameters.size() );
+                for ( Parameter constructorParameter : constructorParameters ) {
+                    String parameterName = constructorParameter.getName();
+                    Element parameterElement = constructorParameter.getElement();
+                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    constructorAccessors.put(
+                        parameterName,
+                        constructorAccessor
+                    );
+                    parameterBindings.add( ParameterBinding.fromTypeAndName(
+                        constructorParameter.getType(),
+                        constructorAccessor.getSimpleName()
+                    ) );
+                }
+
+                return new ConstructorAccessor( parameterBindings, constructorAccessors );
+            }
+            else if ( constructorProperties.size() != constructorParameters.size() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS,
+                    type
+                );
+                return null;
+            }
+            else {
+                Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
+                List<ParameterBinding> parameterBindings = new ArrayList<>( constructorProperties.size() );
+                for ( int i = 0; i < constructorProperties.size(); i++ ) {
+                    String parameterName = constructorProperties.get( i );
+                    Parameter constructorParameter = constructorParameters.get( i );
+                    Element parameterElement = constructorParameter.getElement();
+                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    constructorAccessors.put(
+                        parameterName,
+                        constructorAccessor
+                    );
+                    parameterBindings.add( ParameterBinding.fromTypeAndName(
+                        constructorParameter.getType(),
+                        constructorAccessor.getSimpleName()
+                    ) );
+                }
+
+                return new ConstructorAccessor( parameterBindings, constructorAccessors );
+            }
+        }
+
+        private Accessor createConstructorAccessor(Element element, String parameterName) {
+            String safeParameterName = Strings.getSafeVariableName(
+                parameterName,
+                existingVariableNames
+            );
+            existingVariableNames.add( safeParameterName );
+            return new ParameterElementAccessor( element, safeParameterName );
+        }
+
+        private List<String> getArrayValues(AnnotationValue av) {
+
+            if ( av.getValue() instanceof List ) {
+                List<String> result = new ArrayList<>();
+                for ( AnnotationValue v : getValueAsList( av ) ) {
+                    Object value = v.getValue();
+                    if ( value instanceof String ) {
+                        result.add( (String) value );
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                return result;
+            }
+            else {
+                return null;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<AnnotationValue> getValueAsList(AnnotationValue av) {
+            return (List<AnnotationValue>) av.getValue();
         }
 
         /**
@@ -531,6 +803,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // remove the remaining name based properties
             for ( String handledTarget : handledTargets ) {
                 unprocessedTargetProperties.remove( handledTarget );
+                unprocessedConstructorProperties.remove( handledTarget );
                 unprocessedDefinedTargets.remove( handledTarget );
             }
 
@@ -672,7 +945,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // check the mapping options
             // its an ignored property mapping
             if ( mapping.isIgnored() ) {
-                propertyMapping = null;
+                if ( targetWriteAccessor != null && targetWriteAccessor.getAccessorType() == AccessorType.PARAMETER ) {
+                    // Even though the property is ignored this is a constructor parameter.
+                    // Therefore we have to initialize it
+                    Type accessedType = ctx.getTypeFactory()
+                        .getType( targetWriteAccessor.getAccessedType() );
+
+                    propertyMapping = new JavaExpressionMappingBuilder()
+                        .mappingContext( ctx )
+                        .sourceMethod( method )
+                        .javaExpression( accessedType.getNull() )
+                        .existingVariableNames( existingVariableNames )
+                        .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
+                        .dependsOn( mapping.getDependsOn() )
+                        .mirror( mapping.getMirror() )
+                        .build();
+                }
                 handledTargets.add( targetPropertyName );
             }
 
@@ -821,6 +1109,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
                 Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
+                unprocessedConstructorProperties.remove( targetPropertyName );
                 if ( targetPropertyWriteAccessor == null ) {
                     // TODO improve error message
                     ctx.getMessager()
@@ -1056,6 +1345,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
+    private static class ConstructorAccessor {
+        private final List<ParameterBinding> parameterBindings;
+        private final Map<String, Accessor> constructorAccessors;
+
+        private ConstructorAccessor(
+            List<ParameterBinding> parameterBindings,
+            Map<String, Accessor> constructorAccessors) {
+            this.parameterBindings = parameterBindings;
+            this.constructorAccessors = constructorAccessors;
+        }
+    }
+
     private BeanMappingMethod(Method method,
                               Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
@@ -1082,15 +1383,30 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
-        this.constantMappings = new ArrayList<>( propertyMappings );
-        for ( Parameter sourceParameter : getSourceParameters() ) {
-            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<>();
-            mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
-            for ( PropertyMapping mapping : propertyMappings ) {
-                if ( sourceParameter.getName().equals( mapping.getSourceBeanName() ) ) {
-                    mappingsOfParameter.add( mapping );
-                    constantMappings.remove( mapping );
+        this.constantMappings = new ArrayList<>( propertyMappings.size() );
+        this.constructorMappingsByParameter = new LinkedHashMap<>();
+        this.constructorConstantMappings = new ArrayList<>();
+        Set<String> sourceParameterNames = getSourceParameters().stream()
+            .map( Parameter::getName )
+            .collect( Collectors.toSet() );
+        for ( PropertyMapping mapping : propertyMappings ) {
+            if ( mapping.isConstructorMapping() ) {
+                if ( sourceParameterNames.contains( mapping.getSourceBeanName() ) ) {
+                    constructorMappingsByParameter.computeIfAbsent(
+                        mapping.getSourceBeanName(),
+                        key -> new ArrayList<>()
+                    ).add( mapping );
                 }
+                else {
+                    constructorConstantMappings.add( mapping );
+                }
+            }
+            else if ( sourceParameterNames.contains( mapping.getSourceBeanName() ) ) {
+                mappingsByParameter.computeIfAbsent( mapping.getSourceBeanName(), key -> new ArrayList<>() )
+                    .add( mapping );
+            }
+            else {
+                constantMappings.add( mapping );
             }
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
@@ -1100,13 +1416,26 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return constantMappings;
     }
 
+    public List<PropertyMapping> getConstructorConstantMappings() {
+        return constructorConstantMappings;
+    }
+
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
         // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
-        return mappingsByParameter.get( parameter.getName() );
+        return mappingsByParameter.getOrDefault( parameter.getName(), Collections.emptyList() );
+    }
+
+    public List<PropertyMapping> constructorPropertyMappingsByParameter(Parameter parameter) {
+        // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
+        return constructorMappingsByParameter.getOrDefault( parameter.getName(), Collections.emptyList() );
     }
 
     public Type getReturnTypeToConstruct() {
         return returnTypeToConstruct;
+    }
+
+    public boolean hasConstructorMappings() {
+        return !constructorMappingsByParameter.isEmpty() || !constructorConstantMappings.isEmpty();
     }
 
     public MethodReference getFinalizerMethod() {

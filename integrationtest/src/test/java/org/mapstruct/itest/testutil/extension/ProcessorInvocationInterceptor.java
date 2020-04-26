@@ -71,6 +71,9 @@ public class ProcessorInvocationInterceptor implements InvocationInterceptor {
         }
         else {
             verifier = new Verifier( destination.getCanonicalPath() );
+            if ( processorTestContext.isForkJvm() ) {
+                verifier.setForkJvm( true );
+            }
         }
 
         List<String> goals = new ArrayList<>( 3 );

@@ -5,6 +5,7 @@
  */
 package org.mapstruct.itest.records;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,5 +20,8 @@ public interface CustomerMapper {
 
     @Mapping(target = "mail", source = "email")
     CustomerEntity fromRecord(CustomerDto record);
+
+    @InheritInverseConfiguration
+    CustomerDto toRecord(CustomerEntity entity);
 
 }

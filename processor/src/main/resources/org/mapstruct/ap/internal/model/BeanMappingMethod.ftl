@@ -25,7 +25,62 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <@includeModel object=returnTypeToConstruct/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=returnTypeToConstruct/><#else>new <@includeModel object=returnTypeToConstruct/>()</#if>;
+        <#if hasConstructorMappings()>
+            <#if (sourceParameters?size > 1)>
+                <#list sourceParametersExcludingPrimitives as sourceParam>
+                    <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
+                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
+                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                        </#list>
+                        if ( ${sourceParam.name} != null ) {
+                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
+                            <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                        </#list>
+                        }
+                        else {
+                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
+                            ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
+                        </#list>
+                        }
+                    </#if>
+                </#list>
+                <#list sourcePrimitiveParameters as sourceParam>
+                    <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
+                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
+                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                            <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                        </#list>
+                    </#if>
+                </#list>
+            <#else>
+                <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
+                    <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                </#list>
+                <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
+                <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
+                    <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                </#list>
+                <#if mapNullToDefault>
+                    }
+                    else {
+                    <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
+                        ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
+                    </#list>
+                    }
+                </#if>
+            </#if>
+            <#list constructorConstantMappings as constantMapping>
+
+                <@compress single_line=true>
+                    <@includeModel object=constantMapping.targetType /> <@includeModel object=constantMapping existingInstanceMapping=existingInstanceMapping/>
+                </@compress>
+            </#list>
+
+
+            <@includeModel object=returnTypeToConstruct/> ${resultName} = <@includeModel object=factoryMethod targetType=returnTypeToConstruct/>;
+        <#else >
+            <@includeModel object=returnTypeToConstruct/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=returnTypeToConstruct/><#else>new <@includeModel object=returnTypeToConstruct/>()</#if>;
+        </#if>
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>

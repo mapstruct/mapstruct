@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -57,6 +58,7 @@ public class MethodReference extends ModelElement implements Assignment {
     private final List<ParameterBinding> parameterBindings;
     private final Parameter providingParameter;
     private final boolean isStatic;
+    private final boolean isConstructor;
 
     /**
      * Creates a new reference to the given method.
@@ -91,6 +93,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.definingType = method.getDefiningType();
         this.isStatic = method.isStatic();
         this.name = method.getName();
+        this.isConstructor = false;
    }
 
     private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -106,6 +109,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.parameterBindings = ParameterBinding.fromParameters( method.getParameters() );
         this.isStatic = method.isStatic();
         this.name = method.getName();
+        this.isConstructor = false;
     }
 
     private MethodReference(String name, Type definingType, boolean isStatic) {
@@ -121,6 +125,37 @@ public class MethodReference extends ModelElement implements Assignment {
         this.parameterBindings = Collections.emptyList();
         this.providingParameter = null;
         this.isStatic = isStatic;
+        this.isConstructor = false;
+    }
+
+    private MethodReference(Type definingType, List<ParameterBinding> parameterBindings) {
+        this.name = null;
+        this.definingType = definingType;
+        this.sourceParameters = Collections.emptyList();
+        this.returnType = null;
+        this.declaringMapper = null;
+        this.thrownTypes = Collections.emptyList();
+        this.isUpdateMethod = false;
+        this.contextParam = null;
+        this.parameterBindings = parameterBindings;
+        this.providingParameter = null;
+        this.isStatic = false;
+        this.isConstructor = true;
+
+        if ( parameterBindings.isEmpty() ) {
+            this.importTypes = Collections.emptySet();
+        }
+        else {
+            Set<Type> imported = new LinkedHashSet<>();
+
+            for ( ParameterBinding binding : parameterBindings ) {
+                imported.add( binding.getType() );
+            }
+
+            imported.add( definingType );
+
+            this.importTypes = Collections.unmodifiableSet( imported );
+        }
     }
 
     public MapperReference getDeclaringMapper() {
@@ -271,6 +306,10 @@ public class MethodReference extends ModelElement implements Assignment {
         return isStatic;
     }
 
+    public boolean isConstructor() {
+        return isConstructor;
+    }
+
     public List<ParameterBinding> getParameterBindings() {
         return parameterBindings;
     }
@@ -339,6 +378,10 @@ public class MethodReference extends ModelElement implements Assignment {
 
     public static MethodReference forMethodCall(String methodName) {
         return new MethodReference( methodName, null, false );
+    }
+
+    public static MethodReference forConstructorInvocation(Type type, List<ParameterBinding> parameterBindings) {
+        return new MethodReference( type, parameterBindings );
     }
 
     @Override
