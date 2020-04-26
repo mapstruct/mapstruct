@@ -13,13 +13,16 @@ public class ProcessorTestContext {
     private final String baseDir;
     private final ProcessorTest.ProcessorType processor;
     private final Class<? extends ProcessorTest.CommandLineEnhancer> cliEnhancerClass;
+    private final boolean forkJvm;
 
     public ProcessorTestContext(String baseDir,
         ProcessorTest.ProcessorType processor,
-        Class<? extends ProcessorTest.CommandLineEnhancer> cliEnhancerClass) {
+        Class<? extends ProcessorTest.CommandLineEnhancer> cliEnhancerClass,
+        boolean forkJvm) {
         this.baseDir = baseDir;
         this.processor = processor;
         this.cliEnhancerClass = cliEnhancerClass;
+        this.forkJvm = forkJvm;
     }
 
     public String getBaseDir() {
@@ -32,5 +35,9 @@ public class ProcessorTestContext {
 
     public Class<? extends ProcessorTest.CommandLineEnhancer> getCliEnhancerClass() {
         return cliEnhancerClass;
+    }
+
+    public boolean isForkJvm() {
+        return forkJvm;
     }
 }

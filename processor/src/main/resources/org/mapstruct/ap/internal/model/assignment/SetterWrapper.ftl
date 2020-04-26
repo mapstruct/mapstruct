@@ -10,6 +10,6 @@
 <@lib.handleExceptions>
     <@lib.sourceLocalVarAssignment/>
     <@lib.handleSourceReferenceNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
+        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
     </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>

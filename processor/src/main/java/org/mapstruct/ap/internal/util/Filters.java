@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
-import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.accessor.AccessorType.ADDER;
@@ -75,13 +76,25 @@ public class Filters {
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
-    public Map<String, Accessor> recordsIn(TypeElement typeElement) {
-        if ( RECORD_COMPONENTS_METHOD == null || RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
+    @SuppressWarnings("unchecked")
+    public List<Element> recordComponentsIn(TypeElement typeElement) {
+        if ( RECORD_COMPONENTS_METHOD == null ) {
+            return java.util.Collections.emptyList();
+        }
+
+        try {
+            return (List<Element>) RECORD_COMPONENTS_METHOD.invoke( typeElement );
+        }
+        catch ( IllegalAccessException | InvocationTargetException e ) {
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    public Map<String, Accessor> recordAccessorsIn(Collection<Element> recordComponents) {
+        if ( RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
             return java.util.Collections.emptyMap();
         }
         try {
-            @SuppressWarnings("unchecked")
-            List<Element> recordComponents = (List<Element>) RECORD_COMPONENTS_METHOD.invoke( typeElement );
             Map<String, Accessor> recordAccessors = new LinkedHashMap<>();
             for ( Element recordComponent : recordComponents ) {
                 ExecutableElement recordExecutableElement =
@@ -109,7 +122,7 @@ public class Filters {
     public List<Accessor> fieldsIn(List<VariableElement> accessors) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( VariableElementAccessor::new )
+            .map( FieldElementAccessor::new )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 

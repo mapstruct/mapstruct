@@ -67,16 +67,12 @@ public class ObjectFactoryMethodResolver {
                                                     MappingBuilderContext ctx) {
 
 
-        MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
-
-        List<SelectedMethod<SourceMethod>> matchingFactoryMethods =
-            selectors.getMatchingMethods(
-                method,
-                getAllAvailableMethods( method, ctx.getSourceModel() ),
-                java.util.Collections.emptyList(),
-                alternativeTarget,
-                SelectionCriteria.forFactoryMethods( selectionParameters ) );
+        List<SelectedMethod<SourceMethod>> matchingFactoryMethods = getMatchingFactoryMethods(
+            method,
+            alternativeTarget,
+            selectionParameters,
+            ctx
+        );
 
         if (matchingFactoryMethods.isEmpty()) {
             return null;
@@ -94,6 +90,11 @@ public class ObjectFactoryMethodResolver {
 
         SelectedMethod<SourceMethod> matchingFactoryMethod = first( matchingFactoryMethods );
 
+        return getFactoryMethodReference( method, matchingFactoryMethod, ctx );
+    }
+
+    public static MethodReference getFactoryMethodReference(Method method,
+        SelectedMethod<SourceMethod> matchingFactoryMethod, MappingBuilderContext ctx) {
         Parameter providingParameter =
                 method.getContextProvidedMethods().getParameterForProvidedMethod( matchingFactoryMethod.getMethod() );
 
@@ -113,6 +114,22 @@ public class ObjectFactoryMethodResolver {
                 ref,
                 matchingFactoryMethod.getParameterBindings() );
         }
+    }
+
+    public static List<SelectedMethod<SourceMethod>> getMatchingFactoryMethods( Method method,
+        Type alternativeTarget,
+        SelectionParameters selectionParameters,
+        MappingBuilderContext ctx) {
+
+        MethodSelectors selectors =
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+
+        return selectors.getMatchingMethods(
+                method,
+                getAllAvailableMethods( method, ctx.getSourceModel() ),
+                java.util.Collections.emptyList(),
+                alternativeTarget,
+                SelectionCriteria.forFactoryMethods( selectionParameters ) );
     }
 
     public static MethodReference getBuilderFactoryMethod(Method method, BuilderType builder ) {

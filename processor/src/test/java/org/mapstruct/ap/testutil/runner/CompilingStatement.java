@@ -308,9 +308,11 @@ abstract class CompilingStatement extends Statement {
                 assertThat( actual.getLine() ).isIn( expected.getLine(), expected.getAlternativeLine() );
             }
             else if ( expected.getLine() != null ) {
-                assertThat( actual.getLine() ).isEqualTo( expected.getLine() );
+                assertThat( actual.getLine() ).as( actual.getMessage() ).isEqualTo( expected.getLine() );
             }
-            assertThat( actual.getKind() ).isEqualTo( expected.getKind() );
+            assertThat( actual.getKind() )
+                .as( actual.getMessage() )
+                .isEqualTo( expected.getKind() );
             if ( expected.getMessage() != null && !expected.getMessage().isEmpty() ) {
                 assertThat( actual.getMessage() ).describedAs(
                     String.format(

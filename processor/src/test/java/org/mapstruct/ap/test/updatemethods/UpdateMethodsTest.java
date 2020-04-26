@@ -175,8 +175,8 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                message = "org.mapstruct.ap.test.updatemethods.DepartmentEntity does not have an accessible " +
-                    "parameterless constructor.")
+                message = "org.mapstruct.ap.test.updatemethods.ErroneousOrganizationMapper2.DepartmentEntity does not" +
+                    " have an accessible constructor.")
 
         })
     public void testShouldFailOnConstantMappingNoPropertyGetter() {

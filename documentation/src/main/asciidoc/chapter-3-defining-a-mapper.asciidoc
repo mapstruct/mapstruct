@@ -528,3 +528,80 @@ Otherwise, you would need to write a custom `BuilderProvider`
 ====
 In case you want to disable using builders then you can use the `NoOpBuilderProvider` by creating a `org.mapstruct.ap.spi.BuilderProvider` file in the `META-INF/services` directory with `org.mapstruct.ap.spi.NoOpBuilderProvider` as it's content.
 ====
+
+[[mapping-with-constructors]]
+=== Using Constructors
+
+MapStruct supports using constructors for mapping target types.
+When doing a mapping MapStruct checks if there is a builder for the type being mapped.
+If there is no builder, then MapStruct looks for a single accessible constructor.
+When there are multiple constructors then the following is done to pick the one which should be used:
+
+* If a parameterless constructor exists then it would be used to construct the object, and the other constructors will be ignored
+* If there are multiple constructors then the one annotated with annotation named `@Default` (from any package) will be used
+
+When using a constructor then the names of the parameters of the constructor will be used and matched to the target properties.
+When the constructor has an annotation named `@ConstructorProperties` (from any package) then this annotation will be used to get the names of the parameters.
+
+[NOTE]
+====
+When an object factory method or a method annotated with `@ObjectFactory` exists, it will take precedence over any constructor defined in the target.
+The target object constructor will not be used in that case.
+====
+
+
+.Person with constructor parameters
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Person {
+
+    private final String name;
+    private final String surname;
+
+    public Person(String name, String surname) {
+        this.name = name;
+        this.surname = surname;
+    }
+}
+----
+====
+
+.Person With Constructor Mapper definition
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public interface PersonMapper {
+
+    Person map(PersonDto dto);
+}
+----
+====
+
+.Generated mapper with constructor
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class PersonMapperImpl implements PersonMapper {
+
+    public Person map(PersonDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        String name;
+        String surname;
+        name = dto.getName();
+        surname = dto.getSurname();
+
+        Person person = new Person( name, surname );
+
+        return person;
+    }
+}
+----
+====

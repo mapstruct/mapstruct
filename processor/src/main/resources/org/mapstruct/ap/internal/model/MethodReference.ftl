@@ -16,6 +16,8 @@
     <#-- method is referenced java8 static method in the mapper to implement (interface)  -->
     <#elseif static>
         <@includeModel object=definingType/>.<@methodCall/>
+    <#elseif constructor>
+        new <@includeModel object=definingType/><#if (parameterBindings?size > 0)>( <@arguments/> )<#else>()</#if>
     <#else>
         <@methodCall/>
     </#if>

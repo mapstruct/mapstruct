@@ -21,9 +21,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- *
  * @author Sjaak Derksen
  */
 @IssueKey("385")
@@ -48,12 +48,7 @@ public class InheritanceSelectionTest {
                 message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.selection.resulttype" +
                     ".Fruit: org.mapstruct.ap.test.selection.resulttype.Apple org.mapstruct.ap.test.selection" +
                     ".resulttype.ConflictingFruitFactory.createApple(), org.mapstruct.ap.test.selection.resulttype" +
-                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana()."),
-            @Diagnostic(type = ErroneousFruitMapper.class,
-                kind = Kind.ERROR,
-                line = 23,
-                message = "org.mapstruct.ap.test.selection.resulttype.Fruit does not have an accessible parameterless" +
-                    " constructor.")
+                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana().")
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {
@@ -61,22 +56,22 @@ public class InheritanceSelectionTest {
 
     @IssueKey("1283")
     @Test
-    @WithClasses({ ErroneousResultTypeNoEmptyConstructorMapper.class, Banana.class })
+    @WithClasses({ ErroneousResultTypeNoAccessibleConstructorMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousResultTypeNoEmptyConstructorMapper.class,
+            @Diagnostic(type = ErroneousResultTypeNoAccessibleConstructorMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                message = "org.mapstruct.ap.test.selection.resulttype.Banana does not have an accessible " +
-                    "parameterless constructor.")
+                message = "org.mapstruct.ap.test.selection.resulttype" +
+                    ".ErroneousResultTypeNoAccessibleConstructorMapper.Banana does not have an accessible constructor.")
         }
     )
-    public void testResultTypeHasNoSuitableEmptyConstructor() {
+    public void testResultTypeHasNoSuitableAccessibleConstructor() {
     }
 
     @Test
-    @WithClasses( { ConflictingFruitFactory.class, ResultTypeSelectingFruitMapper.class, Banana.class } )
+    @WithClasses({ ConflictingFruitFactory.class, ResultTypeSelectingFruitMapper.class, Banana.class })
     public void testResultTypeBasedFactoryMethodSelection() {
 
         FruitDto fruitDto = new FruitDto( null );
@@ -88,7 +83,7 @@ public class InheritanceSelectionTest {
 
     @Test
     @IssueKey("434")
-    @WithClasses( { ResultTypeConstructingFruitMapper.class } )
+    @WithClasses({ ResultTypeConstructingFruitMapper.class })
     public void testResultTypeBasedConstructionOfResult() {
 
         FruitDto fruitDto = new FruitDto( null );
@@ -99,7 +94,7 @@ public class InheritanceSelectionTest {
 
     @Test
     @IssueKey("657")
-    @WithClasses( { ResultTypeConstructingFruitInterfaceMapper.class } )
+    @WithClasses({ ResultTypeConstructingFruitInterfaceMapper.class })
     public void testResultTypeBasedConstructionOfResultForInterface() {
 
         FruitDto fruitDto = new FruitDto( null );
@@ -143,7 +138,7 @@ public class InheritanceSelectionTest {
 
     @Test
     @IssueKey("433")
-    @WithClasses( {
+    @WithClasses({
         FruitFamilyMapper.class,
         GoldenDeliciousDto.class,
         GoldenDelicious.class,
@@ -151,11 +146,11 @@ public class InheritanceSelectionTest {
         AppleFamilyDto.class,
         AppleFactory.class,
         Banana.class
-    } )
+    })
     public void testShouldSelectResultTypeInCaseOfAmbiguity() {
 
         AppleFamilyDto appleFamilyDto = new AppleFamilyDto();
-        appleFamilyDto.setApple( new AppleDto("AppleDto") );
+        appleFamilyDto.setApple( new AppleDto( "AppleDto" ) );
 
         AppleFamily result = FruitFamilyMapper.INSTANCE.map( appleFamilyDto );
         assertThat( result ).isNotNull();
@@ -167,7 +162,7 @@ public class InheritanceSelectionTest {
 
     @Test
     @IssueKey("433")
-    @WithClasses( {
+    @WithClasses({
         FruitFamilyMapper.class,
         GoldenDeliciousDto.class,
         GoldenDelicious.class,
@@ -175,7 +170,7 @@ public class InheritanceSelectionTest {
         AppleFamilyDto.class,
         AppleFactory.class,
         Banana.class
-    } )
+    })
     public void testShouldSelectResultTypeInCaseOfAmbiguityForIterable() {
 
         List<AppleDto> source = Arrays.asList( new AppleDto( "AppleDto" ) );
@@ -189,7 +184,7 @@ public class InheritanceSelectionTest {
 
     @Test
     @IssueKey("433")
-    @WithClasses( {
+    @WithClasses({
         FruitFamilyMapper.class,
         GoldenDeliciousDto.class,
         GoldenDelicious.class,
@@ -197,7 +192,7 @@ public class InheritanceSelectionTest {
         AppleFamilyDto.class,
         AppleFactory.class,
         Banana.class
-    } )
+    })
     public void testShouldSelectResultTypeInCaseOfAmbiguityForMap() {
 
         Map<AppleDto, AppleDto> source = new HashMap<AppleDto, AppleDto>();
@@ -213,5 +208,39 @@ public class InheritanceSelectionTest {
         assertThat( entry.getValue() ).isInstanceOf( Apple.class );
         assertThat( entry.getValue().getType() ).isEqualTo( "AppleDto" );
 
+    }
+
+    @Test
+    @IssueKey("73")
+    @WithClasses({
+        Citrus.class,
+        ResultTypeWithConstructorConstructingFruitInterfaceMapper.class
+    })
+    public void testShouldUseConstructorFromResultTypeForInterface() {
+        FruitDto orange = new FruitDto( "orange" );
+        IsFruit citrus = ResultTypeWithConstructorConstructingFruitInterfaceMapper.INSTANCE.map( orange );
+
+        assertThat( citrus ).isInstanceOf( Citrus.class );
+        assertThat( citrus.getType() ).isEqualTo( "orange" );
+        assertThatThrownBy( () -> citrus.setType( "lemon" ) )
+            .hasMessage( "Not allowed to change citrus type" );
+        assertThat( citrus.getType() ).isEqualTo( "orange" );
+    }
+
+    @Test
+    @IssueKey("73")
+    @WithClasses({
+        Citrus.class,
+        ResultTypeWithConstructorConstructingFruitInterfaceMapper.class
+    })
+    public void testShouldUseConstructorFromResultType() {
+        FruitDto lemon = new FruitDto( "lemon" );
+        IsFruit citrus = ResultTypeWithConstructorConstructingFruitInterfaceMapper.INSTANCE.map( lemon );
+
+        assertThat( citrus ).isInstanceOf( Citrus.class );
+        assertThat( citrus.getType() ).isEqualTo( "lemon" );
+        assertThatThrownBy( () -> citrus.setType( "orange" ) )
+            .hasMessage( "Not allowed to change citrus type" );
+        assertThat( citrus.getType() ).isEqualTo( "lemon" );
     }
 }

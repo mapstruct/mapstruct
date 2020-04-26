@@ -106,4 +106,7 @@ public @interface ProcessorTest {
      * @return the {@link CommandLineEnhancer} implementation. Must have a default constructor.
      */
     Class<? extends CommandLineEnhancer> commandLineEnhancer() default CommandLineEnhancer.class;
+
+    boolean forkJvm() default false;
+
 }

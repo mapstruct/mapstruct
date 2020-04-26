@@ -37,12 +37,7 @@ public class FactoryTest {
                 message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.erroneous" +
                     ".ambiguousfactorymethod.Bar: org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar " +
                     "createBar(), org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar org.mapstruct.ap.test" +
-                    ".erroneous.ambiguousfactorymethod.a.BarFactory.createBar()."),
-            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 22,
-                message = "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar does not have an accessible " +
-                    "parameterless constructor.")
+                    ".erroneous.ambiguousfactorymethod.a.BarFactory.createBar().")
 
         }
     )

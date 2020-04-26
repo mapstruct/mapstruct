@@ -111,6 +111,17 @@ public class ParameterBinding {
         return result;
     }
 
+    public static ParameterBinding fromTypeAndName(Type parameterType, String parameterName) {
+        return new ParameterBinding(
+            parameterType,
+            parameterName,
+            false,
+            false,
+            false,
+            null
+        );
+    }
+
     /**
      * @param classTypeOf the type representing {@code Class<X>} for the target type {@code X}
      * @return a parameter binding representing a target type parameter

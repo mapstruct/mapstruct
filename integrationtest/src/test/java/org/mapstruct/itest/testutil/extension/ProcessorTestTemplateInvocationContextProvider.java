@@ -34,7 +34,8 @@ public class ProcessorTestTemplateInvocationContextProvider implements TestTempl
             .map( processorType -> new ProcessorTestTemplateInvocationContext( new ProcessorTestContext(
                 processorTest.baseDir(),
                 processorType,
-                processorTest.commandLineEnhancer()
+                processorTest.commandLineEnhancer(),
+                processorTest.forkJvm()
             ) ) );
     }
 }

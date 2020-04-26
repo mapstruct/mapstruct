@@ -164,17 +164,18 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @IssueKey( "838" )
+    @IssueKey("838")
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = ArtistToChartEntryErroneous.class,
-                        kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 34,
-                        message = "java.lang.Integer does not have an accessible parameterless constructor." )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ArtistToChartEntryErroneous.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 34,
+                message = "org.mapstruct.ap.test.nestedsourceproperties.ArtistToChartEntryErroneous.ChartPosition " +
+                    "does not have an accessible constructor.")
+        }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })
-    public void inverseShouldRaiseErrorForEmptyConstructor() {
+    public void inverseShouldRaiseErrorForNotAccessibleConstructor() {
     }
 }

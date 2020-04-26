@@ -50,7 +50,6 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
@@ -360,7 +359,7 @@ public class TypeFactory {
     }
 
     public Parameter getSingleParameter(DeclaredType includingType, Accessor method) {
-        if ( method.getAccessorType() == AccessorType.FIELD ) {
+        if ( method.getAccessorType().isFieldAssignment() ) {
             return null;
         }
         ExecutableElement executable = (ExecutableElement) method.getElement();
@@ -376,11 +375,15 @@ public class TypeFactory {
 
     public List<Parameter> getParameters(DeclaredType includingType, Accessor accessor) {
         ExecutableElement method = (ExecutableElement) accessor.getElement();
-        TypeMirror methodType = getMethodType( includingType, accessor.getElement() );
+        return getParameters( includingType, method );
+    }
+
+    public List<Parameter> getParameters(DeclaredType includingType, ExecutableElement method) {
+        ExecutableType methodType = getMethodType( includingType, method );
         if ( method == null || methodType.getKind() != TypeKind.EXECUTABLE ) {
             return new ArrayList<>();
         }
-        return getParameters( (ExecutableType) methodType, method );
+        return getParameters( methodType, method );
     }
 
     public List<Parameter> getParameters(ExecutableType methodType, ExecutableElement method) {
@@ -433,7 +436,7 @@ public class TypeFactory {
     }
 
     public List<Type> getThrownTypes(Accessor accessor) {
-        if (accessor.getAccessorType() == AccessorType.FIELD) {
+        if (accessor.getAccessorType().isFieldAssignment()) {
             return new ArrayList<>();
         }
         return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );

@@ -36,12 +36,7 @@ public class AmbiguousAnnotatedFactoryTest {
                     ".ambiguousannotatedfactorymethod.Foo foo), org.mapstruct.ap.test.erroneous" +
                     ".ambiguousannotatedfactorymethod.Bar org.mapstruct.ap.test.erroneous" +
                     ".ambiguousannotatedfactorymethod.AmbiguousBarFactory.createBar(org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Foo foo)."),
-            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 22,
-                message = "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar does not have an " +
-                    "accessible parameterless constructor.")
+                    ".ambiguousannotatedfactorymethod.Foo foo).")
 
         }
     )

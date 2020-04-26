@@ -13,9 +13,16 @@ import org.mapstruct.Mapping;
  * @author Filip Hrisafov
  */
 @Mapper
-public interface ErroneousResultTypeNoEmptyConstructorMapper {
+public interface ErroneousResultTypeNoAccessibleConstructorMapper {
 
     @BeanMapping(resultType = Banana.class)
     @Mapping(target = "type", ignore = true)
     Fruit map(FruitDto source);
+
+    class Banana extends Fruit {
+
+        private Banana(String type) {
+            super( type );
+        }
+    }
 }
