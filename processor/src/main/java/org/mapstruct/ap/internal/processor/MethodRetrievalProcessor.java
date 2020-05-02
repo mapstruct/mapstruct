@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -27,6 +28,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.model.source.EnumMappingOptions;
 import org.mapstruct.ap.internal.model.source.IterableMappingOptions;
 import org.mapstruct.ap.internal.model.source.MapMappingOptions;
 import org.mapstruct.ap.internal.model.source.MapperOptions;
@@ -47,6 +49,7 @@ import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
 
@@ -68,6 +71,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
+    private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private Types typeUtils;
     private Elements elementUtils;
 
@@ -78,6 +82,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.accessorNaming = context.getAccessorNaming();
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
+        this.enumTransformationStrategies = context.getEnumTransformationStrategies();
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
@@ -273,6 +278,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeUtils
         );
 
+        EnumMappingOptions enumMappingOptions = EnumMappingOptions.getInstanceOn(
+            method,
+            mapperOptions,
+            enumTransformationStrategies,
+            messager
+        );
+
         return new SourceMethod.Builder()
             .setExecutable( method )
             .setParameters( parameters )
@@ -284,6 +296,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setIterableMappingOptions( iterableMappingOptions )
             .setMapMappingOptions( mapMappingOptions )
             .setValueMappingOptionss( getValueMappings( method ) )
+            .setEnumMappingOptions( enumMappingOptions )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )

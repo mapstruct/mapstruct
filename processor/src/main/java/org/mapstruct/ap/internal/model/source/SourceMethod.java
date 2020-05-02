@@ -84,6 +84,7 @@ public class SourceMethod implements Method {
         private MapperOptions mapper = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMappingOptions> valueMappings;
+        private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
@@ -136,6 +137,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setEnumMappingOptions(EnumMappingOptions enumMappingOptions) {
+            this.enumMappingOptions = enumMappingOptions;
+            return this;
+        }
+
         public Builder setTypeUtils(Types typeUtils) {
             this.typeUtils = typeUtils;
             return this;
@@ -172,8 +178,15 @@ public class SourceMethod implements Method {
                 mappings = Collections.emptySet();
             }
 
-            MappingMethodOptions mappingMethodOptions =
-                new MappingMethodOptions( mapper, mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+            MappingMethodOptions mappingMethodOptions = new MappingMethodOptions(
+                mapper,
+                mappings,
+                iterableMapping,
+                mapMapping,
+                beanMapping,
+                enumMappingOptions,
+                valueMappings
+            );
 
             return new SourceMethod( this, mappingMethodOptions );
         }

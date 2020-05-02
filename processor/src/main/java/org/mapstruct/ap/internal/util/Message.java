@@ -100,6 +100,7 @@ public enum Message {
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     ENUMMAPPING_REMOVED( "Mapping of Enums via @Mapping is removed. Please use @ValueMapping instead!" ),
+    ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY( "There is no registered EnumTransformationStrategy for '%s'. Registered strategies are: %s." ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 

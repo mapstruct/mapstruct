@@ -14,6 +14,7 @@ import org.mapstruct.BeforeMapping;
 import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
+import org.mapstruct.EnumMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
@@ -43,6 +44,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(Mappings.class)
 @GemDefinition(IterableMapping.class)
 @GemDefinition(BeanMapping.class)
+@GemDefinition(EnumMapping.class)
 @GemDefinition(MapMapping.class)
 @GemDefinition(TargetType.class)
 @GemDefinition(MappingTarget.class)

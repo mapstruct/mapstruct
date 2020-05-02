@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.value.enum2string;
 
+import org.mapstruct.EnumMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
@@ -27,6 +28,7 @@ public interface OrderMapper {
     })
     String mapNormal(OrderType orderType);
 
+    @EnumMapping(nameTransformStrategy = "prefix", configuration = "PREFIX_")
     @ValueMappings({
         @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
         @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
