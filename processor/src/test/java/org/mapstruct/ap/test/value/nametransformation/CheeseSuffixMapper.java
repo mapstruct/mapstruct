@@ -20,14 +20,14 @@ public interface CheeseSuffixMapper {
 
     CheeseSuffixMapper INSTANCE = Mappers.getMapper( CheeseSuffixMapper.class );
 
-    @EnumMapping(nameTransformStrategy = "suffix", configuration = "_CHEESE_TYPE")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.SUFFIX_TRANSFORMATION, configuration = "_CHEESE_TYPE")
     CheeseTypeSuffixed map(CheeseType cheese);
 
     @InheritInverseConfiguration
     @ValueMapping(source = "DEFAULT", target = MappingConstants.NULL)
     CheeseType mapInheritInverse(CheeseTypeSuffixed cheese);
 
-    @EnumMapping(nameTransformStrategy = "stripSuffix", configuration = "_CHEESE_TYPE")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.STRIP_SUFFIX_TRANSFORMATION, configuration = "_CHEESE_TYPE")
     @ValueMapping(source = "DEFAULT", target = MappingConstants.NULL)
     CheeseType mapStripSuffix(CheeseTypeSuffixed cheese);
 }

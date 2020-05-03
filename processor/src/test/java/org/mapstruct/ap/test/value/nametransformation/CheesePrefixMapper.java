@@ -20,7 +20,7 @@ public interface CheesePrefixMapper {
 
     CheesePrefixMapper INSTANCE = Mappers.getMapper( CheesePrefixMapper.class );
 
-    @EnumMapping(nameTransformStrategy = "prefix", configuration = "SWISS_")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.PREFIX_TRANSFORMATION, configuration = "SWISS_")
     CheeseTypePrefixed map(CheeseType cheese);
 
     @InheritInverseConfiguration
@@ -28,6 +28,6 @@ public interface CheesePrefixMapper {
     CheeseType mapInheritInverse(CheeseTypePrefixed cheese);
 
     @ValueMapping(source = "DEFAULT", target = MappingConstants.NULL)
-    @EnumMapping(nameTransformStrategy = "stripPrefix", configuration = "SWISS_")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.STRIP_PREFIX_TRANSFORMATION, configuration = "SWISS_")
     CheeseType mapStripPrefix(CheeseTypePrefixed cheese);
 }

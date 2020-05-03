@@ -41,7 +41,7 @@ public class EnumMappingOptions extends DelegatingOptions {
     }
 
     public String getNameTransformationStrategy() {
-        return enumMapping.nameTransformStrategy().get();
+        return enumMapping.nameTransformationStrategy().get();
     }
 
     public String getNameTransformationConfiguration() {
@@ -78,14 +78,14 @@ public class EnumMappingOptions extends DelegatingOptions {
     private static boolean isConsistent(EnumMappingGem gem, ExecutableElement method,
         Map<String, EnumTransformationStrategy> enumTransformationStrategies, FormattingMessager messager) {
 
-        String strategy = gem.nameTransformStrategy().getValue();
+        String strategy = gem.nameTransformationStrategy().getValue();
 
         if ( !enumTransformationStrategies.containsKey( strategy ) ) {
             String registeredStrategies = Strings.join( enumTransformationStrategies.keySet(), ", " );
             messager.printMessage(
                 method,
                 gem.mirror(),
-                gem.nameTransformStrategy().getAnnotationValue(),
+                gem.nameTransformationStrategy().getAnnotationValue(),
                 ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY,
                 strategy,
                 registeredStrategies

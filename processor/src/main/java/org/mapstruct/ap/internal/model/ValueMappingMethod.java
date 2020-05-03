@@ -117,7 +117,7 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private void initializeEnumTransformationStrategy() {
-            if ( enumMapping == null || !enumMapping.hasAnnotation() ) {
+            if ( !enumMapping.hasAnnotation() ) {
                 enumTransformationInvoker = EnumTransformationStrategyInvoker.DEFAULT;
             }
             else {

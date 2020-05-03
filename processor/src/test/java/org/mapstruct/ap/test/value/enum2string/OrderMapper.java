@@ -28,7 +28,7 @@ public interface OrderMapper {
     })
     String mapNormal(OrderType orderType);
 
-    @EnumMapping(nameTransformStrategy = "prefix", configuration = "PREFIX_")
+    @EnumMapping(nameTransformationStrategy = "prefix", configuration = "PREFIX_")
     @ValueMappings({
         @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
         @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),

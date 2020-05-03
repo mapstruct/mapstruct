@@ -20,15 +20,15 @@ public interface CheeseEnumToStringPrefixMapper {
 
     CheeseEnumToStringPrefixMapper INSTANCE = Mappers.getMapper( CheeseEnumToStringPrefixMapper.class );
 
-    @EnumMapping(nameTransformStrategy = "prefix", configuration = "SWISS_")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.PREFIX_TRANSFORMATION, configuration = "SWISS_")
     String map(CheeseType cheese);
 
     @InheritInverseConfiguration
-    @EnumMapping(nameTransformStrategy = "prefix", configuration = "FRENCH_")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.PREFIX_TRANSFORMATION, configuration = "FRENCH_")
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     CheeseType map(String cheese);
 
-    @EnumMapping(nameTransformStrategy = "stripPrefix", configuration = "SWISS_")
+    @EnumMapping(nameTransformationStrategy = MappingConstants.STRIP_PREFIX_TRANSFORMATION, configuration = "SWISS_")
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     CheeseTypePrefixed mapStripPrefix(String cheese);
 }

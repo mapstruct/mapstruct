@@ -17,6 +17,6 @@ public interface ErroneousNameTransformStrategyMapper {
 
     ErroneousNameTransformStrategyMapper INSTANCE = Mappers.getMapper( ErroneousNameTransformStrategyMapper.class );
 
-    @EnumMapping(nameTransformStrategy = "custom", configuration = "_TYPE")
+    @EnumMapping(nameTransformationStrategy = "custom", configuration = "_TYPE")
     CheeseTypeCustomSuffix map(CheeseType cheese);
 }

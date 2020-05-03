@@ -23,5 +23,11 @@ public class ConstantTest {
         assertThat( MappingConstants.ANY_REMAINING ).isEqualTo( MappingConstantsGem.ANY_REMAINING );
         assertThat( MappingConstants.ANY_UNMAPPED ).isEqualTo( MappingConstantsGem.ANY_UNMAPPED );
         assertThat( MappingConstants.NULL ).isEqualTo( MappingConstantsGem.NULL );
+        assertThat( MappingConstants.SUFFIX_TRANSFORMATION ).isEqualTo( MappingConstantsGem.SUFFIX_TRANSFORMATION );
+        assertThat( MappingConstants.STRIP_SUFFIX_TRANSFORMATION )
+            .isEqualTo( MappingConstantsGem.STRIP_SUFFIX_TRANSFORMATION );
+        assertThat( MappingConstants.PREFIX_TRANSFORMATION ).isEqualTo( MappingConstantsGem.PREFIX_TRANSFORMATION );
+        assertThat( MappingConstants.STRIP_PREFIX_TRANSFORMATION )
+            .isEqualTo( MappingConstantsGem.STRIP_PREFIX_TRANSFORMATION );
     }
 }
