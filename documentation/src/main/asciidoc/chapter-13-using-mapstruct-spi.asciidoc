@@ -198,3 +198,19 @@ A nice example is to provide support for a custom builder strategy.
 include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
 ----
 ====
+
+
+[[custom-enum-transformation-strategy]]
+=== Custom Enum Transformation Strategy
+
+MapStruct offers the possibility to other transformations strategies by implementing `EnumTransformationStrategy` via the Service Provider Interface (SPI).
+A nice example is to provide support for a custom transformation strategy.
+
+.Custom Enum Transformation Strategy which lower-cases the value and applies a suffix
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/value/nametransformation/CustomEnumTransformationStrategy.java[tag=documentation]
+----
+====

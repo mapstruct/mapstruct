@@ -5,11 +5,16 @@
  */
 package org.mapstruct.ap.test.value.nametransformation;
 
+// tag::documentation[]
+
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
+
+// end::documentation[]
 
 /**
  * @author Filip Hrisafov
  */
+// tag::documentation[]
 public class CustomEnumTransformationStrategy implements EnumTransformationStrategy {
 
     @Override
@@ -22,3 +27,4 @@ public class CustomEnumTransformationStrategy implements EnumTransformationStrat
         return value.toLowerCase() + configuration;
     }
 }
+// end::documentation[]

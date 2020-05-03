@@ -159,3 +159,106 @@ MapStruct supports enum to a String mapping along the same lines as is described
 2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
 3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the switch/default clause value.
 4. Difference: A switch/default value needs to be provided to have a determined outcome (enum has a limited set of values, `String` has unlimited options). Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in a warning.
+
+=== Custom name transformation
+
+When no `@ValueMapping`(s) are defined then each constant from the source enum is mapped to a constant with the same name in the target enum type.
+However, there are cases where the source enum needs to be transformed before doing the mapping.
+E.g. a suffix needs to be applied to map from the source into the target enum.
+
+.Enum types
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public enum CheeseType {
+
+    BRIE,
+    ROQUEFORT
+}
+
+public enum CheeseTypeSuffixed {
+
+    BRIE_TYPE,
+    ROQUEFORT_TYPE
+}
+----
+====
+
+.Enum mapping method with custom name transformation strategy
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CheeseMapper {
+
+    CheeseMapper INSTANCE = Mappers.getMapper( CheeseMapper.class );
+
+    @EnumMapping(nameTransformationStrategy = "suffix", configuration = "_TYPE")
+    CheeseTypeSuffixed map(CheeseType cheese);
+
+    @InheritInverseConfiguration
+    CheeseType map(CheeseTypeSuffix cheese);
+}
+----
+====
+
+.Enum mapping method with custom name transformation strategy result
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CheeseSuffixMapperImpl implements CheeseSuffixMapper {
+
+    @Override
+    public CheeseTypeSuffixed map(CheeseType cheese) {
+        if ( cheese == null ) {
+            return null;
+        }
+
+        CheeseTypeSuffixed cheeseTypeSuffixed;
+
+        switch ( cheese ) {
+            case BRIE: cheeseTypeSuffixed = CheeseTypeSuffixed.BRIE_TYPE;
+            break;
+            case ROQUEFORT: cheeseTypeSuffixed = CheeseTypeSuffixed.ROQUEFORT_TYPE;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return cheeseTypeSuffixed;
+    }
+
+    @Override
+    public CheeseType map(CheeseTypeSuffixed cheese) {
+        if ( cheese == null ) {
+            return null;
+        }
+
+        CheeseType cheeseType;
+
+        switch ( cheese ) {
+            case BRIE_TYPE: cheeseType = CheeseType.BRIE;
+            break;
+            case ROQUEFORT_TYPE: cheeseType = CheeseType.ROQUEFORT;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return cheeseType;
+    }
+}
+----
+====
+
+MapStruct provides the following out of the box enum name transformation strategies:
+
+* _suffix_ - Applies a suffix on the source enum
+* _stripSuffix_ - Strips a suffix from the source enum
+* _prefix_ - Applies a prefix on the source enum
+* _stripPrefix_ - Strips a prefix from the source enum
+
+It is also possible to register custom strategies.
+For more information on how to do that have a look at <<custom-enum-transformation-strategy>>
