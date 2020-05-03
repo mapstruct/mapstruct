@@ -26,11 +26,11 @@ public interface EnumTransformationStrategy {
     }
 
     /**
-     * The type of the strategy.
+     * The name of the strategy.
      *
-     * @return the type of the strategy, never {@code null}
+     * @return the name of the strategy, never {@code null}
      */
-    String getType();
+    String getStrategyName();
 
     /**
      * Transform the given value by using the given {@code configuration}.

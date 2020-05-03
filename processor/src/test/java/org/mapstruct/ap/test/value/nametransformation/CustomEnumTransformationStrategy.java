@@ -18,7 +18,7 @@ import org.mapstruct.ap.spi.EnumTransformationStrategy;
 public class CustomEnumTransformationStrategy implements EnumTransformationStrategy {
 
     @Override
-    public String getType() {
+    public String getStrategyName() {
         return "custom";
     }
 

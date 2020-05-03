@@ -118,16 +118,16 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         );
 
         for ( EnumTransformationStrategy transformationStrategy : transformationStrategiesLoader ) {
-            String transformationStrategyType = transformationStrategy.getType();
-            if ( enumTransformationStrategies.containsKey( transformationStrategyType ) ) {
+            String transformationStrategyName = transformationStrategy.getStrategyName();
+            if ( enumTransformationStrategies.containsKey( transformationStrategyName ) ) {
                 throw new IllegalStateException(
-                    "Multiple EnumTransformationStrategies are using the same type. Found: " +
-                        enumTransformationStrategies.get( transformationStrategyType ) + " and " +
-                        transformationStrategy + " for type " + transformationStrategyType );
+                    "Multiple EnumTransformationStrategies are using the same ma,e. Found: " +
+                        enumTransformationStrategies.get( transformationStrategyName ) + " and " +
+                        transformationStrategy + " for name " + transformationStrategyName );
             }
 
             transformationStrategy.init( this );
-            enumTransformationStrategies.put( transformationStrategyType, transformationStrategy );
+            enumTransformationStrategies.put( transformationStrategyName, transformationStrategy );
         }
 
 

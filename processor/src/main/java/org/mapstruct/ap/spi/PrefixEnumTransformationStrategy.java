@@ -11,7 +11,7 @@ package org.mapstruct.ap.spi;
 public class PrefixEnumTransformationStrategy implements EnumTransformationStrategy {
 
     @Override
-    public String getType() {
+    public String getStrategyName() {
         return "prefix";
     }
 

@@ -11,7 +11,7 @@ package org.mapstruct.ap.spi;
 public class StripSuffixEnumTransformationStrategy implements EnumTransformationStrategy {
 
     @Override
-    public String getType() {
+    public String getStrategyName() {
         return "stripSuffix";
     }
 
