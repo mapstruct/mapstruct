@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 
 /**
  * Configured the mapping between two value types.
- * <p><string>Example:</string> Using a suffix for enums</p>
+ * <p><strong>Example:</strong> Using a suffix for enums</p>
  * <pre><code class='java'>
  * public enum CheeseType {
  *     BRIE,
