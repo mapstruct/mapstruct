@@ -27,7 +27,10 @@ public interface CheeseEnumToStringSuffixMapper {
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     CheeseType map(String cheese);
 
-    @EnumMapping(nameTransformationStrategy = MappingConstants.STRIP_SUFFIX_TRANSFORMATION, configuration = "_CHEESE_TYPE")
+    @EnumMapping(
+        nameTransformationStrategy = MappingConstants.STRIP_SUFFIX_TRANSFORMATION,
+        configuration = "_CHEESE_TYPE"
+    )
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     CheeseTypeSuffixed mapStripSuffix(String cheese);
 }

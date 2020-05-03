@@ -27,7 +27,10 @@ public interface CheeseSuffixMapper {
     @ValueMapping(source = "DEFAULT", target = MappingConstants.NULL)
     CheeseType mapInheritInverse(CheeseTypeSuffixed cheese);
 
-    @EnumMapping(nameTransformationStrategy = MappingConstants.STRIP_SUFFIX_TRANSFORMATION, configuration = "_CHEESE_TYPE")
+    @EnumMapping(
+        nameTransformationStrategy = MappingConstants.STRIP_SUFFIX_TRANSFORMATION,
+        configuration = "_CHEESE_TYPE"
+    )
     @ValueMapping(source = "DEFAULT", target = MappingConstants.NULL)
     CheeseType mapStripSuffix(CheeseTypeSuffixed cheese);
 }
