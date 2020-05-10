@@ -157,6 +157,17 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
     /**
+     * Returns the simple name of a method in given type to be used as presence check.
+     *
+     * For instance for type {@code java.util.Optional} you may want to return 'isPresent'.
+     * @param typeName the java fully qualified type name
+     * @return the presence checker method simple name or {@code null}
+     */
+    public String getPresenceCheckerMethodInType(String typeName) {
+        return null;
+    }
+
+    /**
      * Analyzes the method (getter or setter) and derives the property name.
      * See {@link #isGetterMethod(ExecutableElement)} {@link #isSetterMethod(ExecutableElement)}. The first three
      * ('get' / 'set' scenario) characters are removed from the simple name, or the first 2 characters ('is' scenario).

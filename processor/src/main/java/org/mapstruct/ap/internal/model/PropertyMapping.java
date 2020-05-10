@@ -13,6 +13,9 @@ import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
@@ -36,22 +39,20 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.gem.BuilderGem;
-import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.NestedExecutableElementAccessor;
 
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -565,17 +566,36 @@ public class PropertyMapping extends ModelElement {
                 // in the forged method?
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
-                    sourcePresenceChecker = sourceParam.getName()
-                        + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+                    if ( propertyEntry.getPresenceChecker() instanceof NestedExecutableElementAccessor ) {
+                        // nested presence check
+                        sourcePresenceChecker = sourceParam.getName() + " != null && "
+                            + sourceParam.getName() + "." + propertyEntry.getReadAccessor().getSimpleName() + "()."
+                            + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+                    }
+                    else {
+                        sourcePresenceChecker = sourceParam.getName()
+                            + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+                    }
 
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getSimpleName() + "()";
-                    for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
+                    for ( int i = 1; i < sourceReference.getPropertyEntries().size(); i++ ) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
-                        if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
-                            sourcePresenceChecker += " && " + variableName + " != null && "
-                                + variableName + "." + entry.getPresenceChecker().getSimpleName() + "()";
-                            variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                        if ( entry.getPresenceChecker() != null && entry.getReadAccessor() != null ) {
+                            // nested presence check
+                            if ( entry.getPresenceChecker() instanceof NestedExecutableElementAccessor ) {
+                                // XXX not tested
+                                System.out.println( "nested presence check for multiple entries" );
+                                sourcePresenceChecker = variableName + " != null && "
+                                    + variableName + "." + entry.getReadAccessor().getSimpleName() + " != null &&"
+                                    + variableName + "." + entry.getReadAccessor().getSimpleName() + "()."
+                                    + entry.getPresenceChecker().getSimpleName() + "()";
+                            }
+                            else {
+                                sourcePresenceChecker += " && " + variableName + " != null && "
+                                    + variableName + "." + entry.getPresenceChecker().getSimpleName() + "()";
+                                variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                            }
                         }
                         else {
                             break;

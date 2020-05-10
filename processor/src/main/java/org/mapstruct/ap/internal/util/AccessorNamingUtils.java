@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -47,6 +48,40 @@ public final class AccessorNamingUtils {
             && ( executable.getReturnType().getKind() == TypeKind.BOOLEAN ||
             "java.lang.Boolean".equals( getQualifiedName( executable.getReturnType() ) ) )
             && accessorNamingStrategy.getMethodType( executable ) == MethodType.PRESENCE_CHECKER;
+    }
+
+    public ExecutableElement findPresenceCheckMethodFor(ExecutableElement executable) {
+        if ( isGetterMethod( executable ) && executable.getReturnType().getKind() == TypeKind.DECLARED ) {
+            DeclaredType returnType = (DeclaredType) executable.getReturnType();
+            // look for nested custom presence checker in property enclosed methods
+            String typeName = typeFullName( returnType );
+            String customPresenceChecker = accessorNamingStrategy.getPresenceCheckerMethodInType( typeName );
+            if ( customPresenceChecker != null ) {
+                for ( Element element : returnType.asElement().getEnclosedElements() ) {
+                    if ( element instanceof ExecutableElement &&
+                        element.getSimpleName().contentEquals( customPresenceChecker ) &&
+                        isBooleanPublicMethod( (ExecutableElement) element ) ) {
+                        return (ExecutableElement) element;
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private String typeFullName(DeclaredType type) {
+        // FIXME: how to get type package name
+        Object packageName = type.asElement().getEnclosingElement().toString().replace( "package ", "" );
+        return packageName + "." + type.asElement().getSimpleName().toString();
+    }
+
+    private boolean isBooleanPublicMethod(ExecutableElement method) {
+        return isPublicNotStatic( method )
+            && method.getParameters().isEmpty()
+            && ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+            "java.lang.Boolean"
+                .equals( getQualifiedName( method.getReturnType() ) ) );
     }
 
     public boolean isSetterMethod(ExecutableElement executable) {

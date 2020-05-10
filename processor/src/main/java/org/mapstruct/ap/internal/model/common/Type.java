@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -35,12 +36,13 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -530,6 +532,15 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( presenceCheckers == null ) {
             List<Accessor> checkerList = filters.presenceCheckMethodsIn( getAllMethods() );
             Map<String, Accessor> modifiableCheckers = new LinkedHashMap<>();
+            // adding custom nested presenceCheckers, if any
+            filters.presenceCheckMethodsFor( getAllMethods() ).entrySet().forEach( customChecker -> {
+                String propertyName = getPropertyName( new ExecutableElementAccessor(
+                    customChecker.getKey(),
+                    typeMirror,
+                    AccessorType.GETTER
+                ) );
+                modifiableCheckers.put( propertyName, customChecker.getValue() );
+            } );
             for ( Accessor checker : checkerList ) {
                 modifiableCheckers.put( getPropertyName( checker ), checker );
             }

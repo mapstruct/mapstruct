@@ -36,6 +36,17 @@ public interface AccessorNamingStrategy {
     MethodType getMethodType(ExecutableElement method);
 
     /**
+     * Returns the simple name of a method in given type to be used as presence check.
+     *
+     * For instance for type {@code java.util.Optional} you may want to return 'isPresent'.
+     * @param typeName the java fully qualified type name
+     * @return the presence checker method simple name or {@code null}
+     */
+    default String getPresenceCheckerMethodInType(String typeName) {
+        return null;
+    }
+
+    /**
      * Returns the name of the property represented by the given getter or setter method.
      * <p>
      * The default implementation will e.g. return "name" for {@code public String getName()} or {@code public void
