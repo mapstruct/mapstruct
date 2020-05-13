@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,7 @@ import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 /**
  * Chain Of Responsibility Pattern.
  */
-public abstract class DelegatingOptions {
+public abstract class DelegatingOptions implements Iterable<DelegatingOptions> {
 
     private final DelegatingOptions next;
 
@@ -128,4 +129,28 @@ public abstract class DelegatingOptions {
 
     public abstract boolean hasAnnotation();
 
+    @Override
+    public Iterator<DelegatingOptions> iterator() {
+        return new Iterator<DelegatingOptions>() {
+
+            private DelegatingOptions current;
+
+            @Override
+            public boolean hasNext() {
+                return current == null || current.next != null;
+            }
+
+            @Override
+            public DelegatingOptions next() {
+                if ( current == null ) {
+                    current = DelegatingOptions.this;
+                }
+                else {
+                    current = current.next();
+                }
+
+                return current;
+            }
+        };
+    }
 }

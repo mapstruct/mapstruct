@@ -11,9 +11,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.tools.gem.GemValue;
@@ -30,6 +30,45 @@ public class MapMappingOptions extends DelegatingOptions {
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
     private final MapMappingGem mapMapping;
+
+    /**
+     * creates a mapping for inheritance.
+     *
+     * @param inheritedOptions Options that should be inherited, could be {@code null}
+     * @param existingOptions  Existing options, could be {@code null}
+     * @return new mapping
+     */
+    public static MapMappingOptions forInheritance(MapMappingOptions inheritedOptions,
+                                                   MapMappingOptions existingOptions) {
+        if ( inheritedOptions == null ) {
+            return existingOptions;
+        }
+        if ( existingOptions == null || !existingOptions.hasAnnotation() ) {
+            return new MapMappingOptions(
+                inheritedOptions.keyFormattingParameters,
+                SelectionParameters.forInheritance( inheritedOptions.keySelectionParameters, null ),
+                inheritedOptions.valueFormattingParameters,
+                SelectionParameters.forInheritance( inheritedOptions.valueSelectionParameters, null ),
+                inheritedOptions.mapMapping,
+                inheritedOptions
+            );
+        }
+
+        return new MapMappingOptions(
+            existingOptions.keyFormattingParameters,
+            SelectionParameters.forInheritance(
+                inheritedOptions.keySelectionParameters,
+                existingOptions.keySelectionParameters
+            ),
+            existingOptions.valueFormattingParameters,
+            SelectionParameters.forInheritance(
+                inheritedOptions.valueSelectionParameters,
+                existingOptions.valueSelectionParameters
+            ),
+            existingOptions.mapMapping,
+            inheritedOptions
+        );
+    }
 
     public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
                                             ExecutableElement method, FormattingMessager messager, Types typeUtils) {
