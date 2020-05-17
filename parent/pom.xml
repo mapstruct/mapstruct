@@ -53,6 +53,11 @@
             <email>gunnar@mapstruct.org</email>
             <url>https://www.morling.dev/</url>
         </developer>
+        <developer>
+            <id>filiphr</id>
+            <name>Filip Hrisafov</name>
+            <url>https://github.com/filiphr/</url>
+        </developer>
     </developers>
 
     <scm>
