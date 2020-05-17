@@ -1,0 +1,21 @@
+name: Java EA
+
+on: [push]
+
+jobs:
+  test_jdk_ea:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [15-ea]
+    name: 'Linux JDK ${{ matrix.java }}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: 'Test'
+        run: ./mvnw -V -B --no-transfer-progress install -DskipDistribution=true
