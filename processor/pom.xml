@@ -209,6 +209,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- The flatten plugin should run after the shading is done -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- Tidy up all POMs before they are published -->
+                        <id>flatten</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -334,6 +349,7 @@
                     <artifactId>jaxb-api</artifactId>
                     <version>2.3.1</version>
                     <scope>provided</scope>
+                    <optional>true</optional>
                 </dependency>
             </dependencies>
         </profile>

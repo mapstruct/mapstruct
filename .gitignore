@@ -24,3 +24,4 @@ test-output
 # Misc.
 .DS_Store
 checkstyle.cache
+.flattened-pom.xml
