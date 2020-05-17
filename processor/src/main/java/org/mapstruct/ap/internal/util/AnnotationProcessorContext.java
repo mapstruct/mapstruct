@@ -24,6 +24,8 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
+import org.mapstruct.ap.spi.DefaultEnumNamingStrategy;
+import org.mapstruct.ap.spi.EnumNamingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
@@ -41,6 +43,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
+    private EnumNamingStrategy enumNamingStrategy;
     private boolean initialized;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
 
@@ -110,6 +113,15 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
 
+        this.enumNamingStrategy = Services.get( EnumNamingStrategy.class, new DefaultEnumNamingStrategy() );
+        this.enumNamingStrategy.init( this );
+        if ( verbose ) {
+            messager.printMessage(
+                Diagnostic.Kind.NOTE,
+                "MapStruct: Using enum naming strategy: "
+                    + this.enumNamingStrategy.getClass().getCanonicalName()
+            );
+        }
 
         this.enumTransformationStrategies = new LinkedHashMap<>();
         ServiceLoader<EnumTransformationStrategy> transformationStrategiesLoader = ServiceLoader.load(
@@ -236,6 +248,11 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     public AccessorNamingStrategy getAccessorNamingStrategy() {
         initialize();
         return accessorNamingStrategy;
+    }
+
+    public EnumNamingStrategy getEnumNamingStrategy() {
+        initialize();
+        return enumNamingStrategy;
     }
 
     public BuilderProvider getBuilderProvider() {

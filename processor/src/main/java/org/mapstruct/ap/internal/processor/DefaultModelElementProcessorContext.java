@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.EnumNamingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 /**
@@ -96,6 +97,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     @Override
     public Map<String, EnumTransformationStrategy> getEnumTransformationStrategies() {
         return roundContext.getAnnotationProcessorContext().getEnumTransformationStrategies();
+    }
+
+    @Override
+    public EnumNamingStrategy getEnumNamingStrategy() {
+        return roundContext.getAnnotationProcessorContext().getEnumNamingStrategy();
     }
 
     @Override

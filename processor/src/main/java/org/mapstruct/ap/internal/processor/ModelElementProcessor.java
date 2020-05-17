@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.EnumNamingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 /**
@@ -54,6 +55,8 @@ public interface ModelElementProcessor<P, R> {
         AccessorNamingUtils getAccessorNaming();
 
         Map<String, EnumTransformationStrategy> getEnumTransformationStrategies();
+
+        EnumNamingStrategy getEnumNamingStrategy();
 
         Options getOptions();
 
