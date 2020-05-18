@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 /**
  * Default implementation of the processor context.
@@ -41,6 +42,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final VersionInformation versionInformation;
     private final Types delegatingTypes;
     private final AccessorNamingUtils accessorNaming;
+    private final RoundContext roundContext;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
             RoundContext roundContext, Map<String, String> notToBeImported) {
@@ -50,6 +52,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
+        this.roundContext = roundContext;
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
             delegatingTypes,
@@ -88,6 +91,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     @Override
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    @Override
+    public Map<String, EnumTransformationStrategy> getEnumTransformationStrategies() {
+        return roundContext.getAnnotationProcessorContext().getEnumTransformationStrategies();
     }
 
     @Override

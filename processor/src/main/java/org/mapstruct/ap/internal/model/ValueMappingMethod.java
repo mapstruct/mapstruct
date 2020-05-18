@@ -7,19 +7,23 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.EnumMappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
@@ -45,6 +49,8 @@ public class ValueMappingMethod extends MappingMethod {
         private Method method;
         private MappingBuilderContext ctx;
         private ValueMappings valueMappings;
+        private EnumMappingOptions enumMapping;
+        private EnumTransformationStrategyInvoker enumTransformationInvoker;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -61,7 +67,18 @@ public class ValueMappingMethod extends MappingMethod {
             return this;
         }
 
-        public ValueMappingMethod build( ) {
+        public Builder enumMapping(EnumMappingOptions enumMapping) {
+            this.enumMapping = enumMapping;
+            return this;
+        }
+
+        public ValueMappingMethod build() {
+
+            if ( !enumMapping.isValid() ) {
+                return null;
+            }
+
+            initializeEnumTransformationStrategy();
 
             // initialize all relevant parameters
             List<MappingEntry> mappingEntries = new ArrayList<>();
@@ -99,6 +116,23 @@ public class ValueMappingMethod extends MappingMethod {
             );
         }
 
+        private void initializeEnumTransformationStrategy() {
+            if ( !enumMapping.hasAnnotation() ) {
+                enumTransformationInvoker = EnumTransformationStrategyInvoker.DEFAULT;
+            }
+            else {
+                Map<String, EnumTransformationStrategy> enumTransformationStrategies =
+                    ctx.getEnumTransformationStrategies();
+
+                String nameTransformationStrategy = enumMapping.getNameTransformationStrategy();
+                if ( enumTransformationStrategies.containsKey( nameTransformationStrategy ) ) {
+                    enumTransformationInvoker = new EnumTransformationStrategyInvoker( enumTransformationStrategies.get(
+                        nameTransformationStrategy ), enumMapping.getNameTransformationConfiguration() );
+                }
+            }
+
+        }
+
         private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType ) {
 
             List<MappingEntry> mappings = new ArrayList<>();
@@ -120,11 +154,36 @@ public class ValueMappingMethod extends MappingMethod {
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
 
-                // get all target constants
-                List<String> targetConstants = method.getReturnType().getEnumConstants();
+                // We store the target constants in a map in order to support inherited inverse mapping
+                // When using a nameTransformationStrategy the transformation should be done on the target enum
+                // instead of the source enum
+                Map<String, String> targetConstants = new LinkedHashMap<>();
+
+                boolean enumMappingInverse = enumMapping.isInverse();
+                for ( String targetEnumConstant : method.getReturnType().getEnumConstants() ) {
+                    if ( enumMappingInverse ) {
+                        // If the mapping is inverse we have to change the target enum constant
+                        targetConstants.put(
+                            enumTransformationInvoker.transform( targetEnumConstant ),
+                            targetEnumConstant
+                        );
+                    }
+                    else {
+                        targetConstants.put( targetEnumConstant, targetEnumConstant );
+                    }
+                }
+
                 for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
-                    if ( targetConstants.contains( sourceConstant ) ) {
-                        mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                    String targetConstant;
+                    if ( !enumMappingInverse ) {
+                        targetConstant = enumTransformationInvoker.transform( sourceConstant );
+                    }
+                    else {
+                        targetConstant = sourceConstant;
+                    }
+
+                    if ( targetConstants.containsKey( targetConstant ) ) {
+                        mappings.add( new MappingEntry( sourceConstant, targetConstants.get( targetConstant ) ) );
                         unmappedSourceConstants.remove( sourceConstant );
                     }
                 }
@@ -175,7 +234,8 @@ public class ValueMappingMethod extends MappingMethod {
 
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
-                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                    String targetConstant = enumTransformationInvoker.transform( sourceConstant );
+                    mappings.add( new MappingEntry( sourceConstant, targetConstant ) );
                 }
             }
             return mappings;
@@ -204,7 +264,8 @@ public class ValueMappingMethod extends MappingMethod {
 
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
-                    mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                    String stringConstant = enumTransformationInvoker.transform( sourceConstant );
+                    mappings.add( new MappingEntry( stringConstant, sourceConstant ) );
                 }
             }
             return mappings;
@@ -229,7 +290,8 @@ public class ValueMappingMethod extends MappingMethod {
             for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
 
                 if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
                         mappedConstant.getMirror(),
                         mappedConstant.getSourceAnnotationValue(),
                         Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -279,7 +341,8 @@ public class ValueMappingMethod extends MappingMethod {
             for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
                 if ( !NULL.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
                         mappedConstant.getMirror(),
                         mappedConstant.getTargetAnnotationValue(),
                         Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -292,7 +355,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( valueMappings.defaultTarget != null && !NULL.equals( valueMappings.defaultTarget.getTarget() )
                 && !targetEnumConstants.contains( valueMappings.defaultTarget.getTarget() ) ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     valueMappings.defaultTarget.getMirror(),
                     valueMappings.defaultTarget.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -315,6 +379,31 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             return !foundIncorrectMapping;
+        }
+    }
+
+    private static class EnumTransformationStrategyInvoker {
+
+        private static final EnumTransformationStrategyInvoker DEFAULT = new EnumTransformationStrategyInvoker(
+            null,
+            null
+        );
+
+        private final EnumTransformationStrategy transformationStrategy;
+        private final String configuration;
+
+        private EnumTransformationStrategyInvoker(
+            EnumTransformationStrategy transformationStrategy, String configuration) {
+            this.transformationStrategy = transformationStrategy;
+            this.configuration = configuration;
+        }
+
+        private String transform(String source) {
+            if ( transformationStrategy == null ) {
+                return source;
+            }
+
+            return transformationStrategy.transform( source, configuration );
         }
     }
 

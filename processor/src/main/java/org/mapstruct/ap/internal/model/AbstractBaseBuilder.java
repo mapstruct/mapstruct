@@ -86,6 +86,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             forgedMappingMethod = new ValueMappingMethod.Builder()
                 .method( forgedMethod )
                 .valueMappings( forgedMethod.getOptions().getValueMappings() )
+                .enumMapping( forgedMethod.getOptions().getEnumMappingOptions() )
                 .mappingContext( ctx )
                 .build();
         }

@@ -31,6 +31,7 @@ public class MappingMethodOptions {
         null,
         null,
         null,
+        null,
         Collections.emptyList()
     );
 
@@ -39,18 +40,21 @@ public class MappingMethodOptions {
     private IterableMappingOptions iterableMapping;
     private MapMappingOptions mapMapping;
     private BeanMappingOptions beanMapping;
+    private EnumMappingOptions enumMappingOptions;
     private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
 
     public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
+                                EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
         this.beanMapping = beanMapping;
+        this.enumMappingOptions = enumMappingOptions;
         this.valueMappings = valueMappings;
     }
 
@@ -83,6 +87,10 @@ public class MappingMethodOptions {
         return beanMapping;
     }
 
+    public EnumMappingOptions getEnumMappingOptions() {
+        return enumMappingOptions;
+    }
+
     public List<ValueMappingOptions> getValueMappings() {
         return valueMappings;
     }
@@ -97,6 +105,10 @@ public class MappingMethodOptions {
 
     public void setBeanMapping(BeanMappingOptions beanMapping) {
         this.beanMapping = beanMapping;
+    }
+
+    public void setEnumMappingOptions(EnumMappingOptions enumMappingOptions) {
+        this.enumMappingOptions = enumMappingOptions;
     }
 
     public void setValueMappings(List<ValueMappingOptions> valueMappings) {
@@ -139,6 +151,17 @@ public class MappingMethodOptions {
 
             if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
                 setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+            }
+
+            if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {
+                EnumMappingOptions newEnumMappingOptions;
+                if ( isInverse ) {
+                    newEnumMappingOptions = templateOptions.getEnumMappingOptions().inverse();
+                }
+                else {
+                    newEnumMappingOptions = templateOptions.getEnumMappingOptions();
+                }
+                setEnumMappingOptions( newEnumMappingOptions );
             }
 
             if ( getValueMappings() == null ) {

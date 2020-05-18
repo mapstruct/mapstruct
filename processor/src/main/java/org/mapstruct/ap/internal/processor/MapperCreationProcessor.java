@@ -101,6 +101,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             typeUtils,
             messager,
             accessorNaming,
+            context.getEnumTransformationStrategies(),
             options,
             new MappingResolverImpl(
                 messager,
@@ -336,8 +337,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .mappingContext( mappingContext )
                     .method( method )
                     .valueMappings( mappingOptions.getValueMappings() )
+                    .enumMapping( mappingOptions.getEnumMappingOptions() )
                     .build();
-                mappingMethods.add( valueMappingMethod );
+
+                if ( valueMappingMethod != null ) {
+                    mappingMethods.add( valueMappingMethod );
+                }
             }
             else if ( method.isRemovedEnumMapping() ) {
                 messager.printMessage(

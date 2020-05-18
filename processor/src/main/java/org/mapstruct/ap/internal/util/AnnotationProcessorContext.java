@@ -9,7 +9,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.annotation.processing.Messager;
@@ -22,6 +24,7 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
+import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
@@ -39,6 +42,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
     private boolean initialized;
+    private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
 
     private AccessorNamingUtils accessorNaming;
     private Elements elementUtils;
@@ -105,6 +109,28 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
+
+
+        this.enumTransformationStrategies = new LinkedHashMap<>();
+        ServiceLoader<EnumTransformationStrategy> transformationStrategiesLoader = ServiceLoader.load(
+            EnumTransformationStrategy.class,
+            AnnotationProcessorContext.class.getClassLoader()
+        );
+
+        for ( EnumTransformationStrategy transformationStrategy : transformationStrategiesLoader ) {
+            String transformationStrategyName = transformationStrategy.getStrategyName();
+            if ( enumTransformationStrategies.containsKey( transformationStrategyName ) ) {
+                throw new IllegalStateException(
+                    "Multiple EnumTransformationStrategies are using the same ma,e. Found: " +
+                        enumTransformationStrategies.get( transformationStrategyName ) + " and " +
+                        transformationStrategy + " for name " + transformationStrategyName );
+            }
+
+            transformationStrategy.init( this );
+            enumTransformationStrategies.put( transformationStrategyName, transformationStrategy );
+        }
+
+
         this.initialized = true;
     }
 
@@ -215,5 +241,10 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     public BuilderProvider getBuilderProvider() {
         initialize();
         return builderProvider;
+    }
+
+    public Map<String, EnumTransformationStrategy> getEnumTransformationStrategies() {
+        initialize();
+        return enumTransformationStrategies;
     }
 }
