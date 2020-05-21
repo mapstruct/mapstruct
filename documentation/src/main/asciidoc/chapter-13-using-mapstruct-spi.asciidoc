@@ -203,7 +203,9 @@ include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
 === Custom Enum Naming Strategy
 
 MapStruct offers the possibility to override the `EnumNamingStrategy` via the Service Provider Interface (SPI).
-A nice example is the use of the Protobuf Enum [style guide](https://developers.google.com/protocol-buffers/docs/style#enums).
+This can be used when you have certain enums that follow some conventions within your organization.
+For example all enums which implement an interface named `CustomEnumMarker` are prefixed with `CUSTOM_`
+and the default value for them when mapping from `null` is `UNSPECIFIED`
 
 .Normal Enum
 ====
@@ -217,23 +219,23 @@ public enum CheeseType {
 ----
 ====
 
-.Protobuf generated enum
+.Custom marker enum
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-public enum CheeseTypeProtobuf implements ProtocolMessageEnum {
+public enum CustomCheeseType implements CustomEnumMarker {
 
-    CHEESE_TYPE_PROTOBUF_UNSPECIFIED,
-    CHEESE_TYPE_PROTOBUF_BRIE,
-    CHEESE_TYPE_PROTOBUF_ROQUEFORT;
+    UNSPECIFIED,
+    CUSTOM_BRIE,
+    CUSTOM_ROQUEFORT;
 }
 ----
 ====
 
-We want `CheeseType` and `CheeseTypeProtobuf` to be mapped without the need to manually define the value mappings:
+We want `CheeseType` and `CustomCheeseType` to be mapped without the need to manually define the value mappings:
 
-.Protobuf enum mapping
+.Custom enum mapping
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -241,9 +243,9 @@ We want `CheeseType` and `CheeseTypeProtobuf` to be mapped without the need to m
 @Mapper
 public interface CheeseTypeMapper {
 
-    CheeseType map(CheeseTypeProtobuf cheese);
+    CheeseType map(CustomCheeseType cheese);
 
-    CheeseTypeProtobuf map(CheeseType cheese);
+    CustomCheeseType map(CheeseType cheese);
 }
 ----
 ====
@@ -251,56 +253,42 @@ public interface CheeseTypeMapper {
 This can be achieved with implementing the SPI `org.mapstruct.ap.spi.EnumNamingStrategy` as in the following example.
 Here’s an implemented `org.mapstruct.ap.spi.EnumNamingStrategy`:
 
-.Custom Protobuf enum naming strategy
+.Custom enum naming strategy
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-public class ProtobufEnumNamingStrategy extends DefaultEnumNamingStrategy {
-
-    private static final String PROTOBUF_ENUM_INTERFACE = "com.google.protobuf.ProtocolMessageEnum";
-    private static final String PROTOBUF_LITE_ENUM_INTERFACE = "com.google.protobuf.Internal.EnumLite";
-
-    protected final Map<TypeElement, Boolean> knownEnums = new HashMap<>();
+public class CustomEnumNamingStrategy extends DefaultEnumNamingStrategy {
 
     @Override
-    public void init(MapStructProcessingEnvironment processingEnvironment) {
-        super.init( processingEnvironment );
+    public String getDefaultNullEnumConstant(TypeElement enumType) {
+        if ( isCustomEnum( enumType ) ) {
+            return "UNSPECIFIED";
+        }
+
+        return super.getDefaultNullEnumConstant( enumType );
     }
 
     @Override
     public String getEnumConstant(TypeElement enumType, String enumConstant) {
-
-        Boolean isProtobufEnum = knownEnums.computeIfAbsent( enumType, this::isProtobufEnum );
-
-        if ( isProtobufEnum ) {
-            String matchingEnum = removeEnumNamePrefixFromConstant( enumType, enumConstant );
-            if ( "UNSPECIFIED" .equals( matchingEnum ) ) {
-                return MappingConstants.NULL;
-            }
-            return matchingEnum;
+        if ( isCustomEnum( enumType ) ) {
+            return getCustomEnumConstant( enumConstant );
         }
-
         return super.getEnumConstant( enumType, enumConstant );
     }
-
-    private boolean isProtobufEnum(TypeElement enumType) {
-        for ( TypeMirror enumInterface : enumType.getInterfaces() ) {
-            Name interfaceFqn = ( (TypeElement) typeUtils.asElement( enumInterface ) ).getQualifiedName();
-            if ( interfaceFqn.contentEquals( PROTOBUF_ENUM_INTERFACE ) ||
-                interfaceFqn.contentEquals( PROTOBUF_LITE_ENUM_INTERFACE ) ) {
+     protected String getCustomEnumConstant(String enumConstant) {
+        if ( "UNSPECIFIED".equals( enumConstant ) ) {
+            return MappingConstantsGem.NULL;
+        }
+         return enumConstant.replace( "CUSTOM_", "" );
+    }
+     protected boolean isCustomEnum(TypeElement enumType) {
+        for ( TypeMirror enumTypeInterface : enumType.getInterfaces() ) {
+            if ( typeUtils.asElement( enumTypeInterface ).getSimpleName().contentEquals( "CustomEnumMarker" ) ) {
                 return true;
             }
         }
-
-        return false;
-    }
-
-    private String removeEnumNamePrefixFromConstant(TypeElement enumType, String sourceEnumValue) {
-        String enumName = enumType.getSimpleName().toString();
-        String prefix = CaseFormat.UPPER_CAMEL.to( CaseFormat.UPPER_UNDERSCORE, enumName );
-
-        return sourceEnumValue.replace( prefix + "_", "" );
+         return false;
     }
 }
 ----
@@ -308,7 +296,7 @@ public class ProtobufEnumNamingStrategy extends DefaultEnumNamingStrategy {
 
 The generated code then for the `CheeseMapper` looks like:
 
-.Generated Protobuf CheeseTypeMapper
+.Generated CheeseTypeMapper
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -339,7 +327,7 @@ public class CheeseTypeMapperImpl implements CheeseTypeMapper {
     @Override
     public CustomCheeseType map(CheeseType cheese) {
         if ( cheese == null ) {
-            return CustomCheeseType.UNRECOGNIZED;
+            return CustomCheeseType.UNSPECIFIED;
         }
 
         CustomCheeseType customCheeseType;
