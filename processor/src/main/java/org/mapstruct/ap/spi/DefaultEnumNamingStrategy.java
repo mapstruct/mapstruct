@@ -24,6 +24,11 @@ public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
     }
 
     @Override
+    public String getDefaultNullEnumConstant(TypeElement enumType) {
+        return null;
+    }
+
+    @Override
     public String getEnumConstant(TypeElement enumType, String enumConstant) {
         return enumConstant;
     }

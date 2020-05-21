@@ -23,11 +23,13 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
         CheeseType cheeseType;
 
         switch ( cheese ) {
-            case UNRECOGNIZED: cheeseType = null;
+            case UNSPECIFIED: cheeseType = null;
             break;
             case CUSTOM_BRIE: cheeseType = CheeseType.BRIE;
             break;
             case CUSTOM_ROQUEFORT: cheeseType = CheeseType.ROQUEFORT;
+            break;
+            case UNRECOGNIZED: cheeseType = null;
             break;
             default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
         }
@@ -38,7 +40,7 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
     @Override
     public CustomCheeseType map(CheeseType cheese) {
         if ( cheese == null ) {
-            return CustomCheeseType.UNRECOGNIZED;
+            return CustomCheeseType.UNSPECIFIED;
         }
 
         CustomCheeseType customCheeseType;
@@ -57,17 +59,19 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
     @Override
     public String mapToString(CustomCheeseType cheeseType) {
         if ( cheeseType == null ) {
-            return "UNRECOGNIZED";
+            return null;
         }
 
         String string;
 
         switch ( cheeseType ) {
-            case UNRECOGNIZED: string = null;
+            case UNSPECIFIED: string = null;
             break;
             case CUSTOM_BRIE: string = "BRIE";
             break;
             case CUSTOM_ROQUEFORT: string = "ROQUEFORT";
+            break;
+            case UNRECOGNIZED: string = null;
             break;
             default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheeseType );
         }
@@ -97,7 +101,7 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
     @Override
     public CustomCheeseType mapStringToCustom(String cheese) {
         if ( cheese == null ) {
-            return CustomCheeseType.UNRECOGNIZED;
+            return CustomCheeseType.UNSPECIFIED;
         }
 
         CustomCheeseType customCheeseType;

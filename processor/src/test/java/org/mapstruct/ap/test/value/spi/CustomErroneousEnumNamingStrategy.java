@@ -15,12 +15,12 @@ import org.mapstruct.ap.spi.EnumNamingStrategy;
 /**
  * @author Filip Hrisafov
  */
-public class CustomEnumNamingStrategy extends DefaultEnumNamingStrategy implements EnumNamingStrategy {
+public class CustomErroneousEnumNamingStrategy extends DefaultEnumNamingStrategy implements EnumNamingStrategy {
 
     @Override
     public String getDefaultNullEnumConstant(TypeElement enumType) {
         if ( isCustomEnum( enumType ) ) {
-            return "UNSPECIFIED";
+            return "INCORRECT";
         }
 
         return super.getDefaultNullEnumConstant( enumType );

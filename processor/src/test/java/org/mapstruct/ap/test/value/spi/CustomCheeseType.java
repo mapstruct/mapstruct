@@ -10,7 +10,8 @@ package org.mapstruct.ap.test.value.spi;
  */
 public enum CustomCheeseType implements CustomEnumMarker {
 
-    UNRECOGNIZED,
+    UNSPECIFIED,
     CUSTOM_BRIE,
     CUSTOM_ROQUEFORT,
+    UNRECOGNIZED,
 }

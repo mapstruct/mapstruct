@@ -27,7 +27,15 @@ public interface EnumNamingStrategy {
     }
 
     /**
-     * Map enum constant to the value use for matching.
+     * Return the default enum constant to use if the source is null.
+     *
+     * @param enumType the enum
+     * @return enum value or null if there is no designated enum constant
+     */
+    String getDefaultNullEnumConstant(TypeElement enumType);
+
+    /**
+     * Map the enum constant to the value use for matching.
      * In case you want this enum constant to match to null return {@link org.mapstruct.MappingConstants#NULL}
      *
      * @param enumType the enum this constant belongs to

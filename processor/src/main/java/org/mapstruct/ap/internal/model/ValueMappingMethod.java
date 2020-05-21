@@ -88,6 +88,12 @@ public class ValueMappingMethod extends MappingMethod {
             Type sourceType = first( method.getSourceParameters() ).getType();
             Type targetType = method.getResultType();
 
+            if ( targetType.isEnumType() && valueMappings.nullTarget == null ) {
+                // If null target is not set it means that the user has not explicitly defined a mapping for null
+                valueMappings.nullValueTarget = ctx.getEnumNamingStrategy()
+                    .getDefaultNullEnumConstant( targetType.getTypeElement() );
+            }
+
             // enum-to-enum
             if ( sourceType.isEnumType() && targetType.isEnumType() ) {
                 mappingEntries.addAll( enumToEnumMapping( method, sourceType, targetType ) );
@@ -196,11 +202,6 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                 }
 
-                if ( targetConstants.containsKey( NULL ) && !valueMappings.hasNullValue ) {
-                    valueMappings.hasNullValue = true;
-                    valueMappings.nullValueTarget = targetConstants.get( NULL );
-                }
-
                 if ( valueMappings.defaultTarget == null && !unmappedSourceConstants.isEmpty() ) {
                     String sourceErrorMessage = "source";
                     String targetErrorMessage = "target";
@@ -248,10 +249,6 @@ public class ValueMappingMethod extends MappingMethod {
                 for ( String sourceConstant : unmappedSourceConstants ) {
                     String sourceNameConstant = getEnumConstant( sourceTypeElement, sourceConstant );
                     String targetConstant = enumTransformationInvoker.transform( sourceNameConstant );
-                    if ( NULL.equals( targetConstant ) && !valueMappings.hasNullValue ) {
-                        valueMappings.hasNullValue = true;
-                        valueMappings.nullValueTarget = sourceConstant;
-                    }
                     mappings.add( new MappingEntry( sourceConstant, targetConstant ) );
                 }
             }
@@ -278,19 +275,13 @@ public class ValueMappingMethod extends MappingMethod {
 
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
-
+                mappedSources.add( NULL );
                 TypeElement targetTypeElement = targetType.getTypeElement();
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
                     String sourceNameConstant = getEnumConstant( targetTypeElement, sourceConstant );
                     String stringConstant = enumTransformationInvoker.transform( sourceNameConstant );
-                    if ( NULL.equals( stringConstant ) ) {
-                        if ( !valueMappings.hasNullValue ) {
-                            valueMappings.hasNullValue = true;
-                            valueMappings.nullValueTarget = sourceConstant;
-                        }
-                    }
-                    else if ( !mappedSources.contains( stringConstant ) ) {
+                    if ( !mappedSources.contains( stringConstant ) ) {
                         mappings.add( new MappingEntry( stringConstant, sourceConstant ) );
                     }
                 }
@@ -407,6 +398,18 @@ public class ValueMappingMethod extends MappingMethod {
                     method.getReturnType()
                 );
                 foundIncorrectMapping = true;
+            }
+            else if ( valueMappings.nullTarget == null && valueMappings.nullValueTarget != null
+                && !targetEnumConstants.contains( valueMappings.nullValueTarget ) ) {
+                // if there is no nullTarget, but nullValueTarget has a value it means that there was an SPI
+                // which returned an enum for the target enum
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI,
+                    valueMappings.nullValueTarget,
+                    method.getReturnType(),
+                    ctx.getEnumNamingStrategy()
+                );
             }
 
             return !foundIncorrectMapping;
