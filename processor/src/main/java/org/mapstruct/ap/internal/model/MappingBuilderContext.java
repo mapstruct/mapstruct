@@ -30,6 +30,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
+import org.mapstruct.ap.spi.EnumNamingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
 
@@ -105,6 +106,7 @@ public class MappingBuilderContext {
     private final Types typeUtils;
     private final FormattingMessager messager;
     private final AccessorNamingUtils accessorNaming;
+    private final EnumNamingStrategy enumNamingStrategy;
     private final Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private final Options options;
     private final TypeElement mapperTypeElement;
@@ -121,6 +123,7 @@ public class MappingBuilderContext {
                           Types typeUtils,
                           FormattingMessager messager,
                           AccessorNamingUtils accessorNaming,
+                          EnumNamingStrategy enumNamingStrategy,
                           Map<String, EnumTransformationStrategy> enumTransformationStrategies,
                           Options options,
                           MappingResolver mappingResolver,
@@ -132,6 +135,7 @@ public class MappingBuilderContext {
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.accessorNaming = accessorNaming;
+        this.enumNamingStrategy = enumNamingStrategy;
         this.enumTransformationStrategies = enumTransformationStrategies;
         this.options = options;
         this.mappingResolver = mappingResolver;
@@ -184,6 +188,10 @@ public class MappingBuilderContext {
 
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    public EnumNamingStrategy getEnumNamingStrategy() {
+        return enumNamingStrategy;
     }
 
     public Map<String, EnumTransformationStrategy> getEnumTransformationStrategies() {

@@ -8,9 +8,11 @@ package org.mapstruct.ap.internal.model;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -86,6 +88,12 @@ public class ValueMappingMethod extends MappingMethod {
             Type sourceType = first( method.getSourceParameters() ).getType();
             Type targetType = method.getResultType();
 
+            if ( targetType.isEnumType() && valueMappings.nullTarget == null ) {
+                // If null target is not set it means that the user has not explicitly defined a mapping for null
+                valueMappings.nullValueTarget = ctx.getEnumNamingStrategy()
+                    .getDefaultNullEnumConstant( targetType.getTypeElement() );
+            }
+
             // enum-to-enum
             if ( sourceType.isEnumType() && targetType.isEnumType() ) {
                 mappingEntries.addAll( enumToEnumMapping( method, sourceType, targetType ) );
@@ -145,9 +153,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             // Start to fill the mappings with the defined value mappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
-                String target =
-                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
-                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
@@ -160,30 +166,38 @@ public class ValueMappingMethod extends MappingMethod {
                 Map<String, String> targetConstants = new LinkedHashMap<>();
 
                 boolean enumMappingInverse = enumMapping.isInverse();
+                TypeElement targetTypeElement = method.getReturnType().getTypeElement();
                 for ( String targetEnumConstant : method.getReturnType().getEnumConstants() ) {
+                    String targetNameEnum = getEnumConstant( targetTypeElement, targetEnumConstant );
                     if ( enumMappingInverse ) {
                         // If the mapping is inverse we have to change the target enum constant
                         targetConstants.put(
-                            enumTransformationInvoker.transform( targetEnumConstant ),
+                            enumTransformationInvoker.transform( targetNameEnum ),
                             targetEnumConstant
                         );
                     }
                     else {
-                        targetConstants.put( targetEnumConstant, targetEnumConstant );
+                        targetConstants.put( targetNameEnum, targetEnumConstant );
                     }
                 }
 
+                TypeElement sourceTypeElement = sourceType.getTypeElement();
                 for ( String sourceConstant : new ArrayList<>( unmappedSourceConstants ) ) {
+                    String sourceNameConstant = getEnumConstant( sourceTypeElement, sourceConstant );
                     String targetConstant;
                     if ( !enumMappingInverse ) {
-                        targetConstant = enumTransformationInvoker.transform( sourceConstant );
+                        targetConstant = enumTransformationInvoker.transform( sourceNameConstant );
                     }
                     else {
-                        targetConstant = sourceConstant;
+                        targetConstant = sourceNameConstant;
                     }
 
                     if ( targetConstants.containsKey( targetConstant ) ) {
                         mappings.add( new MappingEntry( sourceConstant, targetConstants.get( targetConstant ) ) );
+                        unmappedSourceConstants.remove( sourceConstant );
+                    }
+                    else if ( NULL.equals( targetConstant ) ) {
+                        mappings.add( new MappingEntry( sourceConstant, null ) );
                         unmappedSourceConstants.remove( sourceConstant );
                     }
                 }
@@ -223,18 +237,18 @@ public class ValueMappingMethod extends MappingMethod {
 
             // Start to fill the mappings with the defined valuemappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
-                String target =
-                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
-                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
 
+                TypeElement sourceTypeElement = sourceType.getTypeElement();
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
-                    String targetConstant = enumTransformationInvoker.transform( sourceConstant );
+                    String sourceNameConstant = getEnumConstant( sourceTypeElement, sourceConstant );
+                    String targetConstant = enumTransformationInvoker.transform( sourceNameConstant );
                     mappings.add( new MappingEntry( sourceConstant, targetConstant ) );
                 }
             }
@@ -250,25 +264,33 @@ public class ValueMappingMethod extends MappingMethod {
             if ( sourceErrorOccurred || mandatoryMissing ) {
                 return mappings;
             }
+            Set<String> mappedSources = new LinkedHashSet<>();
 
             // Start to fill the mappings with the defined valuemappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
-                String target =
-                    NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
-                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
+                mappedSources.add( valueMapping.getSource() );
+                mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
             // add mappings based on name
             if ( !valueMappings.hasMapAnyUnmapped ) {
-
+                mappedSources.add( NULL );
+                TypeElement targetTypeElement = targetType.getTypeElement();
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
-                    String stringConstant = enumTransformationInvoker.transform( sourceConstant );
-                    mappings.add( new MappingEntry( stringConstant, sourceConstant ) );
+                    String sourceNameConstant = getEnumConstant( targetTypeElement, sourceConstant );
+                    String stringConstant = enumTransformationInvoker.transform( sourceNameConstant );
+                    if ( !mappedSources.contains( stringConstant ) ) {
+                        mappings.add( new MappingEntry( stringConstant, sourceConstant ) );
+                    }
                 }
             }
             return mappings;
+        }
+
+        private String getEnumConstant(TypeElement typeElement, String enumConstant) {
+            return ctx.getEnumNamingStrategy().getEnumConstant( typeElement, enumConstant );
         }
 
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
@@ -377,6 +399,18 @@ public class ValueMappingMethod extends MappingMethod {
                 );
                 foundIncorrectMapping = true;
             }
+            else if ( valueMappings.nullTarget == null && valueMappings.nullValueTarget != null
+                && !targetEnumConstants.contains( valueMappings.nullValueTarget ) ) {
+                // if there is no nullTarget, but nullValueTarget has a value it means that there was an SPI
+                // which returned an enum for the target enum
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI,
+                    valueMappings.nullValueTarget,
+                    method.getReturnType(),
+                    ctx.getEnumNamingStrategy()
+                );
+            }
 
             return !foundIncorrectMapping;
         }
@@ -417,6 +451,7 @@ public class ValueMappingMethod extends MappingMethod {
         boolean hasMapAnyUnmapped = false;
         boolean hasMapAnyRemaining = false;
         boolean hasDefaultValue = false;
+        boolean hasNullValue = false;
 
         ValueMappings(List<ValueMappingOptions> valueMappings) {
 
@@ -436,6 +471,7 @@ public class ValueMappingMethod extends MappingMethod {
                 else if ( NULL.equals( valueMapping.getSource() ) ) {
                     nullTarget = valueMapping;
                     nullValueTarget = getValue( nullTarget );
+                    hasNullValue = true;
                 }
                 else {
                     regularValueMappings.add( valueMapping );
@@ -489,7 +525,12 @@ public class ValueMappingMethod extends MappingMethod {
 
         MappingEntry( String source, String target ) {
             this.source = source;
-            this.target = target;
+            if ( !NULL.equals( target ) ) {
+                this.target = target;
+            }
+            else {
+                this.target = null;
+            }
         }
 
         public String getSource() {
