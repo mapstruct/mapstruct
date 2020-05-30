@@ -5,6 +5,11 @@
  */
 package org.mapstruct.ap.test.mappingcontrol;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -15,6 +20,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 /**
  * @author Sjaak Derksen
@@ -25,6 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     ShelveDTO.class,
     Fridge.class,
     FridgeDTO.class,
+    CustomerDto.class,
+    OrderItemDto.class,
+    OrderItemKeyDto.class,
     UseDirect.class,
     UseComplex.class
 })
@@ -64,6 +73,49 @@ public class MappingControlTest {
     }
 
     /**
+     * Test the deep cloning annotation with lists
+     */
+    @Test
+    @WithClasses(CloningListMapper.class)
+    public void testDeepCloningListsAndMaps() {
+
+        CustomerDto in = new CustomerDto();
+        in.setId( 10L );
+        in.setCustomerName( "Jaques" );
+        OrderItemDto order1 = new OrderItemDto();
+        order1.setName( "Table" );
+        order1.setQuantity( 2L );
+        in.setOrders( new ArrayList<>( Collections.singleton( order1 ) ) );
+        OrderItemKeyDto key = new OrderItemKeyDto();
+        key.setStockNumber( 5 );
+        Map<OrderItemKeyDto, OrderItemDto> stock = new HashMap<>();
+        stock.put( key, order1 );
+        in.setStock( stock );
+
+        CustomerDto out = CloningListMapper.INSTANCE.clone( in );
+
+        assertThat( out.getId() ).isEqualTo( 10 );
+        assertThat( out.getCustomerName() ).isEqualTo( "Jaques" );
+        assertThat( out.getOrders() )
+            .extracting( "name", "quantity" )
+            .containsExactly( tuple( "Table", 2L ) );
+        assertThat( out.getStock() ).isNotNull();
+        assertThat( out.getStock() ).hasSize( 1 );
+
+        Map.Entry<OrderItemKeyDto, OrderItemDto> entry = out.getStock().entrySet().iterator().next();
+        assertThat( entry.getKey().getStockNumber() ).isEqualTo( 5 );
+        assertThat( entry.getValue().getName() ).isEqualTo( "Table" );
+        assertThat( entry.getValue().getQuantity() ).isEqualTo( 2L );
+
+        // check mapper really created new objects
+        assertThat( out ).isNotSameAs( in );
+        assertThat( out.getOrders().get( 0 ) ).isNotSameAs( order1 );
+        assertThat( entry.getKey() ).isNotSameAs( key );
+        assertThat( entry.getValue() ).isNotSameAs( order1 );
+        assertThat( entry.getValue() ).isNotSameAs( out.getOrders().get( 0 ) );
+    }
+
+    /**
      * This is a nice test. MapStruct looks for a way to map ShelveDto to ShelveDto.
      * <p>
      * MapStruct gets too creative when we allow complex (2 step mappings) to convert if we also allow
@@ -94,6 +146,7 @@ public class MappingControlTest {
         Fridge fridge = MethodMapper.INSTANCE.map( createFridgeDTO() );
 
         assertThat( fridge ).isNotNull();
+        assertThat( fridge.getBeerCount() ).isEqualTo( 5 );
         assertThat( fridge.getBeerCount() ).isEqualTo( 5 );
     }
 

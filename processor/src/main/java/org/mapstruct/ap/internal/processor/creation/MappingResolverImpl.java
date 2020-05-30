@@ -190,8 +190,9 @@ public class MappingResolverImpl implements MappingResolver {
 
             // then direct assignable
             if ( !hasQualfiers() ) {
-                if ( ( sourceType.isAssignableTo( targetType ) && allowDirect( sourceType, targetType ) ) ||
-                    isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
+                if ( ( sourceType.isAssignableTo( targetType ) ||
+                    isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) )
+                    && allowDirect( sourceType, targetType ) ) {
                     Assignment simpleAssignment = sourceRHS;
                     return simpleAssignment;
                 }
@@ -280,11 +281,40 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private boolean allowDirect( Type sourceType, Type targetType ) {
-            if ( sourceType.isPrimitive() || targetType.isPrimitive()
-                || sourceType.isJavaLangType() || targetType.isJavaLangType() ) {
+            if ( selectionCriteria != null && selectionCriteria.isAllowDirect() ) {
                 return true;
             }
-            return selectionCriteria != null && selectionCriteria.isAllowDirect();
+
+            return allowDirect( sourceType ) || allowDirect( targetType );
+        }
+
+        private boolean allowDirect(Type type) {
+            if ( type.isPrimitive() ) {
+                return true;
+            }
+
+            if ( type.isArrayType() ) {
+                return type.isJavaLangType();
+            }
+
+            if ( type.isIterableOrStreamType() ) {
+                List<Type> typeParameters = type.getTypeParameters();
+                // For iterable or stream direct mapping is enabled when:
+                // - The type is raw (no type parameters)
+                // - The type parameter is allowed
+                return typeParameters.isEmpty() || allowDirect( Collections.first( typeParameters ) );
+            }
+
+            if ( type.isMapType() ) {
+                List<Type> typeParameters = type.getTypeParameters();
+                // For map type direct mapping is enabled when:
+                // - The type os raw (no type parameters
+                // - The key and value are direct assignable
+                return typeParameters.isEmpty() ||
+                    ( allowDirect( typeParameters.get( 0 ) ) && allowDirect( typeParameters.get( 1 ) ) );
+            }
+
+            return type.isJavaLangType();
         }
 
         private boolean allowConversion() {
