@@ -21,9 +21,9 @@
     <name>MapStruct Documentation</name>
 
     <properties>
-        <asciidoctorj.pdf.version>1.5.0-alpha.11</asciidoctorj.pdf.version>
-        <asciidoctorj.version>1.5.4</asciidoctorj.version>
-        <jruby.version>1.7.21</jruby.version>
+        <asciidoctorj.pdf.version>1.5.3</asciidoctorj.pdf.version>
+        <asciidoctorj.version>1.6.2</asciidoctorj.version>
+        <jruby.version>9.2.6.0</jruby.version>
     </properties>
     <dependencies>
     </dependencies>
@@ -33,7 +33,7 @@
             <plugin>
               <groupId>org.asciidoctor</groupId>
               <artifactId>asciidoctor-maven-plugin</artifactId>
-              <version>1.5.3</version>
+              <version>1.6.0</version>
               <dependencies>
                   <dependency>
                       <groupId>org.asciidoctor</groupId>

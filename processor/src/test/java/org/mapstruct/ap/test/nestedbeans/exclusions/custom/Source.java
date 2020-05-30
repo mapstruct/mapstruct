@@ -39,4 +39,4 @@ public class Source {
     }
     // tag::documentation[]
 }
-// tag::documentation[]
+// end::documentation[]
