@@ -12,4 +12,8 @@
     <@lib.handleSourceReferenceNullCheck>
         <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf( ${sourceLocalVarName}, ${sourceLocalVarName}.length )</@lib.handleWrite>;
     </@lib.handleSourceReferenceNullCheck>
+    <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !ext.targetBeanName?has_content>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleSourceReferenceNullCheck -->
+        ${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
+        }
+    </#if>
 </@lib.handleExceptions>
