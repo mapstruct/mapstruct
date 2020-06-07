@@ -27,8 +27,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        Song song;
-        String name;
+        Song song = null;
+        String name = null;
 
         song = chartEntryToSong( chartEntry );
         name = chartEntry.getChartName();
@@ -46,12 +46,12 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        String chartName;
-        String songTitle;
-        String artistName;
-        String recordedAt;
-        String city;
-        int position;
+        String chartName = null;
+        String songTitle = null;
+        String artistName = null;
+        String recordedAt = null;
+        String city = null;
+        int position = 0;
 
         chartName = chart.getName();
         songTitle = chartSongTitle( chart );
@@ -70,8 +70,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        String name;
-        String city;
+        String name = null;
+        String city = null;
 
         name = chartEntry.getRecordedAt();
         city = chartEntry.getCity();
@@ -86,7 +86,7 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        Studio studio;
+        Studio studio = null;
 
         studio = chartEntryToStudio( chartEntry );
 
@@ -102,8 +102,8 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        Label label;
-        String name;
+        Label label = null;
+        String name = null;
 
         label = chartEntryToLabel( chartEntry );
         name = chartEntry.getArtistName();
@@ -118,9 +118,9 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
             return null;
         }
 
-        Artist artist;
-        String title;
-        List<Integer> positions;
+        Artist artist = null;
+        String title = null;
+        List<Integer> positions = null;
 
         artist = chartEntryToArtist( chartEntry );
         title = chartEntry.getSongTitle();

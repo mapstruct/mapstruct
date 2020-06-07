@@ -30,16 +30,11 @@
                 <#list sourceParametersExcludingPrimitives as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
-                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                         </#list>
                         if ( ${sourceParam.name} != null ) {
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
-                        </#list>
-                        }
-                        else {
-                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
-                            ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                         </#list>
                         }
                     </#if>
@@ -47,25 +42,20 @@
                 <#list sourcePrimitiveParameters as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
-                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                            <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
                     </#if>
                 </#list>
             <#else>
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
-                    <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName};
+                    <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                 </#list>
                 <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
                     <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
                 <#if mapNullToDefault>
-                    }
-                    else {
-                    <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
-                        ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
-                    </#list>
                     }
                 </#if>
             </#if>

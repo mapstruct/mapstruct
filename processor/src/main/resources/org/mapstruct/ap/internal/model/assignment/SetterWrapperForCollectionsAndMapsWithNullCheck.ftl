@@ -18,10 +18,6 @@
   <@lib.handleLocalVarNullCheck needs_explicit_local_var=directAssignment>
       <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else><@lib.handleWithAssignmentOrNullCheckVar/></#if></@lib.handleWrite>;
   </@lib.handleLocalVarNullCheck>
-  <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !ext.targetBeanName?has_content>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
-      ${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
-      }
-  </#if>
 </#macro>
 <#--
   wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)

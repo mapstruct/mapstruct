@@ -26,35 +26,23 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
             return null;
         }
 
-        String chartName;
+        String chartName = null;
         if ( chart != null ) {
             chartName = chart.getName();
         }
-        else {
-            chartName = null;
-        }
-        String songTitle;
-        String artistName;
-        String recordedAt;
-        String city;
+        String songTitle = null;
+        String artistName = null;
+        String recordedAt = null;
+        String city = null;
         if ( song != null ) {
             songTitle = song.getTitle();
             artistName = songArtistName( song );
             recordedAt = songArtistLabelStudioName( song );
             city = songArtistLabelStudioCity( song );
         }
-        else {
-            songTitle = null;
-            artistName = null;
-            recordedAt = null;
-            city = null;
-        }
-        int position1;
+        int position1 = 0;
         if ( position != null ) {
             position1 = position;
-        }
-        else {
-            position1 = 0;
         }
 
         ChartEntry chartEntry = new ChartEntry( chartName, songTitle, artistName, recordedAt, city, position1 );
@@ -68,10 +56,10 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
             return null;
         }
 
-        String songTitle;
-        String artistName;
-        String recordedAt;
-        String city;
+        String songTitle = null;
+        String artistName = null;
+        String recordedAt = null;
+        String city = null;
 
         songTitle = song.getTitle();
         artistName = songArtistName( song );
@@ -92,7 +80,7 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
             return null;
         }
 
-        String chartName;
+        String chartName = null;
 
         chartName = name.getName();
 
