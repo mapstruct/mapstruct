@@ -37,11 +37,6 @@
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
                         }
-                        else {
-                        <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
-                            ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
-                        </#list>
-                        }
                     </#if>
                 </#list>
                 <#list sourcePrimitiveParameters as sourceParam>
@@ -61,11 +56,6 @@
                     <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
                 <#if mapNullToDefault>
-                    }
-                    else {
-                    <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
-                        ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
-                    </#list>
                     }
                 </#if>
             </#if>
