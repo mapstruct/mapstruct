@@ -195,7 +195,7 @@ null check, regardless of the value of the `NullValuePropertyMappingStrategy`, t
 
 [TIP]
 ====
-`NullValuePropertyMappingStrategy` also applies when the presense checker returns `not present`.
+`NullValuePropertyMappingStrategy` also applies when the presence checker returns `not present`.
 ====
 
 [[checking-source-property-for-null-arguments]]
