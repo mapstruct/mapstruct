@@ -23,6 +23,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
@@ -43,7 +44,6 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -426,20 +426,21 @@ public class MappingResolverImpl implements MappingResolver {
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( Object.class.getName()
-                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
 
-                methodRefY =
-                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+                methodRefY = resolveViaMethod( ySourceType, targetType, true );
 
                 if ( methodRefY != null ) {
-                    Type nonParameterizedSource = getTypeForParameter( methodYCandidate, targetType );
-                    if ( nonParameterizedSource != null ) {
+                    if ( ySourceType.isTypeVar() ) {
+                        ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
+                    }
+                    if ( ySourceType != null ) {
                         selectionCriteria.setPreferUpdateMapping( false );
-                        Assignment methodRefX = resolveViaMethod( sourceType, nonParameterizedSource, true );
+                        Assignment methodRefX = resolveViaMethod( sourceType, ySourceType, true );
                         selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
                         if ( methodRefX != null ) {
                             methodRefY.setAssignment( methodRefX );
@@ -455,14 +456,6 @@ public class MappingResolverImpl implements MappingResolver {
                 }
             }
             return methodRefY;
-        }
-
-        private Type getTypeForParameter(Method method, Type target ) {
-            Type sourceType = method.getSourceParameters().get( 0 ).getType();
-            if ( sourceType.isTypeVar() ) {
-                return typeFactory.typeForTypeVar( target, method.getResultType(), sourceType );
-            }
-            return sourceType;
         }
 
         /**
