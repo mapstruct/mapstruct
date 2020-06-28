@@ -13,6 +13,8 @@ public class Target {
 
     Map<String, EmbeddedTarget> embeddedMapTarget;
 
+    List<List<EmbeddedTarget>> embeddedListListTarget;
+
     public List<EmbeddedTarget> getEmbeddedTarget() {
         return embeddedTarget;
     }
@@ -27,5 +29,14 @@ public class Target {
 
     public void setEmbeddedMapTarget( Map<String, EmbeddedTarget> embeddedMapTarget) {
         this.embeddedMapTarget = embeddedMapTarget;
+    }
+
+    public List<List<EmbeddedTarget>> getEmbeddedListListTarget() {
+        return embeddedListListTarget;
+    }
+
+    public void setEmbeddedListListTarget(
+        List<List<EmbeddedTarget>> embeddedListListTarget) {
+        this.embeddedListListTarget = embeddedListListTarget;
     }
 }

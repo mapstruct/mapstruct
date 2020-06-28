@@ -23,12 +23,17 @@ public interface Issue2122Mapper {
 
     @Mapping(target = "embeddedTarget", source = "value")
     @Mapping(target = "embeddedMapTarget", source = "value")
+    @Mapping(target = "embeddedListListTarget", source = "value")
     Target toTarget(Source source);
 
     EmbeddedTarget toEmbeddedTarget(String value);
 
     default <T> List<T> singleEntry(T entry) {
         return Collections.singletonList( entry );
+    }
+
+    default <T> List<List<T>>  singleNestedListEntry(T entry) {
+        return Collections.singletonList( Collections.singletonList( entry ) );
     }
 
     default <T> HashMap<String, T> singleEntryMap(T entry) {

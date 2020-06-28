@@ -432,13 +432,14 @@ public class MappingResolverImpl implements MappingResolver {
                     continue;
                 }
 
-                methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                if ( ySourceType.isTypeVar() ) {
+                    ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
+                }
 
-                if ( methodRefY != null ) {
-                    if ( ySourceType.isTypeVar() ) {
-                        ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
-                    }
-                    if ( ySourceType != null ) {
+                if ( ySourceType != null ) {
+                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    if ( methodRefY != null ) {
+
                         selectionCriteria.setPreferUpdateMapping( false );
                         Assignment methodRefX = resolveViaMethod( sourceType, ySourceType, true );
                         selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
