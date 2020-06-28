@@ -1095,17 +1095,17 @@ public class Type extends ModelElement implements Comparable<Type> {
     private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
 
         private TypeVariable typeVarToMatch;
-        private Types typeUtils;
+        private Types types;
 
-        TypeVarMatcher( Types typeUtils, Type typeVarToMatch ) {
+        TypeVarMatcher( Types types, Type typeVarToMatch ) {
             super( null );
             this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
-            this.typeUtils = typeUtils;
+            this.types = types;
         }
 
         @Override
         public Type visitTypeVariable(TypeVariable t, Type parameterized) {
-            if ( typeUtils.isSameType( t, typeVarToMatch ) ) {
+            if ( types.isSameType( t, typeVarToMatch ) ) {
                 return parameterized;
             }
             return super.visitTypeVariable( t, parameterized );
@@ -1113,10 +1113,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         @Override
         public Type visitDeclared(DeclaredType t, Type parameterized) {
-            if ( typeUtils.isAssignable(
-                typeUtils.erasure( parameterized.getTypeMirror() ),
-                typeUtils.erasure( t )
-            ) ) {
+            if ( types.isAssignable( types.erasure( t ), types.erasure( parameterized.getTypeMirror() ) ) ) {
                 // if same type, we can cast en assume number of type args are also the same
                 for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
                     Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );

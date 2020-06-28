@@ -38,5 +38,9 @@ public class Issue2122Test {
         assertThat( target.getEmbeddedTarget() ).hasSize( 1 )
             .element( 0 )
             .extracting( EmbeddedTarget::getValue ).isEqualTo( "value" );
+        assertThat( target.getEmbeddedMapTarget() ).isNotNull();
+        assertThat( target.getEmbeddedMapTarget() ).hasSize( 1 );
+        assertThat( target.getEmbeddedMapTarget().get( "test" ) )
+            .extracting( EmbeddedTarget::getValue ).isEqualTo( "value" );
     }
 }
