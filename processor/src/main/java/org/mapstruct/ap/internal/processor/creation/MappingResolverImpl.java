@@ -438,7 +438,7 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( methodRefY != null ) {
                     selectionCriteria.setPreferUpdateMapping( false );
                     Assignment methodRefX =
-                        resolveViaMethod( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType(), true );
+                        resolveViaMethod( sourceType, getSourceType( methodYCandidate, targetType ), true );
                     selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
                     if ( methodRefX != null ) {
                         methodRefY.setAssignment( methodRefX );
@@ -453,6 +453,14 @@ public class MappingResolverImpl implements MappingResolver {
                 }
             }
             return methodRefY;
+        }
+
+        private Type getSourceType( Method method, Type target ) {
+            Type sourceType = method.getSourceParameters().get( 0 ).getType();
+            if ( sourceType.isTypeVar() ) {
+                return typeFactory.typeForTypeVar( target, method.getResultType(), sourceType );
+            }
+            return sourceType;
         }
 
         /**

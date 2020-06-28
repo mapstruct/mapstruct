@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._2122;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -27,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2122Test {
 
-    @Ignore("reproducer for #2122")
     @Test
     public void shouldCompile() {
         Source source = new Source();

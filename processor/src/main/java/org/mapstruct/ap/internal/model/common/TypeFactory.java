@@ -442,6 +442,22 @@ public class TypeFactory {
         return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );
     }
 
+    public Type typeForTypeVar( Type declaredType, Type parameterizedType, Type varType ) {
+        TypeMirror test = parameterizedType.getTypeParameters().get( 0 ).getTypeMirror();
+        TypeMirror varTypeM = varType.getTypeMirror();
+        boolean experiment = typeUtils.isSameType( test, varTypeM );
+        if ( experiment ) {
+            // this an example, what really should be here is a visitor, stepping through declared type
+            // and parameterized type simultaniously
+            // perhaps we should also look at the case that the varType is parameterized
+            return declaredType.getTypeParameters().get( 0 );
+        }
+        else {
+            // did not succeed.
+            return parameterizedType;
+        }
+    }
+
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {
         Set<Type> types = new HashSet<>( typeMirrors.size() );
 
