@@ -37,6 +37,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -443,18 +444,48 @@ public class TypeFactory {
     }
 
     public Type typeForTypeVar( Type declaredType, Type parameterizedType, Type varType ) {
-        TypeMirror test = parameterizedType.getTypeParameters().get( 0 ).getTypeMirror();
-        TypeMirror varTypeM = varType.getTypeMirror();
-        boolean experiment = typeUtils.isSameType( test, varTypeM );
-        if ( experiment ) {
-            // this an example, what really should be here is a visitor, stepping through declared type
-            // and parameterized type simultaniously
-            // perhaps we should also look at the case that the varType is parameterized
-            return declaredType.getTypeParameters().get( 0 );
+
+        if ( varType.isTypeVar() ) {
+            TypeVarMatcher typeVarMatcher = new TypeVarMatcher( typeUtils, varType );
+            return typeVarMatcher.visit( parameterizedType.getTypeMirror(), declaredType );
         }
-        else {
-            // did not succeed.
-            return parameterizedType;
+        return varType;
+}
+
+    private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
+
+        private  TypeVariable typeVarToMatch;
+        private  Types typeUtils;
+
+        TypeVarMatcher( Types typeUtils, Type typeVarToMatch ) {
+            super( typeVarToMatch );
+            this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
+            this.typeUtils = typeUtils;
+        }
+
+        @Override
+        public Type visitTypeVariable(TypeVariable t, Type parameterized) {
+            if ( typeUtils.isSameType( t, typeVarToMatch ) ) {
+                return parameterized;
+            }
+            return super.visitTypeVariable( t, parameterized );
+        }
+
+        @Override
+        public Type visitDeclared(DeclaredType t, Type parameterized) {
+            if ( typeUtils.isAssignable(
+                typeUtils.erasure( parameterized.getTypeMirror() ),
+                typeUtils.erasure( t )
+            ) ) {
+                // if same type, we can cast en assume number of type args are also the same
+                for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
+                    Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );
+                    if ( !DEFAULT_VALUE.equals( result ) ) {
+                        return result;
+                    }
+                }
+            }
+            return super.visitDeclared( t, parameterized );
         }
     }
 
