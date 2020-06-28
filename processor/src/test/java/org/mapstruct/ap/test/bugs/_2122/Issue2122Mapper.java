@@ -6,7 +6,9 @@
 package org.mapstruct.ap.test.bugs._2122;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,12 +23,19 @@ public interface Issue2122Mapper {
     Issue2122Mapper INSTANCE = Mappers.getMapper( Issue2122Mapper.class );
 
     @Mapping(target = "embeddedTarget", source = "value")
+    @Mapping(target = "embeddedMapTarget", source = "value")
     Target toTarget(Source source);
 
     EmbeddedTarget toEmbeddedTarget(String value);
 
     default <T> List<T> singleEntry(T entry) {
         return Collections.singletonList( entry );
+    }
+
+    default <T> Map<String, T> singleEntryMap(T entry) {
+        HashMap<String, T> result = new HashMap<>(  );
+        result.put( "test", entry );
+        return result;
     }
 
 }

@@ -436,26 +436,28 @@ public class MappingResolverImpl implements MappingResolver {
                     resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
 
                 if ( methodRefY != null ) {
-                    selectionCriteria.setPreferUpdateMapping( false );
-                    Assignment methodRefX =
-                        resolveViaMethod( sourceType, getSourceType( methodYCandidate, targetType ), true );
-                    selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
-                    if ( methodRefX != null ) {
-                        methodRefY.setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceRHS );
-                        break;
-                    }
-                    else {
-                        // both should match;
-                        supportingMethodCandidates.clear();
-                        methodRefY = null;
+                    Type nonParameterizedSource = getTypeForParameter( methodYCandidate, targetType );
+                    if ( nonParameterizedSource != null ) {
+                        selectionCriteria.setPreferUpdateMapping( false );
+                        Assignment methodRefX = resolveViaMethod( sourceType, nonParameterizedSource, true );
+                        selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
+                        if ( methodRefX != null ) {
+                            methodRefY.setAssignment( methodRefX );
+                            methodRefX.setAssignment( sourceRHS );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            supportingMethodCandidates.clear();
+                            methodRefY = null;
+                        }
                     }
                 }
             }
             return methodRefY;
         }
 
-        private Type getSourceType( Method method, Type target ) {
+        private Type getTypeForParameter(Method method, Type target ) {
             Type sourceType = method.getSourceParameters().get( 0 ).getType();
             if ( sourceType.isTypeVar() ) {
                 return typeFactory.typeForTypeVar( target, method.getResultType(), sourceType );

@@ -454,11 +454,11 @@ public class TypeFactory {
 
     private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
 
-        private  TypeVariable typeVarToMatch;
-        private  Types typeUtils;
+        private TypeVariable typeVarToMatch;
+        private Types typeUtils;
 
         TypeVarMatcher( Types typeUtils, Type typeVarToMatch ) {
-            super( typeVarToMatch );
+            super( null );
             this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
             this.typeUtils = typeUtils;
         }
@@ -480,7 +480,7 @@ public class TypeFactory {
                 // if same type, we can cast en assume number of type args are also the same
                 for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
                     Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );
-                    if ( !DEFAULT_VALUE.equals( result ) ) {
+                    if ( result != null ) {
                         return result;
                     }
                 }
