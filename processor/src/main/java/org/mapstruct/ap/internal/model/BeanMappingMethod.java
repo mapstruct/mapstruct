@@ -473,9 +473,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private Type getReturnTypeToConstructFromSelectionParameters(SelectionParameters selectionParams) {
             // resultType only applies to method that actually has @BeanMapping annotation, never to forged methods
-            if ( !( method instanceof ForgedMethod )
-                && selectionParams != null
-                && selectionParams.getResultType() != null ) {
+            if ( selectionParams != null && selectionParams.getResultType() != null ) {
                 return ctx.getTypeFactory().getType( selectionParams.getResultType() );
             }
             return null;

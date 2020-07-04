@@ -12,13 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -41,6 +44,8 @@ public class ForgedMethod implements Method {
 
     private final Method basedOn;
     private final boolean forgedNameBased;
+
+    private MappingMethodOptions forgedMappingMethodOptions = null;
 
     /**
      * Creates a new forged method with the given name for mapping a method parameter to a property.
@@ -338,7 +343,10 @@ public class ForgedMethod implements Method {
 
     @Override
     public MappingMethodOptions getOptions() {
-        return basedOn.getOptions();
+        if ( forgedMappingMethodOptions == null ) {
+            forgedMappingMethodOptions = new WrappedMappingMethodOptions( basedOn.getOptions() );
+        }
+        return forgedMappingMethodOptions;
     }
 
     public MappingReferences getMappingReferences() {
@@ -369,4 +377,50 @@ public class ForgedMethod implements Method {
         result = 31 * result + ( returnType != null ? returnType.hashCode() : 0 );
         return result;
     }
+
+    /**
+     * Not all options are relevant for forged methods.
+     */
+    public static class WrappedMappingMethodOptions extends MappingMethodOptions {
+
+        public WrappedMappingMethodOptions(MappingMethodOptions options) {
+            super(
+                options.getMapper(),
+                options.getMappings(),
+                options.getIterableMapping(),
+                options.getMapMapping(),
+                new WrappedBeanMappingOptions( options.getBeanMapping() ),
+                options.getEnumMappingOptions(),
+                options.getValueMappings()
+            );
+        }
+    }
+
+    public static class WrappedBeanMappingOptions extends BeanMappingOptions {
+
+        protected WrappedBeanMappingOptions(BeanMappingOptions options) {
+            super( options );
+        }
+
+        @Override
+        public BuilderGem getBuilder() {
+            return null;
+        }
+
+        @Override
+        public SelectionParameters getSelectionParameters() {
+            return SelectionParameters.forInheritance( super.getSelectionParameters() );
+        }
+
+        @Override
+        public boolean isignoreByDefault() {
+            return false;
+        }
+
+        @Override
+        public List<String> getIgnoreUnmappedSourceProperties() {
+            return Collections.emptyList();
+        }
+    }
+
 }
