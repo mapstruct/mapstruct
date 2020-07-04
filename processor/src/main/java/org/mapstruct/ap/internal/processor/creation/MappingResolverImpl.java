@@ -39,6 +39,7 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
@@ -376,30 +377,54 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
+        /**
+         * Applies matching to given method only
+         *
+         * @param sourceType the source type
+         * @param targetType the target type
+         * @param method     the method to match
+         * @return an assignment if a match, given the criteria could be found. When the method is a
+         * buildIn method, all the bookkeeping is applied.
+         */
+        private Assignment applyMatching(Type sourceType, Type targetType, Method method) {
+
+            if ( method instanceof SourceMethod ) {
+                SelectedMethod<Method> selectedMethod =
+                    getBestMatch( java.util.Collections.singletonList( method ), sourceType, targetType );
+                return selectedMethod != null ? getMappingMethodReference( selectedMethod ) : null;
+            }
+            else if ( method instanceof BuiltInMethod ) {
+                return resolveViaBuiltInMethod( sourceType, targetType );
+            }
+            return null;
+        }
+
         private Assignment resolveViaBuiltInMethod(Type sourceType, Type targetType) {
             SelectedMethod<BuiltInMethod> matchingBuiltInMethod =
                 getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
 
             if ( matchingBuiltInMethod != null ) {
-
-                Set<Field> allUsedFields = new HashSet<>( mapperReferences );
-                SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
-                SupportingMappingMethod supportingMappingMethod =
-                    new SupportingMappingMethod( matchingBuiltInMethod.getMethod(), allUsedFields );
-                supportingMethodCandidates.add( supportingMappingMethod );
-                ConversionContext ctx = new DefaultConversionContext(
-                    typeFactory,
-                    messager,
-                    sourceType,
-                    targetType,
-                    formattingParameters
-                );
-                Assignment methodReference = MethodReference.forBuiltInMethod( matchingBuiltInMethod.getMethod(), ctx );
-                methodReference.setAssignment( sourceRHS );
-                return methodReference;
+                return createFromBuiltInMethod( matchingBuiltInMethod.getMethod() );
             }
 
             return null;
+        }
+
+        private Assignment createFromBuiltInMethod(BuiltInMethod method) {
+            Set<Field> allUsedFields = new HashSet<>( mapperReferences );
+            SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+            SupportingMappingMethod supportingMappingMethod = new SupportingMappingMethod( method, allUsedFields );
+            supportingMethodCandidates.add( supportingMappingMethod );
+            ConversionContext ctx = new DefaultConversionContext(
+                typeFactory,
+                messager,
+                method.getSourceParameters().get( 0 ).getType(),
+                method.getResultType(),
+                formattingParameters
+            );
+            Assignment methodReference = MethodReference.forBuiltInMethod( method, ctx );
+            methodReference.setAssignment( sourceRHS );
+            return methodReference;
         }
 
         /**
@@ -435,7 +460,7 @@ public class MappingResolverImpl implements MappingResolver {
                 ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
                 if ( ySourceType != null ) {
-                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    methodRefY = applyMatching( ySourceType, targetType, methodYCandidate );
                     if ( methodRefY != null ) {
 
                         selectionCriteria.setPreferUpdateMapping( false );
@@ -486,10 +511,9 @@ public class MappingResolverImpl implements MappingResolver {
                 ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
                 if ( ySourceType != null ) {
-                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    methodRefY = applyMatching( ySourceType, targetType, methodYCandidate );
                     if ( methodRefY != null ) {
-                        Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
-                        ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
+                        ConversionAssignment conversionXRef = resolveViaConversion( sourceType, ySourceType );
                         if ( conversionXRef != null ) {
                             methodRefY.setAssignment( conversionXRef.getAssignment() );
                             conversionXRef.getAssignment().setAssignment( sourceRHS );
@@ -539,9 +563,9 @@ public class MappingResolverImpl implements MappingResolver {
                     xTargetType.resolveTypeVarToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
 
                 if ( xTargetType != null ) {
-                    Assignment methodRefX = resolveViaMethod( sourceType, xTargetType, true );
+                    Assignment methodRefX = applyMatching( sourceType, xTargetType, methodXCandidate );
                     if ( methodRefX != null ) {
-                        conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
+                        conversionYRef = resolveViaConversion( xTargetType, targetType );
                         if ( conversionYRef != null ) {
                             conversionYRef.getAssignment().setAssignment( methodRefX );
                             methodRefX.setAssignment( sourceRHS );
