@@ -6,15 +6,16 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
@@ -136,9 +137,8 @@ public class MappingMethodOptions {
      *
      * @param templateMethod the template method with the options to inherit, may be {@code null}
      * @param isInverse if {@code true}, the specified options are from an inverse method
-     * @param method the source method
      */
-    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
+    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
         if ( null != templateOptions ) {
             if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
@@ -200,11 +200,54 @@ public class MappingMethodOptions {
             }
 
             // now add all (does not override duplicates and leaves original mappings)
-            mappings.addAll( newMappings );
+            addAllNonRedefined( newMappings );
 
             // filter new mappings
             filterNestedTargetIgnores( mappings );
         }
+    }
+
+    private void addAllNonRedefined(Set<MappingOptions> inheritedMappings) {
+        Set<String> redefinedSources = new HashSet<>();
+        Set<String> redefinedTargets = new HashSet<>();
+        for ( MappingOptions redefinedMappings : mappings ) {
+            if ( redefinedMappings.getSourceName() != null ) {
+                redefinedSources.add( redefinedMappings.getSourceName() );
+            }
+            if ( redefinedMappings.getTargetName() != null ) {
+                redefinedTargets.add( redefinedMappings.getTargetName() );
+            }
+        }
+        for ( MappingOptions inheritedMapping : inheritedMappings ) {
+            if ( inheritedMapping.isIgnored()
+                || ( !isRedefined( redefinedSources, inheritedMapping.getSourceName() )
+                && !isRedefined( redefinedTargets, inheritedMapping.getTargetName() ) )
+            ) {
+                mappings.add( inheritedMapping );
+            }
+        }
+    }
+
+    private boolean isRedefined(Set<String> redefinedNames, String inheritedName ) {
+        for ( String redefinedName : redefinedNames ) {
+            if ( elementsAreContainedIn( redefinedName, inheritedName ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean elementsAreContainedIn( String redefinedName, String inheritedName ) {
+        if ( redefinedName.startsWith( inheritedName ) ) {
+            // it is possible to redefine an exact matching source name, because the same source can be mapped to
+            // multiple targets. It is not possible for target, but caught by the Set and equals methoded in
+            // MappingOptions
+            if ( redefinedName.length() > inheritedName.length() ) {
+                // redefined.lenght() > inherited.length(), first following character should be separator
+                return '.' == redefinedName.charAt( inheritedName.length() );
+            }
+        }
+        return false;
     }
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
