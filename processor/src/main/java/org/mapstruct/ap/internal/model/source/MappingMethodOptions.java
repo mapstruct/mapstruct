@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -176,11 +177,53 @@ public class MappingMethodOptions {
             }
 
             // now add all (does not override duplicates and leaves original mappings)
-            mappings.addAll( newMappings );
+            addAllNonRedefined( newMappings );
 
             // filter new mappings
             filterNestedTargetIgnores( mappings );
         }
+    }
+
+    private void addAllNonRedefined(Set<MappingOptions> inheritedMappings) {
+        Set<String> redefinedSources = mappings.stream()
+            .map( MappingOptions::getSourceName )
+            .filter( Objects::nonNull )
+            .collect( Collectors.toSet() );
+        Set<String> redefinedTargets = mappings.stream()
+            .map( MappingOptions::getTargetName )
+            .filter( Objects::nonNull )
+            .collect( Collectors.toSet() );
+        for ( MappingOptions inheritedMapping : inheritedMappings ) {
+            if ( inheritedMapping.isIgnored()
+                || ( !isRedefined( redefinedSources, inheritedMapping.getSourceName() )
+                && !isRedefined( redefinedTargets, inheritedMapping.getTargetName() ) )
+            ) {
+                mappings.add( inheritedMapping );
+            }
+        }
+    }
+
+    private boolean isRedefined(Set<String> redefinedNames, String inheritedName ) {
+        for ( String redefinedName : redefinedNames ) {
+            if ( elementsAreContainedIn( redefinedName, inheritedName ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean elementsAreContainedIn( String redefinedName, String inheritedName ) {
+        if ( redefinedName.startsWith( inheritedName ) ) {
+            if ( redefinedName.length() == inheritedName.length() ) {
+                // redefined == inherited
+                return true;
+            }
+            else {
+                // redefined.lenght() > inherited.length(), first following character should be separator
+                return '.' == redefinedName.charAt( inheritedName.length() );
+            }
+        }
+        return false;
     }
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
