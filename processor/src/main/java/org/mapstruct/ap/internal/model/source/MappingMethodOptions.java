@@ -124,9 +124,8 @@ public class MappingMethodOptions {
      *
      * @param templateMethod the template method with the options to inherit, may be {@code null}
      * @param isInverse if {@code true}, the specified options are from an inverse method
-     * @param method the source method
      */
-    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse, SourceMethod method ) {
+    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
         if ( null != templateOptions ) {
             if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
