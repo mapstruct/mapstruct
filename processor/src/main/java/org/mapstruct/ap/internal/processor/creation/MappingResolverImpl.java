@@ -432,9 +432,7 @@ public class MappingResolverImpl implements MappingResolver {
                     continue;
                 }
 
-                if ( ySourceType.isTypeVar() ) {
-                    ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
-                }
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
                 if ( ySourceType != null ) {
                     methodRefY = resolveViaMethod( ySourceType, targetType, true );
@@ -485,9 +483,7 @@ public class MappingResolverImpl implements MappingResolver {
                     continue;
                 }
 
-                if ( ySourceType.isTypeVar() ) {
-                    ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
-                }
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
                 if ( ySourceType != null ) {
                     methodRefY = resolveViaMethod( ySourceType, targetType, true );
@@ -539,10 +535,8 @@ public class MappingResolverImpl implements MappingResolver {
                     continue;
                 }
 
-                if ( xTargetType.isTypeVar() ) {
-                    xTargetType =
-                        xTargetType.resolveToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
-                }
+                xTargetType =
+                    xTargetType.resolveTypeVarToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
 
                 if ( xTargetType != null ) {
                     Assignment methodRefX = resolveViaMethod( sourceType, xTargetType, true );

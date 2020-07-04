@@ -1084,7 +1084,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return the matching declared type.
      */
-    public Type resolveToType( Type declaredType, Type parameterizedType) {
+    public Type resolveTypeVarToType(Type declaredType, Type parameterizedType) {
         if ( isTypeVar() ) {
             TypeVarMatcher typeVarMatcher = new TypeVarMatcher( typeUtils, this );
             return typeVarMatcher.visit( parameterizedType.getTypeMirror(), declaredType );
