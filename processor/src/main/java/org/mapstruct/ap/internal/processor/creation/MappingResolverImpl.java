@@ -479,28 +479,32 @@ public class MappingResolverImpl implements MappingResolver {
             Assignment methodRefY = null;
 
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( Object.class.getName()
-                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
 
-                methodRefY =
-                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+                if ( ySourceType.isTypeVar() ) {
+                    ySourceType = ySourceType.resolveToType( targetType, methodYCandidate.getResultType() );
+                }
 
-                if ( methodRefY != null ) {
-                    Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
-                    ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
-                    if ( conversionXRef != null ) {
-                        methodRefY.setAssignment( conversionXRef.getAssignment() );
-                        conversionXRef.getAssignment().setAssignment( sourceRHS );
-                        conversionXRef.reportMessageWhenNarrowing( messager, this );
-                        break;
-                    }
-                    else {
-                        // both should match
-                        supportingMethodCandidates.clear();
-                        methodRefY = null;
+                if ( ySourceType != null ) {
+                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    if ( methodRefY != null ) {
+                        Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                        ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
+                        if ( conversionXRef != null ) {
+                            methodRefY.setAssignment( conversionXRef.getAssignment() );
+                            conversionXRef.getAssignment().setAssignment( sourceRHS );
+                            conversionXRef.reportMessageWhenNarrowing( messager, this );
+                            break;
+                        }
+                        else {
+                            // both should match
+                            supportingMethodCandidates.clear();
+                            methodRefY = null;
+                        }
                     }
                 }
             }
