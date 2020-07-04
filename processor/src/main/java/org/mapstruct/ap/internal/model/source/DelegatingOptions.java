@@ -105,7 +105,7 @@ public abstract class DelegatingOptions {
         return next.getMappingControl( elementUtils );
     }
 
-    DelegatingOptions next() {
+    protected DelegatingOptions next() {
         return next;
     }
 

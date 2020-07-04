@@ -10,8 +10,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -23,6 +25,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.tools.gem.GemValue;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -398,13 +401,16 @@ public class ForgedMethod implements Method {
 
     public static class WrappedBeanMappingOptions extends BeanMappingOptions {
 
+        BeanMappingOptions options;
+
         protected WrappedBeanMappingOptions(BeanMappingOptions options) {
             super( options );
+            this.options = options;
         }
 
         @Override
         public BuilderGem getBuilder() {
-            return null;
+            return next().getBuilder();
         }
 
         @Override
