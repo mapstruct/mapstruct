@@ -19,33 +19,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("2122")
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
-    Issue2122Mapper.class,
-    Source.class,
-    Target.class,
-    EmbeddedTarget.class
+    Issue2122Method2MethodMapper.class
 })
 public class Issue2122Test {
 
     @Test
     public void shouldCompile() {
-        Source source = new Source();
+        Issue2122Method2MethodMapper.Source source = new Issue2122Method2MethodMapper.Source();
         source.setValue( "value" );
 
-        Target target = Issue2122Mapper.INSTANCE.toTarget( source );
+        Issue2122Method2MethodMapper.Target target = Issue2122Method2MethodMapper.INSTANCE.toTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getEmbeddedTarget() ).isNotNull();
         assertThat( target.getEmbeddedTarget() ).hasSize( 1 )
             .element( 0 )
-            .extracting( EmbeddedTarget::getValue ).isEqualTo( "value" );
+            .extracting( Issue2122Method2MethodMapper.EmbeddedTarget::getValue ).isEqualTo( "value" );
         assertThat( target.getEmbeddedMapTarget() ).isNotNull();
         assertThat( target.getEmbeddedMapTarget() ).hasSize( 1 );
         assertThat( target.getEmbeddedMapTarget().get( "test" ) )
-            .extracting( EmbeddedTarget::getValue ).isEqualTo( "value" );
+            .extracting( Issue2122Method2MethodMapper.EmbeddedTarget::getValue ).isEqualTo( "value" );
         assertThat( target.getEmbeddedListListTarget() ).isNotNull();
         assertThat( target.getEmbeddedListListTarget() ).hasSize( 1 );
         assertThat( target.getEmbeddedListListTarget().get( 0 ) ).hasSize( 1 )
             .element( 0 )
-            .extracting( EmbeddedTarget::getValue ).isEqualTo( "value" );
+            .extracting( Issue2122Method2MethodMapper.EmbeddedTarget::getValue ).isEqualTo( "value" );
     }
 }
