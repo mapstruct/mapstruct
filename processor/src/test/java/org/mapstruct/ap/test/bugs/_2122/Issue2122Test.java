@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._2122;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -51,13 +53,28 @@ public class Issue2122Test {
         Issue2122TypeConversion2MethodMapper.Source source = new Issue2122TypeConversion2MethodMapper.Source();
         source.setValue( 5 );
 
-        Issue2122TypeConversion2MethodMapper.Target target = Issue2122TypeConversion2MethodMapper.INSTANCE.toTarget( source );
+        Issue2122TypeConversion2MethodMapper.Target target =
+            Issue2122TypeConversion2MethodMapper.INSTANCE.toTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getStrings() ).isNotNull();
         assertThat( target.getStrings() ).hasSize( 1 )
             .element( 0 )
             .isEqualTo( "5" );
+    }
+
+    @Test
+    @WithClasses( Issue2122Method2TypeConversionMapper.class )
+    public void shouldMapMethod2TypeConversion() {
+        Issue2122Method2TypeConversionMapper.Source source = new Issue2122Method2TypeConversionMapper.Source();
+        source.setStrings( Collections.singletonList( "5" )  );
+
+        Issue2122Method2TypeConversionMapper.Target target =
+            Issue2122Method2TypeConversionMapper.INSTANCE.toTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getValue() ).isNotNull();
+        assertThat( target.getValue() ).isEqualTo( 5 );
     }
 
 }

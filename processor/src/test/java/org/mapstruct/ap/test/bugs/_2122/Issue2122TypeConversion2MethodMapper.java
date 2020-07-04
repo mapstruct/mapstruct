@@ -51,5 +51,4 @@ public interface Issue2122TypeConversion2MethodMapper {
         }
     }
 
-
 }

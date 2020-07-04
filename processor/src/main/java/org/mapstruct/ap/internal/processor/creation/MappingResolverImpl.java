@@ -532,29 +532,33 @@ public class MappingResolverImpl implements MappingResolver {
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
+                Type xTargetType = methodXCandidate.getReturnType();
                 if ( methodXCandidate.isUpdateMethod() ||
-                    Object.class.getName().equals( methodXCandidate.getReturnType().getFullyQualifiedName() ) ) {
+                    Object.class.getName().equals( xTargetType.getFullyQualifiedName() ) ) {
                     // skip update methods || java.lang.Object as intermediate result
                     continue;
                 }
 
-                Assignment methodRefX = resolveViaMethod(
-                    sourceType,
-                    methodXCandidate.getReturnType(),
-                    true
-                );
-                if ( methodRefX != null ) {
-                    conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
-                    if ( conversionYRef != null ) {
-                        conversionYRef.getAssignment().setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceRHS );
-                        conversionYRef.reportMessageWhenNarrowing( messager, this );
-                        break;
-                    }
-                    else {
-                        // both should match;
-                        supportingMethodCandidates.clear();
-                        conversionYRef = null;
+                if ( xTargetType.isTypeVar() ) {
+                    xTargetType =
+                        xTargetType.resolveToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
+                }
+
+                if ( xTargetType != null ) {
+                    Assignment methodRefX = resolveViaMethod( sourceType, xTargetType, true );
+                    if ( methodRefX != null ) {
+                        conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
+                        if ( conversionYRef != null ) {
+                            conversionYRef.getAssignment().setAssignment( methodRefX );
+                            methodRefX.setAssignment( sourceRHS );
+                            conversionYRef.reportMessageWhenNarrowing( messager, this );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            supportingMethodCandidates.clear();
+                            conversionYRef = null;
+                        }
                     }
                 }
             }
