@@ -23,6 +23,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
@@ -43,7 +44,6 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -426,29 +426,31 @@ public class MappingResolverImpl implements MappingResolver {
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( Object.class.getName()
-                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
 
-                methodRefY =
-                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
-                if ( methodRefY != null ) {
-                    selectionCriteria.setPreferUpdateMapping( false );
-                    Assignment methodRefX =
-                        resolveViaMethod( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType(), true );
-                    selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
-                    if ( methodRefX != null ) {
-                        methodRefY.setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceRHS );
-                        break;
-                    }
-                    else {
-                        // both should match;
-                        supportingMethodCandidates.clear();
-                        methodRefY = null;
+                if ( ySourceType != null ) {
+                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    if ( methodRefY != null ) {
+
+                        selectionCriteria.setPreferUpdateMapping( false );
+                        Assignment methodRefX = resolveViaMethod( sourceType, ySourceType, true );
+                        selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
+                        if ( methodRefX != null ) {
+                            methodRefY.setAssignment( methodRefX );
+                            methodRefX.setAssignment( sourceRHS );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            supportingMethodCandidates.clear();
+                            methodRefY = null;
+                        }
                     }
                 }
             }
@@ -475,28 +477,30 @@ public class MappingResolverImpl implements MappingResolver {
             Assignment methodRefY = null;
 
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( Object.class.getName()
-                    .equals( methodYCandidate.getSourceParameters().get( 0 ).getType().getName() ) ) {
+                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
 
-                methodRefY =
-                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
 
-                if ( methodRefY != null ) {
-                    Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
-                    ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
-                    if ( conversionXRef != null ) {
-                        methodRefY.setAssignment( conversionXRef.getAssignment() );
-                        conversionXRef.getAssignment().setAssignment( sourceRHS );
-                        conversionXRef.reportMessageWhenNarrowing( messager, this );
-                        break;
-                    }
-                    else {
-                        // both should match
-                        supportingMethodCandidates.clear();
-                        methodRefY = null;
+                if ( ySourceType != null ) {
+                    methodRefY = resolveViaMethod( ySourceType, targetType, true );
+                    if ( methodRefY != null ) {
+                        Type targetTypeX = methodYCandidate.getSourceParameters().get( 0 ).getType();
+                        ConversionAssignment conversionXRef = resolveViaConversion( sourceType, targetTypeX );
+                        if ( conversionXRef != null ) {
+                            methodRefY.setAssignment( conversionXRef.getAssignment() );
+                            conversionXRef.getAssignment().setAssignment( sourceRHS );
+                            conversionXRef.reportMessageWhenNarrowing( messager, this );
+                            break;
+                        }
+                        else {
+                            // both should match
+                            supportingMethodCandidates.clear();
+                            methodRefY = null;
+                        }
                     }
                 }
             }
@@ -524,29 +528,31 @@ public class MappingResolverImpl implements MappingResolver {
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
+                Type xTargetType = methodXCandidate.getReturnType();
                 if ( methodXCandidate.isUpdateMethod() ||
-                    Object.class.getName().equals( methodXCandidate.getReturnType().getFullyQualifiedName() ) ) {
+                    Object.class.getName().equals( xTargetType.getFullyQualifiedName() ) ) {
                     // skip update methods || java.lang.Object as intermediate result
                     continue;
                 }
 
-                Assignment methodRefX = resolveViaMethod(
-                    sourceType,
-                    methodXCandidate.getReturnType(),
-                    true
-                );
-                if ( methodRefX != null ) {
-                    conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
-                    if ( conversionYRef != null ) {
-                        conversionYRef.getAssignment().setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceRHS );
-                        conversionYRef.reportMessageWhenNarrowing( messager, this );
-                        break;
-                    }
-                    else {
-                        // both should match;
-                        supportingMethodCandidates.clear();
-                        conversionYRef = null;
+                xTargetType =
+                    xTargetType.resolveTypeVarToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
+
+                if ( xTargetType != null ) {
+                    Assignment methodRefX = resolveViaMethod( sourceType, xTargetType, true );
+                    if ( methodRefX != null ) {
+                        conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
+                        if ( conversionYRef != null ) {
+                            conversionYRef.getAssignment().setAssignment( methodRefX );
+                            methodRefX.setAssignment( sourceRHS );
+                            conversionYRef.reportMessageWhenNarrowing( messager, this );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            supportingMethodCandidates.clear();
+                            conversionYRef = null;
+                        }
                     }
                 }
             }
