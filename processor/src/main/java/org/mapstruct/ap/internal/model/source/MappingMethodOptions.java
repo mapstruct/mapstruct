@@ -6,16 +6,16 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
@@ -185,14 +185,16 @@ public class MappingMethodOptions {
     }
 
     private void addAllNonRedefined(Set<MappingOptions> inheritedMappings) {
-        Set<String> redefinedSources = mappings.stream()
-            .map( MappingOptions::getSourceName )
-            .filter( Objects::nonNull )
-            .collect( Collectors.toSet() );
-        Set<String> redefinedTargets = mappings.stream()
-            .map( MappingOptions::getTargetName )
-            .filter( Objects::nonNull )
-            .collect( Collectors.toSet() );
+        Set<String> redefinedSources = new HashSet<>();
+        Set<String> redefinedTargets = new HashSet<>();
+        for ( MappingOptions redefinedMappings : mappings ) {
+            if ( redefinedMappings.getSourceName() != null ) {
+                redefinedSources.add( redefinedMappings.getSourceName() );
+            }
+            if ( redefinedMappings.getTargetName() != null ) {
+                redefinedTargets.add( redefinedMappings.getTargetName() );
+            }
+        }
         for ( MappingOptions inheritedMapping : inheritedMappings ) {
             if ( inheritedMapping.isIgnored()
                 || ( !isRedefined( redefinedSources, inheritedMapping.getSourceName() )
