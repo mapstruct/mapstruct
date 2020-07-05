@@ -64,4 +64,20 @@ public class Issue2101Test {
         assertThat( target.value3 ).isEqualTo( "test" );
 
     }
+
+    @Test
+    @WithClasses(Issue2102IgnoreAllButMapper.class)
+    public void shouldApplyIgnoreAllButTemplateOfMethod1() {
+
+        Issue2102IgnoreAllButMapper.Source source = new Issue2102IgnoreAllButMapper.Source();
+        source.value1 = "value1";
+        source.value2 = "value2";
+
+        Issue2102IgnoreAllButMapper.Target target = Issue2102IgnoreAllButMapper.INSTANCE.map1( source );
+        assertThat( target.value1 ).isEqualTo( "value1" );
+
+        target = Issue2102IgnoreAllButMapper.INSTANCE.map2( source );
+        assertThat( target.value1 ).isEqualTo( "value2" );
+
+    }
 }
