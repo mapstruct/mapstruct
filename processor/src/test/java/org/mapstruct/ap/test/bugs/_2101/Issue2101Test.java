@@ -64,4 +64,9 @@ public class Issue2101Test {
         assertThat( target.value3 ).isEqualTo( "test" );
 
     }
+
+    @Test
+    @WithClasses(Issue2102IgnoreAllButMapper.class)
+    public void shouldCompile() {
+    }
 }
