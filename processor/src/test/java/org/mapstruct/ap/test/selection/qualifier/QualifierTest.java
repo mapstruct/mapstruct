@@ -103,8 +103,8 @@ public class QualifierTest {
                 kind = Kind.ERROR,
                 line = 28,
                 message =
-                    "No qualifying method found for qualifiers: org.mapstruct.ap.test.selection.qualifier.annotation" +
-                        ".NonQualifierAnnotated and / or qualifying names: "),
+                    "Qualifier error. No method found annotated with: [ @NonQualifierAnnotated ]. " +
+                        "See https://mapstruct.org/faq/#qualifier for more info."),
             @Diagnostic(
                 type = ErroneousMapper.class,
                 kind = Kind.ERROR,
