@@ -308,7 +308,7 @@ public class MappingResolverImpl implements MappingResolver {
                     Strings.join( annotations, MessageConstants.AND )
                 );
             }
-            else if ( !names.isEmpty() ) {
+            else  {
                 messager.printMessage(
                     mappingMethod.getExecutable(),
                     positionHint,
