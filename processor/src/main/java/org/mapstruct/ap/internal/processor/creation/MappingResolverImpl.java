@@ -10,8 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
@@ -48,6 +51,7 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -260,13 +264,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( hasQualfiers() ) {
-                messager.printMessage(
-                        mappingMethod.getExecutable(),
-                        positionHint,
-                        Message.GENERAL_NO_QUALIFYING_METHOD,
-                        Strings.join( selectionCriteria.getQualifiers(), ", " ),
-                        Strings.join( selectionCriteria.getQualifiedByNames(), ", " )
-                );
+                printQualifierMessage( selectionCriteria );
             }
             else if ( allowMappingMethod() ) {
                 // only forge if we would allow mapping method
@@ -279,6 +277,46 @@ public class MappingResolverImpl implements MappingResolver {
 
         private boolean hasQualfiers() {
             return selectionCriteria != null && selectionCriteria.hasQualfiers();
+        }
+
+        private void printQualifierMessage(SelectionCriteria selectionCriteria ) {
+
+            List<String> annotations = selectionCriteria.getQualifiers().stream()
+                .filter( DeclaredType.class::isInstance )
+                .map( DeclaredType.class::cast )
+                .map( DeclaredType::asElement )
+                .map( Element::getSimpleName )
+                .map( Name::toString )
+                .map( a -> "@" + a )
+                .collect( Collectors.toList() );
+            List<String> names = selectionCriteria.getQualifiedByNames();
+
+            if ( !annotations.isEmpty() && !names.isEmpty() ) {
+                messager.printMessage(
+                    mappingMethod.getExecutable(),
+                    positionHint,
+                    Message.GENERAL_NO_QUALIFYING_METHOD_COMBINED,
+                    Strings.join( names, MessageConstants.AND ),
+                    Strings.join( annotations, MessageConstants.AND )
+                );
+            }
+            else if ( !annotations.isEmpty() ) {
+                messager.printMessage(
+                    mappingMethod.getExecutable(),
+                    positionHint,
+                    Message.GENERAL_NO_QUALIFYING_METHOD_ANNOTATION,
+                    Strings.join( annotations, MessageConstants.AND )
+                );
+            }
+            else if ( !names.isEmpty() ) {
+                messager.printMessage(
+                    mappingMethod.getExecutable(),
+                    positionHint,
+                    Message.GENERAL_NO_QUALIFYING_METHOD_NAMED,
+                    Strings.join( names, MessageConstants.AND )
+                );
+            }
+
         }
 
         private boolean allowDirect( Type sourceType, Type targetType ) {
