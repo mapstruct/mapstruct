@@ -4,9 +4,12 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface Issue2102IgnoreAllButMapper {
+
+    Issue2102IgnoreAllButMapper INSTANCE = Mappers.getMapper( Issue2102IgnoreAllButMapper.class );
 
     @BeanMapping( ignoreByDefault = true )
     @Mapping(target = "value1") // but do map value1

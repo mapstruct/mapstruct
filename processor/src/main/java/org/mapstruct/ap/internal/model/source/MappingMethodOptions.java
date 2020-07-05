@@ -238,10 +238,10 @@ public class MappingMethodOptions {
     }
 
     private boolean elementsAreContainedIn( String redefinedName, String inheritedName ) {
-        if ( redefinedName.startsWith( inheritedName ) ) {
+        if ( inheritedName != null && redefinedName.startsWith( inheritedName ) ) {
             // it is possible to redefine an exact matching source name, because the same source can be mapped to
             // multiple targets. It is not possible for target, but caught by the Set and equals methoded in
-            // MappingOptions
+            // MappingOptions. SourceName == null also could hint at redefinition
             if ( redefinedName.length() > inheritedName.length() ) {
                 // redefined.lenght() > inherited.length(), first following character should be separator
                 return '.' == redefinedName.charAt( inheritedName.length() );
