@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,6 +62,18 @@ public class Collections {
         result.addAll( b );
 
         return result;
+    }
+
+    public static <K, V> Map.Entry<K, V> first(Map<K, V> map) {
+        return map.entrySet().iterator().next();
+    }
+
+    public static <K, V> V firstValue(Map<K, V> map) {
+        return first( map ).getValue();
+    }
+
+    public static <K, V> K firstKey(Map<K, V> map) {
+        return first( map ).getKey();
     }
 
 }

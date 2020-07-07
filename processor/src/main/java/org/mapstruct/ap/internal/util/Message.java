@@ -125,6 +125,10 @@ public enum Message {
     GENERAL_NO_QUALIFYING_METHOD_NAMED( "Qualifier error. No method found annotated with @Named#value: [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
     GENERAL_NO_QUALIFYING_METHOD_COMBINED( "Qualifier error. No method found annotated with @Named#value: [ %s ], annotated with [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
 
+    GENERAL_AMBIGIOUS_MAPPING_METHODY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGIOUS_MAPPING_CONVERSIONY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found conversionY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGIOUS_MAPPING_METHODY_CONVERSIONX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( conversionX ( parameter ) ): %s." ),
+
     BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
     BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),
     BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\". Consider to add @Builder in order to select the correct build method.", Diagnostic.Kind.ERROR ),
