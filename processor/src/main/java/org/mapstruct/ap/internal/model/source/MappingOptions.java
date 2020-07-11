@@ -39,11 +39,16 @@ public class MappingOptions extends DelegatingOptions {
 
     private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
 
+    public String getCondition() {
+        return condition;
+    }
+
     private final String sourceName;
     private final String constant;
     private final String javaExpression;
     private final String defaultJavaExpression;
     private final String targetName;
+    private final String condition;
     private final String defaultValue;
     private final FormattingParameters formattingParameters;
     private final SelectionParameters selectionParameters;
@@ -116,10 +121,10 @@ public class MappingOptions extends DelegatingOptions {
         String dateFormat = mapping.dateFormat().getValue();
         String numberFormat = mapping.numberFormat().getValue();
         String defaultValue = mapping.defaultValue().getValue();
+        String condition = mapping.condition().getValue();
 
         Set<String> dependsOn = mapping.dependsOn().hasValue() ?
-            new LinkedHashSet( mapping.dependsOn().getValue() ) :
-            Collections.emptySet();
+                new LinkedHashSet<>(mapping.dependsOn().getValue()) : Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
             dateFormat,
@@ -151,8 +156,8 @@ public class MappingOptions extends DelegatingOptions {
             dependsOn,
             mapping,
             null,
-            beanMappingOptions
-        );
+            beanMappingOptions,
+            condition);
 
         if ( mappings.contains( options ) ) {
             messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mapping.target().get() );
@@ -179,8 +184,8 @@ public class MappingOptions extends DelegatingOptions {
             Collections.emptySet(),
             null,
             null,
-            null
-        );
+            null,
+                null);
     }
 
     private static boolean isConsistent(MappingGem gem, ExecutableElement method,
@@ -267,8 +272,8 @@ public class MappingOptions extends DelegatingOptions {
                            Set<String> dependsOn,
                            MappingGem mapping,
                            InheritContext inheritContext,
-                           DelegatingOptions next
-    ) {
+                           DelegatingOptions next,
+                           String condition) {
         super( next );
         this.targetName = targetName;
         this.element = element;
@@ -285,6 +290,7 @@ public class MappingOptions extends DelegatingOptions {
         this.dependsOn = dependsOn;
         this.mapping = mapping;
         this.inheritContext = inheritContext;
+        this.condition = condition;
     }
 
     private static String getExpression(MappingGem mapping, ExecutableElement element,
@@ -458,8 +464,8 @@ public class MappingOptions extends DelegatingOptions {
             Collections.emptySet(),
             mapping,
             new InheritContext( true, false, templateMethod ),
-            beanMappingOptions
-        );
+            beanMappingOptions,
+                condition);
         return mappingOptions;
 
     }
@@ -487,8 +493,8 @@ public class MappingOptions extends DelegatingOptions {
             dependsOn,
             mapping,
             new InheritContext( false, true, templateMethod ),
-            beanMappingOptions
-        );
+            beanMappingOptions,
+                condition);
         return mappingOptions;
     }
 

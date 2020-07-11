@@ -282,6 +282,31 @@ public @interface Mapping {
     String defaultExpression() default "";
 
     /**
+     * A condition {@link String} based on which the specified target property is to be set.
+     * <p>
+     * An example mapping would lookg like this
+     * <pre><code>
+     * &#64;Mapping(
+     *     target = "someProp",
+     *     condition = "conditionMethodName"
+     * )
+     * </code></pre>
+     * <p>
+     * will cause the following target property assignment to be generated:
+     * <p>
+     * {@code
+     *   if (conditionMethodName(s)) {
+     *      targetBean.setSomeProp( new TimeAndFormat( s.getTime(), s.getFormat() ) )}
+     *   }
+     * <p>
+     * The condition method needs to be defined as follows:
+     * {@code boolean someName(SourceType source); }
+     *
+     * @return The name of the condition method to be evaluated when trting to do the given target mapping
+     */
+    String condition() default "";
+
+    /**
      * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
      * This can be useful when certain attributes should not be propagated from source or target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by

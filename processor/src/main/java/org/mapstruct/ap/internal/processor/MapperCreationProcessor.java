@@ -354,14 +354,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isStreamMapping() ) {
                 this.messager.note( 1, Message.STREAMMAPPING_CREATE_NOTE, method );
                 StreamMappingMethod streamMappingMethod = createWithElementMappingMethod(
-                    method,
-                    mappingOptions,
-                    new StreamMappingMethod.Builder()
+                        method,
+                        mappingOptions,
+                        new StreamMappingMethod.Builder()
                 );
 
                 // If we do StreamMapping that means that internally there is a way to generate the result type
                 hasFactoryMethod =
-                    streamMappingMethod.getFactoryMethod() != null || method.getResultType().isStreamType();
+                        streamMappingMethod.getFactoryMethod() != null || method.getResultType().isStreamType();
                 mappingMethods.add( streamMappingMethod );
             }
             else {

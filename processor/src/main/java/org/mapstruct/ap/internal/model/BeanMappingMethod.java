@@ -1032,6 +1032,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .defaultJavaExpression( mapping.getDefaultJavaExpression() )
                             .mirror( mapping.getMirror() )
                             .options( mapping )
+                            .condition( mapping.getCondition() )
                             .build();
                         handledTargets.add( targetPropertyName );
                         unprocessedSourceParameters.remove( sourceRef.getParameter() );

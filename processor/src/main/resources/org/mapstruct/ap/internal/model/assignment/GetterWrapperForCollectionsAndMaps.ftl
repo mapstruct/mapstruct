@@ -8,13 +8,13 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps" -->
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.sourceLocalVarAssignment/>
-if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing /> != null ) {
+if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccessing /> != null ) {
     <@lib.handleExceptions>
       <#if ext.existingInstanceMapping>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.clear();
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccessing />.clear();
       </#if>
       <@lib.handleLocalVarNullCheck needs_explicit_local_var=false>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccessing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
       </@lib.handleLocalVarNullCheck>
     </@lib.handleExceptions>
 }

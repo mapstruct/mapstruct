@@ -71,6 +71,7 @@ public class PropertyMapping extends ModelElement {
     private final Set<String> dependsOn;
     private final Assignment defaultValueAssignment;
     private final boolean constructorMapping;
+    private final String condition;
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> extends AbstractBaseBuilder<T> {
@@ -146,9 +147,15 @@ public class PropertyMapping extends ModelElement {
         private boolean forgedNamedBased = true;
         private NullValueCheckStrategyGem nvcs;
         private NullValuePropertyMappingStrategyGem nvpms;
+        private String condition;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
+        }
+
+        public PropertyMappingBuilder condition(String condition) {
+            this.condition = condition;
+            return this;
         }
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
@@ -280,7 +287,8 @@ public class PropertyMapping extends ModelElement {
                 assignment,
                 dependsOn,
                 getDefaultValueAssignment( assignment ),
-                targetWriteAccessorType == AccessorType.PARAMETER
+                targetWriteAccessorType == AccessorType.PARAMETER,
+                    condition
             );
         }
 
@@ -878,7 +886,8 @@ public class PropertyMapping extends ModelElement {
                 assignment,
                 dependsOn,
                 null,
-                targetWriteAccessorType == AccessorType.PARAMETER
+                targetWriteAccessorType == AccessorType.PARAMETER,
+                    null
             );
         }
 
@@ -944,7 +953,8 @@ public class PropertyMapping extends ModelElement {
                 assignment,
                 dependsOn,
                 null,
-                targetWriteAccessorType == AccessorType.PARAMETER
+                targetWriteAccessorType == AccessorType.PARAMETER,
+                    null
             );
         }
 
@@ -954,17 +964,17 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String targetWriteAccessorName,
         ValueProvider targetReadAccessorProvider,
         Type targetType, Assignment propertyAssignment,
-        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping, String condition) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment,
-            constructorMapping
+            constructorMapping, condition
         );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
         ValueProvider targetReadAccessorProvider, Type targetType,
         Assignment assignment,
-        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping, String condition) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -975,6 +985,7 @@ public class PropertyMapping extends ModelElement {
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptySet();
         this.defaultValueAssignment = defaultValueAssignment;
         this.constructorMapping = constructorMapping;
+        this.condition = condition;
     }
 
     /**
@@ -982,6 +993,10 @@ public class PropertyMapping extends ModelElement {
      */
     public String getName() {
         return name;
+    }
+
+    public String getCondition() {
+        return condition;
     }
 
     public String getSourceBeanName() {
@@ -1067,7 +1082,8 @@ public class PropertyMapping extends ModelElement {
             + "\n    targetType=" + targetType + ","
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    defaultValueAssignment=" + defaultValueAssignment + ","
-            + "\n    dependsOn=" + dependsOn
+            + "\n    dependsOn=" + dependsOn + ","
+            + "\n    condition=" + condition
             + "\n}";
     }
 }

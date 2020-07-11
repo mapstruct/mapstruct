@@ -36,7 +36,7 @@
 <#macro elseDefaultAssignment>
     <#if ext.defaultValueAssignment?? >
       else {
-        <@handeDefaultAssigment/>
+        <@handleDefaultAssignment/>
       }
     <#elseif setExplicitlyToDefault || setExplicitlyToNull>
       else {
@@ -73,7 +73,7 @@
   </#if>
   <#if ext.defaultValueAssignment?? >
   else {
-    <@handeDefaultAssigment/>
+    <@handleDefaultAssignment/>
   }
   </#if>
 </#macro>
@@ -117,7 +117,7 @@ Performs a standard assignment.
 <#--
 Performs a default assignment with a default value.
 -->
-<#macro handeDefaultAssigment>
+<#macro handleDefaultAssignment>
     <@includeModel object=ext.defaultValueAssignment
                targetBeanName=ext.targetBeanName
                existingInstanceMapping=ext.existingInstanceMapping
@@ -134,11 +134,11 @@ Performs a default assignment with a default value.
 <#macro handleWrite><#if fieldAssignment> = <#nested><#else>( <#nested> )</#if></#macro>
 
 <#--
-  macro: handleWriteAccesing
+  macro: handleWriteAccessing
 
-  purpose: To handle accesing the write target type
+  purpose: To handle accessing the write target type
 -->
-<#macro handleWriteAccesing><#if fieldAssignment><#else>()</#if></#macro>
+<#macro handleWriteAccessing><#if fieldAssignment><#else>()</#if></#macro>
 <#--
   macro: initTargetObject
 
@@ -171,7 +171,7 @@ Performs a default assignment with a default value.
   macro: sourceLocalVarAssignment
 
   purpose: assignment for source local variables. The sourceLocalVarName replaces the sourceReference in the
-           assignmentcall.
+           assignment call.
 -->
 <#macro sourceLocalVarAssignment>
     <#if sourceLocalVarName??>

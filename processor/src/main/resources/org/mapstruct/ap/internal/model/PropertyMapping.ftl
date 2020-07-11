@@ -12,4 +12,5 @@
                targetReadAccessorName=targetReadAccessorName
                targetWriteAccessorName=targetWriteAccessorName
                targetType=targetType
-               defaultValueAssignment=defaultValueAssignment />
+               defaultValueAssignment=defaultValueAssignment
+               condition=condition/>

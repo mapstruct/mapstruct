@@ -84,7 +84,13 @@
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 if ( ${sourceParam.name} != null ) {
                     <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+                        <#if propertyMapping.condition??>
+                        if (${propertyMapping.condition}(${sourceParam.name})) {
+                        </#if>
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                    <#if propertyMapping.condition??>
+                    }
+                    </#if>
                     </#list>
                 }
             </#if>
@@ -92,14 +98,20 @@
         <#list sourcePrimitiveParameters as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+                     <#if propertyMapping.condition??>
+                     if (${propertyMapping.condition}(sourceParam.name)) {
+                     </#if>
                     <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                    <#if propertyMapping.condition??>
+                    }
+                    </#if>
                 </#list>
             </#if>
         </#list>
     <#else>
         <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
-            <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+            <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment condition=propertyMapping.condition/>
         </#list>
         <#if mapNullToDefault>}</#if>
     </#if>
