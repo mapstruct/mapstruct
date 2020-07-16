@@ -5,14 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Set;
+
 import javax.xml.bind.JAXBElement;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen
@@ -24,8 +25,9 @@ public class JaxbElemToValue extends BuiltInMethod {
     private final Set<Type> importTypes;
 
     public JaxbElemToValue(TypeFactory typeFactory) {
-        this.parameter = new Parameter( "element", typeFactory.getType( JAXBElement.class ) );
-        this.returnType = typeFactory.getType( Object.class );
+        Type type = typeFactory.getType(  JAXBElement.class  );
+        this.parameter = new Parameter( "element", type );
+        this.returnType = type.getTypeParameters().get( 0 );
         this.importTypes = asSet( parameter.getType() );
     }
 
