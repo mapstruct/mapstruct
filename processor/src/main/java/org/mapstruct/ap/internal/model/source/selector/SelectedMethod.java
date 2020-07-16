@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -38,5 +39,22 @@ public class SelectedMethod<T extends Method> {
     @Override
     public String toString() {
         return method.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+        SelectedMethod<?> that = (SelectedMethod<?>) o;
+        return method.equals( that.method );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( method );
     }
 }

@@ -294,7 +294,7 @@ public class SourceMethod implements Method {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && first( getSourceParameters() ).getType().isAssignableTo( method.getResultType() )
+            && getMappingSourceType().isAssignableTo( method.getResultType() )
             && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
@@ -326,7 +326,7 @@ public class SourceMethod implements Method {
     public boolean isIterableMapping() {
         if ( isIterableMapping == null ) {
             isIterableMapping = getSourceParameters().size() == 1
-                && first( getSourceParameters() ).getType().isIterableType()
+                && getMappingSourceType().isIterableType()
                 && getResultType().isIterableType();
         }
         return isIterableMapping;
@@ -335,9 +335,9 @@ public class SourceMethod implements Method {
     public boolean isStreamMapping() {
         if ( isStreamMapping == null ) {
             isStreamMapping = getSourceParameters().size() == 1
-                && ( first( getSourceParameters() ).getType().isIterableType() && getResultType().isStreamType()
-                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isIterableType()
-                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isStreamType() );
+                && ( getMappingSourceType().isIterableType() && getResultType().isStreamType()
+                    || getMappingSourceType().isStreamType() && getResultType().isIterableType()
+                    || getMappingSourceType().isStreamType() && getResultType().isStreamType() );
         }
         return isStreamMapping;
     }
@@ -345,7 +345,7 @@ public class SourceMethod implements Method {
     public boolean isMapMapping() {
         if ( isMapMapping == null ) {
             isMapMapping = getSourceParameters().size() == 1
-                && first( getSourceParameters() ).getType().isMapType()
+                && getMappingSourceType().isMapType()
                 && getResultType().isMapType();
         }
         return isMapMapping;

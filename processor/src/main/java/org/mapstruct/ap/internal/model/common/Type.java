@@ -483,6 +483,24 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * Whether this type is raw assignable to the given other type. We can't make a verdict on typevars,
+     * they need to be resolved first.
+     *
+     * @param other The other type.
+     *
+     * @return {@code true} if and only if this type is assignable to the given other type.
+     */
+    public boolean isRawAssignableTo(Type other) {
+        if ( isTypeVar() || other.isTypeVar() ) {
+            return true;
+        }
+        if ( equals( other ) ) {
+            return true;
+        }
+        return typeUtils.isAssignable( typeUtils.erasure( typeMirror ), typeUtils.erasure( other.typeMirror ) );
+    }
+
+    /**
      * getPropertyReadAccessors
      *
      * @return an unmodifiable map of all read accessors (including 'is' for booleans), indexed by property name

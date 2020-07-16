@@ -69,7 +69,7 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
 
             String name = xmlElementDecl.name().get();
-            TypeMirror scope = xmlElementDecl.scope().get();
+            TypeMirror scope = xmlElementDecl.scope().getValue();
 
             boolean nameIsSetAndMatches = name != null && name.equals( xmlElementRefInfo.nameValue() );
             boolean scopeIsSetAndMatches =

@@ -5,12 +5,23 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
+import static java.util.Collections.singletonList;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.firstKey;
+import static org.mapstruct.ap.internal.util.Collections.firstValue;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -42,7 +53,6 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
@@ -54,9 +64,6 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static java.util.Collections.singletonList;
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -77,6 +84,8 @@ public class MappingResolverImpl implements MappingResolver {
     private final Conversions conversions;
     private final BuiltInMappingMethods builtInMethods;
     private final MethodSelectors methodSelectors;
+
+    private static final String JL_OBJECT_NAME = Object.class.getName();
 
     /**
      * Private methods which are not present in the original mapper interface and are added to map certain property
@@ -113,7 +122,9 @@ public class MappingResolverImpl implements MappingResolver {
             sourceRHS,
             criteria,
             positionHint,
-            forger
+            forger,
+            builtInMethods.getBuiltInMethods(),
+            messager
         );
 
         return attempt.getTargetAssignment( sourceRHS.getSourceTypeForMatching(), targetType );
@@ -141,10 +152,11 @@ public class MappingResolverImpl implements MappingResolver {
         private final List<Method> methods;
         private final SelectionCriteria selectionCriteria;
         private final SourceRHS sourceRHS;
-        private final boolean savedPreferUpdateMapping;
         private final FormattingParameters formattingParameters;
         private final AnnotationMirror positionHint;
         private final Supplier<Assignment> forger;
+        private final List<BuiltInMethod> builtIns;
+        private final FormattingMessager messager;
 
         // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a supported method
@@ -155,7 +167,9 @@ public class MappingResolverImpl implements MappingResolver {
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
                                  AnnotationMirror positionHint,
-                                 Supplier<Assignment> forger) {
+                                 Supplier<Assignment> forger,
+                                 List<BuiltInMethod> builtIns,
+                                 FormattingMessager messager) {
 
             this.mappingMethod = mappingMethod;
             this.methods = filterPossibleCandidateMethods( sourceModel );
@@ -164,9 +178,10 @@ public class MappingResolverImpl implements MappingResolver {
             this.sourceRHS = sourceRHS;
             this.supportingMethodCandidates = new HashSet<>();
             this.selectionCriteria = criteria;
-            this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
             this.positionHint = positionHint;
             this.forger = forger;
+            this.builtIns = builtIns;
+            this.messager = messager;
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
@@ -182,14 +197,16 @@ public class MappingResolverImpl implements MappingResolver {
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
 
-            Assignment referencedMethod;
+            Assignment assignment;
 
             // first simple mapping method
             if ( allowMappingMethod() ) {
-                referencedMethod = resolveViaMethod( sourceType, targetType, false );
-                if ( referencedMethod != null ) {
-                    referencedMethod.setAssignment( sourceRHS );
-                    return referencedMethod;
+                List<SelectedMethod<Method>> matches = getBestMatch( methods, sourceType, targetType );
+                reportErrorWhenAmbigious( matches, targetType );
+                if ( !matches.isEmpty() ) {
+                    assignment = toMethodRef( first( matches ) );
+                    assignment.setAssignment( sourceRHS );
+                    return assignment;
                 }
             }
 
@@ -228,38 +245,40 @@ public class MappingResolverImpl implements MappingResolver {
 
                 // check for a built-in method
                 if ( !hasQualfiers() ) {
-                    Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
-                    if ( builtInMethod != null ) {
-                        builtInMethod.setAssignment( sourceRHS );
+                    List<SelectedMethod<BuiltInMethod>> matches = getBestMatch( builtIns, sourceType, targetType );
+                    reportErrorWhenAmbigious( matches, targetType );
+                    if ( !matches.isEmpty() ) {
+                        assignment = toBuildInRef( first( matches ) );
+                        assignment.setAssignment( sourceRHS );
                         usedSupportedMappings.addAll( supportingMethodCandidates );
-                        return builtInMethod;
+                        return assignment;
                     }
                 }
             }
 
             if ( allow2Steps() ) {
                 // 2 step method, first: method(method(source))
-                referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
-                if ( referencedMethod != null ) {
+                assignment = MethodMethod.getBestMatch( this, sourceType, targetType );
+                if ( assignment != null ) {
                     usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return referencedMethod;
+                    return assignment;
                 }
 
                 // 2 step method, then: method(conversion(source))
-                referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
-                if ( referencedMethod != null ) {
+                assignment = ConversionMethod.getBestMatch( this, sourceType, targetType );
+                if ( assignment != null ) {
                     usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return referencedMethod;
+                    return assignment;
                 }
 
                 // stop here when looking for update methods.
                 selectionCriteria.setPreferUpdateMapping( false );
 
                 // 2 step method, finally: conversion(method(source))
-                ConversionAssignment conversion = resolveViaMethodAndConversion( sourceType, targetType );
-                if ( conversion != null ) {
+                assignment = MethodConversion.getBestMatch( this, sourceType, targetType );
+                if ( assignment != null ) {
                     usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return conversion.getAssignment();
+                    return assignment;
                 }
             }
 
@@ -395,232 +414,6 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        /**
-         * Returns a reference to a method mapping the given source type to the given target type, if such a method
-         * exists.
-         */
-        private Assignment resolveViaMethod(Type sourceType, Type targetType, boolean considerBuiltInMethods) {
-
-            // first try to find a matching source method
-            SelectedMethod<Method> matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
-
-            if ( matchingSourceMethod != null ) {
-                return getMappingMethodReference( matchingSourceMethod );
-            }
-
-            if ( considerBuiltInMethods ) {
-                return resolveViaBuiltInMethod( sourceType, targetType );
-            }
-
-            return null;
-        }
-
-        /**
-         * Applies matching to given method only
-         *
-         * @param sourceType the source type
-         * @param targetType the target type
-         * @param method     the method to match
-         * @return an assignment if a match, given the criteria could be found. When the method is a
-         * buildIn method, all the bookkeeping is applied.
-         */
-        private Assignment applyMatching(Type sourceType, Type targetType, Method method) {
-
-            if ( method instanceof SourceMethod ) {
-                SelectedMethod<Method> selectedMethod =
-                    getBestMatch( java.util.Collections.singletonList( method ), sourceType, targetType );
-                return selectedMethod != null ? getMappingMethodReference( selectedMethod ) : null;
-            }
-            else if ( method instanceof BuiltInMethod ) {
-                return resolveViaBuiltInMethod( sourceType, targetType );
-            }
-            return null;
-        }
-
-        private Assignment resolveViaBuiltInMethod(Type sourceType, Type targetType) {
-            SelectedMethod<BuiltInMethod> matchingBuiltInMethod =
-                getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
-
-            if ( matchingBuiltInMethod != null ) {
-                return createFromBuiltInMethod( matchingBuiltInMethod.getMethod() );
-            }
-
-            return null;
-        }
-
-        private Assignment createFromBuiltInMethod(BuiltInMethod method) {
-            Set<Field> allUsedFields = new HashSet<>( mapperReferences );
-            SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
-            SupportingMappingMethod supportingMappingMethod = new SupportingMappingMethod( method, allUsedFields );
-            supportingMethodCandidates.add( supportingMappingMethod );
-            ConversionContext ctx = new DefaultConversionContext(
-                typeFactory,
-                messager,
-                method.getSourceParameters().get( 0 ).getType(),
-                method.getResultType(),
-                formattingParameters
-            );
-            Assignment methodReference = MethodReference.forBuiltInMethod( method, ctx );
-            methodReference.setAssignment( sourceRHS );
-            return methodReference;
-        }
-
-        /**
-         * Suppose mapping required from A to C and:
-         * <ul>
-         * <li>no direct referenced mapping method either built-in or referenced is available from A to C</li>
-         * <li>no conversion is available</li>
-         * <li>there is a method from A to B, methodX</li>
-         * <li>there is a method from B to C, methodY</li>
-         * </ul>
-         * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
-         */
-        private Assignment resolveViaMethodAndMethod(Type sourceType, Type targetType) {
-
-            List<Method> methodYCandidates = new ArrayList<>( methods );
-            methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
-
-            Assignment methodRefY = null;
-
-            // Iterate over all source methods. Check if the return type matches with the parameter that we need.
-            // so assume we need a method from A to C we look for a methodX from A to B (all methods in the
-            // list form such a candidate).
-            // For each of the candidates, we need to look if there's a methodY, either
-            // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
-            // a nested method call can be called. so C = methodY( methodX (A) )
-            for ( Method methodYCandidate : methodYCandidates ) {
-                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
-                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
-                    //  java.lang.Object as intermediate result
-                    continue;
-                }
-
-                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
-
-                if ( ySourceType != null ) {
-                    methodRefY = applyMatching( ySourceType, targetType, methodYCandidate );
-                    if ( methodRefY != null ) {
-
-                        selectionCriteria.setPreferUpdateMapping( false );
-                        Assignment methodRefX = resolveViaMethod( sourceType, ySourceType, true );
-                        selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
-                        if ( methodRefX != null ) {
-                            methodRefY.setAssignment( methodRefX );
-                            methodRefX.setAssignment( sourceRHS );
-                            break;
-                        }
-                        else {
-                            // both should match;
-                            supportingMethodCandidates.clear();
-                            methodRefY = null;
-                        }
-                    }
-                }
-            }
-            return methodRefY;
-        }
-
-        /**
-         * Suppose mapping required from A to C and:
-         * <ul>
-         * <li>there is a conversion from A to B, conversionX</li>
-         * <li>there is a method from B to C, methodY</li>
-         * </ul>
-         * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
-         *
-         * Instead of directly using a built in method candidate, all the return types as 'B' of all available built-in
-         * methods are used to resolve a mapping (assignment) from result type to 'B'. If  a match is found, an attempt
-         * is done to find a matching type conversion.
-         */
-        private Assignment resolveViaConversionAndMethod(Type sourceType, Type targetType) {
-
-            List<Method> methodYCandidates = new ArrayList<>( methods );
-            methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
-
-            Assignment methodRefY = null;
-
-            for ( Method methodYCandidate : methodYCandidates ) {
-                Type ySourceType = methodYCandidate.getSourceParameters().get( 0 ).getType();
-                if ( Object.class.getName().equals( ySourceType.getName() ) ) {
-                    //  java.lang.Object as intermediate result
-                    continue;
-                }
-
-                ySourceType = ySourceType.resolveTypeVarToType( targetType, methodYCandidate.getResultType() );
-
-                if ( ySourceType != null ) {
-                    methodRefY = applyMatching( ySourceType, targetType, methodYCandidate );
-                    if ( methodRefY != null ) {
-                        ConversionAssignment conversionXRef = resolveViaConversion( sourceType, ySourceType );
-                        if ( conversionXRef != null ) {
-                            methodRefY.setAssignment( conversionXRef.getAssignment() );
-                            conversionXRef.getAssignment().setAssignment( sourceRHS );
-                            conversionXRef.reportMessageWhenNarrowing( messager, this );
-                            break;
-                        }
-                        else {
-                            // both should match
-                            supportingMethodCandidates.clear();
-                            methodRefY = null;
-                        }
-                    }
-                }
-            }
-            return methodRefY;
-        }
-
-        /**
-         * Suppose mapping required from A to C and:
-         * <ul>
-         * <li>there is a method from A to B, methodX</li>
-         * <li>there is a conversion from B to C, conversionY</li>
-         * </ul>
-         * then this method tries to resolve this combination and make a mapping conversionY( methodX ( parameter ) )
-         *
-         * Instead of directly using a built in method candidate, all the return types as 'B' of all available built-in
-         * methods are used to resolve a mapping (assignment) from source type to 'B'. If a match is found, an attempt
-         * is done to find a matching type conversion.
-         */
-        private ConversionAssignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
-
-            List<Method> methodXCandidates = new ArrayList<>( methods );
-            methodXCandidates.addAll( builtInMethods.getBuiltInMethods() );
-
-            ConversionAssignment conversionYRef = null;
-
-            // search the other way around
-            for ( Method methodXCandidate : methodXCandidates ) {
-                Type xTargetType = methodXCandidate.getReturnType();
-                if ( methodXCandidate.isUpdateMethod() ||
-                    Object.class.getName().equals( xTargetType.getFullyQualifiedName() ) ) {
-                    // skip update methods || java.lang.Object as intermediate result
-                    continue;
-                }
-
-                xTargetType =
-                    xTargetType.resolveTypeVarToType( sourceType, methodXCandidate.getParameters().get( 0 ).getType() );
-
-                if ( xTargetType != null ) {
-                    Assignment methodRefX = applyMatching( sourceType, xTargetType, methodXCandidate );
-                    if ( methodRefX != null ) {
-                        conversionYRef = resolveViaConversion( xTargetType, targetType );
-                        if ( conversionYRef != null ) {
-                            conversionYRef.getAssignment().setAssignment( methodRefX );
-                            methodRefX.setAssignment( sourceRHS );
-                            conversionYRef.reportMessageWhenNarrowing( messager, this );
-                            break;
-                        }
-                        else {
-                            // both should match;
-                            supportingMethodCandidates.clear();
-                            conversionYRef = null;
-                        }
-                    }
-                }
-            }
-            return conversionYRef;
-        }
-
         private boolean isCandidateForMapping(Method methodCandidate) {
             return isCreateMethodForMapping( methodCandidate ) || isUpdateMethodForMapping( methodCandidate );
         }
@@ -640,15 +433,17 @@ public class MappingResolverImpl implements MappingResolver {
                 && !methodCandidate.isLifecycleCallbackMethod();
         }
 
-        private <T extends Method> SelectedMethod<T> getBestMatch(List<T> methods, Type sourceType, Type returnType) {
-
-            List<SelectedMethod<T>> candidates = methodSelectors.getMatchingMethods(
+        private <T extends Method> List<SelectedMethod<T>> getBestMatch(List<T> methods, Type source, Type target) {
+            return methodSelectors.getMatchingMethods(
                 mappingMethod,
                 methods,
-                singletonList( sourceType ),
-                returnType,
+                singletonList( source ),
+                target,
                 selectionCriteria
             );
+        }
+
+        private <T extends Method> void reportErrorWhenAmbigious(List<SelectedMethod<T>> candidates, Type target) {
 
             // raise an error if more than one mapping method is suitable to map the given source type
             // into the target type
@@ -660,7 +455,7 @@ public class MappingResolverImpl implements MappingResolver {
                         positionHint,
                         Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
                         sourceRHS.getSourceErrorMessagePart(),
-                        returnType,
+                        target,
                         Strings.join( candidates, ", " )
                     );
                 }
@@ -669,27 +464,39 @@ public class MappingResolverImpl implements MappingResolver {
                         mappingMethod.getExecutable(),
                         positionHint,
                         Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                        returnType,
+                        target,
                         Strings.join( candidates, ", " )
                     );
                 }
             }
-
-            if ( !candidates.isEmpty() ) {
-                return first( candidates );
-            }
-
-            return null;
         }
 
-        private Assignment getMappingMethodReference(SelectedMethod<Method> method) {
-            MapperReference mapperReference = findMapperReference( method.getMethod() );
+        private Assignment toMethodRef(SelectedMethod<Method> selectedMethod) {
+            MapperReference mapperReference = findMapperReference( selectedMethod.getMethod() );
 
             return MethodReference.forMapperReference(
-                method.getMethod(),
+                selectedMethod.getMethod(),
                 mapperReference,
-                method.getParameterBindings()
+                selectedMethod.getParameterBindings()
             );
+        }
+
+        private Assignment toBuildInRef(SelectedMethod<BuiltInMethod> selectedMethod) {
+            BuiltInMethod method = selectedMethod.getMethod();
+            Set<Field> allUsedFields = new HashSet<>( mapperReferences );
+            SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+            SupportingMappingMethod supportingMappingMethod = new SupportingMappingMethod( method, allUsedFields );
+            supportingMethodCandidates.add( supportingMappingMethod );
+            ConversionContext ctx = new DefaultConversionContext(
+                typeFactory,
+                messager,
+                method.getMappingSourceType(),
+                method.getResultType(),
+                formattingParameters
+            );
+            Assignment methodReference = MethodReference.forBuiltInMethod( method, ctx );
+            methodReference.setAssignment( sourceRHS );
+            return methodReference;
         }
 
         /**
@@ -770,6 +577,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             return false;
         }
+
     }
 
     private static class ConversionAssignment {
@@ -813,5 +621,408 @@ public class MappingResolverImpl implements MappingResolver {
             );
         }
 
+        String shortName() {
+            return sourceType.getName() + "-->" + targetType.getName();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            ConversionAssignment that = (ConversionAssignment) o;
+            return sourceType.equals( that.sourceType ) && targetType.equals( that.targetType );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash( sourceType, targetType );
+        }
     }
+
+    /**
+     * Suppose mapping required from A to C and:
+     * <ul>
+     * <li>no direct referenced mapping method either built-in or referenced is available from A to C</li>
+     * <li>no conversion is available</li>
+     * <li>there is a method from A to B, methodX</li>
+     * <li>there is a method from B to C, methodY</li>
+     * </ul>
+     * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
+     *
+     * NOTE method X cannot be an update method
+     */
+    private static class MethodMethod<T1 extends Method, T2 extends Method> {
+
+        private final ResolvingAttempt attempt;
+        private final List<T1> xMethods;
+        private final List<T2> yMethods;
+        private final Function<SelectedMethod<T1>, Assignment> xCreate;
+        private final Function<SelectedMethod<T2>, Assignment> yCreate;
+
+        // results
+        private boolean hasResult = false;
+        private Assignment result = null;
+
+        static Assignment getBestMatch(ResolvingAttempt att, Type sourceType, Type targetType) {
+            MethodMethod<Method, Method> mmAttempt =
+                new MethodMethod<>( att, att.methods, att.methods, att::toMethodRef, att::toMethodRef )
+                    .getBestMatch( sourceType, targetType );
+            if ( mmAttempt.hasResult ) {
+                return mmAttempt.result;
+            }
+            MethodMethod<Method, BuiltInMethod> mbAttempt =
+                new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
+                    .getBestMatch( sourceType, targetType );
+            if ( mbAttempt.hasResult ) {
+                return mbAttempt.result;
+            }
+            MethodMethod<BuiltInMethod, Method> bmAttempt =
+                new MethodMethod<>( att, att.builtIns, att.methods, att::toBuildInRef, att::toMethodRef )
+                    .getBestMatch( sourceType, targetType );
+            if ( bmAttempt.hasResult ) {
+                return bmAttempt.result;
+            }
+            MethodMethod<BuiltInMethod, BuiltInMethod> bbAttempt =
+                new MethodMethod<>( att, att.builtIns, att.builtIns, att::toBuildInRef, att::toBuildInRef )
+                    .getBestMatch( sourceType, targetType );
+            return bbAttempt.result;
+        }
+
+        MethodMethod(ResolvingAttempt attempt, List<T1> xMethods, List<T2> yMethods,
+                            Function<SelectedMethod<T1>, Assignment> xCreate,
+                            Function<SelectedMethod<T2>, Assignment> yCreate) {
+            this.attempt = attempt;
+            this.xMethods = xMethods;
+            this.yMethods = yMethods;
+            this.xCreate = xCreate;
+            this.yCreate = yCreate;
+        }
+
+        private MethodMethod<T1, T2> getBestMatch(Type sourceType, Type targetType) {
+
+            Set<T2> yCandidates = new HashSet<>();
+            Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates = new LinkedHashMap<>();
+            Map<SelectedMethod<T1>, Type> typesInTheMiddle = new LinkedHashMap<>();
+
+            // Iterate over all source methods. Check if the return type matches with the parameter that we need.
+            // so assume we need a method from A to C we look for a methodX from A to B (all methods in the
+            // list form such a candidate).
+            // For each of the candidates, we need to look if there's a methodY, either
+            // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
+            // a nested method call can be called. so C = methodY( methodX (A) )
+            attempt.selectionCriteria.setPreferUpdateMapping( false );
+            for ( T2 yCandidate : yMethods ) {
+                Type ySourceType = yCandidate.getMappingSourceType();
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, yCandidate.getResultType() );
+                Type yTargetType = yCandidate.getResultType();
+                if ( ySourceType == null
+                    || !yTargetType.isRawAssignableTo( targetType )
+                    || JL_OBJECT_NAME.equals( ySourceType.getFullyQualifiedName() ) ) {
+                    //  java.lang.Object as intermediate result
+                    continue;
+                }
+                List<SelectedMethod<T1>> xMatches = attempt.getBestMatch( xMethods, sourceType, ySourceType );
+                if ( !xMatches.isEmpty() ) {
+                    xMatches.stream().forEach( x -> xCandidates.put( x, new ArrayList<>() ) );
+                    final Type typeInTheMiddle = ySourceType;
+                    xMatches.stream().forEach( x -> typesInTheMiddle.put( x, typeInTheMiddle ) );
+                    yCandidates.add( yCandidate );
+                }
+            }
+            attempt.selectionCriteria.setPreferUpdateMapping( true );
+
+            // collect all results
+            List<T2> yCandidatesList = new ArrayList<>( yCandidates );
+            Iterator<Map.Entry<SelectedMethod<T1>, List<SelectedMethod<T2>>>> i = xCandidates.entrySet().iterator();
+            while ( i.hasNext() ) {
+                Map.Entry<SelectedMethod<T1>, List<SelectedMethod<T2>>> entry = i.next();
+                Type typeInTheMiddle = typesInTheMiddle.get( entry.getKey() );
+                entry.getValue().addAll( attempt.getBestMatch( yCandidatesList, typeInTheMiddle, targetType ) );
+                if ( entry.getValue().isEmpty() ) {
+                    i.remove();
+                }
+            }
+
+            // no results left
+            if ( xCandidates.isEmpty() ) {
+                return this;
+            }
+            hasResult = true;
+
+            // get result, there should be one entry left with only one value
+            if ( xCandidates.size() == 1 && firstValue( xCandidates ).size() == 1 ) {
+                Assignment methodRefY = yCreate.apply( first( firstValue( xCandidates ) ) );
+                Assignment methodRefX = xCreate.apply( firstKey( xCandidates ) );
+                methodRefY.setAssignment( methodRefX );
+                methodRefX.setAssignment( attempt.sourceRHS );
+                result = methodRefY;
+            }
+            else  {
+                reportAmbigiousError( xCandidates, targetType );
+            }
+            return this;
+
+        }
+
+        void reportAmbigiousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {
+            StringBuilder result = new StringBuilder();
+            xCandidates.entrySet()
+                       .stream()
+                       .forEach( e -> result.append( "method(s)Y: " )
+                                            .append( e.getValue()
+                                                      .stream()
+                                                      .map( v -> v.getMethod().shortName() )
+                                                      .collect( Collectors.joining( ", " ) ) )
+                                            .append( ", methodX: " )
+                                            .append( e.getKey().getMethod().shortName() )
+                                            .append( "; " ) );
+            attempt.messager.printMessage(
+                attempt.mappingMethod.getExecutable(),
+                attempt.positionHint,
+                Message.GENERAL_AMBIGIOUS_MAPPING_METHODY_METHODX,
+                attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
+                target.getName(),
+                result.toString() );
+        }
+    }
+
+    /**
+     * Suppose mapping required from A to C and:
+     * <ul>
+     * <li>there is a conversion from A to B, conversionX</li>
+     * <li>there is a method from B to C, methodY</li>
+     * </ul>
+     * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+     *
+     * Instead of directly using a built in method candidate, all the return types as 'B' of all available built-in
+     * methods are used to resolve a mapping (assignment) from result type to 'B'. If  a match is found, an attempt
+     * is done to find a matching type conversion.
+     */
+    private static class ConversionMethod<T extends Method> {
+
+        private final ResolvingAttempt attempt;
+        private final List<T> methods;
+        private final Function<SelectedMethod<T>, Assignment> create;
+
+        // results
+        private boolean hasResult = false;
+        private Assignment result = null;
+
+        static Assignment getBestMatch(ResolvingAttempt att, Type sourceType, Type targetType) {
+            ConversionMethod<Method> mAttempt = new ConversionMethod<>( att, att.methods, att::toMethodRef )
+                    .getBestMatch( sourceType, targetType );
+            if ( mAttempt.hasResult ) {
+                return mAttempt.result;
+            }
+            ConversionMethod<BuiltInMethod> bAttempt =
+                new ConversionMethod<>( att, att.builtIns, att::toBuildInRef )
+                    .getBestMatch( sourceType, targetType );
+            return bAttempt.result;
+        }
+
+        ConversionMethod(ResolvingAttempt attempt, List<T> methods, Function<SelectedMethod<T>, Assignment> create) {
+            this.attempt = attempt;
+            this.methods = methods;
+            this.create = create;
+        }
+
+        private ConversionMethod<T> getBestMatch(Type sourceType, Type targetType) {
+
+            List<T> yCandidates = new ArrayList<>();
+            Map<ConversionAssignment, List<SelectedMethod<T>>> xRefCandidates = new LinkedHashMap<>();
+
+            for ( T yCandidate : methods ) {
+                Type ySourceType = yCandidate.getMappingSourceType();
+                ySourceType = ySourceType.resolveTypeVarToType( targetType, yCandidate.getResultType() );
+                Type yTargetType = yCandidate.getResultType();
+                if ( ySourceType == null
+                    || !yTargetType.isRawAssignableTo( targetType )
+                    || JL_OBJECT_NAME.equals( ySourceType.getFullyQualifiedName() ) ) {
+                    //  java.lang.Object as intermediate result
+                    continue;
+                }
+                ConversionAssignment xRefCandidate = attempt.resolveViaConversion( sourceType, ySourceType );
+                if ( xRefCandidate != null ) {
+                    xRefCandidates.put( xRefCandidate, new ArrayList<>() );
+                    yCandidates.add( yCandidate );
+                }
+            }
+
+            // collect all results
+            Iterator<Map.Entry<ConversionAssignment, List<SelectedMethod<T>>>> i = xRefCandidates.entrySet().iterator();
+            while ( i.hasNext() ) {
+                Map.Entry<ConversionAssignment, List<SelectedMethod<T>>> entry = i.next();
+                entry.getValue().addAll( attempt.getBestMatch( yCandidates, entry.getKey().targetType, targetType ) );
+                if ( entry.getValue().isEmpty() ) {
+                    i.remove();
+                }
+            }
+
+            // no results left
+            if ( xRefCandidates.isEmpty() ) {
+                return this;
+            }
+            hasResult = true;
+
+            // get result, there should be one entry left with only one value
+            if ( xRefCandidates.size() == 1 && firstValue( xRefCandidates ).size() == 1 ) {
+                Assignment methodRefY = create.apply( first( firstValue( xRefCandidates ) ) );
+                ConversionAssignment conversionRefX = firstKey( xRefCandidates );
+                conversionRefX.reportMessageWhenNarrowing( attempt.messager, attempt );
+                methodRefY.setAssignment( conversionRefX.assignment );
+                conversionRefX.assignment.setAssignment( attempt.sourceRHS );
+                result = methodRefY;
+            }
+            else  {
+                reportAmbigiousError( xRefCandidates, targetType );
+            }
+            return this;
+
+        }
+
+        void reportAmbigiousError(Map<ConversionAssignment, List<SelectedMethod<T>>> xRefCandidates, Type target) {
+            StringBuilder result = new StringBuilder();
+            xRefCandidates.entrySet()
+                          .stream()
+                          .forEach( e -> result.append( "method(s)Y: " )
+                                               .append( e.getValue()
+                                                         .stream()
+                                                         .map( v -> v.getMethod().shortName() )
+                                                         .collect( Collectors.joining( ", " ) ) )
+                                               .append( ", conversionX: " )
+                                               .append( e.getKey().shortName() )
+                                               .append( "; " ) );
+            attempt.messager.printMessage(
+                attempt.mappingMethod.getExecutable(),
+                attempt.positionHint,
+                Message.GENERAL_AMBIGIOUS_MAPPING_METHODY_CONVERSIONX,
+                attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
+                target.getName(),
+                result.toString() );
+        }
+    }
+
+    /**
+     * Suppose mapping required from A to C and:
+     * <ul>
+     * <li>there is a method from A to B, methodX</li>
+     * <li>there is a conversion from B to C, conversionY</li>
+     * </ul>
+     * then this method tries to resolve this combination and make a mapping conversionY( methodX ( parameter ) )
+     *
+     * Instead of directly using a built in method candidate, all the return types as 'B' of all available built-in
+     * methods are used to resolve a mapping (assignment) from source type to 'B'. If a match is found, an attempt
+     * is done to find a matching type conversion.
+     *
+     * NOTE methodX cannot be an update method
+     */
+    private static class MethodConversion<T extends Method> {
+
+        private final ResolvingAttempt attempt;
+        private final List<T> methods;
+        private final Function<SelectedMethod<T>, Assignment> create;
+
+        // results
+        private boolean hasResult = false;
+        private Assignment result = null;
+
+        static Assignment getBestMatch(ResolvingAttempt att, Type sourceType, Type targetType) {
+            MethodConversion<Method> mAttempt = new MethodConversion<>( att, att.methods, att::toMethodRef )
+                    .getBestMatch( sourceType, targetType );
+            if ( mAttempt.hasResult ) {
+                return mAttempt.result;
+            }
+            MethodConversion<BuiltInMethod> bAttempt = new MethodConversion<>( att, att.builtIns, att::toBuildInRef )
+                    .getBestMatch( sourceType, targetType );
+            return bAttempt.result;
+        }
+
+        MethodConversion(ResolvingAttempt attempt, List<T> methods, Function<SelectedMethod<T>, Assignment> create) {
+            this.attempt = attempt;
+            this.methods = methods;
+            this.create = create;
+        }
+
+        private MethodConversion<T> getBestMatch(Type sourceType, Type targetType) {
+
+            List<T> xCandidates = new ArrayList<>();
+            Map<ConversionAssignment, List<SelectedMethod<T>>> yRefCandidates = new LinkedHashMap<>();
+
+            // search through methods, and select egible candidates
+            for ( T xCandidate : methods ) {
+                Type xTargetType = xCandidate.getReturnType();
+                Type xSourceType = xCandidate.getMappingSourceType();
+                xTargetType = xTargetType.resolveTypeVarToType( sourceType, xSourceType );
+                if ( xTargetType == null
+                    || xCandidate.isUpdateMethod()
+                    || !sourceType.isRawAssignableTo( xSourceType )
+                    || JL_OBJECT_NAME.equals( xTargetType.getFullyQualifiedName() ) ) {
+                    // skip update methods || java.lang.Object as intermediate result
+                    continue;
+                }
+                ConversionAssignment yRefCandidate = attempt.resolveViaConversion( xTargetType, targetType );
+                if ( yRefCandidate != null ) {
+                    yRefCandidates.put( yRefCandidate, new ArrayList<>() );
+                    xCandidates.add( xCandidate );
+                }
+            }
+
+            // collect all results
+            Iterator<Map.Entry<ConversionAssignment, List<SelectedMethod<T>>>> i = yRefCandidates.entrySet().iterator();
+            while ( i.hasNext() ) {
+                Map.Entry<ConversionAssignment, List<SelectedMethod<T>>> entry = i.next();
+                entry.getValue().addAll( attempt.getBestMatch( xCandidates, sourceType, entry.getKey().sourceType ) );
+                if ( entry.getValue().isEmpty() ) {
+                    i.remove();
+                }
+            }
+
+            // no results left
+            if ( yRefCandidates.isEmpty() ) {
+                return this;
+            }
+            hasResult = true;
+
+            // get result, there should be one entry left with only one value
+            if ( yRefCandidates.size() == 1 && firstValue( yRefCandidates ).size() == 1 ) {
+                Assignment methodRefX = create.apply( first( firstValue( yRefCandidates ) ) );
+                ConversionAssignment conversionRefY = firstKey( yRefCandidates );
+                conversionRefY.reportMessageWhenNarrowing( attempt.messager, attempt );
+                methodRefX.setAssignment( attempt.sourceRHS );
+                conversionRefY.assignment.setAssignment( methodRefX );
+                result = conversionRefY.assignment;
+            }
+            else  {
+                reportAmbigiousError( yRefCandidates, targetType );
+            }
+            return this;
+
+        }
+
+        void reportAmbigiousError(Map<ConversionAssignment, List<SelectedMethod<T>>> yRefCandidates, Type target) {
+            StringBuilder result = new StringBuilder();
+            yRefCandidates.entrySet()
+                          .stream()
+                          .forEach( e -> result.append( "conversionY: " )
+                                               .append( e.getKey().shortName() )
+                                               .append( ", method(s)X: " )
+                                               .append( e.getValue()
+                                                         .stream()
+                                                         .map( v -> v.getMethod().shortName() )
+                                                         .collect( Collectors.joining( ", " ) ) )
+                                               .append( "; " ) );
+            attempt.messager.printMessage(
+                attempt.mappingMethod.getExecutable(),
+                attempt.positionHint,
+                Message.GENERAL_AMBIGIOUS_MAPPING_CONVERSIONY_METHODX,
+                attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
+                target.getName(),
+                result.toString() );
+        }
+    }
+
 }
