@@ -73,6 +73,8 @@ public class Strings {
         "while"
     );
 
+    private static final char UNDERSCORE = '_';
+
     private Strings() {
     }
 
@@ -166,7 +168,22 @@ public class Strings {
      * @return the identifier without any characters that are not allowed as part of a Java identifier.
      */
     public static String sanitizeIdentifierName(String identifier) {
-        return identifier.replace( "[]", "Array" );
+        if ( identifier != null && identifier.length() > 0 ) {
+
+            int firstNonUnderScoreIndex = 0;
+            while ( firstNonUnderScoreIndex < identifier.length() &&
+                identifier.charAt( firstNonUnderScoreIndex ) == UNDERSCORE ) {
+                firstNonUnderScoreIndex++;
+            }
+
+            if ( firstNonUnderScoreIndex < identifier.length()) {
+                // If it is not consisted of only underscores
+                return identifier.substring( firstNonUnderScoreIndex ).replace( "[]", "Array" );
+            }
+
+            return identifier.replace( "[]", "Array" );
+        }
+        return identifier;
     }
 
     /**

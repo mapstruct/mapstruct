@@ -125,8 +125,7 @@ public class ForgedMethod implements Method {
                          boolean forgedNameBased) {
 
         // establish name
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
-        String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
+        String sourceParamSafeName = Strings.getSafeVariableName( sourceType.getName() );
 
         // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );

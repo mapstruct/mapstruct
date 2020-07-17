@@ -83,6 +83,8 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "Case" ) ).isEqualTo( "case1" );
         assertThat( Strings.getSafeVariableName( "Synchronized" ) ).isEqualTo( "synchronized1" );
         assertThat( Strings.getSafeVariableName( "prop", "prop", "prop_" ) ).isEqualTo( "prop1" );
+        assertThat( Strings.getSafeVariableName( "_Test" ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "__Test" ) ).isEqualTo( "test" );
     }
 
     @Test
@@ -98,12 +100,20 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "prop", Arrays.asList( "prop", "prop1" ) ) ).isEqualTo( "prop2" );
         assertThat( Strings.getSafeVariableName( "prop.font", Arrays.asList( "propFont", "propFont_" ) ) )
             .isEqualTo( "propFont1" );
+        assertThat( Strings.getSafeVariableName( "_Test", new ArrayList<>() ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "__Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
+        assertThat( Strings.getSafeVariableName( "___", new ArrayList<>() ) ).isEqualTo( "___" );
     }
 
     @Test
     public void testSanitizeIdentifierName() {
         assertThat( Strings.sanitizeIdentifierName( "test" ) ).isEqualTo( "test" );
         assertThat( Strings.sanitizeIdentifierName( "int[]" ) ).isEqualTo( "intArray" );
+        assertThat( Strings.sanitizeIdentifierName( "_Test" ) ).isEqualTo( "Test" );
+        assertThat( Strings.sanitizeIdentifierName( "_int[]" ) ).isEqualTo( "intArray" );
+        assertThat( Strings.sanitizeIdentifierName( "__int[]" ) ).isEqualTo( "intArray" );
+        assertThat( Strings.sanitizeIdentifierName( "test_" ) ).isEqualTo( "test_" );
+        assertThat( Strings.sanitizeIdentifierName( "___" ) ).isEqualTo( "___" );
     }
 
     @Test
