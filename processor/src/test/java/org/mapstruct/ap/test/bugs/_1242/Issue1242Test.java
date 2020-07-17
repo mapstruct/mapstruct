@@ -65,7 +65,8 @@ public class Issue1242Test {
                     ".lang.Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
                     ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB(@TargetType java.lang" +
                     ".Class<org.mapstruct.ap.test.bugs._1242.TargetB> clazz), org.mapstruct.ap.test.bugs._1242" +
-                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB().")
+                    ".TargetB org.mapstruct.ap.test.bugs._1242.TargetFactories.createTargetB()." +
+                    " See https://mapstruct.org/faq/#ambiguous for more info." )
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {
     }

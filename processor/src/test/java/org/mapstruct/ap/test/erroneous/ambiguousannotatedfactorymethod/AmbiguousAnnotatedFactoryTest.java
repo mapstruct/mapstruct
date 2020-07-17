@@ -36,7 +36,8 @@ public class AmbiguousAnnotatedFactoryTest {
                     ".ambiguousannotatedfactorymethod.Foo foo), org.mapstruct.ap.test.erroneous" +
                     ".ambiguousannotatedfactorymethod.Bar org.mapstruct.ap.test.erroneous" +
                     ".ambiguousannotatedfactorymethod.AmbiguousBarFactory.createBar(org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Foo foo).")
+                    ".ambiguousannotatedfactorymethod.Foo foo)." +
+                    " See https://mapstruct.org/faq/#ambiguous for more info.")
 
         }
     )

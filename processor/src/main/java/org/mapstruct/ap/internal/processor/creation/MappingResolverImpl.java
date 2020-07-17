@@ -39,6 +39,7 @@ import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Field;
+import org.mapstruct.ap.internal.model.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
@@ -109,7 +110,7 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public Assignment getTargetAssignment(Method mappingMethod, Type targetType,
+    public Assignment getTargetAssignment(Method mappingMethod, ForgedMethodHistory description, Type targetType,
                                           FormattingParameters formattingParameters,
                                           SelectionCriteria criteria, SourceRHS sourceRHS,
                                           AnnotationMirror positionHint,
@@ -118,6 +119,7 @@ public class MappingResolverImpl implements MappingResolver {
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
             mappingMethod,
+            description,
             formattingParameters,
             sourceRHS,
             criteria,
@@ -149,6 +151,7 @@ public class MappingResolverImpl implements MappingResolver {
     private class ResolvingAttempt {
 
         private final Method mappingMethod;
+        private final ForgedMethodHistory description;
         private final List<Method> methods;
         private final SelectionCriteria selectionCriteria;
         private final SourceRHS sourceRHS;
@@ -163,7 +166,7 @@ public class MappingResolverImpl implements MappingResolver {
         // so this set must be cleared.
         private final Set<SupportingMappingMethod> supportingMethodCandidates;
 
-        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod,
+        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, ForgedMethodHistory description,
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
                                  AnnotationMirror positionHint,
@@ -172,6 +175,7 @@ public class MappingResolverImpl implements MappingResolver {
                                  FormattingMessager messager) {
 
             this.mappingMethod = mappingMethod;
+            this.description = description;
             this.methods = filterPossibleCandidateMethods( sourceModel );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
@@ -449,23 +453,32 @@ public class MappingResolverImpl implements MappingResolver {
             // into the target type
             if ( candidates.size() > 1 ) {
 
+                String candidateStr = candidates.stream()
+                                                .limit( 5 )
+                                                .map( m -> m.getMethod().shortName() )
+                                                .collect( Collectors.joining( ", " ) );
+
+                String descriptionStr = description != null ?
+                    description.createSourcePropertyErrorMessage() :
+                    sourceRHS.getSourceErrorMessagePart();
+
                 if ( sourceRHS.getSourceErrorMessagePart() != null ) {
                     messager.printMessage(
                         mappingMethod.getExecutable(),
                         positionHint,
-                        Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
-                        sourceRHS.getSourceErrorMessagePart(),
+                        Message.GENERAL_AMBIGUOUS_MAPPING_METHOD,
+                        descriptionStr,
                         target,
-                        Strings.join( candidates, ", " )
+                        candidateStr
                     );
                 }
                 else {
                     messager.printMessage(
                         mappingMethod.getExecutable(),
                         positionHint,
-                        Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
+                        Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
                         target,
-                        Strings.join( candidates, ", " )
+                        candidateStr
                     );
                 }
             }
@@ -783,7 +796,7 @@ public class MappingResolverImpl implements MappingResolver {
             attempt.messager.printMessage(
                 attempt.mappingMethod.getExecutable(),
                 attempt.positionHint,
-                Message.GENERAL_AMBIGIOUS_MAPPING_METHODY_METHODX,
+                Message.GENERAL_AMBIGUOUS_MAPPING_METHODY_METHODX,
                 attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
                 target.getName(),
                 result.toString() );
@@ -899,7 +912,7 @@ public class MappingResolverImpl implements MappingResolver {
             attempt.messager.printMessage(
                 attempt.mappingMethod.getExecutable(),
                 attempt.positionHint,
-                Message.GENERAL_AMBIGIOUS_MAPPING_METHODY_CONVERSIONX,
+                Message.GENERAL_AMBIGUOUS_MAPPING_METHODY_CONVERSIONX,
                 attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
                 target.getName(),
                 result.toString() );
@@ -1018,7 +1031,7 @@ public class MappingResolverImpl implements MappingResolver {
             attempt.messager.printMessage(
                 attempt.mappingMethod.getExecutable(),
                 attempt.positionHint,
-                Message.GENERAL_AMBIGIOUS_MAPPING_CONVERSIONY_METHODX,
+                Message.GENERAL_AMBIGUOUS_MAPPING_CONVERSIONY_METHODX,
                 attempt.sourceRHS.getSourceType().getName() + " " + attempt.sourceRHS.getSourceParameterName(),
                 target.getName(),
                 result.toString() );

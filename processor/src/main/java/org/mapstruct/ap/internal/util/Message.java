@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.util;
 
 import javax.tools.Diagnostic;
 
+import static org.mapstruct.ap.internal.util.MessageConstants.FAQ_AMBIGUOUS_URL;
 import static org.mapstruct.ap.internal.util.MessageConstants.FAQ_QUALIFIER_URL;
 
 /**
@@ -111,9 +112,9 @@ public enum Message {
 
     GENERAL_NO_IMPLEMENTATION( "No implementation type is registered for return type %s." ),
     GENERAL_ABSTRACT_RETURN_TYPE( "The return type %s is an abstract class or interface. Provide a non abstract / non interface result type or a factory method." ),
-    GENERAL_AMBIGIOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s." ),
-    GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s." ),
-    GENERAL_AMBIGIOUS_CONSTRUCTORS( "Ambiguous constructors found for creating %s. Either declare parameterless constructor or annotate the default constructor with an annotation named @Default." ),
+    GENERAL_AMBIGUOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
+    GENERAL_AMBIGUOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
+    GENERAL_AMBIGUOUS_CONSTRUCTORS( "Ambiguous constructors found for creating %s. Either declare parameterless constructor or annotate the default constructor with an annotation named @Default." ),
     GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS( "Incorrect @ConstructorProperties for %s. The size of the @ConstructorProperties does not match the number of constructor parameters" ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
@@ -125,9 +126,9 @@ public enum Message {
     GENERAL_NO_QUALIFYING_METHOD_NAMED( "Qualifier error. No method found annotated with @Named#value: [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
     GENERAL_NO_QUALIFYING_METHOD_COMBINED( "Qualifier error. No method found annotated with @Named#value: [ %s ], annotated with [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
 
-    GENERAL_AMBIGIOUS_MAPPING_METHODY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( methodX ( parameter ) ): %s." ),
-    GENERAL_AMBIGIOUS_MAPPING_CONVERSIONY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found conversionY( methodX ( parameter ) ): %s." ),
-    GENERAL_AMBIGIOUS_MAPPING_METHODY_CONVERSIONX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( conversionX ( parameter ) ): %s." ),
+    GENERAL_AMBIGUOUS_MAPPING_METHODY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGUOUS_MAPPING_CONVERSIONY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found conversionY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGUOUS_MAPPING_METHODY_CONVERSIONX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( conversionX ( parameter ) ): %s." ),
 
     BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
     BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),

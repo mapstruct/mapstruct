@@ -78,6 +78,7 @@ public class MappingBuilderContext {
          * returns a parameter assignment
          *
          * @param mappingMethod target mapping method
+         * @param description
          * @param targetType return type to match
          * @param formattingParameters used for formatting dates and numbers
          * @param criteria parameters criteria in the selection process
@@ -92,7 +93,7 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        Assignment getTargetAssignment(Method mappingMethod, Type targetType,
+        Assignment getTargetAssignment(Method mappingMethod, ForgedMethodHistory description, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
                                        AnnotationMirror positionHint,

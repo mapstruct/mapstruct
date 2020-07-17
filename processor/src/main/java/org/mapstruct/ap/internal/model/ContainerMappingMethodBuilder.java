@@ -83,6 +83,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         );
 
         Assignment assignment = ctx.getMappingResolver().getTargetAssignment( method,
+            getDescription(),
             targetElementType,
             formattingParameters,
             criteria,
