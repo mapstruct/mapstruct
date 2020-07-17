@@ -30,7 +30,7 @@ public interface ErroneousMapper {
     }
 
     class BranchDTO {
-        public LeafDTO leafDTO;
+        public LeafDTO leaf;
     }
 
     class LeafDTO {
@@ -42,7 +42,7 @@ public interface ErroneousMapper {
     }
 
     class BranchEntity {
-        public LeafEntity leafEntity;
+        public LeafEntity leaf;
     }
 
     class LeafEntity {
