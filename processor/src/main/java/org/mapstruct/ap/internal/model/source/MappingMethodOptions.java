@@ -141,16 +141,22 @@ public class MappingMethodOptions {
     public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
         if ( null != templateOptions ) {
-            if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
-                setIterableMapping( templateOptions.getIterableMapping() );
+            if ( getIterableMapping().hasAnnotation() || templateOptions.getIterableMapping().hasAnnotation() ) {
+                setIterableMapping( IterableMappingOptions.forInheritance(
+                    templateOptions.getIterableMapping(), getIterableMapping()
+                ) );
             }
 
-            if ( !getMapMapping().hasAnnotation() && templateOptions.getMapMapping().hasAnnotation() ) {
-                setMapMapping( templateOptions.getMapMapping() );
+            if ( getMapMapping().hasAnnotation() || templateOptions.getMapMapping().hasAnnotation() ) {
+                setMapMapping( MapMappingOptions.forInheritance(
+                    templateOptions.getMapMapping(), getMapMapping()
+                ) );
             }
 
-            if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+            if ( getBeanMapping().hasAnnotation() || templateOptions.getBeanMapping().hasAnnotation() ) {
+                setBeanMapping( BeanMappingOptions.forInheritance(
+                    templateOptions.getBeanMapping(), getBeanMapping()
+                ) );
             }
 
             if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {

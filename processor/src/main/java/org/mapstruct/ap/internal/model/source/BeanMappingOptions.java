@@ -5,21 +5,22 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.tools.gem.GemValue;
@@ -35,17 +36,33 @@ public class BeanMappingOptions extends DelegatingOptions {
     private final BeanMappingGem beanMapping;
 
     /**
-     * creates a mapping for inheritance. Will set
+     * creates a mapping for inheritance.
      *
+     * @param inheritedOptions Options that should be inherited, could be {@code null}
+     * @param existingOptions Existing options, could be {@code null}
      * @return new mapping
      */
-    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
-        BeanMappingOptions options =  new BeanMappingOptions(
-            SelectionParameters.forInheritance( beanMapping.selectionParameters ),
-            beanMapping.beanMapping,
-            beanMapping
+    public static BeanMappingOptions forInheritance(BeanMappingOptions inheritedOptions,
+                                                    BeanMappingOptions existingOptions) {
+        if ( inheritedOptions == null ) {
+            return existingOptions;
+        }
+        if ( existingOptions == null || !existingOptions.hasAnnotation() ) {
+            return new BeanMappingOptions(
+                SelectionParameters.forInheritance( inheritedOptions.selectionParameters, null ),
+                inheritedOptions.beanMapping,
+                inheritedOptions
+            );
+        }
+
+        return new BeanMappingOptions(
+            SelectionParameters.forInheritance(
+                inheritedOptions.selectionParameters,
+                existingOptions.selectionParameters
+            ),
+            existingOptions.beanMapping,
+            inheritedOptions
         );
-        return options;
     }
 
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
@@ -164,9 +181,16 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
-        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::ignoreUnmappedSourceProperties )
-            .map( GemValue::get )
-            .orElse( Collections.emptyList() );
+        return StreamSupport.stream( spliterator(), false )
+            .filter( opt -> opt instanceof BeanMappingOptions )
+            .map( opt -> (BeanMappingOptions) opt )
+            .filter( opt -> opt.beanMapping != null )
+            .map( opt -> opt.beanMapping )
+            .map( BeanMappingGem::ignoreUnmappedSourceProperties )
+            .filter( GemValue::hasValue )
+            .flatMap( gv -> gv.getValue().stream() )
+            .distinct()
+            .collect( Collectors.toList() );
     }
 
     public AnnotationMirror getMirror() {

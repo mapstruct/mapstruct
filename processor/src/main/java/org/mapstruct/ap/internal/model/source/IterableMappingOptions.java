@@ -29,6 +29,38 @@ public class IterableMappingOptions extends DelegatingOptions {
     private final FormattingParameters formattingParameters;
     private final IterableMappingGem iterableMapping;
 
+    /**
+     * creates a mapping for inheritance.
+     *
+     * @param inheritedOptions Options that should be inherited, could be {@code null}
+     * @param existingOptions Existing options, could be {@code null}
+     * @return new mapping
+     */
+    public static IterableMappingOptions forInheritance(IterableMappingOptions inheritedOptions,
+                                                        IterableMappingOptions existingOptions) {
+        if ( inheritedOptions == null ) {
+            return existingOptions;
+        }
+        if ( existingOptions == null || !existingOptions.hasAnnotation() ) {
+            return new IterableMappingOptions(
+                inheritedOptions.formattingParameters,
+                SelectionParameters.forInheritance( inheritedOptions.selectionParameters, null ),
+                inheritedOptions.iterableMapping,
+                inheritedOptions
+            );
+        }
+
+        return new IterableMappingOptions(
+            existingOptions.formattingParameters,
+            SelectionParameters.forInheritance(
+                inheritedOptions.selectionParameters,
+                existingOptions.selectionParameters
+            ),
+            existingOptions.iterableMapping,
+            inheritedOptions
+        );
+    }
+
     public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
                                                  MapperOptions mappperOptions, ExecutableElement method,
                                                  FormattingMessager messager, Types typeUtils) {

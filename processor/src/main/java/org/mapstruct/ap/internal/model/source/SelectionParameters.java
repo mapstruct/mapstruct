@@ -5,13 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.util.Collections;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -29,18 +31,37 @@ public class SelectionParameters {
 
     /**
      * Returns new selection parameters
-     *
+     * <p>
      * ResultType is not inherited.
      *
-     * @param selectionParameters
-     * @return
+     * @param inheritedParams Parameters that should be inherited, could be {@code null}
+     * @param originalParams  Original parameters, could be {@code null}
+     * @return New selection parameters
      */
-    public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
+    public static SelectionParameters forInheritance(SelectionParameters inheritedParams,
+                                                     SelectionParameters originalParams) {
+        if ( inheritedParams == null ) {
+            return originalParams;
+        }
+        if ( originalParams == null ) {
+            return new SelectionParameters(
+                inheritedParams.qualifiers,
+                inheritedParams.qualifyingNames,
+                null,
+                inheritedParams.typeUtils
+            );
+        }
+
         return new SelectionParameters(
-            selectionParameters.qualifiers,
-            selectionParameters.qualifyingNames,
-            null,
-            selectionParameters.typeUtils
+            Collections.join(
+                inheritedParams.qualifiers, originalParams.qualifiers
+            ),
+            Collections.join(
+                inheritedParams.qualifyingNames, originalParams.qualifyingNames
+            ),
+            originalParams.resultType,
+            originalParams.typeUtils,
+            originalParams.sourceRHS
         );
     }
 
@@ -153,8 +174,8 @@ public class SelectionParameters {
 
     public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
         return new SelectionParameters(
-            Collections.emptyList(),
-            Collections.emptyList(),
+            emptyList(),
+            emptyList(),
             null,
             null,
             sourceRHS
