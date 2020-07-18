@@ -603,23 +603,57 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
                 .getEnclosedElements() );
 
-            ExecutableElement defaultConstructor = null;
+            // The rules for picking a constructor are the following:
+            // 1. Constructor annotated with @Default (from any package) has highest precedence
+            // 2. If there is a single public constructor then it would be used to construct the object
+            // 3. If a parameterless constructor exists then it would be used to construct the object, and the other
+            // constructors will be ignored
+            ExecutableElement defaultAnnotatedConstructor = null;
+            ExecutableElement parameterLessConstructor = null;
             List<ExecutableElement> accessibleConstructors = new ArrayList<>( constructors.size() );
+            List<ExecutableElement> publicConstructors = new ArrayList<>( );
 
             for ( ExecutableElement constructor : constructors ) {
                 if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
                     continue;
                 }
 
+                if ( hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                    // We found a constructor annotated with @Default everything else is irrelevant
+                    defaultAnnotatedConstructor = constructor;
+                    break;
+                }
+
                 if ( constructor.getParameters().isEmpty() ) {
-                    defaultConstructor = constructor;
+                    parameterLessConstructor = constructor;
                 }
                 else {
                     accessibleConstructors.add( constructor );
                 }
+
+                if ( constructor.getModifiers().contains( Modifier.PUBLIC ) ) {
+                    publicConstructors.add( constructor );
+                }
             }
 
-            if ( defaultConstructor != null ) {
+            if ( defaultAnnotatedConstructor != null ) {
+                // If a default annotated constructor exists it will be used, it has highest precedence
+                return getConstructorAccessor( type, defaultAnnotatedConstructor );
+            }
+
+            if ( publicConstructors.size() == 1 ) {
+                // If there is a single public constructor then use that one
+                ExecutableElement publicConstructor = publicConstructors.get( 0 );
+                if ( publicConstructor.getParameters().isEmpty() ) {
+                    // The public parameterless constructor
+                    return null;
+                }
+
+                return getConstructorAccessor( type, publicConstructor );
+            }
+
+            if ( parameterLessConstructor != null ) {
+                // If there is a constructor without parameters use it
                 return null;
             }
 
@@ -627,38 +661,25 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            ExecutableElement constructor = null;
             if ( accessibleConstructors.size() > 1 ) {
 
-                for ( ExecutableElement accessibleConstructor : accessibleConstructors ) {
-                    for ( AnnotationMirror annotationMirror : accessibleConstructor.getAnnotationMirrors() ) {
-                        if ( annotationMirror.getAnnotationType()
-                            .asElement()
-                            .getSimpleName()
-                            .contentEquals( "Default" ) ) {
-                            constructor = accessibleConstructor;
-                            break;
-                        }
-                    }
-                }
-
-                if ( constructor == null ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        GENERAL_AMBIGIOUS_CONSTRUCTORS,
-                        type,
-                        Strings.join( constructors, ", " )
-                    );
-                    return null;
-                }
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    GENERAL_AMBIGIOUS_CONSTRUCTORS,
+                    type,
+                    Strings.join( constructors, ", " )
+                );
+                return null;
             }
             else {
-                constructor = accessibleConstructors.get( 0 );
+                return getConstructorAccessor( type, accessibleConstructors.get( 0 ) );
             }
 
+        }
+
+        private ConstructorAccessor getConstructorAccessor(Type type, ExecutableElement constructor) {
             List<Parameter> constructorParameters = ctx.getTypeFactory()
                 .getParameters( (DeclaredType) type.getTypeMirror(), constructor );
-
 
             List<String> constructorProperties = null;
             for ( AnnotationMirror annotationMirror : constructor.getAnnotationMirrors() ) {
@@ -734,6 +755,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
             existingVariableNames.add( safeParameterName );
             return new ParameterElementAccessor( element, safeParameterName );
+        }
+
+        private boolean hasDefaultAnnotationFromAnyPackage(Element element) {
+            for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+                if ( annotationMirror.getAnnotationType()
+                    .asElement()
+                    .getSimpleName()
+                    .contentEquals( "Default" ) ) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private List<String> getArrayValues(AnnotationValue av) {
