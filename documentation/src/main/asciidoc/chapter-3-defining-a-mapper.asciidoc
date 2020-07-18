@@ -542,6 +542,48 @@ When there are multiple constructors then the following is done to pick the one 
 * If a parameterless constructor exists then it will be used to construct the object, and the other constructors will be ignored.
 * If there are multiple eligible constructors then there will be a compilation error due to ambigious constructors. In order to break the ambiquity an annotation named `@Default` (from any package) can used.
 
+.Deciding which constructor to use
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Vehicle {
+
+    protected Vehicle() { }
+
+    // MapStruct will use this constructor, because it is a single public constructor
+    public Vehicle(String color) { }
+}
+
+public class Car {
+
+    // MapStruct will use this constructor, because it is a parameterless empty constructor
+    public Car() { }
+
+    public Car(String make, String color) { }
+}
+
+public class Truck {
+
+    public Truck() { }
+
+    // MapStruct will use this constructor, because it is annotated with @Default
+    @Default
+    public Truck(String make, String color) { }
+}
+
+public class Van {
+
+    // There will be a compilation error when using this class because MapStruct cannot pick a constructor
+
+    public Van(String make) { }
+
+    public Van(String make, String color) { }
+
+}
+----
+====
+
 When using a constructor then the names of the parameters of the constructor will be used and matched to the target properties.
 When the constructor has an annotation named `@ConstructorProperties` (from any package) then this annotation will be used to get the names of the parameters.
 
