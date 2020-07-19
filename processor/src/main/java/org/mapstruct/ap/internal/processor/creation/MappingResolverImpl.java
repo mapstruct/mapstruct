@@ -75,6 +75,8 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class MappingResolverImpl implements MappingResolver {
 
+    private static final int MAX_REPORTING_AMBIGUOUS = 5;
+
     private final FormattingMessager messager;
     private final Types typeUtils;
     private final TypeFactory typeFactory;
@@ -206,7 +208,7 @@ public class MappingResolverImpl implements MappingResolver {
             // first simple mapping method
             if ( allowMappingMethod() ) {
                 List<SelectedMethod<Method>> matches = getBestMatch( methods, sourceType, targetType );
-                reportErrorWhenAmbigious( matches, targetType );
+                reportErrorWhenAmbiguous( matches, targetType );
                 if ( !matches.isEmpty() ) {
                     assignment = toMethodRef( first( matches ) );
                     assignment.setAssignment( sourceRHS );
@@ -250,7 +252,7 @@ public class MappingResolverImpl implements MappingResolver {
                 // check for a built-in method
                 if ( !hasQualfiers() ) {
                     List<SelectedMethod<BuiltInMethod>> matches = getBestMatch( builtIns, sourceType, targetType );
-                    reportErrorWhenAmbigious( matches, targetType );
+                    reportErrorWhenAmbiguous( matches, targetType );
                     if ( !matches.isEmpty() ) {
                         assignment = toBuildInRef( first( matches ) );
                         assignment.setAssignment( sourceRHS );
@@ -447,20 +449,19 @@ public class MappingResolverImpl implements MappingResolver {
             );
         }
 
-        private <T extends Method> void reportErrorWhenAmbigious(List<SelectedMethod<T>> candidates, Type target) {
+        private <T extends Method> void reportErrorWhenAmbiguous(List<SelectedMethod<T>> candidates, Type target) {
 
             // raise an error if more than one mapping method is suitable to map the given source type
             // into the target type
             if ( candidates.size() > 1 ) {
 
-                String candidateStr = candidates.stream()
-                                                .limit( 5 )
-                                                .map( m -> m.getMethod().shortName() )
-                                                .collect( Collectors.joining( ", " ) );
-
-                String descriptionStr = description != null ?
-                    description.createSourcePropertyErrorMessage() :
-                    sourceRHS.getSourceErrorMessagePart();
+                String descriptionStr = "";
+                if ( description != null ) {
+                    descriptionStr = description.createSourcePropertyErrorMessage();
+                }
+                else {
+                    descriptionStr = sourceRHS.getSourceErrorMessagePart();
+                }
 
                 if ( sourceRHS.getSourceErrorMessagePart() != null ) {
                     messager.printMessage(
@@ -469,7 +470,7 @@ public class MappingResolverImpl implements MappingResolver {
                         Message.GENERAL_AMBIGUOUS_MAPPING_METHOD,
                         descriptionStr,
                         target,
-                        candidateStr
+                        join( candidates )
                     );
                 }
                 else {
@@ -478,7 +479,7 @@ public class MappingResolverImpl implements MappingResolver {
                         positionHint,
                         Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
                         target,
-                        candidateStr
+                        join( candidates )
                     );
                 }
             }
@@ -591,6 +592,18 @@ public class MappingResolverImpl implements MappingResolver {
             return false;
         }
 
+        private <T extends Method> String join( List<SelectedMethod<T>> candidates ) {
+
+            String candidateStr = candidates.stream()
+                                            .limit( MAX_REPORTING_AMBIGUOUS )
+                                            .map( m -> m.getMethod().shortName() )
+                                            .collect( Collectors.joining( ", " ) );
+
+            if ( candidates.size() > MAX_REPORTING_AMBIGUOUS ) {
+                candidateStr += String.format( "... and %s more", +candidates.size() - MAX_REPORTING_AMBIGUOUS );
+            }
+            return candidateStr;
+        }
     }
 
     private static class ConversionAssignment {
@@ -775,21 +788,19 @@ public class MappingResolverImpl implements MappingResolver {
                 result = methodRefY;
             }
             else  {
-                reportAmbigiousError( xCandidates, targetType );
+                reportAmbiguousError( xCandidates, targetType );
             }
             return this;
 
         }
 
-        void reportAmbigiousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {
+        void reportAmbiguousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {
             StringBuilder result = new StringBuilder();
             xCandidates.entrySet()
                        .stream()
+                       .limit( MAX_REPORTING_AMBIGUOUS )
                        .forEach( e -> result.append( "method(s)Y: " )
-                                            .append( e.getValue()
-                                                      .stream()
-                                                      .map( v -> v.getMethod().shortName() )
-                                                      .collect( Collectors.joining( ", " ) ) )
+                                            .append( attempt.join( e.getValue() ) )
                                             .append( ", methodX: " )
                                             .append( e.getKey().getMethod().shortName() )
                                             .append( "; " ) );
@@ -891,21 +902,19 @@ public class MappingResolverImpl implements MappingResolver {
                 result = methodRefY;
             }
             else  {
-                reportAmbigiousError( xRefCandidates, targetType );
+                reportAmbiguousError( xRefCandidates, targetType );
             }
             return this;
 
         }
 
-        void reportAmbigiousError(Map<ConversionAssignment, List<SelectedMethod<T>>> xRefCandidates, Type target) {
+        void reportAmbiguousError(Map<ConversionAssignment, List<SelectedMethod<T>>> xRefCandidates, Type target) {
             StringBuilder result = new StringBuilder();
             xRefCandidates.entrySet()
                           .stream()
+                          .limit( MAX_REPORTING_AMBIGUOUS )
                           .forEach( e -> result.append( "method(s)Y: " )
-                                               .append( e.getValue()
-                                                         .stream()
-                                                         .map( v -> v.getMethod().shortName() )
-                                                         .collect( Collectors.joining( ", " ) ) )
+                                               .append( attempt.join( e.getValue() ) )
                                                .append( ", conversionX: " )
                                                .append( e.getKey().shortName() )
                                                .append( "; " ) );
@@ -1010,23 +1019,21 @@ public class MappingResolverImpl implements MappingResolver {
                 result = conversionRefY.assignment;
             }
             else  {
-                reportAmbigiousError( yRefCandidates, targetType );
+                reportAmbiguousError( yRefCandidates, targetType );
             }
             return this;
 
         }
 
-        void reportAmbigiousError(Map<ConversionAssignment, List<SelectedMethod<T>>> yRefCandidates, Type target) {
+        void reportAmbiguousError(Map<ConversionAssignment, List<SelectedMethod<T>>> yRefCandidates, Type target) {
             StringBuilder result = new StringBuilder();
             yRefCandidates.entrySet()
                           .stream()
+                          .limit( MAX_REPORTING_AMBIGUOUS )
                           .forEach( e -> result.append( "conversionY: " )
                                                .append( e.getKey().shortName() )
                                                .append( ", method(s)X: " )
-                                               .append( e.getValue()
-                                                         .stream()
-                                                         .map( v -> v.getMethod().shortName() )
-                                                         .collect( Collectors.joining( ", " ) ) )
+                                               .append( attempt.join( e.getValue() ) )
                                                .append( "; " ) );
             attempt.messager.printMessage(
                 attempt.mappingMethod.getExecutable(),

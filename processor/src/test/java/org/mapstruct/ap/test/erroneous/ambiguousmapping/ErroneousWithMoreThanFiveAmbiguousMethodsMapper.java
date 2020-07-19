@@ -9,9 +9,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ErroneousMapper {
+public interface ErroneousWithMoreThanFiveAmbiguousMethodsMapper {
 
-    ErroneousMapper INSTANCE = Mappers.getMapper( ErroneousMapper.class );
+    ErroneousWithMoreThanFiveAmbiguousMethodsMapper
+        INSTANCE = Mappers.getMapper( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class );
 
     TrunkEntity map(TrunkDTO dto);
 
@@ -21,6 +22,27 @@ public interface ErroneousMapper {
 
     // duplicated method, triggering ambigious mapping method
     default LeafEntity map2(LeafDTO dto) {
+        return new LeafEntity();
+    }
+
+    // duplicated method, triggering ambigious mapping method
+    default LeafEntity map3(LeafDTO dto) {
+        return new LeafEntity();
+    }
+
+    // duplicated method, triggering ambigious mapping method
+    default LeafEntity map4(LeafDTO dto) {
+        return new LeafEntity();
+    }
+
+    // duplicated method, triggering ambigious mapping method
+
+    default LeafEntity map5(LeafDTO dto) {
+        return new LeafEntity();
+    }
+
+    // duplicated method, triggering ambigious mapping method
+    default LeafEntity map6(LeafDTO dto) {
         return new LeafEntity();
     }
 

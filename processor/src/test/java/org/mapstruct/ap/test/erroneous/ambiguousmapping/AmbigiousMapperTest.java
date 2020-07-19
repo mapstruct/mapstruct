@@ -19,20 +19,48 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class AmbigiousMapperTest {
 
     @Test
-    @WithClasses(ErroneousMapper.class)
+    @WithClasses( ErroneousWithAmbiguousMethodsMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousMapper.class,
+            @Diagnostic(type = ErroneousWithAmbiguousMethodsMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
                 message = "Ambiguous mapping methods found for mapping property "
-                    + "\"org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousMapper.LeafDTO branch.leaf\" to "
-                    + "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousMapper.LeafEntity: "
+                    + "\"org.mapstruct.ap.test.erroneous.ambiguousmapping."
+                    + "ErroneousWithAmbiguousMethodsMapper.LeafDTO branch.leaf\" to "
+                    + "org.mapstruct.ap.test.erroneous.ambiguousmapping."
+                    + "ErroneousWithAmbiguousMethodsMapper.LeafEntity: "
                     + "LeafEntity:map1(LeafDTO), LeafEntity:map2(LeafDTO). "
                     + "See https://mapstruct.org/faq/#ambiguous for more info.")
         }
     )
-    public void testNestedAmbigious() {
+
+    public void testErrorMessageForAmbiguous() {
     }
+    @Test
+    @WithClasses( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 17,
+                message = "Ambiguous mapping methods found for mapping property "
+                    + "\"org.mapstruct.ap.test.erroneous.ambiguousmapping."
+                    + "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO branch.leaf\" to "
+                    + "org.mapstruct.ap.test.erroneous.ambiguousmapping."
+                    + "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity: "
+                    + "LeafEntity:map1(LeafDTO), "
+                    + "LeafEntity:map2(LeafDTO), "
+                    + "LeafEntity:map3(LeafDTO), "
+                    + "LeafEntity:map4(LeafDTO), "
+                    + "LeafEntity:map5(LeafDTO)"
+                    + "... and 1 more. "
+                    + "See https://mapstruct.org/faq/#ambiguous for more info.")
+        }
+    )
+    public void testErrorMessageForManyAmbiguous() {
+    }
+
 }
