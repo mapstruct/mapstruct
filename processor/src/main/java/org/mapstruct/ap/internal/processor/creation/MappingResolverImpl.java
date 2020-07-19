@@ -600,7 +600,7 @@ public class MappingResolverImpl implements MappingResolver {
                                             .collect( Collectors.joining( ", " ) );
 
             if ( candidates.size() > MAX_REPORTING_AMBIGUOUS ) {
-                candidateStr += String.format( "... and %s more", +candidates.size() - MAX_REPORTING_AMBIGUOUS );
+                candidateStr += String.format( "... and %s more", candidates.size() - MAX_REPORTING_AMBIGUOUS );
             }
             return candidateStr;
         }

@@ -38,6 +38,7 @@ public class AmbigiousMapperTest {
 
     public void testErrorMessageForAmbiguous() {
     }
+
     @Test
     @WithClasses( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class)
     @ExpectedCompilationOutcome(
