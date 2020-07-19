@@ -11,11 +11,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
@@ -250,7 +251,8 @@ public class MappingMethodOptions {
         return false;
     }
 
-    public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory ) {
+    public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory,
+                               FormattingMessager messager) {
         CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
@@ -262,15 +264,27 @@ public class MappingMethodOptions {
         Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
 
 
-        Set<String> mappedPropertyNames = mappings.stream()
-                                                  .map( m -> getPropertyEntries( m )[0] )
-                                                  .collect( Collectors.toSet() );
-
-        for ( String targetPropertyName : writeAccessors.keySet() ) {
-            if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
-                MappingOptions mapping = MappingOptions.forIgnore( targetPropertyName );
-                mappings.add( mapping );
+        for ( MappingOptions mapping : mappings ) {
+            String mappedTargetProperty = getFirstTargetPropertyName( mapping );
+            if ( !".".equals( mappedTargetProperty ) ) {
+                // Remove the mapped target property from the write accessors
+                writeAccessors.remove( mappedTargetProperty );
             }
+            else {
+                messager.printMessage(
+                    method.getExecutable(),
+                    getBeanMapping().getMirror(),
+                    Message.BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS
+                );
+                // Nothing more to do if this is reached
+                return;
+            }
+        }
+
+        // The writeAccessors now contains only the accessors that should be ignored
+        for ( String targetPropertyName : writeAccessors.keySet() ) {
+            MappingOptions mapping = MappingOptions.forIgnore( targetPropertyName );
+            mappings.add( mapping );
         }
     }
 
@@ -288,6 +302,15 @@ public class MappingMethodOptions {
 
     private String[] getPropertyEntries( MappingOptions mapping ) {
         return mapping.getTargetName().split( "\\." );
+    }
+
+    private String getFirstTargetPropertyName(MappingOptions mapping) {
+        String targetName = mapping.getTargetName();
+        if ( ".".equals( targetName ) ) {
+            return targetName;
+        }
+
+        return getPropertyEntries( mapping )[0];
     }
 
 }
