@@ -56,7 +56,7 @@ public class IgnorePropertyTest {
 
     @Test
     @IssueKey("1933")
-    public void shouldIgnoreBase() {
+    public void shouldInheritIgnoreByDefaultFromBase() {
 
         WorkBenchDto workBenchDto = new WorkBenchDto();
         workBenchDto.setArticleName( "MyBench" );
@@ -68,6 +68,26 @@ public class IgnorePropertyTest {
 
         assertThat( benchTarget ).isNotNull();
         assertThat( benchTarget.getArticleName() ).isNull();
+        assertThat( benchTarget.getDescription() ).isEqualTo( "Beautiful" );
+        assertThat( benchTarget.getKey() ).isNull();
+        assertThat( benchTarget.getModificationDate() ).isNull();
+        assertThat( benchTarget.getCreationDate() ).isNull();
+    }
+
+    @Test
+    @IssueKey("1933")
+    public void shouldOnlyIgnoreBase() {
+
+        WorkBenchDto workBenchDto = new WorkBenchDto();
+        workBenchDto.setArticleName( "MyBench" );
+        workBenchDto.setArticleDescription( "Beautiful" );
+        workBenchDto.setCreationDate( new Date() );
+        workBenchDto.setModificationDate( new Date() );
+
+        WorkBenchEntity benchTarget = ToolMapper.INSTANCE.mapBenchWithImplicit( workBenchDto );
+
+        assertThat( benchTarget ).isNotNull();
+        assertThat( benchTarget.getArticleName() ).isEqualTo( "MyBench" );
         assertThat( benchTarget.getDescription() ).isEqualTo( "Beautiful" );
         assertThat( benchTarget.getKey() ).isNull();
         assertThat( benchTarget.getModificationDate() ).isNull();
