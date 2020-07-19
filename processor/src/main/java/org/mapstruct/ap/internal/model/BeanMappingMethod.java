@@ -62,7 +62,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
-import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGIOUS_CONSTRUCTORS;
+import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGUOUS_CONSTRUCTORS;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS;
 
 /**
@@ -569,7 +569,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
+                    Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
                     returnTypeImpl,
                     Strings.join( matchingFactoryMethods, ", " )
                 );
@@ -665,7 +665,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    GENERAL_AMBIGIOUS_CONSTRUCTORS,
+                    GENERAL_AMBIGUOUS_CONSTRUCTORS,
                     type,
                     Strings.join( constructors, ", " )
                 );

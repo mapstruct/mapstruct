@@ -96,6 +96,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
+                getDescription(),
                 keyTargetType,
                 keyFormattingParameters,
                 keyCriteria,
@@ -142,6 +143,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
+                getDescription(),
                 valueTargetType,
                 valueFormattingParameters,
                 valueCriteria,

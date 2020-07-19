@@ -37,8 +37,8 @@ public class FactoryTest {
                 message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.erroneous" +
                     ".ambiguousfactorymethod.Bar: org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar " +
                     "createBar(), org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar org.mapstruct.ap.test" +
-                    ".erroneous.ambiguousfactorymethod.a.BarFactory.createBar().")
-
+                    ".erroneous.ambiguousfactorymethod.a.BarFactory.createBar()." +
+                    " See https://mapstruct.org/faq/#ambiguous for more info.")
         }
     )
     public void shouldUseTwoFactoryMethods() {

@@ -9,6 +9,7 @@ public final class MessageConstants {
 
     public static final String AND = " and ";
     public static final String FAQ_QUALIFIER_URL = "https://mapstruct.org/faq/#qualifier";
+    public static final String FAQ_AMBIGUOUS_URL = "https://mapstruct.org/faq/#ambiguous";
 
     private MessageConstants() {
     }

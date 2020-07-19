@@ -48,7 +48,9 @@ public class InheritanceSelectionTest {
                 message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.selection.resulttype" +
                     ".Fruit: org.mapstruct.ap.test.selection.resulttype.Apple org.mapstruct.ap.test.selection" +
                     ".resulttype.ConflictingFruitFactory.createApple(), org.mapstruct.ap.test.selection.resulttype" +
-                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana().")
+                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana()." +
+                    " See https://mapstruct.org/faq/#ambiguous for more info."
+            )
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {

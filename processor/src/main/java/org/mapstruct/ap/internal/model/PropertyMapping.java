@@ -242,6 +242,7 @@ public class PropertyMapping extends ModelElement {
             if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
+                    getForgedMethodHistory( rightHandSide ),
                     targetType,
                     formattingParameters,
                     criteria,
@@ -791,6 +792,7 @@ public class PropertyMapping extends ModelElement {
             if ( !targetType.isEnumType() ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
+                    null, // TODO description for constant
                     targetType,
                     formattingParameters,
                     criteria,

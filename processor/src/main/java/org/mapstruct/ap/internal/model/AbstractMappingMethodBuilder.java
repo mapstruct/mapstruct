@@ -27,6 +27,8 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     public abstract M build();
 
+    private ForgedMethodHistory description;
+
     /**
      * @return {@code true} if property names should be used for the creation of the {@link ForgedMethodHistory}.
      */
@@ -44,7 +46,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             history = ( (ForgedMethod) method ).getHistory();
         }
 
-        ForgedMethodHistory forgedHistory = new ForgedMethodHistory(
+        description = new ForgedMethodHistory(
             history,
             Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
             Strings.stubPropertyName( targetType.getName() ),
@@ -53,7 +55,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             shouldUsePropertyNamesInHistory(),
             sourceRHS.getSourceErrorMessagePart() );
 
-        ForgedMethod forgedMethod = forElementMapping( name, sourceType, targetType, method, forgedHistory, true );
+        ForgedMethod forgedMethod = forElementMapping( name, sourceType, targetType, method, description, true );
         BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
 
         return createForgedAssignment(
@@ -77,4 +79,9 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         builder.append( type.getIdentification() );
         return builder.toString();
     }
+
+    public ForgedMethodHistory getDescription() {
+        return description;
+    }
+
 }
