@@ -26,16 +26,14 @@ public class AmbigiousMapperTest {
             @Diagnostic(type = ErroneousWithAmbiguousMethodsMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Ambiguous mapping methods found for mapping property "
-                    + "\"org.mapstruct.ap.test.erroneous.ambiguousmapping."
-                    + "ErroneousWithAmbiguousMethodsMapper.LeafDTO branch.leaf\" to "
-                    + "org.mapstruct.ap.test.erroneous.ambiguousmapping."
-                    + "ErroneousWithAmbiguousMethodsMapper.LeafEntity: "
-                    + "LeafEntity:map1(LeafDTO), LeafEntity:map2(LeafDTO). "
-                    + "See https://mapstruct.org/faq/#ambiguous for more info.")
+                message =
+    "Ambiguous mapping methods found for mapping property " +
+    "\"ErroneousWithAmbiguousMethodsMapper.LeafDTO branch.leaf\" to ErroneousWithAmbiguousMethodsMapper.LeafEntity: " +
+    "ErroneousWithAmbiguousMethodsMapper.LeafEntity map1(ErroneousWithAmbiguousMethodsMapper.LeafDTO dto), " +
+    "ErroneousWithAmbiguousMethodsMapper.LeafEntity map2(ErroneousWithAmbiguousMethodsMapper.LeafDTO dto). " +
+    "See https://mapstruct.org/faq/#ambiguous for more info."            )
         }
     )
-
     public void testErrorMessageForAmbiguous() {
     }
 
@@ -47,18 +45,18 @@ public class AmbigiousMapperTest {
             @Diagnostic(type = ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                message = "Ambiguous mapping methods found for mapping property "
-                    + "\"org.mapstruct.ap.test.erroneous.ambiguousmapping."
-                    + "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO branch.leaf\" to "
-                    + "org.mapstruct.ap.test.erroneous.ambiguousmapping."
-                    + "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity: "
-                    + "LeafEntity:map1(LeafDTO), "
-                    + "LeafEntity:map2(LeafDTO), "
-                    + "LeafEntity:map3(LeafDTO), "
-                    + "LeafEntity:map4(LeafDTO), "
-                    + "LeafEntity:map5(LeafDTO)"
-                    + "... and 1 more. "
-                    + "See https://mapstruct.org/faq/#ambiguous for more info.")
+                message =
+    // CHECKSTYLE:OFF
+    "Ambiguous mapping methods found for mapping property \"ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO branch.leaf\" to " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity: " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map1(ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map2(ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map3(ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map4(ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+    "ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map5(ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto)" +
+    "... and 1 more. See https://mapstruct.org/faq/#ambiguous for more info."
+    // CHECKSTYLE:ON
+            )
         }
     )
     public void testErrorMessageForManyAmbiguous() {

@@ -49,8 +49,7 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonNameMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                message = "Unknown property \"fulName\" in result type org.mapstruct.ap.test.namesuggestion.Person. " +
-                    "Did you mean \"fullName\"?")
+                message = "Unknown property \"fulName\" in result type Person. Did you mean \"fullName\"?")
         }
     )
     public void testNameSuggestion() {
@@ -66,8 +65,8 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                message = "Unknown property \"colour\" in type org.mapstruct.ap.test.namesuggestion.Garage for target" +
-                    " name \"garage.colour.rgb\". Did you mean \"garage.color\"?"),
+                message = "Unknown property \"colour\" in type Garage for target name \"garage.colour.rgb\". " +
+                    "Did you mean \"garage.color\"?"),
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 20,
@@ -75,8 +74,8 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                message = "Unknown property \"colour\" in type org.mapstruct.ap.test.namesuggestion.Garage for" +
-                    " target name \"garage.colour\". Did you mean \"garage.color\"?"),
+                message = "Unknown property \"colour\" in type Garage for target name \"garage.colour\". " +
+                    "Did you mean \"garage.color\"?"),
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 23,

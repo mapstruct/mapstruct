@@ -33,9 +33,8 @@ public class DisablingNestedSimpleBeansMappingTest {
             @Diagnostic(type = ErroneousDisabledHouseMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.nestedbeans.Roof roof\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.RoofDto roof\". Consider to declare/implement a mapping method: \"org" +
-                    ".mapstruct.ap.test.nestedbeans.RoofDto map(org.mapstruct.ap.test.nestedbeans.Roof value)\"."
+                message = "Can't map property \"Roof roof\" to \"RoofDto roof\". " +
+                    "Consider to declare/implement a mapping method: \"RoofDto map(Roof value)\"."
             )
         })
     @Test
@@ -51,9 +50,8 @@ public class DisablingNestedSimpleBeansMappingTest {
             @Diagnostic(type = ErroneousDisabledViaConfigHouseMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.nestedbeans.Roof roof\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.RoofDto roof\". Consider to declare/implement a mapping method: \"org" +
-                    ".mapstruct.ap.test.nestedbeans.RoofDto map(org.mapstruct.ap.test.nestedbeans.Roof value)\"."
+                message = "Can't map property \"Roof roof\" to \"RoofDto roof\". " +
+                    "Consider to declare/implement a mapping method: \"RoofDto map(Roof value)\"."
             )
         })
     @Test

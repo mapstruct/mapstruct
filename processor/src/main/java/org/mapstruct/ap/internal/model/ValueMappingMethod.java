@@ -209,7 +209,7 @@ public class ValueMappingMethod extends MappingMethod {
                         ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
                         sourceErrorMessage = history.createSourcePropertyErrorMessage();
                         targetErrorMessage =
-                            "\"" + history.getTargetType().toString() + " " + history.createTargetPropertyName() + "\"";
+                            "\"" + history.getTargetType().describe() + " " + history.createTargetPropertyName() + "\"";
                     }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.

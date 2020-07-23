@@ -662,7 +662,7 @@ public class NestedTargetPropertyMappingHolder {
                             mapping.getTargetAnnotationValue(),
                             Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE,
                             targetPropertyName,
-                            targetType,
+                            targetType.describe(),
                             mapping.getTargetName(),
                             Strings.join( pathProperties, "." )
                         );

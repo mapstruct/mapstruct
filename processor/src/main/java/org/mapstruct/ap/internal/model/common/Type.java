@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -81,6 +82,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isStream;
     private final boolean isLiteral;
 
+    private final boolean loggingVerbose;
+
     private final List<String> enumConstants;
 
     private final Map<String, String> toBeImportedTypes;
@@ -116,7 +119,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
-                boolean isLiteral ) {
+                boolean isLiteral, boolean loggingVerbose) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -162,6 +165,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.toBeImportedTypes = toBeImportedTypes;
         this.notToBeImportedTypes = notToBeImportedTypes;
         this.filters = new Filters( accessorNaming, typeUtils, typeMirror );
+
+        this.loggingVerbose = loggingVerbose;
     }
     //CHECKSTYLE:ON
 
@@ -417,7 +422,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -459,7 +465,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -1009,6 +1016,27 @@ public class Type extends ModelElement implements Comparable<Type> {
     @Override
     public String toString() {
         return typeMirror.toString();
+    }
+
+    /**
+     * @return a string representation of the type for use in messages
+     */
+    public String describe() {
+        if ( loggingVerbose ) {
+            return toString();
+        }
+        else {
+            // name allows for inner classes
+            String name = getFullyQualifiedName().replaceFirst( "^" + getPackageName() + ".", "" );
+            List<Type> typeParams = getTypeParameters();
+            if ( typeParams.isEmpty() ) {
+                return name;
+            }
+            else {
+                String params = typeParams.stream().map( Type::describe ).collect( Collectors.joining( "," ) );
+                return String.format( "%s<%s>", name, params );
+            }
+        }
     }
 
     /**

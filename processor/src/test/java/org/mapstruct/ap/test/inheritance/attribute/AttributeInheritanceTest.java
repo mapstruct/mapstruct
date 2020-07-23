@@ -44,8 +44,8 @@ public class AttributeInheritanceTest {
             type = ErroneousTargetSourceMapper.class,
             kind = Kind.ERROR,
             line = 16,
-            message = "Can't map property \"java.lang.CharSequence foo\" to \"java.lang.String foo\". Consider to " +
-                "declare/implement a mapping method: \"java.lang.String map(java.lang.CharSequence value)\"."
+            message = "Can't map property \"CharSequence foo\" to \"String foo\". " +
+                "Consider to declare/implement a mapping method: \"String map(CharSequence value)\"."
         ))
     public void shouldReportErrorDueToUnmappableAttribute() {
     }

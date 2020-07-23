@@ -129,9 +129,8 @@ public class DefaultValueTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
-                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
-                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+                message = "Can't map property \"Region region\" to \"String region\". " +
+                    "Consider to declare/implement a mapping method: \"String map(Region value)\".")
         }
     )
     public void errorOnDefaultValueAndConstant() {
@@ -153,9 +152,8 @@ public class DefaultValueTest {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
-                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
-                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+                message = "Can't map property \"Region region\" to \"String region\". " +
+                    "Consider to declare/implement a mapping method: \"String map(Region value)\".")
         }
     )
     public void errorOnDefaultValueAndExpression() {

@@ -85,12 +85,9 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR, line = 16,
-                message = "No target bean properties found: can't map property \"org.mapstruct.ap.test.selection" +
-                    ".generics.UpperBoundWrapper<org.mapstruct.ap.test.selection.generics.TypeA> " +
-                    "fooUpperBoundFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "fooUpperBoundFailure\". Consider to declare/implement a mapping method: \"org.mapstruct.ap.test" +
-                    ".selection.generics.TypeA map(org.mapstruct.ap.test.selection.generics.UpperBoundWrapper<org" +
-                    ".mapstruct.ap.test.selection.generics.TypeA> value)\".")
+                message = "No target bean properties found: can't map property " +
+                    "\"UpperBoundWrapper<TypeA> fooUpperBoundFailure\" to \"TypeA fooUpperBoundFailure\". " +
+                    "Consider to declare/implement a mapping method: \"TypeA map(UpperBoundWrapper<TypeA> value)\".")
         })
     public void shouldFailOnUpperBound() {
     }
@@ -102,12 +99,11 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "No target bean properties found: can't map property \"org.mapstruct.ap.test.selection" +
-                    ".generics.WildCardExtendsWrapper<org.mapstruct.ap.test.selection.generics.TypeA> " +
-                    "fooWildCardExtendsTypeAFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "fooWildCardExtendsTypeAFailure\". Consider to declare/implement a mapping method: \"org" +
-                    ".mapstruct.ap.test.selection.generics.TypeA map(org.mapstruct.ap.test.selection.generics" +
-                    ".WildCardExtendsWrapper<org.mapstruct.ap.test.selection.generics.TypeA> value)\".")
+                message = "No target bean properties found: can't map property " +
+                    "\"WildCardExtendsWrapper<TypeA> fooWildCardExtendsTypeAFailure\" to " +
+                    "\"TypeA fooWildCardExtendsTypeAFailure\". " +
+                    "Consider to declare/implement a mapping method: " +
+                    "\"TypeA map(WildCardExtendsWrapper<TypeA> value)\".")
         })
     public void shouldFailOnWildCardBound() {
     }
@@ -119,12 +115,11 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "No target bean properties found: can't map property \"org.mapstruct.ap.test.selection" +
-                    ".generics.WildCardExtendsMBWrapper<org.mapstruct.ap.test.selection.generics.TypeB> " +
-                    "fooWildCardExtendsMBTypeBFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeB " +
-                    "fooWildCardExtendsMBTypeBFailure\". Consider to declare/implement a mapping method: \"org" +
-                    ".mapstruct.ap.test.selection.generics.TypeB map(org.mapstruct.ap.test.selection.generics" +
-                    ".WildCardExtendsMBWrapper<org.mapstruct.ap.test.selection.generics.TypeB> value)\".")
+                message = "No target bean properties found: can't map property " +
+                    "\"WildCardExtendsMBWrapper<TypeB> fooWildCardExtendsMBTypeBFailure\" to " +
+                    "\"TypeB fooWildCardExtendsMBTypeBFailure\". " +
+                    "Consider to declare/implement a mapping method: " +
+                    "\"TypeB map(WildCardExtendsMBWrapper<TypeB> value)\".")
         })
     public void shouldFailOnWildCardMultipleBounds() {
     }
@@ -136,12 +131,11 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "No target bean properties found: can't map property \"org.mapstruct.ap.test.selection" +
-                    ".generics.WildCardSuperWrapper<org.mapstruct.ap.test.selection.generics.TypeA> " +
-                    "fooWildCardSuperTypeAFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "fooWildCardSuperTypeAFailure\". Consider to declare/implement a mapping method: \"org.mapstruct" +
-                    ".ap.test.selection.generics.TypeA map(org.mapstruct.ap.test.selection.generics" +
-                    ".WildCardSuperWrapper<org.mapstruct.ap.test.selection.generics.TypeA> value)\".")
+                message = "No target bean properties found: can't map property " +
+                    "\"WildCardSuperWrapper<TypeA> fooWildCardSuperTypeAFailure\" to " +
+                    "\"TypeA fooWildCardSuperTypeAFailure\". " +
+                    "Consider to declare/implement a mapping method: " +
+                    "\"TypeA map(WildCardSuperWrapper<TypeA> value)\".")
         })
     public void shouldFailOnSuperBounds1() {
     }
@@ -153,12 +147,9 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "No target bean properties found: can't map property \"org.mapstruct.ap.test.selection" +
-                    ".generics.WildCardSuperWrapper<org.mapstruct.ap.test.selection.generics.TypeC> " +
-                    "fooWildCardSuperTypeCFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeC " +
-                    "fooWildCardSuperTypeCFailure\". Consider to declare/implement a mapping method: \"org.mapstruct" +
-                    ".ap.test.selection.generics.TypeC map(org.mapstruct.ap.test.selection.generics" +
-                    ".WildCardSuperWrapper<org.mapstruct.ap.test.selection.generics.TypeC> value)\".")
+                message = "No target bean properties found: can't map property \"WildCardSuperWrapper<TypeC> " +
+                    "fooWildCardSuperTypeCFailure\" to \"TypeC fooWildCardSuperTypeCFailure\". " +
+                    "Consider to declare/implement a mapping method: \"TypeC map(WildCardSuperWrapper<TypeC> value)\".")
         })
     public void shouldFailOnSuperBounds2() {
     }
@@ -172,13 +163,10 @@ public class ConversionTest {
     })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper6.class, kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 17, message =
-            "No target bean properties found: can't map property \"org.mapstruct.ap.test.NoProperties "
-                + "foo.wrapped\" to"
-                + " \"org.mapstruct.ap.test.selection.generics.TypeA "
-                + "foo.wrapped\". Consider to declare/implement a mapping method: \"org" +
-                ".mapstruct.ap.test.selection.generics.TypeA map(org.mapstruct.ap.test.NoProperties " +
-                "value)\".")
+            line = 17,
+            message = "No target bean properties found: can't map property " +
+                "\"NoProperties foo.wrapped\" to \"TypeA foo.wrapped\". " +
+                "Consider to declare/implement a mapping method: \"TypeA map(NoProperties value)\".")
     })
     public void shouldFailOnNonMatchingWildCards() {
     }

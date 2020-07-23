@@ -95,8 +95,10 @@ public class TypeFactory {
     private final Map<String, String> toBeImportedTypes = new HashMap<>();
     private final Map<String, String> notToBeImportedTypes;
 
+    private final boolean loggingVerbose;
+
     public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext,
-                       Map<String, String> notToBeImportedTypes) {
+                       Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -129,6 +131,8 @@ public class TypeFactory {
             ConcurrentNavigableMap.class.getName(),
             withDefaultConstructor( getType( ConcurrentSkipListMap.class ) )
         );
+
+        this.loggingVerbose = loggingVerbose;
     }
 
     public Type getTypeForLiteral(Class<?> type) {
@@ -298,7 +302,8 @@ public class TypeFactory {
             toBeImportedTypes,
             notToBeImportedTypes,
             toBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -523,7 +528,8 @@ public class TypeFactory {
                 toBeImportedTypes,
                 notToBeImportedTypes,
                 null,
-                implementationType.isLiteral()
+                implementationType.isLiteral(),
+                loggingVerbose
             );
             return implementation.createNew( replacement );
         }

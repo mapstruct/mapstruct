@@ -110,7 +110,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 typeUtils,
                 typeFactory,
                 new ArrayList<>( sourceModel ),
-                mapperReferences
+                mapperReferences,
+                options.isVerbose()
             ),
             mapperTypeElement,
             //sourceModel is passed only to fetch the after/before mapping methods in lifecycleCallbackFactory;
@@ -325,7 +326,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keySelectionParameters( keySelectionParameters )
                     .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
-                    .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
