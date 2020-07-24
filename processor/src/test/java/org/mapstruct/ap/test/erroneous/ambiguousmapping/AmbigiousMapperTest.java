@@ -12,6 +12,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @IssueKey("2156")
@@ -60,6 +61,33 @@ public class AmbigiousMapperTest {
         }
     )
     public void testErrorMessageForManyAmbiguous() {
+    }
+
+    @Test
+    @ProcessorOption(name = "mapstruct.verbose", value = "true")
+    @WithClasses( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 17,
+                message =
+                    // CHECKSTYLE:OFF
+                 "Ambiguous mapping methods found for mapping property \"org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO branch.leaf\" " +
+                     "to org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity: " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map1(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map2(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map3(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map4(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map5(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto), " +
+                     "org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafEntity map6(org.mapstruct.ap.test.erroneous.ambiguousmapping.ErroneousWithMoreThanFiveAmbiguousMethodsMapper.LeafDTO dto). " +
+                     "See https://mapstruct.org/faq/#ambiguous for more info."
+                // CHECKSTYLE:ON
+            )
+        }
+    )
+    public void testErrorMessageForManyAmbiguousVerbose() {
     }
 
 }
