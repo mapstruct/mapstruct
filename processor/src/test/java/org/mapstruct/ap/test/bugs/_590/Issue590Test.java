@@ -27,9 +27,8 @@ public class Issue590Test {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                message = "Can't map property \"java.lang.String prop\" to \"java.util.logging.XMLFormatter " +
-                    "prop\". Consider to declare/implement a mapping method: \"java.util.logging.XMLFormatter map" +
-                    "(java.lang.String value)\".")
+                message = "Can't map property \"String prop\" to \"XMLFormatter prop\". " +
+                    "Consider to declare/implement a mapping method: \"XMLFormatter map(String value)\".")
         })
     public void showsCantMapPropertyError() {
 

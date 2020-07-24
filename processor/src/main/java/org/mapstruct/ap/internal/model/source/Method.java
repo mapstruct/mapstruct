@@ -196,9 +196,7 @@ public interface Method {
     }
 
     /**
-     * @return the short name for error messages
+     * @return the short name for error messages when verbose, full name when not
      */
-    default String shortName() {
-        return getResultType().getName() + ":" + getName() + "(" + getMappingSourceType().getName() + ")";
-    }
+    String describe();
 }

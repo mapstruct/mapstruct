@@ -853,9 +853,8 @@ public class PropertyMapping extends ModelElement {
                     method.getExecutable(),
                     positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
-                    sourceType,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName
                 );
             }
@@ -864,9 +863,8 @@ public class PropertyMapping extends ModelElement {
                     method.getExecutable(),
                     positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS,
-                    sourceType,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName,
                     errorMessageDetails
                 );
@@ -899,7 +897,7 @@ public class PropertyMapping extends ModelElement {
                     positionHint,
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName
                 );
             }

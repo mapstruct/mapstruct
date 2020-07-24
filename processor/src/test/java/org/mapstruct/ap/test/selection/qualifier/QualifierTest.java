@@ -109,9 +109,8 @@ public class QualifierTest {
                 type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                message =
-                    "Can't map property \"java.lang.String title\" to \"java.lang.String title\". Consider to " +
-                        "declare/implement a mapping method: \"java.lang.String map(java.lang.String value)\".")
+                message = "Can't map property \"String title\" to \"String title\". " +
+                    "Consider to declare/implement a mapping method: \"String map(String value)\".")
         }
     )
     public void shouldNotProduceMatchingMethod() {
@@ -188,9 +187,8 @@ public class QualifierTest {
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
                 line = 24,
-                message = "The return type org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry is an " +
-                    "abstract class or interface. Provide a non abstract / non interface result type or a factory " +
-                    "method.")
+                message = "The return type AbstractEntry is an abstract class or interface. " +
+                    "Provide a non abstract / non interface result type or a factory method.")
         }
     )
     public void testEmptyBeanMapping() {

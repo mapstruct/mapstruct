@@ -83,10 +83,18 @@ public class Parameter extends ModelElement {
 
     @Override
     public String toString() {
+        return String.format( format(), type );
+    }
+
+    public String describe() {
+        return String.format( format(), type.describe() );
+    }
+
+    private String format() {
         return ( mappingTarget ? "@MappingTarget " : "" )
             + ( targetType ? "@TargetType " : "" )
             + ( mappingContext ? "@Context " : "" )
-            + type.toString() + " " + name;
+            +  "%s " + name;
     }
 
     @Override

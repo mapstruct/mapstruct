@@ -75,7 +75,7 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class MappingResolverImpl implements MappingResolver {
 
-    private static final int MAX_REPORTING_AMBIGUOUS = 5;
+    private static final int LIMIT_REPORTING_AMBIGUOUS = 5;
 
     private final FormattingMessager messager;
     private final Types typeUtils;
@@ -88,6 +88,8 @@ public class MappingResolverImpl implements MappingResolver {
     private final BuiltInMappingMethods builtInMethods;
     private final MethodSelectors methodSelectors;
 
+    private final boolean verboseLogging;
+
     private static final String JL_OBJECT_NAME = Object.class.getName();
 
     /**
@@ -98,7 +100,7 @@ public class MappingResolverImpl implements MappingResolver {
 
     public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
-                               List<MapperReference> mapperReferences) {
+                               List<MapperReference> mapperReferences, boolean verboseLogging) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
@@ -109,6 +111,8 @@ public class MappingResolverImpl implements MappingResolver {
         this.conversions = new Conversions( typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory, messager );
+
+        this.verboseLogging = verboseLogging;
     }
 
     @Override
@@ -128,7 +132,8 @@ public class MappingResolverImpl implements MappingResolver {
             positionHint,
             forger,
             builtInMethods.getBuiltInMethods(),
-            messager
+            messager,
+            verboseLogging
         );
 
         return attempt.getTargetAssignment( sourceRHS.getSourceTypeForMatching(), targetType );
@@ -162,19 +167,21 @@ public class MappingResolverImpl implements MappingResolver {
         private final Supplier<Assignment> forger;
         private final List<BuiltInMethod> builtIns;
         private final FormattingMessager messager;
+        private final int reportingLimitAmbiguous;
 
         // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a supported method
         // so this set must be cleared.
         private final Set<SupportingMappingMethod> supportingMethodCandidates;
 
+        // CHECKSTYLE:OFF
         private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, ForgedMethodHistory description,
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
                                  AnnotationMirror positionHint,
                                  Supplier<Assignment> forger,
                                  List<BuiltInMethod> builtIns,
-                                 FormattingMessager messager) {
+                                 FormattingMessager messager, boolean verboseLogging) {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
@@ -188,7 +195,9 @@ public class MappingResolverImpl implements MappingResolver {
             this.forger = forger;
             this.builtIns = builtIns;
             this.messager = messager;
+            this.reportingLimitAmbiguous = verboseLogging ? Integer.MAX_VALUE : LIMIT_REPORTING_AMBIGUOUS;
         }
+        // CHECKSTYLE:ON
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
@@ -469,7 +478,7 @@ public class MappingResolverImpl implements MappingResolver {
                         positionHint,
                         Message.GENERAL_AMBIGUOUS_MAPPING_METHOD,
                         descriptionStr,
-                        target,
+                        target.describe(),
                         join( candidates )
                     );
                 }
@@ -478,7 +487,7 @@ public class MappingResolverImpl implements MappingResolver {
                         mappingMethod.getExecutable(),
                         positionHint,
                         Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
-                        target,
+                        target.describe(),
                         join( candidates )
                     );
                 }
@@ -595,12 +604,12 @@ public class MappingResolverImpl implements MappingResolver {
         private <T extends Method> String join( List<SelectedMethod<T>> candidates ) {
 
             String candidateStr = candidates.stream()
-                                            .limit( MAX_REPORTING_AMBIGUOUS )
-                                            .map( m -> m.getMethod().shortName() )
+                                            .limit( reportingLimitAmbiguous )
+                                            .map( m -> m.getMethod().describe() )
                                             .collect( Collectors.joining( ", " ) );
 
-            if ( candidates.size() > MAX_REPORTING_AMBIGUOUS ) {
-                candidateStr += String.format( "... and %s more", candidates.size() - MAX_REPORTING_AMBIGUOUS );
+            if ( candidates.size() > reportingLimitAmbiguous ) {
+                candidateStr += String.format( "... and %s more", candidates.size() - reportingLimitAmbiguous );
             }
             return candidateStr;
         }
@@ -642,8 +651,8 @@ public class MappingResolverImpl implements MappingResolver {
                 attempt.positionHint,
                 message,
                 attempt.sourceRHS.getSourceErrorMessagePart(),
-                sourceType.toString(),
-                targetType.toString()
+                sourceType.describe(),
+                targetType.describe()
             );
         }
 
@@ -798,11 +807,11 @@ public class MappingResolverImpl implements MappingResolver {
             StringBuilder result = new StringBuilder();
             xCandidates.entrySet()
                        .stream()
-                       .limit( MAX_REPORTING_AMBIGUOUS )
+                       .limit( attempt.reportingLimitAmbiguous )
                        .forEach( e -> result.append( "method(s)Y: " )
                                             .append( attempt.join( e.getValue() ) )
                                             .append( ", methodX: " )
-                                            .append( e.getKey().getMethod().shortName() )
+                                            .append( e.getKey().getMethod().describe() )
                                             .append( "; " ) );
             attempt.messager.printMessage(
                 attempt.mappingMethod.getExecutable(),
@@ -912,7 +921,7 @@ public class MappingResolverImpl implements MappingResolver {
             StringBuilder result = new StringBuilder();
             xRefCandidates.entrySet()
                           .stream()
-                          .limit( MAX_REPORTING_AMBIGUOUS )
+                          .limit( attempt.reportingLimitAmbiguous )
                           .forEach( e -> result.append( "method(s)Y: " )
                                                .append( attempt.join( e.getValue() ) )
                                                .append( ", conversionX: " )
@@ -1029,7 +1038,7 @@ public class MappingResolverImpl implements MappingResolver {
             StringBuilder result = new StringBuilder();
             yRefCandidates.entrySet()
                           .stream()
-                          .limit( MAX_REPORTING_AMBIGUOUS )
+                          .limit( attempt.reportingLimitAmbiguous )
                           .forEach( e -> result.append( "conversionY: " )
                                                .append( e.getKey().shortName() )
                                                .append( ", method(s)X: " )

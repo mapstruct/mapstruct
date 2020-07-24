@@ -71,8 +71,8 @@ public class LossyConversionTest {
             @Diagnostic(type = KitchenDrawerMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 24,
-                message = "property \"java.math.BigInteger numberOfKnifes\" has a possibly lossy conversion "
-                    + "from java.math.BigInteger to java.lang.Integer.")
+                message = "property \"BigInteger numberOfKnifes\" has a possibly lossy conversion "
+                    + "from BigInteger to Integer.")
         })
     public void testConversionFromBigIntegerToInteger() {
     }
@@ -84,8 +84,8 @@ public class LossyConversionTest {
             @Diagnostic(type = ErroneousKitchenDrawerMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                message = "Can't map property \"org.mapstruct.ap.test.conversion.lossy.VerySpecialNumber " +
-                    "numberOfSpoons\". It has a possibly lossy conversion from java.math.BigInteger to java.lang.Long.")
+                message = "Can't map property \"VerySpecialNumber numberOfSpoons\". " +
+                    "It has a possibly lossy conversion from BigInteger to Long.")
         })
     public void test2StepConversionFromBigIntegerToLong() {
     }
@@ -97,8 +97,8 @@ public class LossyConversionTest {
             @Diagnostic(type = ErroneousKitchenDrawerMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                message = "Can't map property \"java.lang.Double depth\". It has a possibly lossy conversion "
-                    + "from java.lang.Double to float.")
+                message =
+                    "Can't map property \"Double depth\". It has a possibly lossy conversion from Double to float.")
         })
     public void testConversionFromDoubleToFloat() {
     }
@@ -110,8 +110,8 @@ public class LossyConversionTest {
             @Diagnostic(type = ErroneousKitchenDrawerMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 24,
-                message = "Can't map property \"java.math.BigDecimal length\". It has a possibly lossy conversion from "
-                    + "java.math.BigDecimal to java.lang.Float.")
+                message =
+            "Can't map property \"BigDecimal length\". It has a possibly lossy conversion from BigDecimal to Float.")
         })
     public void testConversionFromBigDecimalToFloat() {
     }
@@ -135,8 +135,7 @@ public class LossyConversionTest {
             @Diagnostic(type = ListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 21,
-                message = "collection element has a possibly lossy conversion from java.math.BigDecimal to "
-                    + "java.math.BigInteger.")
+                message = "collection element has a possibly lossy conversion from BigDecimal to BigInteger.")
         })
     public void testListElementConversion() {
     }
@@ -148,11 +147,11 @@ public class LossyConversionTest {
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 19,
-                message = "map key has a possibly lossy conversion from java.lang.Long to java.lang.Integer."),
+                message = "map key has a possibly lossy conversion from Long to Integer."),
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 19,
-                message = "map value has a possibly lossy conversion from java.lang.Double to java.lang.Float.")
+                message = "map value has a possibly lossy conversion from Double to Float.")
     })
     public void testMapElementConversion() {
     }

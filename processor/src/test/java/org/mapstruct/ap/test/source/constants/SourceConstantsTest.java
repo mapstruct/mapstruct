@@ -192,13 +192,11 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
                 line = 28,
-                message = "Constant \"DENMARK\" doesn't exist in enum type org.mapstruct.ap.test.source."
-                    + "constants.CountryEnum for property \"country\"."),
+                message = "Constant \"DENMARK\" doesn't exist in enum type CountryEnum for property \"country\"."),
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
                 line = 28,
-                message = "Can't map \"java.lang.String \"DENMARK\"\" to \"org.mapstruct.ap.test.source."
-                    + "constants.CountryEnum country\".")
+                message = "Can't map \"DENMARK\" to \"CountryEnum country\".")
         }
     )
     public void errorOnNonExistingEnumConstant() throws ParseException {
@@ -219,8 +217,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper6.class,
                 kind = Kind.ERROR,
                 line = 25,
-                message = "Can't map \"java.lang.String \"3001\"\" to \"java.lang.Long "
-                    + "longWrapperConstant\". Reason: L/l mandatory for long types.")
+                message = "Can't map \"3001\" to \"Long longWrapperConstant\". Reason: L/l mandatory for long types.")
         }
     )
     public void cannotMapIntConstantToLong() throws ParseException {

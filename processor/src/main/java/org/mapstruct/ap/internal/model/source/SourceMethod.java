@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -67,6 +68,8 @@ public class SourceMethod implements Method {
     private Boolean isStreamMapping;
     private final boolean hasObjectFactoryAnnotation;
 
+    private final boolean verboseLogging;
+
     public static class Builder {
 
         private Type declaringMapper = null;
@@ -86,6 +89,7 @@ public class SourceMethod implements Method {
         private List<ValueMappingOptions> valueMappings;
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
+        private boolean verboseLogging;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -172,6 +176,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setVerboseLogging(boolean verboseLogging) {
+            this.verboseLogging = verboseLogging;
+            return this;
+        }
+
         public SourceMethod build() {
 
             if ( mappings == null ) {
@@ -215,6 +224,8 @@ public class SourceMethod implements Method {
         this.typeFactory = builder.typeFactory;
         this.prototypeMethods = builder.prototypeMethods;
         this.mapperToImplement = builder.definingType;
+
+        this.verboseLogging = builder.verboseLogging;
     }
 
     private boolean determineIfIsObjectFactory() {
@@ -520,5 +531,19 @@ public class SourceMethod implements Method {
 
     public boolean hasObjectFactoryAnnotation() {
         return hasObjectFactoryAnnotation;
+    }
+
+    @Override
+    public String describe() {
+        if ( verboseLogging ) {
+            return toString();
+        }
+        else {
+            String mapper = declaringMapper != null ? declaringMapper.getName() + "." : "";
+            String sourceTypes = getParameters().stream()
+                .map( Parameter::describe )
+                .collect( Collectors.joining( ", " ) );
+            return getResultType().describe() + " " + mapper + getName() + "(" + sourceTypes + ")";
+        }
     }
 }

@@ -44,6 +44,7 @@ import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
+import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
@@ -74,6 +75,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private Types typeUtils;
     private Elements elementUtils;
+    private Options options;
 
     @Override
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
@@ -83,6 +85,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
         this.enumTransformationStrategies = context.getEnumTransformationStrategies();
+        this.options = context.getOptions();
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
@@ -301,6 +304,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
+            .setVerboseLogging( options.isVerbose() )
             .build();
     }
 
@@ -355,6 +359,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
+            .setVerboseLogging( options.isVerbose() )
             .build();
     }
 

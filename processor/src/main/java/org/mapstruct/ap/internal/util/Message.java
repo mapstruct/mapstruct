@@ -77,8 +77,8 @@ public enum Message {
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
 
-    CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map \"%s %s\" to \"%s %s\"." ),
-    CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS( "Can't map \"%s %s\" to \"%s %s\". Reason: %s." ),
+    CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\"." ),
+    CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS( "Can't map %s to \"%s %s\". Reason: %s." ),
     CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     CONSTANTMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s for property \"%s\"." ),
 

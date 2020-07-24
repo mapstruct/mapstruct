@@ -24,9 +24,8 @@ public class Issue1698Test {
         diagnostics = {
             @Diagnostic(type = Erroneous1698Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                message = "Can't map property \"java.lang.String rabbit\" to \"org.mapstruct.ap.test.bugs._1698" +
-                    ".Erroneous1698Mapper.Rabbit rabbit\". Consider to declare/implement a mapping method: \"org" +
-                    ".mapstruct.ap.test.bugs._1698.Erroneous1698Mapper.Rabbit map(java.lang.String value)\".")
+                message = "Can't map property \"String rabbit\" to \"Erroneous1698Mapper.Rabbit rabbit\". " +
+                    "Consider to declare/implement a mapping method: \"Erroneous1698Mapper.Rabbit map(String value)\".")
         })
 
     public void testErrorMessage() {

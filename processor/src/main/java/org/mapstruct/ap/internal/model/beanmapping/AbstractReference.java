@@ -112,18 +112,18 @@ public abstract class AbstractReference {
         }
         else if ( propertyEntries.isEmpty() ) {
             if ( parameter != null ) {
-                result = String.format( "parameter \"%s %s\"", parameter.getType(), parameter.getName() );
+                result = String.format( "parameter \"%s %s\"", parameter.getType().describe(), parameter.getName() );
             }
         }
         else if ( propertyEntries.size() == 1 ) {
             PropertyEntry propertyEntry = propertyEntries.get( 0 );
-            result = String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+            result = String.format( "property \"%s %s\"", propertyEntry.getType().describe(), propertyEntry.getName() );
         }
         else {
             PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
             result = String.format(
                 "property \"%s %s\"",
-                lastPropertyEntry.getType(),
+                lastPropertyEntry.getType().describe(),
                 Strings.join( getElementNames(), "." )
             );
         }

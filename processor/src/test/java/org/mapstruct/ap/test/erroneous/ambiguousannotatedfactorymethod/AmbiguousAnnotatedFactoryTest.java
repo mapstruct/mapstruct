@@ -30,13 +30,9 @@ public class AmbiguousAnnotatedFactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Bar: org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Bar createBar(org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Foo foo), org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Bar org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.AmbiguousBarFactory.createBar(org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousannotatedfactorymethod.Foo foo)." +
+                message = "Ambiguous factory methods found for creating Bar: " +
+                    "Bar createBar(Foo foo), " +
+                    "Bar AmbiguousBarFactory.createBar(Foo foo)." +
                     " See https://mapstruct.org/faq/#ambiguous for more info.")
 
         }

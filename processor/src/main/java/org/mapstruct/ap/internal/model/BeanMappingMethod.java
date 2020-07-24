@@ -489,8 +489,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_ABSTRACT,
-                    resultType,
-                    method.getResultType()
+                    resultType.describe(),
+                    method.getResultType().describe()
                 );
                 error = false;
             }
@@ -499,8 +499,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_NOT_ASSIGNABLE,
-                    resultType,
-                    method.getResultType()
+                    resultType.describe(),
+                    method.getResultType().describe()
                 );
                 error = false;
             }
@@ -509,7 +509,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                    resultType
+                    resultType.describe()
                 );
                 error = false;
             }
@@ -522,7 +522,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     GENERAL_ABSTRACT_RETURN_TYPE,
-                    returnType
+                    returnType.describe()
                 );
                 error = false;
             }
@@ -530,7 +530,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                    returnType
+                    returnType.describe()
                 );
                 error = false;
             }
@@ -570,8 +570,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
-                    returnTypeImpl,
-                    Strings.join( matchingFactoryMethods, ", " )
+                    returnTypeImpl.describe(),
+                    matchingFactoryMethods.stream()
+                        .map( SelectedMethod::getMethod )
+                        .map( Method::describe )
+                        .collect( Collectors.joining( ", " ) )
                 );
                 hasFactoryMethod = true;
             }
@@ -911,13 +914,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
 
                     Message msg;
-                    Object[] args;
+                    String[] args;
 
                     if ( targetRef.getPathProperties().isEmpty() ) {
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
-                        args = new Object[] {
+                        args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mostSimilarProperty
                         };
                     }
@@ -925,9 +928,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         List<String> pathProperties = new ArrayList<>( targetRef.getPathProperties() );
                         pathProperties.add( mostSimilarProperty );
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE;
-                        args = new Object[] {
+                        args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mapping.getTargetName(),
                             Strings.join( pathProperties, "." )
                         };
@@ -956,14 +959,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         msg = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE;
                         args = new Object[] {
                             mapping.getTargetName(),
-                            resultTypeToMap
+                            resultTypeToMap.describe()
                         };
                     }
                     else {
                         msg = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_TYPE;
                         args = new Object[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mapping.getTargetName()
                         };
                     }
@@ -1279,10 +1282,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ctx.getMessager().printMessage(
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND,
-                        sourceType,
-                        targetType,
-                        targetType,
-                        sourceType
+                        sourceType.describe(),
+                        targetType.describe(),
+                        targetType.describe(),
+                        sourceType.describe()
                     );
                 }
                 else {
@@ -1291,10 +1294,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND,
                         history.createSourcePropertyErrorMessage(),
-                        history.getTargetType(),
+                        history.getTargetType().describe(),
                         history.createTargetPropertyName(),
-                        history.getTargetType(),
-                        history.getSourceType()
+                        history.getTargetType().describe(),
+                        history.getSourceType().describe()
                     );
                 }
             }
@@ -1321,14 +1324,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
                         Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
                         Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
-                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().toString();
-                    String targetErrorMessage = method.getReturnType().toString();
+                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
+                    String targetErrorMessage = method.getReturnType().describe();
                     if ( ( (ForgedMethod) method ).getHistory() != null ) {
                         ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
                         sourceErrorMessage = history.createSourcePropertyErrorMessage();
                         targetErrorMessage = MessageFormat.format(
                             "\"{0} {1}\"",
-                            history.getTargetType(),
+                            history.getTargetType().describe(),
                             history.createTargetPropertyName()
                         );
                     }

@@ -340,6 +340,13 @@ public class ForgedMethod implements Method {
         return basedOn.getOptions();
     }
 
+    @Override
+    public String describe() {
+        // the name of the forged method is never fully qualified, so no need to distinguish
+        // between verbose or not. The type knows whether it should log verbose
+        return getResultType().describe() + ":" + getName() + "(" + getMappingSourceType().describe() + ")";
+    }
+
     public MappingReferences getMappingReferences() {
         return mappingReferences;
     }

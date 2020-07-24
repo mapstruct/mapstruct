@@ -34,10 +34,9 @@ public class FactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22,
-                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.erroneous" +
-                    ".ambiguousfactorymethod.Bar: org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar " +
-                    "createBar(), org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar org.mapstruct.ap.test" +
-                    ".erroneous.ambiguousfactorymethod.a.BarFactory.createBar()." +
+                message = "Ambiguous factory methods found for creating Bar: " +
+                    "Bar createBar(), " +
+                    "Bar BarFactory.createBar()." +
                     " See https://mapstruct.org/faq/#ambiguous for more info.")
         }
     )
