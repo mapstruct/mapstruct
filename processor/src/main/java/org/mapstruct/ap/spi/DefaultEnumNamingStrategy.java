@@ -11,6 +11,8 @@ import javax.lang.model.util.Types;
 
 /**
  * @author Filip Hrisafov
+ *
+ * @since 1.4
  */
 public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
 

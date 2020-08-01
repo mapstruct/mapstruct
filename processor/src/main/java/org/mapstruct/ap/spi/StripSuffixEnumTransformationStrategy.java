@@ -7,6 +7,8 @@ package org.mapstruct.ap.spi;
 
 /**
  * @author Filip Hrisafov
+ *
+ * @since 1.4
  */
 public class StripSuffixEnumTransformationStrategy implements EnumTransformationStrategy {
 

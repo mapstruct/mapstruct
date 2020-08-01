@@ -83,6 +83,8 @@ public @interface MapperConfig {
      * their simple name rather than their fully-qualified name.
      *
      * @return classes to add in the imports of the generated implementation.
+     *
+     * @since 1.4
      */
     Class<?>[] imports() default { };
 

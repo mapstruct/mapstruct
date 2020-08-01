@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
  * Allows multiple {@link MappingControl} on a class declaration.
  *
  * @author Sjaak Derksen
+ *
+ * @since 1.4
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.ANNOTATION_TYPE)
