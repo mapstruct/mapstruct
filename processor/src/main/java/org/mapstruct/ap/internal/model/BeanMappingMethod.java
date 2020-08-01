@@ -1488,6 +1488,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
+            if ( propertyMapping.isConstructorMapping() ) {
+                // We need to add the target type imports for a constructor mapper since we define its parameters
+                types.addAll( propertyMapping.getTargetType().getImportTypes() );
+            }
         }
 
         if ( returnTypeToConstruct != null  ) {
