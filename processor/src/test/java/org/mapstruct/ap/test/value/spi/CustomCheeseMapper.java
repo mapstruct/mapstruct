@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.value.spi;
 
+import org.mapstruct.EnumMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
@@ -24,6 +25,8 @@ public interface CustomCheeseMapper {
 
     String mapToString(CustomCheeseType cheeseType);
 
+    // If defaultException is explicitly defined then it should be used instead of what is in the SPI
+    @EnumMapping(defaultException = IllegalArgumentException.class)
     String mapToString(CheeseType cheeseType);
 
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "CUSTOM_BRIE")

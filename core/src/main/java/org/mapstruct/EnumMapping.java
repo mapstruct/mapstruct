@@ -111,7 +111,7 @@ public @interface EnumMapping {
      *
      * @return the name transformation strategy
      */
-    String nameTransformationStrategy();
+    String nameTransformationStrategy() default "";
 
     /**
      * The configuration that should be passed on the appropriate name transformation strategy.
@@ -119,5 +119,12 @@ public @interface EnumMapping {
      *
      * @return the configuration to use
      */
-    String configuration();
+    String configuration() default "";
+
+    /**
+     * Exception that should be thrown by the generated code if no mapping matches.
+     *
+     * @return the exception that should be used in the generated code
+     */
+    Class<? extends Exception> defaultException() default IllegalArgumentException.class;
 }

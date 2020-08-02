@@ -37,7 +37,7 @@ public class CustomErroneousEnumNamingStrategyTest {
             @Diagnostic(
                 type = CustomCheeseMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 24,
                 messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
                     "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
                     " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"
@@ -45,7 +45,7 @@ public class CustomErroneousEnumNamingStrategyTest {
             @Diagnostic(
                 type = CustomCheeseMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 30,
+                line = 33,
                 messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
                     "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
                     " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"

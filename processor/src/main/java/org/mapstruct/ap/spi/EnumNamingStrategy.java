@@ -47,4 +47,12 @@ public interface EnumNamingStrategy {
      * never return null
      */
     String getEnumConstant(TypeElement enumType, String enumConstant);
+
+    /**
+     * Return the type element of the exception that should be used in the generated code
+     * for an unexpected enum constant.
+     *
+     * @return the type element of the exception that should be used, never {@code null}
+     */
+    TypeElement getDefaultExceptionType();
 }

@@ -11,6 +11,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.spi.DefaultEnumNamingStrategy;
 import org.mapstruct.ap.spi.EnumNamingStrategy;
+import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 
 /**
  * @author Filip Hrisafov
@@ -50,5 +51,10 @@ public class CustomEnumNamingStrategy extends DefaultEnumNamingStrategy implemen
         }
 
         return false;
+    }
+
+    @Override
+    protected Class<? extends Exception> getDefaultExceptionClass() {
+        return CustomIllegalArgumentException.class;
     }
 }

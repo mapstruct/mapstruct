@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.value.spi;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     CheeseType.class,
     CustomCheeseType.class,
     CustomEnumMarker.class,
+    CustomIllegalArgumentException.class,
 })
 @WithServiceImplementation(CustomEnumNamingStrategy.class)
 public class CustomEnumNamingStrategyTest {

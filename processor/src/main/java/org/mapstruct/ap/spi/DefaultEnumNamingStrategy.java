@@ -34,4 +34,13 @@ public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
     public String getEnumConstant(TypeElement enumType, String enumConstant) {
         return enumConstant;
     }
+
+    @Override
+    public TypeElement getDefaultExceptionType() {
+        return elementUtils.getTypeElement( getDefaultExceptionClass().getCanonicalName() );
+    }
+
+    protected Class<? extends Exception> getDefaultExceptionClass() {
+        return IllegalArgumentException.class;
+    }
 }

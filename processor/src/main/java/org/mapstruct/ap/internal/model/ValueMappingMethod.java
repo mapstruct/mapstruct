@@ -43,7 +43,9 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final String defaultTarget;
     private final String nullTarget;
-    private final boolean throwIllegalArgumentException;
+
+    private final Type defaultException;
+
     private final boolean overridden;
 
     public static class Builder {
@@ -118,14 +120,14 @@ public class ValueMappingMethod extends MappingMethod {
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
-                !valueMappings.hasDefaultValue,
+                determineDefaultException(),
                 beforeMappingMethods,
                 afterMappingMethods
             );
         }
 
         private void initializeEnumTransformationStrategy() {
-            if ( !enumMapping.hasAnnotation() ) {
+            if ( !enumMapping.hasNameTransformationStrategy() ) {
                 enumTransformationInvoker = EnumTransformationStrategyInvoker.DEFAULT;
             }
             else {
@@ -414,6 +416,21 @@ public class ValueMappingMethod extends MappingMethod {
 
             return !foundIncorrectMapping;
         }
+
+        private Type determineDefaultException() {
+            if ( !valueMappings.hasDefaultValue ) {
+                if ( enumMapping.hasAnnotation() ) {
+                    TypeMirror definedDefaultException = enumMapping.getDefaultException();
+                    if ( definedDefaultException != null ) {
+                        return ctx.getTypeFactory().getType( definedDefaultException );
+                    }
+                }
+
+                return ctx.getTypeFactory().getType( ctx.getEnumNamingStrategy().getDefaultExceptionType() );
+            }
+
+            return null;
+        }
     }
 
     private static class EnumTransformationStrategyInvoker {
@@ -485,14 +502,26 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
-        boolean throwIllegalArgumentException, List<LifecycleCallbackMethodReference> beforeMappingMethods,
+        Type defaultException,
+        List<LifecycleCallbackMethodReference> beforeMappingMethods,
         List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
-        this.throwIllegalArgumentException = throwIllegalArgumentException;
+        this.defaultException = defaultException;
         this.overridden = method.overridesMethod();
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> importTypes = super.getImportTypes();
+
+        if ( defaultException != null && !defaultException.isJavaLangType() ) {
+            importTypes.addAll( defaultException.getImportTypes() );
+        }
+
+        return importTypes;
     }
 
     public List<MappingEntry> getValueMappings() {
@@ -507,8 +536,8 @@ public class ValueMappingMethod extends MappingMethod {
         return nullTarget;
     }
 
-    public boolean isThrowIllegalArgumentException() {
-        return throwIllegalArgumentException;
+    public Type getDefaultException() {
+        return defaultException;
     }
 
     public Parameter getSourceParameter() {
