@@ -14,12 +14,12 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.tools.gem.GemValue;
@@ -103,6 +103,10 @@ public class BeanMappingOptions extends DelegatingOptions {
         super( next );
         this.selectionParameters = selectionParameters;
         this.beanMapping = beanMapping;
+    }
+
+    protected BeanMappingOptions( BeanMappingOptions beanMappingOptions ) {
+        this( beanMappingOptions.selectionParameters, beanMappingOptions.beanMapping, beanMappingOptions );
     }
 
     // @Mapping, @BeanMapping
