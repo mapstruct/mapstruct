@@ -2,7 +2,7 @@
 == Using the MapStruct SPI
 === Custom Accessor Naming Strategy
 
-MapStruct offers the possibility to override the `AccessorNamingStrategy` via the Service Provide Interface (SPI). A nice example is the use of the fluent API on the source object `GolfPlayer` and `GolfPlayerDto` below.
+MapStruct offers the possibility to override the `AccessorNamingStrategy` via the Service Provider Interface (SPI). A nice example is the use of the fluent API on the source object `GolfPlayer` and `GolfPlayerDto` below.
 
 .Source object GolfPlayer with fluent API.
 ====
