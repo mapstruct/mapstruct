@@ -17,10 +17,12 @@ import javax.lang.model.type.TypeMirror;
 public class ParameterElementAccessor extends AbstractAccessor<Element> {
 
     protected final String name;
+    protected final TypeMirror accessedType;
 
-    public ParameterElementAccessor(Element element, String name) {
+    public ParameterElementAccessor(Element element, TypeMirror accessedType, String name) {
         super( element );
         this.name = name;
+        this.accessedType = accessedType;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class ParameterElementAccessor extends AbstractAccessor<Element> {
 
     @Override
     public TypeMirror getAccessedType() {
-        return element.asType();
+        return accessedType;
     }
 
     @Override
