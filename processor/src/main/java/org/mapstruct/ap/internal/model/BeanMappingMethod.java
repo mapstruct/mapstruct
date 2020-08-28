@@ -296,8 +296,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             existingVariableNames
             );
 
-            if (factoryMethod != null && method instanceof ForgedMethod ) {
-                ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                if ( factoryMethod != null ) {
+                    forgedMethod.addThrownTypes( factoryMethod.getThrownTypes() );
+                }
+
+                for ( PropertyMapping propertyMapping : propertyMappings ) {
+                    if ( propertyMapping.getAssignment() != null ) {
+                        forgedMethod.addThrownTypes( propertyMapping.getAssignment().getThrownTypes() );
+                    }
+                }
+
             }
 
             MethodReference finalizeMethod = null;
