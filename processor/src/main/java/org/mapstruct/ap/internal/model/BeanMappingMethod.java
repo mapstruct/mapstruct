@@ -27,6 +27,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 
@@ -598,15 +599,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
                 for ( Element recordComponent : recordComponents ) {
+                    TypeMirror recordComponentMirror = ctx.getTypeUtils()
+                        .asMemberOf( (DeclaredType) type.getTypeMirror(), recordComponent );
                     String parameterName = recordComponent.getSimpleName().toString();
-                    Accessor accessor = createConstructorAccessor( recordComponent, parameterName );
+                    Accessor accessor = createConstructorAccessor(
+                        recordComponent,
+                        recordComponentMirror,
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         accessor
                     );
 
                     parameterBindings.add( ParameterBinding.fromTypeAndName(
-                        ctx.getTypeFactory().getType( recordComponent.asType() ),
+                        ctx.getTypeFactory().getType( recordComponentMirror ),
                         accessor.getSimpleName()
                     ) );
                 }
@@ -718,7 +725,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 for ( Parameter constructorParameter : constructorParameters ) {
                     String parameterName = constructorParameter.getName();
                     Element parameterElement = constructorParameter.getElement();
-                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    Accessor constructorAccessor = createConstructorAccessor(
+                        parameterElement,
+                        constructorParameter.getType().getTypeMirror(),
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         constructorAccessor
@@ -746,7 +757,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     String parameterName = constructorProperties.get( i );
                     Parameter constructorParameter = constructorParameters.get( i );
                     Element parameterElement = constructorParameter.getElement();
-                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    Accessor constructorAccessor = createConstructorAccessor(
+                        parameterElement,
+                        constructorParameter.getType().getTypeMirror(),
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         constructorAccessor
@@ -761,13 +776,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Accessor createConstructorAccessor(Element element, String parameterName) {
+        private Accessor createConstructorAccessor(Element element, TypeMirror accessedType, String parameterName) {
             String safeParameterName = Strings.getSafeVariableName(
                 parameterName,
                 existingVariableNames
             );
             existingVariableNames.add( safeParameterName );
-            return new ParameterElementAccessor( element, safeParameterName );
+            return new ParameterElementAccessor( element, accessedType, safeParameterName );
         }
 
         private boolean hasDefaultAnnotationFromAnyPackage(Element element) {
