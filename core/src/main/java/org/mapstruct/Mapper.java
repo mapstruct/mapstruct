@@ -302,6 +302,18 @@ public @interface Mapper {
      * If no exception is configured, the exception given via {@link MapperConfig#defaultEnumException()} will be
      * used, using {@link IllegalArgumentException} by default.
      *
+     * <p>
+     * Note:
+     * <ul>
+     *     <li>
+     *      The defined exception should at least have a constructor with a {@link String} parameter.
+     *     </li>
+     *     <li>
+     *      If the defined exception is a checked exception then the enum mapping methods should have that exception
+     *      in the throws clause.
+     *     </li>
+     * </ul>
+     *
      * @return the exception that should be used in the generated code
      *
      * @since 1.4
