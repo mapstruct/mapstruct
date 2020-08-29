@@ -43,7 +43,9 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final String defaultTarget;
     private final String nullTarget;
-    private final boolean throwIllegalArgumentException;
+
+    private final Type unexpectedValueMappingException;
+
     private final boolean overridden;
 
     public static class Builder {
@@ -90,7 +92,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( targetType.isEnumType() && valueMappings.nullTarget == null ) {
                 // If null target is not set it means that the user has not explicitly defined a mapping for null
-                valueMappings.nullValueTarget = ctx.getEnumNamingStrategy()
+                valueMappings.nullValueTarget = ctx.getEnumMappingStrategy()
                     .getDefaultNullEnumConstant( targetType.getTypeElement() );
             }
 
@@ -118,14 +120,14 @@ public class ValueMappingMethod extends MappingMethod {
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
-                !valueMappings.hasDefaultValue,
+                determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
                 afterMappingMethods
             );
         }
 
         private void initializeEnumTransformationStrategy() {
-            if ( !enumMapping.hasAnnotation() ) {
+            if ( !enumMapping.hasNameTransformationStrategy() ) {
                 enumTransformationInvoker = EnumTransformationStrategyInvoker.DEFAULT;
             }
             else {
@@ -290,7 +292,7 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private String getEnumConstant(TypeElement typeElement, String enumConstant) {
-            return ctx.getEnumNamingStrategy().getEnumConstant( typeElement, enumConstant );
+            return ctx.getEnumMappingStrategy().getEnumConstant( typeElement, enumConstant );
         }
 
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
@@ -408,11 +410,25 @@ public class ValueMappingMethod extends MappingMethod {
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI,
                     valueMappings.nullValueTarget,
                     method.getReturnType(),
-                    ctx.getEnumNamingStrategy()
+                    ctx.getEnumMappingStrategy()
                 );
             }
 
             return !foundIncorrectMapping;
+        }
+
+        private Type determineUnexpectedValueMappingException() {
+            if ( !valueMappings.hasDefaultValue ) {
+                TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
+                if ( unexpectedValueMappingException != null ) {
+                    return ctx.getTypeFactory().getType( unexpectedValueMappingException );
+                }
+
+                return ctx.getTypeFactory()
+                    .getType( ctx.getEnumMappingStrategy().getUnexpectedValueMappingExceptionType() );
+            }
+
+            return null;
         }
     }
 
@@ -485,14 +501,26 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
-        boolean throwIllegalArgumentException, List<LifecycleCallbackMethodReference> beforeMappingMethods,
+        Type unexpectedValueMappingException,
+        List<LifecycleCallbackMethodReference> beforeMappingMethods,
         List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
-        this.throwIllegalArgumentException = throwIllegalArgumentException;
+        this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> importTypes = super.getImportTypes();
+
+        if ( unexpectedValueMappingException != null && !unexpectedValueMappingException.isJavaLangType() ) {
+            importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
+        }
+
+        return importTypes;
     }
 
     public List<MappingEntry> getValueMappings() {
@@ -507,8 +535,8 @@ public class ValueMappingMethod extends MappingMethod {
         return nullTarget;
     }
 
-    public boolean isThrowIllegalArgumentException() {
-        return throwIllegalArgumentException;
+    public Type getUnexpectedValueMappingException() {
+        return unexpectedValueMappingException;
     }
 
     public Parameter getSourceParameter() {

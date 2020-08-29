@@ -14,7 +14,7 @@ import javax.lang.model.util.Types;
  *
  * @since 1.4
  */
-public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
+public class DefaultEnumMappingStrategy implements EnumMappingStrategy {
 
     protected Elements elementUtils;
     protected Types typeUtils;
@@ -33,5 +33,14 @@ public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
     @Override
     public String getEnumConstant(TypeElement enumType, String enumConstant) {
         return enumConstant;
+    }
+
+    @Override
+    public TypeElement getUnexpectedValueMappingExceptionType() {
+        return elementUtils.getTypeElement( getUnexpectedValueMappingExceptionClass().getCanonicalName() );
+    }
+
+    protected Class<? extends Exception> getUnexpectedValueMappingExceptionClass() {
+        return IllegalArgumentException.class;
     }
 }

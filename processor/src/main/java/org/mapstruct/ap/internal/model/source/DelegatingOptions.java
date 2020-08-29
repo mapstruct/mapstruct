@@ -105,6 +105,10 @@ public abstract class DelegatingOptions {
         return next.getMappingControl( elementUtils );
     }
 
+    public TypeMirror getUnexpectedValueMappingException() {
+        return next.getUnexpectedValueMappingException();
+    }
+
     DelegatingOptions next() {
         return next;
     }

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.value.spi;
 
 import javax.annotation.processing.Generated;
+import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -31,7 +32,7 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
             break;
             case UNRECOGNIZED: cheeseType = null;
             break;
-            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+            default: throw new CustomIllegalArgumentException( "Unexpected enum constant: " + cheese );
         }
 
         return cheeseType;
@@ -50,7 +51,7 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
             break;
             case ROQUEFORT: customCheeseType = CustomCheeseType.CUSTOM_ROQUEFORT;
             break;
-            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+            default: throw new CustomIllegalArgumentException( "Unexpected enum constant: " + cheese );
         }
 
         return customCheeseType;
@@ -73,7 +74,7 @@ public class CustomCheeseMapperImpl implements CustomCheeseMapper {
             break;
             case UNRECOGNIZED: string = null;
             break;
-            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheeseType );
+            default: throw new CustomIllegalArgumentException( "Unexpected enum constant: " + cheeseType );
         }
 
         return string;

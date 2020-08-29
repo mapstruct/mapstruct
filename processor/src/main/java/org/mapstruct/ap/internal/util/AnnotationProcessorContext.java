@@ -24,8 +24,8 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
-import org.mapstruct.ap.spi.DefaultEnumNamingStrategy;
-import org.mapstruct.ap.spi.EnumNamingStrategy;
+import org.mapstruct.ap.spi.DefaultEnumMappingStrategy;
+import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
@@ -43,7 +43,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
 
     private BuilderProvider builderProvider;
     private AccessorNamingStrategy accessorNamingStrategy;
-    private EnumNamingStrategy enumNamingStrategy;
+    private EnumMappingStrategy enumMappingStrategy;
     private boolean initialized;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
 
@@ -113,13 +113,13 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
 
-        this.enumNamingStrategy = Services.get( EnumNamingStrategy.class, new DefaultEnumNamingStrategy() );
-        this.enumNamingStrategy.init( this );
+        this.enumMappingStrategy = Services.get( EnumMappingStrategy.class, new DefaultEnumMappingStrategy() );
+        this.enumMappingStrategy.init( this );
         if ( verbose ) {
             messager.printMessage(
                 Diagnostic.Kind.NOTE,
                 "MapStruct: Using enum naming strategy: "
-                    + this.enumNamingStrategy.getClass().getCanonicalName()
+                    + this.enumMappingStrategy.getClass().getCanonicalName()
             );
         }
 
@@ -250,9 +250,9 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         return accessorNamingStrategy;
     }
 
-    public EnumNamingStrategy getEnumNamingStrategy() {
+    public EnumMappingStrategy getEnumMappingStrategy() {
         initialize();
-        return enumNamingStrategy;
+        return enumMappingStrategy;
     }
 
     public BuilderProvider getBuilderProvider() {

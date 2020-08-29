@@ -202,7 +202,7 @@ include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
 [[custom-enum-naming-strategy]]
 === Custom Enum Naming Strategy
 
-MapStruct offers the possibility to override the `EnumNamingStrategy` via the Service Provider Interface (SPI).
+MapStruct offers the possibility to override the `EnumMappingStrategy` via the Service Provider Interface (SPI).
 This can be used when you have certain enums that follow some conventions within your organization.
 For example all enums which implement an interface named `CustomEnumMarker` are prefixed with `CUSTOM_`
 and the default value for them when mapping from `null` is `UNSPECIFIED`
@@ -250,15 +250,15 @@ public interface CheeseTypeMapper {
 ----
 ====
 
-This can be achieved with implementing the SPI `org.mapstruct.ap.spi.EnumNamingStrategy` as in the following example.
-Here’s an implemented `org.mapstruct.ap.spi.EnumNamingStrategy`:
+This can be achieved with implementing the SPI `org.mapstruct.ap.spi.EnumMappingStrategy` as in the following example.
+Here’s an implemented `org.mapstruct.ap.spi.EnumMappingStrategy`:
 
 .Custom enum naming strategy
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-public class CustomEnumNamingStrategy extends DefaultEnumNamingStrategy {
+public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy {
 
     @Override
     public String getDefaultNullEnumConstant(TypeElement enumType) {

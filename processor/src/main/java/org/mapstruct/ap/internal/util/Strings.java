@@ -129,6 +129,10 @@ public class Strings {
         return string == null || string.isEmpty();
     }
 
+    public static boolean isNotEmpty(String string) {
+        return !isEmpty( string );
+    }
+
     public static String getSafeVariableName(String name, String... existingVariableNames) {
         return getSafeVariableName( name, Arrays.asList( existingVariableNames ) );
     }

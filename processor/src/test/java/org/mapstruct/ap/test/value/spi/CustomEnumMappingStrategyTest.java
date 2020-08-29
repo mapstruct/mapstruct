@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.value.spi;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,42 +24,65 @@ import static org.assertj.core.api.Assertions.assertThat;
     CheeseType.class,
     CustomCheeseType.class,
     CustomEnumMarker.class,
+    CustomIllegalArgumentException.class,
 })
-@WithServiceImplementation(CustomErroneousEnumNamingStrategy.class)
-public class CustomErroneousEnumNamingStrategyTest {
+@WithServiceImplementation(CustomEnumMappingStrategy.class)
+public class CustomEnumMappingStrategyTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
     @WithClasses({
         CustomCheeseMapper.class
     })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(
-                type = CustomCheeseMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
-                messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
-                    "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
-                    " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"
-            ),
-            @Diagnostic(
-                type = CustomCheeseMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 30,
-                messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
-                    "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
-                    " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"
-            )
-        }
-    )
-    public void shouldThrowCompileErrorWhenDefaultEnumDoesNotExist() {
+    public void shouldApplyCustomEnumMappingStrategy() {
+        generatedSource.addComparisonToFixtureFor( CustomCheeseMapper.class );
+        CustomCheeseMapper mapper = CustomCheeseMapper.INSTANCE;
+
+        // CheeseType -> CustomCheeseType
+        assertThat( mapper.map( (CheeseType) null ) ).isEqualTo( CustomCheeseType.UNSPECIFIED );
+        assertThat( mapper.map( CheeseType.BRIE ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
+        assertThat( mapper.map( CheeseType.ROQUEFORT ) ).isEqualTo( CustomCheeseType.CUSTOM_ROQUEFORT );
+
+        // CustomCheeseType -> CheeseType
+        assertThat( mapper.map( (CustomCheeseType) null ) ).isNull();
+        assertThat( mapper.map( CustomCheeseType.UNSPECIFIED ) ).isNull();
+        assertThat( mapper.map( CustomCheeseType.CUSTOM_BRIE ) ).isEqualTo( CheeseType.BRIE );
+        assertThat( mapper.map( CustomCheeseType.CUSTOM_ROQUEFORT ) ).isEqualTo( CheeseType.ROQUEFORT );
+        assertThat( mapper.map( CustomCheeseType.UNRECOGNIZED ) ).isNull();
+
+        // CheeseType -> String
+        assertThat( mapper.mapToString( (CheeseType) null ) ).isNull();
+        assertThat( mapper.mapToString( CheeseType.BRIE ) ).isEqualTo( "BRIE" );
+        assertThat( mapper.mapToString( CheeseType.ROQUEFORT ) ).isEqualTo( "ROQUEFORT" );
+
+        // CustomCheeseType -> String
+        assertThat( mapper.mapToString( (CustomCheeseType) null ) ).isNull();
+        assertThat( mapper.mapToString( CustomCheeseType.UNSPECIFIED ) ).isNull();
+        assertThat( mapper.mapToString( CustomCheeseType.CUSTOM_BRIE ) ).isEqualTo( "BRIE" );
+        assertThat( mapper.mapToString( CustomCheeseType.CUSTOM_ROQUEFORT ) ).isEqualTo( "ROQUEFORT" );
+        assertThat( mapper.mapToString( CustomCheeseType.UNRECOGNIZED ) ).isNull();
+
+        // String - > CheeseType
+        assertThat( mapper.mapStringToCheese( null ) ).isNull();
+        assertThat( mapper.mapStringToCheese( "BRIE" ) ).isEqualTo( CheeseType.BRIE );
+        assertThat( mapper.mapStringToCheese( "ROQUEFORT" ) ).isEqualTo( CheeseType.ROQUEFORT );
+        assertThat( mapper.mapStringToCheese( "UNKNOWN" ) ).isEqualTo( CheeseType.BRIE );
+
+        // CustomCheeseType -> String
+        assertThat( mapper.mapStringToCustom( null ) ).isEqualTo( CustomCheeseType.UNSPECIFIED );
+        assertThat( mapper.mapStringToCustom( "UNRECOGNIZED" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
+        assertThat( mapper.mapStringToCustom( "BRIE" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
+        assertThat( mapper.mapStringToCustom( "ROQUEFORT" ) ).isEqualTo( CustomCheeseType.CUSTOM_ROQUEFORT );
+        assertThat( mapper.mapStringToCustom( "UNKNOWN" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
     }
 
     @Test
     @WithClasses({
         OverridesCustomCheeseMapper.class
     })
-    public void shouldApplyDefinedMappingsInsteadOfCustomEnumNamingStrategy() {
+    public void shouldApplyDefinedMappingsInsteadOfCustomEnumMappingStrategy() {
         OverridesCustomCheeseMapper mapper = OverridesCustomCheeseMapper.INSTANCE;
 
         // CheeseType -> CustomCheeseType

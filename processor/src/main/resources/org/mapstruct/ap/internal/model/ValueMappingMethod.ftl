@@ -25,7 +25,7 @@
         case <@writeSource source=valueMapping.source/>: ${resultName} = <@writeTarget target=valueMapping.target/>;
         break;
     </#list>
-    default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
+    default: <#if unexpectedValueMappingException??>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>
@@ -40,7 +40,7 @@
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
 
-    <#if !(valueMappings.empty && throwIllegalArgumentException)>
+    <#if !(valueMappings.empty && unexpectedValueMappingException??)>
     return ${resultName};
     </#if>
 }

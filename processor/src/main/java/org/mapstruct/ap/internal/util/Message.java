@@ -105,6 +105,8 @@ public enum Message {
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     ENUMMAPPING_REMOVED( "Mapping of Enums via @Mapping is removed. Please use @ValueMapping instead!" ),
     ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY( "There is no registered EnumTransformationStrategy for '%s'. Registered strategies are: %s." ),
+    ENUMMAPPING_MISSING_CONFIGURATION( "Configuration has to be defined when strategy is defined." ),
+    ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
@@ -169,7 +171,7 @@ public enum Message {
     VALUEMAPPING_UNMAPPED_SOURCES( "The following constants from the %s enum have no corresponding constant in the %s enum and must be be mapped via adding additional mappings: %s." ),
     VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM( "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for %s." ),
     VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of type String to an enum type.", Diagnostic.Kind.WARNING  ),
-    VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI( "Constant %s doesn't exist in enum type %s. Constant was returned from EnumNamingStrategy: %s"),
+    VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI( "Constant %s doesn't exist in enum type %s. Constant was returned from EnumMappingStrategy: %s"),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
     // CHECKSTYLE:ON
 

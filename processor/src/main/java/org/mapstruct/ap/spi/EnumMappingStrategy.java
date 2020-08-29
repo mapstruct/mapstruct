@@ -13,11 +13,12 @@ import org.mapstruct.util.Experimental;
  * A service provider interface for the mapping between different enum constants
  *
  * @author Arne Seime
+ * @author Filip Hrisafov
  *
  * @since 1.4
  */
 @Experimental("This SPI can have it's signature changed in subsequent releases")
-public interface EnumNamingStrategy {
+public interface EnumMappingStrategy {
 
     /**
      * Initializes the enum value mapping strategy
@@ -47,4 +48,12 @@ public interface EnumNamingStrategy {
      * never return null
      */
     String getEnumConstant(TypeElement enumType, String enumConstant);
+
+    /**
+     * Return the type element of the exception that should be used in the generated code
+     * for an unexpected enum constant.
+     *
+     * @return the type element of the exception that should be used, never {@code null}
+     */
+    TypeElement getUnexpectedValueMappingExceptionType();
 }

@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -135,6 +136,13 @@ public class MapperConfigOptions extends DelegatingOptions {
         return mapperConfig.mappingControl().hasValue() ?
             MappingControl.fromTypeMirror( mapperConfig.mappingControl().getValue(), elementUtils ) :
             next().getMappingControl( elementUtils );
+    }
+
+    @Override
+    public TypeMirror getUnexpectedValueMappingException() {
+        return mapperConfig.unexpectedValueMappingException().hasValue() ?
+            mapperConfig.unexpectedValueMappingException().get() :
+            next().getUnexpectedValueMappingException();
     }
 
     @Override
