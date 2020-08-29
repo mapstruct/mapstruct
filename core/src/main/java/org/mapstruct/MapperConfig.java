@@ -293,7 +293,7 @@ public @interface MapperConfig {
      *
      * @since 1.4
      */
-    Class<? extends Exception> defaultEnumException() default IllegalArgumentException.class;
+    Class<? extends Exception> unexpectedValueMappingException() default IllegalArgumentException.class;
 
 }
 

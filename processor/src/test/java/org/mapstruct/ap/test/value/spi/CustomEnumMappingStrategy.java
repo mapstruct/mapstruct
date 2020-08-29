@@ -54,7 +54,7 @@ public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy implem
     }
 
     @Override
-    protected Class<? extends Exception> getDefaultExceptionClass() {
+    protected Class<? extends Exception> getUnexpectedValueMappingExceptionClass() {
         return CustomIllegalArgumentException.class;
     }
 }

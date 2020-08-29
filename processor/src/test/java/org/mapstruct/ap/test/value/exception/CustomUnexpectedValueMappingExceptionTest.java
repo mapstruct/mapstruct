@@ -23,26 +23,26 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Config.class,
-    CustomDefaultExceptionDefinedInMapper.class,
-    CustomDefaultExceptionDefinedInMapperAndEnumMapping.class,
-    CustomDefaultExceptionDefinedInMapperConfig.class,
-    CustomDefaultExceptionMapper.class,
+    CustomUnexpectedValueMappingExceptionDefinedInMapper.class,
+    CustomUnexpectedValueMappingExceptionDefinedInMapperAndEnumMapping.class,
+    CustomUnexpectedValueMappingExceptionDefinedInMapperConfig.class,
+    CustomUnexpectedValueMappingExceptionMapper.class,
     CustomIllegalArgumentException.class,
     ExternalOrderType.class,
     OrderType.class
 })
-public class CustomDefaultExceptionTest {
+public class CustomUnexpectedValueMappingExceptionTest {
 
     @Rule
     public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
-    public void shouldGenerateCustomDefaultException() {
+    public void shouldGenerateCustomUnexpectedValueMappingException() {
         generatedSource.addComparisonToFixtureFor(
-            CustomDefaultExceptionDefinedInMapper.class,
-            CustomDefaultExceptionDefinedInMapperAndEnumMapping.class,
-            CustomDefaultExceptionDefinedInMapperConfig.class,
-            CustomDefaultExceptionMapper.class
+            CustomUnexpectedValueMappingExceptionDefinedInMapper.class,
+            CustomUnexpectedValueMappingExceptionDefinedInMapperAndEnumMapping.class,
+            CustomUnexpectedValueMappingExceptionDefinedInMapperConfig.class,
+            CustomUnexpectedValueMappingExceptionMapper.class
         );
     }
 }

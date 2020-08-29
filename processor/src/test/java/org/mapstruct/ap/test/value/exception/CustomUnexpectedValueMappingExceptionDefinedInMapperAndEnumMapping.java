@@ -17,23 +17,22 @@ import org.mapstruct.ap.test.value.OrderType;
 /**
  * @author Filip Hrisafov
  */
-@Mapper
-public interface CustomDefaultExceptionMapper {
+@Mapper(unexpectedValueMappingException = CustomIllegalArgumentException.class)
+public interface CustomUnexpectedValueMappingExceptionDefinedInMapperAndEnumMapping {
 
-    @EnumMapping(defaultException = CustomIllegalArgumentException.class)
-    @ValueMapping( source = MappingConstants.ANY_UNMAPPED, target = "DEFAULT" )
+    @ValueMapping(source = MappingConstants.ANY_UNMAPPED, target = "DEFAULT")
     ExternalOrderType withAnyUnmapped(OrderType orderType);
 
-    @EnumMapping(defaultException = CustomIllegalArgumentException.class)
-    @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "DEFAULT" )
+    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "DEFAULT")
     ExternalOrderType withAnyRemaining(OrderType orderType);
 
-    @EnumMapping(defaultException = CustomIllegalArgumentException.class)
     @ValueMapping(source = "EXTRA", target = "SPECIAL")
     @ValueMapping(source = "STANDARD", target = "DEFAULT")
     @ValueMapping(source = "NORMAL", target = "DEFAULT")
     ExternalOrderType onlyWithMappings(OrderType orderType);
 
+    // If unexpectedValueMappingException is explicitly defined then it should be used instead of what is in the SPI
+    @EnumMapping(unexpectedValueMappingException = IllegalArgumentException.class)
     @InheritInverseConfiguration(name = "onlyWithMappings")
     OrderType inverseOnlyWithMappings(ExternalOrderType orderType);
 }

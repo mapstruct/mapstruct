@@ -25,8 +25,8 @@ public interface CustomCheeseMapper {
 
     String mapToString(CustomCheeseType cheeseType);
 
-    // If defaultException is explicitly defined then it should be used instead of what is in the SPI
-    @EnumMapping(defaultException = IllegalArgumentException.class)
+    // If unexpectedValueMappingException is explicitly defined then it should be used instead of what is in the SPI
+    @EnumMapping(unexpectedValueMappingException = IllegalArgumentException.class)
     String mapToString(CheeseType cheeseType);
 
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "CUSTOM_BRIE")

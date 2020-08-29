@@ -12,10 +12,10 @@ import org.mapstruct.ap.test.value.OrderType;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-08-02T09:36:57+0200",
+    date = "2020-08-29T09:36:57+0200",
     comments = "version: , compiler: javac, environment: Java 11.0.2 (AdoptOpenJDK)"
 )
-public class CustomDefaultExceptionMapperImpl implements CustomDefaultExceptionMapper {
+public class CustomUnexpectedValueMappingExceptionDefinedInMapperConfigImpl implements CustomUnexpectedValueMappingExceptionDefinedInMapperConfig {
 
     @Override
     public ExternalOrderType withAnyUnmapped(OrderType orderType) {

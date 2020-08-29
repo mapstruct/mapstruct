@@ -139,10 +139,10 @@ public class MapperConfigOptions extends DelegatingOptions {
     }
 
     @Override
-    public TypeMirror getDefaultEnumException() {
-        return mapperConfig.defaultEnumException().hasValue() ?
-            mapperConfig.defaultEnumException().get() :
-            next().getDefaultEnumException();
+    public TypeMirror getUnexpectedValueMappingException() {
+        return mapperConfig.unexpectedValueMappingException().hasValue() ?
+            mapperConfig.unexpectedValueMappingException().get() :
+            next().getUnexpectedValueMappingException();
     }
 
     @Override

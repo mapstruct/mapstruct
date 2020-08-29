@@ -15,7 +15,7 @@ import org.mapstruct.ap.test.value.OrderType;
     date = "2020-08-29T09:36:57+0200",
     comments = "version: , compiler: javac, environment: Java 11.0.2 (AdoptOpenJDK)"
 )
-public class CustomDefaultExceptionDefinedInMapperImpl implements CustomDefaultExceptionDefinedInMapper {
+public class CustomUnexpectedValueMappingExceptionDefinedInMapperImpl implements CustomUnexpectedValueMappingExceptionDefinedInMapper {
 
     @Override
     public ExternalOrderType withAnyUnmapped(OrderType orderType) {

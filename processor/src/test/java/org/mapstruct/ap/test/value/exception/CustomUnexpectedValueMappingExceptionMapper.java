@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.value.exception;
 
+import org.mapstruct.EnumMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -16,15 +17,18 @@ import org.mapstruct.ap.test.value.OrderType;
 /**
  * @author Filip Hrisafov
  */
-@Mapper(defaultEnumException = CustomIllegalArgumentException.class)
-public interface CustomDefaultExceptionDefinedInMapper {
+@Mapper
+public interface CustomUnexpectedValueMappingExceptionMapper {
 
-    @ValueMapping(source = MappingConstants.ANY_UNMAPPED, target = "DEFAULT")
+    @EnumMapping(unexpectedValueMappingException = CustomIllegalArgumentException.class)
+    @ValueMapping( source = MappingConstants.ANY_UNMAPPED, target = "DEFAULT" )
     ExternalOrderType withAnyUnmapped(OrderType orderType);
 
-    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "DEFAULT")
+    @EnumMapping(unexpectedValueMappingException = CustomIllegalArgumentException.class)
+    @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "DEFAULT" )
     ExternalOrderType withAnyRemaining(OrderType orderType);
 
+    @EnumMapping(unexpectedValueMappingException = CustomIllegalArgumentException.class)
     @ValueMapping(source = "EXTRA", target = "SPECIAL")
     @ValueMapping(source = "STANDARD", target = "DEFAULT")
     @ValueMapping(source = "NORMAL", target = "DEFAULT")

@@ -44,7 +44,7 @@ public class ValueMappingMethod extends MappingMethod {
     private final String defaultTarget;
     private final String nullTarget;
 
-    private final Type defaultException;
+    private final Type unexpectedValueMappingException;
 
     private final boolean overridden;
 
@@ -120,7 +120,7 @@ public class ValueMappingMethod extends MappingMethod {
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
-                determineDefaultException(),
+                determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -417,14 +417,15 @@ public class ValueMappingMethod extends MappingMethod {
             return !foundIncorrectMapping;
         }
 
-        private Type determineDefaultException() {
+        private Type determineUnexpectedValueMappingException() {
             if ( !valueMappings.hasDefaultValue ) {
-                TypeMirror definedDefaultException = enumMapping.getDefaultException();
-                if ( definedDefaultException != null ) {
-                    return ctx.getTypeFactory().getType( definedDefaultException );
+                TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
+                if ( unexpectedValueMappingException != null ) {
+                    return ctx.getTypeFactory().getType( unexpectedValueMappingException );
                 }
 
-                return ctx.getTypeFactory().getType( ctx.getEnumMappingStrategy().getDefaultExceptionType() );
+                return ctx.getTypeFactory()
+                    .getType( ctx.getEnumMappingStrategy().getUnexpectedValueMappingExceptionType() );
             }
 
             return null;
@@ -500,14 +501,14 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
-        Type defaultException,
+        Type unexpectedValueMappingException,
         List<LifecycleCallbackMethodReference> beforeMappingMethods,
         List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
-        this.defaultException = defaultException;
+        this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
     }
 
@@ -515,8 +516,8 @@ public class ValueMappingMethod extends MappingMethod {
     public Set<Type> getImportTypes() {
         Set<Type> importTypes = super.getImportTypes();
 
-        if ( defaultException != null && !defaultException.isJavaLangType() ) {
-            importTypes.addAll( defaultException.getImportTypes() );
+        if ( unexpectedValueMappingException != null && !unexpectedValueMappingException.isJavaLangType() ) {
+            importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
         }
 
         return importTypes;
@@ -534,8 +535,8 @@ public class ValueMappingMethod extends MappingMethod {
         return nullTarget;
     }
 
-    public Type getDefaultException() {
-        return defaultException;
+    public Type getUnexpectedValueMappingException() {
+        return unexpectedValueMappingException;
     }
 
     public Parameter getSourceParameter() {

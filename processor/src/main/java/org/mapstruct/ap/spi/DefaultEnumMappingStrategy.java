@@ -36,11 +36,11 @@ public class DefaultEnumMappingStrategy implements EnumMappingStrategy {
     }
 
     @Override
-    public TypeElement getDefaultExceptionType() {
-        return elementUtils.getTypeElement( getDefaultExceptionClass().getCanonicalName() );
+    public TypeElement getUnexpectedValueMappingExceptionType() {
+        return elementUtils.getTypeElement( getUnexpectedValueMappingExceptionClass().getCanonicalName() );
     }
 
-    protected Class<? extends Exception> getDefaultExceptionClass() {
+    protected Class<? extends Exception> getUnexpectedValueMappingExceptionClass() {
         return IllegalArgumentException.class;
     }
 }

@@ -55,5 +55,5 @@ public interface EnumMappingStrategy {
      *
      * @return the type element of the exception that should be used, never {@code null}
      */
-    TypeElement getDefaultExceptionType();
+    TypeElement getUnexpectedValueMappingExceptionType();
 }

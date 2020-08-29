@@ -16,7 +16,7 @@ import org.mapstruct.ap.test.value.OrderType;
  * @author Filip Hrisafov
  */
 @Mapper(config = Config.class)
-public interface CustomDefaultExceptionDefinedInMapperConfig {
+public interface CustomUnexpectedValueMappingExceptionDefinedInMapperConfig {
 
     @ValueMapping(source = MappingConstants.ANY_UNMAPPED, target = "DEFAULT")
     ExternalOrderType withAnyUnmapped(OrderType orderType);

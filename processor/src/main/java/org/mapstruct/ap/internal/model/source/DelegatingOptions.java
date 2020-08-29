@@ -105,8 +105,8 @@ public abstract class DelegatingOptions {
         return next.getMappingControl( elementUtils );
     }
 
-    public TypeMirror getDefaultEnumException() {
-        return next.getDefaultEnumException();
+    public TypeMirror getUnexpectedValueMappingException() {
+        return next.getUnexpectedValueMappingException();
     }
 
     DelegatingOptions next() {

@@ -55,12 +55,13 @@ public class EnumMappingOptions extends DelegatingOptions {
         return enumMapping.configuration().getValue();
     }
 
-    public TypeMirror getDefaultException() {
-        if ( enumMapping != null && enumMapping.defaultException().hasValue() ) {
-            return enumMapping.defaultException().getValue();
+    @Override
+    public TypeMirror getUnexpectedValueMappingException() {
+        if ( enumMapping != null && enumMapping.unexpectedValueMappingException().hasValue() ) {
+            return enumMapping.unexpectedValueMappingException().getValue();
         }
 
-        return next().getDefaultEnumException();
+        return next().getUnexpectedValueMappingException();
     }
 
     public boolean isInverse() {
@@ -125,7 +126,7 @@ public class EnumMappingOptions extends DelegatingOptions {
             isConsistent = true;
         }
 
-        isConsistent = isConsistent || gem.defaultException().hasValue();
+        isConsistent = isConsistent || gem.unexpectedValueMappingException().hasValue();
 
         if ( !isConsistent ) {
             messager.printMessage(

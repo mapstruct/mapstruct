@@ -129,7 +129,7 @@ public class DefaultOptions extends DelegatingOptions {
     }
 
     @Override
-    public TypeMirror getDefaultEnumException() {
+    public TypeMirror getUnexpectedValueMappingException() {
         return null;
     }
 

@@ -15,7 +15,7 @@ import org.mapstruct.ap.test.value.OrderType;
     date = "2020-08-29T09:36:57+0200",
     comments = "version: , compiler: javac, environment: Java 11.0.2 (AdoptOpenJDK)"
 )
-public class CustomDefaultExceptionDefinedInMapperConfigImpl implements CustomDefaultExceptionDefinedInMapperConfig {
+public class CustomUnexpectedValueMappingExceptionDefinedInMapperAndEnumMappingImpl implements CustomUnexpectedValueMappingExceptionDefinedInMapperAndEnumMapping {
 
     @Override
     public ExternalOrderType withAnyUnmapped(OrderType orderType) {
@@ -93,7 +93,7 @@ public class CustomDefaultExceptionDefinedInMapperConfigImpl implements CustomDe
             break;
             case B2B: orderType1 = OrderType.B2B;
             break;
-            default: throw new CustomIllegalArgumentException( "Unexpected enum constant: " + orderType );
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
         }
 
         return orderType1;

@@ -299,8 +299,8 @@ public @interface Mapper {
 
     /**
      * Exception that should be thrown by the generated code if no mapping matches for enums.
-     * If no exception is configured, the exception given via {@link MapperConfig#defaultEnumException()} will be
-     * used, using {@link IllegalArgumentException} by default.
+     * If no exception is configured, the exception given via {@link MapperConfig#unexpectedValueMappingException()}
+     * will be used, using {@link IllegalArgumentException} by default.
      *
      * <p>
      * Note:
@@ -318,5 +318,5 @@ public @interface Mapper {
      *
      * @since 1.4
      */
-    Class<? extends Exception> defaultEnumException() default IllegalArgumentException.class;
+    Class<? extends Exception> unexpectedValueMappingException() default IllegalArgumentException.class;
 }

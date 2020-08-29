@@ -38,8 +38,8 @@ public class ErroneousEnumMappingTest {
             @Diagnostic(type = EmptyEnumMappingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                message = "'nameTransformationStrategy', 'configuration' and 'defaultException' are undefined in " +
-                    "@EnumMapping, define at least one of them."
+                message = "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are " +
+                    "undefined in @EnumMapping, define at least one of them."
             )
         }
     )

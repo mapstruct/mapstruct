@@ -11,6 +11,6 @@ import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(defaultEnumException = CustomIllegalArgumentException.class)
+@MapperConfig(unexpectedValueMappingException = CustomIllegalArgumentException.class)
 public interface Config {
 }
