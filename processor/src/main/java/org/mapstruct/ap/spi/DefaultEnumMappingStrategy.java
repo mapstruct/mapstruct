@@ -14,7 +14,7 @@ import javax.lang.model.util.Types;
  *
  * @since 1.4
  */
-public class DefaultEnumNamingStrategy implements EnumNamingStrategy {
+public class DefaultEnumMappingStrategy implements EnumMappingStrategy {
 
     protected Elements elementUtils;
     protected Types typeUtils;

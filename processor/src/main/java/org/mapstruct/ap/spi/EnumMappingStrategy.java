@@ -13,11 +13,12 @@ import org.mapstruct.util.Experimental;
  * A service provider interface for the mapping between different enum constants
  *
  * @author Arne Seime
+ * @author Filip Hrisafov
  *
  * @since 1.4
  */
 @Experimental("This SPI can have it's signature changed in subsequent releases")
-public interface EnumNamingStrategy {
+public interface EnumMappingStrategy {
 
     /**
      * Initializes the enum value mapping strategy

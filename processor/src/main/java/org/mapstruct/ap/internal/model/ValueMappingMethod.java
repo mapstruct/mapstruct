@@ -92,7 +92,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( targetType.isEnumType() && valueMappings.nullTarget == null ) {
                 // If null target is not set it means that the user has not explicitly defined a mapping for null
-                valueMappings.nullValueTarget = ctx.getEnumNamingStrategy()
+                valueMappings.nullValueTarget = ctx.getEnumMappingStrategy()
                     .getDefaultNullEnumConstant( targetType.getTypeElement() );
             }
 
@@ -292,7 +292,7 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private String getEnumConstant(TypeElement typeElement, String enumConstant) {
-            return ctx.getEnumNamingStrategy().getEnumConstant( typeElement, enumConstant );
+            return ctx.getEnumMappingStrategy().getEnumConstant( typeElement, enumConstant );
         }
 
         private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
@@ -410,7 +410,7 @@ public class ValueMappingMethod extends MappingMethod {
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI,
                     valueMappings.nullValueTarget,
                     method.getReturnType(),
-                    ctx.getEnumNamingStrategy()
+                    ctx.getEnumMappingStrategy()
                 );
             }
 
@@ -426,7 +426,7 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                 }
 
-                return ctx.getTypeFactory().getType( ctx.getEnumNamingStrategy().getDefaultExceptionType() );
+                return ctx.getTypeFactory().getType( ctx.getEnumMappingStrategy().getDefaultExceptionType() );
             }
 
             return null;

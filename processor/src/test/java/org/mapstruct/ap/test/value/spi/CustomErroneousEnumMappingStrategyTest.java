@@ -25,8 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomCheeseType.class,
     CustomEnumMarker.class,
 })
-@WithServiceImplementation(CustomErroneousEnumNamingStrategy.class)
-public class CustomErroneousEnumNamingStrategyTest {
+@WithServiceImplementation(CustomErroneousEnumMappingStrategy.class)
+public class CustomErroneousEnumMappingStrategyTest {
 
     @Test
     @WithClasses({
@@ -40,7 +40,7 @@ public class CustomErroneousEnumNamingStrategyTest {
                 line = 24,
                 messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
                     "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
-                    " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"
+                    " Constant was returned from EnumMappingStrategy: .*CustomErroneousEnumMappingStrategy@.*"
             ),
             @Diagnostic(
                 type = CustomCheeseMapper.class,
@@ -48,7 +48,7 @@ public class CustomErroneousEnumNamingStrategyTest {
                 line = 33,
                 messageRegExp = "Constant INCORRECT doesn't exist in enum type " +
                     "org\\.mapstruct\\.ap\\.test\\.value\\.spi\\.CustomCheeseType." +
-                    " Constant was returned from EnumNamingStrategy: .*CustomErroneousEnumNamingStrategy@.*"
+                    " Constant was returned from EnumMappingStrategy: .*CustomErroneousEnumMappingStrategy@.*"
             )
         }
     )
@@ -59,7 +59,7 @@ public class CustomErroneousEnumNamingStrategyTest {
     @WithClasses({
         OverridesCustomCheeseMapper.class
     })
-    public void shouldApplyDefinedMappingsInsteadOfCustomEnumNamingStrategy() {
+    public void shouldApplyDefinedMappingsInsteadOfCustomEnumMappingStrategy() {
         OverridesCustomCheeseMapper mapper = OverridesCustomCheeseMapper.INSTANCE;
 
         // CheeseType -> CustomCheeseType

@@ -9,14 +9,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
-import org.mapstruct.ap.spi.DefaultEnumNamingStrategy;
-import org.mapstruct.ap.spi.EnumNamingStrategy;
+import org.mapstruct.ap.spi.DefaultEnumMappingStrategy;
+import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 
 /**
  * @author Filip Hrisafov
  */
-public class CustomEnumNamingStrategy extends DefaultEnumNamingStrategy implements EnumNamingStrategy {
+public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy implements EnumMappingStrategy {
 
     @Override
     public String getDefaultNullEnumConstant(TypeElement enumType) {

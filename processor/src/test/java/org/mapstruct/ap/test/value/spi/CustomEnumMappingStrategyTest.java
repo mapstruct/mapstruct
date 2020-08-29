@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomEnumMarker.class,
     CustomIllegalArgumentException.class,
 })
-@WithServiceImplementation(CustomEnumNamingStrategy.class)
-public class CustomEnumNamingStrategyTest {
+@WithServiceImplementation(CustomEnumMappingStrategy.class)
+public class CustomEnumMappingStrategyTest {
 
     @Rule
     public final GeneratedSource generatedSource = new GeneratedSource();
@@ -36,7 +36,7 @@ public class CustomEnumNamingStrategyTest {
     @WithClasses({
         CustomCheeseMapper.class
     })
-    public void shouldApplyCustomEnumNamingStrategy() {
+    public void shouldApplyCustomEnumMappingStrategy() {
         generatedSource.addComparisonToFixtureFor( CustomCheeseMapper.class );
         CustomCheeseMapper mapper = CustomCheeseMapper.INSTANCE;
 
@@ -82,7 +82,7 @@ public class CustomEnumNamingStrategyTest {
     @WithClasses({
         OverridesCustomCheeseMapper.class
     })
-    public void shouldApplyDefinedMappingsInsteadOfCustomEnumNamingStrategy() {
+    public void shouldApplyDefinedMappingsInsteadOfCustomEnumMappingStrategy() {
         OverridesCustomCheeseMapper mapper = OverridesCustomCheeseMapper.INSTANCE;
 
         // CheeseType -> CustomCheeseType
