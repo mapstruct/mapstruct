@@ -24,4 +24,7 @@ public interface CustomerMapper {
     @InheritInverseConfiguration
     CustomerDto toRecord(CustomerEntity entity);
 
+    @Mapping(target = "value", source = "name")
+    GenericRecord<String> toValue(CustomerEntity entity);
+
 }

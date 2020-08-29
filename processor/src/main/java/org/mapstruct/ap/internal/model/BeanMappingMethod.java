@@ -589,10 +589,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
                 for ( Element recordComponent : recordComponents ) {
+                    TypeMirror recordComponentMirror = ctx.getTypeUtils()
+                        .asMemberOf( (DeclaredType) type.getTypeMirror(), recordComponent );
                     String parameterName = recordComponent.getSimpleName().toString();
                     Accessor accessor = createConstructorAccessor(
                         recordComponent,
-                        recordComponent.asType(),
+                        recordComponentMirror,
                         parameterName
                     );
                     constructorAccessors.put(
@@ -601,7 +603,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     );
 
                     parameterBindings.add( ParameterBinding.fromTypeAndName(
-                        ctx.getTypeFactory().getType( recordComponent.asType() ),
+                        ctx.getTypeFactory().getType( recordComponentMirror ),
                         accessor.getSimpleName()
                     ) );
                 }
