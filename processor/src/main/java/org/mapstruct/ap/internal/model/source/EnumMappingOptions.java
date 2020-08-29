@@ -56,7 +56,11 @@ public class EnumMappingOptions extends DelegatingOptions {
     }
 
     public TypeMirror getDefaultException() {
-        return enumMapping.defaultException().getValue();
+        if ( enumMapping != null && enumMapping.defaultException().hasValue() ) {
+            return enumMapping.defaultException().getValue();
+        }
+
+        return next().getDefaultEnumException();
     }
 
     public boolean isInverse() {

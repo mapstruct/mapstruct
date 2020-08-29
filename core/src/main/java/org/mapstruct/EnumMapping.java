@@ -123,6 +123,8 @@ public @interface EnumMapping {
 
     /**
      * Exception that should be thrown by the generated code if no mapping matches.
+     * If no exception is configured, the exception given via {@link MapperConfig#defaultEnumException()} or
+     * {@link Mapper#defaultEnumException()} will be used, using {@link IllegalArgumentException} by default.
      *
      * @return the exception that should be used in the generated code
      */

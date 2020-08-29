@@ -22,6 +22,10 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 @IssueKey("2169")
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
+    Config.class,
+    CustomDefaultExceptionDefinedInMapper.class,
+    CustomDefaultExceptionDefinedInMapperAndEnumMapping.class,
+    CustomDefaultExceptionDefinedInMapperConfig.class,
     CustomDefaultExceptionMapper.class,
     CustomIllegalArgumentException.class,
     ExternalOrderType.class,
@@ -34,6 +38,11 @@ public class CustomDefaultExceptionTest {
 
     @Test
     public void shouldGenerateCustomDefaultException() {
-        generatedSource.addComparisonToFixtureFor( CustomDefaultExceptionMapper.class );
+        generatedSource.addComparisonToFixtureFor(
+            CustomDefaultExceptionDefinedInMapper.class,
+            CustomDefaultExceptionDefinedInMapperAndEnumMapping.class,
+            CustomDefaultExceptionDefinedInMapperConfig.class,
+            CustomDefaultExceptionMapper.class
+        );
     }
 }

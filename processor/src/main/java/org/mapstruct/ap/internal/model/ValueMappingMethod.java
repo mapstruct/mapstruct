@@ -419,11 +419,9 @@ public class ValueMappingMethod extends MappingMethod {
 
         private Type determineDefaultException() {
             if ( !valueMappings.hasDefaultValue ) {
-                if ( enumMapping.hasAnnotation() ) {
-                    TypeMirror definedDefaultException = enumMapping.getDefaultException();
-                    if ( definedDefaultException != null ) {
-                        return ctx.getTypeFactory().getType( definedDefaultException );
-                    }
+                TypeMirror definedDefaultException = enumMapping.getDefaultException();
+                if ( definedDefaultException != null ) {
+                    return ctx.getTypeFactory().getType( definedDefaultException );
                 }
 
                 return ctx.getTypeFactory().getType( ctx.getEnumMappingStrategy().getDefaultExceptionType() );

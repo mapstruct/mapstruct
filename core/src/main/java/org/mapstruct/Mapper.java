@@ -296,4 +296,15 @@ public @interface Mapper {
      * @see org.mapstruct.control.MappingControl
      */
     Class<? extends Annotation> mappingControl() default MappingControl.class;
+
+    /**
+     * Exception that should be thrown by the generated code if no mapping matches for enums.
+     * If no exception is configured, the exception given via {@link MapperConfig#defaultEnumException()} will be
+     * used, using {@link IllegalArgumentException} by default.
+     *
+     * @return the exception that should be used in the generated code
+     *
+     * @since 1.4
+     */
+    Class<? extends Exception> defaultEnumException() default IllegalArgumentException.class;
 }
