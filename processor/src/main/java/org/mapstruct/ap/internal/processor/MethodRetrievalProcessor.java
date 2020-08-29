@@ -176,11 +176,22 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( usedMapper.equals( mapperToImplement ) ) {
             for ( DeclaredType mapper : mapperOptions.uses() ) {
-                methods.addAll( retrieveMethods(
-                    asTypeElement( mapper ),
-                    mapperToImplement,
-                    mapperOptions,
-                    prototypeMethods ) );
+                TypeElement usesMapperElement = asTypeElement( mapper );
+                if ( !mapperToImplement.equals( usesMapperElement ) ) {
+                    methods.addAll( retrieveMethods(
+                        usesMapperElement,
+                        mapperToImplement,
+                        mapperOptions,
+                        prototypeMethods ) );
+                }
+                else {
+                    messager.printMessage(
+                        mapperToImplement,
+                        mapperOptions.getAnnotationMirror(),
+                        Message.RETRIEVAL_MAPPER_USES_CYCLE,
+                        mapperToImplement
+                    );
+                }
             }
         }
 
