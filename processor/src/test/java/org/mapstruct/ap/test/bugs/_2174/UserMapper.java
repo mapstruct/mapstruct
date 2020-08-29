@@ -18,7 +18,8 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
 
     @Mapping(target = "address.city", source = "city")
-    User map(UserDto dto) throws CityNotFoundException;
+    @Mapping(target = "address.code", source = "postalCode")
+    User map(UserDto dto) throws CityNotFoundException, PostalCodeNotFoundException;
 
     default City mapCity(String city) throws CityNotFoundException {
         if ( "Test City".equals( city ) ) {
@@ -28,15 +29,29 @@ public interface UserMapper {
         throw new CityNotFoundException( "City with name '" + city + "' does not exist" );
     }
 
+    default PostalCode mapCode(String code) throws PostalCodeNotFoundException {
+        if ( "10000".equals( code ) ) {
+            return new PostalCode( code );
+        }
+
+        throw new PostalCodeNotFoundException( "Postal code '" + code + "' does not exist" );
+    }
+
     class UserDto {
         private final String city;
+        private final String postalCode;
 
-        public UserDto(String city) {
+        public UserDto(String city, String postalCode) {
             this.city = city;
+            this.postalCode = postalCode;
         }
 
         public String getCity() {
             return city;
+        }
+
+        public String getPostalCode() {
+            return postalCode;
         }
     }
 
@@ -55,13 +70,19 @@ public interface UserMapper {
 
     class Address {
         private final City city;
+        private final PostalCode code;
 
-        public Address(City city) {
+        public Address(City city, PostalCode code) {
             this.city = city;
+            this.code = code;
         }
 
         public City getCity() {
             return city;
+        }
+
+        public PostalCode getCode() {
+            return code;
         }
     }
 
@@ -78,9 +99,29 @@ public interface UserMapper {
         }
     }
 
+    class PostalCode {
+
+        private final String code;
+
+        public PostalCode(String code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
+
     class CityNotFoundException extends Exception {
 
         public CityNotFoundException(String message) {
+            super( message );
+        }
+    }
+
+    class PostalCodeNotFoundException extends Exception {
+
+        public PostalCodeNotFoundException(String message) {
             super( message );
         }
     }
