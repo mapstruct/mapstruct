@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("2164")
 @WithClasses(Issue2164Mapper.class)
 @RunWith(AnnotationProcessorTestRunner.class)
-public class Issue2164Tester {
+public class Issue2164Test {
 
     @Test
     public void shouldSelectProperMethod() {
