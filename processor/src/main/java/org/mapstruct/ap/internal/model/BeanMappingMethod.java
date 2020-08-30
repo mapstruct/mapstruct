@@ -1068,10 +1068,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // its a plain-old property mapping
             else  {
 
-                // determine source parameter
                 SourceReference sourceRef = mappingRef.getSourceReference();
+                // sourceRef is not defined, check if a source property has the same name
                 if ( sourceRef == null && method.getSourceParameters().size() == 1 ) {
-                    sourceRef = getSourceRef( method.getSourceParameters().get( 0 ), targetPropertyName );
+                    sourceRef = getSourceRefByTargetName( method.getSourceParameters().get( 0 ), targetPropertyName );
+                }
+
+                if ( sourceRef == null ) {
+                    // still no match. Try if one of the parameters has the same name
+                    sourceRef = method.getSourceParameters()
+                        .stream()
+                        .filter( p -> targetPropertyName.equals( p.getName() ) )
+                        .findAny()
+                        .map( p -> new SourceReference.BuilderFromProperty()
+                            .sourceParameter( p )
+                            .name( targetPropertyName )
+                            .build() )
+                        .orElse( null );
                 }
 
                 if ( sourceRef != null ) {
@@ -1153,7 +1166,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<SourceReference> sourceReferences = new ArrayList<>();
             for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
                 for ( Parameter sourceParameter : method.getSourceParameters() ) {
-                    SourceReference sourceRef = getSourceRef( sourceParameter, targetPropertyName );
+                    SourceReference sourceRef = getSourceRefByTargetName( sourceParameter, targetPropertyName );
                     if ( sourceRef != null ) {
                         sourceReferences.add( sourceRef );
                     }
@@ -1251,7 +1264,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private SourceReference getSourceRef(Parameter sourceParameter, String targetPropertyName) {
+        private SourceReference getSourceRefByTargetName(Parameter sourceParameter, String targetPropertyName) {
 
             SourceReference sourceRef = null;
 
@@ -1261,11 +1274,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             Accessor sourceReadAccessor =
                 sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
-
-            Accessor sourcePresenceChecker =
-                sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
-
             if ( sourceReadAccessor != null ) {
+                // property mapping
+                Accessor sourcePresenceChecker =
+                    sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
+
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
                 sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
