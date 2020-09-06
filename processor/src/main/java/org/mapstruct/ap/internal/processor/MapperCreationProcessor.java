@@ -367,11 +367,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
                 BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
+                Type userDefinedReturnType = getUserDesiredReturnType( method );
+                Type builderBaseType = userDefinedReturnType != null ? userDefinedReturnType : method.getReturnType();
                 BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builder ) )
+                    .userDefinedReturnType( userDefinedReturnType )
+                    .returnTypeBuilder( typeFactory.builderTypeFor( builderBaseType, builder ) )
                     .build();
 
                 // We can consider that the bean mapping method can always be constructed. If there is a problem
@@ -390,6 +393,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return mappingMethods;
+    }
+
+    private Type getUserDesiredReturnType(SourceMethod method) {
+        SelectionParameters selectionParameters = method.getOptions().getBeanMapping().getSelectionParameters();
+        if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
+            return typeFactory.getType( selectionParameters.getResultType() );
+        }
+        return null;
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,

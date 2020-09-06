@@ -87,6 +87,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private MappingBuilderContext ctx;
         private Method method;
+        private Type userDefinedReturnType;
 
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
@@ -105,6 +106,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
+            return this;
+        }
+
+        public Builder userDefinedReturnType(Type userDefinedReturnType) {
+            this.userDefinedReturnType = userDefinedReturnType;
             return this;
         }
 
@@ -148,20 +154,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine which return type to construct
             boolean cannotConstructReturnType = false;
             if ( !method.getReturnType().isVoid() ) {
-                Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
-                if ( returnTypeImpl != null ) {
+                Type returnTypeImpl = null;
+                if ( isBuilderRequired() ) {
+                    // the userDefinedReturn type can also require a builder. That buildertype is already set
+                    returnTypeImpl = returnTypeBuilder.getBuilder();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
                         cannotConstructReturnType = true;
                     }
                 }
-                else if ( isBuilderRequired() ) {
-                    returnTypeImpl = returnTypeBuilder.getBuilder();
+                else if ( userDefinedReturnType != null ) {
+                    returnTypeImpl = userDefinedReturnType;
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -480,16 +488,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 propertyMappings.sort( Comparator.comparingInt( propertyMapping ->
                     graphAnalyzer.getTraversalSequence( propertyMapping.getName() ) ) );
             }
-        }
-
-        private Type getReturnTypeToConstructFromSelectionParameters(SelectionParameters selectionParams) {
-            // resultType only applies to method that actually has @BeanMapping annotation, never to forged methods
-            if ( !( method instanceof ForgedMethod )
-                && selectionParams != null
-                && selectionParams.getResultType() != null ) {
-                return ctx.getTypeFactory().getType( selectionParams.getResultType() );
-            }
-            return null;
         }
 
         private boolean canResultTypeFromBeanMappingBeConstructed(Type resultType) {
