@@ -1068,8 +1068,31 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 SourceReference sourceRef = mappingRef.getSourceReference();
                 // sourceRef is not defined, check if a source property has the same name
-                if ( sourceRef == null && method.getSourceParameters().size() == 1 ) {
-                    sourceRef = getSourceRefByTargetName( method.getSourceParameters().get( 0 ), targetPropertyName );
+                if ( sourceRef == null ) {
+                    for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                        SourceReference matchingSourceRef = getSourceRefByTargetName(
+                            sourceParameter,
+                            targetPropertyName
+                        );
+                        if ( matchingSourceRef != null ) {
+                            if ( sourceRef != null ) {
+                                errorOccured = true;
+                                // This can only happen when the target property matches multiple properties
+                                // within the different source parameters
+                                ctx.getMessager()
+                                    .printMessage(
+                                        method.getExecutable(),
+                                        mappingRef.getMapping().getMirror(),
+                                        Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                                        targetPropertyName
+                                    );
+                                break;
+                            }
+                            // We can't break here since it is possible that the same property exists in multiple
+                            // source parameters
+                            sourceRef = matchingSourceRef;
+                        }
+                    }
                 }
 
                 if ( sourceRef == null ) {
