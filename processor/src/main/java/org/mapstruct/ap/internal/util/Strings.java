@@ -174,15 +174,16 @@ public class Strings {
     public static String sanitizeIdentifierName(String identifier) {
         if ( identifier != null && identifier.length() > 0 ) {
 
-            int firstNonUnderScoreIndex = 0;
-            while ( firstNonUnderScoreIndex < identifier.length() &&
-                identifier.charAt( firstNonUnderScoreIndex ) == UNDERSCORE ) {
-                firstNonUnderScoreIndex++;
+            int firstAlphabeticIndex = 0;
+            while ( firstAlphabeticIndex < identifier.length() &&
+                ( identifier.charAt( firstAlphabeticIndex ) == UNDERSCORE ||
+                    Character.isDigit( identifier.charAt( firstAlphabeticIndex ) ) ) ) {
+                firstAlphabeticIndex++;
             }
 
-            if ( firstNonUnderScoreIndex < identifier.length()) {
+            if ( firstAlphabeticIndex < identifier.length()) {
                 // If it is not consisted of only underscores
-                return identifier.substring( firstNonUnderScoreIndex ).replace( "[]", "Array" );
+                return identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
             }
 
             return identifier.replace( "[]", "Array" );
