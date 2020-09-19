@@ -85,6 +85,8 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "prop", "prop", "prop_" ) ).isEqualTo( "prop1" );
         assertThat( Strings.getSafeVariableName( "_Test" ) ).isEqualTo( "test" );
         assertThat( Strings.getSafeVariableName( "__Test" ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "_0Test" ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "_0123Test" ) ).isEqualTo( "test" );
     }
 
     @Test
@@ -103,6 +105,10 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "_Test", new ArrayList<>() ) ).isEqualTo( "test" );
         assertThat( Strings.getSafeVariableName( "__Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
         assertThat( Strings.getSafeVariableName( "___", new ArrayList<>() ) ).isEqualTo( "___" );
+        assertThat( Strings.getSafeVariableName( "_0Test", new ArrayList<>() ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "__0Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
+        assertThat( Strings.getSafeVariableName( "___0", new ArrayList<>() ) ).isEqualTo( "___0" );
+        assertThat( Strings.getSafeVariableName( "__0123456789Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
     }
 
     @Test
@@ -114,6 +120,11 @@ public class StringsTest {
         assertThat( Strings.sanitizeIdentifierName( "__int[]" ) ).isEqualTo( "intArray" );
         assertThat( Strings.sanitizeIdentifierName( "test_" ) ).isEqualTo( "test_" );
         assertThat( Strings.sanitizeIdentifierName( "___" ) ).isEqualTo( "___" );
+        assertThat( Strings.sanitizeIdentifierName( "_0Test" ) ).isEqualTo( "Test" );
+        assertThat( Strings.sanitizeIdentifierName( "_0123456789Test" ) ).isEqualTo( "Test" );
+        assertThat( Strings.sanitizeIdentifierName( "_0int[]" ) ).isEqualTo( "intArray" );
+        assertThat( Strings.sanitizeIdentifierName( "__0int[]" ) ).isEqualTo( "intArray" );
+        assertThat( Strings.sanitizeIdentifierName( "___0" ) ).isEqualTo( "___0" );
     }
 
     @Test
