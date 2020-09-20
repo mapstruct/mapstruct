@@ -73,6 +73,8 @@ public enum Message {
     PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE( "No write accessor found for property \"%s\" in target type." ),
     PROPERTYMAPPING_WHITESPACE_TRIMMED( "The property named \"%s\" has whitespaces, using trimmed property \"%s\" instead.", Diagnostic.Kind.WARNING ),
+    PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET("The type of parameter \"%s\" has no property named \"%s\". Please define the source property explicitly."),
+    PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),

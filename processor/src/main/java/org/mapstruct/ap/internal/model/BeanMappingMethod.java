@@ -65,6 +65,8 @@ import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGUOUS_CONSTRUCTORS;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS;
+import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET;
+import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -1111,6 +1113,31 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                     else {
                         errorOccured = true;
+                    }
+                }
+                else {
+                    errorOccured = true;
+
+                    if ( method.getSourceParameters().size() == 1 ) {
+                        ctx.getMessager()
+                            .printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getTargetAnnotationValue(),
+                                PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET,
+                                method.getSourceParameters().get( 0 ).getName(),
+                                targetPropertyName
+                            );
+                    }
+                    else {
+                        ctx.getMessager()
+                            .printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getTargetAnnotationValue(),
+                                PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET,
+                                targetPropertyName
+                            );
                     }
                 }
             }

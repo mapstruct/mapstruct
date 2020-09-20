@@ -30,8 +30,9 @@ public class Issue2077Test {
         diagnostics = {
             @Diagnostic(type = Issue2077ErroneousMapper.class,
                 kind = ERROR,
-                line = 22,
-                message = "Unmapped target property: \"s1\".")
+                line = 18,
+                message = "The type of parameter \"source\" has no property named \"s1\". Please define the source " +
+                    "property explicitly.")
         }
     )
     public void shouldNotCompile() {
