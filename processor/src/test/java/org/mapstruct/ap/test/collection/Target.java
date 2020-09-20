@@ -8,13 +8,11 @@ package org.mapstruct.ap.test.collection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class Target {
 
@@ -54,10 +52,11 @@ public class Target {
     private StringHolderToLongMap nonGenericMapStringtoLong;
 
     public Target() {
-        otherStringLongMap = Maps.newHashMap();
+        otherStringLongMap = new HashMap<>();
         otherStringLongMap.put( "not-present-after-mapping", 42L );
 
-        otherStringList = Lists.newArrayList( "not-present-after-mapping" );
+        otherStringList = new ArrayList<>();
+        otherStringList.add( "not-present-after-mapping" );
     }
 
     public List<String> getStringList() {

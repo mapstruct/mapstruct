@@ -8,12 +8,10 @@ package org.mapstruct.ap.test.collection.iterabletononiterable;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 public class StringListMapper {
 
     public String stringListToString(List<String> strings) {
-        return strings == null ? null : Joiner.on( "-" ).join( strings );
+        return strings == null ? null : String.join( "-", strings );
     }
 
     public List<String> stringToStringList(String string) {

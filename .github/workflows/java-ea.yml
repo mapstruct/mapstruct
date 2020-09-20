@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [15-ea]
+        java: [16-ea]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:

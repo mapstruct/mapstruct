@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -26,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -41,8 +43,6 @@ import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.xml.sax.InputSource;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.DefaultLogger;
@@ -217,7 +217,7 @@ abstract class CompilingStatement extends Statement {
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             checker.addListener(
                 new DefaultLogger(
-                    ByteStreams.nullOutputStream(),
+                    NullOutputStream.NULL_OUTPUT_STREAM,
                     AutomaticBean.OutputStreamOptions.CLOSE,
                     errorStream,
                     AutomaticBean.OutputStreamOptions.CLOSE
@@ -234,7 +234,7 @@ abstract class CompilingStatement extends Statement {
     }
 
     private static List<File> findGeneratedFiles(File file) {
-        final List<File> files = Lists.newLinkedList();
+        final List<File> files = new LinkedList<>();
 
         if ( file.canRead() ) {
             if ( file.isDirectory() ) {

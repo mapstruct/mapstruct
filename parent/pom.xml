@@ -22,17 +22,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.mapstruct.gem.version>1.0.0.Alpha2</org.mapstruct.gem.version>
-        <!-- We can't go to 3.0.0-M2 as it has a regression. See https://issues.apache.org/jira/browse/MENFORCER-306 -->
-        <org.apache.maven.plugins.enforcer.version>3.0.0-M1</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>3.0.0-M3</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.enforcer.version>3.0.0-M3</org.apache.maven.plugins.enforcer.version>
+        <org.apache.maven.plugins.surefire.version>3.0.0-M5</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>8.29</com.puppycrawl.tools.checkstyle.version>
-        <org.junit.jupiter.version>5.6.0</org.junit.jupiter.version>
+        <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
+        <org.junit.jupiter.version>5.7.0</org.junit.jupiter.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
-        <assertj.version>3.11.1</assertj.version>
+        <assertj.version>3.17.2</assertj.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the hickory processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
@@ -112,7 +111,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>19.0</version>
+                <version>29.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.mapstruct.tools.gem</groupId>
@@ -307,7 +306,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.1</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>
@@ -383,7 +382,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>4.0.0</version>
+                    <version>5.1.1</version>
                     <executions>
                         <execution>
                             <id>bundle-manifest</id>
@@ -529,7 +528,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.5</version>
+                    <version>0.8.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
