@@ -72,28 +72,30 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement targetTypeElement,
                                                        TypeElement immutableAnnotation) {
 
-        TypeMirror immutableAnnotationType = immutableAnnotation.asType();
-        Optional<TypeElement> optionalTypeElement = findTypeWithImmutableAnnotation(
-            targetTypeElement,
-            immutableAnnotationType
-        );
+        // we can avoid any reflection/type mirror inspection of the annotations
+        // if the type we're dealing with now has a builder method on it.
+        BuilderInfo fromType = super.findBuilderInfo( targetTypeElement );
+        if ( fromType != null ) {
+            return fromType;
+        }
 
-        return optionalTypeElement.flatMap( typeWithValueImmutableAnnotation ->
-            elementUtils.getAllAnnotationMirrors( typeWithValueImmutableAnnotation )
-                .stream()
-                .map( AnnotationMirror::getAnnotationType )
-                .filter( annotationMirror -> typeUtils.isSameType( annotationMirror, immutableAnnotationType ) )
-                .map( annotationMirror -> {
-                    TypeElement immutableElement = asImmutableElement( typeWithValueImmutableAnnotation );
-                    if ( immutableElement != null ) {
-                        return super.findBuilderInfo( immutableElement );
-                    }
-                    else {
-                        // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
-                        throw new TypeHierarchyErroneousException( typeWithValueImmutableAnnotation );
-                    }
-                } )
-                .findFirst() )
+        // if there's no build method on the type, then look for the immutable annotation
+        // since it may be accompanied by a Value.Style which provides info on the
+        // name of the generated builder
+        return findTypeWithImmutableAnnotation(
+            targetTypeElement,
+            immutableAnnotation.asType()
+        ).map( typeElement -> {
+            TypeElement immutableElement = asImmutableElement( typeElement );
+            if ( immutableElement != null ) {
+                return super.findBuilderInfo( immutableElement );
+            }
+            else {
+                // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
+                throw new TypeHierarchyErroneousException( typeElement );
+            }
+
+        } )
             .orElse( null );
     }
 
@@ -105,6 +107,9 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
      * 2) on an interface in the same package that the element implements
      * 3) on the superclass for the element
      * <p>
+     *
+     * We're looking for the immutable annotation since there could be additional annotations there
+     * which affect the name of the generated immutable builder.
      *
      * @param targetTypeElement             element to analyze for the immutables annotation
      * @param immutableAnnotationTypeMirror type of the annotation we're looking for
@@ -127,7 +132,9 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
 
         String targetPackage = findPackage( targetTypeElement );
         return Stream.concat(
+            // 2. we'll check interfaces second
             targetTypeElement.getInterfaces().stream(),
+            // 3. if not found on an interface, check the super class
             Stream.of( targetTypeElement.getSuperclass() )
         )
             .filter( intf -> intf.getKind() == TypeKind.DECLARED )
@@ -164,7 +171,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
                     enclosingQualifier = enclosingQualifierFromStyle( style, enclosingElement );
                 }
                 else {
-                    enclosingQualifier = "Immutable" + enclosingElement.getSimpleName().toString();
+                    enclosingQualifier = "Immutable" + enclosingElement.getSimpleName();
                 }
             }
             enclosingElement = enclosingElement.getEnclosingElement();
@@ -187,7 +194,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return immutableNameFromStylePattern(
             nameWithoutAbstractPrefix( style, element ),
             getSingleAnnotationValue( "typeImmutable", style )
-                .orElse( getSingleAnnotationValue( "typeImmutableEnclosing", style )
+                .orElseGet( () -> getSingleAnnotationValue( "typeImmutableEnclosing", style )
                     .orElse( "Immutable*" ) )
         );
     }
@@ -241,7 +248,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
             .filter( p -> simpleNameOfElement.startsWith( p.substring( 0, p.length() - 1 ) ) )
             .map( p -> simpleNameOfElement.substring( p.length() - 1 ) )
             .findFirst()
-            .orElse( element.getSimpleName().toString() );
+            .orElseGet( () -> element.getSimpleName().toString() );
     }
 
     protected Optional<String> getSingleAnnotationValue(String annotationKey, AnnotationMirror style) {
