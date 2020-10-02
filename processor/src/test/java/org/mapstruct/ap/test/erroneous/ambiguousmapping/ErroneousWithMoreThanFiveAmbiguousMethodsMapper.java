@@ -20,28 +20,28 @@ public interface ErroneousWithMoreThanFiveAmbiguousMethodsMapper {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
     default LeafEntity map2(LeafDTO dto) {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
     default LeafEntity map3(LeafDTO dto) {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
     default LeafEntity map4(LeafDTO dto) {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
 
     default LeafEntity map5(LeafDTO dto) {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
     default LeafEntity map6(LeafDTO dto) {
         return new LeafEntity();
     }
