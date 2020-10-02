@@ -151,7 +151,7 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
 
 MapStruct has a `CollectionMappingStrategy`, with the possible values: `ACCESSOR_ONLY`, `SETTER_PREFERRED`, `ADDER_PREFERRED` and `TARGET_IMMUTABLE`.
 
-In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are applied to the presence/absense of a `set-s`, `add-` and / or `get-s` method on the target object:
+In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are applied to the presence/absence of a `set-s`, `add-` and / or `get-s` method on the target object:
 
 .Collection mapping strategy options
 |===

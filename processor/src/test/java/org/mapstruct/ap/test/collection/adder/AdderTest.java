@@ -178,7 +178,7 @@ public class AdderTest {
     }
 
     @Test
-    public void testShouldFallBackToDaliSingularInAbsenseOfHumanSingular() {
+    public void testShouldFallBackToDaliSingularInAbsenceOfHumanSingular() {
         AdderUsageObserver.setUsed( false );
 
         SourceTeeth source = new SourceTeeth();

@@ -19,7 +19,7 @@ public interface ErroneousWithAmbiguousMethodsMapper {
         return new LeafEntity();
     }
 
-    // duplicated method, triggering ambigious mapping method
+    // duplicated method, triggering ambiguous mapping method
     default LeafEntity map2(LeafDTO dto) {
         return new LeafEntity();
     }

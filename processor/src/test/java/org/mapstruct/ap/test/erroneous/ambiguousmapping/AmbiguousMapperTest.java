@@ -17,7 +17,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @IssueKey("2156")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class AmbigiousMapperTest {
+public class AmbiguousMapperTest {
 
     @Test
     @WithClasses( ErroneousWithAmbiguousMethodsMapper.class)
