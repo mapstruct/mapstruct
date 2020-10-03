@@ -274,7 +274,9 @@ public class TypeFactory {
         else {
             isEnumType = false;
             isInterface = false;
-            name = mirror.toString();
+            // When the component type is primitive and is annotated with ElementType.TYPE_USE then
+            // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
+            name = mirror.getKind().isPrimitive() ? NativeTypes.getName( mirror.getKind() ) : mirror.toString();
             packageName = null;
             qualifiedName = name;
             typeElement = null;
