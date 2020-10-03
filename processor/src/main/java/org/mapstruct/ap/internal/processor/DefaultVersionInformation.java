@@ -6,6 +6,8 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
@@ -103,7 +105,28 @@ public class DefaultVersionInformation implements VersionInformation {
     }
 
     private static String getCompiler(ProcessingEnvironment processingEnv) {
-        String className = processingEnv.getClass().getName();
+        String className;
+        if ( Proxy.isProxyClass( processingEnv.getClass() ) ) {
+            // IntelliJ IDEA wraps the ProcessingEnvironment in a Proxy.
+            // Therefore we need smarter logic to determine the type  of the compiler
+            String processingEnvToString = processingEnv.toString();
+            if ( processingEnvToString.contains( COMPILER_NAME_JAVAC ) ) {
+                // The toString of the javac ProcessingEnvironment is "javac ProcessingEnvironment"
+                className = JAVAC_PE_CLASS;
+            }
+            else if ( processingEnvToString.startsWith( JDT_BATCH_PE_CLASS ) ) {
+                // The toString of the JDT Batch is from Object#toString so it contains the class name
+                className = JDT_BATCH_PE_CLASS;
+            }
+            else {
+                InvocationHandler invocationHandler = Proxy.getInvocationHandler( processingEnv );
+                return "Proxy handler " + invocationHandler.getClass() + " from " +
+                    getLibraryName( invocationHandler.getClass(), false );
+            }
+        }
+        else {
+            className = processingEnv.getClass().getName();
+        }
 
         if ( className.equals( JAVAC_PE_CLASS ) ) {
             return COMPILER_NAME_JAVAC;
@@ -135,7 +158,10 @@ public class DefaultVersionInformation implements VersionInformation {
             }
         }
 
-        if ( "jar".equals( resource.getProtocol() ) ) {
+        if ( resource == null ) {
+            return "";
+        }
+        else if ( "jar".equals( resource.getProtocol() ) ) {
             return extractJarFileName( resource.getFile() );
         }
         else if ( "jrt".equals( resource.getProtocol() ) ) {
@@ -149,6 +175,9 @@ public class DefaultVersionInformation implements VersionInformation {
     }
 
     private static Manifest openManifest(String classFileName, URL resource) {
+        if ( resource == null ) {
+            return null;
+        }
         try {
             URL manifestUrl = createManifestUrl( classFileName, resource );
             return new Manifest( manifestUrl.openStream() );
