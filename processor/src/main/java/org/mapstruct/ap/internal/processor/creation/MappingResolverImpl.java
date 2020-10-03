@@ -367,7 +367,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( type.isArrayType() ) {
-                return type.isJavaLangType();
+                return type.isJavaLangType() || type.getComponentType().isPrimitive();
             }
 
             if ( type.isIterableOrStreamType() ) {
