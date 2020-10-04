@@ -9,8 +9,9 @@ import org.junit.Test;
 import org.mapstruct.itest.immutables.TopLevelDto;
 import org.mapstruct.itest.immutables.TopLevelFixture;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mapstruct.itest.immutables.TopLevelFixture.CHILD_VALUE;
+import static org.assertj.core.api.Assertions.assertThat;
 
 // shows support for a @Value.Style example
 public class FixedStyledValueTest {
@@ -24,11 +25,13 @@ public class FixedStyledValueTest {
 
     @Test
     public void toImmutable() {
-        assertEquals(domain, FixedTopLevelMapper.INSTANCE.toImmutable(dto) );
+        BaseTopLevelWithStyle actual = BaseTopLevelMapper.INSTANCE.toImmutable( dto );
+        assertThat(actual.getChild().getString()).isEqualTo( CHILD_VALUE );
     }
 
     @Test
     public void fromImmutable() {
-        assertEquals(dto, FixedTopLevelMapper.INSTANCE.fromImmutable(domain) );
+        TopLevelDto actual = BaseTopLevelMapper.INSTANCE.fromImmutable( domain );
+        assertThat(actual.getChild().getString()).isEqualTo( CHILD_VALUE );
     }
 }

@@ -15,8 +15,8 @@ public interface TopLevelMapper {
 
     TopLevelMapper INSTANCE = Mappers.getMapper( TopLevelMapper.class );
 
-    TopLevelWithValueEnclosingStyle toImmutable(TopLevelDto dto);
-    TopLevelWithValueEnclosingStyle.Child toImmutable(TopLevelDto.ChildDto dto);
+    AbstractTopLevelWithValueEnclosingStyle toImmutable(TopLevelDto dto);
+    AbstractTopLevelWithValueEnclosingStyle.Child toImmutable(TopLevelDto.ChildDto dto);
 
-    TopLevelDto fromImmutable(TopLevelWithValueEnclosingStyle domain);
+    TopLevelDto fromImmutable(AbstractTopLevelWithValueEnclosingStyle domain);
 }

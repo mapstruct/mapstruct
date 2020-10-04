@@ -8,8 +8,8 @@ package org.mapstruct.itest.immutables.inner;
 import org.junit.Test;
 import org.mapstruct.itest.immutables.*;
 
-import static org.junit.Assert.*;
 import static org.mapstruct.itest.immutables.TopLevelFixture.CHILD_VALUE;
+import static org.assertj.core.api.Assertions.assertThat;
 
 // Shows support for inner classes using all defaults
 public class InnerClassTest {
@@ -22,11 +22,13 @@ public class InnerClassTest {
 
     @Test
     public void toImmutable() {
-        assertEquals(domain, TopLevelMapper.INSTANCE.toImmutable(dto) );
+        TopLevel actual = TopLevelMapper.INSTANCE.toImmutable( dto );
+        assertThat( actual.getChild().getString() ).isEqualTo( CHILD_VALUE );
     }
 
     @Test
     public void fromImmutable() {
-        assertEquals(dto, TopLevelMapper.INSTANCE.fromImmutable(domain) );
+        TopLevelDto actual = TopLevelMapper.INSTANCE.fromImmutable( domain );
+        assertThat( actual.getChild().getString() ).isEqualTo( CHILD_VALUE );
     }
 }

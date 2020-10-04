@@ -11,11 +11,11 @@ import org.mapstruct.factory.Mappers;
 import org.mapstruct.itest.immutables.TopLevelDto;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface FixedTopLevelMapper {
-    FixedTopLevelMapper INSTANCE = Mappers.getMapper( FixedTopLevelMapper.class );
+public interface BaseTopLevelMapper {
+    BaseTopLevelMapper INSTANCE = Mappers.getMapper( BaseTopLevelMapper.class );
 
-    FixedTopLevelWithStyle toImmutable(TopLevelDto dto);
-    FixedTopLevelWithStyle.Child toImmutable(TopLevelDto.ChildDto dto);
+    BaseTopLevelWithStyle toImmutable(TopLevelDto dto);
+    BaseTopLevelWithStyle.Child toImmutable(TopLevelDto.ChildDto dto);
 
-    TopLevelDto fromImmutable(FixedTopLevelWithStyle domain);
+    TopLevelDto fromImmutable(BaseTopLevelWithStyle domain);
 }
