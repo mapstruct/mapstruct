@@ -159,4 +159,38 @@ public class DefaultValueTest {
     public void errorOnDefaultValueAndExpression() {
     }
 
+    @Test
+    @IssueKey("2214")
+    @WithClasses({
+        CountryMapperMultipleSources.class,
+        Region.class,
+    })
+    public void shouldBeAbleToDetermineDefaultValueBasedOnOnlyTargetType() {
+        CountryEntity entity = new CountryEntity();
+        CountryDts target = CountryMapperMultipleSources.INSTANCE.map( entity, "ZH" );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getCode() ).isEqualTo( "CH" );
+    }
+
+    @Test
+    @IssueKey("2220")
+    @WithClasses({
+        ErroneousMissingSourceMapper.class,
+        Region.class,
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                type = ErroneousMissingSourceMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 17,
+                message = "The type of parameter \"tenant\" has no property named \"type\"." +
+                    " Please define the source property explicitly."),
+        }
+    )
+    public void errorWhenOnlyTargetDefinedAndSourceDoesNotHaveProperty() {
+    }
+
 }
