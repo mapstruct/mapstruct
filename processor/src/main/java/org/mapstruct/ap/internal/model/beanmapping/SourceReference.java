@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
@@ -239,11 +238,24 @@ public class SourceReference extends AbstractReference {
             if ( isForwarded ) {
                 Parameter parameter = Parameter.getSourceParameter( templateMethod.getParameters(), parameterName );
                 if ( parameter != null ) {
-                    result = method.getSourceParameters()
-                                   .stream()
-                                   .filter( p -> p.getType().isAssignableTo( parameter.getType() ) )
-                                   .collect( Collectors.reducing( (a, b) -> null ) )
-                                   .orElse( null );
+
+                    // When forward inheriting we should find the matching source parameter by type
+                    // If there are multiple parameters of the same type
+                    // then we fallback to match the parameter name to the current method source parameters
+                    for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                        if ( sourceParameter.getType().isAssignableTo( parameter.getType() ) ) {
+                            if ( result == null ) {
+                                result = sourceParameter;
+                            }
+                            else {
+                                // When we reach here it means that we found a second source parameter
+                                // that has the same type, then fallback to the matching source parameter
+                                // in the current method
+                                result = Parameter.getSourceParameter( method.getParameters(), parameterName );
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             else {
