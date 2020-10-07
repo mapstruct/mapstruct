@@ -44,6 +44,14 @@ public class Issue2125Test {
         );
 
         assertThat( comment ).isNotNull();
+        assertThat( comment.getIssueId() ).isEqualTo( 2126 );
+
+        comment = Issue2125Mapper.INSTANCE.cloneWithQualifierExplicitSource(
+            new Comment( 2125, "Fix issue" ),
+            1000
+        );
+
+        assertThat( comment ).isNotNull();
         assertThat( comment.getIssueId() ).isEqualTo( 1001 );
     }
 
@@ -59,12 +67,6 @@ public class Issue2125Test {
                 alternativeLine = 17, // For some reason javac reports the error on the method instead of the annotation
                 message = "The type of parameter \"repository\" has no property named \"issueId\". Please define the " +
                     "source property explicitly."),
-            @Diagnostic(type = Issue2125ErroneousMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 19,
-                alternativeLine = 21, // For some reason javac reports the error on the method instead of the annotation
-                message = "No property named \"issueId\" exists in source parameter(s). Please define the source " +
-                    "explicitly.")
         })
     public void shouldReportErrorWhenMultipleSourcesMatch() {
     }

@@ -15,10 +15,17 @@ public interface Issue2125Mapper {
 
     Issue2125Mapper INSTANCE = Mappers.getMapper( Issue2125Mapper.class );
 
+    // In this case the issueId from the Comment is used
     Comment clone(Comment comment, Integer issueId);
 
+    // When source is not defined then we will use the issueId from the Comment,
+    // same as when there was no mapping
     @Mapping(target = "issueId", qualifiedByName = "mapIssueNumber")
     Comment cloneWithQualifier(Comment comment, Integer issueId);
+
+    // When source is defined then we will source the parameter name
+    @Mapping(target = "issueId", source = "issueId", qualifiedByName = "mapIssueNumber")
+    Comment cloneWithQualifierExplicitSource(Comment comment, Integer issueId);
 
     @Named("mapIssueNumber")
     default Integer mapIssueNumber(Integer issueNumber) {
