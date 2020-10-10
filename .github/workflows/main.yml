@@ -5,6 +5,7 @@ on: [push, pull_request]
 env:
   SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
   SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+  MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
 jobs:
   test_jdk:
@@ -22,7 +23,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: 'Test'
-        run: ./mvnw -V -B --no-transfer-progress install -DskipDistribution=true
+        run: ./mvnw ${MAVEN_ARGS} install -DskipDistribution=true
   linux:
     name: 'Linux JDK 8'
     runs-on: ubuntu-latest
@@ -34,7 +35,7 @@ jobs:
         with:
           java-version: 8
       - name: 'Test'
-        run: ./mvnw -V -B --no-transfer-progress install
+        run: ./mvnw ${MAVEN_ARGS} install
       - name: 'Generate coverage report'
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
@@ -52,7 +53,7 @@ jobs:
         with:
           java-version: 8
       - name: 'Test'
-        run: ./mvnw -V -B --no-transfer-progress install
+        run: ./mvnw ${MAVEN_ARGS} install
   mac:
     name: 'Mac OS'
     runs-on: macos-latest
@@ -63,4 +64,4 @@ jobs:
         with:
           java-version: 8
       - name: 'Test'
-        run: ./mvnw -V -B --no-transfer-progress install
+        run: ./mvnw ${MAVEN_ARGS} install
