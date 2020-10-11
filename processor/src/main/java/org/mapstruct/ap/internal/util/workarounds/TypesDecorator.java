@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.util.workarounds;
 
 import java.util.List;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -52,12 +51,19 @@ public class TypesDecorator implements Types {
 
     @Override
     public boolean isSubtype(TypeMirror t1, TypeMirror t2) {
-        return SpecificCompilerWorkarounds.isSubtype( delegate, t1, t2 );
+        if ( isRegularType( t1 ) && isRegularType( t2 ) ) {
+            return delegate.isSubtype( erasure( t1 ), erasure(  t2 ) );
+        }
+        return false;
     }
 
     @Override
     public boolean isAssignable(TypeMirror t1, TypeMirror t2) {
-        return SpecificCompilerWorkarounds.isAssignable( delegate, t1, t2 );
+//        return SpecificCompilerWorkarounds.isAssignable( delegate, t1, t2 );
+        if ( isRegularType( t1 ) && isRegularType( t2 ) ) {
+            return delegate.isAssignable( t1, t2 );
+        }
+        return false;
     }
 
     @Override
@@ -77,7 +83,10 @@ public class TypesDecorator implements Types {
 
     @Override
     public TypeMirror erasure(TypeMirror t) {
-        return SpecificCompilerWorkarounds.erasure( delegate, t );
+        if ( isRegularType( t ) ) {
+            return delegate.erasure( t );
+        }
+        return t;
     }
 
     @Override
@@ -132,11 +141,20 @@ public class TypesDecorator implements Types {
 
     @Override
     public TypeMirror asMemberOf(DeclaredType containing, Element element) {
-        return SpecificCompilerWorkarounds.asMemberOf(
-            delegate,
-            processingEnv,
-            versionInformation,
-            containing,
-            element );
+        return delegate.asMemberOf( containing, element );
+    }
+
+    private boolean isRegularType(TypeMirror t) {
+        if ( t == null ) {
+            return false;
+        }
+        TypeKind k = t.getKind();
+        return TypeKind.DECLARED == k
+            || k.isPrimitive()
+            || TypeKind.ARRAY == k
+            || TypeKind.TYPEVAR == k
+            || TypeKind.WILDCARD == k
+            || TypeKind.UNION == k // e.g. multi catch exceptions
+            || TypeKind.INTERSECTION == k; // e.g. <T extends TypeA & TypeB>
     }
 }
