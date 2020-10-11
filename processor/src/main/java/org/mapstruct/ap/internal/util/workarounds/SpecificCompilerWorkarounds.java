@@ -113,28 +113,6 @@ public class SpecificCompilerWorkarounds {
      */
     static TypeMirror asMemberOf(Types typeUtils, ProcessingEnvironment env, VersionInformation versionInformation,
                                  DeclaredType containing, Element element) {
-        TypeMirror result = null;
-        Exception lastException = null;
-        try {
-            try {
-                result = typeUtils.asMemberOf( containing, element );
-            }
-            catch ( IllegalArgumentException e ) {
-                lastException = e;
-                if ( versionInformation.isEclipseJDTCompiler() ) {
-                    result = EclipseClassLoaderBridge.invokeAsMemberOfWorkaround( env, containing, element );
-                }
-            }
-        }
-        catch ( Exception e ) {
-            lastException = e;
-        }
-
-        if ( null == result ) {
-            throw new RuntimeException( "Fallback implementation of asMemberOf didn't work for "
-                + element + " in " + containing, lastException );
-        }
-
-        return result;
+        return typeUtils.asMemberOf( containing, element );
     }
 }
