@@ -28,15 +28,21 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  *
  * @author Andreas Gudian
  */
-public class TypesDecorator implements Types {
-    private final Types delegate;
-    private final ProcessingEnvironment processingEnv;
-    private final VersionInformation versionInformation;
+public abstract class AbstractTypesDecorator implements Types {
 
-    public TypesDecorator(ProcessingEnvironment processingEnv, VersionInformation versionInformation) {
+    private final Types delegate;
+
+    public static Types create(ProcessingEnvironment processingEnvironment, VersionInformation info ) {
+        if ( info.isEclipseJDTCompiler() ) {
+            return new EclipseTypesDecorator( processingEnvironment );
+        }
+        else {
+            return new JavacTypesDecorator( processingEnvironment );
+        }
+    }
+
+    AbstractTypesDecorator(ProcessingEnvironment processingEnv) {
         this.delegate = processingEnv.getTypeUtils();
-        this.processingEnv = processingEnv;
-        this.versionInformation = versionInformation;
     }
 
     @Override
