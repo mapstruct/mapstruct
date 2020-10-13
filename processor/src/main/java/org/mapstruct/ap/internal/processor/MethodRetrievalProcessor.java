@@ -21,9 +21,15 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
+import org.mapstruct.ap.internal.gem.IterableMappingGem;
+import org.mapstruct.ap.internal.gem.MapMappingGem;
+import org.mapstruct.ap.internal.gem.MappingGem;
+import org.mapstruct.ap.internal.gem.MappingsGem;
+import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.ValueMappingGem;
+import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -36,23 +42,15 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.gem.BeanMappingGem;
-import org.mapstruct.ap.internal.gem.IterableMappingGem;
-import org.mapstruct.ap.internal.gem.MapMappingGem;
-import org.mapstruct.ap.internal.gem.MappingGem;
-import org.mapstruct.ap.internal.gem.MappingsGem;
-import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
-import org.mapstruct.ap.internal.gem.ValueMappingGem;
-import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
-
-import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -119,7 +117,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         TypeElement typeElement = asTypeElement( mapperAnnotation.mapperConfigType() );
         List<SourceMethod> methods = new ArrayList<>();
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
+        for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
 
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -160,7 +158,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                MapperOptions mapperOptions, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
+        for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
                 usedMapper,
                 executable,

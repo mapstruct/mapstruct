@@ -28,22 +28,21 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
-import org.mapstruct.ap.internal.util.ElementUtils;
 import javax.lang.model.util.SimpleTypeVisitor8;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -662,7 +661,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> getAllMethods() {
         if ( allMethods == null ) {
-            allMethods = Executables.getAllEnclosedExecutableElements( elementUtils, typeElement );
+            allMethods = elementUtils.getAllEnclosedExecutableElements( typeElement );
         }
 
         return allMethods;
@@ -670,7 +669,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<VariableElement> getAllFields() {
         if ( allFields == null ) {
-            allFields = Fields.getAllEnclosedFields( elementUtils, typeElement );
+            allFields = elementUtils.getAllEnclosedFields( typeElement );
         }
 
         return allFields;
