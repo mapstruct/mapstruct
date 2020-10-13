@@ -18,8 +18,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
@@ -93,7 +93,7 @@ public class MappingOptions extends DelegatingOptions {
 
     public static void addInstances(MappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions,
-                                    FormattingMessager messager, Types typeUtils,
+                                    FormattingMessager messager, TypeUtils typeUtils,
                                     Set<MappingOptions> mappings) {
 
         for ( MappingGem mapping : gem.value().getValue() ) {
@@ -102,7 +102,8 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     public static void addInstance(MappingGem mapping, ExecutableElement method,
-                                   BeanMappingOptions beanMappingOptions, FormattingMessager messager, Types typeUtils,
+                                   BeanMappingOptions beanMappingOptions, FormattingMessager messager,
+                                   TypeUtils typeUtils,
                                    Set<MappingOptions> mappings) {
 
         if ( !isConsistent( mapping, method, messager ) ) {
@@ -421,7 +422,7 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     @Override
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return Optional.ofNullable( mapping ).map( MappingGem::mappingControl )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )

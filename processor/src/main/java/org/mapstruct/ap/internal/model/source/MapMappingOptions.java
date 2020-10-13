@@ -8,8 +8,8 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
@@ -32,7 +32,8 @@ public class MapMappingOptions extends DelegatingOptions {
     private final MapMappingGem mapMapping;
 
     public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
-                                            ExecutableElement method, FormattingMessager messager, Types typeUtils) {
+                                            ExecutableElement method, FormattingMessager messager,
+                                            TypeUtils typeUtils) {
 
         if ( mapMapping == null || !isConsistent( mapMapping, method, messager ) ) {
             MapMappingOptions options = new MapMappingOptions(
@@ -146,7 +147,7 @@ public class MapMappingOptions extends DelegatingOptions {
             .orElse( next().getNullValueMappingStrategy() );
     }
 
-    public MappingControl getKeyMappingControl(Elements elementUtils) {
+    public MappingControl getKeyMappingControl(ElementUtils elementUtils) {
         return Optional.ofNullable( mapMapping ).map( MapMappingGem::keyMappingControl )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
@@ -154,7 +155,7 @@ public class MapMappingOptions extends DelegatingOptions {
             .orElse( next().getMappingControl( elementUtils ) );
     }
 
-    public MappingControl getValueMappingControl(Elements elementUtils) {
+    public MappingControl getValueMappingControl(ElementUtils elementUtils) {
         return Optional.ofNullable( mapMapping ).map( MapMappingGem::valueMappingControl )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )

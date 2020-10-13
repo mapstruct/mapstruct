@@ -14,7 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.gem.MappingControlGem;
 import org.mapstruct.ap.internal.gem.MappingControlUseGem;
@@ -32,7 +32,7 @@ public class MappingControl {
     private boolean allowMappingMethod = false;
     private boolean allow2Steps = false;
 
-    public static MappingControl fromTypeMirror(TypeMirror mirror, Elements elementUtils) {
+    public static MappingControl fromTypeMirror(TypeMirror mirror, ElementUtils elementUtils) {
         MappingControl mappingControl = new MappingControl();
         if ( TypeKind.DECLARED == mirror.getKind() ) {
             resolveControls( mappingControl, ( (DeclaredType) mirror ).asElement(), new HashSet<>(), elementUtils );
@@ -60,7 +60,7 @@ public class MappingControl {
     }
 
     private static void resolveControls(MappingControl control, Element element, Set<Element> handledElements,
-                                       Elements elementUtils) {
+                                       ElementUtils elementUtils) {
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
             Element lElement = annotationMirror.getAnnotationType().asElement();
             if ( isAnnotation( lElement, MAPPING_CONTROL_FQN ) ) {
@@ -102,7 +102,7 @@ public class MappingControl {
         }
     }
 
-    private static boolean isAnnotationInPackage(Element element, String packageFQN, Elements elementUtils) {
+    private static boolean isAnnotationInPackage(Element element, String packageFQN, ElementUtils elementUtils) {
         if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
             return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
         }

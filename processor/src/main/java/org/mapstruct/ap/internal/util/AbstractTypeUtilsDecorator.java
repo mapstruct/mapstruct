@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.util.workarounds;
+package org.mapstruct.ap.internal.util;
 
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -20,28 +20,17 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.version.VersionInformation;
-
 /**
- * Replaces the usage of {@link Types} within MapStruct by delegating to the original implementation or to our specific
- * workarounds if necessary.
+ * Replaces the usage of {@link TypeUtils} within MapStruct by delegating to the original implementation or to our
+ * specific workarounds if necessary.
  *
  * @author Andreas Gudian
  */
-public abstract class AbstractTypesDecorator implements Types {
+public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
     private final Types delegate;
 
-    public static Types create(ProcessingEnvironment processingEnvironment, VersionInformation info ) {
-        if ( info.isEclipseJDTCompiler() ) {
-            return new EclipseTypesDecorator( processingEnvironment );
-        }
-        else {
-            return new JavacTypesDecorator( processingEnvironment );
-        }
-    }
-
-    AbstractTypesDecorator(ProcessingEnvironment processingEnv) {
+    AbstractTypeUtilsDecorator(ProcessingEnvironment processingEnv) {
         this.delegate = processingEnv.getTypeUtils();
     }
 
@@ -65,7 +54,6 @@ public abstract class AbstractTypesDecorator implements Types {
 
     @Override
     public boolean isAssignable(TypeMirror t1, TypeMirror t2) {
-//        return SpecificCompilerWorkarounds.isAssignable( delegate, t1, t2 );
         if ( isRegularType( t1 ) && isRegularType( t2 ) ) {
             return delegate.isAssignable( t1, t2 );
         }

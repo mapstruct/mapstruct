@@ -8,8 +8,8 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -25,7 +25,7 @@ public class MethodSelectors {
 
     private final List<MethodSelector> selectors;
 
-    public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+    public MethodSelectors(TypeUtils typeUtils, ElementUtils elementUtils, TypeFactory typeFactory,
                            FormattingMessager messager) {
         selectors = Arrays.asList(
             new MethodFamilySelector(),

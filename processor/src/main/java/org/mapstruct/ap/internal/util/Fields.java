@@ -13,12 +13,11 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.util.ElementFilter.fieldsIn;
-import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
+import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link VariableElement}s.
@@ -51,7 +50,7 @@ public class Fields {
      *
      * @return the executable elements usable in the type
      */
-    public static List<VariableElement> getAllEnclosedFields(Elements elementUtils, TypeElement element) {
+    public static List<VariableElement> getAllEnclosedFields(ElementUtils elementUtils, TypeElement element) {
         List<VariableElement> enclosedElements = new ArrayList<>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
@@ -59,7 +58,7 @@ public class Fields {
         return enclosedElements;
     }
 
-    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<VariableElement> alreadyAdded,
+    private static void addEnclosedElementsInHierarchy(ElementUtils elementUtils, List<VariableElement> alreadyAdded,
                                                        TypeElement element, TypeElement parentType) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( elementUtils, element );

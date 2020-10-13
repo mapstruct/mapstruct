@@ -23,9 +23,9 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Types;
 
 import org.junit.Test;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,7 +73,7 @@ public class SelectionParametersTest {
         }
     }
 
-    private final Types typeUtils = new Types() {
+    private final TypeUtils typeUtils = new TypeUtils() {
         @Override
         public Element asElement(TypeMirror t) {
             throw new UnsupportedOperationException( "asElement is not supported" );

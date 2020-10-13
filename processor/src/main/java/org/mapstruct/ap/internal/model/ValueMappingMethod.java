@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -295,7 +295,7 @@ public class ValueMappingMethod extends MappingMethod {
             return ctx.getEnumMappingStrategy().getEnumConstant( typeElement, enumConstant );
         }
 
-        private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
+        private SelectionParameters getSelectionParameters(Method method, TypeUtils typeUtils) {
             BeanMappingGem beanMapping = BeanMappingGem.instanceOn( method.getExecutable() );
             if ( beanMapping != null ) {
                 List<TypeMirror> qualifiers = beanMapping.qualifiedBy().get();

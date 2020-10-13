@@ -16,7 +16,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.internal.gem.AfterMappingGem;
 import org.mapstruct.ap.internal.gem.BeforeMappingGem;
@@ -24,7 +23,7 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
-import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
+import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -93,7 +92,8 @@ public class Executables {
      *
      * @return the executable elements usable in the type
      */
-    public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
+    public static List<ExecutableElement> getAllEnclosedExecutableElements(ElementUtils elementUtils,
+                                                                           TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
@@ -101,7 +101,7 @@ public class Executables {
         return enclosedElements;
     }
 
-    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+    private static void addEnclosedElementsInHierarchy(ElementUtils elementUtils, List<ExecutableElement> alreadyAdded,
                                                        TypeElement element, TypeElement parentType) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( elementUtils, element );
@@ -139,7 +139,7 @@ public class Executables {
      * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
      * @param parentType the type for with elements are collected
      */
-    private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
+    private static void addNotYetOverridden(ElementUtils elementUtils, List<ExecutableElement> alreadyCollected,
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
         List<ExecutableElement> safeToAdd = new ArrayList<>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
@@ -185,7 +185,7 @@ public class Executables {
      * @param parentType the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
-    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
+    private static boolean wasNotYetOverridden(ElementUtils elementUtils, List<ExecutableElement> alreadyCollected,
                                                ExecutableElement executable, TypeElement parentType) {
         for ( ListIterator<ExecutableElement> it = alreadyCollected.listIterator(); it.hasNext(); ) {
             ExecutableElement executableInSubtype = it.next();

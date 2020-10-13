@@ -21,8 +21,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -73,8 +73,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
-    private Types typeUtils;
-    private Elements elementUtils;
+    private TypeUtils typeUtils;
+    private ElementUtils elementUtils;
     private Options options;
 
     @Override

@@ -36,8 +36,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
@@ -81,8 +81,8 @@ public class TypeFactory {
             return sb.toString();
         };
 
-    private final Elements elementUtils;
-    private final Types typeUtils;
+    private final ElementUtils elementUtils;
+    private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final RoundContext roundContext;
 
@@ -97,8 +97,8 @@ public class TypeFactory {
 
     private final boolean loggingVerbose;
 
-    public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext,
-                       Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
+    public TypeFactory(ElementUtils elementUtils, TypeUtils typeUtils, FormattingMessager messager,
+                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;

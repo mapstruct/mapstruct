@@ -8,7 +8,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -132,7 +132,7 @@ public class MapperConfigOptions extends DelegatingOptions {
     }
 
     @Override
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return mapperConfig.mappingControl().hasValue() ?
             MappingControl.fromTypeMirror( mapperConfig.mappingControl().getValue(), elementUtils ) :
             next().getMappingControl( elementUtils );

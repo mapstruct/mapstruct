@@ -3,10 +3,9 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.util.workarounds;
+package org.mapstruct.ap.internal.util;
 
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 /**
  * Contains workarounds for various quirks in specific compilers.
@@ -29,7 +28,7 @@ public class SpecificCompilerWorkarounds {
      * @return the element freshly resolved using the qualified name, if the original element did not return any
      *         enclosed elements, whereas the resolved element does return enclosed elements.
      */
-    public static TypeElement replaceTypeElementIfNecessary(Elements elementUtils, TypeElement element) {
+    public static TypeElement replaceTypeElementIfNecessary(ElementUtils elementUtils, TypeElement element) {
         if ( element.getEnclosedElements().isEmpty() ) {
             TypeElement resolvedByName = elementUtils.getTypeElement( element.getQualifiedName() );
             if ( resolvedByName != null && !resolvedByName.getEnclosedElements().isEmpty() ) {

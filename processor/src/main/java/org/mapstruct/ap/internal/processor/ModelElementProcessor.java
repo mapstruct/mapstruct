@@ -8,8 +8,8 @@ package org.mapstruct.ap.internal.processor;
 import java.util.Map;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -35,7 +35,7 @@ public interface ModelElementProcessor<P, R> {
     /**
      * Context object passed to
      * {@link ModelElementProcessor#process(ProcessorContext, TypeElement, Object)}
-     * providing access to common infrastructure objects such as {@link Types}
+     * providing access to common infrastructure objects such as {@link TypeUtils}
      * etc.
      *
      * @author Gunnar Morling
@@ -44,9 +44,9 @@ public interface ModelElementProcessor<P, R> {
 
         Filer getFiler();
 
-        Types getTypeUtils();
+        TypeUtils getTypeUtils();
 
-        Elements getElementUtils();
+        ElementUtils getElementUtils();
 
         TypeFactory getTypeFactory();
 

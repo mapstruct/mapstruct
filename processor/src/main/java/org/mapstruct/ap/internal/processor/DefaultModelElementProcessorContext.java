@@ -13,19 +13,17 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.workarounds.AbstractElementsDecorator;
-import org.mapstruct.ap.internal.util.workarounds.AbstractTypesDecorator;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
@@ -42,8 +40,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final Options options;
     private final TypeFactory typeFactory;
     private final VersionInformation versionInformation;
-    private final Types delegatingTypes;
-    private final Elements delegatingElements;
+    private final TypeUtils delegatingTypes;
+    private final ElementUtils delegatingElements;
     private final AccessorNamingUtils accessorNaming;
     private final RoundContext roundContext;
 
@@ -54,8 +52,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
-        this.delegatingTypes = AbstractTypesDecorator.create( processingEnvironment, versionInformation );
-        this.delegatingElements = AbstractElementsDecorator.create( processingEnvironment, versionInformation );
+        this.delegatingTypes = TypeUtils.create( processingEnvironment, versionInformation );
+        this.delegatingElements = ElementUtils.create( processingEnvironment, versionInformation );
         this.roundContext = roundContext;
         this.typeFactory = new TypeFactory(
             delegatingElements,
@@ -74,12 +72,12 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     }
 
     @Override
-    public Types getTypeUtils() {
+    public TypeUtils getTypeUtils() {
         return delegatingTypes;
     }
 
     @Override
-    public Elements getElementUtils() {
+    public ElementUtils getElementUtils() {
         return delegatingElements;
     }
 

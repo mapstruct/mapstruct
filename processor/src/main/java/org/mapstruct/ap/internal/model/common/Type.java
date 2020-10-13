@@ -28,9 +28,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import javax.lang.model.util.SimpleTypeVisitor8;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -57,8 +57,8 @@ import org.mapstruct.ap.internal.util.NativeTypes;
  */
 public class Type extends ModelElement implements Comparable<Type> {
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
+    private final TypeUtils typeUtils;
+    private final ElementUtils elementUtils;
     private final TypeFactory typeFactory;
     private final AccessorNamingUtils accessorNaming;
 
@@ -109,7 +109,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Filters filters;
 
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+    public Type(TypeUtils typeUtils, ElementUtils elementUtils, TypeFactory typeFactory,
                 AccessorNamingUtils accessorNaming,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
@@ -1141,9 +1141,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
 
         private TypeVariable typeVarToMatch;
-        private Types types;
+        private TypeUtils types;
 
-        TypeVarMatcher( Types types, Type typeVarToMatch ) {
+        TypeVarMatcher(TypeUtils types, Type typeVarToMatch ) {
             super( null );
             this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
             this.types = types;

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.util.workarounds;
+package org.mapstruct.ap.internal.util;
 
 import java.io.Writer;
 import java.util.List;
@@ -18,22 +18,11 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.internal.version.VersionInformation;
-
-public class AbstractElementsDecorator implements Elements {
+public class AbstractElementUtilsDecorator implements ElementUtils {
 
     private final Elements delegate;
 
-    public static Elements create(ProcessingEnvironment processingEnvironment, VersionInformation info ) {
-        if ( info.isEclipseJDTCompiler() ) {
-            return new EclipseElementsDecorator( processingEnvironment );
-        }
-        else {
-            return new JavacElementsDecorator( processingEnvironment );
-        }
-    }
-
-    AbstractElementsDecorator(ProcessingEnvironment processingEnv) {
+    AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv) {
         this.delegate = processingEnv.getElementUtils();
     }
 

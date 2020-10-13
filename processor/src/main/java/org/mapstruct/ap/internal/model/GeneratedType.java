@@ -12,7 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -35,7 +35,7 @@ public abstract class GeneratedType extends ModelElement {
 
         private T myself;
         protected TypeFactory typeFactory;
-        protected Elements elementUtils;
+        protected ElementUtils elementUtils;
         protected Options options;
         protected VersionInformation versionInformation;
         protected SortedSet<Type> extraImportedTypes;
@@ -46,7 +46,7 @@ public abstract class GeneratedType extends ModelElement {
             myself = selfType.cast( this );
         }
 
-        public T elementUtils(Elements elementUtils) {
+        public T elementUtils(ElementUtils elementUtils) {
             this.elementUtils = elementUtils;
             return myself;
         }

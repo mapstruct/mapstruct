@@ -19,7 +19,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -53,10 +53,10 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 public class MethodMatcher {
 
     private final SourceMethod candidateMethod;
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
 
-    MethodMatcher(Types typeUtils, TypeFactory typeFactory, SourceMethod candidateMethod) {
+    MethodMatcher(TypeUtils typeUtils, TypeFactory typeFactory, SourceMethod candidateMethod) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
         this.typeFactory = typeFactory;

@@ -12,8 +12,8 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -40,10 +40,10 @@ import org.mapstruct.ap.internal.gem.QualifierGem;
  */
 public class QualifierSelector implements MethodSelector {
 
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeMirror namedAnnotationTypeMirror;
 
-    public QualifierSelector( Types typeUtils, Elements elementUtils ) {
+    public QualifierSelector(TypeUtils typeUtils, ElementUtils elementUtils ) {
         this.typeUtils = typeUtils;
         namedAnnotationTypeMirror = elementUtils.getTypeElement( "org.mapstruct.Named" ).asType();
     }
