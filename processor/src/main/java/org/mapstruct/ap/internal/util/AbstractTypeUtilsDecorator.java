@@ -74,10 +74,7 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
     @Override
     public TypeMirror erasure(TypeMirror t) {
-        if ( isRegularType( t ) ) {
-            return delegate.erasure( t );
-        }
-        return t;
+        return delegate.erasure( t );
     }
 
     @Override
