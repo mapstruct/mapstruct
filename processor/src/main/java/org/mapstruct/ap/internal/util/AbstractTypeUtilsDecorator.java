@@ -54,10 +54,7 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
     @Override
     public boolean isAssignable(TypeMirror t1, TypeMirror t2) {
-        if ( isRegularType( t1 ) && isRegularType( t2 ) ) {
-            return delegate.isAssignable( t1, t2 );
-        }
-        return false;
+        return delegate.isAssignable( t1, t2 );
     }
 
     @Override
