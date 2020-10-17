@@ -46,10 +46,7 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
     @Override
     public boolean isSubtype(TypeMirror t1, TypeMirror t2) {
-        if ( isRegularType( t1 ) && isRegularType( t2 ) ) {
-            return delegate.isSubtype( erasure( t1 ), erasure(  t2 ) );
-        }
-        return false;
+        return delegate.isSubtype( erasure( t1 ), erasure( t2 ) );
     }
 
     @Override
@@ -132,17 +129,4 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
         return delegate.asMemberOf( containing, element );
     }
 
-    private boolean isRegularType(TypeMirror t) {
-        if ( t == null ) {
-            return false;
-        }
-        TypeKind k = t.getKind();
-        return TypeKind.DECLARED == k
-            || k.isPrimitive()
-            || TypeKind.ARRAY == k
-            || TypeKind.TYPEVAR == k
-            || TypeKind.WILDCARD == k
-            || TypeKind.UNION == k // e.g. multi catch exceptions
-            || TypeKind.INTERSECTION == k; // e.g. <T extends TypeA & TypeB>
-    }
 }
