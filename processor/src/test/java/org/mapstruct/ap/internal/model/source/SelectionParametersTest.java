@@ -75,6 +75,11 @@ public class SelectionParametersTest {
 
     private final TypeUtils typeUtils = new TypeUtils() {
         @Override
+        public boolean isSubtypeErased(TypeMirror t1, TypeMirror t2) {
+            throw new UnsupportedOperationException( "isSubTypeErased is not supported" );
+        }
+
+        @Override
         public Element asElement(TypeMirror t) {
             throw new UnsupportedOperationException( "asElement is not supported" );
         }

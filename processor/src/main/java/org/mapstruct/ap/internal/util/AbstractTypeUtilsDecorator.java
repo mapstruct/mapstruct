@@ -46,7 +46,7 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
     @Override
     public boolean isSubtype(TypeMirror t1, TypeMirror t2) {
-        return delegate.isSubtype( erasure( t1 ), erasure( t2 ) );
+        return delegate.isSubtype( t1, t2 );
     }
 
     @Override
@@ -129,4 +129,8 @@ public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
         return delegate.asMemberOf( containing, element );
     }
 
+    @Override
+    public boolean isSubtypeErased(TypeMirror t1, TypeMirror t2) {
+        return delegate.isSubtype( erasure( t1 ), erasure( t2 ) );
+    }
 }

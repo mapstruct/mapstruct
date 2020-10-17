@@ -198,10 +198,10 @@ public class TypeFactory {
 
         ImplementationType implementationType = getImplementationType( mirror );
 
-        boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
-        boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
-        boolean isMapType = typeUtils.isSubtype( mirror, mapType );
-        boolean isStreamType = streamType != null && typeUtils.isSubtype( mirror, streamType );
+        boolean isIterableType = typeUtils.isSubtypeErased( mirror, iterableType );
+        boolean isCollectionType = typeUtils.isSubtypeErased( mirror, collectionType );
+        boolean isMapType = typeUtils.isSubtypeErased( mirror, mapType );
+        boolean isStreamType = streamType != null && typeUtils.isSubtypeErased( mirror, streamType );
 
         boolean isEnumType;
         boolean isInterface;

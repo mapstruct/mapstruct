@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.util;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.version.VersionInformation;
@@ -20,4 +21,6 @@ public interface TypeUtils extends Types {
             return new JavacTypeUtilsDecorator( processingEnvironment );
         }
     }
+
+    boolean isSubtypeErased(TypeMirror t1, TypeMirror t2);
 }

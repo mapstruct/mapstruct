@@ -312,8 +312,8 @@ public class MethodMatcher {
                 // check if types are in bound
                 TypeMirror lowerBound = t.getLowerBound();
                 TypeMirror upperBound = t.getUpperBound();
-                if ( ( isNullType( lowerBound ) || typeUtils.isSubtype( lowerBound, p ) )
-                    && ( isNullType( upperBound ) || typeUtils.isSubtype( p, upperBound ) ) ) {
+                if ( ( isNullType( lowerBound ) || typeUtils.isSubtypeErased( lowerBound, p ) )
+                    && ( isNullType( upperBound ) || typeUtils.isSubtypeErased( p, upperBound ) ) ) {
                     genericTypesMap.put( t, p );
                     return Boolean.TRUE;
                 }
@@ -359,7 +359,7 @@ public class MethodMatcher {
                         // for example method: String method(? super String)
                         // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
-                        return typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound );
+                        return typeUtils.isSubtypeErased( superBound, p ) || typeUtils.isSameType( p, superBound );
 
                     case TYPEVAR:
 
@@ -377,7 +377,7 @@ public class MethodMatcher {
                         // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
+                        return ( typeUtils.isSubtypeErased( superBoundAsDeclared, p ) || typeUtils.isSameType(
                             p,
                             superBoundAsDeclared ) );
                     default:
@@ -415,7 +415,7 @@ public class MethodMatcher {
         List<? extends TypeMirror> bounds = tpe != null ? tpe.getBounds() : null;
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
-                if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtype( t, bound ) ) ) {
+                if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtypeErased( t, bound ) ) ) {
                     return false;
                 }
             }

@@ -860,7 +860,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private boolean isStream(TypeMirror candidate) {
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         TypeMirror streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
-        return streamType != null && typeUtils.isSubtype( candidate, streamType );
+        return streamType != null && typeUtils.isSubtypeErased( candidate, streamType );
     }
 
     private boolean isMap(TypeMirror candidate) {
@@ -870,7 +870,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
         String className = clazz.getCanonicalName();
         TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
-        return typeUtils.isSubtype( candidate, classType );
+        return typeUtils.isSubtypeErased( candidate, classType );
     }
 
     /**
