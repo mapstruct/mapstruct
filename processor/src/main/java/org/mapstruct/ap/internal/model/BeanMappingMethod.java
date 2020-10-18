@@ -85,6 +85,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
 
+    private final MappingReferences mappingReferences;
+
     public static class Builder {
 
         private MappingBuilderContext ctx;
@@ -337,7 +339,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 returnTypeBuilder,
                 beforeMappingMethods,
                 afterMappingMethods,
-                finalizeMethod
+                finalizeMethod,
+                mappingReferences
             );
         }
 
@@ -1488,6 +1491,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
+    //CHECKSTYLE:OFF
     private BeanMappingMethod(Method method,
                               Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
@@ -1497,7 +1501,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
-                              MethodReference finalizerMethod) {
+                              MethodReference finalizerMethod,
+                              MappingReferences mappingReferences) {
         super(
             method,
             existingVariableNames,
@@ -1506,10 +1511,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             beforeMappingReferences,
             afterMappingReferences
         );
+        //CHECKSTYLE:ON
 
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
+        this.mappingReferences = mappingReferences;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -1628,7 +1635,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         if ( !super.equals( obj ) ) {
             return false;
         }
-        return Objects.equals( propertyMappings, that.propertyMappings );
+
+        if ( !Objects.equals( propertyMappings, that.propertyMappings ) ) {
+            return false;
+        }
+
+        if ( !Objects.equals( mappingReferences, that.mappingReferences ) ) {
+            return false;
+        }
+
+
+        return true;
     }
 
 }

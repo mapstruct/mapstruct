@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
@@ -137,6 +138,38 @@ public class MappingReferences {
 
     public List<MappingReference> getTargetThisReferences() {
         return targetThisReferences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof MappingReferences ) ) {
+            return false;
+        }
+
+        MappingReferences that = (MappingReferences) o;
+
+        if ( restrictToDefinedMappings != that.restrictToDefinedMappings ) {
+            return false;
+        }
+        if ( forForgedMethods != that.forForgedMethods ) {
+            return false;
+        }
+        if ( !Objects.equals( mappingReferences, that.mappingReferences ) ) {
+            return false;
+        }
+        if ( Objects.equals( targetThisReferences, that.targetThisReferences ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return mappingReferences != null ? mappingReferences.hashCode() : 0;
     }
 
     /**
