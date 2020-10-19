@@ -296,8 +296,17 @@ public class MethodMatcher {
         public Boolean visitTypeVariable(TypeVariable t, TypeMirror p) {
             if ( genericTypesMap.containsKey( t ) ) {
                 // when already found, the same mapping should apply
+                // Then we should visit the resolved generic type.
+                // Which can potentially be another generic type
+                // e.g.
+                // <T> T fromOptional(Optional<T> optional)
+                // T resolves to Collection<Integer>
+                // We know what T resolves to, so we should treat it as if the method signature was
+                // Collection<Integer> fromOptional(Optional<Collection<Integer> optional)
                 TypeMirror p1 = genericTypesMap.get( t );
-                return typeUtils.isSubtype( p, p1 );
+                // p (Integer) should be a subType of p1 (Number)
+                // i.e. you can assign p (Integer) to p1 (Number)
+                return visit( p, p1 );
             }
             else {
                 // check if types are in bound
