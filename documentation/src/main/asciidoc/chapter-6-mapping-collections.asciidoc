@@ -90,7 +90,7 @@ carDto.getPassengers().addAll( personsToPersonDtos( car.getPassengers() ) );
 
 [WARNING]
 ====
-It is not allowed to declare mapping methods with an iterable source and a non-iterable target or the other way around. An error will be raised when detecting this situation.
+It is not allowed to declare mapping methods with an iterable source (from a java package) and a non-iterable target or the other way around. An error will be raised when detecting this situation.
 ====
 
 [[mapping-maps]]

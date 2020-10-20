@@ -42,11 +42,11 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
                 line = 15,
-                message = "Can't generate mapping method from iterable type to non-iterable type."),
+                message = "Can't generate mapping method from iterable type from java stdlib to non-iterable type."),
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                message = "Can't generate mapping method from non-iterable type to iterable type.")
+                message = "Can't generate mapping method from non-iterable type to iterable type from java stdlib.")
         }
     )
     public void shouldFailToGenerateImplementationBetweenStreamAndNonStreamOrIterable() {

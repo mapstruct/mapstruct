@@ -15,4 +15,6 @@ public interface ErroneousCollectionToNonCollectionMapper {
     Integer stringSetToInteger(Set<String> strings);
 
     Set<String> integerToStringSet(Integer integer);
+
+    Set<String> nonJavaStdlibToCollection(Source stringCollection);
 }
