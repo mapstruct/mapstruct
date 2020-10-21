@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -37,7 +37,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class SourceMethod implements Method {
 
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
 
     private final Type declaringMapper;
@@ -82,7 +82,7 @@ public class SourceMethod implements Method {
         private IterableMappingOptions iterableMapping = null;
         private MapMappingOptions mapMapping = null;
         private BeanMappingOptions beanMapping = null;
-        private Types typeUtils;
+        private TypeUtils typeUtils;
         private TypeFactory typeFactory = null;
         private MapperOptions mapper = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
@@ -146,7 +146,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setTypeUtils(Types typeUtils) {
+        public Builder setTypeUtils(TypeUtils typeUtils) {
             this.typeUtils = typeUtils;
             return this;
         }

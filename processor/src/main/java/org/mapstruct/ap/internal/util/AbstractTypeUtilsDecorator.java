@@ -3,10 +3,9 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.util.workarounds;
+package org.mapstruct.ap.internal.util;
 
 import java.util.List;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -21,23 +20,18 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.version.VersionInformation;
-
 /**
- * Replaces the usage of {@link Types} within MapStruct by delegating to the original implementation or to our specific
- * workarounds if necessary.
+ * Replaces the usage of {@link TypeUtils} within MapStruct by delegating to the original implementation or to our
+ * specific workarounds if necessary.
  *
  * @author Andreas Gudian
  */
-public class TypesDecorator implements Types {
-    private final Types delegate;
-    private final ProcessingEnvironment processingEnv;
-    private final VersionInformation versionInformation;
+public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
-    public TypesDecorator(ProcessingEnvironment processingEnv, VersionInformation versionInformation) {
+    private final Types delegate;
+
+    AbstractTypeUtilsDecorator(ProcessingEnvironment processingEnv) {
         this.delegate = processingEnv.getTypeUtils();
-        this.processingEnv = processingEnv;
-        this.versionInformation = versionInformation;
     }
 
     @Override
@@ -52,12 +46,12 @@ public class TypesDecorator implements Types {
 
     @Override
     public boolean isSubtype(TypeMirror t1, TypeMirror t2) {
-        return SpecificCompilerWorkarounds.isSubtype( delegate, t1, t2 );
+        return delegate.isSubtype( t1, t2 );
     }
 
     @Override
     public boolean isAssignable(TypeMirror t1, TypeMirror t2) {
-        return SpecificCompilerWorkarounds.isAssignable( delegate, t1, t2 );
+        return delegate.isAssignable( t1, t2 );
     }
 
     @Override
@@ -77,7 +71,7 @@ public class TypesDecorator implements Types {
 
     @Override
     public TypeMirror erasure(TypeMirror t) {
-        return SpecificCompilerWorkarounds.erasure( delegate, t );
+        return delegate.erasure( t );
     }
 
     @Override
@@ -132,11 +126,11 @@ public class TypesDecorator implements Types {
 
     @Override
     public TypeMirror asMemberOf(DeclaredType containing, Element element) {
-        return SpecificCompilerWorkarounds.asMemberOf(
-            delegate,
-            processingEnv,
-            versionInformation,
-            containing,
-            element );
+        return delegate.asMemberOf( containing, element );
+    }
+
+    @Override
+    public boolean isSubtypeErased(TypeMirror t1, TypeMirror t2) {
+        return delegate.isSubtype( erasure( t1 ), erasure( t2 ) );
     }
 }

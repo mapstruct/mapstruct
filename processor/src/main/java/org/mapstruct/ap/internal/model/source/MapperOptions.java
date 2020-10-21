@@ -12,7 +12,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -162,7 +162,7 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return mapper.mappingControl().hasValue() ?
             MappingControl.fromTypeMirror( mapper.mappingControl().getValue(), elementUtils ) :
             next().getMappingControl( elementUtils );

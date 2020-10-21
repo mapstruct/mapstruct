@@ -32,8 +32,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
@@ -78,7 +78,7 @@ public class MappingResolverImpl implements MappingResolver {
     private static final int LIMIT_REPORTING_AMBIGUOUS = 5;
 
     private final FormattingMessager messager;
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
 
     private final List<Method> sourceModel;
@@ -98,7 +98,7 @@ public class MappingResolverImpl implements MappingResolver {
      */
     private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
 
-    public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
+    public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences, boolean verboseLogging) {
         this.messager = messager;

@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -103,8 +103,8 @@ public class MappingBuilderContext {
     }
 
     private final TypeFactory typeFactory;
-    private final Elements elementUtils;
-    private final Types typeUtils;
+    private final ElementUtils elementUtils;
+    private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final AccessorNamingUtils accessorNaming;
     private final EnumMappingStrategy enumMappingStrategy;
@@ -120,8 +120,8 @@ public class MappingBuilderContext {
 
     //CHECKSTYLE:OFF
     public MappingBuilderContext(TypeFactory typeFactory,
-                          Elements elementUtils,
-                          Types typeUtils,
+                          ElementUtils elementUtils,
+                          TypeUtils typeUtils,
                           FormattingMessager messager,
                           AccessorNamingUtils accessorNaming,
                           EnumMappingStrategy enumMappingStrategy,
@@ -175,11 +175,11 @@ public class MappingBuilderContext {
         return typeFactory;
     }
 
-    public Elements getElementUtils() {
+    public ElementUtils getElementUtils() {
         return elementUtils;
     }
 
-    public Types getTypeUtils() {
+    public TypeUtils getTypeUtils() {
         return typeUtils;
     }
 
