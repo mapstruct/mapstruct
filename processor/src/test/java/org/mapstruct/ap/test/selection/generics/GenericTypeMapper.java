@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.selection.generics;
 
-import java.io.Serializable;
-
 public class GenericTypeMapper {
 
     public <T> T getWrapped(Wrapper<T> source) {
@@ -53,7 +51,4 @@ public class GenericTypeMapper {
         return (String) t.getWrapped();
     }
 
-    public <T extends TypeB & Serializable> T getWildCardExtendsMBType(WildCardExtendsMBWrapper<? extends T> t) {
-        return t.getWrapped();
-    }
 }

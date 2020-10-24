@@ -17,10 +17,7 @@ public class Source {
     private Wrapper<Wrapper<BigDecimal>> fooNested;
     private UpperBoundWrapper<TypeB> fooUpperBoundCorrect;
     private WildCardExtendsWrapper<String> fooWildCardExtendsString;
-    private WildCardExtendsWrapper<TypeC> fooWildCardExtendsTypeCCorrect;
-    private WildCardExtendsWrapper<TypeB> fooWildCardExtendsTypeBCorrect;
     private WildCardSuperWrapper<String> fooWildCardSuperString;
-    private WildCardExtendsMBWrapper<TypeC> fooWildCardExtendsMBTypeCCorrect;
     private WildCardSuperWrapper<TypeB> fooWildCardSuperTypeBCorrect;
 
     public Wrapper<Integer> getFooInteger() {
@@ -87,36 +84,12 @@ public class Source {
         this.fooWildCardExtendsString = fooWildCardExtendsString;
     }
 
-    public void setFooWildCardExtendsTypeCCorrect(WildCardExtendsWrapper<TypeC> fooWildCardExtendsTypeCCorrect) {
-        this.fooWildCardExtendsTypeCCorrect = fooWildCardExtendsTypeCCorrect;
-    }
-
-    public WildCardExtendsWrapper<TypeC> getFooWildCardExtendsTypeCCorrect() {
-        return fooWildCardExtendsTypeCCorrect;
-    }
-
-    public WildCardExtendsWrapper<TypeB> getFooWildCardExtendsTypeBCorrect() {
-        return fooWildCardExtendsTypeBCorrect;
-    }
-
-    public void setFooWildCardExtendsTypeBCorrect(WildCardExtendsWrapper<TypeB> fooWildCardExtendsTypeBCorrect) {
-        this.fooWildCardExtendsTypeBCorrect = fooWildCardExtendsTypeBCorrect;
-    }
-
     public WildCardSuperWrapper<String> getFooWildCardSuperString() {
         return fooWildCardSuperString;
     }
 
     public void setFooWildCardSuperString(WildCardSuperWrapper<String> fooWildCardSuperString) {
         this.fooWildCardSuperString = fooWildCardSuperString;
-    }
-
-    public WildCardExtendsMBWrapper<TypeC> getFooWildCardExtendsMBTypeCCorrect() {
-        return fooWildCardExtendsMBTypeCCorrect;
-    }
-
-    public void setFooWildCardExtendsMBTypeCCorrect(WildCardExtendsMBWrapper<TypeC> fooWildCardExtendsMBTypeCCorrect) {
-        this.fooWildCardExtendsMBTypeCCorrect = fooWildCardExtendsMBTypeCCorrect;
     }
 
     public WildCardSuperWrapper<TypeB> getFooWildCardSuperTypeBCorrect() {

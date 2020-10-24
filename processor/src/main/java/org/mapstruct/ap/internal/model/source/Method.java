@@ -199,4 +199,11 @@ public interface Method {
      * @return the short name for error messages when verbose, full name when not
      */
     String describe();
+
+    /**
+     * Returns the formal type parameters of this method in declaration order.
+     *
+     * @return the formal type parameters, or an empty list if there are none
+     */
+    List<Type> getTypeParameters();
 }

@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source2.class,
     Target.class,
     SourceEnum.class,
-    SourceTargetMapper.class,
-    TargetSourceMapper.class,
     BigDecimalWrapper.class,
     ValueWrapper.class
 })
@@ -30,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1482Test {
 
     @Test
+    @WithClasses( SourceTargetMapper.class )
     public void testForward() {
 
         Source source = new Source();
@@ -45,6 +44,7 @@ public class Issue1482Test {
     }
 
     @Test
+    @WithClasses( TargetSourceMapper.class )
     public void testReverse() {
 
         Target target = new Target();

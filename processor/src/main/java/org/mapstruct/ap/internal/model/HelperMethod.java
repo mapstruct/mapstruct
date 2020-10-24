@@ -128,6 +128,11 @@ public abstract class HelperMethod implements Method {
         return false;
     }
 
+    @Override
+    public List<Type> getTypeParameters() {
+        return Collections.emptyList();
+    }
+
     /**
      * the conversion context is used to format an auxiliary parameter in the method call with context specific
      * information such as a date format.

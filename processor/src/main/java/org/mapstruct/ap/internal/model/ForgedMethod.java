@@ -341,6 +341,11 @@ public class ForgedMethod implements Method {
     }
 
     @Override
+    public List<Type> getTypeParameters() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public String describe() {
         // the name of the forged method is never fully qualified, so no need to distinguish
         // between verbose or not. The type knows whether it should log verbose

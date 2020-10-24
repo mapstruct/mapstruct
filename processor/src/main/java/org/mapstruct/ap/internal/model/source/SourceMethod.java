@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import org.mapstruct.ap.internal.util.TypeUtils;
@@ -56,6 +57,7 @@ public class SourceMethod implements Method {
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
     private final ParameterProvidedMethods contextProvidedMethods;
+    private final List<Type> typeParameters;
 
     private List<String> parameterNames;
 
@@ -89,6 +91,8 @@ public class SourceMethod implements Method {
         private List<ValueMappingOptions> valueMappings;
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
+        private List<Type> typeParameters;
+
         private boolean verboseLogging;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
@@ -197,6 +201,12 @@ public class SourceMethod implements Method {
                 valueMappings
             );
 
+            this.typeParameters = this.executable.getTypeParameters()
+                .stream()
+                .map( Element::asType )
+                .map( typeFactory::getType )
+                .collect( Collectors.toList() );
+
             return new SourceMethod( this, mappingMethodOptions );
         }
     }
@@ -214,6 +224,7 @@ public class SourceMethod implements Method {
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.contextProvidedMethods = builder.contextProvidedMethods;
+        this.typeParameters = builder.typeParameters;
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
@@ -531,6 +542,11 @@ public class SourceMethod implements Method {
 
     public boolean hasObjectFactoryAnnotation() {
         return hasObjectFactoryAnnotation;
+    }
+
+    @Override
+    public List<Type> getTypeParameters() {
+        return this.typeParameters;
     }
 
     @Override
