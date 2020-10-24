@@ -123,6 +123,7 @@
                         </manifest>
                         <manifestEntries>
                             <Automatic-Module-Name>org.mapstruct.processor</Automatic-Module-Name>
+                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>
                         </manifestEntries>
                     </archive>
                 </configuration>
