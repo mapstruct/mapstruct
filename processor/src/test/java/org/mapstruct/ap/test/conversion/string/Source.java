@@ -23,6 +23,7 @@ public class Source {
     private Boolean boolBool;
     private char c;
     private Character cc;
+    private StringBuilder sb;
     private Object object;
 
     public byte getB() {
@@ -159,5 +160,13 @@ public class Source {
 
     public void setObject(Object object) {
         this.object = object;
+    }
+
+    public StringBuilder getSb() {
+        return sb;
+    }
+
+    public void setSb(StringBuilder sb) {
+        this.sb = sb;
     }
 }

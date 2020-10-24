@@ -231,4 +231,15 @@ public final class ConversionUtils {
     public static String dateTimeFormat(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, JodaTimeConstants.DATE_TIME_FORMAT_FQN );
     }
+
+    /**
+     * Name for {@link java.lang.StringBuilder}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String stringBuilder(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, StringBuilder.class );
+    }
 }
