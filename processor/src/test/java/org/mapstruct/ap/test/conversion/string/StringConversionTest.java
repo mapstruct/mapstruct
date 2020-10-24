@@ -48,6 +48,7 @@ public class StringConversionTest {
         source.setBoolBool( Boolean.TRUE );
         source.setC( 'G' );
         source.setCc( 'H' );
+        source.setSb( new StringBuilder( "SB" ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -68,6 +69,7 @@ public class StringConversionTest {
         assertThat( target.getBoolBool() ).isEqualTo( "true" );
         assertThat( target.getC() ).isEqualTo( "G" );
         assertThat( target.getCc() ).isEqualTo( "H" );
+        assertThat( target.getSb() ).isEqualTo( "SB" );
     }
 
     @Test
@@ -89,6 +91,7 @@ public class StringConversionTest {
         target.setBoolBool( "true" );
         target.setC( "G" );
         target.setCc( "H" );
+        target.setSb( "SB" );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -109,6 +112,7 @@ public class StringConversionTest {
         assertThat( source.getBoolBool() ).isEqualTo( true );
         assertThat( source.getC() ).isEqualTo( 'G' );
         assertThat( source.getCc() ).isEqualTo( 'H' );
+        assertThat( source.getSb().toString() ).isEqualTo( "SB" );
     }
 
     @Test
