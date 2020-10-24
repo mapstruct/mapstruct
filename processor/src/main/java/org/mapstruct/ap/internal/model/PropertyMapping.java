@@ -374,6 +374,11 @@ public class PropertyMapping extends ModelElement {
             return null;
         }
 
+        private boolean hasDefaultValueAssignment(Assignment rhs) {
+            return ( defaultValue != null || defaultJavaExpression != null ) &&
+                ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null);
+        }
+
         private Assignment assignToPlain(Type targetType, AccessorType targetAccessorType,
                                          Assignment rightHandSide) {
 
@@ -415,7 +420,9 @@ public class PropertyMapping extends ModelElement {
                 );
             }
             else {
-                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, nvpms, targetType );
+                // If the property mapping has a default value assignment then we have to do a null value check
+                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, nvpms, targetType )
+                    || hasDefaultValueAssignment( rhs );
                 if ( !includeSourceNullCheck ) {
                     // solution for #834 introduced a local var and null check for nested properties always.
                     // however, a local var is not needed if there's no need to check for null.
