@@ -537,26 +537,10 @@ When doing a mapping MapStruct checks if there is a builder for the type being m
 If there is no builder, then MapStruct looks for a single accessible constructor.
 When there are multiple constructors then the following is done to pick the one which should be used:
 
-* If a constructor is annotated with an annotation _named_ `@Default` (from any package) it will be used.
+* If a constructor is annotated with an annotation _named_ `@Default` (from any package, see <<non-shipped-annotations>>) it will be used.
 * If a single public constructor exists then it will be used to construct the object, and the other non public constructors will be ignored.
 * If a parameterless constructor exists then it will be used to construct the object, and the other constructors will be ignored.
-* If there are multiple eligible constructors then there will be a compilation error due to ambiguous constructors. In order to break the ambiguity an annotation _named_ `@Default` (from any package) can used.
-
-The `@Default` annotation is not shipped as our goal is to leave the entity code free from MapStruct annotations. You can use any third party library annotation.
-
-[TIP]
-====
-If there is none or not an appropriate annotation available among dependencies in your project, you can create a custom one.
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Target(ElementType.CONSTRUCTOR)
-@Retention(RetentionPolicy.CLASS)
-public @interface Default {
-
-}
-----
-====
+* If there are multiple eligible constructors then there will be a compilation error due to ambiguous constructors. In order to break the ambiguity an annotation _named_ `@Default` (from any package, see <<non-shipped-annotations>>) can used.
 
 .Deciding which constructor to use
 ====
@@ -601,23 +585,7 @@ public class Van {
 ====
 
 When using a constructor then the names of the parameters of the constructor will be used and matched to the target properties.
-When the constructor has an annotation _named_ `@ConstructorProperties` (from any package) then this annotation will be used to get the names of the parameters.
-This annotation is not shipped as our goal is to leave the entity code free from MapStruct annotations. You can use any third party library annotation. A good, but not the only example, is `java.beans.ConstructorProperties`.
-
-[TIP]
-====
-If there is none or not an appropriate annotation available among dependencies in your project, you can create a custom one.
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Target(ElementType.CONSTRUCTOR)
-@Retention(RetentionPolicy.CLASS)
-public @interface ConstructorProperties {
-
-    String[] value();
-}
-----
-====
+When the constructor has an annotation _named_ `@ConstructorProperties` (from any package, see <<non-shipped-annotations>>) then this annotation will be used to get the names of the parameters.
 
 [NOTE]
 ====
