@@ -1315,6 +1315,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
+                        unprocessedConstructorProperties.remove( targetProperty.getKey() );
                     }
                 }
             }
