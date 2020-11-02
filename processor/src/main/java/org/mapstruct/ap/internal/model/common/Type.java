@@ -1159,7 +1159,12 @@ public class Type extends ModelElement implements Comparable<Type> {
         @Override
         public Type visitDeclared(DeclaredType t, Type parameterized) {
             if ( types.isAssignable( types.erasure( t ), types.erasure( parameterized.getTypeMirror() ) ) ) {
-                // if same type, we can cast en assume number of type args are also the same
+                // We can't assume that the type args are the same
+                // e.g. List<T> is assignable to Object
+                if ( t.getTypeArguments().size() != parameterized.getTypeParameters().size() ) {
+                    return super.visitDeclared( t, parameterized );
+                }
+
                 for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
                     Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );
                     if ( result != null ) {
