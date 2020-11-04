@@ -45,3 +45,5 @@ include::chapter-11-reusing-mapping-configurations.asciidoc[]
 include::chapter-12-customizing-mapping.asciidoc[]
 
 include::chapter-13-using-mapstruct-spi.asciidoc[]
+
+include::chapter-14-third-party-api-integration.asciidoc[]
