@@ -1,0 +1,41 @@
+[[third-party-api-integration]]
+== Third-party API integration
+
+[[non-shipped-annotations]]
+=== Non-shipped annotations
+
+There are various use-cases you must resolve ambiguity for MapStruct to use a correct piece of code.
+However, the primary goal of MapStruct is to focus on bean mapping without polluting the entity code.
+For that reason, MapStruct is flexible enough to interact with already defined annotations from third-party libraries.
+The requirement to enable this behavior is to match the _name_ of such annotation.
+Hence, we say that annotation can be _from any package_.
+
+The annotations _named_ `@ConstructorProperties` and `@Default` are currently examples of this kind of annotation.
+
+[WARNING]
+====
+If such named third-party annotation exists, it does not guarantee its `@Target` matches with the intended placement.
+Be aware of placing a third-party annotation just for sake of mapping is not recommended as long as it might lead to unwanted side effects caused by that library.
+====
+
+A very common case is that no third-party dependency imported to your project provides such annotation or is inappropriate for use as already described.
+In such cases create your own annotation, for example:
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+package foo.support.mapstruct;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.CONSTRUCTOR)
+@Retention(RetentionPolicy.CLASS)
+public @interface Default {
+
+}
+----
+====
