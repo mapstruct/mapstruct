@@ -7,11 +7,13 @@ package org.mapstruct.ap.test.bugs._1395;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Filip Hrisafov
  */
-@Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR, componentModel = "spring", uses = NotUsedService.class)
+@Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR, componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = NotUsedService.class)
 public interface Issue1395Mapper {
 
     Target map(Source source);

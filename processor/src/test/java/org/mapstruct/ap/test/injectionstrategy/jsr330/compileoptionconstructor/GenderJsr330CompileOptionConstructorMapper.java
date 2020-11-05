@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.injectionstrategy.jsr330.compileoptionconstructor;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
@@ -14,7 +15,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 /**
  * @author Andrei Arlou
  */
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = MappingConstants.ComponentModel.JSR330)
 public interface GenderJsr330CompileOptionConstructorMapper {
 
     @ValueMappings({

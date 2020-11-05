@@ -135,7 +135,7 @@ public @interface MapperConfig {
      *
      * @return The component model for the generated mapper.
      */
-    String componentModel() default "default";
+    String componentModel() default MappingConstants.ComponentModel.DEFAULT;
 
     /**
      * Specifies the name of the implementation class. The {@code <CLASS_NAME>} will be replaced by the

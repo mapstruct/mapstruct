@@ -66,4 +66,49 @@ public final class MappingConstants {
      */
     public static final String STRIP_PREFIX_TRANSFORMATION = "stripPrefix";
 
+    /**
+    * Specifies the component model constants to which the generated mapper should adhere.
+    * It can be used with the annotation {@link Mapper#componentModel()} or {@link MapperConfig#componentModel()}
+    *
+    * <p>
+    * <strong>Example:</strong>
+    * </p>
+    * <pre><code class='java'>
+    * // Spring component model
+    * &#64;Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+    * </code></pre>
+    *
+    * @since 1.5.0
+    */
+    public static final class ComponentModel {
+
+        private ComponentModel() {
+        }
+
+        /**
+         * The mapper uses no component model, instances are typically retrieved
+         * via {@link org.mapstruct.factory.Mappers#getMapper(java.lang.Class)}
+         *
+         */
+        public static final String DEFAULT = "default";
+
+        /**
+         * The generated mapper is an application-scoped CDI bean and can be retrieved via @Inject
+         */
+        public static final String CDI = "cdi";
+
+        /**
+         * The generated mapper is a Spring bean and can be retrieved via @Autowired
+         *
+         */
+        public static final String SPRING = "spring";
+
+        /**
+         * The generated mapper is annotated with @javax.inject.Named and @Singleton, and can be retrieved via @Inject
+         *
+         */
+        public static final String JSR330 = "jsr330";
+
+    }
+
 }

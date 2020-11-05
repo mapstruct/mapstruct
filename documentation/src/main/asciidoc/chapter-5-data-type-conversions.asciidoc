@@ -405,7 +405,7 @@ public class ReferenceMapper {
     }
 }
 
-@Mapper(componentModel = "cdi", uses = ReferenceMapper.class )
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI, uses = ReferenceMapper.class )
 public interface CarMapper {
 
     Car carDtoToCar(CarDto carDto);

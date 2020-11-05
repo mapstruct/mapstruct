@@ -7,10 +7,12 @@ package org.mapstruct.ap.test.injectionstrategy.jsr330.constructor;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MapperConfig;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(componentModel = "jsr330", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@MapperConfig(componentModel = MappingConstants.ComponentModel.JSR330,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ConstructorJsr330Config {
 }

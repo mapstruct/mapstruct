@@ -6,12 +6,13 @@
 package org.mapstruct.ap.test.bugs._880;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Andreas Gudian
  *
  */
-@Mapper(componentModel = "default", config = Config.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.DEFAULT, config = Config.class)
 public interface UsesConfigFromAnnotationMapper {
     Poodle metamorph(Object essence);
 }

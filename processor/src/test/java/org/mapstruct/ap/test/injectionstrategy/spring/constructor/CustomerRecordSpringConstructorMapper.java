@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.injectionstrategy.spring.constructor;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordEntity;
 
 /**
  * @author Kevin Grüneberg
  */
-@Mapper(componentModel = "spring",
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
     uses = { CustomerSpringConstructorMapper.class, GenderSpringConstructorMapper.class },
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     disableSubMappingMethodsGeneration = true)

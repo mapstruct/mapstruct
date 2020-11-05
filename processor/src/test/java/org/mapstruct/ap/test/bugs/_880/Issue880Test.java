@@ -10,6 +10,7 @@ import javax.tools.Diagnostic.Kind;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Component;
     Poodle.class,
     Config.class })
 @ProcessorOptions({
-    @ProcessorOption(name = "mapstruct.defaultComponentModel", value = "spring"),
+    @ProcessorOption(name = "mapstruct.defaultComponentModel", value = MappingConstants.ComponentModel.SPRING),
     @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "ignore") })
 public class Issue880Test {
     @Rule
@@ -40,7 +41,7 @@ public class Issue880Test {
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = @Diagnostic(kind = Kind.WARNING,
-            type = UsesConfigFromAnnotationMapper.class, line = 16,
+            type = UsesConfigFromAnnotationMapper.class, line = 17,
             message = "Unmapped target property: \"core\"."))
     public void compilationSucceedsAndAppliesCorrectComponentModel() {
         generatedSource.forMapper( UsesConfigFromAnnotationMapper.class ).containsNoImportFor( Component.class );

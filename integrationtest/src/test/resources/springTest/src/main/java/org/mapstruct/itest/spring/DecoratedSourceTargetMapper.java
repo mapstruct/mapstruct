@@ -6,10 +6,11 @@
 package org.mapstruct.itest.spring;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.spring.other.DateMapper;
 
-@Mapper( componentModel = "spring", uses = DateMapper.class )
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = DateMapper.class )
 @DecoratedWith( SourceTargetMapperDecorator.class )
 public interface DecoratedSourceTargetMapper {
 

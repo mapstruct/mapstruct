@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 
@@ -24,7 +25,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 public class SpringComponentProcessor extends AnnotationBasedComponentModelProcessor {
     @Override
     protected String getComponentModelIdentifier() {
-        return "spring";
+        return MappingConstantsGem.ComponentModelGem.SPRING;
     }
 
     @Override
