@@ -6,11 +6,12 @@
 package org.mapstruct.ap.test.destination;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(implementationName = "<CLASS_NAME>Jsr330Impl", componentModel = "jsr330")
+@Mapper(implementationName = "<CLASS_NAME>Jsr330Impl", componentModel = MappingConstants.ComponentModel.JSR330)
 public interface DestinationClassNameWithJsr330Mapper {
     String intToString(Integer source);
 }

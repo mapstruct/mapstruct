@@ -35,7 +35,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * </p>
  * <pre><code class='java'>
  * // we have MarkMapper (map field "mark" to field "name" to upper case)
- * &#64;Mapper(componentModel = "spring")
+ * &#64;Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
  * public class MarkMapper {
  *     public String mapMark(String mark) {
  *         return mark.toUpperCase();
@@ -43,7 +43,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * }
  * // we have CarMapper
  * &#64;Mapper(
- *      componentModel = "spring",
+ *      componentModel = MappingConstants.ComponentModel.SPRING,
  *      uses = MarkMapper.class,
  *      injectionStrategy = InjectionStrategy.CONSTRUCTOR)
  * public interface CarMapper {
@@ -148,7 +148,7 @@ public @interface Mapper {
      *
      * @return The component model for the generated mapper.
      */
-    String componentModel() default "default";
+    String componentModel() default MappingConstants.ComponentModel.DEFAULT;
 
     /**
      * Specifies the name of the implementation class. The {@code <CLASS_NAME>} will be replaced by the

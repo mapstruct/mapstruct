@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.injectionstrategy.spring.compileoptionconstructor;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
@@ -14,7 +15,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 /**
  * @author Andrei Arlou
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface GenderSpringCompileOptionConstructorMapper {
 
     @ValueMappings({

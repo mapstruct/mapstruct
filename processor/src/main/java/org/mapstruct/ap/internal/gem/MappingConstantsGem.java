@@ -28,4 +28,23 @@ public final class MappingConstantsGem {
     public static final String PREFIX_TRANSFORMATION = "prefix";
 
     public static final String STRIP_PREFIX_TRANSFORMATION = "stripPrefix";
+
+    /**
+     * Gem for the class {@link org.mapstruct.MappingConstants.ComponentModel}
+     *
+     */
+    public final class ComponentModelGem {
+
+        private ComponentModelGem() {
+        }
+
+        public static final String DEFAULT = "default";
+
+        public static final String CDI = "cdi";
+
+        public static final String SPRING = "spring";
+
+        public static final String JSR330 = "jsr330";
+     }
+
 }

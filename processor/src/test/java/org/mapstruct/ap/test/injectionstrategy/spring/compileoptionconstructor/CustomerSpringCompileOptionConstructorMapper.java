@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.injectionstrategy.spring.compileoptionconstructor;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 
 /**
  * @author Andrei Arlou
  */
-@Mapper( componentModel = "spring",
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING,
     uses = GenderSpringCompileOptionConstructorMapper.class)
 public interface CustomerSpringCompileOptionConstructorMapper {
 

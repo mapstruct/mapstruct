@@ -6,9 +6,10 @@
 package org.mapstruct.itest.jsr330;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.itest.jsr330.other.DateMapper;
 
-@Mapper(componentModel = "jsr330", uses = DateMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.JSR330, uses = DateMapper.class)
 public interface SourceTargetMapper {
 
     Target sourceToTarget(Source source);

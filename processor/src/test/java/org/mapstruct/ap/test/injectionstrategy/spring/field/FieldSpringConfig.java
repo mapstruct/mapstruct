@@ -7,10 +7,11 @@ package org.mapstruct.ap.test.injectionstrategy.spring.field;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MapperConfig;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+@MapperConfig(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.FIELD)
 public interface FieldSpringConfig {
 }
