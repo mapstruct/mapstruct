@@ -1315,6 +1315,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
+
+                        // The source parameter was directly mapped so ignore all of its source properties completely
+                        if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
+                            // We explicitly ignore source properties from primitives or array types
+                            Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                            for ( String sourceProperty : readAccessors.keySet() ) {
+                                unprocessedSourceProperties.remove( sourceProperty );
+                            }
+                        }
+
                         unprocessedConstructorProperties.remove( targetProperty.getKey() );
                     }
                 }
