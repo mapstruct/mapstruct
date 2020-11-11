@@ -141,7 +141,7 @@ dependencies {
 
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.projectlombok:lombok:1.18.16"
-    implementation "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.1.0"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.projectlombok:lombok:1.18.16"
 }
