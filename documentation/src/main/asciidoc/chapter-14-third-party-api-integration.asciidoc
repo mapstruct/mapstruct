@@ -50,16 +50,16 @@ MapStruct takes advantage of generated getters, setters, and constructors and us
 [NOTE]
 ====
 Lombok 1.18.16 introduces a breaking change (https://projectlombok.org/changelog[changelog]).
-The additional dependency `lombok-mapstruct-binding` (https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven]) must be added otherwise MapStruct stops working with Lombok.
+The additional annotation processor `lombok-mapstruct-binding` (https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven]) must be added otherwise MapStruct stops working with Lombok.
 This resolves the compilation issues of Lombok and MapStruct modules.
 
 [source, xml]
 ----
-<dependency>
+<path>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok-mapstruct-binding</artifactId>
     <version>0.1.0</version>
-</dependency>
+</path>
 ----
 ====
 
@@ -94,13 +94,6 @@ The set up using Maven or Gradle does not differ from what is described in <<set
         <version>${org.projectlombok.version}</version>
         <scope>provided</scope>
     </dependency>
-
-    <!-- additional dependency is required as of Lombok 1.18.16 -->
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok-mapstruct-binding</artifactId>
-        <version>0.1.0</version>
-    </dependency>
 </dependencies>
 
 <build>
@@ -122,6 +115,13 @@ The set up using Maven or Gradle does not differ from what is described in <<set
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
                         <version>${org.projectlombok.version}</version>
+                    </path>
+
+                    <!-- additional annotation processor required as of Lombok 1.18.16 -->
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-mapstruct-binding</artifactId>
+                        <version>0.1.0</version>
                     </path>
                 </annotationProcessorPaths>
             </configuration>
