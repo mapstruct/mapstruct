@@ -75,7 +75,7 @@ The set up using Maven or Gradle does not differ from what is described in <<set
 
 <properties>
     <org.mapstruct.version>{mapstructVersion}</org.mapstruct.version>
-    <org.projectlombok.version>1.18.12</org.projectlombok.version>
+    <org.projectlombok.version>1.18.16</org.projectlombok.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 </properties>
@@ -87,12 +87,19 @@ The set up using Maven or Gradle does not differ from what is described in <<set
         <version>${org.mapstruct.version}</version>
     </dependency>
 
-    <!-- lombok dependencies should not end up on classpath -->
+    <!-- lombok dependency should not end up on classpath -->
     <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <version>${org.projectlombok.version}</version>
         <scope>provided</scope>
+    </dependency>
+
+    <!-- additional dependency is required as of Lombok 1.18.16 -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-mapstruct-binding</artifactId>
+        <version>0.1.0</version>
     </dependency>
 </dependencies>
 
@@ -132,8 +139,11 @@ The set up using Maven or Gradle does not differ from what is described in <<set
 
 dependencies {
 
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}", "org.projectlombok:lombok:1.18.12"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", "org.projectlombok:lombok:1.18.12"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.projectlombok:lombok:1.18.16"
+    implementation "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok:1.18.16"
 }
 
 ----
