@@ -516,7 +516,8 @@ public class PersonMapperImpl implements PersonMapper {
 
 Supported builder frameworks:
 
-* https://projectlombok.org/[Lombok] - requires having the Lombok classes in a separate module. See for more information https://github.com/rzwitserloot/lombok/issues/1538[rzwitserloot/lombok#1538]
+* https://projectlombok.org/[Lombok] - It is required to have the Lombok classes in a separate module.
+See for more information at https://github.com/rzwitserloot/lombok/issues/1538[rzwitserloot/lombok#1538] and to set up Lombok with MapStruct, refer to <<lombok>>.
 * https://github.com/google/auto/blob/master/value/userguide/index.md[AutoValue]
 * https://immutables.github.io/[Immutables] - When Immutables are present on the annotation processor path then the `ImmutablesAccessorNamingStrategy` and `ImmutablesBuilderProvider` would be used by default
 * https://github.com/google/FreeBuilder[FreeBuilder] - When FreeBuilder is present on the annotation processor path then the `FreeBuilderAccessorNamingStrategy` would be used by default.
