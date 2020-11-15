@@ -1619,10 +1619,45 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourcePrimitiveParameters() {
+    public List<Parameter> getSourceParametersNeedingNullCheck() {
         return getSourceParameters().stream()
-                            .filter( parameter -> parameter.getType().isPrimitive() )
+                            .filter( this::needsNullCheck )
                             .collect( Collectors.toList() );
+    }
+
+    public List<Parameter> getSourceParametersNotNeedingNullCheck() {
+        return getSourceParameters().stream()
+                            .filter( parameter -> !needsNullCheck( parameter ) )
+                            .collect( Collectors.toList() );
+    }
+
+    private boolean needsNullCheck(Parameter parameter) {
+        if ( parameter.getType().isPrimitive() ) {
+            return false;
+        }
+
+        List<PropertyMapping> mappings = propertyMappingsByParameter( parameter );
+        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+            return false;
+        }
+
+        mappings = constructorPropertyMappingsByParameter( parameter );
+
+        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean doesNotNeedNullCheckForSourceParameter(PropertyMapping mapping) {
+        if ( mapping.getAssignment().isCallingUpdateMethod() ) {
+            // If the mapping assignment is calling an update method then we should do a null check
+            // in the bean mapping
+            return false;
+        }
+
+        return mapping.getAssignment().isSourceReferenceParameter();
     }
 
     @Override
