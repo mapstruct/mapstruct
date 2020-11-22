@@ -2,12 +2,15 @@ name: Java EA
 
 on: [push]
 
+env:
+  MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+
 jobs:
   test_jdk_ea:
     strategy:
       fail-fast: false
       matrix:
-        java: [15-ea]
+        java: [16-ea]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
@@ -18,4 +21,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: 'Test'
-        run: ./mvnw -V -B --no-transfer-progress install -DskipDistribution=true
+        run: ./mvnw ${MAVEN_ARGS} install -DskipDistribution=true

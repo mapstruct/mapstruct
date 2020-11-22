@@ -9,8 +9,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-30T19:22:52+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2020-10-24T17:41:29+0300",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_265 (AdoptOpenJDK)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
@@ -53,6 +53,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         target.setC( String.valueOf( source.getC() ) );
         if ( source.getCc() != null ) {
             target.setCc( source.getCc().toString() );
+        }
+        if ( source.getSb() != null ) {
+            target.setSb( source.getSb().toString() );
         }
 
         return target;
@@ -115,6 +118,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             source.setCc( target.getCc().charAt( 0 ) );
         }
         source.setObject( target.getObject() );
+        if ( target.getSb() != null ) {
+            source.setSb( new StringBuilder( target.getSb() ) );
+        }
 
         return source;
     }

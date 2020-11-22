@@ -14,7 +14,6 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.atIndex;
 
 /**
  * @author Filip Hrisafov
@@ -34,9 +33,8 @@ public class Issue1338Test {
         source.setProperties( Arrays.asList( "first", "second" ) );
         Target target = Issue1338Mapper.INSTANCE.map( source );
 
-        assertThat( target )
-            .extracting( "properties" )
-            .contains( Arrays.asList( "first", "second" ), atIndex( 0 ) );
+        assertThat( target.getProperties() )
+            .containsExactly( "first", "second" );
 
         Source mapped = Issue1338Mapper.INSTANCE.map( target );
 

@@ -36,8 +36,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
@@ -81,8 +81,8 @@ public class TypeFactory {
             return sb.toString();
         };
 
-    private final Elements elementUtils;
-    private final Types typeUtils;
+    private final ElementUtils elementUtils;
+    private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final RoundContext roundContext;
 
@@ -95,8 +95,10 @@ public class TypeFactory {
     private final Map<String, String> toBeImportedTypes = new HashMap<>();
     private final Map<String, String> notToBeImportedTypes;
 
-    public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext,
-                       Map<String, String> notToBeImportedTypes) {
+    private final boolean loggingVerbose;
+
+    public TypeFactory(ElementUtils elementUtils, TypeUtils typeUtils, FormattingMessager messager,
+                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -129,6 +131,8 @@ public class TypeFactory {
             ConcurrentNavigableMap.class.getName(),
             withDefaultConstructor( getType( ConcurrentSkipListMap.class ) )
         );
+
+        this.loggingVerbose = loggingVerbose;
     }
 
     public Type getTypeForLiteral(Class<?> type) {
@@ -194,10 +198,10 @@ public class TypeFactory {
 
         ImplementationType implementationType = getImplementationType( mirror );
 
-        boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
-        boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
-        boolean isMapType = typeUtils.isSubtype( mirror, mapType );
-        boolean isStreamType = streamType != null && typeUtils.isSubtype( mirror, streamType );
+        boolean isIterableType = typeUtils.isSubtypeErased( mirror, iterableType );
+        boolean isCollectionType = typeUtils.isSubtypeErased( mirror, collectionType );
+        boolean isMapType = typeUtils.isSubtypeErased( mirror, mapType );
+        boolean isStreamType = streamType != null && typeUtils.isSubtypeErased( mirror, streamType );
 
         boolean isEnumType;
         boolean isInterface;
@@ -270,7 +274,9 @@ public class TypeFactory {
         else {
             isEnumType = false;
             isInterface = false;
-            name = mirror.toString();
+            // When the component type is primitive and is annotated with ElementType.TYPE_USE then
+            // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
+            name = mirror.getKind().isPrimitive() ? NativeTypes.getName( mirror.getKind() ) : mirror.toString();
             packageName = null;
             qualifiedName = name;
             typeElement = null;
@@ -298,7 +304,8 @@ public class TypeFactory {
             toBeImportedTypes,
             notToBeImportedTypes,
             toBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -523,7 +530,8 @@ public class TypeFactory {
                 toBeImportedTypes,
                 notToBeImportedTypes,
                 null,
-                implementationType.isLiteral()
+                implementationType.isLiteral(),
+                loggingVerbose
             );
             return implementation.createNew( replacement );
         }

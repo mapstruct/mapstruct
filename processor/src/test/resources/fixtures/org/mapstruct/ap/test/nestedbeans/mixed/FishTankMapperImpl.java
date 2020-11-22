@@ -57,9 +57,9 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setFish( fishToFishDto( source.getFish() ) );
+        fishTankDto.setFish( fishToFishDto1( source.getFish() ) );
         fishTankDto.setMaterial( fishTankToMaterialDto1( source ) );
-        fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
+        fishTankDto.setQuality( waterQualityToWaterQualityDto1( source.getQuality() ) );
         fishTankDto.setOrnament( ornamentToOrnamentDto( sourceInteriorOrnament( source ) ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
         fishTankDto.setName( source.getName() );
@@ -197,6 +197,18 @@ public class FishTankMapperImpl implements FishTankMapper {
         return waterPlantDto;
     }
 
+    protected FishDto fishToFishDto1(Fish fish) {
+        if ( fish == null ) {
+            return null;
+        }
+
+        FishDto fishDto = new FishDto();
+
+        fishDto.setKind( fish.getType() );
+
+        return fishDto;
+    }
+
     protected MaterialDto fishTankToMaterialDto1(FishTank fishTank) {
         if ( fishTank == null ) {
             return null;
@@ -219,6 +231,31 @@ public class FishTankMapperImpl implements FishTankMapper {
         waterQualityOrganisationDto.setName( waterQualityReport.getOrganisationName() );
 
         return waterQualityOrganisationDto;
+    }
+
+    protected WaterQualityReportDto waterQualityReportToWaterQualityReportDto1(WaterQualityReport waterQualityReport) {
+        if ( waterQualityReport == null ) {
+            return null;
+        }
+
+        WaterQualityReportDto waterQualityReportDto = new WaterQualityReportDto();
+
+        waterQualityReportDto.setOrganisation( waterQualityReportToWaterQualityOrganisationDto1( waterQualityReport ) );
+        waterQualityReportDto.setVerdict( waterQualityReport.getVerdict() );
+
+        return waterQualityReportDto;
+    }
+
+    protected WaterQualityDto waterQualityToWaterQualityDto1(WaterQuality waterQuality) {
+        if ( waterQuality == null ) {
+            return null;
+        }
+
+        WaterQualityDto waterQualityDto = new WaterQualityDto();
+
+        waterQualityDto.setReport( waterQualityReportToWaterQualityReportDto1( waterQuality.getReport() ) );
+
+        return waterQualityDto;
     }
 
     protected Fish fishDtoToFish(FishDto fishDto) {

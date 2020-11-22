@@ -155,7 +155,7 @@ MapStruct supports enum to a String mapping along the same lines as is described
 
 *`String` to enum*
 
-1. Similarity: All not explicit defined mappings will result in the target enum constant mapped from the `String` value when that maches the target enum constant name.
+1. Similarity: All not explicit defined mappings will result in the target enum constant mapped from the `String` value when that matches the target enum constant name.
 2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
 3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the switch/default clause value.
 4. Difference: A switch/default value needs to be provided to have a determined outcome (enum has a limited set of values, `String` has unlimited options). Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in a warning.

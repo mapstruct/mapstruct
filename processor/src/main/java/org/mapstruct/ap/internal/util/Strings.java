@@ -73,6 +73,8 @@ public class Strings {
         "while"
     );
 
+    private static final char UNDERSCORE = '_';
+
     private Strings() {
     }
 
@@ -127,6 +129,10 @@ public class Strings {
         return string == null || string.isEmpty();
     }
 
+    public static boolean isNotEmpty(String string) {
+        return !isEmpty( string );
+    }
+
     public static String getSafeVariableName(String name, String... existingVariableNames) {
         return getSafeVariableName( name, Arrays.asList( existingVariableNames ) );
     }
@@ -166,7 +172,23 @@ public class Strings {
      * @return the identifier without any characters that are not allowed as part of a Java identifier.
      */
     public static String sanitizeIdentifierName(String identifier) {
-        return identifier.replace( "[]", "Array" );
+        if ( identifier != null && identifier.length() > 0 ) {
+
+            int firstAlphabeticIndex = 0;
+            while ( firstAlphabeticIndex < identifier.length() &&
+                ( identifier.charAt( firstAlphabeticIndex ) == UNDERSCORE ||
+                    Character.isDigit( identifier.charAt( firstAlphabeticIndex ) ) ) ) {
+                firstAlphabeticIndex++;
+            }
+
+            if ( firstAlphabeticIndex < identifier.length()) {
+                // If it is not consisted of only underscores
+                return identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
+            }
+
+            return identifier.replace( "[]", "Array" );
+        }
+        return identifier;
     }
 
     /**

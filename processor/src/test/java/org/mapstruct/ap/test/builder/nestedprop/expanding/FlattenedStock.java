@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public class FlattenedStock {
     private String article1;
@@ -16,8 +16,8 @@ public class FlattenedStock {
     }
 
     public FlattenedStock(String article1, String article2, int count) {
-        this.article1 = checkNotNull( article1 );
-        this.article2 = checkNotNull( article2 );
+        this.article1 = requireNonNull( article1 );
+        this.article2 = requireNonNull( article2 );
         this.count = count;
     }
 

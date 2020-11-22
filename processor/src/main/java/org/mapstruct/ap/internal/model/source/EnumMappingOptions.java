@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.EnumMappingGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -14,6 +15,8 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.util.Message.ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY;
+import static org.mapstruct.ap.internal.util.Message.ENUMMAPPING_MISSING_CONFIGURATION;
+import static org.mapstruct.ap.internal.util.Message.ENUMMAPPING_NO_ELEMENTS;
 
 /**
  * @author Filip Hrisafov
@@ -40,12 +43,25 @@ public class EnumMappingOptions extends DelegatingOptions {
         return valid;
     }
 
+    public boolean hasNameTransformationStrategy() {
+        return hasAnnotation() && Strings.isNotEmpty( getNameTransformationStrategy() );
+    }
+
     public String getNameTransformationStrategy() {
-        return enumMapping.nameTransformationStrategy().get();
+        return enumMapping.nameTransformationStrategy().getValue();
     }
 
     public String getNameTransformationConfiguration() {
-        return enumMapping.configuration().get();
+        return enumMapping.configuration().getValue();
+    }
+
+    @Override
+    public TypeMirror getUnexpectedValueMappingException() {
+        if ( enumMapping != null && enumMapping.unexpectedValueMappingException().hasValue() ) {
+            return enumMapping.unexpectedValueMappingException().getValue();
+        }
+
+        return next().getUnexpectedValueMappingException();
     }
 
     public boolean isInverse() {
@@ -79,21 +95,47 @@ public class EnumMappingOptions extends DelegatingOptions {
         Map<String, EnumTransformationStrategy> enumTransformationStrategies, FormattingMessager messager) {
 
         String strategy = gem.nameTransformationStrategy().getValue();
+        String configuration = gem.configuration().getValue();
 
-        if ( !enumTransformationStrategies.containsKey( strategy ) ) {
-            String registeredStrategies = Strings.join( enumTransformationStrategies.keySet(), ", " );
+        boolean isConsistent = false;
+
+        if ( Strings.isNotEmpty( strategy ) || Strings.isNotEmpty( configuration ) ) {
+            if ( !enumTransformationStrategies.containsKey( strategy ) ) {
+                String registeredStrategies = Strings.join( enumTransformationStrategies.keySet(), ", " );
+                messager.printMessage(
+                    method,
+                    gem.mirror(),
+                    gem.nameTransformationStrategy().getAnnotationValue(),
+                    ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY,
+                    strategy,
+                    registeredStrategies
+                );
+
+                return false;
+            }
+            else if ( Strings.isEmpty( configuration ) ) {
+                messager.printMessage(
+                    method,
+                    gem.mirror(),
+                    gem.configuration().getAnnotationValue(),
+                    ENUMMAPPING_MISSING_CONFIGURATION
+                );
+                return false;
+            }
+
+            isConsistent = true;
+        }
+
+        isConsistent = isConsistent || gem.unexpectedValueMappingException().hasValue();
+
+        if ( !isConsistent ) {
             messager.printMessage(
                 method,
                 gem.mirror(),
-                gem.nameTransformationStrategy().getAnnotationValue(),
-                ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY,
-                strategy,
-                registeredStrategies
+                ENUMMAPPING_NO_ELEMENTS
             );
-
-            return false;
         }
 
-        return true;
+        return isConsistent;
     }
 }

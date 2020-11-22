@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -24,9 +24,9 @@ import org.mapstruct.ap.internal.model.source.Method;
  */
 public class TargetTypeSelector implements MethodSelector {
 
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
 
-    public TargetTypeSelector( Types typeUtils ) {
+    public TargetTypeSelector( TypeUtils typeUtils ) {
         this.typeUtils = typeUtils;
     }
 

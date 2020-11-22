@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.FileAssert;
@@ -22,9 +23,6 @@ import org.assertj.core.error.ShouldHaveSameContent;
 import org.assertj.core.internal.Diff;
 import org.assertj.core.internal.Failures;
 import org.assertj.core.util.diff.Delta;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 
 /**
  * Allows to perform assertions on .java source files.
@@ -58,7 +56,7 @@ public class JavaFileAssert extends FileAssert {
         isFile();
 
         try {
-            return Assertions.assertThat( Files.toString( actual, Charsets.UTF_8 ) );
+            return Assertions.assertThat( FileUtils.readFileToString( actual, StandardCharsets.UTF_8 ) );
         }
         catch ( IOException e ) {
             failWithMessage( "Unable to read" + actual.toString() + ". Exception: " + e.getMessage() );

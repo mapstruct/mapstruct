@@ -20,7 +20,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -42,7 +41,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         private FormattingParameters keyFormattingParameters;
         private FormattingParameters valueFormattingParameters;
-        private NullValueMappingStrategyGem nullValueMappingStrategy;
         private SelectionParameters keySelectionParameters;
         private SelectionParameters valueSelectionParameters;
 
@@ -70,11 +68,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder nullValueMappingStrategy(NullValueMappingStrategyGem nullValueMappingStrategy) {
-            this.nullValueMappingStrategy = nullValueMappingStrategy;
-            return this;
-        }
-
         public MapMappingMethod build() {
 
             List<Type> sourceTypeParams =
@@ -96,6 +89,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
+                getDescription(),
                 keyTargetType,
                 keyFormattingParameters,
                 keyCriteria,
@@ -115,7 +109,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                         String.format(
                             "%s \"%s\"",
                             keySourceRHS.getSourceErrorMessagePart(),
-                            keySourceRHS.getSourceType()
+                            keySourceRHS.getSourceType().describe()
                         ),
                         keySourceRHS.getSourceType(),
                         keyTargetType,
@@ -142,6 +136,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
+                getDescription(),
                 valueTargetType,
                 valueFormattingParameters,
                 valueCriteria,
@@ -171,7 +166,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                         String.format(
                             "%s \"%s\"",
                             valueSourceRHS.getSourceErrorMessagePart(),
-                            valueSourceRHS.getSourceType()
+                            valueSourceRHS.getSourceType().describe()
                         ),
                         valueSourceRHS.getSourceType(),
                         valueTargetType,

@@ -42,11 +42,11 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
                 line = 15,
-                message = "Can't generate mapping method from iterable type to non-iterable type."),
+                message = "Can't generate mapping method from iterable type from java stdlib to non-iterable type."),
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
                 line = 17,
-                message = "Can't generate mapping method from non-iterable type to iterable type.")
+                message = "Can't generate mapping method from non-iterable type to iterable type from java stdlib.")
         }
     )
     public void shouldFailToGenerateImplementationBetweenStreamAndNonStreamOrIterable() {
@@ -60,12 +60,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToPrimitivePropertyMapper.class,
                 kind = Kind.ERROR,
                 line = 13,
-                message =
-                    "Can't map property \"java.util.stream.Stream<java.lang.String> strings\" to \"int strings\". "
-                        +
-                        "Consider to declare/implement a mapping method: \"int map(java.util.stream.Stream<java" +
-                        ".lang.String>"
-                        + " value)\".")
+                message = "Can't map property \"Stream<String> strings\" to \"int strings\". " +
+                    "Consider to declare/implement a mapping method: \"int map(Stream<String> value)\".")
         }
     )
     public void shouldFailToGenerateImplementationBetweenCollectionAndPrimitive() {
@@ -104,10 +100,9 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 24,
-                message = "No target bean properties found: can't map Stream element \"org.mapstruct.ap.test" +
-                    ".WithProperties withProperties\" to \"org.mapstruct.ap.test.NoProperties noProperties\". " +
-                    "Consider to declare/implement a mapping method: \"org.mapstruct.ap.test.NoProperties map(org" +
-                    ".mapstruct.ap.test.WithProperties value)\".")
+                message = "No target bean properties found: " +
+                    "can't map Stream element \"WithProperties withProperties\" to \"NoProperties noProperties\". " +
+                    "Consider to declare/implement a mapping method: \"NoProperties map(WithProperties value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
@@ -122,9 +117,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
                 line = 19,
-                message = "Can't map stream element \"java.text.AttributedString\" to \"java.lang.String \". Consider" +
-                    " to declare/implement a mapping method: \"java.lang.String map(java.text.AttributedString value)" +
-                    "\".")
+                message = "Can't map stream element \"AttributedString\" to \"String \". " +
+                    "Consider to declare/implement a mapping method: \"String map(AttributedString value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStreamWithDisabledAuto() {
@@ -138,10 +132,9 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                message = "No target bean properties found: can't map Stream element \"org.mapstruct.ap.test" +
-                    ".WithProperties withProperties\" to \"org.mapstruct.ap.test.NoProperties noProperties\". " +
-                    "Consider to declare/implement a mapping method: \"org.mapstruct.ap.test.NoProperties map(org" +
-                    ".mapstruct.ap.test.WithProperties value)\".")
+                message = "No target bean properties found: " +
+                    "can't map Stream element \"WithProperties withProperties\" to \"NoProperties noProperties\". " +
+                    "Consider to declare/implement a mapping method: \"NoProperties map(WithProperties value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStream() {
@@ -156,9 +149,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
                 line = 20,
-                message = "Can't map stream element \"java.text.AttributedString\" to \"java.lang.String \". Consider" +
-                    " to declare/implement a mapping method: \"java.lang.String map(java.text.AttributedString value)" +
-                    "\".")
+                message = "Can't map stream element \"AttributedString\" to \"String \". " +
+                    "Consider to declare/implement a mapping method: \"String map(AttributedString value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStreamWithDisabledAuto() {
@@ -172,10 +164,9 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 25,
-                message = "No target bean properties found: can't map Stream element \"org.mapstruct.ap.test" +
-                    ".WithProperties withProperties\" to \"org.mapstruct.ap.test.NoProperties noProperties\". " +
-                    "Consider to declare/implement a mapping method: \"org.mapstruct.ap.test.NoProperties map(org" +
-                    ".mapstruct.ap.test.WithProperties value)\".")
+                message = "No target bean properties found: " +
+                    "can't map Stream element \"WithProperties withProperties\" to \"NoProperties noProperties\". " +
+                    "Consider to declare/implement a mapping method: \"NoProperties map(WithProperties value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToList() {
@@ -190,9 +181,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
                 line = 20,
-                message = "Can't map stream element \"java.text.AttributedString\" to \"java.lang.String \". Consider" +
-                    " to declare/implement a mapping method: \"java.lang.String map(java.text.AttributedString value)" +
-                    "\".")
+                message = "Can't map stream element \"AttributedString\" to \"String \". " +
+                    "Consider to declare/implement a mapping method: \"String map(AttributedString value)\".")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToListWithDisabledAuto() {

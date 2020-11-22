@@ -21,9 +21,15 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.gem.BeanMappingGem;
+import org.mapstruct.ap.internal.gem.IterableMappingGem;
+import org.mapstruct.ap.internal.gem.MapMappingGem;
+import org.mapstruct.ap.internal.gem.MappingGem;
+import org.mapstruct.ap.internal.gem.MappingsGem;
+import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.ValueMappingGem;
+import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -36,22 +42,15 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
-import org.mapstruct.ap.internal.gem.BeanMappingGem;
-import org.mapstruct.ap.internal.gem.IterableMappingGem;
-import org.mapstruct.ap.internal.gem.MapMappingGem;
-import org.mapstruct.ap.internal.gem.MappingGem;
-import org.mapstruct.ap.internal.gem.MappingsGem;
-import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
-import org.mapstruct.ap.internal.gem.ValueMappingGem;
-import org.mapstruct.ap.internal.gem.ValueMappingsGem;
+import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
-
-import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -72,8 +71,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
-    private Types typeUtils;
-    private Elements elementUtils;
+    private TypeUtils typeUtils;
+    private ElementUtils elementUtils;
+    private Options options;
 
     @Override
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
@@ -83,6 +83,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
         this.enumTransformationStrategies = context.getEnumTransformationStrategies();
+        this.options = context.getOptions();
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
@@ -116,7 +117,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         TypeElement typeElement = asTypeElement( mapperAnnotation.mapperConfigType() );
         List<SourceMethod> methods = new ArrayList<>();
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
+        for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
 
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -157,7 +158,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                MapperOptions mapperOptions, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
+        for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
                 usedMapper,
                 executable,
@@ -173,11 +174,22 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( usedMapper.equals( mapperToImplement ) ) {
             for ( DeclaredType mapper : mapperOptions.uses() ) {
-                methods.addAll( retrieveMethods(
-                    asTypeElement( mapper ),
-                    mapperToImplement,
-                    mapperOptions,
-                    prototypeMethods ) );
+                TypeElement usesMapperElement = asTypeElement( mapper );
+                if ( !mapperToImplement.equals( usesMapperElement ) ) {
+                    methods.addAll( retrieveMethods(
+                        usesMapperElement,
+                        mapperToImplement,
+                        mapperOptions,
+                        prototypeMethods ) );
+                }
+                else {
+                    messager.printMessage(
+                        mapperToImplement,
+                        mapperOptions.getAnnotationMirror(),
+                        Message.RETRIEVAL_MAPPER_USES_CYCLE,
+                        mapperToImplement
+                    );
+                }
             }
         }
 
@@ -301,6 +313,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
+            .setVerboseLogging( options.isVerbose() )
             .build();
     }
 
@@ -355,6 +368,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
+            .setVerboseLogging( options.isVerbose() )
             .build();
     }
 
@@ -469,7 +483,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         Type parameterType = sourceParameters.get( 0 ).getType();
 
-        if ( parameterType.isIterableOrStreamType() && !resultType.isIterableOrStreamType() ) {
+        if ( isStreamTypeOrIterableFromJavaStdLib( parameterType ) && !resultType.isIterableOrStreamType() ) {
             messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
             return false;
         }
@@ -479,7 +493,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( !parameterType.isIterableOrStreamType() && resultType.isIterableOrStreamType() ) {
+        if ( !parameterType.isIterableOrStreamType() && isStreamTypeOrIterableFromJavaStdLib( resultType ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ITERABLE );
             return false;
         }
@@ -518,6 +532,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         return true;
+    }
+
+    private boolean isStreamTypeOrIterableFromJavaStdLib(Type type) {
+        return type.isStreamType() || ( type.isIterableType() && type.isJavaLangType() );
     }
 
     /**

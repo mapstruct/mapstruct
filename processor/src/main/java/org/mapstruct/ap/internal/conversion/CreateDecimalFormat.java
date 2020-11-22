@@ -55,4 +55,9 @@ public class CreateDecimalFormat extends HelperMethod {
     public MappingMethodOptions getOptions() {
         return MappingMethodOptions.empty();
     }
+
+    @Override
+    public String describe() {
+        return null;
+    }
 }

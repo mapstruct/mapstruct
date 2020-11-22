@@ -35,4 +35,16 @@ public class RecordsTest {
         assertThat( customer.name() ).isEqualTo( "Kermit" );
         assertThat( customer.email() ).isEqualTo( "kermit@test.com" );
     }
+
+    @Test
+    public void shouldMapIntoGenericRecord() {
+        CustomerEntity entity = new CustomerEntity();
+        entity.setName( "Kermit" );
+        entity.setMail( "kermit@test.com" );
+
+        GenericRecord<String> value = CustomerMapper.INSTANCE.toValue( entity );
+
+        assertThat( value ).isNotNull();
+        assertThat( value.value() ).isEqualTo( "Kermit" );
+    }
 }

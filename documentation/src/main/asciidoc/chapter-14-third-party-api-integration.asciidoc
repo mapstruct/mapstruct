@@ -1,0 +1,190 @@
+[[third-party-api-integration]]
+== Third-party API integration
+
+[[non-shipped-annotations]]
+=== Non-shipped annotations
+
+There are various use-cases you must resolve ambiguity for MapStruct to use a correct piece of code.
+However, the primary goal of MapStruct is to focus on bean mapping without polluting the entity code.
+For that reason, MapStruct is flexible enough to interact with already defined annotations from third-party libraries.
+The requirement to enable this behavior is to match the _name_ of such annotation.
+Hence, we say that annotation can be _from any package_.
+
+The annotations _named_ `@ConstructorProperties` and `@Default` are currently examples of this kind of annotation.
+
+[WARNING]
+====
+If such named third-party annotation exists, it does not guarantee its `@Target` matches with the intended placement.
+Be aware of placing a third-party annotation just for sake of mapping is not recommended as long as it might lead to unwanted side effects caused by that library.
+====
+
+A very common case is that no third-party dependency imported to your project provides such annotation or is inappropriate for use as already described.
+In such cases create your own annotation, for example:
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+package foo.support.mapstruct;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.CONSTRUCTOR)
+@Retention(RetentionPolicy.CLASS)
+public @interface Default {
+
+}
+----
+====
+
+[[lombok]]
+=== Lombok
+
+MapStruct works together with https://projectlombok.org/[Project Lombok] as of MapStruct 1.2.0.Beta1 and Lombok 1.16.14.
+
+MapStruct takes advantage of generated getters, setters, and constructors and uses them to generate the mapper implementations.
+
+[NOTE]
+====
+Lombok 1.18.16 introduces a breaking change (https://projectlombok.org/changelog[changelog]).
+The additional annotation processor `lombok-mapstruct-binding` (https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven]) must be added otherwise MapStruct stops working with Lombok.
+This resolves the compilation issues of Lombok and MapStruct modules.
+
+[source, xml]
+----
+<path>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok-mapstruct-binding</artifactId>
+    <version>0.1.0</version>
+</path>
+----
+====
+
+==== Set up
+
+The set up using Maven or Gradle does not differ from what is described in <<setup>>. Additionally, you need to provide Lombok dependencies.
+
+.Maven configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+
+<properties>
+    <org.mapstruct.version>{mapstructVersion}</org.mapstruct.version>
+    <org.projectlombok.version>1.18.16</org.projectlombok.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+
+    <!-- lombok dependency should not end up on classpath -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${org.projectlombok.version}</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>${org.projectlombok.version}</version>
+                    </path>
+
+                    <!-- additional annotation processor required as of Lombok 1.18.16 -->
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-mapstruct-binding</artifactId>
+                        <version>0.1.0</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+====
+
+.Gradle configuration (3.4 and later)
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+
+dependencies {
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.projectlombok:lombok:1.18.16"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok:1.18.16"
+}
+
+----
+====
+
+The usage combines what you already know from <<defining-mapper>> and Lombok.
+
+.Usage of MapStruct with Lombok
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Data
+public class Source {
+
+    private String test;
+}
+
+public class Target {
+
+    private Long testing;
+
+    public Long getTesting() {
+        return testing;
+    }
+
+    public void setTesting( Long testing ) {
+        this.testing = testing;
+    }
+}
+
+@Mapper
+public interface SourceTargetMapper {
+
+    SourceTargetMapper MAPPER = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping( source = "test", target = "testing" )
+    Target toTarget( Source s );
+}
+
+----
+====
+
+A working example can be found on the GitHub project https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-lombok[mapstruct-lombok].

@@ -33,7 +33,7 @@ public class Issue1283Test {
             @Diagnostic(type = ErroneousInverseTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 22L,
-                message = "org.mapstruct.ap.test.bugs._1283.Source does not have an accessible constructor."
+                message = "Source does not have an accessible constructor."
             )
         }
     )
@@ -48,7 +48,7 @@ public class Issue1283Test {
             @Diagnostic(type = ErroneousTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18L,
-                message = "org.mapstruct.ap.test.bugs._1283.Source does not have an accessible constructor."
+                message = "Source does not have an accessible constructor."
             )
         }
     )

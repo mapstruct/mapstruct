@@ -43,7 +43,7 @@ public class ForgedMethodHistory {
     }
 
     public String createSourcePropertyErrorMessage() {
-        return conditionallyCapitalizedElementType() + " \"" + getSourceType() + " " +
+        return conditionallyCapitalizedElementType() + " \"" + getSourceType().describe() + " " +
             stripBrackets( getDottedSourceElement() ) + "\"";
     }
 

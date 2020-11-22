@@ -8,15 +8,12 @@ package org.mapstruct.ap.test.bugs._2077;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sjaak Derksen
  */
 @Mapper( unmappedTargetPolicy = ReportingPolicy.ERROR )
 public interface Issue2077ErroneousMapper {
-
-    Issue2077ErroneousMapper INSTANCE = Mappers.getMapper( Issue2077ErroneousMapper.class );
 
     @Mapping(target = "s1", defaultValue = "xyz" )
     Target map(String source);

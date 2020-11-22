@@ -128,10 +128,8 @@ public class MappingControlTest {
             @Diagnostic(type = ErroneousDirectMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                message = "Can't map property \"org.mapstruct.ap.test.mappingcontrol.ShelveDTO shelve\" to \"org" +
-                    ".mapstruct.ap.test.mappingcontrol.ShelveDTO shelve\". Consider to declare/implement a mapping " +
-                    "method: \"org.mapstruct.ap.test.mappingcontrol.ShelveDTO map(org.mapstruct.ap.test" +
-                    ".mappingcontrol.ShelveDTO value)\"."
+                message = "Can't map property \"ShelveDTO shelve\" to \"ShelveDTO shelve\". " +
+                    "Consider to declare/implement a mapping method: \"ShelveDTO map(ShelveDTO value)\"."
             )
         })
     public void directSelectionNotAllowed() {
@@ -157,9 +155,8 @@ public class MappingControlTest {
             @Diagnostic(type = ErroneousMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                message = "Can't map property \"org.mapstruct.ap.test.mappingcontrol.ShelveDTO shelve\" to \"int " +
-                    "beerCount\". Consider to declare/implement a mapping method: \"int map(org.mapstruct.ap.test" +
-                    ".mappingcontrol.ShelveDTO value)\"."
+                message = "Can't map property \"ShelveDTO shelve\" to \"int beerCount\". " +
+                    "Consider to declare/implement a mapping method: \"int map(ShelveDTO value)\"."
             )
         })
     public void methodSelectionNotAllowed() {
@@ -184,8 +181,8 @@ public class MappingControlTest {
             @Diagnostic(type = ErroneousConversionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"java.lang.String beerCount\" to \"int beerCount\". Consider to " +
-                    "declare/implement a mapping method: \"int map(java.lang.String value)\"."
+                message = "Can't map property \"String beerCount\" to \"int beerCount\". " +
+                    "Consider to declare/implement a mapping method: \"int map(String value)\"."
             )
         })
     public void conversionSelectionNotAllowed() {
@@ -210,9 +207,8 @@ public class MappingControlTest {
             @Diagnostic(type = ErroneousComplexMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                message = "Can't map property \"org.mapstruct.ap.test.mappingcontrol.ShelveDTO shelve\" to \"int " +
-                    "beerCount\". Consider to declare/implement a mapping method: \"int map(org.mapstruct.ap.test" +
-                    ".mappingcontrol.ShelveDTO value)\"."
+                message = "Can't map property \"ShelveDTO shelve\" to \"int beerCount\". " +
+                    "Consider to declare/implement a mapping method: \"int map(ShelveDTO value)\"."
             )
         })
     public void complexSelectionNotAllowed() {
@@ -225,9 +221,8 @@ public class MappingControlTest {
             @Diagnostic(type = ErroneousComplexMapperWithConfig.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 17,
-                message = "Can't map property \"org.mapstruct.ap.test.mappingcontrol.ShelveDTO shelve\" to \"int " +
-                    "beerCount\". Consider to declare/implement a mapping method: \"int map(org.mapstruct.ap.test" +
-                    ".mappingcontrol.ShelveDTO value)\"."
+                message = "Can't map property \"ShelveDTO shelve\" to \"int beerCount\". " +
+                    "Consider to declare/implement a mapping method: \"int map(ShelveDTO value)\"."
             )
         })
     public void complexSelectionNotAllowedWithConfig() {

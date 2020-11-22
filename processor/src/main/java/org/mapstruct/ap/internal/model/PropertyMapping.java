@@ -46,6 +46,8 @@ import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
@@ -249,6 +251,7 @@ public class PropertyMapping extends ModelElement {
             if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
+                    getForgedMethodHistory( rightHandSide ),
                     targetType,
                     formattingParameters,
                     criteria,
@@ -422,7 +425,8 @@ public class PropertyMapping extends ModelElement {
                 );
             }
             else {
-                boolean includeSourceNullCheck = SetterWrapper.doSourceNullCheck( rhs, nvcs, nvpms, targetType );
+                // If the property mapping has a default value assignment then we have to do a null value check
+                boolean includeSourceNullCheck = setterWrapperNeedsSourceNullCheck( rhs, targetType );
                 if ( !includeSourceNullCheck ) {
                     // solution for #834 introduced a local var and null check for nested properties always.
                     // however, a local var is not needed if there's no need to check for null.
@@ -436,6 +440,49 @@ public class PropertyMapping extends ModelElement {
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT );
             }
+        }
+
+        /**
+         * Checks whether the setter wrapper should include a null / presence check or not
+         *
+         * @param rhs the source right hand side
+         * @param targetType the target type
+         *
+         * @return whether to include a null / presence check or not
+         */
+        private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs, Type targetType) {
+            if ( rhs.getSourceType().isPrimitive() && rhs.getSourcePresenceCheckerReference() == null ) {
+                // If the source type is primitive or it doesn't have a presence checker then
+                // we shouldn't do a null check
+                return false;
+            }
+
+            if ( nvcs == ALWAYS ) {
+                // NullValueCheckStrategy is ALWAYS -> do a null check
+                return true;
+            }
+
+            if ( nvpms == SET_TO_DEFAULT || nvpms == IGNORE ) {
+                // NullValuePropertyMapping is SET_TO_DEFAULT or IGNORE -> do a null check
+                return true;
+            }
+
+            if ( rhs.getType().isConverted() ) {
+                // A type conversion is applied, so a null check is required
+                return true;
+            }
+
+            if ( rhs.getType().isDirect() && targetType.isPrimitive() ) {
+                // If the type is direct and the target type is primitive (i.e. we are unboxing) then check is needed
+                return true;
+            }
+
+            if ( defaultValue != null || defaultJavaExpression != null ) {
+                // If there is default value defined then a check is needed
+                return true;
+            }
+
+            return false;
         }
 
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
@@ -799,6 +846,7 @@ public class PropertyMapping extends ModelElement {
             if ( !targetType.isEnumType() ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
+                    null, // TODO description for constant
                     targetType,
                     formattingParameters,
                     criteria,
@@ -859,9 +907,8 @@ public class PropertyMapping extends ModelElement {
                     method.getExecutable(),
                     positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
-                    sourceType,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName
                 );
             }
@@ -870,9 +917,8 @@ public class PropertyMapping extends ModelElement {
                     method.getExecutable(),
                     positionHint,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS,
-                    sourceType,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName,
                     errorMessageDetails
                 );
@@ -906,7 +952,7 @@ public class PropertyMapping extends ModelElement {
                     positionHint,
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,
-                    targetType,
+                    targetType.describe(),
                     targetPropertyName
                 );
             }

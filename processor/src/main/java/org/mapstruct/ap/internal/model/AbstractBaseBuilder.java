@@ -146,10 +146,10 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             method.getExecutable(),
             Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
             sourceErrorMessagePart,
-            targetType,
+            targetType.describe(),
             targetPropertyName,
-            targetType,
-            sourceType
+            targetType.describe(),
+            sourceType.describe()
         );
     }
 
@@ -171,10 +171,10 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             posHint,
             Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
             sourceErrorMessagePart,
-            targetType,
+            targetType.describe(),
             targetPropertyName,
-            targetType,
-            sourceType
+            targetType.describe(),
+            sourceType.describe()
         );
     }
 }

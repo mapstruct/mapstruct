@@ -32,6 +32,6 @@ public class Issue895Test {
         assertThat( listOfByteArray.getBytes() ).containsExactly( new byte[] { 0, 1 }, new byte[] { 1, 2 } );
 
         arrayOfByteArray = Mappers.getMapper( MultiArrayMapper.class ).convert( listOfByteArray );
-        assertThat( arrayOfByteArray.getBytes() ).containsExactly( new byte[] { 0, 1 }, new byte[] { 1, 2 } );
+        assertThat( arrayOfByteArray.getBytes() ).isDeepEqualTo( new byte[][] { { 0, 1 }, { 1, 2 } } );
     }
 }

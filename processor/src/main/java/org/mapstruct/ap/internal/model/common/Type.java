@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -27,22 +28,21 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
-import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -56,8 +56,8 @@ import org.mapstruct.ap.internal.util.NativeTypes;
  */
 public class Type extends ModelElement implements Comparable<Type> {
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
+    private final TypeUtils typeUtils;
+    private final ElementUtils elementUtils;
     private final TypeFactory typeFactory;
     private final AccessorNamingUtils accessorNaming;
 
@@ -80,6 +80,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isVoid;
     private final boolean isStream;
     private final boolean isLiteral;
+
+    private final boolean loggingVerbose;
 
     private final List<String> enumConstants;
 
@@ -106,7 +108,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Filters filters;
 
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+    public Type(TypeUtils typeUtils, ElementUtils elementUtils, TypeFactory typeFactory,
                 AccessorNamingUtils accessorNaming,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
@@ -116,7 +118,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
-                boolean isLiteral ) {
+                boolean isLiteral, boolean loggingVerbose) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -162,6 +164,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.toBeImportedTypes = toBeImportedTypes;
         this.notToBeImportedTypes = notToBeImportedTypes;
         this.filters = new Filters( accessorNaming, typeUtils, typeMirror );
+
+        this.loggingVerbose = loggingVerbose;
     }
     //CHECKSTYLE:ON
 
@@ -417,7 +421,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -459,7 +464,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,
-            isLiteral
+            isLiteral,
+            loggingVerbose
         );
     }
 
@@ -480,6 +486,24 @@ public class Type extends ModelElement implements Comparable<Type> {
         TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
 
         return typeUtils.isAssignable( typeMirrorToMatch, other.typeMirror );
+    }
+
+    /**
+     * Whether this type is raw assignable to the given other type. We can't make a verdict on typevars,
+     * they need to be resolved first.
+     *
+     * @param other The other type.
+     *
+     * @return {@code true} if and only if this type is assignable to the given other type.
+     */
+    public boolean isRawAssignableTo(Type other) {
+        if ( isTypeVar() || other.isTypeVar() ) {
+            return true;
+        }
+        if ( equals( other ) ) {
+            return true;
+        }
+        return typeUtils.isAssignable( typeUtils.erasure( typeMirror ), typeUtils.erasure( other.typeMirror ) );
     }
 
     /**
@@ -637,7 +661,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> getAllMethods() {
         if ( allMethods == null ) {
-            allMethods = Executables.getAllEnclosedExecutableElements( elementUtils, typeElement );
+            allMethods = elementUtils.getAllEnclosedExecutableElements( typeElement );
         }
 
         return allMethods;
@@ -645,7 +669,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<VariableElement> getAllFields() {
         if ( allFields == null ) {
-            allFields = Fields.getAllEnclosedFields( elementUtils, typeElement );
+            allFields = elementUtils.getAllEnclosedFields( typeElement );
         }
 
         return allFields;
@@ -836,7 +860,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private boolean isStream(TypeMirror candidate) {
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         TypeMirror streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
-        return streamType != null && typeUtils.isSubtype( candidate, streamType );
+        return streamType != null && typeUtils.isSubtypeErased( candidate, streamType );
     }
 
     private boolean isMap(TypeMirror candidate) {
@@ -846,7 +870,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
         String className = clazz.getCanonicalName();
         TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
-        return typeUtils.isSubtype( candidate, classType );
+        return typeUtils.isSubtypeErased( candidate, classType );
     }
 
     /**
@@ -994,6 +1018,27 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * @return a string representation of the type for use in messages
+     */
+    public String describe() {
+        if ( loggingVerbose ) {
+            return toString();
+        }
+        else {
+            // name allows for inner classes
+            String name = getFullyQualifiedName().replaceFirst( "^" + getPackageName() + ".", "" );
+            List<Type> typeParams = getTypeParameters();
+            if ( typeParams.isEmpty() ) {
+                return name;
+            }
+            else {
+                String params = typeParams.stream().map( Type::describe ).collect( Collectors.joining( "," ) );
+                return String.format( "%s<%s>", name, params );
+            }
+        }
+    }
+
+    /**
      *
      * @return an identification that can be used as part in a forged method name.
      */
@@ -1095,9 +1140,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
 
         private TypeVariable typeVarToMatch;
-        private Types types;
+        private TypeUtils types;
 
-        TypeVarMatcher( Types types, Type typeVarToMatch ) {
+        TypeVarMatcher(TypeUtils types, Type typeVarToMatch ) {
             super( null );
             this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
             this.types = types;
@@ -1114,7 +1159,12 @@ public class Type extends ModelElement implements Comparable<Type> {
         @Override
         public Type visitDeclared(DeclaredType t, Type parameterized) {
             if ( types.isAssignable( types.erasure( t ), types.erasure( parameterized.getTypeMirror() ) ) ) {
-                // if same type, we can cast en assume number of type args are also the same
+                // We can't assume that the type args are the same
+                // e.g. List<T> is assignable to Object
+                if ( t.getTypeArguments().size() != parameterized.getTypeParameters().size() ) {
+                    return super.visitDeclared( t, parameterized );
+                }
+
                 for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
                     Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );
                     if ( result != null ) {

@@ -27,7 +27,7 @@
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>
             <#if (sourceParameters?size > 1)>
-                <#list sourceParametersExcludingPrimitives as sourceParam>
+                <#list sourceParametersNeedingNullCheck as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
@@ -39,7 +39,7 @@
                         }
                     </#if>
                 </#list>
-                <#list sourcePrimitiveParameters as sourceParam>
+                <#list sourceParametersNotNeedingNullCheck as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
@@ -80,7 +80,7 @@
     	</#if>
     </#list>
     <#if (sourceParameters?size > 1)>
-        <#list sourceParametersExcludingPrimitives as sourceParam>
+        <#list sourceParametersNeedingNullCheck as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 if ( ${sourceParam.name} != null ) {
                     <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
@@ -95,7 +95,7 @@
                 }
             </#if>
         </#list>
-        <#list sourcePrimitiveParameters as sourceParam>
+        <#list sourceParametersNotNeedingNullCheck as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                      <#if propertyMapping.condition??>

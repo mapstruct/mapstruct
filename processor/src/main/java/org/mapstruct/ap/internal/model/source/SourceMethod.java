@@ -10,9 +10,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -36,7 +37,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class SourceMethod implements Method {
 
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
 
     private final Type declaringMapper;
@@ -67,6 +68,8 @@ public class SourceMethod implements Method {
     private Boolean isStreamMapping;
     private final boolean hasObjectFactoryAnnotation;
 
+    private final boolean verboseLogging;
+
     public static class Builder {
 
         private Type declaringMapper = null;
@@ -79,13 +82,14 @@ public class SourceMethod implements Method {
         private IterableMappingOptions iterableMapping = null;
         private MapMappingOptions mapMapping = null;
         private BeanMappingOptions beanMapping = null;
-        private Types typeUtils;
+        private TypeUtils typeUtils;
         private TypeFactory typeFactory = null;
         private MapperOptions mapper = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMappingOptions> valueMappings;
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
+        private boolean verboseLogging;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -142,7 +146,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setTypeUtils(Types typeUtils) {
+        public Builder setTypeUtils(TypeUtils typeUtils) {
             this.typeUtils = typeUtils;
             return this;
         }
@@ -169,6 +173,11 @@ public class SourceMethod implements Method {
 
         public Builder setContextProvidedMethods(ParameterProvidedMethods contextProvidedMethods) {
             this.contextProvidedMethods = contextProvidedMethods;
+            return this;
+        }
+
+        public Builder setVerboseLogging(boolean verboseLogging) {
+            this.verboseLogging = verboseLogging;
             return this;
         }
 
@@ -215,6 +224,8 @@ public class SourceMethod implements Method {
         this.typeFactory = builder.typeFactory;
         this.prototypeMethods = builder.prototypeMethods;
         this.mapperToImplement = builder.definingType;
+
+        this.verboseLogging = builder.verboseLogging;
     }
 
     private boolean determineIfIsObjectFactory() {
@@ -294,7 +305,7 @@ public class SourceMethod implements Method {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && first( getSourceParameters() ).getType().isAssignableTo( method.getResultType() )
+            && getMappingSourceType().isAssignableTo( method.getResultType() )
             && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
@@ -326,7 +337,7 @@ public class SourceMethod implements Method {
     public boolean isIterableMapping() {
         if ( isIterableMapping == null ) {
             isIterableMapping = getSourceParameters().size() == 1
-                && first( getSourceParameters() ).getType().isIterableType()
+                && getMappingSourceType().isIterableType()
                 && getResultType().isIterableType();
         }
         return isIterableMapping;
@@ -335,9 +346,9 @@ public class SourceMethod implements Method {
     public boolean isStreamMapping() {
         if ( isStreamMapping == null ) {
             isStreamMapping = getSourceParameters().size() == 1
-                && ( first( getSourceParameters() ).getType().isIterableType() && getResultType().isStreamType()
-                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isIterableType()
-                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isStreamType() );
+                && ( getMappingSourceType().isIterableType() && getResultType().isStreamType()
+                    || getMappingSourceType().isStreamType() && getResultType().isIterableType()
+                    || getMappingSourceType().isStreamType() && getResultType().isStreamType() );
         }
         return isStreamMapping;
     }
@@ -345,7 +356,7 @@ public class SourceMethod implements Method {
     public boolean isMapMapping() {
         if ( isMapMapping == null ) {
             isMapMapping = getSourceParameters().size() == 1
-                && first( getSourceParameters() ).getType().isMapType()
+                && getMappingSourceType().isMapType()
                 && getResultType().isMapType();
         }
         return isMapMapping;
@@ -520,5 +531,19 @@ public class SourceMethod implements Method {
 
     public boolean hasObjectFactoryAnnotation() {
         return hasObjectFactoryAnnotation;
+    }
+
+    @Override
+    public String describe() {
+        if ( verboseLogging ) {
+            return toString();
+        }
+        else {
+            String mapper = declaringMapper != null ? declaringMapper.getName() + "." : "";
+            String sourceTypes = getParameters().stream()
+                .map( Parameter::describe )
+                .collect( Collectors.joining( ", " ) );
+            return getResultType().describe() + " " + mapper + getName() + "(" + sourceTypes + ")";
+        }
     }
 }

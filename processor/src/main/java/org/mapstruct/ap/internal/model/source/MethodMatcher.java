@@ -19,7 +19,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -53,10 +53,10 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 public class MethodMatcher {
 
     private final SourceMethod candidateMethod;
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
 
-    MethodMatcher(Types typeUtils, TypeFactory typeFactory, SourceMethod candidateMethod) {
+    MethodMatcher(TypeUtils typeUtils, TypeFactory typeFactory, SourceMethod candidateMethod) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
         this.typeFactory = typeFactory;
@@ -296,15 +296,24 @@ public class MethodMatcher {
         public Boolean visitTypeVariable(TypeVariable t, TypeMirror p) {
             if ( genericTypesMap.containsKey( t ) ) {
                 // when already found, the same mapping should apply
+                // Then we should visit the resolved generic type.
+                // Which can potentially be another generic type
+                // e.g.
+                // <T> T fromOptional(Optional<T> optional)
+                // T resolves to Collection<Integer>
+                // We know what T resolves to, so we should treat it as if the method signature was
+                // Collection<Integer> fromOptional(Optional<Collection<Integer> optional)
                 TypeMirror p1 = genericTypesMap.get( t );
-                return typeUtils.isSubtype( p, p1 );
+                // p (Integer) should be a subType of p1 (Number)
+                // i.e. you can assign p (Integer) to p1 (Number)
+                return visit( p, p1 );
             }
             else {
                 // check if types are in bound
                 TypeMirror lowerBound = t.getLowerBound();
                 TypeMirror upperBound = t.getUpperBound();
-                if ( ( isNullType( lowerBound ) || typeUtils.isSubtype( lowerBound, p ) )
-                    && ( isNullType( upperBound ) || typeUtils.isSubtype( p, upperBound ) ) ) {
+                if ( ( isNullType( lowerBound ) || typeUtils.isSubtypeErased( lowerBound, p ) )
+                    && ( isNullType( upperBound ) || typeUtils.isSubtypeErased( p, upperBound ) ) ) {
                     genericTypesMap.put( t, p );
                     return Boolean.TRUE;
                 }
@@ -350,7 +359,7 @@ public class MethodMatcher {
                         // for example method: String method(? super String)
                         // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
-                        return typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound );
+                        return typeUtils.isSubtypeErased( superBound, p ) || typeUtils.isSameType( p, superBound );
 
                     case TYPEVAR:
 
@@ -368,7 +377,7 @@ public class MethodMatcher {
                         // to check super type, we can simply inverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
+                        return ( typeUtils.isSubtypeErased( superBoundAsDeclared, p ) || typeUtils.isSameType(
                             p,
                             superBoundAsDeclared ) );
                     default:
@@ -406,7 +415,7 @@ public class MethodMatcher {
         List<? extends TypeMirror> bounds = tpe != null ? tpe.getBounds() : null;
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
-                if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtype( t, bound ) ) ) {
+                if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtypeErased( t, bound ) ) ) {
                     return false;
                 }
             }

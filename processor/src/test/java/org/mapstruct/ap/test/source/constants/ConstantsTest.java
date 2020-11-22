@@ -70,38 +70,33 @@ public class ConstantsTest {
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 25,
-                message = "Can't map \"java.lang.String \"zz\"\" to \"boolean booleanValue\". Reason: only 'true' or " +
-                    "'false' are supported."),
+                message =
+                    "Can't map \"zz\" to \"boolean booleanValue\". Reason: only 'true' or 'false' are supported."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 26,
-                message = "Can't map \"java.lang.String \"'ba'\"\" to \"char charValue\". Reason: invalid character " +
-                    "literal."),
+                message = "Can't map \"'ba'\" to \"char charValue\". Reason: invalid character literal."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 27,
-                message = "Can't map \"java.lang.String \"200\"\" to \"byte byteValue\". Reason: Value out of range. " +
-                    "Value:\"200\" Radix:10."),
+                message =
+                    "Can't map \"200\" to \"byte byteValue\". Reason: Value out of range. Value:\"200\" Radix:10."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 28,
-                message = "Can't map \"java.lang.String \"0xFFFF_FFFF_FFFF\"\" to \"int intValue\". Reason: integer " +
-                    "number too large."),
+                message = "Can't map \"0xFFFF_FFFF_FFFF\" to \"int intValue\". Reason: integer number too large."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                message = "Can't map \"java.lang.String \"1\"\" to \"long longValue\". Reason: L/l mandatory for long" +
-                    " types."),
+                message = "Can't map \"1\" to \"long longValue\". Reason: L/l mandatory for long types."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 30,
-                message = "Can't map \"java.lang.String \"1.40e-_45f\"\" to \"float floatValue\". Reason: improperly " +
-                    "placed underscores."),
+                message = "Can't map \"1.40e-_45f\" to \"float floatValue\". Reason: improperly placed underscores."),
             @Diagnostic(type = ErroneousConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 31,
-                message = "Can't map \"java.lang.String \"1e-137000\"\" to \"double doubleValue\". Reason: floating " +
-                    "point number too small.")
+                message = "Can't map \"1e-137000\" to \"double doubleValue\". Reason: floating point number too small.")
         }
     )
     public void miscellaneousDetailMessages() {

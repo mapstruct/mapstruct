@@ -171,8 +171,7 @@ public class NestedSourcePropertiesTest {
             @Diagnostic(type = ArtistToChartEntryErroneous.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 34,
-                message = "org.mapstruct.ap.test.nestedsourceproperties.ArtistToChartEntryErroneous.ChartPosition " +
-                    "does not have an accessible constructor.")
+                message = "ArtistToChartEntryErroneous.ChartPosition does not have an accessible constructor.")
         }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })

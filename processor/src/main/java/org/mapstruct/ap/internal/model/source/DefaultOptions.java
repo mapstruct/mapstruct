@@ -8,7 +8,8 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Collections;
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.util.Elements;
+import javax.lang.model.type.TypeMirror;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -123,8 +124,13 @@ public class DefaultOptions extends DelegatingOptions {
     }
 
     @Override
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return MappingControl.fromTypeMirror( mapper.mappingControl().getDefaultValue(), elementUtils );
+    }
+
+    @Override
+    public TypeMirror getUnexpectedValueMappingException() {
+        return null;
     }
 
     @Override

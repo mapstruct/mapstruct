@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
@@ -50,7 +50,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
                                                    ExecutableElement method, FormattingMessager messager,
-                                                   Types typeUtils, TypeFactory typeFactory
+                                                   TypeUtils typeUtils, TypeFactory typeFactory
     ) {
         if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
             BeanMappingOptions options = new BeanMappingOptions( null, null, mapperOptions );
@@ -143,7 +143,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     @Override
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return Optional.ofNullable( beanMapping ).map( BeanMappingGem::mappingControl )
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )

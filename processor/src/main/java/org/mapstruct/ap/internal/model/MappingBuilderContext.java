@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -30,7 +30,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
-import org.mapstruct.ap.spi.EnumNamingStrategy;
+import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
 
@@ -78,6 +78,7 @@ public class MappingBuilderContext {
          * returns a parameter assignment
          *
          * @param mappingMethod target mapping method
+         * @param description
          * @param targetType return type to match
          * @param formattingParameters used for formatting dates and numbers
          * @param criteria parameters criteria in the selection process
@@ -92,7 +93,7 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        Assignment getTargetAssignment(Method mappingMethod, Type targetType,
+        Assignment getTargetAssignment(Method mappingMethod, ForgedMethodHistory description, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
                                        AnnotationMirror positionHint,
@@ -102,11 +103,11 @@ public class MappingBuilderContext {
     }
 
     private final TypeFactory typeFactory;
-    private final Elements elementUtils;
-    private final Types typeUtils;
+    private final ElementUtils elementUtils;
+    private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final AccessorNamingUtils accessorNaming;
-    private final EnumNamingStrategy enumNamingStrategy;
+    private final EnumMappingStrategy enumMappingStrategy;
     private final Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private final Options options;
     private final TypeElement mapperTypeElement;
@@ -119,11 +120,11 @@ public class MappingBuilderContext {
 
     //CHECKSTYLE:OFF
     public MappingBuilderContext(TypeFactory typeFactory,
-                          Elements elementUtils,
-                          Types typeUtils,
+                          ElementUtils elementUtils,
+                          TypeUtils typeUtils,
                           FormattingMessager messager,
                           AccessorNamingUtils accessorNaming,
-                          EnumNamingStrategy enumNamingStrategy,
+                          EnumMappingStrategy enumMappingStrategy,
                           Map<String, EnumTransformationStrategy> enumTransformationStrategies,
                           Options options,
                           MappingResolver mappingResolver,
@@ -135,7 +136,7 @@ public class MappingBuilderContext {
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.accessorNaming = accessorNaming;
-        this.enumNamingStrategy = enumNamingStrategy;
+        this.enumMappingStrategy = enumMappingStrategy;
         this.enumTransformationStrategies = enumTransformationStrategies;
         this.options = options;
         this.mappingResolver = mappingResolver;
@@ -174,11 +175,11 @@ public class MappingBuilderContext {
         return typeFactory;
     }
 
-    public Elements getElementUtils() {
+    public ElementUtils getElementUtils() {
         return elementUtils;
     }
 
-    public Types getTypeUtils() {
+    public TypeUtils getTypeUtils() {
         return typeUtils;
     }
 
@@ -190,8 +191,8 @@ public class MappingBuilderContext {
         return accessorNaming;
     }
 
-    public EnumNamingStrategy getEnumNamingStrategy() {
-        return enumNamingStrategy;
+    public EnumMappingStrategy getEnumMappingStrategy() {
+        return enumMappingStrategy;
     }
 
     public Map<String, EnumTransformationStrategy> getEnumTransformationStrategies() {

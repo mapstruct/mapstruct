@@ -82,8 +82,7 @@ public class IgnorePropertyTest {
             @Diagnostic(type = ErroneousTargetHasNoWriteAccessorMapper.class,
                 kind = Kind.ERROR,
                 line = 22,
-                message = "Property \"hasClaws\" has no write accessor in " +
-                    "org.mapstruct.ap.test.ignore.PreditorDto.")
+                message = "Property \"hasClaws\" has no write accessor in PreditorDto.")
         }
     )
     public void shouldGiveErrorOnMappingForReadOnlyProp() {

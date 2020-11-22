@@ -18,8 +18,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
@@ -73,8 +73,8 @@ import static org.mapstruct.ap.internal.util.Collections.join;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
-    private Elements elementUtils;
-    private Types typeUtils;
+    private ElementUtils elementUtils;
+    private TypeUtils typeUtils;
     private FormattingMessager messager;
     private Options options;
     private VersionInformation versionInformation;
@@ -101,7 +101,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             typeUtils,
             messager,
             accessorNaming,
-            context.getEnumNamingStrategy(),
+            context.getEnumMappingStrategy(),
             context.getEnumTransformationStrategies(),
             options,
             new MappingResolverImpl(
@@ -110,7 +110,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 typeUtils,
                 typeFactory,
                 new ArrayList<>( sourceModel ),
-                mapperReferences
+                mapperReferences,
+                options.isVerbose()
             ),
             mapperTypeElement,
             //sourceModel is passed only to fetch the after/before mapping methods in lifecycleCallbackFactory;
@@ -325,7 +326,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keySelectionParameters( keySelectionParameters )
                     .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
-                    .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
@@ -367,11 +367,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
                 BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
+                Type userDefinedReturnType = getUserDesiredReturnType( method );
+                Type builderBaseType = userDefinedReturnType != null ? userDefinedReturnType : method.getReturnType();
                 BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .returnTypeBuilder( typeFactory.builderTypeFor( method.getReturnType(), builder ) )
+                    .userDefinedReturnType( userDefinedReturnType )
+                    .returnTypeBuilder( typeFactory.builderTypeFor( builderBaseType, builder ) )
                     .build();
 
                 // We can consider that the bean mapping method can always be constructed. If there is a problem
@@ -390,6 +393,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return mappingMethods;
+    }
+
+    private Type getUserDesiredReturnType(SourceMethod method) {
+        SelectionParameters selectionParameters = method.getOptions().getBeanMapping().getSelectionParameters();
+        if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
+            return typeFactory.getType( selectionParameters.getResultType() );
+        }
+        return null;
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
@@ -486,7 +497,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // @BeanMapping( ignoreByDefault = true )
         if ( mappingOptions.getBeanMapping() != null && mappingOptions.getBeanMapping().isignoreByDefault() ) {
-            mappingOptions.applyIgnoreAll( method, typeFactory );
+            mappingOptions.applyIgnoreAll( method, typeFactory, mappingContext.getMessager() );
         }
 
         mappingOptions.markAsFullyInitialized();

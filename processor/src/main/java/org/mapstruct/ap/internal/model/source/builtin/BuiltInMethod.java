@@ -67,21 +67,13 @@ public abstract class BuiltInMethod implements Method {
 
         Type sourceType = first( sourceTypes );
 
-        if ( getReturnType().isAssignableTo( targetType.erasure() )
-            && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
-            return doTypeVarsMatch( sourceType, targetType );
+        Type returnType = getReturnType().resolveTypeVarToType( sourceType, getParameter().getType()  );
+        if ( returnType == null ) {
+            return false;
         }
-        if ( getReturnType().getFullyQualifiedName().equals( "java.lang.Object" )
-            && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
-            // return type could be a type parameter T
-            return doTypeVarsMatch( sourceType, targetType );
-        }
-        if ( getReturnType().isAssignableTo( targetType.erasure() )
-            &&  getParameter().getType().getFullyQualifiedName().equals( "java.lang.Object" ) ) {
-            // parameter type could be a type parameter T
-            return doTypeVarsMatch( sourceType, targetType );
-        }
-        return false;
+
+        return returnType.isAssignableTo( targetType )
+            && sourceType.erasure().isAssignableTo( getParameter().getType() );
     }
 
     @Override
@@ -276,4 +268,10 @@ public abstract class BuiltInMethod implements Method {
         return null;
     }
 
+    @Override
+    public String describe() {
+        // the name of the builtin method is never fully qualified, so no need to distinguish
+        // between verbose or not. The type knows whether it should log verbose
+        return getResultType().describe() + ":" + getName() + "(" + getMappingSourceType().describe() + ")";
+    }
 }

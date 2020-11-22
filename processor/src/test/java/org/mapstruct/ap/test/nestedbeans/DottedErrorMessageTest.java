@@ -100,8 +100,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Color house.roof.color\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.unmappable.ColorDto house.roof.color\".")
+                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\".")
         }
     )
     public void testDeepNestedBeans() {
@@ -118,8 +117,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Wheel car.wheels\" to \"org.mapstruct.ap.test" +
-                    ".nestedbeans.unmappable.WheelDto car.wheels\".")
+                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\".")
         }
     )
     public void testIterables() {
@@ -136,8 +134,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Word dictionary.wordMap{:key}\" to \"org" +
-                    ".mapstruct.ap.test.nestedbeans.unmappable.WordDto dictionary.wordMap{:key}\".")
+                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\".")
         }
     )
     public void testMapKeys() {
@@ -154,8 +151,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWord dictionary.wordMap{:value}\" " +
-                    "to \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWordDto dictionary.wordMap{:value}\".")
+                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\".")
         }
     )
     public void testMapValues() {
@@ -172,8 +168,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info computers[].info\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.unmappable.InfoDto computers[].info\".")
+                    " \"Info computers[].info\" to \"InfoDto computers[].info\".")
         }
     )
     public void testCollectionElementProperty() {
@@ -190,8 +185,7 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 10,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info catNameMap{:value}.info\" to \"org" +
-                    ".mapstruct.ap.test.nestedbeans.unmappable.InfoDto catNameMap{:value}.info\".")
+                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\".")
         }
     )
     public void testMapValueProperty() {
@@ -208,10 +202,8 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 25,
                 message =
-                    "The following constants from the property \"org.mapstruct.ap.test.nestedbeans.unmappable" +
-                        ".RoofType house.roof.type\" enum " +
-                        "have no corresponding constant in the \"org.mapstruct.ap.test.nestedbeans.unmappable" +
-                        ".ExternalRoofType house.roof.type\" enum and must " +
+                    "The following constants from the property \"RoofType house.roof.type\" enum " +
+                        "have no corresponding constant in the \"ExternalRoofType house.roof.type\" enum and must " +
                         "be be mapped via adding additional mappings: NORMAL."
             )
         }
@@ -235,38 +227,32 @@ public class DottedErrorMessageTest {
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Color house.roof.color\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.unmappable.ColorDto house.roof.color\"."),
+                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\"."),
             @Diagnostic(type = BaseDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Wheel car.wheels\" to \"org.mapstruct.ap.test" +
-                    ".nestedbeans.unmappable.WheelDto car.wheels\"."),
+                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\"."),
             @Diagnostic(type = BaseDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Word dictionary.wordMap{:key}\" to \"org" +
-                    ".mapstruct.ap.test.nestedbeans.unmappable.WordDto dictionary.wordMap{:key}\"."),
+                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\"."),
             @Diagnostic(type = BaseDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWord dictionary.wordMap{:value}\" " +
-                    "to \"org.mapstruct.ap.test.nestedbeans.unmappable.ForeignWordDto dictionary.wordMap{:value}\"."),
+                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\"."),
             @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info computers[].info\" to \"org.mapstruct.ap" +
-                    ".test.nestedbeans.unmappable.InfoDto computers[].info\"."),
+                    " \"Info computers[].info\" to \"InfoDto computers[].info\"."),
             @Diagnostic(type = BaseValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 10,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"org.mapstruct.ap.test.nestedbeans.unmappable.Info catNameMap{:value}.info\" to \"org" +
-                    ".mapstruct.ap.test.nestedbeans.unmappable.InfoDto catNameMap{:value}.info\".")
+                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\".")
         }
     )
     public void testWarnUnmappedTargetProperties() {

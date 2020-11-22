@@ -20,7 +20,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
@@ -60,10 +59,10 @@ public class Filters {
     }
 
     private final AccessorNamingUtils accessorNaming;
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final TypeMirror typeMirror;
 
-    public Filters(AccessorNamingUtils accessorNaming, Types typeUtils, TypeMirror typeMirror) {
+    public Filters(AccessorNamingUtils accessorNaming, TypeUtils typeUtils, TypeMirror typeMirror) {
         this.accessorNaming = accessorNaming;
         this.typeUtils = typeUtils;
         this.typeMirror = typeMirror;

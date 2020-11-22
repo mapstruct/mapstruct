@@ -45,10 +45,11 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                message = "Ambiguous factory methods found for creating org.mapstruct.ap.test.selection.resulttype" +
-                    ".Fruit: org.mapstruct.ap.test.selection.resulttype.Apple org.mapstruct.ap.test.selection" +
-                    ".resulttype.ConflictingFruitFactory.createApple(), org.mapstruct.ap.test.selection.resulttype" +
-                    ".Banana org.mapstruct.ap.test.selection.resulttype.ConflictingFruitFactory.createBanana().")
+                message = "Ambiguous factory methods found for creating Fruit: " +
+                    "Apple ConflictingFruitFactory.createApple(), " +
+                    "Banana ConflictingFruitFactory.createBanana(). " +
+                    "See https://mapstruct.org/faq/#ambiguous for more info."
+            )
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {
@@ -63,8 +64,8 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousResultTypeNoAccessibleConstructorMapper.class,
                 kind = Kind.ERROR,
                 line = 18,
-                message = "org.mapstruct.ap.test.selection.resulttype" +
-                    ".ErroneousResultTypeNoAccessibleConstructorMapper.Banana does not have an accessible constructor.")
+                message =
+                    "ErroneousResultTypeNoAccessibleConstructorMapper.Banana does not have an accessible constructor.")
         }
     )
     public void testResultTypeHasNoSuitableAccessibleConstructor() {
@@ -110,8 +111,8 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ResultTypeConstructingFruitInterfaceErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 23,
-                message = "The return type org.mapstruct.ap.test.selection.resulttype.IsFruit is an abstract class or" +
-                    " interface. Provide a non abstract / non interface result type or a factory method."
+                message = "The return type IsFruit is an abstract class or interface. " +
+                    "Provide a non abstract / non interface result type or a factory method."
             )
         }
     )
@@ -127,8 +128,7 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousFruitMapper2.class,
                 kind = Kind.ERROR,
                 line = 22,
-                message = "org.mapstruct.ap.test.selection.resulttype.Banana not assignable to: org.mapstruct.ap.test" +
-                    ".selection.resulttype.Apple.")
+                message = "Banana not assignable to: Apple.")
         }
     )
     @IssueKey("434")

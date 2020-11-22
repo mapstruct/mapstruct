@@ -175,8 +175,7 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                message = "org.mapstruct.ap.test.updatemethods.ErroneousOrganizationMapper2.DepartmentEntity does not" +
-                    " have an accessible constructor.")
+                message = "ErroneousOrganizationMapper2.DepartmentEntity does not have an accessible constructor.")
 
         })
     public void testShouldFailOnConstantMappingNoPropertyGetter() {
@@ -196,9 +195,8 @@ public class UpdateMethodsTest {
             @Diagnostic(type = CompanyMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 23,
-                message = "Unmapped target property: \"employees\". Mapping from property \"org.mapstruct.ap.test" +
-                    ".updatemethods.UnmappableDepartmentDto department\" to \"org.mapstruct.ap.test.updatemethods" +
-                    ".DepartmentEntity department\".")
+                message = "Unmapped target property: \"employees\". " +
+                    "Mapping from property \"UnmappableDepartmentDto department\" to \"DepartmentEntity department\".")
         }
     )
     public void testShouldNotUseTwoNestedUpdateMethods() {

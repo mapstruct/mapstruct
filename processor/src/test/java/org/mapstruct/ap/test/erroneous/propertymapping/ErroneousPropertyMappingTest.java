@@ -27,9 +27,8 @@ public class ErroneousPropertyMappingTest {
         diagnostics = {
             @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.erroneous.propertymapping.UnmappableClass " +
-                    "source\" to \"java.lang.String property\". Consider to declare/implement a mapping method: " +
-                    "\"java.lang.String map(org.mapstruct.ap.test.erroneous.propertymapping.UnmappableClass value)\".")
+                message = "Can't map property \"UnmappableClass source\" to \"String property\". " +
+                    "Consider to declare/implement a mapping method: \"String map(UnmappableClass value)\".")
         }
     )
     public void testUnmappableSourceProperty() {
@@ -42,10 +41,8 @@ public class ErroneousPropertyMappingTest {
         diagnostics = {
             @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.erroneous.propertymapping.UnmappableClass " +
-                    "nameBasedSource\" to \"java.lang.String nameBasedSource\". Consider to declare/implement a " +
-                    "mapping method: \"java.lang.String map(org.mapstruct.ap.test.erroneous.propertymapping" +
-                    ".UnmappableClass value)\".")
+                message = "Can't map property \"UnmappableClass nameBasedSource\" to \"String nameBasedSource\"." +
+                    " Consider to declare/implement a mapping method: \"String map(UnmappableClass value)\".")
         }
     )
     public void testUnmappableSourcePropertyWithNoSourceDefinedInMapping() {
@@ -58,8 +55,7 @@ public class ErroneousPropertyMappingTest {
         diagnostics = {
             @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map \"java.lang.String \"constant\"\" to \"org.mapstruct.ap.test.erroneous" +
-                    ".propertymapping.UnmappableClass constant\".")
+                message = "Can't map \"constant\" to \"UnmappableClass constant\".")
         }
     )
     public void testUnmappableConstantAssignment() {
@@ -72,9 +68,8 @@ public class ErroneousPropertyMappingTest {
         diagnostics = {
             @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.erroneous.propertymapping.UnmappableClass " +
-                    "source\" to \"java.lang.String property\". Consider to declare/implement a mapping method: " +
-                    "\"java.lang.String map(org.mapstruct.ap.test.erroneous.propertymapping.UnmappableClass value)\".")
+                message = "Can't map property \"UnmappableClass source\" to \"String property\". " +
+                    "Consider to declare/implement a mapping method: \"String map(UnmappableClass value)\".")
         }
     )
     public void testUnmappableParameterAssignment() {

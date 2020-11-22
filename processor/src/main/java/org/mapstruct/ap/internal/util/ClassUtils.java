@@ -6,9 +6,9 @@
 package org.mapstruct.ap.internal.util;
 
 /**
- * Utilities for working with classes. It is mainly needed because using the {@link javax.lang.model.util.Elements}
+ * Utilities for working with classes. It is mainly needed because using the {@link ElementUtils}
  * is not always correct. For example when compiling with JDK 9 and source version 8 classes from different modules
- * are available by {@link javax.lang.model.util.Elements#getTypeElement(CharSequence)} but they are actually not
+ * are available by {@link ElementUtils#getTypeElement(CharSequence)} but they are actually not
  * if those modules are not added during compilation.
  *
  * @author Filip Hrisafov

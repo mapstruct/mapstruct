@@ -27,6 +27,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 
@@ -62,8 +63,10 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_ABSTRACT;
 import static org.mapstruct.ap.internal.util.Message.BEANMAPPING_NOT_ASSIGNABLE;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_ABSTRACT_RETURN_TYPE;
-import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGIOUS_CONSTRUCTORS;
+import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGUOUS_CONSTRUCTORS;
 import static org.mapstruct.ap.internal.util.Message.GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS;
+import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET;
+import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -82,10 +85,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
 
+    private final MappingReferences mappingReferences;
+
     public static class Builder {
 
         private MappingBuilderContext ctx;
         private Method method;
+        private Type userDefinedReturnType;
 
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
@@ -104,6 +110,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
+            return this;
+        }
+
+        public Builder userDefinedReturnType(Type userDefinedReturnType) {
+            this.userDefinedReturnType = userDefinedReturnType;
             return this;
         }
 
@@ -147,20 +158,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine which return type to construct
             boolean cannotConstructReturnType = false;
             if ( !method.getReturnType().isVoid() ) {
-                Type returnTypeImpl = getReturnTypeToConstructFromSelectionParameters( selectionParameters );
-                if ( returnTypeImpl != null ) {
+                Type returnTypeImpl = null;
+                if ( isBuilderRequired() ) {
+                    // the userDefinedReturn type can also require a builder. That buildertype is already set
+                    returnTypeImpl = returnTypeBuilder.getBuilder();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
                         cannotConstructReturnType = true;
                     }
                 }
-                else if ( isBuilderRequired() ) {
-                    returnTypeImpl = returnTypeBuilder.getBuilder();
+                else if ( userDefinedReturnType != null ) {
+                    returnTypeImpl = userDefinedReturnType;
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -296,8 +309,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             existingVariableNames
             );
 
-            if (factoryMethod != null && method instanceof ForgedMethod ) {
-                ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                if ( factoryMethod != null ) {
+                    forgedMethod.addThrownTypes( factoryMethod.getThrownTypes() );
+                }
+
+                for ( PropertyMapping propertyMapping : propertyMappings ) {
+                    if ( propertyMapping.getAssignment() != null ) {
+                        forgedMethod.addThrownTypes( propertyMapping.getAssignment().getThrownTypes() );
+                    }
+                }
+
             }
 
             MethodReference finalizeMethod = null;
@@ -316,7 +339,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 returnTypeBuilder,
                 beforeMappingMethods,
                 afterMappingMethods,
-                finalizeMethod
+                finalizeMethod,
+                mappingReferences
             );
         }
 
@@ -471,16 +495,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Type getReturnTypeToConstructFromSelectionParameters(SelectionParameters selectionParams) {
-            // resultType only applies to method that actually has @BeanMapping annotation, never to forged methods
-            if ( !( method instanceof ForgedMethod )
-                && selectionParams != null
-                && selectionParams.getResultType() != null ) {
-                return ctx.getTypeFactory().getType( selectionParams.getResultType() );
-            }
-            return null;
-        }
-
         private boolean canResultTypeFromBeanMappingBeConstructed(Type resultType) {
 
             boolean error = true;
@@ -489,8 +503,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_ABSTRACT,
-                    resultType,
-                    method.getResultType()
+                    resultType.describe(),
+                    method.getResultType().describe()
                 );
                 error = false;
             }
@@ -499,8 +513,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     BEANMAPPING_NOT_ASSIGNABLE,
-                    resultType,
-                    method.getResultType()
+                    resultType.describe(),
+                    method.getResultType().describe()
                 );
                 error = false;
             }
@@ -509,7 +523,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     method.getOptions().getBeanMapping().getMirror(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                    resultType
+                    resultType.describe()
                 );
                 error = false;
             }
@@ -522,7 +536,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     GENERAL_ABSTRACT_RETURN_TYPE,
-                    returnType
+                    returnType.describe()
                 );
                 error = false;
             }
@@ -530,7 +544,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                    returnType
+                    returnType.describe()
                 );
                 error = false;
             }
@@ -569,9 +583,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                    returnTypeImpl,
-                    Strings.join( matchingFactoryMethods, ", " )
+                    Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
+                    returnTypeImpl.describe(),
+                    matchingFactoryMethods.stream()
+                        .map( SelectedMethod::getMethod )
+                        .map( Method::describe )
+                        .collect( Collectors.joining( ", " ) )
                 );
                 hasFactoryMethod = true;
             }
@@ -585,15 +602,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
                 for ( Element recordComponent : recordComponents ) {
+                    TypeMirror recordComponentMirror = ctx.getTypeUtils()
+                        .asMemberOf( (DeclaredType) type.getTypeMirror(), recordComponent );
                     String parameterName = recordComponent.getSimpleName().toString();
-                    Accessor accessor = createConstructorAccessor( recordComponent, parameterName );
+                    Accessor accessor = createConstructorAccessor(
+                        recordComponent,
+                        recordComponentMirror,
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         accessor
                     );
 
                     parameterBindings.add( ParameterBinding.fromTypeAndName(
-                        ctx.getTypeFactory().getType( recordComponent.asType() ),
+                        ctx.getTypeFactory().getType( recordComponentMirror ),
                         accessor.getSimpleName()
                     ) );
                 }
@@ -603,23 +626,57 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
                 .getEnclosedElements() );
 
-            ExecutableElement defaultConstructor = null;
+            // The rules for picking a constructor are the following:
+            // 1. Constructor annotated with @Default (from any package) has highest precedence
+            // 2. If there is a single public constructor then it would be used to construct the object
+            // 3. If a parameterless constructor exists then it would be used to construct the object, and the other
+            // constructors will be ignored
+            ExecutableElement defaultAnnotatedConstructor = null;
+            ExecutableElement parameterLessConstructor = null;
             List<ExecutableElement> accessibleConstructors = new ArrayList<>( constructors.size() );
+            List<ExecutableElement> publicConstructors = new ArrayList<>( );
 
             for ( ExecutableElement constructor : constructors ) {
                 if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
                     continue;
                 }
 
+                if ( hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                    // We found a constructor annotated with @Default everything else is irrelevant
+                    defaultAnnotatedConstructor = constructor;
+                    break;
+                }
+
                 if ( constructor.getParameters().isEmpty() ) {
-                    defaultConstructor = constructor;
+                    parameterLessConstructor = constructor;
                 }
                 else {
                     accessibleConstructors.add( constructor );
                 }
+
+                if ( constructor.getModifiers().contains( Modifier.PUBLIC ) ) {
+                    publicConstructors.add( constructor );
+                }
             }
 
-            if ( defaultConstructor != null ) {
+            if ( defaultAnnotatedConstructor != null ) {
+                // If a default annotated constructor exists it will be used, it has highest precedence
+                return getConstructorAccessor( type, defaultAnnotatedConstructor );
+            }
+
+            if ( publicConstructors.size() == 1 ) {
+                // If there is a single public constructor then use that one
+                ExecutableElement publicConstructor = publicConstructors.get( 0 );
+                if ( publicConstructor.getParameters().isEmpty() ) {
+                    // The public parameterless constructor
+                    return null;
+                }
+
+                return getConstructorAccessor( type, publicConstructor );
+            }
+
+            if ( parameterLessConstructor != null ) {
+                // If there is a constructor without parameters use it
                 return null;
             }
 
@@ -627,38 +684,25 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            ExecutableElement constructor = null;
             if ( accessibleConstructors.size() > 1 ) {
 
-                for ( ExecutableElement accessibleConstructor : accessibleConstructors ) {
-                    for ( AnnotationMirror annotationMirror : accessibleConstructor.getAnnotationMirrors() ) {
-                        if ( annotationMirror.getAnnotationType()
-                            .asElement()
-                            .getSimpleName()
-                            .contentEquals( "Default" ) ) {
-                            constructor = accessibleConstructor;
-                            break;
-                        }
-                    }
-                }
-
-                if ( constructor == null ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        GENERAL_AMBIGIOUS_CONSTRUCTORS,
-                        type,
-                        Strings.join( constructors, ", " )
-                    );
-                    return null;
-                }
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    GENERAL_AMBIGUOUS_CONSTRUCTORS,
+                    type,
+                    Strings.join( constructors, ", " )
+                );
+                return null;
             }
             else {
-                constructor = accessibleConstructors.get( 0 );
+                return getConstructorAccessor( type, accessibleConstructors.get( 0 ) );
             }
 
+        }
+
+        private ConstructorAccessor getConstructorAccessor(Type type, ExecutableElement constructor) {
             List<Parameter> constructorParameters = ctx.getTypeFactory()
                 .getParameters( (DeclaredType) type.getTypeMirror(), constructor );
-
 
             List<String> constructorProperties = null;
             for ( AnnotationMirror annotationMirror : constructor.getAnnotationMirrors() ) {
@@ -684,7 +728,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 for ( Parameter constructorParameter : constructorParameters ) {
                     String parameterName = constructorParameter.getName();
                     Element parameterElement = constructorParameter.getElement();
-                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    Accessor constructorAccessor = createConstructorAccessor(
+                        parameterElement,
+                        constructorParameter.getType().getTypeMirror(),
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         constructorAccessor
@@ -712,7 +760,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     String parameterName = constructorProperties.get( i );
                     Parameter constructorParameter = constructorParameters.get( i );
                     Element parameterElement = constructorParameter.getElement();
-                    Accessor constructorAccessor = createConstructorAccessor( parameterElement, parameterName );
+                    Accessor constructorAccessor = createConstructorAccessor(
+                        parameterElement,
+                        constructorParameter.getType().getTypeMirror(),
+                        parameterName
+                    );
                     constructorAccessors.put(
                         parameterName,
                         constructorAccessor
@@ -727,13 +779,26 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Accessor createConstructorAccessor(Element element, String parameterName) {
+        private Accessor createConstructorAccessor(Element element, TypeMirror accessedType, String parameterName) {
             String safeParameterName = Strings.getSafeVariableName(
                 parameterName,
                 existingVariableNames
             );
             existingVariableNames.add( safeParameterName );
-            return new ParameterElementAccessor( element, safeParameterName );
+            return new ParameterElementAccessor( element, accessedType, safeParameterName );
+        }
+
+        private boolean hasDefaultAnnotationFromAnyPackage(Element element) {
+            for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+                if ( annotationMirror.getAnnotationType()
+                    .asElement()
+                    .getSimpleName()
+                    .contentEquals( "Default" ) ) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private List<String> getArrayValues(AnnotationValue av) {
@@ -877,13 +942,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
 
                     Message msg;
-                    Object[] args;
+                    String[] args;
 
                     if ( targetRef.getPathProperties().isEmpty() ) {
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
-                        args = new Object[] {
+                        args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mostSimilarProperty
                         };
                     }
@@ -891,9 +956,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         List<String> pathProperties = new ArrayList<>( targetRef.getPathProperties() );
                         pathProperties.add( mostSimilarProperty );
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE;
-                        args = new Object[] {
+                        args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mapping.getTargetName(),
                             Strings.join( pathProperties, "." )
                         };
@@ -922,14 +987,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         msg = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE;
                         args = new Object[] {
                             mapping.getTargetName(),
-                            resultTypeToMap
+                            resultTypeToMap.describe()
                         };
                     }
                     else {
                         msg = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_TYPE;
                         args = new Object[] {
                             targetPropertyName,
-                            resultTypeToMap,
+                            resultTypeToMap.describe(),
                             mapping.getTargetName()
                         };
                     }
@@ -1006,10 +1071,51 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // its a plain-old property mapping
             else  {
 
-                // determine source parameter
                 SourceReference sourceRef = mappingRef.getSourceReference();
-                if ( sourceRef == null && method.getSourceParameters().size() == 1 ) {
-                    sourceRef = getSourceRef( method.getSourceParameters().get( 0 ), targetPropertyName );
+                // sourceRef is not defined, check if a source property has the same name
+                if ( sourceRef == null ) {
+                    // Here we follow the same rules as when we implicitly map
+                    // When we implicitly map we first do property name based mapping
+                    // i.e. look for matching properties in the source types
+                    // and then do parameter name based mapping
+                    for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                        SourceReference matchingSourceRef = getSourceRefByTargetName(
+                            sourceParameter,
+                            targetPropertyName
+                        );
+                        if ( matchingSourceRef != null ) {
+                            if ( sourceRef != null ) {
+                                errorOccured = true;
+                                // This can only happen when the target property matches multiple properties
+                                // within the different source parameters
+                                ctx.getMessager()
+                                    .printMessage(
+                                        method.getExecutable(),
+                                        mappingRef.getMapping().getMirror(),
+                                        Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                                        targetPropertyName
+                                    );
+                                break;
+                            }
+                            // We can't break here since it is possible that the same property exists in multiple
+                            // source parameters
+                            sourceRef = matchingSourceRef;
+                        }
+                    }
+
+                }
+
+                if ( sourceRef == null ) {
+                    // still no match. Try if one of the parameters has the same name
+                    sourceRef = method.getSourceParameters()
+                        .stream()
+                        .filter( p -> targetPropertyName.equals( p.getName() ) )
+                        .findAny()
+                        .map( p -> new SourceReference.BuilderFromProperty()
+                            .sourceParameter( p )
+                            .name( targetPropertyName )
+                            .build() )
+                        .orElse( null );
                 }
 
                 if ( sourceRef != null ) {
@@ -1039,6 +1145,31 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                     else {
                         errorOccured = true;
+                    }
+                }
+                else {
+                    errorOccured = true;
+
+                    if ( method.getSourceParameters().size() == 1 ) {
+                        ctx.getMessager()
+                            .printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getTargetAnnotationValue(),
+                                PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET,
+                                method.getSourceParameters().get( 0 ).getName(),
+                                targetPropertyName
+                            );
+                    }
+                    else {
+                        ctx.getMessager()
+                            .printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getTargetAnnotationValue(),
+                                PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET,
+                                targetPropertyName
+                            );
                     }
                 }
             }
@@ -1092,7 +1223,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<SourceReference> sourceReferences = new ArrayList<>();
             for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
                 for ( Parameter sourceParameter : method.getSourceParameters() ) {
-                    SourceReference sourceRef = getSourceRef( sourceParameter, targetPropertyName );
+                    SourceReference sourceRef = getSourceRefByTargetName( sourceParameter, targetPropertyName );
                     if ( sourceRef != null ) {
                         sourceReferences.add( sourceRef );
                     }
@@ -1185,12 +1316,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
+
+                        // The source parameter was directly mapped so ignore all of its source properties completely
+                        if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
+                            // We explicitly ignore source properties from primitives or array types
+                            Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                            for ( String sourceProperty : readAccessors.keySet() ) {
+                                unprocessedSourceProperties.remove( sourceProperty );
+                            }
+                        }
+
+                        unprocessedConstructorProperties.remove( targetProperty.getKey() );
                     }
                 }
             }
         }
 
-        private SourceReference getSourceRef(Parameter sourceParameter, String targetPropertyName) {
+        private SourceReference getSourceRefByTargetName(Parameter sourceParameter, String targetPropertyName) {
 
             SourceReference sourceRef = null;
 
@@ -1200,11 +1342,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             Accessor sourceReadAccessor =
                 sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
-
-            Accessor sourcePresenceChecker =
-                sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
-
             if ( sourceReadAccessor != null ) {
+                // property mapping
+                Accessor sourcePresenceChecker =
+                    sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
+
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
                 sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
@@ -1246,10 +1388,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ctx.getMessager().printMessage(
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND,
-                        sourceType,
-                        targetType,
-                        targetType,
-                        sourceType
+                        sourceType.describe(),
+                        targetType.describe(),
+                        targetType.describe(),
+                        sourceType.describe()
                     );
                 }
                 else {
@@ -1258,10 +1400,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND,
                         history.createSourcePropertyErrorMessage(),
-                        history.getTargetType(),
+                        history.getTargetType().describe(),
                         history.createTargetPropertyName(),
-                        history.getTargetType(),
-                        history.getSourceType()
+                        history.getTargetType().describe(),
+                        history.getSourceType().describe()
                     );
                 }
             }
@@ -1288,14 +1430,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
                         Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
                         Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
-                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().toString();
-                    String targetErrorMessage = method.getReturnType().toString();
+                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
+                    String targetErrorMessage = method.getReturnType().describe();
                     if ( ( (ForgedMethod) method ).getHistory() != null ) {
                         ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
                         sourceErrorMessage = history.createSourcePropertyErrorMessage();
                         targetErrorMessage = MessageFormat.format(
                             "\"{0} {1}\"",
-                            history.getTargetType(),
+                            history.getTargetType().describe(),
                             history.createTargetPropertyName()
                         );
                     }
@@ -1361,6 +1503,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
+    //CHECKSTYLE:OFF
     private BeanMappingMethod(Method method,
                               Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
@@ -1370,7 +1513,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
-                              MethodReference finalizerMethod) {
+                              MethodReference finalizerMethod,
+                              MappingReferences mappingReferences) {
         super(
             method,
             existingVariableNames,
@@ -1379,10 +1523,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             beforeMappingReferences,
             afterMappingReferences
         );
+        //CHECKSTYLE:ON
 
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
+        this.mappingReferences = mappingReferences;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -1452,6 +1598,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
+            if ( propertyMapping.isConstructorMapping() ) {
+                // We need to add the target type imports for a constructor mapper since we define its parameters
+                types.addAll( propertyMapping.getTargetType().getImportTypes() );
+            }
         }
 
         if ( returnTypeToConstruct != null  ) {
@@ -1470,10 +1620,45 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourcePrimitiveParameters() {
+    public List<Parameter> getSourceParametersNeedingNullCheck() {
         return getSourceParameters().stream()
-                            .filter( parameter -> parameter.getType().isPrimitive() )
+                            .filter( this::needsNullCheck )
                             .collect( Collectors.toList() );
+    }
+
+    public List<Parameter> getSourceParametersNotNeedingNullCheck() {
+        return getSourceParameters().stream()
+                            .filter( parameter -> !needsNullCheck( parameter ) )
+                            .collect( Collectors.toList() );
+    }
+
+    private boolean needsNullCheck(Parameter parameter) {
+        if ( parameter.getType().isPrimitive() ) {
+            return false;
+        }
+
+        List<PropertyMapping> mappings = propertyMappingsByParameter( parameter );
+        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+            return false;
+        }
+
+        mappings = constructorPropertyMappingsByParameter( parameter );
+
+        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean doesNotNeedNullCheckForSourceParameter(PropertyMapping mapping) {
+        if ( mapping.getAssignment().isCallingUpdateMethod() ) {
+            // If the mapping assignment is calling an update method then we should do a null check
+            // in the bean mapping
+            return false;
+        }
+
+        return mapping.getAssignment().isSourceReferenceParameter();
     }
 
     @Override
@@ -1497,7 +1682,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         if ( !super.equals( obj ) ) {
             return false;
         }
-        return Objects.equals( propertyMappings, that.propertyMappings );
+
+        if ( !Objects.equals( propertyMappings, that.propertyMappings ) ) {
+            return false;
+        }
+
+        if ( !Objects.equals( mappingReferences, that.mappingReferences ) ) {
+            return false;
+        }
+
+
+        return true;
     }
 
 }

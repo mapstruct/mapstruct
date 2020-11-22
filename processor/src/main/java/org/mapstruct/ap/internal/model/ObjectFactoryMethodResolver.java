@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 
@@ -21,7 +22,6 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -81,9 +81,13 @@ public class ObjectFactoryMethodResolver {
         if ( matchingFactoryMethods.size() > 1 ) {
             ctx.getMessager().printMessage(
                 method.getExecutable(),
-                Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                alternativeTarget,
-                Strings.join( matchingFactoryMethods, ", " ) );
+                Message.GENERAL_AMBIGUOUS_FACTORY_METHOD,
+                alternativeTarget.describe(),
+                matchingFactoryMethods.stream()
+                    .map( SelectedMethod::getMethod )
+                    .map( Method::describe )
+                    .collect( Collectors.joining( ", " ) )
+            );
 
             return null;
         }

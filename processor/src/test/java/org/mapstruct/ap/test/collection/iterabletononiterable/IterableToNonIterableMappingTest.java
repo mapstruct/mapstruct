@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.collection.iterabletononiterable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +16,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class })
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class, FruitsMenu.class,
+        FruitSalad.class, Fruit.class, FruitsMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class IterableToNonIterableMappingTest {
 
@@ -44,5 +46,27 @@ public class IterableToNonIterableMappingTest {
         assertThat( source ).isNotNull();
         assertThat( source.getNames() ).isEqualTo( Arrays.asList( "Alice", "Bob", "Jim" ) );
         assertThat( source.publicNames ).isEqualTo( Arrays.asList( "Alice", "Bob", "Jim" ) );
+    }
+
+    @Test
+    @IssueKey("607")
+    public void shouldMapIterableToNonIterable() {
+        List<Fruit> fruits =  Arrays.asList( new Fruit( "mango" ), new Fruit( "apple" ),
+                new Fruit( "banana" ) );
+        FruitsMenu menu = new FruitsMenu(fruits);
+        FruitSalad salad = FruitsMapper.INSTANCE.fruitsMenuToSalad( menu );
+        assertThat( salad.getFruits().get( 0 ).getType() ).isEqualTo( "mango" );
+        assertThat( salad.getFruits().get( 1 ).getType() ).isEqualTo( "apple" );
+        assertThat( salad.getFruits().get( 2 ).getType() ).isEqualTo( "banana" );
+    }
+
+    @Test
+    @IssueKey("607")
+    public void shouldMapNonIterableToIterable() {
+        List<Fruit> fruits =  Arrays.asList( new Fruit( "mango" ), new Fruit( "apple" ),
+                new Fruit( "banana" ) );
+        FruitSalad salad = new FruitSalad(fruits);
+        FruitsMenu menu = FruitsMapper.INSTANCE.fruitSaladToMenu( salad );
+        assertThat( salad.getFruits() ).extracting( Fruit::getType ).containsExactly( "mango", "apple", "banana" );
     }
 }

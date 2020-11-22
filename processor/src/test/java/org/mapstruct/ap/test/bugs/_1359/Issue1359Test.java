@@ -15,7 +15,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.atIndex;
+import static org.assertj.core.api.InstanceOfAssertFactories.ITERABLE;
 
 /**
  * @author Filip Hrisafov
@@ -33,14 +33,14 @@ public class Issue1359Test {
     public void shouldCompile() {
 
         Target target = new Target();
-        assertThat( target ).extracting( "properties" ).contains( null, atIndex( 0 ) );
+        assertThat( target ).extracting( "properties" ).isNull();
 
         Set<String> properties = new HashSet<>();
         properties.add( "first" );
         Source source = new Source( properties );
         Issue1359Mapper.INSTANCE.map( target, source );
 
-        assertThat( target ).extracting( "properties" ).contains( properties, atIndex( 0 ) );
+        assertThat( target ).extracting( "properties", ITERABLE ).containsExactly( "first" );
 
     }
 }

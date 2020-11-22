@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 
@@ -24,7 +24,7 @@ public class SelectionParameters {
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
-    private final Types typeUtils;
+    private final TypeUtils typeUtils;
     private final SourceRHS sourceRHS;
 
     /**
@@ -45,12 +45,12 @@ public class SelectionParameters {
     }
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils) {
+        TypeUtils typeUtils) {
         this( qualifiers, qualifyingNames, resultType, typeUtils, null );
     }
 
     private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils, SourceRHS sourceRHS) {
+                                TypeUtils typeUtils, SourceRHS sourceRHS) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;

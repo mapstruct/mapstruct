@@ -176,7 +176,7 @@ public class ManySourceArgumentsTest {
                 line = 16,
                 message = "Several possible source properties for target property \"description\".")
     })
-    public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
+    public void shouldFailToGenerateMappingsForAmbiguousSourceProperty() {
     }
 
     @Test

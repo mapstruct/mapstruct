@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -101,8 +101,12 @@ public abstract class DelegatingOptions {
         return next.getBuilder();
     }
 
-    public MappingControl getMappingControl(Elements elementUtils) {
+    public MappingControl getMappingControl(ElementUtils elementUtils) {
         return next.getMappingControl( elementUtils );
+    }
+
+    public TypeMirror getUnexpectedValueMappingException() {
+        return next.getUnexpectedValueMappingException();
     }
 
     DelegatingOptions next() {

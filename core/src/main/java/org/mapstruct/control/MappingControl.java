@@ -87,6 +87,8 @@ import java.lang.annotation.Target;
  * </code></pre>
  *
  * @author Sjaak Derksen
+ *
+ * @since 1.4
  */
 @Retention(RetentionPolicy.CLASS)
 @Repeatable(MappingControls.class)

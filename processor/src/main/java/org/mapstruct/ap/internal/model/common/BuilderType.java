@@ -9,7 +9,7 @@ import java.util.Collection;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.spi.BuilderInfo;
 
@@ -84,7 +84,7 @@ public class BuilderType {
     }
 
     public static BuilderType create(BuilderInfo builderInfo, Type typeToBuild, TypeFactory typeFactory,
-        Types typeUtils) {
+        TypeUtils typeUtils) {
         if ( builderInfo == null ) {
             return null;
         }

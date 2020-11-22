@@ -187,4 +187,16 @@ public interface Method {
     default boolean isMappingTargetAssignableToReturnType() {
         return isUpdateMethod() && getResultType().isAssignableTo( getReturnType() );
     }
+
+    /**
+     * @return the first source type, intended for mapping methods from single source to target
+     */
+    default Type getMappingSourceType() {
+        return getSourceParameters().get( 0 ).getType();
+    }
+
+    /**
+     * @return the short name for error messages when verbose, full name when not
+     */
+    String describe();
 }

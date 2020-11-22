@@ -31,31 +31,25 @@ public class ErroneousJavaInternalTest {
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.nestedbeans.exclusions.Source.MyType date\" to " +
-                    "\"java.util.Date date\". Consider to declare/implement a mapping method: \"java.util.Date map" +
-                    "(org.mapstruct.ap.test.nestedbeans.exclusions.Source.MyType value)\"."),
+                message = "Can't map property \"Source.MyType date\" to \"Date date\". " +
+                    "Consider to declare/implement a mapping method: \"Date map(Source.MyType value)\"."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"org.mapstruct.ap.test.nestedbeans.exclusions.Source.MyType calendar\"" +
-                    " to \"java.util.GregorianCalendar calendar\". Consider to declare/implement a mapping method: " +
-                    "\"java.util.GregorianCalendar map(org.mapstruct.ap.test.nestedbeans.exclusions.Source.MyType " +
-                    "value)\"."),
+                message = "Can't map property \"Source.MyType calendar\" to \"GregorianCalendar calendar\". " +
+                    "Consider to declare/implement a mapping method: \"GregorianCalendar map(Source.MyType value)\"."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"java.util.List<org.mapstruct.ap.test.nestedbeans.exclusions.Source" +
-                    ".MyType> types\" to \"java.util.List<java.lang.String> types\". Consider to declare/implement a " +
-                    "mapping method: \"java.util.List<java.lang.String> map(java.util.List<org.mapstruct.ap.test" +
-                    ".nestedbeans.exclusions.Source.MyType> value)\"."),
+                message = "Can't map property \"List<Source.MyType> types\" to \"List<String> types\". " +
+                    "Consider to declare/implement a mapping method: \"List<String> map(List<Source.MyType> value)\"."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 16,
-                message = "Can't map property \"java.util.List<org.mapstruct.ap.test.nestedbeans.exclusions.Source" +
-                    ".MyType> nestedMyType.deepNestedType.types\" to \"java.util.List<java.lang.String> nestedMyType" +
-                    ".deepNestedType.types\". Consider to declare/implement a mapping method: \"java.util.List<java" +
-                    ".lang.String> map(java.util.List<org.mapstruct.ap.test.nestedbeans.exclusions.Source.MyType> " +
-                    "value)\".")
+                message = "Can't map property \"List<Source.MyType> nestedMyType.deepNestedType.types\" to " +
+                    "\"List<String> nestedMyType.deepNestedType.types\". " +
+                    "Consider to declare/implement a mapping method: " +
+                    "\"List<String> map(List<Source.MyType> value)\".")
         })
     @Test
     public void shouldNotNestIntoJavaPackageObjects() {

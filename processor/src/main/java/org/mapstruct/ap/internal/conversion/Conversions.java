@@ -175,6 +175,7 @@ public class Conversions {
         register( Character.class, String.class, new CharWrapperToStringConversion() );
         register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
         register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
+        register( StringBuilder.class, String.class, new StringBuilderToStringConversion() );
 
         registerJodaConversions();
 

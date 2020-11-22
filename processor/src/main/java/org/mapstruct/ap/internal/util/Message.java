@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.util;
 
 import javax.tools.Diagnostic;
 
+import static org.mapstruct.ap.internal.util.MessageConstants.FAQ_AMBIGUOUS_URL;
 import static org.mapstruct.ap.internal.util.MessageConstants.FAQ_QUALIFIER_URL;
 
 /**
@@ -38,6 +39,7 @@ public enum Message {
     BEANMAPPING_UNMAPPED_SOURCES_ERROR( "Unmapped source %s." ),
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
+    BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
 
     PROPERTYMAPPING_MAPPING_NOTE( "mapping property: %s to: %s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_CREATE_NOTE( "creating property mapping: %s.", Diagnostic.Kind.NOTE ),
@@ -71,12 +73,14 @@ public enum Message {
     PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE( "No write accessor found for property \"%s\" in target type." ),
     PROPERTYMAPPING_WHITESPACE_TRIMMED( "The property named \"%s\" has whitespaces, using trimmed property \"%s\" instead.", Diagnostic.Kind.WARNING ),
+    PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET("The type of parameter \"%s\" has no property named \"%s\". Please define the source property explicitly."),
+    PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
 
-    CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map \"%s %s\" to \"%s %s\"." ),
-    CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS( "Can't map \"%s %s\" to \"%s %s\". Reason: %s." ),
+    CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\"." ),
+    CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS( "Can't map %s to \"%s %s\". Reason: %s." ),
     CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     CONSTANTMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s for property \"%s\"." ),
 
@@ -103,6 +107,8 @@ public enum Message {
     ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     ENUMMAPPING_REMOVED( "Mapping of Enums via @Mapping is removed. Please use @ValueMapping instead!" ),
     ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY( "There is no registered EnumTransformationStrategy for '%s'. Registered strategies are: %s." ),
+    ENUMMAPPING_MISSING_CONFIGURATION( "Configuration has to be defined when strategy is defined." ),
+    ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
@@ -111,9 +117,9 @@ public enum Message {
 
     GENERAL_NO_IMPLEMENTATION( "No implementation type is registered for return type %s." ),
     GENERAL_ABSTRACT_RETURN_TYPE( "The return type %s is an abstract class or interface. Provide a non abstract / non interface result type or a factory method." ),
-    GENERAL_AMBIGIOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s." ),
-    GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s." ),
-    GENERAL_AMBIGIOUS_CONSTRUCTORS( "Ambiguous constructors found for creating %s. Either declare parameterless constructor or annotate the default constructor with an annotation named @Default." ),
+    GENERAL_AMBIGUOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
+    GENERAL_AMBIGUOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
+    GENERAL_AMBIGUOUS_CONSTRUCTORS( "Ambiguous constructors found for creating %s. Either declare parameterless constructor or annotate the default constructor with an annotation named @Default." ),
     GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS( "Incorrect @ConstructorProperties for %s. The size of the @ConstructorProperties does not match the number of constructor parameters" ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
@@ -125,6 +131,10 @@ public enum Message {
     GENERAL_NO_QUALIFYING_METHOD_NAMED( "Qualifier error. No method found annotated with @Named#value: [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
     GENERAL_NO_QUALIFYING_METHOD_COMBINED( "Qualifier error. No method found annotated with @Named#value: [ %s ], annotated with [ %s ]. See " + FAQ_QUALIFIER_URL + " for more info." ),
 
+    GENERAL_AMBIGUOUS_MAPPING_METHODY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGUOUS_MAPPING_CONVERSIONY_METHODX( "Ambiguous 2step methods found, mapping %s to %s. Found conversionY( methodX ( parameter ) ): %s." ),
+    GENERAL_AMBIGUOUS_MAPPING_METHODY_CONVERSIONX( "Ambiguous 2step methods found, mapping %s to %s. Found methodY( conversionX ( parameter ) ): %s." ),
+
     BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
     BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),
     BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\". Consider to add @Builder in order to select the correct build method.", Diagnostic.Kind.ERROR ),
@@ -133,9 +143,9 @@ public enum Message {
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
     RETRIEVAL_VOID_MAPPING_METHOD( "Can't generate mapping method with return type void." ),
     RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE( "The result type is not assignable to the the return type." ),
-    RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type to non-iterable type." ),
+    RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type from java stdlib to non-iterable type." ),
     RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER( "Can't generate mapping method that has a parameter annotated with @TargetType." ),
-    RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type." ),
+    RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type from java stdlib." ),
     RETRIEVAL_PRIMITIVE_PARAMETER( "Can't generate mapping method with primitive parameter type." ),
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
     RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),
@@ -143,6 +153,7 @@ public enum Message {
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
     RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE( "The types of @Context parameters must be unique." ),
+    RETRIEVAL_MAPPER_USES_CYCLE( "The mapper %s is referenced itself in Mapper#uses.", Diagnostic.Kind.WARNING ),
 
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),

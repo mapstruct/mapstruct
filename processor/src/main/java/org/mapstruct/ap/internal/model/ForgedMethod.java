@@ -125,8 +125,7 @@ public class ForgedMethod implements Method {
                          boolean forgedNameBased) {
 
         // establish name
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
-        String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
+        String sourceParamSafeName = Strings.getSafeVariableName( sourceType.getName() );
 
         // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
@@ -339,6 +338,13 @@ public class ForgedMethod implements Method {
     @Override
     public MappingMethodOptions getOptions() {
         return basedOn.getOptions();
+    }
+
+    @Override
+    public String describe() {
+        // the name of the forged method is never fully qualified, so no need to distinguish
+        // between verbose or not. The type knows whether it should log verbose
+        return getResultType().describe() + ":" + getName() + "(" + getMappingSourceType().describe() + ")";
     }
 
     public MappingReferences getMappingReferences() {

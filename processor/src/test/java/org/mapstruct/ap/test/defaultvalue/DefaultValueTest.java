@@ -129,9 +129,8 @@ public class DefaultValueTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
-                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
-                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+                message = "Can't map property \"Region region\" to \"String region\". " +
+                    "Consider to declare/implement a mapping method: \"String map(Region value)\".")
         }
     )
     public void errorOnDefaultValueAndConstant() {
@@ -153,12 +152,45 @@ public class DefaultValueTest {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
-                message = "Can't map property \"org.mapstruct.ap.test.defaultvalue.Region region\" to \"java.lang" +
-                    ".String region\". Consider to declare/implement a mapping method: \"java.lang.String map(org" +
-                    ".mapstruct.ap.test.defaultvalue.Region value)\".")
+                message = "Can't map property \"Region region\" to \"String region\". " +
+                    "Consider to declare/implement a mapping method: \"String map(Region value)\".")
         }
     )
     public void errorOnDefaultValueAndExpression() {
+    }
+
+    @Test
+    @IssueKey("2214")
+    @WithClasses({
+        CountryMapperMultipleSources.class,
+        Region.class,
+    })
+    public void shouldBeAbleToDetermineDefaultValueBasedOnOnlyTargetType() {
+        CountryEntity entity = new CountryEntity();
+        CountryDts target = CountryMapperMultipleSources.INSTANCE.map( entity, "ZH" );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getCode() ).isEqualTo( "CH" );
+    }
+
+    @Test
+    @IssueKey("2220")
+    @WithClasses({
+        ErroneousMissingSourceMapper.class,
+        Region.class,
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                type = ErroneousMissingSourceMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 17,
+                message = "The type of parameter \"tenant\" has no property named \"type\"." +
+                    " Please define the source property explicitly."),
+        }
+    )
+    public void errorWhenOnlyTargetDefinedAndSourceDoesNotHaveProperty() {
     }
 
 }

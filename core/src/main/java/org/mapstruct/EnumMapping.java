@@ -111,7 +111,7 @@ public @interface EnumMapping {
      *
      * @return the name transformation strategy
      */
-    String nameTransformationStrategy();
+    String nameTransformationStrategy() default "";
 
     /**
      * The configuration that should be passed on the appropriate name transformation strategy.
@@ -119,5 +119,26 @@ public @interface EnumMapping {
      *
      * @return the configuration to use
      */
-    String configuration();
+    String configuration() default "";
+
+    /**
+     * Exception that should be thrown by the generated code if no mapping matches.
+     * If no exception is configured, the exception given via {@link MapperConfig#unexpectedValueMappingException()} or
+     * {@link Mapper#unexpectedValueMappingException()} will be used, using {@link IllegalArgumentException} by default.
+     *
+     * <p>
+     * Note:
+     * <ul>
+     *     <li>
+     *      The defined exception should at least have a constructor with a {@link String} parameter.
+     *     </li>
+     *     <li>
+     *      If the defined exception is a checked exception then the enum mapping methods should have that exception
+     *      in the throws clause.
+     *     </li>
+     * </ul>
+     *
+     * @return the exception that should be used in the generated code
+     */
+    Class<? extends Exception> unexpectedValueMappingException() default IllegalArgumentException.class;
 }

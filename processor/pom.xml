@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-parent</artifactId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -123,6 +123,7 @@
                         </manifest>
                         <manifestEntries>
                             <Automatic-Module-Name>org.mapstruct.processor</Automatic-Module-Name>
+                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>
                         </manifestEntries>
                     </archive>
                 </configuration>
