@@ -434,6 +434,4 @@ public @interface Mapping {
      */
     Class<? extends Annotation> mappingControl() default MappingControl.class;
 
-
-
 }

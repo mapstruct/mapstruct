@@ -67,6 +67,7 @@ import static org.mapstruct.ap.internal.util.Message.GENERAL_AMBIGUOUS_CONSTRUCT
 import static org.mapstruct.ap.internal.util.Message.GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS;
 import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET;
 import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET;
+import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_RESOLVE_CONDITION_METHOD;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -1173,6 +1174,28 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
+
+            //check if there's a condition and if the method exists
+            if ( mapping.getCondition() != null ) {
+                long methodsMatching = ctx.getSourceModel().stream()
+                        .filter(e -> e.getName().equals(mapping.getCondition()))
+                        .filter(e -> "boolean".equals(e.getReturnType().getName()))
+                        .count();
+
+                if ( methodsMatching == 0 ) {
+                    ctx.getMessager()
+                            .printMessage(
+                                    method.getExecutable(),
+                                    mapping.getMirror(),
+                                    mapping.getTargetAnnotationValue(),
+                                    PROPERTYMAPPING_CANNOT_RESOLVE_CONDITION_METHOD,
+                                    mapping.getCondition(),
+                                    targetPropertyName
+                            );
+                    errorOccured = true;
+                }
+            }
+
             // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
             if ( propertyMapping != null ) {
                 propertyMappings.add( propertyMapping );

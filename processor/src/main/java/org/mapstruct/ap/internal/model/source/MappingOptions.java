@@ -39,10 +39,6 @@ public class MappingOptions extends DelegatingOptions {
 
     private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
 
-    public String getCondition() {
-        return condition;
-    }
-
     private final String sourceName;
     private final String constant;
     private final String javaExpression;
@@ -352,6 +348,10 @@ public class MappingOptions extends DelegatingOptions {
      */
     public String getSourceName() {
         return sourceName;
+    }
+
+    public String getCondition() {
+        return condition;
     }
 
     public AnnotationValue getSourceAnnotationValue() {
