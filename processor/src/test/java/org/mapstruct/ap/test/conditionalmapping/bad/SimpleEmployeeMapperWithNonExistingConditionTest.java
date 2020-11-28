@@ -29,7 +29,8 @@ public class SimpleEmployeeMapperWithNonExistingConditionTest extends TestCase {
             @Diagnostic(
                     type = SimpleEmployeeMapperWithNonExistingCondition.class,
                     kind = javax.tools.Diagnostic.Kind.ERROR,
-                    message = "No conditional method named \"nonExisting\" found with correct return type to resolve target param \"nin\""
+                    message = "No conditional method named \"nonExisting\" " +
+                            "found with correct return type to resolve target param \"nin\""
             )
     })
     public void shouldHaveCompilationErrorIfConditionMethodMissing() {

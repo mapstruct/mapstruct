@@ -29,7 +29,8 @@ public class SimpleEmployeeMapperWithNonMatchingTypesTest extends TestCase {
             @Diagnostic(
                     type = SimpleEmployeeMapperWithNonMatchingTypes.class,
                     kind = javax.tools.Diagnostic.Kind.ERROR,
-                    message = "No conditional method named \"isAmericanCitizen\" found with correct return type to resolve target param \"ssid\""
+                    message = "No conditional method named \"isAmericanCitizen\" " +
+                            "found with correct return type to resolve target param \"ssid\""
             )
     })
     public void shouldHaveCompilationErrorIfConditionReturnTypeNotBoolean() {

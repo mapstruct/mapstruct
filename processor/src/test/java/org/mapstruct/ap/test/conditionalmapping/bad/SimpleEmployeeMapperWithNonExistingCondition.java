@@ -13,7 +13,8 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SimpleEmployeeMapperWithNonExistingCondition {
-    SimpleEmployeeMapperWithNonExistingCondition INSTANCE = Mappers.getMapper( SimpleEmployeeMapperWithNonExistingCondition.class );
+    SimpleEmployeeMapperWithNonExistingCondition INSTANCE =
+            Mappers.getMapper( SimpleEmployeeMapperWithNonExistingCondition.class );
 
     @Mapping(source = "uniqueIdNumber", target = "nin", condition = "nonExisting")
     Employee mapEmployee( EmployeeDto employeeDto );

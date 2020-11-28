@@ -13,7 +13,8 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SimpleEmployeeMapperWithNonMatchingTypes {
-    SimpleEmployeeMapperWithNonMatchingTypes INSTANCE = Mappers.getMapper( SimpleEmployeeMapperWithNonMatchingTypes.class );
+    SimpleEmployeeMapperWithNonMatchingTypes INSTANCE =
+            Mappers.getMapper( SimpleEmployeeMapperWithNonMatchingTypes.class );
 
     @Mapping(source = "uniqueIdNumber", target = "ssid", condition = "isAmericanCitizen")
     Employee mapEmployee( EmployeeDto employeeDto );
