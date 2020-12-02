@@ -345,5 +345,6 @@ public @interface MapperConfig {
      * @since 1.5
      */
     boolean suppressTimestampInGenerated() default false;
+    Class<? extends Annotation>[] implementationAnnotations() default {};
 }
 
