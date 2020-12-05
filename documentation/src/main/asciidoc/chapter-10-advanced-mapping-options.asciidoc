@@ -161,13 +161,13 @@ The mechanism is also present on iterable mapping and map mapping. `@IterableMap
 
 MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
 
-However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
+However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MapperConfig`, the mapping result can be altered to return empty *default* values. This means for:
 
 * *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
 * *Iterables / Arrays*: an empty iterable will be returned.
 * *Maps*: an empty map will be returned.
 
-The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MapperConfig#nullValueMappingStrategy`.
 
 
 [[mapping-result-for-null-properties]]
@@ -179,13 +179,13 @@ By default the target property will be set to null.
 
 However:
 
-1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result can be altered to return *default* values.
+1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result can be altered to return *default* values.
 For `List` MapStruct generates an `ArrayList`, for `Map` a `HashMap`, for arrays an empty array, for `String` `""` and for primitive / boxed types a representation of `false` or `0`.
 For all other objects an new instance is created. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`.
 
-2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MappingConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
+2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
 
-The strategy works in a hierarchical fashion. Setting `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MappingConfig#nullValuePropertyMappingStrategy`.
+The strategy works in a hierarchical fashion. Setting `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MapperConfig#nullValuePropertyMappingStrategy`.
 
 [NOTE]
 ====
@@ -213,7 +213,7 @@ First calling a mapping method on the source property is not protected by a null
 
 The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
 
-The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MappingConfig#nullValueCheckStrategy`.
+The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MaperConfig#nullValueCheckStrategy`.
 
 [[source-presence-check]]
 === Source presence checking
