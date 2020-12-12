@@ -316,7 +316,7 @@ public class SourceMethod implements Method {
             && isIterableMapping() == method.isIterableMapping()
             && isEnumMapping( this ) == isEnumMapping( method )
             && getResultType().isAssignableTo( method.getResultType() )
-            && allParametersAreAssignable( getSourceParameters(), method.getSourceParameters() );
+            && allInheritedParametersAreAssignable( getSourceParameters(), method.getSourceParameters() );
     }
 
     @Override
@@ -428,14 +428,14 @@ public class SourceMethod implements Method {
         return applicableReversePrototypeMethods;
     }
 
-    private static boolean allParametersAreAssignable(List<Parameter> fromParams, List<Parameter> toParams) {
-        if ( fromParams.size() == toParams.size() ) {
+    private static boolean allInheritedParametersAreAssignable(List<Parameter> fromParams, List<Parameter> toParams) {
+        if ( toParams.size() <= fromParams.size() ) {
             Set<Parameter> unaccountedToParams = new HashSet<>( toParams );
 
-            for ( Parameter fromParam : fromParams ) {
+            for ( Parameter toParam : toParams ) {
                 // each fromParam needs at least one match, and all toParam need to be accounted for at the end
                 boolean hasMatch = false;
-                for ( Parameter toParam : toParams ) {
+                for ( Parameter fromParam : fromParams ) {
                     if ( fromParam.getType().isAssignableTo( toParam.getType() ) ) {
                         unaccountedToParams.remove( toParam );
                         hasMatch = true;
