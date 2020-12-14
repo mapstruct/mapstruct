@@ -187,15 +187,15 @@ When invoking javac directly, these options are passed to the compiler in the fo
         <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
         <showWarnings>true</showWarnings>
         <compilerArgs>
-            <compilerArg>
+            <arg>
                 -Amapstruct.suppressGeneratorTimestamp=true
-            </compilerArg>
-            <compilerArg>
+            </arg>
+            <arg>
                 -Amapstruct.suppressGeneratorVersionInfoComment=true
-            </compilerArg>
-            <compilerArg>
+            </arg>
+            <arg>
                 -Amapstruct.verbose=true
-            </compilerArg>
+            </arg>
         </compilerArgs>
     </configuration>
 </plugin>
