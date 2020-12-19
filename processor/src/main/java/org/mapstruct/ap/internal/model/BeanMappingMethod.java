@@ -938,6 +938,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             if ( targetWriteAccessor == null ) {
                 if ( targetReadAccessor == null ) {
+                    if ( mapping.getInheritContext() != null && mapping.getInheritContext().isForwarded() &&
+                        mapping.getInheritContext().getTemplateMethod().isUpdateMethod() != method.isUpdateMethod() ) {
+                        // When a configuration is inherited and the template method is not same type as the current
+                        // method then we can safely ignore this mapping.
+                        // This means that a property which is inherited might be present for a direct mapping
+                        // via the Builder, but not for an update mapping (directly on the object itself),
+                        // or vice versa
+                        return false;
+                    }
                     Set<String> readAccessors = resultTypeToMap.getPropertyReadAccessors().keySet();
                     String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
 
