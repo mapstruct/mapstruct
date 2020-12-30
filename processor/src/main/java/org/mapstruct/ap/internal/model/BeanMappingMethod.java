@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,6 +57,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.ParameterElementAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
@@ -272,6 +274,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 // map parameters without a mapping
                 applyParameterNameBasedMapping();
+
+                // map properties without a mapping from map parameters
+                applyPropertyNameBasedMappingForMapSources();
             }
 
             // Process the unprocessed defined targets
@@ -1237,6 +1242,28 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
          * the set of remaining target properties.
          */
+        private void applyPropertyNameBasedMappingForMapSources() {
+            List<SourceReference> sourceReferences = new ArrayList<>();
+            for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
+                for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                    if (!sourceParameter.getType().isMapType()) {
+                        continue;
+                    }
+                    SourceReference sourceRef = getMapSourceRefByTargetName( sourceParameter, targetPropertyName );
+                    if ( sourceRef != null ) {
+                        sourceReferences.add( sourceRef );
+                    }
+                }
+            }
+            applyPropertyNameBasedMapping( sourceReferences );
+        }
+
+        /**
+         * Iterates over all target properties and all source parameters.
+         * <p>
+         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
+         * the set of remaining target properties.
+         */
         private void applyPropertyNameBasedMapping(List<SourceReference> sourceReferences) {
 
             for ( SourceReference sourceRef : sourceReferences ) {
@@ -1356,6 +1383,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                                      .build();
             }
             return sourceRef;
+        }
+
+        private SourceReference getMapSourceRefByTargetName(Parameter sourceParameter, String targetPropertyName) {
+
+            SourceReference sourceRef = null;
+
+            if ( !sourceParameter.getType().isMapType()) {
+                return sourceRef;
+            }
+
+            return SourceReference.fromMapSource(new String[]{targetPropertyName}, sourceParameter);
         }
 
         private MappingReferences extractMappingReferences(String targetProperty, boolean restrictToDefinedMappings) {

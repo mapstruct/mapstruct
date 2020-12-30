@@ -14,7 +14,6 @@ import java.util.Objects;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -55,7 +54,22 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  */
 public class SourceReference extends AbstractReference {
 
-    private final String sourceName;
+    public static SourceReference fromMapSource(String[] segments, Parameter parameter) {
+        Type valueType = null;
+        final List<Type> typeParameters = parameter.getType().getTypeParameters();
+        if (typeParameters.size() == 2) {
+            valueType = typeParameters.get(1);
+        } else {
+            //TODO: this should be a type mirror of Object by default
+            valueType = parameter.getType();
+        }
+        MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
+        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
+        List<PropertyEntry> entries = Collections.singletonList(
+            PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType)
+        );
+        return new SourceReference( parameter, entries, true );
+    }
 
     /**
      * Builds a {@link SourceReference} from an {@code @Mappping}.
@@ -155,7 +169,7 @@ public class SourceReference extends AbstractReference {
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
 
             if (parameter.getType().isMapType()) {
-                return forMapSource(segments, parameter);
+                return fromMapSource(segments, parameter);
             }
 
             boolean foundEntryMatch;
@@ -184,23 +198,6 @@ public class SourceReference extends AbstractReference {
             return new SourceReference( parameter, entries, foundEntryMatch );
         }
 
-        private SourceReference forMapSource(String[] segments, Parameter parameter) {
-            Type valueType = null;
-            final List<Type> typeParameters = parameter.getType().getTypeParameters();
-            if (typeParameters.size() == 2) {
-                valueType = typeParameters.get(1);
-            } else {
-                //TODO: this should be a type mirror of Object by default
-                valueType = parameter.getType();
-            }
-            MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
-            MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
-            List<PropertyEntry> entries = Collections.singletonList(
-                PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType)
-            );
-            return new SourceReference( parameter, entries, true );
-        }
-
         /**
          * When there are more than one source parameters, the first segment name of the property
          * needs to match the parameter name to avoid ambiguity
@@ -211,8 +208,12 @@ public class SourceReference extends AbstractReference {
          */
         private SourceReference buildFromMultipleSourceParameters(String[] segments, Parameter parameter) {
 
-            if (parameter.getType().isMapType()) {
-                return forMapSource(segments, parameter);
+            if (parameter != null && parameter.getType().isMapType()) {
+                String[] propertyNames = new String[0];
+                if ( segments.length > 1) {
+                    propertyNames = Arrays.copyOfRange(segments, 1, segments.length);
+                }
+                return fromMapSource(propertyNames, parameter);
             }
 
             boolean foundEntryMatch;
@@ -431,13 +432,8 @@ public class SourceReference extends AbstractReference {
         }
     }
 
-    private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid, String sourceName) {
-        super( sourceParameter, sourcePropertyEntries, isValid );
-        this.sourceName = sourceName;
-    }
-
     private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
-        this( sourceParameter, sourcePropertyEntries, isValid, null );
+        super( sourceParameter, sourcePropertyEntries, isValid );
     }
 
     public SourceReference pop() {

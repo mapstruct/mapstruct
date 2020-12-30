@@ -8,13 +8,16 @@ package org.mapstruct.ap.test.frommap;
 import java.util.List;
 
 /**
- * @author Filip Hrisafov
+ * @author Christian Kosmowski
  */
 public class Target {
 
     // CHECKSTYLE:OFF
     public String normalInt;
     public String fieldWithMethods;
+    public List<Integer> finalList;
+    public List<Integer> normalList;
+    public Integer fieldOnlyWithGetter;
     // CHECKSTYLE:ON
 
     public String getFieldWithMethods() {

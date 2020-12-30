@@ -10,13 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Filip Hrisafov
+ * @author Christian Kosmowski
  */
 public class Source {
 
     // CHECKSTYLE:OFF
-    public final int finalInt = 10;
-    public int normalInt;
     public final List<Integer> finalList = Arrays.asList( 1, 2, 3 );
     public List<Integer> normalList;
     public Integer fieldOnlyWithGetter;

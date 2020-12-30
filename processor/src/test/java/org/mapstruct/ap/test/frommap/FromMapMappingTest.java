@@ -11,6 +11,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,25 @@ public class FromMapMappingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.normalInt ).isEqualTo( "1" );
-        //assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue" );
+        assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
+    }
+
+    @Test
+    public void shouldMapSourcesToTarget() {
+        Map<String, Object> sourceMap = new HashMap<>();
+        sourceMap.put("theInt", "1");
+        sourceMap.put("fieldWithMethods", "aTestValue");
+
+        Source source = new Source();
+        source.normalList = new ArrayList<>();
+        source.fieldOnlyWithGetter = 12;
+
+        Target target = SourceTargetMapper.INSTANCE.toTarget( sourceMap, source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.normalInt ).isEqualTo( "1" );
+        assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
+        assertThat( target.fieldOnlyWithGetter ).isEqualTo( 33 );
     }
 
 }
