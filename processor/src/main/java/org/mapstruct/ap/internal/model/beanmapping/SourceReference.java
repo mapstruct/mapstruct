@@ -58,15 +58,18 @@ public class SourceReference extends AbstractReference {
         Type valueType = null;
         final List<Type> typeParameters = parameter.getType().getTypeParameters();
         if (typeParameters.size() == 2) {
-            valueType = typeParameters.get(1);
-        } else {
+            valueType = typeParameters.get( 1 );
+        }
+        else {
             //TODO: this should be a type mirror of Object by default
             valueType = parameter.getType();
         }
-        MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType().getTypeElement(), valueType.getTypeMirror(), String.join(".", segments));
-        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(parameter.getType().getTypeElement(), valueType.getTypeMirror(), String.join(".", segments));
+        MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType().getTypeElement(),
+            valueType.getTypeMirror(), String.join( ".", segments ) );
+        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(
+            parameter.getType().getTypeElement(), valueType.getTypeMirror(), String.join( ".", segments ) );
         List<PropertyEntry> entries = Collections.singletonList(
-            PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType)
+            PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType )
         );
         return new SourceReference( parameter, entries, true );
     }
@@ -169,7 +172,7 @@ public class SourceReference extends AbstractReference {
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
 
             if (parameter.getType().isMapType()) {
-                return fromMapSource(segments, parameter);
+                return fromMapSource( segments, parameter );
             }
 
             boolean foundEntryMatch;
@@ -211,9 +214,9 @@ public class SourceReference extends AbstractReference {
             if (parameter != null && parameter.getType().isMapType()) {
                 String[] propertyNames = new String[0];
                 if ( segments.length > 1) {
-                    propertyNames = Arrays.copyOfRange(segments, 1, segments.length);
+                    propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                 }
-                return fromMapSource(propertyNames, parameter);
+                return fromMapSource( propertyNames, parameter );
             }
 
             boolean foundEntryMatch;

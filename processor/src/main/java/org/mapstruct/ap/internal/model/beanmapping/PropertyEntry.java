@@ -39,17 +39,16 @@ public class PropertyEntry {
     /**
      * Constructor used to create {@link SourceReference} property entries from a mapping
      *
-     * @param name name of the property (dot separated)
-     * @param readAccessor its read accessor
+     * @param name            name of the property (dot separated)
+     * @param readAccessor    its read accessor
      * @param presenceChecker its presence Checker
-     * @param type type of the property
+     * @param type            type of the property
      * @return the property entry for given parameters.
      */
     public static PropertyEntry forSourceReference(String[] name, Accessor readAccessor,
                                                    Accessor presenceChecker, Type type) {
         return new PropertyEntry( name, readAccessor, presenceChecker, type );
     }
-
 
     public String getName() {
         return fullName[fullName.length - 1];
@@ -68,7 +67,7 @@ public class PropertyEntry {
     }
 
     public String getFullName() {
-        return Strings.join( Arrays.asList(  fullName ), "." );
+        return Strings.join( Arrays.asList( fullName ), "." );
     }
 
     @Override

@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import org.mapstruct.ap.internal.model.common.Type;
-
+import java.util.Collections;
+import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * An {@link Accessor} that wraps a Map value.

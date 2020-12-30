@@ -21,15 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Kosmowski
  */
 @RunWith(AnnotationProcessorTestRunner.class)
-@IssueKey( "1075" )
+@IssueKey("1075")
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class FromMapMappingTest {
 
     @Test
     public void shouldMapSourceToTarget() {
         Map<String, Object> sourceMap = new HashMap<>();
-        sourceMap.put("theInt", "1");
-        sourceMap.put("fieldWithMethods", "aTestValue");
+        sourceMap.put( "theInt", "1" );
+        sourceMap.put( "fieldWithMethods", "aTestValue" );
 
         Target target = SourceTargetMapper.INSTANCE.toTarget( sourceMap );
 
@@ -41,8 +41,8 @@ public class FromMapMappingTest {
     @Test
     public void shouldMapSourcesToTarget() {
         Map<String, Object> sourceMap = new HashMap<>();
-        sourceMap.put("theInt", "1");
-        sourceMap.put("fieldWithMethods", "aTestValue");
+        sourceMap.put( "theInt", "1" );
+        sourceMap.put( "fieldWithMethods", "aTestValue" );
 
         Source source = new Source();
         source.normalList = new ArrayList<>();
