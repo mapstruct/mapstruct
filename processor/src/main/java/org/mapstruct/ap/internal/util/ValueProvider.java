@@ -46,7 +46,7 @@ public class ValueProvider {
             return null;
         }
         String value = accessor.getSimpleName();
-        if (accessor.getAccessorType() == AccessorType.MAP) {
+        if (accessor.getAccessorType() == AccessorType.MAP_GET ) {
             value = "get( \"" + value + "\" )";
             return new ValueProvider( value );
         }

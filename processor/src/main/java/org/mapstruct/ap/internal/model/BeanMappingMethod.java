@@ -1394,7 +1394,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return sourceRef;
             }
 
-            return SourceReference.fromMapSource( new String[] { targetPropertyName }, sourceParameter );
+            Type defaultType = ctx.getTypeFactory().getType( Object.class );
+            return SourceReference.fromMapSource( new String[] { targetPropertyName }, sourceParameter,  defaultType );
         }
 
         private MappingReferences extractMappingReferences(String targetProperty, boolean restrictToDefinedMappings) {

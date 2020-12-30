@@ -50,6 +50,6 @@ public class MapValueAccessor implements Accessor {
 
     @Override
     public AccessorType getAccessorType() {
-        return AccessorType.MAP;
+        return AccessorType.MAP_GET;
     }
 }

@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.frommap;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -23,11 +24,14 @@ public interface SourceTargetMapper {
     @Mapping(source = "theInt", target = "normalInt")
     @Mapping(target = "finalList", ignore = true)
     @Mapping(target = "normalList", ignore = true)
-    @Mapping(target = "fieldOnlyWithGetter", ignore = true)
+    @Mapping(target = "fieldOnlyWithGetter", source = "nonExistent", defaultValue = "44")
     Target toTarget(Map<String, Object> source);
 
     @Mapping(source = "source.theInt", target = "normalInt")
     Target toTarget(Map<String, Object> source, Source source2);
+
+    @Mapping(source = "source.theInt", target = "normalInt")
+    Target toExistingTarget(@MappingTarget Target target, Map<String, Object> source, Source source2);
 
     default String map(Object object) {
         return object.toString();

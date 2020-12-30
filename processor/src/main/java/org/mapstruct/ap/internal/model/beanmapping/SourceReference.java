@@ -54,16 +54,9 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  */
 public class SourceReference extends AbstractReference {
 
-    public static SourceReference fromMapSource(String[] segments, Parameter parameter) {
-        Type valueType = null;
+    public static SourceReference fromMapSource(String[] segments, Parameter parameter, Type defaultValueType) {
         final List<Type> typeParameters = parameter.getType().getTypeParameters();
-        if (typeParameters.size() == 2) {
-            valueType = typeParameters.get( 1 );
-        }
-        else {
-            //TODO: this should be a type mirror of Object by default
-            valueType = parameter.getType();
-        }
+        Type valueType = typeParameters.size() == 2 ? typeParameters.get( 1 ) : defaultValueType;
         MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType().getTypeElement(),
             valueType.getTypeMirror(), String.join( ".", segments ) );
         MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(
@@ -172,7 +165,7 @@ public class SourceReference extends AbstractReference {
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
 
             if (parameter.getType().isMapType()) {
-                return fromMapSource( segments, parameter );
+                return fromMapSource( segments, parameter, typeFactory.getType( Object.class ) );
             }
 
             boolean foundEntryMatch;
@@ -216,7 +209,7 @@ public class SourceReference extends AbstractReference {
                 if ( segments.length > 1) {
                     propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                 }
-                return fromMapSource( propertyNames, parameter );
+                return fromMapSource( propertyNames, parameter, typeFactory.getType( Object.class ) );
             }
 
             boolean foundEntryMatch;

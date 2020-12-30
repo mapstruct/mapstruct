@@ -36,6 +36,7 @@ public class FromMapMappingTest {
         assertThat( target ).isNotNull();
         assertThat( target.normalInt ).isEqualTo( "1" );
         assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
+        assertThat( target.fieldOnlyWithGetter ).isEqualTo( 44 );
     }
 
     @Test
@@ -54,6 +55,28 @@ public class FromMapMappingTest {
         assertThat( target.normalInt ).isEqualTo( "1" );
         assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
         assertThat( target.fieldOnlyWithGetter ).isEqualTo( 33 );
+    }
+
+    @Test
+    public void shouldMapSourcesToExistingTarget() {
+        Target target = new Target();
+        target.normalInt = "815";
+        target.setFieldWithMethods( "aFieldWithMethod" );
+
+        Map<String, Object> sourceMap = new HashMap<>();
+        sourceMap.put( "theInt", "1" );
+        sourceMap.put( "fieldWithMethods", "aTestValue" );
+
+        Source source = new Source();
+        source.normalList = new ArrayList<>();
+        source.fieldOnlyWithGetter = 12;
+
+        Target result = SourceTargetMapper.INSTANCE.toExistingTarget( target, sourceMap, source );
+
+        assertThat( result ).isNotNull();
+        assertThat( result.normalInt ).isEqualTo( "1" );
+        assertThat( result.fieldWithMethods ).isEqualTo( "aTestValue11" );
+        assertThat( result.fieldOnlyWithGetter ).isEqualTo( 33 );
     }
 
 }

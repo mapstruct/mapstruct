@@ -613,7 +613,7 @@ public class PropertyMapping extends ModelElement {
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
 
-                    if (propertyEntry.getPresenceChecker().getAccessorType() == AccessorType.MAP) {
+                    if (propertyEntry.getPresenceChecker().getAccessorType() == AccessorType.MAP_CONTAINS ) {
                         return sourceParam.getName()
                             + "." + "containsKey( \"" + propertyEntry.getPresenceChecker().getSimpleName() + "\" )";
                     }
