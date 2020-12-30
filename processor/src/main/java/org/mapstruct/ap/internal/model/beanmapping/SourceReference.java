@@ -63,8 +63,8 @@ public class SourceReference extends AbstractReference {
             //TODO: this should be a type mirror of Object by default
             valueType = parameter.getType();
         }
-        MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
-        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(parameter.getType(), valueType.getTypeMirror(), String.join(".", segments));
+        MapValueAccessor mapValueAccessor = new MapValueAccessor(parameter.getType().getTypeElement(), valueType.getTypeMirror(), String.join(".", segments));
+        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(parameter.getType().getTypeElement(), valueType.getTypeMirror(), String.join(".", segments));
         List<PropertyEntry> entries = Collections.singletonList(
             PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType)
         );

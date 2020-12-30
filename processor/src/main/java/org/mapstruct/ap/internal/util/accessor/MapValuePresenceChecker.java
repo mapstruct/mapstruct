@@ -20,12 +20,12 @@ import java.util.Set;
  */
 public class MapValuePresenceChecker implements Accessor {
 
-    private final Type mapType;
+    private final Element element;
     private final TypeMirror valueTypeMirror;
     private final String simpleName;
 
-    public MapValuePresenceChecker(Type mapType, TypeMirror valueTypeMirror, String simpleName) {
-        this.mapType = mapType;
+    public MapValuePresenceChecker(Element element, TypeMirror valueTypeMirror, String simpleName) {
+        this.element = element;
         this.valueTypeMirror = valueTypeMirror;
         this.simpleName = simpleName;
     }
@@ -47,9 +47,7 @@ public class MapValuePresenceChecker implements Accessor {
 
     @Override
     public Element getElement() {
-        return mapType.getTypeElement().getEnclosedElements().stream().filter(element -> {
-            return element.getSimpleName().contentEquals("containsKey");
-        }).findFirst().orElse(null);
+        return this.getElement();
     }
 
     @Override

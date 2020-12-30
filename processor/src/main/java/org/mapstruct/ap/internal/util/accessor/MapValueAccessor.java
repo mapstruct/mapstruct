@@ -22,12 +22,12 @@ import java.util.Set;
  */
 public class MapValueAccessor implements Accessor {
 
-    private final Type mapType;
     private final TypeMirror valueTypeMirror;
     private final String simpleName;
+    private final Element element;
 
-    public MapValueAccessor(Type mapType, TypeMirror valueTypeMirror, String simpleName) {
-        this.mapType = mapType;
+    public MapValueAccessor(Element element, TypeMirror valueTypeMirror, String simpleName) {
+        this.element = element;
         this.valueTypeMirror = valueTypeMirror;
         this.simpleName = simpleName;
     }
@@ -49,9 +49,7 @@ public class MapValueAccessor implements Accessor {
 
     @Override
     public Element getElement() {
-        return mapType.getTypeElement().getEnclosedElements().stream().filter(element -> {
-            return element.getSimpleName().contentEquals("get");
-        }).findFirst().orElse(null);
+        return this.element;
     }
 
     @Override
