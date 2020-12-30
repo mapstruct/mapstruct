@@ -612,6 +612,12 @@ public class PropertyMapping extends ModelElement {
                 // in the forged method?
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
+
+                    if (propertyEntry.getPresenceChecker().getAccessorType() == AccessorType.MAP) {
+                        return sourceParam.getName()
+                            + "." + "containsKey( \"" + propertyEntry.getPresenceChecker().getSimpleName() + "\" )";
+                    }
+
                     sourcePresenceChecker = sourceParam.getName()
                         + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
 

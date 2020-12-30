@@ -50,6 +50,7 @@ public class PropertyEntry {
         return new PropertyEntry( name, readAccessor, presenceChecker, type );
     }
 
+
     public String getName() {
         return fullName[fullName.length - 1];
     }

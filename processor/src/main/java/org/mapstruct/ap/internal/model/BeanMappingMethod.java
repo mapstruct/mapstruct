@@ -237,7 +237,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
 
-                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
+                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() || sourceParameter.getType().isMapType()) {
                     continue;
                 }
                 Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
