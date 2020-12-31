@@ -137,7 +137,7 @@ public class MappingMethodOptions {
      * Merges in all the mapping options configured, giving the already defined options precedence.
      *
      * @param templateMethod the template method with the options to inherit, may be {@code null}
-     * @param isInverse if {@code true}, the specified options are from an inverse method
+     * @param isInverse      if {@code true}, the specified options are from an inverse method
      */
     public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
@@ -151,7 +151,7 @@ public class MappingMethodOptions {
             }
 
             if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping() ) );
             }
 
             if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {
@@ -181,7 +181,7 @@ public class MappingMethodOptions {
                         ValueMappingOptions valueMapping =
                             isInverse ? inheritedValueMapping.inverse() : inheritedValueMapping;
                         if ( valueMapping != null
-                            && !getValueMappings().contains(  valueMapping ) ) {
+                            && !getValueMappings().contains( valueMapping ) ) {
                             getValueMappings().add( valueMapping );
                         }
                     }
@@ -221,15 +221,14 @@ public class MappingMethodOptions {
         }
         for ( MappingOptions inheritedMapping : inheritedMappings ) {
             if ( inheritedMapping.isIgnored()
-                || ( !isRedefined( redefinedSources, inheritedMapping.getSourceName() )
-                && !isRedefined( redefinedTargets, inheritedMapping.getTargetName() ) )
+                || !isRedefined( redefinedTargets, inheritedMapping.getTargetName() )
             ) {
                 mappings.add( inheritedMapping );
             }
         }
     }
 
-    private boolean isRedefined(Set<String> redefinedNames, String inheritedName ) {
+    private boolean isRedefined(Set<String> redefinedNames, String inheritedName) {
         for ( String redefinedName : redefinedNames ) {
             if ( elementsAreContainedIn( redefinedName, inheritedName ) ) {
                 return true;
@@ -238,7 +237,7 @@ public class MappingMethodOptions {
         return false;
     }
 
-    private boolean elementsAreContainedIn( String redefinedName, String inheritedName ) {
+    private boolean elementsAreContainedIn(String redefinedName, String inheritedName) {
         if ( inheritedName != null && redefinedName.startsWith( inheritedName ) ) {
             // it is possible to redefine an exact matching source name, because the same source can be mapped to
             // multiple targets. It is not possible for target, but caught by the Set and equals methoded in
@@ -288,7 +287,7 @@ public class MappingMethodOptions {
         }
     }
 
-    private void filterNestedTargetIgnores( Set<MappingOptions> mappings) {
+    private void filterNestedTargetIgnores(Set<MappingOptions> mappings) {
 
         // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
         Set<String> ignored = getMappingTargetNamesBy( MappingOptions::isIgnored, mappings );
@@ -297,10 +296,10 @@ public class MappingMethodOptions {
 
     private boolean isToBeIgnored(Set<String> ignored, MappingOptions mapping) {
         String[] propertyEntries = getPropertyEntries( mapping );
-        return propertyEntries.length > 1 && ignored.contains( propertyEntries[ 0 ] );
+        return propertyEntries.length > 1 && ignored.contains( propertyEntries[0] );
     }
 
-    private String[] getPropertyEntries( MappingOptions mapping ) {
+    private String[] getPropertyEntries(MappingOptions mapping) {
         return mapping.getTargetName().split( "\\." );
     }
 
