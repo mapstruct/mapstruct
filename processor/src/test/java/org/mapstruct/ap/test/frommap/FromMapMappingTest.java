@@ -5,15 +5,14 @@
  */
 package org.mapstruct.ap.test.frommap;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,61 +21,93 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1075")
-@WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class FromMapMappingTest {
 
     @Test
-    public void shouldMapSourceToTarget() {
-        Map<String, Object> sourceMap = new HashMap<>();
-        sourceMap.put( "theInt", "1" );
-        sourceMap.put( "fieldWithMethods", "aTestValue" );
+    @WithClasses(MapToBeanDefinedMapper.class)
+    public void shouldMapWithDefinedMapping() {
+        Map<String, Integer> sourceMap = new HashMap<>();
+        sourceMap.put( "number", 44 );
 
-        Target target = SourceTargetMapper.INSTANCE.toTarget( sourceMap );
+        MapToBeanDefinedMapper.Target target = MapToBeanDefinedMapper.INSTANCE.toTarget( sourceMap );
 
         assertThat( target ).isNotNull();
-        assertThat( target.normalInt ).isEqualTo( "1" );
-        assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
-        assertThat( target.fieldOnlyWithGetter ).isEqualTo( 44 );
+        assertThat( target.getNormalInt() ).isEqualTo( "44" );
     }
 
     @Test
-    public void shouldMapSourcesToTarget() {
-        Map<String, Object> sourceMap = new HashMap<>();
-        sourceMap.put( "theInt", "1" );
-        sourceMap.put( "fieldWithMethods", "aTestValue" );
+    @WithClasses(MapToBeanImplicitMapper.class)
+    public void shouldMapWithImpicitMapping() {
+        Map<String, String> sourceMap = new HashMap<>();
+        sourceMap.put( "name", "mapstruct" );
 
-        Source source = new Source();
-        source.normalList = new ArrayList<>();
-        source.fieldOnlyWithGetter = 12;
-
-        Target target = SourceTargetMapper.INSTANCE.toTarget( sourceMap, source );
+        MapToBeanImplicitMapper.Target target = MapToBeanImplicitMapper.INSTANCE.toTarget( sourceMap );
 
         assertThat( target ).isNotNull();
-        assertThat( target.normalInt ).isEqualTo( "1" );
-        assertThat( target.fieldWithMethods ).isEqualTo( "aTestValue11" );
-        assertThat( target.fieldOnlyWithGetter ).isEqualTo( 33 );
+        assertThat( target.getName() ).isEqualTo( "mapstruct" );
     }
 
     @Test
-    public void shouldMapSourcesToExistingTarget() {
-        Target target = new Target();
-        target.normalInt = "815";
-        target.setFieldWithMethods( "aFieldWithMethod" );
+    @WithClasses(MapToBeanUpdateImplicitMapper.class)
+    public void shouldMapToExistingTargetWithImpicitMapping() {
+        Map<String, Integer> sourceMap = new HashMap<>();
+        sourceMap.put( "rating",  5 );
 
-        Map<String, Object> sourceMap = new HashMap<>();
-        sourceMap.put( "theInt", "1" );
-        sourceMap.put( "fieldWithMethods", "aTestValue" );
+        MapToBeanUpdateImplicitMapper.Target existingTarget = new MapToBeanUpdateImplicitMapper.Target();
+        existingTarget.setRating( 4 );
+        existingTarget.setName( "mapstruct" );
 
-        Source source = new Source();
-        source.normalList = new ArrayList<>();
-        source.fieldOnlyWithGetter = 12;
+        MapToBeanUpdateImplicitMapper.Target target = MapToBeanUpdateImplicitMapper.INSTANCE
+            .toTarget( existingTarget, sourceMap );
 
-        Target result = SourceTargetMapper.INSTANCE.toExistingTarget( target, sourceMap, source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getName() ).isEqualTo( "mapstruct" );
+        assertThat( target.getRating() ).isEqualTo( 5 );
+    }
 
-        assertThat( result ).isNotNull();
-        assertThat( result.normalInt ).isEqualTo( "1" );
-        assertThat( result.fieldWithMethods ).isEqualTo( "aTestValue11" );
-        assertThat( result.fieldOnlyWithGetter ).isEqualTo( 33 );
+    @Test
+    @WithClasses(MapToBeanWithDefaultMapper.class)
+    public void shouldMapWithDefaultValue() {
+        Map<String, Integer> sourceMap = new HashMap<>();
+
+        MapToBeanWithDefaultMapper.Target target = MapToBeanWithDefaultMapper.INSTANCE
+            .toTarget( sourceMap );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNormalInt() ).isEqualTo( "4711" );
+    }
+
+    @Test
+    @WithClasses(MapToBeanUsingMappingMethodMapper.class)
+    public void shouldMapUsingMappingMethod() {
+        Map<String, Integer> sourceMap = new HashMap<>();
+        sourceMap.put( "number", 23 );
+
+        MapToBeanUsingMappingMethodMapper.Target target = MapToBeanUsingMappingMethodMapper.INSTANCE
+            .toTarget( sourceMap );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNormalInt() ).isEqualTo( "converted_23" );
+    }
+
+    @Test
+    @WithClasses(MapToBeanFromMultipleSources.class)
+    public void shouldMapFromMultipleSources() {
+        Map<String, Integer> integers = new HashMap<>();
+        integers.put( "number", 23 );
+
+        Map<String, String> strings = new HashMap<>();
+        strings.put( "string", "stringFromMap" );
+
+        MapToBeanFromMultipleSources.Source source = new MapToBeanFromMultipleSources.Source();
+
+        MapToBeanFromMultipleSources.Target target = MapToBeanFromMultipleSources.INSTANCE
+            .toTarget( integers, strings, source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getInteger() ).isEqualTo( 23 );
+        assertThat( target.getString() ).isEqualTo( "stringFromMap" );
+        assertThat( target.getStringFromBean() ).isEqualTo( "stringFromBean" );
     }
 
 }
