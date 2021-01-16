@@ -87,4 +87,27 @@ public class QualfierMessageTest {
     )
     public void testNoQualifyingMethodByAnnotationAndNamedFound() {
     }
+
+    @Test
+    @WithClasses(ErroneousMessageByNamedWithIterableMapper.class)
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(
+                            type = ErroneousMessageByNamedWithIterableMapper.class,
+                            kind = ERROR,
+                            line = 16,
+                            message = "Qualifier error. No method found annotated with @Named#value: [ SelectMe ]. " +
+                                    "See https://mapstruct.org/faq/#qualifier for more info."),
+                    @Diagnostic(
+                            type = ErroneousMessageByNamedWithIterableMapper.class,
+                            kind = ERROR,
+                            line = 16,
+                            messageRegExp = "Can't map property.*"),
+
+            }
+    )
+    public void testNoQualifyingMethodByNamedForForgedIterableFound() {
+    }
+
 }
