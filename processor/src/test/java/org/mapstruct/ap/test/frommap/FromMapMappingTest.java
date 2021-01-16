@@ -126,4 +126,17 @@ public class FromMapMappingTest {
         assertThat( target.getStringFromNestedSource() ).isEqualTo( "nestedString" );
     }
 
+    @Test
+    @WithClasses(MapToBeanFromMapAndNestedMap.class)
+    public void shouldMapFromNestedMap() {
+
+        MapToBeanFromMapAndNestedMap.Source source = new MapToBeanFromMapAndNestedMap.Source();
+        MapToBeanFromMapAndNestedMap.Target target = MapToBeanFromMapAndNestedMap.INSTANCE
+            .toTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNestedTarget() ).isNotNull();
+        assertThat( target.getNestedTarget().getStringFromNestedMap() ).isEqualTo( "valueFromNestedMap" );
+    }
+
 }
