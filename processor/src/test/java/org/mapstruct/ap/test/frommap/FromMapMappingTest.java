@@ -110,4 +110,20 @@ public class FromMapMappingTest {
         assertThat( target.getStringFromBean() ).isEqualTo( "stringFromBean" );
     }
 
+    @Test
+    @WithClasses(MapToBeanFromMapAndNestedSource.class)
+    public void shouldMapFromNestedSource() {
+        Map<String, Integer> integers = new HashMap<>();
+        integers.put( "number", 23 );
+
+        MapToBeanFromMapAndNestedSource.Source source = new MapToBeanFromMapAndNestedSource.Source();
+
+        MapToBeanFromMapAndNestedSource.Target target = MapToBeanFromMapAndNestedSource.INSTANCE
+            .toTarget( integers, source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getInteger() ).isEqualTo( 23 );
+        assertThat( target.getStringFromNestedSource() ).isEqualTo( "nestedString" );
+    }
+
 }
