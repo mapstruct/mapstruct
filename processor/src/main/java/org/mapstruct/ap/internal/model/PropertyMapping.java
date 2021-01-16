@@ -617,6 +617,7 @@ public class PropertyMapping extends ModelElement {
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
                 .callingContextTargetPropertyName( targetPropertyName )
+                .positionHint( positionHint )
                 .build();
 
             return createForgedAssignment( source, methodRef, iterableMappingMethod );

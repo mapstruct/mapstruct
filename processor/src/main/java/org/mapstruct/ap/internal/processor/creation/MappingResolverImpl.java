@@ -298,7 +298,13 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( hasQualfiers() ) {
-                printQualifierMessage( selectionCriteria );
+                if ((sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()) {
+                    // Allow forging iterable mapping when no iterable mapping already found
+                    return forger.get();
+                }
+                else {
+                    printQualifierMessage( selectionCriteria );
+                }
             }
             else if ( allowMappingMethod() ) {
                 // only forge if we would allow mapping method
