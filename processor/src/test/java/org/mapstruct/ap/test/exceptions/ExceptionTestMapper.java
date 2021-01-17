@@ -20,6 +20,6 @@ public class ExceptionTestMapper  {
         else if ( size == 2 ) {
             throw new TestException2();
         }
-        return new Long(size);
+        return Long.valueOf( size );
     }
 }

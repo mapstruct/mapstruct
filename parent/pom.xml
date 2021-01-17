@@ -25,7 +25,7 @@
         <org.apache.maven.plugins.enforcer.version>3.0.0-M3</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.0.0-M5</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
-        <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
+        <org.springframework.version>5.3.3</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
         <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
         <org.junit.jupiter.version>5.7.0</org.junit.jupiter.version>
@@ -202,7 +202,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.10</version>
+                <version>1.18.16</version>
             </dependency>
             <dependency>
                 <groupId>org.immutables</groupId>
@@ -261,7 +261,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.5</version>
+                <version>2.6</version>
             </dependency>
 
             <!-- Project modules -->
@@ -553,7 +553,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.13.1</version>
+                    <version>0.15.2</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
