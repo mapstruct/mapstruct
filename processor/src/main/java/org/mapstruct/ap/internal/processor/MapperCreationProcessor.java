@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -77,6 +79,9 @@ import static org.mapstruct.ap.internal.util.Collections.join;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
+    /** Modifiers for public "constant" e.g. "public static final" */
+    private static final List<Modifier> PUBLIC_CONSTANT_MODIFIERS = Arrays.asList( PUBLIC, STATIC, FINAL );
+
     private ElementUtils elementUtils;
     private TypeUtils typeUtils;
     private FormattingMessager messager;
@@ -137,16 +142,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<String> variableNames = new LinkedList<>();
 
         for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
-            boolean isSingleton = typeUtils.asElement( usedMapper ).getEnclosedElements().stream()
-            .filter( a -> a.getKind().isField() )
-            .filter( a -> a.getModifiers().containsAll( Arrays.asList( PUBLIC, STATIC, FINAL ) ) )
-            .filter( a -> a.getSimpleName().contentEquals( "INSTANCE" ) )
-            .filter( a -> typeUtils.isSameType( a.asType(), usedMapper ) )
-            .anyMatch( a -> true );
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
-                isSingleton,
+                hasSingletonInstance( usedMapper ),
                 typeFactory,
                 variableNames
             );
@@ -156,6 +155,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return result;
+    }
+
+    private boolean hasSingletonInstance(TypeMirror mapper) {
+      return typeUtils.asElement( mapper ).getEnclosedElements().stream()
+          .anyMatch( a -> isPublicConstantOfType( a, "INSTANCE", mapper ) );
+    }
+
+    /**
+     * @return true if the <code>element</code> is a "public static final" field (e.g. a constant)
+     *         named <code>fieldName</code> of type "fieldType"
+     */
+    private boolean isPublicConstantOfType(Element element, String fieldName, TypeMirror fieldType) {
+      return element.getKind().isField() &&
+             element.getModifiers().containsAll( PUBLIC_CONSTANT_MODIFIERS ) &&
+             element.getSimpleName().contentEquals( fieldName ) &&
+             typeUtils.isSameType( element.asType(), fieldType );
     }
 
     private Mapper getMapper(TypeElement element, MapperOptions mapperOptions, List<SourceMethod> methods) {
