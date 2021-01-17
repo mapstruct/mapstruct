@@ -21,7 +21,7 @@ public interface MapToBeanFromMapAndNestedMap {
 
     Target toTarget(Source source);
 
-    NestedTarget toNestedTarget(Map<String, String> nestedMap);
+    //NestedTarget toNestedTarget(Map<String, String> nestedMap);
 
     class Source {
 

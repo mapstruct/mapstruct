@@ -296,6 +296,9 @@ public class PropertyMapping extends ModelElement {
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
+            else if ( sourceType.isMapType() && !targetType.isMapType()) {
+                assignment = forgeMapToBeanMapping( sourceType, targetType, rightHandSide );
+            }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
@@ -688,6 +691,19 @@ public class PropertyMapping extends ModelElement {
                 .build();
 
             return createForgedAssignment( source, methodRef, mapMappingMethod );
+        }
+
+        private Assignment forgeMapToBeanMapping(Type sourceType, Type targetType, SourceRHS source) {
+
+            targetType = targetType.withoutBounds();
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
+
+            BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
+            final BeanMappingMethod mapToBeanMappingMethod = builder.mappingContext( ctx )
+                .forgedMethod( methodRef )
+                .build();
+
+            return createForgedAssignment( source, methodRef, mapToBeanMappingMethod );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
