@@ -21,19 +21,22 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class DefaultMapperReference extends MapperReference {
 
+    private final boolean isSingleton;
     private final boolean isAnnotatedMapper;
     private final Set<Type> importTypes;
 
-    private DefaultMapperReference(Type type, boolean isAnnotatedMapper, Set<Type> importTypes, String variableName) {
+    private DefaultMapperReference(Type type, boolean isAnnotatedMapper, boolean isSingleton,
+                                   Set<Type> importTypes, String variableName) {
         super( type, variableName );
         this.isAnnotatedMapper = isAnnotatedMapper;
         this.importTypes = importTypes;
+        this.isSingleton = isSingleton;
     }
 
-    public static DefaultMapperReference getInstance(Type type, boolean isAnnotatedMapper, TypeFactory typeFactory,
-                                                     List<String> otherMapperReferences) {
+    public static DefaultMapperReference getInstance(Type type, boolean isAnnotatedMapper, boolean isSingleton,
+                                                     TypeFactory typeFactory, List<String> otherMapperReferences) {
         Set<Type> importTypes = Collections.asSet( type );
-        if ( isAnnotatedMapper ) {
+        if ( isAnnotatedMapper && !isSingleton) {
             importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
         }
 
@@ -42,7 +45,7 @@ public class DefaultMapperReference extends MapperReference {
             otherMapperReferences
         );
 
-        return new DefaultMapperReference( type, isAnnotatedMapper, importTypes, variableName );
+        return new DefaultMapperReference( type, isAnnotatedMapper, isSingleton, importTypes, variableName );
     }
 
     @Override
@@ -53,4 +56,9 @@ public class DefaultMapperReference extends MapperReference {
     public boolean isAnnotatedMapper() {
         return isAnnotatedMapper;
     }
+
+    public boolean isSingleton() {
+      return isSingleton;
+    }
+
 }

@@ -9,7 +9,6 @@ import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.BossDto;
 import org.mapstruct.ap.test.updatemethods.BossEntity;
 import org.mapstruct.ap.test.updatemethods.ConstructableDepartmentEntity;
-import org.mapstruct.factory.Mappers;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -18,7 +17,7 @@ import org.mapstruct.factory.Mappers;
 )
 public class OrganizationMapper3Impl implements OrganizationMapper3 {
 
-    private final ExternalMapper externalMapper = Mappers.getMapper( ExternalMapper.class );
+    private final ExternalMapper externalMapper = ExternalMapper.INSTANCE;
 
     @Override
     public void toBossEntity(BossDto dto, BossEntity entity) {

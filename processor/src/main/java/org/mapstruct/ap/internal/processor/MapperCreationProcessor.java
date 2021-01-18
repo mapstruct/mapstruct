@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -60,6 +61,9 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
 import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -133,9 +137,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<String> variableNames = new LinkedList<>();
 
         for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
+            boolean isSingleton = typeUtils.asElement( usedMapper ).getEnclosedElements().stream()
+            .filter( a -> a.getKind().isField() )
+            .filter( a -> a.getModifiers().containsAll( Arrays.asList( PUBLIC, STATIC, FINAL ) ) )
+            .filter( a -> a.getSimpleName().contentEquals( "INSTANCE" ) )
+            .filter( a -> typeUtils.isSameType( a.asType(), usedMapper ) )
+            .anyMatch( a -> true );
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                isSingleton,
                 typeFactory,
                 variableNames
             );
