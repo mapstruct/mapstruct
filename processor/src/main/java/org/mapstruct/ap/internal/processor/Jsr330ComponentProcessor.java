@@ -57,6 +57,11 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
         return true;
     }
 
+    @Override
+    protected boolean allowEmptyConstructor() {
+        return true;
+    }
+
     private Annotation singleton() {
         return new Annotation( getTypeFactory().getType( "javax.inject.Singleton" ) );
     }

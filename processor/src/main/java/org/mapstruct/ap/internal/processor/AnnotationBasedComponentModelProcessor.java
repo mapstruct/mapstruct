@@ -111,10 +111,12 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     }
 
     private void buildConstructors(Mapper mapper) {
-        if ( !toMapperReferences( mapper.getFields() ).isEmpty() ) {
+        final boolean allowEmptyConstructor = allowEmptyConstructor();
+
+        if ( allowEmptyConstructor || !toMapperReferences( mapper.getFields() ).isEmpty() ) {
             AnnotatedConstructor annotatedConstructor = buildAnnotatedConstructorForMapper( mapper );
 
-            if ( !annotatedConstructor.getMapperReferences().isEmpty() ) {
+            if ( allowEmptyConstructor || !annotatedConstructor.getMapperReferences().isEmpty() ) {
                 mapper.setConstructor( annotatedConstructor );
             }
         }
@@ -123,7 +125,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         if ( decorator != null ) {
             AnnotatedConstructor decoratorConstructor = buildAnnotatedConstructorForDecorator( decorator );
-            if ( !decoratorConstructor.getMapperReferences().isEmpty() ) {
+            if ( allowEmptyConstructor || !decoratorConstructor.getMapperReferences().isEmpty() ) {
                 decorator.setConstructor( decoratorConstructor );
             }
         }
@@ -265,6 +267,13 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @return if a decorator (sub-)class needs to be generated or not
      */
     protected abstract boolean requiresGenerationOfDecoratorClass();
+
+    /**
+     * @return if empty constructor needs to be generated or not
+     */
+    protected boolean allowEmptyConstructor() {
+        return false;
+    }
 
     @Override
     public int getPriority() {
