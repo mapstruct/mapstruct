@@ -91,4 +91,12 @@ public class Jsr330ConstructorMapperTest {
             .contains( "@Inject" + lineSeparator() +
                 "    public CustomerJsr330ConstructorMapperImpl(GenderJsr330ConstructorMapper" );
     }
+
+    @Test
+    public void shouldHaveEmptyConstructorInjection() {
+        generatedSource.forMapper( GenderJsr330ConstructorMapper.class )
+            .content()
+            .contains( "@Inject" + lineSeparator() +
+                "    public GenderJsr330ConstructorMapperImpl() {" );
+    }
 }
