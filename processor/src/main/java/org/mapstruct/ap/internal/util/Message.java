@@ -174,7 +174,10 @@ public enum Message {
     VALUEMAPPING_ANY_REMAINING_FOR_NON_ENUM( "Source = \"<ANY_REMAINING>\" can only be used on targets of type enum and not for %s." ),
     VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of type String to an enum type.", Diagnostic.Kind.WARNING  ),
     VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI( "Constant %s doesn't exist in enum type %s. Constant was returned from EnumMappingStrategy: %s"),
-    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
+    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
+
+    MAPTOBEANMAPPING_WRONG_GENERIC_TYPES( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
+    MAPTOBEANMAPPING_UNTYPED( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was untyped.", Diagnostic.Kind.WARNING );
     // CHECKSTYLE:ON
 
 

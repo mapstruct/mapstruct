@@ -10,8 +10,12 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.collection.erroneous.ErroneousCollectionToPrimitivePropertyMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,6 +141,48 @@ public class FromMapMappingTest {
         assertThat( target ).isNotNull();
         assertThat( target.getNestedTarget() ).isNotNull();
         assertThat( target.getNestedTarget().getStringFromNestedMap() ).isEqualTo( "valueFromNestedMap" );
+    }
+
+    @Test
+    @WithClasses(MapToBeanTypeCheckMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = MapToBeanTypeCheckMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 21,
+                message = "The Map parameter \"source\" cannot be used for property mapping. " +
+                    "It must be typed with Map<String, ???> but it was typed with Map<Integer,String>.")
+        }
+    )
+    public void shouldWarnAboutWrongMapTypes() {
+
+        Map<Integer, String> upsideDownMap = new HashMap<>();
+        upsideDownMap.put( 23, "number" );
+
+        MapToBeanTypeCheckMapper.Target target = MapToBeanTypeCheckMapper.INSTANCE
+            .toTarget( upsideDownMap );
+    }
+
+    @Test
+    @WithClasses(MapToBeanUntypedMapMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = MapToBeanUntypedMapMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 21,
+                message = "The Map parameter \"source\" cannot be used for property mapping. " +
+                    "It must be typed with Map<String, ???> but it was untyped.")
+        }
+    )
+    public void shouldWarnAboutUntypedMapTypes() {
+
+        Map upsideDownMap = new HashMap<>();
+        upsideDownMap.put( 23, "number" );
+
+        MapToBeanUntypedMapMapper.Target target = MapToBeanUntypedMapMapper.INSTANCE
+            .toTarget( upsideDownMap );
     }
 
 }

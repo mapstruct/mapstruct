@@ -1243,10 +1243,36 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMappingForMapSources() {
+            final Type stringType = ctx.getTypeFactory().getType( String.class );
+            for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                if ( !sourceParameter.getType().isMapType() ) {
+                    continue;
+                }
+                final List<Type> typeParameters = sourceParameter.getType().getTypeParameters();
+                if (!(typeParameters.size() == 2 && typeParameters.get( 0 ).equals( stringType ))) {
+                    Message message = typeParameters.isEmpty() ? Message.MAPTOBEANMAPPING_UNTYPED
+                        : Message.MAPTOBEANMAPPING_WRONG_GENERIC_TYPES;
+                    ctx.getMessager()
+                        .printMessage(
+                            method.getExecutable(),
+                            message,
+                            sourceParameter.getName(),
+                            String.format(
+                                "Map<%s,%s>",
+                                !typeParameters.isEmpty() ? typeParameters.get( 0 ).getName() : "",
+                                typeParameters.size() > 1 ? typeParameters.get( 1 ).getName() : ""
+                            )
+                        );
+                }
+            }
             List<SourceReference> sourceReferences = new ArrayList<>();
             for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
                 for ( Parameter sourceParameter : method.getSourceParameters() ) {
                     if ( !sourceParameter.getType().isMapType() ) {
+                        continue;
+                    }
+                    final List<Type> typeParameters = sourceParameter.getType().getTypeParameters();
+                    if (!(typeParameters.size() == 2 && typeParameters.get( 0 ).equals( stringType ))) {
                         continue;
                     }
                     SourceReference sourceRef = getMapSourceRefByTargetName( sourceParameter, targetPropertyName );
