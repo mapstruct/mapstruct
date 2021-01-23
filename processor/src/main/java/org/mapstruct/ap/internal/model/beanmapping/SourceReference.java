@@ -418,11 +418,25 @@ public class SourceReference extends AbstractReference {
     public List<SourceReference> push(TypeFactory typeFactory, FormattingMessager messager, Method method ) {
         List<SourceReference> result = new ArrayList<>();
         PropertyEntry deepestProperty = getDeepestProperty();
+        String fullName;
+        Type type;
         if ( deepestProperty != null ) {
-            Type type = deepestProperty.getType();
+            fullName = deepestProperty.getFullName();
+            type = deepestProperty.getType();
+        }
+        else if ( getParameter() != null ) {
+            fullName = getParameter().getName();
+            type = getParameter().getType();
+        }
+        else {
+            fullName = null;
+            type = null;
+        }
+
+        if ( type != null ) {
             Map<String, Accessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
             for ( Map.Entry<String, Accessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
-                String newFullName = deepestProperty.getFullName() + "." + newDeepestReadAccessorEntry.getKey();
+                String newFullName = fullName + "." + newDeepestReadAccessorEntry.getKey();
                 SourceReference sourceReference = new BuilderFromMapping()
                     .sourceName( newFullName )
                     .method( method )
