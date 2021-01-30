@@ -109,13 +109,8 @@ For Gradle, you need something along the following lines:
 ```groovy
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.15'
+    id "com.diffplug.eclipse.apt" version "3.26.0" // Only for Eclipse
 }
-
-// You can integrate with your IDEs.
-// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
-apply plugin: 'net.ltgt.apt-idea'
-apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
