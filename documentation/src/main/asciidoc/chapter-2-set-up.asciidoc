@@ -76,7 +76,7 @@ It will not work with older versions.
 
 Add the following to your Gradle build file in order to enable MapStruct:
 
-.Gradle configuration (3.4 and later)
+.Gradle configuration
 ====
 [source, groovy, linenums]
 [subs="verbatim,attributes"]
@@ -84,44 +84,12 @@ Add the following to your Gradle build file in order to enable MapStruct:
 ...
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.20'
+    id "com.diffplug.eclipse.apt" version "3.26.0" // Only for Eclipse
 }
-
-// You can integrate with your IDEs.
-// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
-apply plugin: 'net.ltgt.apt-idea'
-apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-    // If you are using mapstruct in test code
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-}
-...
-----
-====
-.Gradle (3.3 and older)
-====
-[source, groovy, linenums]
-[subs="verbatim,attributes"]
-----
-...
-plugins {
-    ...
-    id 'net.ltgt.apt' version '0.20'
-}
-
-// You can integrate with your IDEs.
-// See more details: https://github.com/tbroyer/gradle-apt-plugin#usage-with-ides
-apply plugin: 'net.ltgt.apt-idea'
-apply plugin: 'net.ltgt.apt-eclipse'
-
-dependencies {
-    ...
-    compile "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
     // If you are using mapstruct in test code
