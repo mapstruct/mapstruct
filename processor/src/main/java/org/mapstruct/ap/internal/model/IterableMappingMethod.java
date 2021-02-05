@@ -9,6 +9,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
@@ -84,6 +85,14 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             afterMappingReferences,
             selectionParameters
         );
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> types = super.getImportTypes();
+
+        types.add( getSourceElementType() );
+        return types;
     }
 
     public Type getSourceElementType() {
