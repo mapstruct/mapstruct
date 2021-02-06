@@ -143,7 +143,7 @@ public @interface Mapper {
      * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
      * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
-     * The method overrides an unmappedTargetPolicy set in a central configuration set
+     * The method overrides a componentModel set in a central configuration set
      * by {@link #config() }
      *
      * @return The component model for the generated mapper.
