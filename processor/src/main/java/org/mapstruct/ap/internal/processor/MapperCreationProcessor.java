@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -208,6 +209,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
             messager.printMessage( element, Message.GENERAL_NOT_ALL_FORGED_CREATED,
                 mappingContext.getForgedMethodsUnderCreation().keySet() );
+        }
+
+        if ( element.getModifiers().contains( Modifier.PRIVATE ) ) {
+            // If the mapper element is private then we should report an error
+            // we can't generate an implementation for a private mapper
+            mappingContext.getMessager()
+                .printMessage( element,
+                    Message.GENERAL_CANNOT_IMPLEMENT_PRIVATE_MAPPER,
+                    element.getSimpleName().toString(),
+                    element.getKind() == ElementKind.INTERFACE ? "interface" : "class"
+                );
         }
 
         return mapper;
