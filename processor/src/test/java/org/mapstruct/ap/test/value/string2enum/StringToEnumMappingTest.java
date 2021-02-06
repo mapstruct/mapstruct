@@ -16,6 +16,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IssueKey( "1557" )
 @WithClasses({ OrderType.class, OrderMapper.class })
@@ -53,7 +54,20 @@ public class StringToEnumMappingTest {
                     "type String to an enum type." )
         }
     )
-    public void shouldRaiseErrorWhenUsingAnyRemaining() {
+    public void shouldRaiseWarningWhenNotUsingAnyRemainingOrAnyUnmapped() {
+
+        assertThatThrownBy( () -> ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.INSTANCE.map( "unknown" ) )
+            .isInstanceOf( IllegalArgumentException.class )
+            .hasMessage( "Unexpected enum constant: unknown" );
+
+        assertThat( ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.INSTANCE.map( null ) )
+            .isEqualTo( OrderType.STANDARD );
+
+        assertThat( ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.INSTANCE.map( "STANDARD" ) )
+            .isNull();
+
+        assertThat( ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.INSTANCE.map( "RETAIL" ) )
+            .isEqualTo( OrderType.RETAIL );
     }
 
 }
