@@ -9,7 +9,6 @@ import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.CompanyDto;
 import org.mapstruct.ap.test.updatemethods.CompanyEntity;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntityFactory;
-import org.mapstruct.factory.Mappers;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -18,7 +17,7 @@ import org.mapstruct.factory.Mappers;
 )
 public class OrganizationMapper1Impl implements OrganizationMapper1 {
 
-    private final ExternalMapper externalMapper = Mappers.getMapper( ExternalMapper.class );
+    private final ExternalMapper externalMapper = ExternalMapper.INSTANCE;
     private final DepartmentEntityFactory departmentEntityFactory = new DepartmentEntityFactory();
 
     @Override

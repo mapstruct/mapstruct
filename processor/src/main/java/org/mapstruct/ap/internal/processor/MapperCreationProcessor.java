@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -13,7 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -60,6 +63,9 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
 import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -72,6 +78,9 @@ import static org.mapstruct.ap.internal.util.Collections.join;
  * @author Gunnar Morling
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
+
+    /** Modifiers for public "constant" e.g. "public static final" */
+    private static final List<Modifier> PUBLIC_CONSTANT_MODIFIERS = Arrays.asList( PUBLIC, STATIC, FINAL );
 
     private ElementUtils elementUtils;
     private TypeUtils typeUtils;
@@ -136,6 +145,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                hasSingletonInstance( usedMapper ),
                 typeFactory,
                 variableNames
             );
@@ -145,6 +155,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return result;
+    }
+
+    private boolean hasSingletonInstance(TypeMirror mapper) {
+      return typeUtils.asElement( mapper ).getEnclosedElements().stream()
+          .anyMatch( a -> isPublicConstantOfType( a, "INSTANCE", mapper ) );
+    }
+
+    /**
+     * @return true if the <code>element</code> is a "public static final" field (e.g. a constant)
+     *         named <code>fieldName</code> of type "fieldType"
+     */
+    private boolean isPublicConstantOfType(Element element, String fieldName, TypeMirror fieldType) {
+      return element.getKind().isField() &&
+             element.getModifiers().containsAll( PUBLIC_CONSTANT_MODIFIERS ) &&
+             element.getSimpleName().contentEquals( fieldName ) &&
+             typeUtils.isSameType( element.asType(), fieldType );
     }
 
     private Mapper getMapper(TypeElement element, MapperOptions mapperOptions, List<SourceMethod> methods) {
