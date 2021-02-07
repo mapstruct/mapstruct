@@ -74,17 +74,16 @@ public class MethodMatcher {
 
         for ( int i = 0; i < sourceTypes.size(); i++ ) {
             Type candidateSourceParType = analyser.candidateParTypes.get( i );
-            if ( !( sourceTypes.get( i ).isAssignableTo( candidateSourceParType )
-                && !isPrimitiveToObject( sourceTypes.get( i ), candidateSourceParType ) ) ) {
+            if ( !sourceTypes.get( i ).isAssignableTo( candidateSourceParType )
+                || isPrimitiveToObject( sourceTypes.get( i ), candidateSourceParType ) ) {
                 return false;
             }
         }
-
         // TODO: TargetType checking should not be part of method selection, it should be in checking the annotation
         // (the relation target / target type, target type being a class)
 
         if ( !analyser.candidateReturnType.isVoid() ) {
-            if ( !( analyser.candidateReturnType.isAssignableTo( targetType ) ) ){
+            if ( !( analyser.candidateReturnType.isAssignableTo( targetType ) ) ) {
                 return false;
             }
         }
@@ -305,7 +304,6 @@ public class MethodMatcher {
             }
             return true;
         }
-
 
         /**
          * Checks whether all found candidates are within the bounds of the method type var. For instance

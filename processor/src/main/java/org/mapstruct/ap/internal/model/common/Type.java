@@ -1280,13 +1280,13 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
             if ( parameterized.getExtendsBound() != null ) {
                 ResolvedPair match = visit( parameterized.getExtendsBound(), declared );
-                if ( match != null ) {
+                if ( match.match != null ) {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
                 }
             }
             else if (parameterized.getSuperBound() != null ) {
                 ResolvedPair match = visit( parameterized.getSuperBound(), declared );
-                if ( match != null ) {
+                if ( match.match != null ) {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
                 }
 
@@ -1408,7 +1408,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 return false;
             }
             ResolvedPair that = (ResolvedPair) o;
-            return parameter.equals( that.parameter );
+            return Objects.equals( parameter, that.parameter ) && Objects.equals( match, that.match );
         }
 
         @Override

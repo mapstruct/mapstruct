@@ -21,10 +21,10 @@ public interface ReturnTypeIsTypeVarArrayMapper {
 
     Target sourceToTarget(Source source);
 
-    @SuppressWarnings("unchecked")
-    default <T> T[] map(GenericWrapper<T> in ) {
+    @SuppressWarnings( "unchecked" )
+    default <T> T[] map(GenericWrapper<T> in) {
         return Collections.singletonList( in.getWrapped() )
-                          .toArray( (T[] ) Array.newInstance( in.getWrapped().getClass(), 1 ) );
+                          .toArray( (T[]) Array.newInstance( in.getWrapped().getClass(), 1 ) );
     }
 
     class Source {

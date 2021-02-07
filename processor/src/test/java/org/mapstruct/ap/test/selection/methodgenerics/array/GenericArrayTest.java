@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.selection.methodgenerics.array;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.util.Arrays.array;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,7 @@ public class GenericArrayTest {
         ReturnTypeIsTypeVarArrayMapper.Target target = ReturnTypeIsTypeVarArrayMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isEqualTo( array( "test" ) );
+        assertThat( target.getProp() ).containsExactly( "test" );
     }
 
     @Test
@@ -59,7 +58,7 @@ public class GenericArrayTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().getWrapped() ).isEqualTo( array( "test" ) );
+        assertThat( target.getProp().getWrapped() ).containsExactly( "test" );
 
     }
 }

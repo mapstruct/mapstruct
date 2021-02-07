@@ -60,7 +60,6 @@ public class PlainTest {
 
     }
 
-
     @Test
     @WithClasses( ReturnTypeIsRawTypeMapper.class )
     public void testRaw() {

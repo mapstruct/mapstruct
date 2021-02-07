@@ -26,7 +26,7 @@ public interface BothParameterizedMapper {
 
         private final GenericSourceWrapper<String> prop;
 
-        public <T> Source(GenericSourceWrapper<String> prop) {
+        public Source(GenericSourceWrapper<String> prop) {
             this.prop = prop;
         }
 

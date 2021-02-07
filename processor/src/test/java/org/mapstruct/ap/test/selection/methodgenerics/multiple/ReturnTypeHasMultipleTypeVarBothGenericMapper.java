@@ -17,7 +17,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface ReturnTypeHasMultipleTypeVarBothGenericMapper {
 
-    ReturnTypeHasMultipleTypeVarBothGenericMapper INSTANCE = Mappers.getMapper( ReturnTypeHasMultipleTypeVarBothGenericMapper.class );
+    ReturnTypeHasMultipleTypeVarBothGenericMapper INSTANCE =
+        Mappers.getMapper( ReturnTypeHasMultipleTypeVarBothGenericMapper.class );
 
     Target toTarget(Source source);
 

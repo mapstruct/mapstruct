@@ -27,10 +27,6 @@ public interface SourceTypeIsBoundedTypeVarMapper {
         return null;
     }
 
-    default Long map( String in ) {
-        return Long.parseLong( in );
-    }
-
     class Source {
 
         private final String prop1;
