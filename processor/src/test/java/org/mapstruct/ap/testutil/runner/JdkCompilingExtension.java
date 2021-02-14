@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticCollector;
@@ -22,17 +21,18 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.jupiter.api.condition.JRE;
 import org.mapstruct.ap.MappingProcessor;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
 /**
- * Statement that uses the JDK compiler to compile.
+ * Extension that uses the JDK compiler to compile.
  *
  * @author Andreas Gudian
+ * @author Filip Hrisafov
  */
-class JdkCompilingStatement extends CompilingStatement {
+class JdkCompilingExtension extends CompilingExtension {
 
     private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( TEST_COMPILATION_CLASSPATH );
 
@@ -40,8 +40,8 @@ class JdkCompilingStatement extends CompilingStatement {
         new ModifiableURLClassLoader( new FilteringParentClassLoader( "org.mapstruct." ) )
                 .withPaths( PROCESSOR_CLASSPATH );
 
-    JdkCompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
-        super( method, compilationCache );
+    JdkCompilingExtension() {
+        super( Compiler.JDK );
     }
 
     @Override
@@ -107,14 +107,20 @@ class JdkCompilingStatement extends CompilingStatement {
     }
 
     /**
-     * The JDK compiler only reports the first message of kind ERROR that is reported for one source file line, so we
-     * filter out the surplus diagnostics. The input list is already sorted by file name and line number, with the order
-     * for the diagnostics in the same line being kept at the order as given in the test.
+     * The JDK 8 compiler needs some special treatment for the diagnostics.
+     * See comment in the function.
      */
     @Override
     protected List<DiagnosticDescriptor> filterExpectedDiagnostics(List<DiagnosticDescriptor> expectedDiagnostics) {
-        List<DiagnosticDescriptor> filtered = new ArrayList<>( expectedDiagnostics.size() );
+        if ( JRE.currentVersion() != JRE.JAVA_8 ) {
+            // The JDK 8+ compilers report all ERROR diagnostics properly. Also when there are multiple per line.
+            return expectedDiagnostics;
+        }
+        List<DiagnosticDescriptor> filtered = new ArrayList<DiagnosticDescriptor>( expectedDiagnostics.size() );
 
+        // The JDK 8 compiler only reports the first message of kind ERROR that is reported for one source file line,
+        // so we filter out the surplus diagnostics. The input list is already sorted by file name and line number,
+        // with the order for the diagnostics in the same line being kept at the order as given in the test.
         DiagnosticDescriptor previous = null;
         for ( DiagnosticDescriptor diag : expectedDiagnostics ) {
             if ( diag.getKind() != Kind.ERROR
@@ -129,8 +135,4 @@ class JdkCompilingStatement extends CompilingStatement {
         return filtered;
     }
 
-    @Override
-    protected String getPathSuffix() {
-        return "_jdk";
-    }
 }

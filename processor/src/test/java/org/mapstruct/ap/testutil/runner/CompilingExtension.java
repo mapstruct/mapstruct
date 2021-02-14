@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,34 +24,38 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.puppycrawl.tools.checkstyle.Checker;
+import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
+import com.puppycrawl.tools.checkstyle.DefaultLogger;
+import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.WithServiceImplementations;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.xml.sax.InputSource;
 
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.DefaultLogger;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
 /**
- * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.
+ * A JUnit Jupiter Extension that performs source generation using the annotation processor and compiles those sources.
  *
  * @author Andreas Gudian
+ * @author Filip Hrisafov
  */
-abstract class CompilingStatement extends Statement {
+abstract class CompilingExtension implements BeforeEachCallback {
+
+    static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create( new Object() );
 
     private static final String TARGET_COMPILATION_TESTS = "/target/compilation-tests/";
 
@@ -67,46 +69,20 @@ abstract class CompilingStatement extends Statement {
 
     protected static final List<String> PROCESSOR_CLASSPATH = buildProcessorClasspath();
 
-    private final FrameworkMethod method;
-    private final CompilationCache compilationCache;
-    private final boolean runCheckstyle;
-    private Statement next;
-
     private String classOutputDir;
     private String sourceOutputDir;
     private String additionalCompilerClasspath;
-    private CompilationRequest compilationRequest;
+    private final Compiler compiler;
 
-    CompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
-        this.method = method;
-        this.compilationCache = compilationCache;
-        this.runCheckstyle = !method.getMethod().getDeclaringClass().isAnnotationPresent( DisableCheckstyle.class );
-
-        this.compilationRequest = new CompilationRequest( getTestClasses(), getServices(), getProcessorOptions() );
+    protected CompilingExtension(Compiler compiler) {
+        this.compiler = compiler;
     }
 
-    void setNextStatement(Statement next) {
-        this.next = next;
-    }
-
-    @Override
-    public void evaluate() throws Throwable {
-        generateMapperImplementation();
-
-        GeneratedSource.setCompilingStatement( this );
-        next.evaluate();
-        GeneratedSource.clearCompilingStatement();
-    }
-
-    String getSourceOutputDir() {
-        return compilationCache.getLastSourceOutputDir();
-    }
-
-    protected void setupDirectories() {
+    protected void setupDirectories(Method testMethod, Class<?> testClass) {
         String compilationRoot = getBasePath()
             + TARGET_COMPILATION_TESTS
-            + method.getDeclaringClass().getName()
-            + "/" + method.getName()
+            + testClass.getName()
+            + "/" + testMethod.getName()
             + getPathSuffix();
 
         classOutputDir = compilationRoot + "/classes";
@@ -118,7 +94,9 @@ abstract class CompilingStatement extends Statement {
         ( (ModifiableURLClassLoader) Thread.currentThread().getContextClassLoader() ).withPath( classOutputDir );
     }
 
-    protected abstract String getPathSuffix();
+    protected String getPathSuffix() {
+        return "_" + compiler.name().toLowerCase();
+    }
 
     private static List<String> buildTestCompilationClasspath() {
         String[] whitelist =
@@ -169,14 +147,21 @@ abstract class CompilingStatement extends Statement {
         return Stream.of( whitelist ).anyMatch( path::contains );
     }
 
-    protected void generateMapperImplementation() throws Exception {
-        CompilationOutcomeDescriptor actualResult = compile();
+    @Override
+    public void beforeEach(ExtensionContext context) throws Exception {
+        CompilationOutcomeDescriptor actualResult = compile( context );
+        assertResult( actualResult, context );
+    }
+
+    private void assertResult(CompilationOutcomeDescriptor actualResult, ExtensionContext context) throws Exception {
+        Method testMethod = context.getRequiredTestMethod();
+        Class<?> testClass = context.getRequiredTestClass();
 
         CompilationOutcomeDescriptor expectedResult =
             CompilationOutcomeDescriptor.forExpectedCompilationResult(
-                method.getAnnotation( ExpectedCompilationOutcome.class ),
-                method.getAnnotation( ExpectedNote.ExpectedNotes.class ),
-                method.getAnnotation( ExpectedNote.class )
+                findAnnotation( testMethod, ExpectedCompilationOutcome.class ).orElse( null ),
+                findAnnotation( testMethod, ExpectedNote.ExpectedNotes.class ).orElse( null ),
+                findAnnotation( testMethod, ExpectedNote.class ).orElse( null )
             );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
@@ -195,7 +180,7 @@ abstract class CompilingStatement extends Statement {
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
         assertNotes( actualResult.getNotes(), expectedResult.getNotes() );
 
-        if ( runCheckstyle ) {
+        if ( !findAnnotation( testClass, DisableCheckstyle.class ).isPresent() ) {
             assertCheckstyleRules();
         }
     }
@@ -349,18 +334,14 @@ abstract class CompilingStatement extends Statement {
      *
      * @return A set containing the classes to be compiled for this test
      */
-    private Set<Class<?>> getTestClasses() {
+    private Set<Class<?>> getTestClasses(Method testMethod, Class<?> testClass) {
         Set<Class<?>> testClasses = new HashSet<>();
 
-        WithClasses withClasses = method.getAnnotation( WithClasses.class );
-        if ( withClasses != null ) {
-            testClasses.addAll( Arrays.asList( withClasses.value() ) );
-        }
+        findAnnotation( testMethod, WithClasses.class )
+            .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
 
-        withClasses = method.getMethod().getDeclaringClass().getAnnotation( WithClasses.class );
-        if ( withClasses != null ) {
-            testClasses.addAll( Arrays.asList( withClasses.value() ) );
-        }
+        findAnnotation( testClass, WithClasses.class )
+            .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
 
         if ( testClasses.isEmpty() ) {
             throw new IllegalStateException(
@@ -377,24 +358,19 @@ abstract class CompilingStatement extends Statement {
      * @return A map containing the package were to look for a resource (key) and the resource (value) to be compiled
      * for this test
      */
-    private Map<Class<?>, Class<?>> getServices() {
+    private Map<Class<?>, Class<?>> getServices(Method testMethod, Class<?> testClass) {
         Map<Class<?>, Class<?>> services = new HashMap<>();
 
-        addServices( services, method.getAnnotation( WithServiceImplementations.class ) );
-        addService( services, method.getAnnotation( WithServiceImplementation.class ) );
+        addServices( services, findRepeatableAnnotations( testMethod, WithServiceImplementation.class ) );
 
-        Class<?> declaringClass = method.getMethod().getDeclaringClass();
-        addServices( services, declaringClass.getAnnotation( WithServiceImplementations.class ) );
-        addService( services, declaringClass.getAnnotation( WithServiceImplementation.class ) );
+        addServices( services, findRepeatableAnnotations( testClass, WithServiceImplementation.class ) );
 
         return services;
     }
 
-    private void addServices(Map<Class<?>, Class<?>> services, WithServiceImplementations withImplementations) {
-        if ( withImplementations != null ) {
-            for ( WithServiceImplementation resource : withImplementations.value() ) {
-                addService( services, resource );
-            }
+    private void addServices(Map<Class<?>, Class<?>> services, List<WithServiceImplementation> withImplementations) {
+        for ( WithServiceImplementation withImplementation : withImplementations ) {
+            addService( services, withImplementation );
         }
     }
 
@@ -425,17 +401,11 @@ abstract class CompilingStatement extends Statement {
      *
      * @return A list containing the processor options to be used for this test
      */
-    private List<String> getProcessorOptions() {
-        List<ProcessorOption> processorOptions =
-            getProcessorOptions(
-                method.getAnnotation( ProcessorOptions.class ),
-                method.getAnnotation( ProcessorOption.class ) );
+    private List<String> getProcessorOptions(Method testMethod, Class<?> testClass) {
+        List<ProcessorOption> processorOptions = findRepeatableAnnotations( testMethod, ProcessorOption.class );
 
         if ( processorOptions.isEmpty() ) {
-            processorOptions =
-                getProcessorOptions(
-                    method.getMethod().getDeclaringClass().getAnnotation( ProcessorOptions.class ),
-                    method.getMethod().getDeclaringClass().getAnnotation( ProcessorOption.class ) );
+            processorOptions = findRepeatableAnnotations( testClass, ProcessorOption.class );
         }
 
         List<String> result = new ArrayList<>( processorOptions.size() );
@@ -447,17 +417,6 @@ abstract class CompilingStatement extends Statement {
         result.add( "-g:source,lines,vars" );
 
         return result;
-    }
-
-    private List<ProcessorOption> getProcessorOptions(ProcessorOptions options, ProcessorOption option) {
-        if ( options != null ) {
-            return Arrays.asList( options.value() );
-        }
-        else if ( option != null ) {
-            return Arrays.asList( option );
-        }
-
-        return Collections.emptyList();
     }
 
     private String asOptionString(ProcessorOption processorOption) {
@@ -479,17 +438,32 @@ abstract class CompilingStatement extends Statement {
         return sourceFiles;
     }
 
-    private CompilationOutcomeDescriptor compile()
-        throws Exception {
+    private CompilationOutcomeDescriptor compile(ExtensionContext context) {
+        Method testMethod = context.getRequiredTestMethod();
+        Class<?> testClass = context.getRequiredTestClass();
 
-        if ( !needsRecompilation() ) {
+        CompilationRequest compilationRequest = new CompilationRequest(
+            compiler,
+            getTestClasses( testMethod, testClass ),
+            getServices( testMethod, testClass ),
+            getProcessorOptions( testMethod, testClass )
+        );
+
+        ExtensionContext.Store rootStore = context.getRoot().getStore( NAMESPACE );
+
+        // We need to put the compilation request in the store, so the GeneratedSource can use it
+        context.getStore( NAMESPACE ).put( context.getUniqueId() + "-compilationRequest", compilationRequest );
+        CompilationCache compilationCache = rootStore
+            .getOrComputeIfAbsent( compilationRequest, request -> new CompilationCache(), CompilationCache.class );
+
+        if ( !needsRecompilation( compilationRequest, compilationCache ) ) {
             return compilationCache.getLastResult();
         }
 
-        setupDirectories();
+        setupDirectories( testMethod, testClass );
         compilationCache.setLastSourceOutputDir( sourceOutputDir );
 
-        boolean needsAdditionalCompilerClasspath = prepareServices();
+        boolean needsAdditionalCompilerClasspath = prepareServices( compilationRequest );
         CompilationOutcomeDescriptor resultHolder;
 
         resultHolder = compileWithSpecificCompiler(
@@ -517,7 +491,7 @@ abstract class CompilingStatement extends Statement {
                                                                                 String classOutputDir,
                                                                                 String additionalCompilerClasspath);
 
-    boolean needsRecompilation() {
+    boolean needsRecompilation(CompilationRequest compilationRequest, CompilationCache compilationCache) {
         return !compilationRequest.equals( compilationCache.getLastRequest() );
     }
 
@@ -559,7 +533,7 @@ abstract class CompilingStatement extends Statement {
         path.delete();
     }
 
-    private boolean prepareServices() {
+    private boolean prepareServices(CompilationRequest compilationRequest) {
         if ( !compilationRequest.getServices().isEmpty() ) {
             String servicesDir =
                 additionalCompilerClasspath + File.separator + "META-INF" + File.separator + "services";

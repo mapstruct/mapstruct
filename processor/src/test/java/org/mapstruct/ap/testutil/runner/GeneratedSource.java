@@ -13,48 +13,60 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.mapstruct.ap.testutil.runner.CompilingExtension.NAMESPACE;
 
 /**
- * A {@link TestRule} to perform assertions on generated source files.
+ * A {@link org.junit.jupiter.api.extension.RegisterExtension RegisterExtension} to perform assertions on generated
+ * source files.
  * <p>
  * To add it to the test, use:
  *
  * <pre>
- * &#064;Rule
- * public GeneratedSource generatedSources = new GeneratedSource();
+ * &#064;RegisterExtension
+ * final GeneratedSource generatedSources = new GeneratedSource();
  * </pre>
  *
  * @author Andreas Gudian
  */
-public class GeneratedSource implements TestRule {
+public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     private static final String FIXTURES_ROOT = "fixtures/";
 
     /**
-     * static ThreadLocal, as the {@link CompilingStatement} must inject itself statically for this rule to gain access
-     * to the statement's information. As test execution of different classes in parallel is supported.
+     * ThreadLocal, as the source dir must be injected for this extension to gain access
+     * to the compilation information. As test execution of different classes in parallel is supported.
      */
-    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<>();
+    private ThreadLocal<String> sourceOutputDir = new ThreadLocal<>();
 
     private List<Class<?>> fixturesFor = new ArrayList<>();
 
     @Override
-    public Statement apply(Statement base, Description description) {
-        return new GeneratedSourceStatement( base );
+    public void beforeTestExecution(ExtensionContext context) throws Exception {
+        CompilationRequest compilationRequest = context.getStore( NAMESPACE )
+            .get( context.getUniqueId() + "-compilationRequest", CompilationRequest.class );
+        setSourceOutputDir( context.getStore( NAMESPACE )
+            .get( compilationRequest, CompilationCache.class )
+            .getLastSourceOutputDir() );
     }
 
-    static void setCompilingStatement(CompilingStatement compilingStatement) {
-        GeneratedSource.compilingStatement.set( compilingStatement );
+    @Override
+    public void afterTestExecution(ExtensionContext context) throws Exception {
+        handleFixtureComparison();
+        clearSourceOutputDir();
     }
 
-    static void clearCompilingStatement() {
-        GeneratedSource.compilingStatement.remove();
+    private void setSourceOutputDir(String sourceOutputDir) {
+        this.sourceOutputDir.set( sourceOutputDir );
+    }
+
+    private void clearSourceOutputDir() {
+        this.sourceOutputDir.remove();
     }
 
     /**
@@ -101,21 +113,7 @@ public class GeneratedSource implements TestRule {
      * @return an assert for the file specified by the given path
      */
     public JavaFileAssert forJavaFile(String path) {
-        return new JavaFileAssert( new File( compilingStatement.get().getSourceOutputDir() + "/" + path ) );
-    }
-
-    private class GeneratedSourceStatement extends Statement {
-        private final Statement next;
-
-        private GeneratedSourceStatement(Statement next) {
-            this.next = next;
-        }
-
-        @Override
-        public void evaluate() throws Throwable {
-            next.evaluate();
-            handleFixtureComparison();
-        }
+        return new JavaFileAssert( new File( sourceOutputDir.get() + "/" + path ) );
     }
 
     private void handleFixtureComparison() throws UnsupportedEncodingException {

@@ -13,11 +13,14 @@ import java.util.Set;
  * Represents a compilation task for a number of sources with given processor options.
  */
 public class CompilationRequest {
+    private final Compiler compiler;
     private final Set<Class<?>> sourceClasses;
     private final Map<Class<?>, Class<?>> services;
     private final List<String> processorOptions;
 
-    CompilationRequest(Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services, List<String> processorOptions) {
+    CompilationRequest(Compiler compiler, Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services,
+                       List<String> processorOptions) {
+        this.compiler = compiler;
         this.sourceClasses = sourceClasses;
         this.services = services;
         this.processorOptions = processorOptions;
@@ -27,6 +30,7 @@ public class CompilationRequest {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ( ( compiler == null ) ? 0 : compiler.hashCode() );
         result = prime * result + ( ( processorOptions == null ) ? 0 : processorOptions.hashCode() );
         result = prime * result + ( ( services == null ) ? 0 : services.hashCode() );
         result = prime * result + ( ( sourceClasses == null ) ? 0 : sourceClasses.hashCode() );
@@ -46,7 +50,8 @@ public class CompilationRequest {
         }
         CompilationRequest other = (CompilationRequest) obj;
 
-        return processorOptions.equals( other.processorOptions )
+        return compiler.equals( other.compiler )
+            && processorOptions.equals( other.processorOptions )
             && services.equals( other.services )
             && sourceClasses.equals( other.sourceClasses );
     }

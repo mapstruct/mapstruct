@@ -5,10 +5,27 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import org.junit.jupiter.api.condition.JRE;
+
 /**
  * @author Andreas Gudian
- *
+ * @author Filip Hrisafov
  */
 public enum Compiler {
-    JDK, JDK11, ECLIPSE, ECLIPSE11;
+    JDK,
+    ECLIPSE;
+
+    private final JRE latestSupportedJre;
+
+    Compiler() {
+        this( JRE.OTHER );
+    }
+
+    Compiler(JRE latestSupportedJre) {
+        this.latestSupportedJre = latestSupportedJre;
+    }
+
+    public JRE latestSupportedJre() {
+        return latestSupportedJre;
+    }
 }
