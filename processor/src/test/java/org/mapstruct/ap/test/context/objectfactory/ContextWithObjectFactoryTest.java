@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.context.objectfactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -23,10 +21,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     ValveDto.class,
     ContextObjectFactory.class,
     ContextWithObjectFactoryMapper.class})
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ContextWithObjectFactoryTest {
 
-    @Test
+    @ProcessorTest
     public void testFactoryCalled( ) {
         ValveDto dto = new ValveDto();
         dto.setOneWay( true );

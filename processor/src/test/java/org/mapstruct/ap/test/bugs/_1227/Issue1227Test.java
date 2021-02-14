@@ -5,24 +5,21 @@
  */
 package org.mapstruct.ap.test.bugs._1227;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("1227")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1227Mapper.class,
     ThreadDto.class
 })
 public class Issue1227Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
     }
 }

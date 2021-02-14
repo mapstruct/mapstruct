@@ -5,16 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1719;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1719")
 @WithClasses({
     Source.class,
@@ -29,7 +26,7 @@ public class Issue1719Test {
      * from the child-parent relation. It cannot even assume that the the collection can be cleared at forehand.
      * Therefore the only sensible choice is for MapStruct to create a create method for the target elements.
      */
-    @Test
+    @ProcessorTest
     @WithClasses(Issue1719Mapper.class)
     public void testShouldGiveNoErrorMessage() {
         Source source = new Source();

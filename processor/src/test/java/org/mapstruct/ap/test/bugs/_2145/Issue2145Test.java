@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._2145;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("2145")
 @WithClasses(Issue2145Mapper.class)
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue2145Test {
 
-    @Test
+    @ProcessorTest
     public void test() {
         Issue2145Mapper.Source source = new Issue2145Mapper.Source();
         source.setValue( "test" );

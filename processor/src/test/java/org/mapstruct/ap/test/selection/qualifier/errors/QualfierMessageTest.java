@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.errors;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 @IssueKey("2135")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class QualfierMessageTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMessageByAnnotationMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -42,7 +39,7 @@ public class QualfierMessageTest {
     public void testNoQualifyingMethodByAnnotationFound() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMessageByNamedMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -64,7 +61,7 @@ public class QualfierMessageTest {
     public void testNoQualifyingMethodByNamedFound() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMessageByAnnotationAndNamedMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -88,7 +85,7 @@ public class QualfierMessageTest {
     public void testNoQualifyingMethodByAnnotationAndNamedFound() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMessageByNamedWithIterableMapper.class)
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,

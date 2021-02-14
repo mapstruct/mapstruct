@@ -5,17 +5,16 @@
  */
 package org.mapstruct.ap.test.callbacks.returning;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Test case for https://github.com/mapstruct/mapstruct/issues/469
@@ -26,21 +25,22 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses( { Attribute.class, AttributeDto.class, Node.class, NodeDto.class, NodeMapperDefault.class,
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class CallbacksWithReturnValuesTest {
-    @Test( expected = StackOverflowError.class )
+    @ProcessorTest
     public void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
-        NodeMapperDefault.INSTANCE.nodeToNodeDto( root );
+        assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root ) )
+            .isInstanceOf( StackOverflowError.class );
     }
 
-    @Test( expected = StackOverflowError.class )
+    @ProcessorTest
     public void updatingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
-        NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() );
+        assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() ) )
+            .isInstanceOf( StackOverflowError.class );
     }
 
-    @Test
+    @ProcessorTest
     public void mappingWithContextCorrectlyResolvesCycles() {
         final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
         ContextListener contextListener = new ContextListener() {
@@ -74,7 +74,7 @@ public class CallbacksWithReturnValuesTest {
         return root;
     }
 
-    @Test
+    @ProcessorTest
     public void numberMappingWithoutContextDoesNotUseCache() {
         Number n1 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
@@ -82,7 +82,7 @@ public class CallbacksWithReturnValuesTest {
         assertThat( n1 ).isNotSameAs( n2 );
     }
 
-    @Test
+    @ProcessorTest
     public void numberMappingWithContextUsesCache() {
         NumberMapperContext.putCache( new Number( 2342 ) );
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
@@ -92,7 +92,7 @@ public class CallbacksWithReturnValuesTest {
         NumberMapperContext.clearCache();
     }
 
-    @Test
+    @ProcessorTest
     public void numberMappingWithContextCallsVisitNumber() {
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );

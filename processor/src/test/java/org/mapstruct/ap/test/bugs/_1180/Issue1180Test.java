@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._1180;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
@@ -23,11 +21,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SharedConfig.class,
     ErroneousIssue1180Mapper.class
 } )
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey( "1180" )
 public class Issue1180Test {
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousIssue1180Mapper.class,

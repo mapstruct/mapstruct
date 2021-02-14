@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.bugs._892;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._892.Issue892Mapper.Source;
 import org.mapstruct.ap.test.bugs._892.Issue892Mapper.Target;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * When having two setter methods with the same name, choose the one with the argument type matching the getter method.
  *
  * @author Andreas Gudian
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ Issue892Mapper.class })
 public class Issue892Test {
-    @Test
+    @ProcessorTest
     public void compiles() {
         Source src = new Source();
         src.setType( 42 );

@@ -9,24 +9,21 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedbeans.recursive.RecursionMapper;
 import org.mapstruct.ap.test.nestedbeans.recursive.TreeRecursionMapper;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 public class RecursionTest {
 
     @WithClasses({
         RecursionMapper.class
     })
-    @Test
+    @ProcessorTest
     @IssueKey("1103")
     public void testRecursiveAutoMap() {
         RecursionMapper.RootDto rootDto = new RecursionMapper.RootDto(
@@ -61,7 +58,7 @@ public class RecursionTest {
     @WithClasses({
         TreeRecursionMapper.class
     })
-    @Test
+    @ProcessorTest
     @IssueKey("1103")
     public void testRecursiveTreeAutoMap() {
         TreeRecursionMapper.RootDto rootDto = new TreeRecursionMapper.RootDto(

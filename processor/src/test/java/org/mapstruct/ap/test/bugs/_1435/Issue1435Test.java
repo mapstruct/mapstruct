@@ -5,15 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._1435;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1435")
 @WithClasses({
     Config.class,
@@ -22,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     OutObject.class,
 })
 public class Issue1435Test {
-    @Test
+    @ProcessorTest
     public void mustNotSetListToNull() {
         InObject source = new InObject( "Rainbow Dash" );
 

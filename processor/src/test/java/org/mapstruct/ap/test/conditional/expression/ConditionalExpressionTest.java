@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.conditional.expression;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.conditional.Employee;
 import org.mapstruct.ap.test.conditional.EmployeeDto;
 import org.mapstruct.ap.test.conditional.basic.BasicEmployee;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Employee.class,
     EmployeeDto.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConditionalExpressionTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodsInUtilClassMapper.class
     })
@@ -62,7 +59,7 @@ public class ConditionalExpressionTest {
         assertThat( employee.getSsid() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         SimpleConditionalExpressionMapper.class
     })
@@ -77,7 +74,7 @@ public class ConditionalExpressionTest {
         assertThat( target.getValue() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {

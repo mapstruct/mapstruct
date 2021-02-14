@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.java8stream.defaultimplementation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,11 +15,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Source.class,
@@ -31,10 +29,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SourceTargetMapper.class
 })
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DefaultStreamImplementationTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForNavigableSet() {
         NavigableSet<TargetFoo> target =
             SourceTargetMapper.INSTANCE.streamToNavigableSet( createSourceFooStream() );
@@ -43,7 +40,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( TreeSet.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForCollection() {
         Collection<TargetFoo> target =
             SourceTargetMapper.INSTANCE.streamToCollection( createSourceFooStream() );
@@ -52,7 +49,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( ArrayList.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForIterable() {
         Iterable<TargetFoo> target =
             SourceTargetMapper.INSTANCE.streamToIterable( createSourceFooStream() );
@@ -61,7 +58,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( ArrayList.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForList() {
         List<TargetFoo> target = SourceTargetMapper.INSTANCE.streamToList( createSourceFooStream() );
 
@@ -69,7 +66,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( ArrayList.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForSet() {
         Set<TargetFoo> target =
             SourceTargetMapper.INSTANCE.streamToSet( createSourceFooStream() );
@@ -78,7 +75,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( HashSet.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForSortedSet() {
         SortedSet<TargetFoo> target =
             SourceTargetMapper.INSTANCE.streamToSortedSet( createSourceFooStream() );
@@ -87,7 +84,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).isInstanceOf( TreeSet.class );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<>();
         SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter(
@@ -98,7 +95,7 @@ public class DefaultStreamImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseTargetParameterForArrayMapping() {
         TargetFoo[] target = new TargetFoo[3];
         SourceTargetMapper.INSTANCE.streamToArrayUsingTargetParameter(
@@ -110,7 +107,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ), null );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseTargetParameterForArrayMappingAndSmallerArray() {
         TargetFoo[] target = new TargetFoo[1];
         SourceTargetMapper.INSTANCE.streamToArrayUsingTargetParameter(
@@ -122,7 +119,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).containsOnly( new TargetFoo( "Bob" ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseAndReturnTargetParameterForArrayMapping() {
         TargetFoo[] target = new TargetFoo[3];
         TargetFoo[] result =
@@ -133,7 +130,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ), null );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseAndReturnTargetParameterForArrayMappingAndSmallerArray() {
         TargetFoo[] target = new TargetFoo[1];
         TargetFoo[] result =
@@ -144,7 +141,7 @@ public class DefaultStreamImplementationTest {
         assertThat( target ).containsOnly( new TargetFoo( "Bob" ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseAndReturnTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<>();
         Iterable<TargetFoo> result =
@@ -155,7 +152,7 @@ public class DefaultStreamImplementationTest {
         assertResultList( target );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultImplementationForListWithoutSetter() {
         Source source = new Source();
         source.setFooStream( createSourceFooStream() );

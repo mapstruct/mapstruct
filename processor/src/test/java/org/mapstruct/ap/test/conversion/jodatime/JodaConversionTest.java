@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.jodatime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -16,41 +14,40 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
-import org.mapstruct.ap.testutil.runner.EnabledOnCompiler;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests the conversion between Joda-Time types and String/Date/Calendar.
  *
  * @author Timo Eckhardt
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("75")
 public class JodaConversionTest {
 
     private Locale originalLocale;
 
-    @Before
+    @BeforeEach
     public void setDefaultLocale() {
         originalLocale = Locale.getDefault();
         Locale.setDefault( Locale.GERMAN );
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Locale.setDefault( originalLocale );
     }
 
-    @Test
+    @ProcessorTest
     public void testDateTimeToString() {
         Source src = new Source();
         src.setDateTime( new DateTime( 2014, 1, 1, 0, 0, 0, DateTimeZone.UTC ) );
@@ -59,7 +56,7 @@ public class JodaConversionTest {
         assertThat( target.getDateTime() ).isEqualTo( "01.01.2014 00:00 UTC" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateTimeToString() {
         Source src = new Source();
         src.setLocalDateTime( new LocalDateTime( 2014, 1, 1, 0, 0 ) );
@@ -68,7 +65,7 @@ public class JodaConversionTest {
         assertThat( target.getLocalDateTime() ).isEqualTo( "01.01.2014 00:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalDateToString() {
         Source src = new Source();
         src.setLocalDate( new LocalDate( 2014, 1, 1 ) );
@@ -77,7 +74,7 @@ public class JodaConversionTest {
         assertThat( target.getLocalDate() ).isEqualTo( "01.01.2014" );
     }
 
-    @Test
+    @ProcessorTest
     public void testLocalTimeToString() {
         Source src = new Source();
         src.setLocalTime( new LocalTime( 0, 0 ) );
@@ -86,11 +83,8 @@ public class JodaConversionTest {
         assertThat( target.getLocalTime() ).isEqualTo( "00:00" );
     }
 
-    @Test
-    @DisabledOnCompiler({
-        Compiler.JDK11,
-        Compiler.ECLIPSE11
-    })
+    @ProcessorTest
+    @EnabledOnJre(JRE.JAVA_8)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void testSourceToTargetMappingForStrings() {
         Source src = new Source();
@@ -117,11 +111,8 @@ public class JodaConversionTest {
         assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
     }
 
-    @Test
-    @EnabledOnCompiler({
-        Compiler.JDK11,
-        Compiler.ECLIPSE11
-    })
+    @ProcessorTest
+    @EnabledForJreRange(min = JRE.JAVA_11)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void testSourceToTargetMappingForStringsJdk11() {
         Source src = new Source();
@@ -148,7 +139,7 @@ public class JodaConversionTest {
         assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToDateTime() {
         String dateTimeAsString = "01.01.2014 00:00 UTC";
         Target target = new Target();
@@ -161,7 +152,7 @@ public class JodaConversionTest {
         assertThat( src.getDateTime() ).isEqualTo( sourceDateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalDateTime() {
         String dateTimeAsString = "01.01.2014 00:00";
         Target target = new Target();
@@ -174,7 +165,7 @@ public class JodaConversionTest {
         assertThat( src.getLocalDateTime() ).isEqualTo( sourceDateTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalDate() {
         String dateTimeAsString = "01.01.2014";
         Target target = new Target();
@@ -187,7 +178,7 @@ public class JodaConversionTest {
         assertThat( src.getLocalDate() ).isEqualTo( sourceDate );
     }
 
-    @Test
+    @ProcessorTest
     public void testStringToLocalTime() {
         String dateTimeAsString = "00:00";
         Target target = new Target();
@@ -200,7 +191,7 @@ public class JodaConversionTest {
         assertThat( src.getLocalTime() ).isEqualTo( sourceTime );
     }
 
-    @Test
+    @ProcessorTest
     public void testTargetToSourceNullMapping() {
         Target target = new Target();
         Source src = SourceTargetMapper.INSTANCE.targetToSource( target );
@@ -212,7 +203,7 @@ public class JodaConversionTest {
         assertThat( src.getLocalTime() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testTargetToSourceMappingForStrings() {
         Target target = new Target();
 
@@ -229,7 +220,7 @@ public class JodaConversionTest {
         assertThat( src.getLocalTime() ).isEqualTo( new LocalTime( 0, 0 ) );
     }
 
-    @Test
+    @ProcessorTest
     public void testCalendar() {
         Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
         DateTime dateTimeWithCalendar = new DateTime( calendar );
@@ -245,7 +236,7 @@ public class JodaConversionTest {
         assertThat( mappedSource.getDateTimeForCalendarConversion() ).isEqualTo( dateTimeWithCalendar );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ StringToLocalDateMapper.class, SourceWithStringDate.class, TargetWithLocalDate.class })
     @IssueKey("456")
     public void testStringToLocalDateUsingDefaultFormat() {

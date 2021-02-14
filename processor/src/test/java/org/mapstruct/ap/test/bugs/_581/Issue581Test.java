@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.bugs._581;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._581.source.Car;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "581" )
 @WithClasses({ Car.class, org.mapstruct.ap.test.bugs._581._target.Car.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue581Test {
 
-    @Test
+    @ProcessorTest
     public void shouldMapSourceAndTargetWithTheSameClassName() {
         Car source = new Car();
 

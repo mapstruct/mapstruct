@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1552;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Issue1552Mapper.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1552")
 public class Issue1552Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
         Target target = Issue1552Mapper.INSTANCE.twoArgsWithConstant( "first", "second" );
 

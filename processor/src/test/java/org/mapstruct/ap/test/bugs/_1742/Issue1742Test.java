@@ -5,17 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._1742;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("1742")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( {
     Issue1742Mapper.class,
     NestedSource.class,
@@ -25,7 +22,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 } )
 public class Issue1742Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
     }

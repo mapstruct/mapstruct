@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.builder.noop;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.NoOpBuilderProvider;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey( "1418" )
 @WithServiceImplementation(NoOpBuilderProvider.class)
 @WithClasses( {
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 public class NoOpBuilderProviderTest {
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseBuilder() {
         Person person = PersonMapper.INSTANCE.map( new PersonDto( "Filip" ) );
 

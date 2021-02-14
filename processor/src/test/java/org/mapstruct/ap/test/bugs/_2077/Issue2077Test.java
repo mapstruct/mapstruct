@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._2077;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -20,10 +18,9 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  * @author Sjaak Derksen
  */
 @IssueKey("2077")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue2077Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses(Issue2077ErroneousMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

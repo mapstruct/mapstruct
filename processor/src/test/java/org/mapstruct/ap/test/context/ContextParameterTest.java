@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.context;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.ap.test.context.Node.Attribute;
 import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests the usage of the {@link Context} annotation in the following situations:
@@ -44,12 +42,11 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     CycleContextLifecycleMethods.class,
     FactoryContextMethods.class,
     SelfContainingCycleContext.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ContextParameterTest {
 
     private static final int MAGIC_NUMBER_OFFSET = 10;
 
-    @Test
+    @ProcessorTest
     public void mappingWithContextCorrectlyResolvesCycles() {
         Node root = buildNodes();
         NodeDto rootDto =
@@ -61,7 +58,7 @@ public class ContextParameterTest {
         assertResult( updated );
     }
 
-    @Test
+    @ProcessorTest
     public void automappingWithContextCorrectlyResolvesCycles() {
         Node root = buildNodes();
         NodeDto rootDto = AutomappingNodeMapperWithContext.INSTANCE
@@ -74,7 +71,7 @@ public class ContextParameterTest {
         assertResult( updated );
     }
 
-    @Test
+    @ProcessorTest
     public void automappingWithSelfContainingContextCorrectlyResolvesCycles() {
         Node root = buildNodes();
         NodeDto rootDto = AutomappingNodeMapperWithSelfContainingContext.INSTANCE

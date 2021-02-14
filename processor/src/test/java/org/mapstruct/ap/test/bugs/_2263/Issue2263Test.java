@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._2263;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("2263")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Erroneous2263Mapper.class,
     Source.class,
@@ -26,7 +23,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class Issue2263Test {
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Erroneous2263Mapper.class,

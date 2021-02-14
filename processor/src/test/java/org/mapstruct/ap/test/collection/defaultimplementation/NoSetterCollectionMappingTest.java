@@ -5,29 +5,26 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * @author Andreas Gudian
  *
  */
 @WithClasses( { NoSetterMapper.class, NoSetterSource.class, NoSetterTarget.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class NoSetterCollectionMappingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey( "220" )
     public void compilesAndMapsCorrectly() {
         NoSetterSource source = new NoSetterSource();

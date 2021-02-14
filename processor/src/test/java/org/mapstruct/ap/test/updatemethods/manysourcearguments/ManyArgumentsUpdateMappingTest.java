@@ -8,11 +8,9 @@ package org.mapstruct.ap.test.updatemethods.manysourcearguments;
 import java.time.LocalDate;
 import java.time.Month;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2274")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     ExampleMapper.class,
     ExampleMember.class,
@@ -29,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class ManyArgumentsUpdateMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUpdateToNullIfSourceParametersAreNull() {
         ExampleTarget target = new ExampleTarget();
         target.setBirthday( LocalDate.of( 2020, Month.NOVEMBER, 15 ) );

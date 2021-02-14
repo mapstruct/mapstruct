@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2301;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2301")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Artifact.class,
     ArtifactDto.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2301Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyIgnoreProperties() {
         Artifact artifact = Issue2301Mapper.INSTANCE.map( new ArtifactDto( "mapstruct" ) );
 

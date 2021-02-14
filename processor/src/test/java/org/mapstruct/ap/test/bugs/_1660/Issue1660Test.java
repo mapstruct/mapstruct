@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1660;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1660")
 @WithClasses({
     Issue1660Mapper.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1660Test {
 
-    @Test
+    @ProcessorTest
     public void shouldNotUseStaticMethods() {
         Source source = new Source();
         source.setValue( "source" );

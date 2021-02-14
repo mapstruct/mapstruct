@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.value.nametransformation;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CheeseType.class,
     CheeseTypeSuffixed.class,
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class EnumNameTransformationStrategyTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CheeseSuffixMapper.class
     })
@@ -43,7 +40,7 @@ public class EnumNameTransformationStrategyTest {
             .isEqualTo( CheeseType.BRIE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CheesePrefixMapper.class
     })
@@ -58,7 +55,7 @@ public class EnumNameTransformationStrategyTest {
             .isEqualTo( CheeseType.BRIE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CheeseEnumToStringSuffixMapper.class
     })
@@ -71,7 +68,7 @@ public class EnumNameTransformationStrategyTest {
         assertThat( mapper.mapStripSuffix( "DEFAULT" ) ).isEqualTo( CheeseTypeSuffixed.DEFAULT );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CheeseEnumToStringPrefixMapper.class
     })
@@ -84,7 +81,7 @@ public class EnumNameTransformationStrategyTest {
         assertThat( mapper.mapStripPrefix( "DEFAULT" ) ).isEqualTo( CheeseTypePrefixed.DEFAULT );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousNameTransformStrategyMapper.class
     })
@@ -102,7 +99,7 @@ public class EnumNameTransformationStrategyTest {
     public void shouldGiveCompileErrorWhenUsingUnknownNameTransformStrategy() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousNameTransformStrategyMapper.class
     })

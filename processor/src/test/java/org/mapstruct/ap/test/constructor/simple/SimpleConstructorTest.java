@@ -7,12 +7,10 @@ package org.mapstruct.ap.test.constructor.simple;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.constructor.Person;
 import org.mapstruct.ap.test.constructor.PersonDto;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,10 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     PersonDto.class,
     SimpleConstructorMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleConstructorTest {
 
-    @Test
+    @ProcessorTest
     public void mapDefault() {
         PersonDto source = new PersonDto();
         source.setName( "Bob" );
@@ -47,7 +44,7 @@ public class SimpleConstructorTest {
         assertThat( target.getChildren() ).containsExactly( "Alice", "Tom" );
     }
 
-    @Test
+    @ProcessorTest
     public void mapWithConstants() {
         PersonDto source = new PersonDto();
         source.setName( "Bob" );
@@ -67,7 +64,7 @@ public class SimpleConstructorTest {
         assertThat( target.getChildren() ).containsExactly( "Alice", "Tom" );
     }
 
-    @Test
+    @ProcessorTest
     public void mapWithExpressions() {
         PersonDto source = new PersonDto();
         source.setName( "Bob" );

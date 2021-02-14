@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1159;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1159")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1159Mapper.class,
 })
@@ -34,12 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 public class Issue1159Test {
 
-    @Test
+    @ProcessorTest(Compiler.JDK)
     // The warning is not present in the Eclipse compilation for some reason
-    @DisabledOnCompiler({
-        Compiler.ECLIPSE,
-        Compiler.ECLIPSE11
-    })
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED, diagnostics = {
         @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.WARNING,

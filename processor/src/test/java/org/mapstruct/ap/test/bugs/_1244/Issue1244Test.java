@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1244;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,11 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1244")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( SizeMapper.class )
 public class Issue1244Test {
 
-    @Test
+    @ProcessorTest
     public void properlyCreatesMapperWithSizeAsParameterName() {
         SizeMapper.SizeHolder sizeHolder = new SizeMapper.SizeHolder();
         sizeHolder.setSize( "size" );

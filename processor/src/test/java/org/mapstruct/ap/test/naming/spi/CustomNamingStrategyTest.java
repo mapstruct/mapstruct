@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.naming.spi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test do demonstrate the usage of custom implementations of {@link AccessorNamingStrategy}.
  *
  * @author Andreas Gudian
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ GolfPlayer.class, GolfPlayerDto.class, GolfPlayerMapper.class })
 @WithServiceImplementation(CustomAccessorNamingStrategy.class)
 public class CustomNamingStrategyTest {
-    @Test
+    @ProcessorTest
     public void shouldApplyCustomNamingStrategy() {
         GolfPlayer player = new GolfPlayer()
             .withName( "Jared" )

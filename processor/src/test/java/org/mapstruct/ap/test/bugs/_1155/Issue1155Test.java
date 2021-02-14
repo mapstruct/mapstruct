@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1155;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Entity.class,
     Issue1155Mapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1155")
 public class Issue1155Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
         Entity.Dto dto = new Entity.Dto();

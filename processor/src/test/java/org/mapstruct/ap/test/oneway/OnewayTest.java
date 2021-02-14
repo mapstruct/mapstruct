@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.oneway;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for propagation of attribute without setter in source and getter in
@@ -20,10 +18,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class OnewayTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("17")
     public void shouldMapAttributeWithoutSetterInSourceType() {
         Source source = new Source();
@@ -34,7 +31,7 @@ public class OnewayTest {
         assertThat( target.retrieveFoo() ).isEqualTo( Long.valueOf( 42 ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("41")
     public void shouldReverseMapAttributeWithoutSetterInTargetType() {
         Target target = new Target();
@@ -45,7 +42,7 @@ public class OnewayTest {
         assertThat( source.retrieveBar() ).isEqualTo( 23 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("104")
     public void shouldMapMappedAttributeWithoutSetterInSourceType() {
         Source source = new Source();

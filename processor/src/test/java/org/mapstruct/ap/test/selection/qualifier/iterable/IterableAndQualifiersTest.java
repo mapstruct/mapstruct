@@ -10,11 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -34,10 +32,9 @@ import org.mapstruct.factory.Mappers;
     TopologyFeatureDto.class,
     TopologyFeatureEntity.class,
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class IterableAndQualifiersTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(TopologyMapper.class)
     public void testGenerationBasedOnQualifier() {
 
@@ -71,7 +68,7 @@ public class IterableAndQualifiersTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(TopologyWithoutIterableMappingMapper.class)
     public void testIterableGeneratorBasedOnQualifier() {
 

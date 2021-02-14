@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.conditional.qualifier;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.conditional.Employee;
 import org.mapstruct.ap.test.conditional.EmployeeDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Employee.class,
     EmployeeDto.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConditionalQualifierTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodWithSourceParameterMapper.class
     })
@@ -58,7 +55,7 @@ public class ConditionalQualifierTest {
         assertThat( employee.getSsid() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodWithClassQualifiersMapper.class
     })

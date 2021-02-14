@@ -7,13 +7,11 @@ package org.mapstruct.ap.test.ignore.inherit;
 
 import java.util.Date;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ignoring properties during the mapping.
@@ -30,10 +28,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     WorkBenchEntity.class,
     ToolMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class IgnorePropertyTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("1392")
     /**
      * Should not issue warnings on unmapped target properties
@@ -54,7 +51,7 @@ public class IgnorePropertyTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("1933")
     public void shouldInheritIgnoreByDefaultFromBase() {
 
@@ -74,7 +71,7 @@ public class IgnorePropertyTest {
         assertThat( benchTarget.getCreationDate() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("1933")
     public void shouldOnlyIgnoreBase() {
 

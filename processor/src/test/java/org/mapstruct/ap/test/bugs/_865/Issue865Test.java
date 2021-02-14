@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._865;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( {
     ProjectDto.class,
     ProjectEntity.class,
@@ -26,7 +24,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 } )
 public class Issue865Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateNpeCheckBeforeCallingAddAllWhenInUpdateMethods() {
 
         ProjectDto dto = new ProjectDto();
@@ -41,7 +39,7 @@ public class Issue865Test {
         assertThat( entity.getCoreUsers() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateNpeCheckBeforeCallingAddAllWhenInUpdateMethodsAndTargetWithoutSetter() {
 
         ProjectDto dto = new ProjectDto();

@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.selection.twosteperror;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@RunWith( AnnotationProcessorTestRunner.class )
 public class TwoStepMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMapperMM.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
@@ -33,7 +30,7 @@ public class TwoStepMappingTest {
     public void methodAndMethodTest() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ErroneousMapperCM.class )
     @ExpectedCompilationOutcome( value = CompilationResult.FAILED,
         diagnostics = {
@@ -56,7 +53,7 @@ public class TwoStepMappingTest {
     public void conversionAndMethodTest() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ErroneousMapperMC.class )
     @ExpectedCompilationOutcome( value = CompilationResult.FAILED,
         diagnostics = {

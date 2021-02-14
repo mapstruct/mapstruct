@@ -5,15 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1457;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     SourceBook.class,
     TargetBook.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1457")
 public class Issue1457Test {
 
@@ -29,7 +26,7 @@ public class Issue1457Test {
     private String authorFirstName;
     private String authorLastName;
 
-    @Before
+    @BeforeEach
     public void setup() {
         sourceBook = new SourceBook();
         sourceBook.setIsbn( "3453146972" );
@@ -39,7 +36,7 @@ public class Issue1457Test {
         authorLastName = "Adams";
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         BookMapper.class
     })
@@ -67,7 +64,7 @@ public class Issue1457Test {
         assertThat( targetBook.isAfterMappingWithDifferentVariableName() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         DifferentOrderingBookMapper.class
     })
@@ -81,7 +78,7 @@ public class Issue1457Test {
         assertTargetBookMatchesSourceBook( targetBook );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ObjectFactoryBookMapper.class
     })
@@ -102,7 +99,7 @@ public class Issue1457Test {
         assertThat( authorLastName ).isEqualTo( targetBook.getAuthorLastName() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousBookMapper.class
     })

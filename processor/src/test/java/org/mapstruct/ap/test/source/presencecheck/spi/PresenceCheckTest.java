@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.source.presencecheck.spi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for correct handling of source presence checks.
@@ -28,10 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     GoalKeeper.class,
     SoccerTeamTarget.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckTest {
 
-    @Test
+    @ProcessorTest
     public void testWithSourcesPresent() {
 
         Source source = new Source();
@@ -49,7 +46,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isEqualTo( new String[]{ "x", "y"} );
     }
 
-    @Test
+    @ProcessorTest
     public void testWithSourcesAbsent() {
 
         Source source = new Source();
@@ -67,7 +64,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isNull();
    }
 
-    @Test
+    @ProcessorTest
     public void testUpdateMethodWithSourcesPresent() {
 
         Source source = new Source();
@@ -86,7 +83,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isEqualTo( new String[]{ "x", "y"} );
     }
 
-    @Test
+    @ProcessorTest
     public void testUpdateMethodWithSourcesAbsent() {
 
         Source source = new Source();
@@ -105,7 +102,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isNull();
     }
 
-   @Test
+    @ProcessorTest
     public void testWithSourcesPresentAndDefault() {
 
         Source source = new Source();
@@ -123,7 +120,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isEqualTo( new String[]{ "x", "y"} );
    }
 
-    @Test
+    @ProcessorTest
     public void testWithSourcesAbsentAndDefault() {
 
         Source source = new Source();
@@ -141,7 +138,7 @@ public class PresenceCheckTest {
         assertThat( target.getSomeArray() ).isEqualTo( new String[]{ "u", "v"} );
     }
 
-    @Test
+    @ProcessorTest
     public void testAdderWithSourcesPresent() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();
@@ -152,7 +149,7 @@ public class PresenceCheckTest {
         assertThat( target.getPlayers() ).containsExactly( "pele", "cruyf" );
     }
 
-    @Test
+    @ProcessorTest
     public void testAdderWithSourcesAbsent() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();
@@ -163,7 +160,7 @@ public class PresenceCheckTest {
         assertThat( target.getPlayers() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testNestedWithSourcesPresent() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();
@@ -176,7 +173,7 @@ public class PresenceCheckTest {
         assertThat( target.getGoalKeeperName() ).isEqualTo( "Buffon" );
     }
 
-    @Test
+    @ProcessorTest
     public void testNestedWithSourcesAbsentOnRootLevel() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();
@@ -187,7 +184,7 @@ public class PresenceCheckTest {
         assertThat( target.getGoalKeeperName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testNestedWithSourcesAbsentOnNestingLevel() {
 
         SoccerTeamSource soccerTeamSource = new SoccerTeamSource();

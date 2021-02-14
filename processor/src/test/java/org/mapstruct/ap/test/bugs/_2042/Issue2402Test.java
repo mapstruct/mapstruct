@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2042;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,13 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2402")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue2402Mapper.class
 })
 public class Issue2402Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
         Issue2402Mapper.Target target = Issue2402Mapper.INSTANCE.
             map(

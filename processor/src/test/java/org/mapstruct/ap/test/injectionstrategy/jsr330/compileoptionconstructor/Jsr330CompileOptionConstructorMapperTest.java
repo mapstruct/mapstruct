@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jsr330.compileoptionconstructor;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,33 +39,32 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomerJsr330CompileOptionConstructorMapper.class,
     GenderJsr330CompileOptionConstructorMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @ProcessorOption( name = "mapstruct.defaultInjectionStrategy", value = "constructor")
 @ComponentScan(basePackageClasses = CustomerJsr330CompileOptionConstructorMapper.class)
 @Configuration
 public class Jsr330CompileOptionConstructorMapperTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Autowired
     private CustomerJsr330CompileOptionConstructorMapper customerMapper;
     private ConfigurableApplicationContext context;
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConvertToTarget() {
         // given
         CustomerEntity customerEntity = new CustomerEntity();
@@ -83,7 +80,7 @@ public class Jsr330CompileOptionConstructorMapperTest {
         assertThat( customerDto.getGender() ).isEqualTo( GenderDto.M );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldHaveConstructorInjectionFromCompileOption() {
         generatedSource.forMapper( CustomerJsr330CompileOptionConstructorMapper.class )
             .content()

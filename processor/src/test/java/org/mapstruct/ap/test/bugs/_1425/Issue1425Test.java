@@ -6,11 +6,9 @@
 package org.mapstruct.ap.test.bugs._1425;
 
 import org.joda.time.LocalDate;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,11 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1425")
 public class Issue1425Test {
 
-    @Test
+    @ProcessorTest
     public void shouldTestMappingLocalDates() {
         Source source = new Source();
         source.setValue( LocalDate.parse( "2018-04-18" ) );

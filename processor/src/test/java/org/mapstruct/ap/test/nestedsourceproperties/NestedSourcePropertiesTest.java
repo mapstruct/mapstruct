@@ -5,15 +5,9 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.nestedsourceproperties._target.AdderUsageObserver;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartPositions;
@@ -23,25 +17,26 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
 @WithClasses({ Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class })
 @IssueKey("65")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSourcePropertiesTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForPropertyNamesOnly() {
         generatedSource.addComparisonToFixtureFor( ArtistToChartEntry.class );
@@ -73,7 +68,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForMultipleParam() {
 
@@ -108,7 +103,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldPickPropertyNameOverParameterName() {
 
@@ -127,7 +122,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getSongTitle() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryAdder.class, ChartPositions.class, AdderUsageObserver.class })
     public void shouldUseAddAsTargetAccessor() {
 
@@ -142,10 +137,10 @@ public class NestedSourcePropertiesTest {
         assertThat( positions ).isNotNull();
         assertThat( positions.getPositions() ).containsExactly( 3L, 5L );
 
-        assertTrue( AdderUsageObserver.isUsed() );
+        assertThat( AdderUsageObserver.isUsed() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryGetter.class, ChartPositions.class, AdderUsageObserver.class })
     public void shouldUseGetAsTargetAccessor() {
 
@@ -160,10 +155,10 @@ public class NestedSourcePropertiesTest {
         assertThat( positions ).isNotNull();
         assertThat( positions.getPositions() ).containsExactly( 3L, 5L );
 
-        assertFalse( AdderUsageObserver.isUsed() );
+        assertThat( AdderUsageObserver.isUsed() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("838")
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

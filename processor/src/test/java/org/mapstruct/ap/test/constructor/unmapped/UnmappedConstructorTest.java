@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.constructor.unmapped;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     OrderDto.class,
     UnmappedConstructorMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class UnmappedConstructorTest {
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
             @Diagnostic(type = UnmappedConstructorMapper.class,

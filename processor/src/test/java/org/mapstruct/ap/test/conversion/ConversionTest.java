@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.conversion;
 
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyConversions() {
         Source source = new Source();
         source.setFoo( 42 );
@@ -31,7 +28,7 @@ public class ConversionTest {
         assertThat( target.getZip() ).isEqualTo( "73" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldHandleNulls() {
         Source source = new Source();
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
@@ -42,7 +39,7 @@ public class ConversionTest {
         assertThat( target.getZip() ).isEqualTo( "0" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyConversionsToMappedProperties() {
         Source source = new Source();
         source.setQax( 42 );
@@ -55,7 +52,7 @@ public class ConversionTest {
         assertThat( target.getQax() ).isEqualTo( 23 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyConversionsForReverseMapping() {
         Target target = new Target();
         target.setFoo( 42L );
@@ -70,7 +67,7 @@ public class ConversionTest {
         assertThat( source.getZip() ).isEqualTo( 73 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyConversionsToMappedPropertiesForReverseMapping() {
         Target target = new Target();
         target.setQax( 42 );

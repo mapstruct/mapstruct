@@ -8,15 +8,13 @@ package org.mapstruct.ap.test.conditional.basic;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,13 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
     BasicEmployee.class,
     BasicEmployeeDto.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConditionalMappingTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodInMapper.class
     })
@@ -53,7 +50,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodAndBeanPresenceCheckMapper.class
     })
@@ -70,7 +67,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodInUsesMapper.class
     })
@@ -87,7 +84,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodInUsesStaticMapper.class
     })
@@ -104,7 +101,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodInContextMapper.class
     })
@@ -122,7 +119,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodWithSourceParameterMapper.class
     })
@@ -136,7 +133,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isEqualTo( "Tester" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodWithSourceParameterAndValueMapper.class
     })
@@ -155,7 +152,7 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isEqualTo( "Tester" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousAmbiguousConditionalMethodMapper.class
     })
@@ -177,7 +174,7 @@ public class ConditionalMappingTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConditionalMethodForCollectionMapper.class
     })
@@ -205,7 +202,7 @@ public class ConditionalMappingTest {
             .containsExactly( "Test", "Test Vol. 2" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OptionalLikeConditionalMapper.class
     })

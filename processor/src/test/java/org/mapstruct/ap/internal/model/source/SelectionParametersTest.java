@@ -24,7 +24,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.type.WildcardType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;

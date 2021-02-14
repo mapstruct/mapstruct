@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Filip Hrisafov
@@ -23,12 +23,12 @@ public class StringsTest {
     private static final Locale TURKEY_LOCALE = getTurkeyLocale();
     private Locale defaultLocale;
 
-    @Before
+    @BeforeEach
     public void before() {
         defaultLocale = Locale.getDefault();
     }
 
-    @After
+    @AfterEach
     public void after() {
         Locale.setDefault( defaultLocale );
     }

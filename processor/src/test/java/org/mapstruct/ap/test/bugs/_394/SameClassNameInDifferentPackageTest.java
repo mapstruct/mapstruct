@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._394;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._394.source.AnotherCar;
 import org.mapstruct.ap.test.bugs._394.source.Cars;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses( {
     SameNameForSourceAndTargetCarsMapper.class,
@@ -26,10 +24,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     org.mapstruct.ap.test.bugs._394._target.AnotherCar.class
 } )
 @IssueKey("394")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SameClassNameInDifferentPackageTest {
 
-    @Test
+    @ProcessorTest
     public void shouldCreateMapMethodImplementation() {
         Map<String, AnotherCar> values = new HashMap<String, AnotherCar>();
         //given

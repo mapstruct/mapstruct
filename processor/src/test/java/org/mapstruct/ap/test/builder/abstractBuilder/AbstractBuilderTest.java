@@ -5,10 +5,8 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     ProductDto.class,
     ProductMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractBuilderTest {
 
     /**
@@ -35,7 +32,7 @@ public class AbstractBuilderTest {
      * - all values are mapped
      * - all values are set properly
      */
-    @Test
+    @ProcessorTest
     public void testThatAbstractBuilderMapsAllProperties() {
         ImmutableProduct product = ProductMapper.INSTANCE.fromMutable( new ProductDto( "router", 31 ) );
 
@@ -43,7 +40,7 @@ public class AbstractBuilderTest {
         assertThat( product.getName() ).isEqualTo( "router" );
     }
 
-    @Test
+    @ProcessorTest
     public void testThatAbstractBuilderReverseMapsAllProperties() {
         ProductDto product = ProductMapper.INSTANCE.fromImmutable( ImmutableProduct.builder()
             .price( 31000 )

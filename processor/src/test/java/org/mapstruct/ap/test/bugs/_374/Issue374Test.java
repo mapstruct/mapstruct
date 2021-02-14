@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._374;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/306.
@@ -24,10 +22,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey( "306" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue374Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingTargetToDefault() {
 
@@ -38,7 +35,7 @@ public class Issue374Test {
         assertThat( result.getConstant() ).isEqualTo( "test" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingTargetWithConstantToDefault() {
 
@@ -49,7 +46,7 @@ public class Issue374Test {
         assertThat( target2.getConstant() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingIterableTargetToDefault() {
 
@@ -60,7 +57,7 @@ public class Issue374Test {
         assertThat( targetList ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374Mapper.class, Source.class, Target.class } )
     public void shouldMapExistingMapTargetToDefault() {
 
@@ -71,7 +68,7 @@ public class Issue374Test {
         assertThat( resultMap ).isEqualTo( resultMap );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
     public void shouldMapExistingTargetVoidReturnToDefault() {
 
@@ -81,7 +78,7 @@ public class Issue374Test {
         assertThat( target.getConstant() ).isEqualTo( "test" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
     public void shouldMapExistingIterableTargetVoidReturnToDefault() {
 
@@ -91,7 +88,7 @@ public class Issue374Test {
         assertThat( targetList ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
     public void shouldMapExistingMapTargetVoidReturnToDefault() {
 

@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.nestedgenerics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith( AnnotationProcessorTestRunner.class)
 public class NestedGenericsTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeHasNestedTypeVarMapper.class )
     public void testGenericReturnTypeVar() {
 
@@ -33,7 +30,7 @@ public class NestedGenericsTest {
         assertThat( target.getProp().get( 0 ) ).contains( "test" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceTypeHasNestedTypeVarMapper.class )
     public void testGenericSourceTypeVar() {
 

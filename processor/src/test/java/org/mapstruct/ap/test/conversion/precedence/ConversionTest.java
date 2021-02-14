@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.conversion.precedence;
 
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, IntegerStringMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeMappingMethodInsteadOfConversion() {
         Source source = new Source();
         source.setFoo( 42 );

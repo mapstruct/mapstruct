@@ -5,17 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._1685;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1685")
 @WithClasses({
     User.class,
@@ -25,12 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1685Test {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         UserMapper.class
     );
 
-    @Test
+    @ProcessorTest
     public void testSetToNullWhenNVPMSSetToNull() {
 
         User target = new User();
@@ -58,7 +55,7 @@ public class Issue1685Test {
         assertThat( target.getSettings() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testIgnoreWhenNVPMSIgnore() {
 
         User target = new User();
@@ -86,7 +83,7 @@ public class Issue1685Test {
         assertThat( target.getSettings() ).containsExactly( "test" );
     }
 
-    @Test
+    @ProcessorTest
     public void testSetToDefaultWhenNVPMSSetToDefault() {
 
         User target = new User();

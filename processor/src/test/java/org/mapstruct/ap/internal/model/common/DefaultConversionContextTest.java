@@ -20,7 +20,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.tools.Diagnostic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.testutil.IssueKey;

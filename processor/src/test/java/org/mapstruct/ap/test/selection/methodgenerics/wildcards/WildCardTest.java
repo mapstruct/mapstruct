@@ -5,12 +5,9 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.wildcards;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.DisabledOnCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,10 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class WildCardTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceWildCardExtendsMapper.class )
     public void testExtendsRelation() {
 
@@ -41,10 +37,9 @@ public class WildCardTest {
         assertThat( target.getPropC() ).isEqualTo( typeC );
     }
 
-    @Test
-    @WithClasses( IntersectionMapper.class )
     // Eclipse does not handle intersection types correctly (TODO: worthwhile to investigate?)
-    @DisabledOnCompiler( Compiler.ECLIPSE )
+    @ProcessorTest(Compiler.JDK)
+    @WithClasses( IntersectionMapper.class )
     public void testIntersectionRelation() {
 
         // prepare source

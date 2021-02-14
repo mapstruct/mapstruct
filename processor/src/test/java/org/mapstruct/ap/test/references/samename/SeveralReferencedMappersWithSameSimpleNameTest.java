@@ -5,17 +5,15 @@
  */
 package org.mapstruct.ap.test.references.samename;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.references.samename.a.AnotherSourceTargetMapper;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
 import org.mapstruct.ap.test.references.samename.model.Source;
 import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for referring several mappers with the same simple name.
@@ -32,10 +30,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Jsr330SourceTargetMapper.class,
     AnotherSourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SeveralReferencedMappersWithSameSimpleNameTest {
 
-    @Test
+    @ProcessorTest
     public void severalMappersWithSameSimpleNameCanBeReferenced() {
         Source source = new Source();
         source.setFoo( 123 );
@@ -48,7 +45,7 @@ public class SeveralReferencedMappersWithSameSimpleNameTest {
         assertThat( target.getBar() ).isEqualTo( "912" );
     }
 
-    @Test
+    @ProcessorTest
     public void mapperInSamePackageAndAnotherMapperWithSameNameInAnotherPackageCanBeReferenced() {
         Source source = new Source();
         source.setFoo( 123 );

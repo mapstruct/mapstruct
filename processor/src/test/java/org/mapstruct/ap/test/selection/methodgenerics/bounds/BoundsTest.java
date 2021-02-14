@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.bounds;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 public class BoundsTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceTypeIsBoundedTypeVarMapper.class )
     public void testGenericSourceTypeVar() {
 

@@ -5,19 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._2101;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("2101")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue2101Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses(Issue2101Mapper.class)
     public void shouldMap() {
 
@@ -34,7 +31,7 @@ public class Issue2101Test {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(Issue2101AdditionalMapper.class)
     public void shouldMapSomeAdditionalTests1() {
         Issue2101AdditionalMapper.Source source = new Issue2101AdditionalMapper.Source();
@@ -49,7 +46,7 @@ public class Issue2101Test {
         assertThat( target.value3 ).isEqualTo( "value3" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(Issue2101AdditionalMapper.class)
     public void shouldMapSomeAdditionalTests2() {
         Issue2101AdditionalMapper.Source source = new Issue2101AdditionalMapper.Source();
@@ -65,7 +62,7 @@ public class Issue2101Test {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(Issue2102IgnoreAllButMapper.class)
     public void shouldApplyIgnoreAllButTemplateOfMethod1() {
 

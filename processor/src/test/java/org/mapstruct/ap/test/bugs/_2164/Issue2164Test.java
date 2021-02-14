@@ -7,20 +7,17 @@ package org.mapstruct.ap.test.bugs._2164;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("2164")
 @WithClasses(Issue2164Mapper.class)
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue2164Test {
 
-    @Test
+    @ProcessorTest
     public void shouldSelectProperMethod() {
 
         Issue2164Mapper.Target target = Issue2164Mapper.INSTANCE.map( new BigDecimal( "1234" ) );

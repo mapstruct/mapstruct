@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._634;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Gunnar Morling
@@ -26,10 +24,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Target.class,
     SourceTargetMapper.class,
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class GenericContainerTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("634")
     public void canMapGenericSourceTypeToGenericTargetType() {
         List<Foo> items = Arrays.asList( new Foo( "42" ), new Foo( "84" ) );

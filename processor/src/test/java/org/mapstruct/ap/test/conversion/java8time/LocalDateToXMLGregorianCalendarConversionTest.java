@@ -5,32 +5,28 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Source;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Target;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  */
 @IssueKey("580")
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class LocalDateToXMLGregorianCalendarConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldNullCheckOnBuiltinAndConversion() {
         Target target = SourceTargetMapper.INSTANCE.toTarget( new Source() );
 
@@ -43,7 +39,7 @@ public class LocalDateToXMLGregorianCalendarConversionTest {
         assertThat( source.getDate() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapCorrectlyOnBuiltinAndConversion() throws Exception {
         XMLGregorianCalendar calendarDate = DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
             2007,

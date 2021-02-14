@@ -5,29 +5,26 @@
  */
 package org.mapstruct.ap.test.unmappedsource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.unmappedtarget.Source;
+import org.mapstruct.ap.test.unmappedtarget.Target;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.test.unmappedtarget.Source;
-import org.mapstruct.ap.test.unmappedtarget.Target;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests expected diagnostics for unmapped source properties.
  *
  * @author Gunnar Morling
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class UnmappedSourceTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
@@ -53,7 +50,7 @@ public class UnmappedSourceTest {
         assertThat( target.getBar() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, ErroneousStrictSourceTargetMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

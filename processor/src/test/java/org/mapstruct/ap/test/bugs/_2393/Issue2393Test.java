@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2393;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2393")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Address.class,
     AddressDto.class,
@@ -26,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2393Test {
 
-    @Test
+    @ProcessorTest
     public void shouldUseCorrectImport() {
         AddressDto dto = AddressDto.Converter.INSTANCE.convert( new Address(
             "Zurich",

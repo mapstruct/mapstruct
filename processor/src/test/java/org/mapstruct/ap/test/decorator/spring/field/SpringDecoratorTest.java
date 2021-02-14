@@ -5,26 +5,24 @@
  */
 package org.mapstruct.ap.test.decorator.spring.field;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Calendar;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the application of decorators using component model spring.
@@ -40,7 +38,6 @@ import org.springframework.context.annotation.Configuration;
     PersonMapperDecorator.class
 })
 @IssueKey("592")
-@RunWith(AnnotationProcessorTestRunner.class)
 @ComponentScan(basePackageClasses = SpringDecoratorTest.class)
 @Configuration
 public class SpringDecoratorTest {
@@ -49,20 +46,20 @@ public class SpringDecoratorTest {
     private PersonMapper personMapper;
     private ConfigurableApplicationContext context;
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeDecoratorMethods() {
         //given
         Calendar birthday = Calendar.getInstance();
@@ -79,7 +76,7 @@ public class SpringDecoratorTest {
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldDelegateNonDecoratedMethodsToDefaultImplementation() {
         //given
         Address address = new Address( "42 Ocean View Drive" );

@@ -5,22 +5,20 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the strategies for mapping {@code null} values, given via {@code NullValueMapping} etc.
@@ -38,15 +36,14 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     CentralConfig.class,
     CarMapperSettingOnConfig.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NullValueMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldProvideMapperInstance() {
         assertThat( CarMapper.INSTANCE ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapExpressionAndConstantRegardlessNullArg() {
         //given
         Car car = new Car( "Morris", 2 );
@@ -72,7 +69,7 @@ public class NullValueMappingTest {
         assertThat( carDto2.getCatalogId() ).isNotEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapExpressionAndConstantRegardlessNullArgSeveralSources() {
         //given
         Car car = new Car( "Morris", 2 );
@@ -98,7 +95,7 @@ public class NullValueMappingTest {
         assertThat( carDto2.getCatalogId() ).isNotEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIterableWithNullArg() {
 
         //given
@@ -119,7 +116,7 @@ public class NullValueMappingTest {
         assertThat( carDtos2.isEmpty() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void shouldMapMapWithNullArg() {
 
@@ -143,7 +140,7 @@ public class NullValueMappingTest {
         assertThat( carDtoMap2.isEmpty() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapExpressionAndConstantRegardlessNullArgOnMapper() {
 
         //when
@@ -157,7 +154,7 @@ public class NullValueMappingTest {
         assertThat( carDto.getCatalogId() ).isNotEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIterableWithNullArgOnMapper() {
 
         //when
@@ -168,7 +165,7 @@ public class NullValueMappingTest {
         assertThat( carDtos.isEmpty() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapMapWithNullArgOnMapper() {
 
         //when
@@ -178,7 +175,7 @@ public class NullValueMappingTest {
         assertThat( carDtoMap ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapExpressionAndConstantRegardlessNullArgOnConfig() {
 
         //when
@@ -192,7 +189,7 @@ public class NullValueMappingTest {
         assertThat( carDto.getCatalogId() ).isNotEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIterableWithNullArgOnConfig() {
 
         //when
@@ -203,7 +200,7 @@ public class NullValueMappingTest {
         assertThat( carDtos.isEmpty() ).isTrue();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapMapWithNullArgOnConfig() {
 
         //when
@@ -213,7 +210,7 @@ public class NullValueMappingTest {
         assertThat( carDtoMap ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyConfiguredStrategyForMethodWithSeveralSourceParams() {
         //when
         DriverAndCarDto result = CarMapper.INSTANCE.driverAndCarToDto( null, null );

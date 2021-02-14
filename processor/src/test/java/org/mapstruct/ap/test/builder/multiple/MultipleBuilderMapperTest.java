@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.builder.multiple;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builder.multiple.build.Process;
 import org.mapstruct.ap.test.builder.multiple.builder.Case;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1479")
 @WithClasses({
     Process.class,
@@ -53,7 +50,7 @@ public class MultipleBuilderMapperTest {
                     "\"wrongCreate(), create()\"."
             )
         })
-    @Test
+    @ProcessorTest
     public void moreThanOneBuildMethod() {
     }
 
@@ -72,14 +69,14 @@ public class MultipleBuilderMapperTest {
                         "\"wrongCreate(), create()\"."
             )
         })
-    @Test
+    @ProcessorTest
     public void moreThanOneBuildMethodDefinedOnMapper() {
     }
 
     @WithClasses({
         BuilderDefinedMapper.class
     })
-    @Test
+    @ProcessorTest
     public void builderMappingDefined() {
         Process map = BuilderDefinedMapper.INSTANCE.map( new Source( "map" ) );
         Process wrongMap = BuilderDefinedMapper.INSTANCE.wrongMap( new Source( "wrongMap" ) );
@@ -92,7 +89,7 @@ public class MultipleBuilderMapperTest {
         BuilderMapperConfig.class,
         BuilderConfigDefinedMapper.class
     })
-    @Test
+    @ProcessorTest
     public void builderMappingMapperConfigDefined() {
         Process map = BuilderConfigDefinedMapper.INSTANCE.map( new Source( "map" ) );
         Process wrongMap = BuilderConfigDefinedMapper.INSTANCE.wrongMap( new Source( "wrongMap" ) );
@@ -115,7 +112,7 @@ public class MultipleBuilderMapperTest {
                     "implementing a custom BuilderProvider SPI."
             )
         })
-    @Test
+    @ProcessorTest
     public void tooManyBuilderCreationMethods() {
         Case caseTarget = TooManyBuilderCreationMethodsMapper.INSTANCE.map( new Source( "test" ) );
 
@@ -128,7 +125,7 @@ public class MultipleBuilderMapperTest {
     @WithClasses( {
         DefaultBuildMethodMapper.class
     } )
-    @Test
+    @ProcessorTest
     public void defaultBuildMethod() {
         Task task = DefaultBuildMethodMapper.INSTANCE.map( new Source( "test" ) );
 

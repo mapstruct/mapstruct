@@ -7,18 +7,15 @@ package org.mapstruct.ap.test.bugs._1131;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1131")
 @WithClasses({
     Issue1131Mapper.class,
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1131Test {
 
-    @Test
+    @ProcessorTest
     public void shouldUseCreateWithSourceNested() {
 
         Source source = new Source();
@@ -38,6 +35,7 @@ public class Issue1131Test {
 
         Target target = new Target();
 
+        Issue1131Mapper.CALLED_METHODS.clear();
         Issue1131Mapper.INSTANCE.merge( source, target );
 
         assertThat( target.getNested() ).isNotNull();
@@ -49,7 +47,7 @@ public class Issue1131Test {
         );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseContextObjectFactory() {
 
         Source source = new Source();

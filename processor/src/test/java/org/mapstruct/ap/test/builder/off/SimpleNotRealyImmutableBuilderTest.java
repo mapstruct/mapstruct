@@ -5,12 +5,10 @@
  */
 package org.mapstruct.ap.test.builder.off;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 
@@ -21,13 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
     SimpleMutablePerson.class,
     SimpleNotRealyImmutablePerson.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleNotRealyImmutableBuilderTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testSimpleImmutableBuilderHappyPath() {
         SimpleMapper mapper = Mappers.getMapper( SimpleMapper.class );

@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.bugs._1714;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1714")
 @WithClasses({
     Issue1714Mapper.class
 })
 public class Issue1714Test {
 
-    @Test
+    @ProcessorTest
     public void codeShouldBeGeneratedCorrectly() {
 
         Issue1714Mapper.OnDemand source = new Issue1714Mapper.OnDemand();

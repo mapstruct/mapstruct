@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1340;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -18,10 +16,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Issue1340Mapper.class
 })
 @IssueKey("1340")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue1340Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
     }
 }

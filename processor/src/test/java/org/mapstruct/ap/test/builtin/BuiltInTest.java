@@ -24,12 +24,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.mapstruct.ap.test.builtin._target.IterableTarget;
 import org.mapstruct.ap.test.builtin._target.MapTarget;
 import org.mapstruct.ap.test.builtin.bean.BigDecimalProperty;
@@ -62,8 +58,8 @@ import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToStringMapper;
 import org.mapstruct.ap.test.builtin.source.IterableSource;
 import org.mapstruct.ap.test.builtin.source.MapSource;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -89,24 +85,22 @@ import static org.assertj.core.api.Assertions.assertThat;
     IterableSource.class,
     MapSource.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BuiltInTest {
 
     private static TimeZone originalTimeZone;
 
-    @BeforeClass
+    @BeforeAll
     public static void setDefaultTimeZoneToCet() {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreOriginalTimeZone() {
         TimeZone.setDefault( originalTimeZone );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( JaxbMapper.class )
     public void shouldApplyBuiltInOnJAXBElement()  {
         JaxbElementProperty source = new JaxbElementProperty();
@@ -119,7 +113,7 @@ public class BuiltInTest {
         assertThat( target.publicProp ).isEqualTo( "PUBLIC TEST" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( JaxbMapper.class )
     @IssueKey( "1698" )
     public void shouldApplyBuiltInOnJAXBElementExtra()  {
@@ -142,7 +136,7 @@ public class BuiltInTest {
         assertThat( target2.getProp() ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( JaxbListMapper.class )
     @IssueKey( "141" )
     public void shouldApplyBuiltInOnJAXBElementList() {
@@ -157,7 +151,7 @@ public class BuiltInTest {
         assertThat( target.publicProp.get( 0 ) ).isEqualTo( "PUBLIC TEST2" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( DateToXmlGregCalMapper.class )
     public void shouldApplyBuiltInOnDateToXmlGregCal() throws ParseException {
 
@@ -173,7 +167,7 @@ public class BuiltInTest {
         assertThat( target.publicProp.toString() ).isEqualTo( "2016-08-31T10:20:56.000+02:00" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( XmlGregCalToDateMapper.class )
     public void shouldApplyBuiltInOnXmlGregCalToDate() throws DatatypeConfigurationException {
 
@@ -190,7 +184,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( StringToXmlGregCalMapper.class )
     public void shouldApplyBuiltInStringToXmlGregCal() {
 
@@ -225,7 +219,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( XmlGregCalToStringMapper.class )
     public void shouldApplyBuiltInXmlGregCalToString() throws DatatypeConfigurationException {
 
@@ -252,7 +246,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( CalendarToXmlGregCalMapper.class )
     public void shouldApplyBuiltInOnCalendarToXmlGregCal() throws ParseException {
 
@@ -268,7 +262,7 @@ public class BuiltInTest {
         assertThat( target.publicProp.toString() ).isEqualTo( "2016-03-02T00:00:00.000+01:00" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( XmlGregCalToCalendarMapper.class )
     public void shouldApplyBuiltInOnXmlGregCalToCalendar() throws DatatypeConfigurationException {
 
@@ -286,7 +280,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( CalendarToDateMapper.class )
     public void shouldApplyBuiltInOnCalendarToDate() throws ParseException {
 
@@ -302,7 +296,7 @@ public class BuiltInTest {
         assertThat( target.publicProp ).isEqualTo( createCalendar( "02.03.2016" ).getTime() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( DateToCalendarMapper.class )
     public void shouldApplyBuiltInOnDateToCalendar() throws ParseException {
 
@@ -319,7 +313,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( CalendarToStringMapper.class )
     public void shouldApplyBuiltInOnCalendarToString() throws ParseException {
 
@@ -335,7 +329,7 @@ public class BuiltInTest {
         assertThat( target.publicProp ).isEqualTo( "02.03.2016" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( StringToCalendarMapper.class )
     public void shouldApplyBuiltInOnStringToCalendar() throws ParseException {
 
@@ -352,7 +346,7 @@ public class BuiltInTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( IterableSourceTargetMapper.class )
     public void shouldApplyBuiltInOnIterable() throws DatatypeConfigurationException {
 
@@ -366,7 +360,7 @@ public class BuiltInTest {
         assertThat( target.publicDates ).containsExactly( "02.03.2016" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( MapSourceTargetMapper.class )
     public void shouldApplyBuiltInOnMap() throws DatatypeConfigurationException {
 
@@ -382,7 +376,7 @@ public class BuiltInTest {
         assertThat( target.publicExample.get( "TEST" ) ).isEqualTo( "2016-03-02+01:00" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( CalendarToZonedDateTimeMapper.class )
     public void shouldApplyBuiltInOnCalendarToZonedDateTime() throws ParseException {
         assertThat( CalendarToZonedDateTimeMapper.INSTANCE.map( null ) ).isNull();
@@ -399,7 +393,7 @@ public class BuiltInTest {
         assertThat( target.publicProp ).isEqualTo( ZonedDateTime.of( 2016, 3, 2, 0, 0, 0, 0, ZoneId.systemDefault() ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ZonedDateTimeToCalendarMapper.class )
     public void shouldApplyBuiltInOnZonedDateTimeToCalendar() throws ParseException {
         assertThat( ZonedDateTimeToCalendarMapper.INSTANCE.map( null ) ).isNull();

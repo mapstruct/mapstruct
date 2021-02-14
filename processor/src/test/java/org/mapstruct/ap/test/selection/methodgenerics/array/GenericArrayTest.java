@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.array;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class GenericArrayTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeIsTypeVarArrayMapper.class )
     public void testGenericReturnTypeVar() {
 
@@ -33,7 +30,7 @@ public class GenericArrayTest {
         assertThat( target.getProp() ).containsExactly( "test" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceTypeIsTypeVarArrayMapper.class )
     public void testGenericSourceTypeVar() {
 
@@ -47,7 +44,7 @@ public class GenericArrayTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( BothParameterizedMapper.class )
     public void testBothParameterized() {
 

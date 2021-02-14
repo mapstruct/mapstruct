@@ -5,31 +5,28 @@
  */
 package org.mapstruct.ap.test.decorator.jsr330;
 
-import static java.lang.System.lineSeparator;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Calendar;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import static java.lang.System.lineSeparator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the application of decorators using component model jsr330.
@@ -45,37 +42,32 @@ import org.springframework.context.annotation.Configuration;
     PersonMapperDecorator.class
 })
 @IssueKey("592")
-@RunWith(AnnotationProcessorTestRunner.class)
 @ComponentScan(basePackageClasses = Jsr330DecoratorTest.class)
 @Configuration
 public class Jsr330DecoratorTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Inject
     @Named
     private PersonMapper personMapper;
     private ConfigurableApplicationContext context;
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeDecoratorMethods() {
         Calendar birthday = Calendar.getInstance();
         birthday.set( 1928, Calendar.MAY, 23 );
@@ -89,7 +81,7 @@ public class Jsr330DecoratorTest {
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldDelegateNonDecoratedMethodsToDefaultImplementation() {
         Address address = new Address( "42 Ocean View Drive" );
 
@@ -100,7 +92,7 @@ public class Jsr330DecoratorTest {
     }
 
     @IssueKey("664")
-    @Test
+    @ProcessorTest
     public void hasSingletonAnnotation() {
         // check the decorator
         generatedSource.forMapper( PersonMapper.class ).content()

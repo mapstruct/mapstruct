@@ -5,33 +5,29 @@
  */
 package org.mapstruct.ap.test.template;
 
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous1;
 import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous2;
 import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous3;
 import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperNonMatchingName;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
 @IssueKey("383")
 @WithClasses({ Source.class, NestedSource.class, Target.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritConfigurationTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperSingle.class })
     public void shouldInheritConfigurationSingleCandidates() {
 
@@ -58,7 +54,7 @@ public class InheritConfigurationTest {
         assertThat( updatedTarget.getConstantProp() ).isEqualTo( "constant" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { SourceTargetMapperMultiple.class } )
     public void shouldInheritConfigurationMultipleCandidates() {
 
@@ -86,7 +82,7 @@ public class InheritConfigurationTest {
 
     }
 
-   @Test
+   @ProcessorTest
     @WithClasses({ SourceTargetMapperSeveralArgs.class })
     public void shouldInheritConfigurationSeveralArgs() {
 
@@ -114,7 +110,7 @@ public class InheritConfigurationTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous1.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -134,7 +130,7 @@ public class InheritConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodError() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous2.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -154,7 +150,7 @@ public class InheritConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous3.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -176,7 +172,7 @@ public class InheritConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperNonMatchingName.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

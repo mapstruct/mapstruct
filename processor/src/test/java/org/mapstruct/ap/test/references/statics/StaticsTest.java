@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.references.statics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -22,17 +20,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  */
 @IssueKey( "410" )
 @WithClasses( { Beer.class, BeerDto.class, Category.class } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StaticsTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     @WithClasses( {  BeerMapper.class, CustomMapper.class } )
     public void shouldUseStaticMethod() {
 
@@ -44,7 +37,7 @@ public class StaticsTest {
         assertThat( result.getCategory() ).isEqualTo( Category.STRONG ); // why settle for less?
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {  BeerMapperWithNonUsedMapper.class, NonUsedMapper.class } )
     public void shouldNotImportNonUsed() {
 

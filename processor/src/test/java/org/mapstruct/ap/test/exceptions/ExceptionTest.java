@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.exceptions.imports.TestException1;
 import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  *
@@ -32,105 +32,115 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     TestExceptionBase.class,
     TestException1.class,
     TestException2.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class ExceptionTest {
 
-    @Test( expected = RuntimeException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowRuntimeInBeanMapping() throws TestException2, ParseException {
         Source source = new Source();
         source.setSize( 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.sourceToTarget( source );
+        assertThatThrownBy( () -> sourceTargetMapper.sourceToTarget( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
-    @Test( expected = TestException2.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestException2InBeanMapping() throws TestException2, ParseException {
         Source source = new Source();
         source.setSize( 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.sourceToTarget( source );
+        assertThatThrownBy( () -> sourceTargetMapper.sourceToTarget( source ) )
+            .isInstanceOf( TestException2.class );
     }
 
-    @Test( expected = ParseException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestParseExceptionInBeanMappingDueToTypeConverion() throws TestException2, ParseException {
         Source source = new Source();
         source.setDate( "nonsense" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.sourceToTarget( source );
+        assertThatThrownBy( () -> sourceTargetMapper.sourceToTarget( source ) )
+            .isInstanceOf( ParseException.class );
     }
 
-    @Test( expected = RuntimeException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowRuntimeInIterableMapping() throws TestException2 {
         List<Integer> source = new ArrayList<>();
         source.add( 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerListToLongList( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerListToLongList( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
-    @Test( expected = TestException2.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestException2InIterableMapping() throws TestException2 {
         List<Integer> source = new ArrayList<>();
         source.add( 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerListToLongList( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerListToLongList( source ) )
+            .isInstanceOf( TestException2.class );
     }
 
-    @Test( expected = RuntimeException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowRuntimeInMapKeyMapping() throws TestException2 {
         Map<Integer, String> source = new HashMap<>();
         source.put( 1, "test" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerKeyMapToLongKeyMap( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerKeyMapToLongKeyMap( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
-    @Test( expected = TestException2.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestException2InMapKeyMapping() throws TestException2 {
         Map<Integer, String> source = new HashMap<>();
         source.put( 2, "test" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerKeyMapToLongKeyMap( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerKeyMapToLongKeyMap( source ) )
+            .isInstanceOf( TestException2.class );
     }
 
-    @Test( expected = RuntimeException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowRuntimeInMapValueMapping() throws TestException2 {
         Map<String, Integer> source = new HashMap<>();
         source.put( "test", 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerValueMapToLongValueMap( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerValueMapToLongValueMap( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
-    @Test( expected = TestException2.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestException2InMapValueMapping() throws TestException2 {
         Map<String, Integer> source = new HashMap<>();
         source.put( "test", 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.integerValueMapToLongValueMap( source );
+        assertThatThrownBy( () -> sourceTargetMapper.integerValueMapToLongValueMap( source ) )
+            .isInstanceOf( TestException2.class );
     }
 
-    @Test( expected = RuntimeException.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowRuntimeInBeanMappingViaBaseException() throws TestExceptionBase {
         Source source = new Source();
         source.setSize( 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.sourceToTargetViaBaseException( source );
+        assertThatThrownBy( () -> sourceTargetMapper.sourceToTargetViaBaseException( source ) )
+            .isInstanceOf( RuntimeException.class );
     }
 
-    @Test( expected = TestException2.class )
+    @ProcessorTest
     @IssueKey( "198" )
     public void shouldThrowTestException2InBeanMappingViaBaseException() throws TestExceptionBase {
         Source source = new Source();
         source.setSize( 2 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
-        sourceTargetMapper.sourceToTargetViaBaseException( source );
+        assertThatThrownBy( () -> sourceTargetMapper.sourceToTargetViaBaseException( source ) )
+            .isInstanceOf( TestException2.class );
     }
 }

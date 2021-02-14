@@ -7,20 +7,17 @@ package org.mapstruct.ap.test.source.presencecheck.spi;
 
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CollectionPresenceMapper.class
     })
@@ -31,7 +28,7 @@ public class PresenceCheckMappingTest {
         assertThat( target.getPlayers() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CollectionWithNullValueCheckMapper.class
     })
@@ -44,7 +41,7 @@ public class PresenceCheckMappingTest {
         assertThat( target.getPlayers() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CollectionWithNonDirectMapper.class
     })
@@ -56,7 +53,7 @@ public class PresenceCheckMappingTest {
         assertThat( target.getPlayers() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         NonDirectMapper.class
     })

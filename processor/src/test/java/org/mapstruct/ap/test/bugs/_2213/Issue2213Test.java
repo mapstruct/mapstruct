@@ -5,12 +5,10 @@
  */
 package org.mapstruct.ap.test.bugs._2213;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
     Car.class,
     Car2.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("2213")
 public class Issue2213Test {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource()
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource()
         .addComparisonToFixtureFor( CarMapper.class );
 
-    @Test
+    @ProcessorTest
     public void testShouldNotGenerateIntermediatePrimitiveMappingMethod() {
         Car2 car = new Car2();
         int[] sourceInt = { 1, 2, 3 };

@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.constructor.visibility;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.constructor.Default;
 import org.mapstruct.ap.test.constructor.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,14 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2150")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     PersonDto.class,
     Default.class,
 })
 public class ConstructorVisibilityTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         SimpleWithPublicConstructorMapper.class
     })
@@ -43,7 +40,7 @@ public class ConstructorVisibilityTest {
         assertThat( target.getAge() ).isEqualTo( 30 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         SimpleWithPublicParameterlessConstructorMapper.class
     })
@@ -60,7 +57,7 @@ public class ConstructorVisibilityTest {
         assertThat( target.getAge() ).isEqualTo( -1 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         SimpleWithPublicParameterlessConstructorAndDefaultAnnotatedMapper.class
     })

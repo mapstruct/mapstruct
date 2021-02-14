@@ -5,15 +5,11 @@
  */
 package org.mapstruct.ap.test.factories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.factories.a.BarFactory;
 import org.mapstruct.ap.test.factories.targettype.Bar9Base;
 import org.mapstruct.ap.test.factories.targettype.Bar9Child;
@@ -21,8 +17,10 @@ import org.mapstruct.ap.test.factories.targettype.Bar9Factory;
 import org.mapstruct.ap.test.factories.targettype.Foo9Base;
 import org.mapstruct.ap.test.factories.targettype.Foo9Child;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -33,9 +31,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     org.mapstruct.ap.test.factories.b.BarFactory.class, org.mapstruct.ap.test.factories.c.BarFactory.class,
     Bar9Factory.class, Source.class, SourceTargetMapperAndBar2Factory.class, Target.class, CustomList.class,
     CustomListImpl.class, CustomMap.class, CustomMapImpl.class, FactoryCreatable.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class FactoryTest {
-    @Test
+    @ProcessorTest
     public void shouldUseThreeFactoryMethods() {
         Target target = SourceTargetMapperAndBar2Factory.INSTANCE.sourceToTarget( createSource() );
 
@@ -94,7 +91,7 @@ public class FactoryTest {
         return source;
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "136" )
     @WithClasses( { GenericFactory.class, SourceTargetMapperWithGenericFactory.class } )
     public void shouldUseGenericFactory() {

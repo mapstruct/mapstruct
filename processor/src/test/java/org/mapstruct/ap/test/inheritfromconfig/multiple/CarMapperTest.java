@@ -5,17 +5,14 @@
  */
 package org.mapstruct.ap.test.inheritfromconfig.multiple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@RunWith(AnnotationProcessorTestRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
 @WithClasses({
     BaseDto.class,
     BaseEntity.class,
@@ -30,7 +27,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("1367")
 public class CarMapperTest {
 
-    @Test
+    @ProcessorTest
     public void testMapEntityToDto() {
         CarDto dto = CarMapper.MAPPER.mapTo( newCar() );
         assertThat( dto.getDbId() ).isEqualTo( 9L );
@@ -38,7 +35,7 @@ public class CarMapperTest {
         assertThat( dto.getSeatCount() ).isEqualTo( 5 );
     }
 
-    @Test
+    @ProcessorTest
     public void testMapDtoToEntity() {
         CarEntity car = CarMapper.MAPPER.mapFrom( newCarDto() );
         assertThat( car.getId() ).isEqualTo( 9L );
@@ -48,7 +45,7 @@ public class CarMapperTest {
         assertThat( car.getCreationDate() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void testForwardMappingShouldTakePrecedence() {
         Car2Dto dto = new Car2Dto();
         dto.setMaker( "mazda" );

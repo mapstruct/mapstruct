@@ -5,11 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedsourceproperties._target.BaseChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryComposed;
@@ -23,18 +18,19 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.SourceDtoFactory;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
 @IssueKey("389")
 @WithClasses({ Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ReversingNestedSourcePropertiesTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryReverse.class })
     public void shouldGenerateNestedReverse() {
 
@@ -63,7 +59,7 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist().getLabel().getStudio().getName() ).isEqualTo( "Abbey Road" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryWithIgnoresReverse.class })
     public void shouldIgnoreEverytingBelowArtist() {
 
@@ -86,7 +82,7 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryUpdateReverse.class })
     public void shouldGenerateNestedUpdateReverse() {
 
@@ -116,7 +112,7 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist().getLabel().getStudio().getName() ).isEqualTo( "Abbey Road" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { ArtistToChartEntryWithFactoryReverse.class, SourceDtoFactory.class } )
     public void shouldGenerateNestedReverseWithFactory() {
 
@@ -151,7 +147,7 @@ public class ReversingNestedSourcePropertiesTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryComposedReverse.class, ChartEntryComposed.class, ChartEntryLabel.class })
     public void shouldGenerateNestedComposedReverse() {
 
@@ -181,7 +177,7 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist().getLabel().getStudio().getName() ).isEqualTo( "Abbey Road" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntryWithMappingReverse.class, ChartEntryWithMapping.class })
     public void shouldGenerateNestedWithMappingReverse() {
 
@@ -210,7 +206,7 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist().getLabel().getStudio().getName() ).isEqualTo( "Abbey Road" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ArtistToChartEntryWithConfigReverse.class,
         ArtistToChartEntryConfig.class,

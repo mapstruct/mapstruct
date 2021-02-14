@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.generics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
@@ -24,10 +22,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SourceTargetMapper.class,
     TargetTo.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class GenericsTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("574")
     public void mapsIdCorrectly() {
         TargetTo target = new TargetTo();

@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._2023;
 
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2023")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue2023Mapper.class,
     NewPersonRequest.class,
@@ -27,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2023Test {
 
-    @Test
+    @ProcessorTest
     public void shouldUseDefaultExpressionCorrectly() {
         PersonDto person = new PersonDto();
         person.setName( "John" );

@@ -7,16 +7,14 @@ package org.mapstruct.ap.test.java8stream.erroneous;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.NoProperties;
 import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for illegal mappings between collection/stream types, iterable and non-iterable types etc.
@@ -31,10 +29,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Filip Hrisafov
  */
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousStreamMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousStreamToNonStreamMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -52,7 +49,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailToGenerateImplementationBetweenStreamAndNonStreamOrIterable() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousStreamToPrimitivePropertyMapper.class, Source.class, Target.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -67,7 +64,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailToGenerateImplementationBetweenCollectionAndPrimitive() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ EmptyStreamMappingMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -92,7 +89,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnEmptyIterableAnnotationStreamMappings() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousStreamToStreamNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -108,7 +105,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousStreamToStreamNoElementMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(
@@ -124,7 +121,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnNoElementMappingFoundForStreamToStreamWithDisabledAuto() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousListToStreamNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -140,7 +137,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnNoElementMappingFoundForListToStream() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousListToStreamNoElementMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(
@@ -156,7 +153,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnNoElementMappingFoundForListToStreamWithDisabledAuto() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousStreamToListNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -172,7 +169,7 @@ public class ErroneousStreamMappingTest {
     public void shouldFailOnNoElementMappingFoundForStreamToList() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("993")
     @WithClasses({ ErroneousStreamToListNoElementMappingFoundDisabledAuto.class })
     @ExpectedCompilationOutcome(

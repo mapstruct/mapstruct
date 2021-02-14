@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring.field;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,32 +40,31 @@ import static org.assertj.core.api.Assertions.assertThat;
     FieldSpringConfig.class
 })
 @IssueKey("571")
-@RunWith(AnnotationProcessorTestRunner.class)
 @ComponentScan(basePackageClasses = CustomerSpringFieldMapper.class)
 @Configuration
 public class SpringFieldMapperTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Autowired
     private CustomerSpringFieldMapper customerMapper;
     private ConfigurableApplicationContext context;
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConvertToTarget() {
         // given
         CustomerEntity customerEntity = new CustomerEntity();
@@ -83,7 +80,7 @@ public class SpringFieldMapperTest {
         assertThat( customerDto.getGender() ).isEqualTo( GenderDto.M );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldHaveFieldInjection() {
         generatedSource.forMapper( CustomerSpringFieldMapper.class )
             .content()

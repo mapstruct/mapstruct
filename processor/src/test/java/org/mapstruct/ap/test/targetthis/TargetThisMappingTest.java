@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.targetthis;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Dainius Figoras
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( {
     OrderDTO.class,
     CustomerDTO.class,
@@ -30,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 public class TargetThisMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( SimpleMapper.class )
     public void testTargetingThis() {
         CustomerDTO ce = new CustomerDTO();
@@ -49,7 +46,7 @@ public class TargetThisMappingTest {
         assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( NestedMapper.class )
     public void testTargetingThisWithNestedLevels() {
         CustomerDTO customerDTO = new CustomerDTO();
@@ -70,7 +67,7 @@ public class TargetThisMappingTest {
         assertThat( c.getStatus() ).isEqualTo( customerDTO.getItem().getStatus() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( SimpleMapperWithIgnore.class )
     public void testTargetingThisWithIgnore() {
         CustomerDTO ce = new CustomerDTO();
@@ -89,7 +86,7 @@ public class TargetThisMappingTest {
         assertThat( c.getStatus() ).isEqualTo( ce.getItem().getStatus() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ErroneousNestedMapper.class )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -107,7 +104,7 @@ public class TargetThisMappingTest {
     public void testNestedDuplicates() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ConfictsResolvedNestedMapper.class )
     public void testWithConflictsResolved() {
 
@@ -128,7 +125,7 @@ public class TargetThisMappingTest {
         assertThat( c.getId() ).isEqualTo( orderDTO.getCustomer().getItem().getId() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( FlatteningMapper.class )
     public void testFlattening() {
 

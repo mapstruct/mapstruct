@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Date;
+
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Jeffrey Smyth
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class JavaDefaultExpressionTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void testJavaDefaultExpressionWithValues() {
         Source source = new Source();
@@ -37,7 +34,7 @@ public class JavaDefaultExpressionTest {
         assertThat( target.getSourceDate() ).isEqualTo( source.getDate() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void testJavaDefaultExpressionWithNoValues() {
         Source source = new Source();
@@ -49,7 +46,7 @@ public class JavaDefaultExpressionTest {
         assertThat( target.getSourceDate() ).isEqualTo( new Date( 30L ) );
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -70,7 +67,7 @@ public class JavaDefaultExpressionTest {
     public void testJavaDefaultExpressionExpression() {
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -91,7 +88,7 @@ public class JavaDefaultExpressionTest {
     public void testJavaDefaultExpressionConstant() {
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -112,7 +109,7 @@ public class JavaDefaultExpressionTest {
     public void testJavaDefaultExpressionDefaultValue() {
     }
 
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {

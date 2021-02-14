@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     CharSource.class,
     CharTarget.class,
     CharMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class CharConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyCharConversion() {
         CharSource source = new CharSource();
         source.setC( 'G' );
@@ -32,7 +29,7 @@ public class CharConversionTest {
         assertThat( target.getC() ).isEqualTo( Character.valueOf( 'G' ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseCharConversion() {
         CharTarget target = new CharTarget();
         target.setC( 'G' );
@@ -43,7 +40,7 @@ public class CharConversionTest {
         assertThat( source.getC() ).isEqualTo( 'G' );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "229" )
     public void wrapperToPrimitiveIsNullSafe() {
         CharTarget target = new CharTarget();

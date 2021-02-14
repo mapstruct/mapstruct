@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.collection.wildcard;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/527.
@@ -29,13 +26,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author Sjaak Derksen
  */
 @IssueKey("527")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class WildCardTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ExtendsBoundSourceTargetMapper.class,
         ExtendsBoundSource.class,
@@ -57,7 +53,7 @@ public class WildCardTest {
             .doesNotContain( "? extends org.mapstruct.ap.test.collection.wildcard.Idea" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         SourceSuperBoundTargetMapper.class,
         Source.class,
@@ -79,7 +75,7 @@ public class WildCardTest {
             .doesNotContain( "? super org.mapstruct.ap.test.collection.wildcard.Idea" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousIterableSuperBoundSourceMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
@@ -93,7 +89,7 @@ public class WildCardTest {
     public void shouldFailOnSuperBoundSource() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousIterableExtendsBoundTargetMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
@@ -107,7 +103,7 @@ public class WildCardTest {
     public void shouldFailOnExtendsBoundTarget() {
     }
 
-   @Test
+   @ProcessorTest
     @WithClasses({ ErroneousIterableTypeVarBoundMapperOnMethod.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
@@ -121,7 +117,7 @@ public class WildCardTest {
     public void shouldFailOnTypeVarSource() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousIterableTypeVarBoundMapperOnMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
@@ -135,7 +131,7 @@ public class WildCardTest {
     public void shouldFailOnTypeVarTarget() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { BeanMapper.class, GoodIdea.class, CunningPlan.class } )
     public void shouldMapBean() {
 

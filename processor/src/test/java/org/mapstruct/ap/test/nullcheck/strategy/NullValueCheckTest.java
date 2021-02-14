@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.nullcheck.strategy;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     HouseMapperConfig.class,
     HouseMapperWithConfig.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NullValueCheckTest {
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnMapper() {
 
         HouseEntity entity = HouseMapper.INSTANCE.mapWithNvcsOnMapper( new HouseDto() );
@@ -35,7 +32,7 @@ public class NullValueCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnBean() {
 
         HouseEntity entity = HouseMapper.INSTANCE.mapWithNvcsOnBean( new HouseDto() );
@@ -46,7 +43,7 @@ public class NullValueCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnMapping() {
 
         HouseEntity entity = HouseMapper.INSTANCE.mapWithNvcsOnMapping( new HouseDto() );
@@ -57,7 +54,7 @@ public class NullValueCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnConfig() {
 
         HouseEntity entity = HouseMapperWithConfig.INSTANCE.mapWithNvcsOnMapper( new HouseDto() );
@@ -68,7 +65,7 @@ public class NullValueCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnConfigAndBean() {
 
         HouseEntity entity = HouseMapperWithConfig.INSTANCE.mapWithNvcsOnBean( new HouseDto() );
@@ -79,7 +76,7 @@ public class NullValueCheckTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void testDefinedOnConfigAndMapping() {
 
         HouseEntity entity = HouseMapperWithConfig.INSTANCE.mapWithNvcsOnMapping( new HouseDto() );

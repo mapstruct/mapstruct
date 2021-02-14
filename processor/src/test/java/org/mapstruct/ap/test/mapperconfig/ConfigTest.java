@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.mapperconfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -31,10 +29,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     CustomMapperViaMapperConfig.class,
     SourceTargetMapper.class
 } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConfigTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Target.class, SourceTargetMapper.class } )
     public void shouldUseCustomMapperViaMapperForFooToEntity() {
 
@@ -43,7 +40,7 @@ public class ConfigTest {
         assertThat( target.getFoo().getCreatedBy() ).isEqualTo( CustomMapperViaMapper.class.getSimpleName() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { Target.class, SourceTargetMapper.class } )
     public void shouldUseCustomMapperViaMapperConfigForFooToDto() {
 
@@ -52,7 +49,7 @@ public class ConfigTest {
         assertThat( source.getFoo().getCreatedBy() ).isEqualTo( CustomMapperViaMapperConfig.class.getSimpleName() );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { TargetNoFoo.class, SourceTargetMapperWarn.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -63,7 +60,7 @@ public class ConfigTest {
     public void shouldUseWARNViaMapper() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { TargetNoFoo.class, SourceTargetMapperErroneous.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {

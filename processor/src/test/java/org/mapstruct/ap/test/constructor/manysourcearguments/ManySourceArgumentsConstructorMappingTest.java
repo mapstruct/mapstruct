@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.constructor.manysourcearguments;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.constructor.Person;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
     ManySourceArgumentsConstructorMapper.class,
     Person.class,
 } )
 public class ManySourceArgumentsConstructorMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseDefaultValueForSourceParameters() {
         Person person = ManySourceArgumentsConstructorMapper.INSTANCE.map( null, "Test Valley" );
 

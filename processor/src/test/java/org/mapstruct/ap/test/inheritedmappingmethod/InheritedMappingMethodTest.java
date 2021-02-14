@@ -5,33 +5,30 @@
  */
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod._target.FastCarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.Car;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.FastCar;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "274" )
 @WithClasses({
  Car.class, CarDto.class, UnboundMappable.class, CarMapper.class, //
     FastCar.class, FastCarDto.class, BoundMappable.class, FastCarMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritedMappingMethodTest {
 
-    @Test
+    @ProcessorTest
     public void shouldProvideUnboundedMapperInstance() {
         UnboundMappable<CarDto, Car> instance = CarMapper.INSTANCE;
         assertThat( instance ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapUsingUnboundedInheretedMappingMethod() {
         // given
         CarDto bikeDto = new CarDto();
@@ -45,13 +42,13 @@ public class InheritedMappingMethodTest {
         assertThat( bike.getHorsepower() ).isEqualTo( 130 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldProvideBoundedMapperInstance() {
         BoundMappable<? extends CarDto, ? extends Car> instance = FastCarMapper.INSTANCE;
         assertThat( instance ).isNotNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapUsingBoundedInheretedMappingMethod() {
         // given
         FastCarDto bikeDto = new FastCarDto();

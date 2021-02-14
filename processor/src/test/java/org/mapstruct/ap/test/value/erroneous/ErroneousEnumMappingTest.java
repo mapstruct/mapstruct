@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.value.erroneous;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("2169")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CustomIllegalArgumentException.class,
     ExternalOrderType.class,
@@ -29,7 +26,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class ErroneousEnumMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         EmptyEnumMappingMapper.class
     })
@@ -46,7 +43,7 @@ public class ErroneousEnumMappingTest {
     public void shouldCompileErrorWhenEnumMappingIsEmpty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         NoConfigurationEnumMappingMapper.class
     })

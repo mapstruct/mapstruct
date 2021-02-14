@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1608;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1608")
 @WithClasses({
     Issue1608Mapper.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1608Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseFluentSettersStartingWithIs() {
 
         Book book = new Book();

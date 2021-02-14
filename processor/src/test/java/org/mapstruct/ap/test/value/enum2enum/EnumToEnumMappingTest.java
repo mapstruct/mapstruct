@@ -7,17 +7,15 @@ package org.mapstruct.ap.test.value.enum2enum;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,17 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
     OrderMapper.class, SpecialOrderMapper.class, DefaultOrderMapper.class, OrderEntity.class,
     OrderType.class, OrderDto.class, ExternalOrderType.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumMappingTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         DefaultOrderMapper.class,
         OrderMapper.class,
         SpecialOrderMapper.class
     );
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateEnumMappingMethod() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.B2B );
         assertThat( target ).isEqualTo( ExternalOrderType.B2B );
@@ -51,7 +48,7 @@ public class EnumToEnumMappingTest {
         assertThat( target ).isEqualTo( ExternalOrderType.RETAIL );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConsiderConstantMappings() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.EXTRA );
         assertThat( target ).isEqualTo( ExternalOrderType.SPECIAL );
@@ -63,7 +60,7 @@ public class EnumToEnumMappingTest {
         assertThat( target ).isEqualTo( ExternalOrderType.DEFAULT );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldInvokeEnumMappingMethodForPropertyMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.EXTRA );
@@ -73,7 +70,7 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseMappings() {
 
         OrderType result = OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
@@ -90,7 +87,7 @@ public class EnumToEnumMappingTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyNullMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( null );
@@ -100,7 +97,7 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyTargetIsNullMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.STANDARD );
@@ -110,7 +107,7 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto.getOrderType() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDefaultMappings() {
         OrderEntity order = new OrderEntity();
 
@@ -140,7 +137,7 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.RETAIL );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDefaultReverseMappings() {
 
         OrderType result = SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
@@ -157,7 +154,7 @@ public class EnumToEnumMappingTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMappAllUnmappedToDefault() {
 
         OrderEntity order = new OrderEntity();
@@ -189,7 +186,7 @@ public class EnumToEnumMappingTest {
     }
 
     @IssueKey("1091")
-    @Test
+    @ProcessorTest
     public void shouldMapAnyRemainingToNullCorrectly() {
         ExternalOrderType externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.RETAIL );
         assertThat( externalOrderType )
@@ -211,7 +208,7 @@ public class EnumToEnumMappingTest {
         assertThat( externalOrderType ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousOrderMapperMappingSameConstantTwice.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -225,7 +222,7 @@ public class EnumToEnumMappingTest {
     public void shouldRaiseErrorIfSameSourceEnumConstantIsMappedTwice() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousOrderMapperUsingUnknownEnumConstants.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -244,7 +241,7 @@ public class EnumToEnumMappingTest {
     public void shouldRaiseErrorIfUnknownEnumConstantsAreSpecifiedInMapping() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -259,7 +256,7 @@ public class EnumToEnumMappingTest {
     public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousOrderMapperDuplicateANY.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

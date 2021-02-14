@@ -5,31 +5,28 @@
  */
 package org.mapstruct.ap.test.array;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("108")
 public class ArrayMappingTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource()
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource()
         .addComparisonToFixtureFor( ScienceMapper.class );
 
-    @Test
+    @ProcessorTest
     public void shouldCopyArraysInBean() {
 
         Scientist source = new Scientist("Bob");
@@ -44,7 +41,7 @@ public class ArrayMappingTest {
         assertThat( dto.publicPublications ).containsOnly( "public the Lancet", "public Nature" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldForgeMappingForIntToString() {
 
         Scientist source = new Scientist("Bob");
@@ -58,7 +55,7 @@ public class ArrayMappingTest {
         assertThat( dto.publicPublicationYears ).containsOnly( 1994, 1998 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayToArray() {
         ScientistDto[] dtos = ScienceMapper.INSTANCE
             .scientistsToDtos( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
@@ -67,7 +64,7 @@ public class ArrayMappingTest {
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapListToArray() {
         ScientistDto[] dtos = ScienceMapper.INSTANCE
             .scientistsToDtos( Arrays.asList( new Scientist( "Bob" ), new Scientist( "Larry" ) ) );
@@ -76,7 +73,7 @@ public class ArrayMappingTest {
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayToList() {
         List<ScientistDto> dtos = ScienceMapper.INSTANCE
             .scientistsToDtosAsList( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
@@ -85,7 +82,7 @@ public class ArrayMappingTest {
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayToArrayExistingSmallerSizedTarget() {
 
         ScientistDto[] existingTarget =  new ScientistDto[]{ new ScientistDto( "Jim" ) };
@@ -98,7 +95,7 @@ public class ArrayMappingTest {
         assertThat( target ).extracting( "name" ).containsOnly( "Bob" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayToArrayExistingEqualSizedTarget() {
 
         ScientistDto[] existingTarget =  new ScientistDto[]{ new ScientistDto( "Jim" ), new ScientistDto( "Bart" ) };
@@ -111,7 +108,7 @@ public class ArrayMappingTest {
         assertThat( target ).extracting( "name" ).containsOnly( "Bob", "Larry"  );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayToArrayExistingLargerSizedTarget() {
 
         ScientistDto[] existingTarget =
@@ -125,7 +122,7 @@ public class ArrayMappingTest {
         assertThat( target ).extracting( "name" ).containsOnly( "Bob", "Larry", "John"  );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapTargetToNullWhenNullSource() {
         // TODO: What about existing target?
 
@@ -139,7 +136,7 @@ public class ArrayMappingTest {
     }
 
     @IssueKey("534")
-    @Test
+    @ProcessorTest
     public void shouldMapBooleanWhenReturnDefault() {
 
         boolean[] existingTarget = new boolean[]{true};
@@ -151,7 +148,7 @@ public class ArrayMappingTest {
         assertThat( ScienceMapper.INSTANCE.nvmMapping( null ) ).isEmpty();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapShortWhenReturnDefault() {
         short[] existingTarget = new short[]{ 5 };
         short[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -160,7 +157,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( new short[] { 0 } );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapCharWhenReturnDefault() {
         char[] existingTarget = new char[]{ 'a' };
         char[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -169,7 +166,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( new char[] { 0 } );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIntWhenReturnDefault() {
         int[] existingTarget = new int[]{ 5 };
         int[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -178,7 +175,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( 0 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapLongWhenReturnDefault() {
         long[] existingTarget = new long[]{ 5L };
         long[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -187,7 +184,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( 0L );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapFloatWhenReturnDefault() {
         float[] existingTarget = new float[]{ 3.1f };
         float[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -196,7 +193,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( 0.0f );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapDoubleWhenReturnDefault() {
         double[] existingTarget = new double[]{ 5.0d };
         double[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
@@ -205,21 +202,21 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).containsOnly( 0.0d );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldVoidMapIntWhenReturnNull() {
         long[] existingTarget = new long[]{ 5L };
         ScienceMapper.INSTANCE.nvmMappingVoidReturnNull( null, existingTarget );
         assertThat( existingTarget ).containsOnly( 5L );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldVoidMapIntWhenReturnDefault() {
         long[] existingTarget = new long[]{ 5L };
         ScienceMapper.INSTANCE.nvmMappingVoidReturnDefault( null, existingTarget );
         assertThat( existingTarget ).containsOnly( 0L );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "999" )
     public void shouldNotContainFQNForStringArray() {
         generatedSource.forMapper( ScienceMapper.class ).content().doesNotContain( "java.lang.String[]" );
