@@ -25,6 +25,11 @@ final class FilteringParentClassLoader extends ClassLoader {
         this.excludedPrefixes = new ArrayList<>( Arrays.asList( excludedPrefixes ) );
     }
 
+    FilteringParentClassLoader(ClassLoader parent, String... excludedPrefixes) {
+        super( parent );
+        this.excludedPrefixes = new ArrayList<>( Arrays.asList( excludedPrefixes ) );
+    }
+
     /**
      * @param classes The classes to hide (inner classes are hidden as well)
      * @return {@code this}
