@@ -10,14 +10,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -37,13 +35,12 @@ import static org.assertj.core.api.Assertions.tuple;
     UseDirect.class,
     UseComplex.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class MappingControlTest {
 
     /**
      * Baseline Test, normal, direct allowed
      */
-    @Test
+    @ProcessorTest
     @WithClasses(DirectMapper.class)
     public void directSelectionAllowed() {
 
@@ -58,7 +55,7 @@ public class MappingControlTest {
     /**
      * Test the deep cloning annotation
      */
-    @Test
+    @ProcessorTest
     @WithClasses(CloningMapper.class)
     public void testDeepCloning() {
 
@@ -75,7 +72,7 @@ public class MappingControlTest {
     /**
      * Test the deep cloning annotation with lists
      */
-    @Test
+    @ProcessorTest
     @WithClasses(CloningListMapper.class)
     public void testDeepCloningListsAndMaps() {
 
@@ -121,7 +118,7 @@ public class MappingControlTest {
      * MapStruct gets too creative when we allow complex (2 step mappings) to convert if we also allow
      * it to forge methods (which is contradiction with the fact that we do not allow methods on this mapper)
      */
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousDirectMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -138,7 +135,7 @@ public class MappingControlTest {
     /**
      * Baseline Test, normal, method allowed
      */
-    @Test
+    @ProcessorTest
     @WithClasses(MethodMapper.class)
     public void methodSelectionAllowed() {
         Fridge fridge = MethodMapper.INSTANCE.map( createFridgeDTO() );
@@ -148,7 +145,7 @@ public class MappingControlTest {
         assertThat( fridge.getBeerCount() ).isEqualTo( 5 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMethodMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -165,7 +162,7 @@ public class MappingControlTest {
     /**
      * Baseline Test, normal, conversion allowed
      */
-    @Test
+    @ProcessorTest
     @WithClasses(ConversionMapper.class)
     public void conversionSelectionAllowed() {
         Fridge fridge = ConversionMapper.INSTANCE.map( createFridgeDTO().getShelve().getCoolBeer() );
@@ -174,7 +171,7 @@ public class MappingControlTest {
         assertThat( fridge.getBeerCount() ).isEqualTo( 5 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousConversionMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -191,7 +188,7 @@ public class MappingControlTest {
     /**
      * Baseline Test, normal, complex mapping allowed
      */
-    @Test
+    @ProcessorTest
     @WithClasses(ComplexMapper.class)
     public void complexSelectionAllowed() {
         Fridge fridge = ComplexMapper.INSTANCE.map( createFridgeDTO() );
@@ -200,7 +197,7 @@ public class MappingControlTest {
         assertThat( fridge.getBeerCount() ).isEqualTo( 5 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousComplexMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -214,7 +211,7 @@ public class MappingControlTest {
     public void complexSelectionNotAllowed() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Config.class, ErroneousComplexMapperWithConfig.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {

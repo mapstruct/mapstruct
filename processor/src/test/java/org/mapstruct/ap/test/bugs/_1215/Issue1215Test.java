@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._1215;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._1215.dto.EntityDTO;
 import org.mapstruct.ap.test.bugs._1215.entity.AnotherTag;
 import org.mapstruct.ap.test.bugs._1215.entity.Entity;
 import org.mapstruct.ap.test.bugs._1215.entity.Tag;
 import org.mapstruct.ap.test.bugs._1215.mapper.Issue1215Mapper;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -27,10 +25,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Issue1215Mapper.class
 } )
 @IssueKey( "1215" )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class Issue1215Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
     }
 }

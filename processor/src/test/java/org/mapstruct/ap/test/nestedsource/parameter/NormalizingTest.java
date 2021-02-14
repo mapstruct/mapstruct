@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.nestedsource.parameter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
 @WithClasses({ FontDto.class, LetterDto.class, LetterEntity.class, LetterMapper.class })
 @IssueKey("836")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NormalizingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateImplementationForPropertyNamesOnly() {
 
         FontDto fontIn = new FontDto();

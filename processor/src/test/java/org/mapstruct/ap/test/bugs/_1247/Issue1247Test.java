@@ -8,11 +8,9 @@ package org.mapstruct.ap.test.bugs._1247;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("1247")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue1247Mapper.class,
     DtoIn.class,
@@ -33,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1247Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseMappings() {
 
         DtoIn in = new DtoIn( "data", "data2" );
@@ -48,7 +45,7 @@ public class Issue1247Test {
         assertThat( out.getInternal().getInternalData().getList() ).containsExactly( "first", "second" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseMappingsWithConstantsExpressionsAndDefaults() {
 
         DtoIn in = new DtoIn( "data", "data2" );
@@ -68,7 +65,7 @@ public class Issue1247Test {
         assertThat( out.getInternal().getInternalData().getDefaultValue() ).isEqualTo( "data2" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyUseMappingsWithConstantsExpressionsAndUseDefault() {
 
         DtoIn in = new DtoIn( "data", null );

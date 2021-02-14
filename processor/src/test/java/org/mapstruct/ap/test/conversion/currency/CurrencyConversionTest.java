@@ -9,12 +9,10 @@ import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WithClasses({ CurrencyMapper.class, CurrencySource.class, CurrencyTarget.class })
 @IssueKey("1355")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class CurrencyConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyCurrencyConversions() {
         final CurrencySource source = new CurrencySource();
         source.setCurrencyA( Currency.getInstance( "USD" ) );
@@ -44,7 +41,7 @@ public class CurrencyConversionTest {
             .containsExactlyInAnyOrder( "EUR", "CHF" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseConversions() {
         final CurrencyTarget target = new CurrencyTarget();
         target.setCurrencyA( "USD" );

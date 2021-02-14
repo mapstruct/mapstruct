@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.accessibility.referenced;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.accessibility.referenced.a.ReferencedMapperDefaultOther;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
@@ -23,13 +21,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author Sjaak Derksen
  */
 @WithClasses( { Source.class, Target.class, ReferencedSource.class, ReferencedTarget.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class ReferencedAccessibilityTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @IssueKey("206")
     @WithClasses({ SourceTargetMapperPrivate.class, ReferencedMapperPrivate.class })
     @ExpectedCompilationOutcome(
@@ -46,17 +43,17 @@ public class ReferencedAccessibilityTest {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperPrivate.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperDefaultSame.class, ReferencedMapperDefaultSame.class } )
     public void shouldBeAbleToAccessDefaultMethodInReferencedInSamePackage() { }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperProtected.class, ReferencedMapperProtected.class } )
     public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() { }
 
-    @Test
+    @ProcessorTest
     @IssueKey("206")
     @WithClasses({ SourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class })
     @ExpectedCompilationOutcome(
@@ -73,12 +70,12 @@ public class ReferencedAccessibilityTest {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperDefaultOther.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetmapperProtectedBase.class } )
     public void shouldBeAbleToAccessProtectedMethodInBase() { }
 
-    @Test
+    @ProcessorTest
     @IssueKey("206")
     @WithClasses({ AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class })
     @ExpectedCompilationOutcome(

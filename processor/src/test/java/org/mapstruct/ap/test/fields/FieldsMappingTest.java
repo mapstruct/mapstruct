@@ -5,24 +5,21 @@
  */
 package org.mapstruct.ap.test.fields;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey( "557" )
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class FieldsMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldMapSourceToTarget() {
         Source source = new Source();
         source.normalInt = 4;
@@ -41,7 +38,7 @@ public class FieldsMappingTest {
         assertThat( target.fieldWithMethods ).isEqualTo( "4111" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapTargetToSource() {
         Target target = new Target();
         target.finalInt = "40";

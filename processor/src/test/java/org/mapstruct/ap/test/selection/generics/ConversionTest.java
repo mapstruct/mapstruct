@@ -9,15 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.NoProperties;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Tests for the invocation of generic methods for mapping bean properties.
@@ -30,10 +28,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     TypeA.class, TypeB.class, TypeC.class
 })
 @IssueKey(value = "79")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConversionTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void shouldApplyGenericTypeMapper() {
 
@@ -71,7 +68,7 @@ public class ConversionTest {
         assertThat( target.getFooWildCardSuperTypeBCorrect() ).isEqualTo( typeB );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSource1.class, ErroneousTarget1.class, ErroneousSourceTargetMapper1.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -84,7 +81,7 @@ public class ConversionTest {
     public void shouldFailOnUpperBound() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSource2.class, ErroneousTarget2.class, ErroneousSourceTargetMapper2.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -100,7 +97,7 @@ public class ConversionTest {
     public void shouldFailOnWildCardBound() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSource3.class, ErroneousTarget3.class, ErroneousSourceTargetMapper3.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -116,7 +113,7 @@ public class ConversionTest {
     public void shouldFailOnWildCardMultipleBounds() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ErroneousSource4.class, ErroneousTarget4.class, ErroneousSourceTargetMapper4.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -132,7 +129,7 @@ public class ConversionTest {
     public void shouldFailOnSuperBounds1() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousSource6.class,
         ErroneousTarget6.class,

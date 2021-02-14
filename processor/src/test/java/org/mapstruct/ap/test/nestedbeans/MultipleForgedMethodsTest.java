@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.mapstruct.ap.test.nestedbeans.maps.AntonymsDictionary;
 import org.mapstruct.ap.test.nestedbeans.maps.AntonymsDictionaryDto;
 import org.mapstruct.ap.test.nestedbeans.maps.AutoMapMapper;
@@ -16,22 +16,20 @@ import org.mapstruct.ap.test.nestedbeans.maps.WordDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.Garage;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.GarageDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.MultipleListMapper;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This test is for a case when several identical methods could be generated, what is an easy edge case to miss.
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class MultipleForgedMethodsTest {
 
     @WithClasses({
         Word.class, WordDto.class, AntonymsDictionaryDto.class, AntonymsDictionary.class, AutoMapMapper.class
     })
-    @Test
+    @ProcessorTest
     public void testNestedMapsAutoMap() {
 
         HashMap<WordDto, WordDto> dtoAntonyms = new HashMap<>();
@@ -52,8 +50,10 @@ public class MultipleForgedMethodsTest {
         AntonymsDictionary mappedAntonymsDictionary = AutoMapMapper.INSTANCE.entityToDto(
             new AntonymsDictionaryDto( dtoAntonyms ) );
 
-        Assert.assertEquals( "Mapper did not map dto to entity correctly", new AntonymsDictionary( entityAntonyms ),
-            mappedAntonymsDictionary
+        assertEquals(
+            new AntonymsDictionary( entityAntonyms ),
+            mappedAntonymsDictionary,
+            "Mapper did not map dto to entity correctly"
         );
     }
 
@@ -61,7 +61,7 @@ public class MultipleForgedMethodsTest {
         MultipleListMapper.class, Garage.class, GarageDto.class, Car.class, CarDto.class,
         Wheel.class, WheelDto.class
     })
-    @Test
+    @ProcessorTest
     public void testMultipleCollections() {
         GarageDto dto = new GarageDto(
             Arrays.asList( new CarDto(
@@ -97,7 +97,7 @@ public class MultipleForgedMethodsTest {
 
         GarageDto mappedDto = MultipleListMapper.INSTANCE.convert( entity );
 
-        Assert.assertEquals( "Mapper did not map entity to dto correctly", dto, mappedDto );
+        assertEquals( dto, mappedDto, "Mapper did not map entity to dto correctly" );
 
     }
 

@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.builtin.jodatime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -16,8 +14,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builtin.jodatime.bean.DateTimeBean;
 import org.mapstruct.ap.test.builtin.jodatime.bean.LocalDateBean;
 import org.mapstruct.ap.test.builtin.jodatime.bean.LocalDateTimeBean;
@@ -32,8 +28,10 @@ import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocal
 import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalDateTime;
 import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalTime;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -46,11 +44,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     LocalDateTimeBean.class,
     XmlGregorianCalendarBean.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey( "689" )
 public class JodaTimeTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(DateTimeToXmlGregorianCalendar.class)
     public void shouldMapDateTimeToXmlGregorianCalendar() {
 
@@ -69,7 +66,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( -60 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(DateTimeToXmlGregorianCalendar.class)
     public void shouldMapIncompleteDateTimeToXmlGregorianCalendar() {
 
@@ -85,7 +82,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( 1 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarToDateTime() throws Exception {
 
@@ -105,7 +102,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( null ) ).isEqualTo( 3600000 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutTimeZoneToDateTimeWithDefaultTimeZone() throws Exception {
 
@@ -131,7 +128,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutMillisToDateTime() throws Exception {
 
@@ -157,7 +154,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( null ) ).isEqualTo( 3600000 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutMillisAndTimeZoneToDateTimeWithDefaultTimeZone() throws Exception {
 
@@ -182,7 +179,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutSecondsToDateTime() throws Exception {
 
@@ -207,7 +204,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( null ) ).isEqualTo( 3600000 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutSecondsAndTimeZoneToDateTimeWithDefaultTimeZone() throws Exception {
 
@@ -231,7 +228,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToDateTime.class)
     public void shouldNotMapXmlGregorianCalendarWithoutMinutes() throws Exception {
 
@@ -247,7 +244,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({DateTimeToXmlGregorianCalendar.class, XmlGregorianCalendarToDateTime.class})
     public void shouldMapRoundTrip() {
 
@@ -263,7 +260,7 @@ public class JodaTimeTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(LocalDateTimeToXmlGregorianCalendar.class)
     public void shouldMapLocalDateTimeToXmlGregorianCalendar() {
 
@@ -282,7 +279,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(LocalDateTimeToXmlGregorianCalendar.class)
     public void shouldMapIncompleteLocalDateTimeToXmlGregorianCalendar() {
 
@@ -301,7 +298,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDateTime.class)
     public void shouldMapXmlGregorianCalendarToLocalDateTime() throws Exception {
 
@@ -320,7 +317,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalDateTime().getMillisOfSecond() ).isEqualTo( 100 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutMillisToLocalDateTime() throws Exception {
 
@@ -344,7 +341,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalDateTime().getMillisOfSecond() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDateTime.class)
     public void shouldMapXmlGregorianCalendarWithoutSecondsToLocalDateTime() throws Exception {
 
@@ -368,7 +365,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalDateTime().getMillisOfSecond() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDateTime.class)
     public void shouldNotMapXmlGregorianCalendarWithoutMinutesToLocalDateTime() throws Exception {
 
@@ -385,7 +382,7 @@ public class JodaTimeTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(LocalDateToXmlGregorianCalendar.class)
     public void shouldMapLocalDateToXmlGregorianCalendar() {
 
@@ -404,7 +401,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDate.class)
     public void shouldMapXmlGregorianCalendarToLocalDate() throws Exception {
 
@@ -422,7 +419,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalDate().getDayOfMonth() ).isEqualTo( 25 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalDate.class)
     public void shouldNotMapXmlGregorianCalendarWithoutDaysToLocalDate() throws Exception {
 
@@ -439,7 +436,7 @@ public class JodaTimeTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(LocalTimeToXmlGregorianCalendar.class)
     public void shouldMapIncompleteLocalTimeToXmlGregorianCalendar() {
 
@@ -458,7 +455,7 @@ public class JodaTimeTest {
         assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalTime.class)
     public void shouldMapXmlGregorianCalendarToLocalTime() throws Exception {
 
@@ -474,7 +471,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalTime().getMillisOfSecond() ).isEqualTo( 100 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalTime.class)
     public void shouldMapXmlGregorianCalendarWithoutMillisToLocalTime() throws Exception {
 
@@ -492,7 +489,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalTime().getMillisOfSecond() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalTime.class)
     public void shouldMapXmlGregorianCalendarWithoutSecondsToLocalTime() throws Exception {
 
@@ -510,7 +507,7 @@ public class JodaTimeTest {
         assertThat( res.getLocalTime().getMillisOfSecond() ).isEqualTo( 0 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(XmlGregorianCalendarToLocalTime.class)
     public void shouldNotMapXmlGregorianCalendarWithoutMinutesToLocalTime() throws Exception {
 

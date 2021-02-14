@@ -8,11 +8,9 @@ package org.mapstruct.ap.test.bugs._1359;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.ITERABLE;
@@ -25,11 +23,10 @@ import static org.assertj.core.api.InstanceOfAssertFactories.ITERABLE;
     Source.class,
     Target.class
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey( "1359" )
 public class Issue1359Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
         Target target = new Target();

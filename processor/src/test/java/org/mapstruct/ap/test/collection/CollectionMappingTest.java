@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -17,20 +14,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class,
     StringHolderArrayList.class,
     StringHolderToLongMap.class,
     StringHolder.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapNullList() {
         Source source = new Source();
@@ -41,7 +38,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringList() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapNullList() {
         Target target = new Target();
@@ -52,7 +49,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringList() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapList() {
         Source source = new Source();
@@ -64,7 +61,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("92")
     public void shouldMapListWithoutSetter() {
         Source source = new Source();
@@ -76,7 +73,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringListNoSetter() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapList() {
         Target target = new Target();
@@ -88,7 +85,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapListAsCopy() {
         Source source = new Source();
@@ -101,7 +98,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringList() ).isNotEqualTo( target.getStringList() );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "153" )
     public void shouldMapListWithClearAndAddAll() {
         Source source = new Source();
@@ -130,7 +127,7 @@ public class CollectionMappingTest {
         TestList.setAddAllCalled( false );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapListAsCopy() {
         Target target = new Target();
@@ -142,7 +139,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapArrayList() {
         Source source = new Source();
@@ -154,7 +151,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringArrayList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapArrayList() {
         Target target = new Target();
@@ -166,7 +163,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringArrayList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapSet() {
         Source source = new Source();
@@ -178,7 +175,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringSet() ).contains( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapSet() {
         Target target = new Target();
@@ -190,7 +187,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringSet() ).contains( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapSetAsCopy() {
         Source source = new Source();
@@ -202,7 +199,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringSet() ).containsOnly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapHashSetAsCopy() {
         Source source = new Source();
@@ -214,7 +211,7 @@ public class CollectionMappingTest {
         assertThat( source.getStringHashSet() ).containsOnly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapSetAsCopy() {
         Target target = new Target();
@@ -226,7 +223,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringSet() ).containsOnly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapListToCollection() {
         Source source = new Source();
@@ -238,7 +235,7 @@ public class CollectionMappingTest {
         assertThat( target.getIntegerCollection() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapListToCollection() {
         Target target = new Target();
@@ -250,7 +247,7 @@ public class CollectionMappingTest {
         assertThat( source.getIntegerList() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapIntegerSetToRawSet() {
         Source source = new Source();
@@ -262,7 +259,7 @@ public class CollectionMappingTest {
         assertThat( target.getSet() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapIntegerSetToStringSet() {
         Source source = new Source();
@@ -274,7 +271,7 @@ public class CollectionMappingTest {
         assertThat( target.getAnotherStringSet() ).containsOnly( "1", "2" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapIntegerSetToStringSet() {
         Target target = new Target();
@@ -286,7 +283,7 @@ public class CollectionMappingTest {
         assertThat( source.getAnotherIntegerSet() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapSetOfEnumToStringSet() {
         Source source = new Source();
@@ -298,7 +295,7 @@ public class CollectionMappingTest {
         assertThat( target.getColours() ).containsOnly( "BLUE", "GREEN" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapSetOfEnumToStringSet() {
         Target target = new Target();
@@ -310,7 +307,7 @@ public class CollectionMappingTest {
         assertThat( source.getColours() ).containsOnly( Colour.GREEN, Colour.BLUE );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapMapAsCopy() {
         Source source = new Source();
 
@@ -326,7 +323,7 @@ public class CollectionMappingTest {
         assertThat( target.getStringLongMap() ).hasSize( 3 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "153" )
     public void shouldMapMapWithClearAndPutAll() {
         Source source = new Source();
@@ -358,7 +355,7 @@ public class CollectionMappingTest {
         TestMap.setPuttAllCalled( false );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("87")
     public void shouldMapIntegerSetToNumberSet() {
         Set<Number> numbers = SourceTargetMapper.INSTANCE
@@ -368,7 +365,7 @@ public class CollectionMappingTest {
         assertThat( numbers ).containsOnly( 123, 456 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("732")
     public void shouldEnumSetAsCopy() {
         Source source = new Source();
@@ -381,7 +378,7 @@ public class CollectionMappingTest {
         assertThat( target.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("853")
     public void shouldMapNonGenericList() {
         Source source = new Source();
@@ -406,7 +403,7 @@ public class CollectionMappingTest {
         assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("853")
     public void shouldMapNonGenericMap() {
         Source source = new Source();

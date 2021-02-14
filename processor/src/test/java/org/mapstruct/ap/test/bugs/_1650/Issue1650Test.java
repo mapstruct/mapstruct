@@ -5,16 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1650;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("1650")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     AMapper.class,
     A.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1650Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
        A a = new A();

@@ -5,12 +5,10 @@
  */
 package org.mapstruct.ap.test.bugs._2245;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,17 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2245")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     TestMapper.class
 })
 public class Issue2245Test {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource()
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource()
         .addComparisonToFixtureFor( TestMapper.class );
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateSourceGetMethodOnce() {
 
         TestMapper.Tenant tenant =

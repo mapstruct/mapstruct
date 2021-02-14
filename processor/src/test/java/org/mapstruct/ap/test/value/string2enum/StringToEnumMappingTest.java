@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.value.string2enum;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IssueKey( "1557" )
 @WithClasses({ OrderType.class, OrderMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StringToEnumMappingTest {
 
-    @Test
+    @ProcessorTest
     public void testTheNormalStuff() {
         assertThat( OrderMapper.INSTANCE.mapNormal( null ) ).isNull();
         assertThat( OrderMapper.INSTANCE.mapNormal( "SPECIAL" ) ).isEqualTo( OrderType.EXTRA );
@@ -35,14 +32,14 @@ public class StringToEnumMappingTest {
         assertThat( OrderMapper.INSTANCE.mapNormal( "blah" ) ).isEqualTo( OrderType.RETAIL );
     }
 
-    @Test
+    @ProcessorTest
     public void testRemainingAndNull() {
         assertThat( OrderMapper.INSTANCE.mapWithAnyUnmapped( null ) ).isEqualTo( OrderType.STANDARD );
         assertThat( OrderMapper.INSTANCE.mapWithAnyUnmapped( "DEFAULT" ) ).isNull();
         assertThat( OrderMapper.INSTANCE.mapWithAnyUnmapped( "BLAH" ) ).isEqualTo( OrderType.RETAIL );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousOrderMapperUsingNoAnyRemainingAndNoAnyUnmapped.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,

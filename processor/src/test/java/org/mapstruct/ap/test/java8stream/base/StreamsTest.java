@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Source.class,
     Target.class,
@@ -36,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class StreamsTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     public void shouldNotContainFunctionIdentity() {
         generatedSource.forMapper( StreamMapper.class )
             .content()
@@ -47,7 +44,7 @@ public class StreamsTest {
             .doesNotContain( "Function.identity()" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapSourceStream() {
         List<Integer> someInts = Arrays.asList( 1, 2, 3 );
         Stream<Integer> stream = someInts.stream();
@@ -84,7 +81,7 @@ public class StreamsTest {
         assertThat( target.getTargetElements().get( 0 ).getSource() ).isEqualTo( "source1" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapTargetStream() {
         List<Integer> someInts = Arrays.asList( 1, 2, 3 );
         Stream<Integer> stream = someInts.stream();

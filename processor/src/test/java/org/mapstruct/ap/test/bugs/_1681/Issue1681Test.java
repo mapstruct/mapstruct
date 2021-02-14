@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1681;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1681")
 @WithClasses({
     Issue1681Mapper.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1681Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
         Target target = new Target( "before" );
         Source source = new Source();
@@ -37,7 +34,7 @@ public class Issue1681Test {
         assertThat( updatedTarget.getValue() ).isEqualTo( "after" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldCompileWithBuilder() {
         Target.Builder targetBuilder = Target.builder();
         targetBuilder.builderValue( "before" );

@@ -5,10 +5,8 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     ParentSource.class,
     ParentMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractGenericTargetBuilderTest {
 
-    @Test
+    @ProcessorTest
     public void testAbstractTargetMapper() {
         ParentSource parent = new ParentSource();
         parent.setCount( 4 );

@@ -5,29 +5,26 @@
  */
 package org.mapstruct.ap.test.defaultcomponentmodel;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("2277")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Source.class,
     Target.class,
 })
 public class DefaultComponentModelMapperTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         InstanceIterableMapper.class,
         InstanceMapper.class,

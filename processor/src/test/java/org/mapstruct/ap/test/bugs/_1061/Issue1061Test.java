@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.bugs._1061;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("1061")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses(SourceTargetMapper.class)
 public class Issue1061Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
     }

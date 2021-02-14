@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     ByteSource.class,
@@ -40,10 +38,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     DoubleWrapperTarget.class,
     SourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NumberConversionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyByteConversions() {
         ByteSource source = new ByteSource();
         source.setB( (byte) 1 );
@@ -76,7 +73,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyByteWrapperConversions() {
         ByteWrapperSource source = new ByteWrapperSource();
         source.setB( (byte) 1 );
@@ -109,7 +106,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyShortConversions() {
         ShortSource source = new ShortSource();
         source.setB( (short) 1 );
@@ -142,7 +139,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyShortWrapperConversions() {
         ShortWrapperSource source = new ShortWrapperSource();
         source.setB( (short) 1 );
@@ -175,7 +172,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyIntConversions() {
         IntSource source = new IntSource();
         source.setB( 1 );
@@ -208,7 +205,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyIntWrapperConversions() {
         IntWrapperSource source = new IntWrapperSource();
         source.setB( 1 );
@@ -241,7 +238,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyLongConversions() {
         LongSource source = new LongSource();
         source.setB( 1 );
@@ -274,7 +271,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyLongWrapperConversions() {
         LongWrapperSource source = new LongWrapperSource();
         source.setB( (long) 1 );
@@ -307,7 +304,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyFloatConversions() {
         FloatSource source = new FloatSource();
         source.setB( 1 );
@@ -340,7 +337,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyFloatWrapperConversions() {
         FloatWrapperSource source = new FloatWrapperSource();
         source.setB( 1f );
@@ -373,7 +370,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDoubleConversions() {
         DoubleSource source = new DoubleSource();
         source.setB( 1 );
@@ -406,7 +403,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDoubleWrapperConversions() {
         DoubleWrapperSource source = new DoubleWrapperSource();
         source.setB( 1d );
@@ -439,7 +436,7 @@ public class NumberConversionTest {
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "229" )
     public void wrapperToPrimitiveIsNullSafe() {
         assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new ByteWrapperSource() ) ).isNotNull();

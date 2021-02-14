@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._931;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verifies that source.nested == null, leads to target.id == null
@@ -19,10 +17,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey( "931" )
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses( { Source.class, Nested.class, Target.class, SourceTargetMapper.class } )
 public class Issue931Test {
-    @Test
+    @ProcessorTest
     public void shouldMapNestedNullToNull() {
 
         Source source = new Source();

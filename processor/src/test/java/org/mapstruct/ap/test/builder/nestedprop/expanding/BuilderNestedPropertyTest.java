@@ -5,10 +5,8 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     ImmutableArticle.class,
     ExpandingMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class BuilderNestedPropertyTest {
 
-    @Test
+    @ProcessorTest
     public void testNestedImmutablePropertyMapper() {
         FlattenedStock stock = new FlattenedStock( "Sock", "Tie", 33 );
         ImmutableExpandedStock expandedTarget = ExpandingMapper.INSTANCE.writeToNestedProperty( stock );

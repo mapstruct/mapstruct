@@ -5,30 +5,27 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class JavaExpressionTest {
 
-   @Test
+   @ProcessorTest
    @WithClasses({ Source.class, Target.class, TimeAndFormat.class, SourceTargetMapper.class })
     public void testJavaExpressionInsertion() throws ParseException {
         Source source = new Source();
@@ -47,7 +44,7 @@ public class JavaExpressionTest {
     }
 
     @IssueKey( "255" )
-    @Test
+    @ProcessorTest
     @WithClasses({
         Source.class,
         Source2.class,
@@ -79,7 +76,7 @@ public class JavaExpressionTest {
         return dateFormat.parse( date );
     }
 
-   @Test
+   @ProcessorTest
    @WithClasses({ Source.class, Target.class, TimeAndFormat.class, SourceTargetMapper.class })
     public void testJavaExpressionInsertionWithExistingTarget() throws ParseException {
         Source source = new Source();
@@ -100,7 +97,7 @@ public class JavaExpressionTest {
     }
 
     @IssueKey( "278" )
-    @Test
+    @ProcessorTest
     @WithClasses({
         SourceBooleanWorkAround.class,
         TargetBooleanWorkAround.class,
@@ -120,7 +117,7 @@ public class JavaExpressionTest {
     }
 
     @IssueKey( "305" )
-    @Test
+    @ProcessorTest
     @WithClasses({
         SourceList.class,
         TargetList.class,
@@ -136,7 +133,7 @@ public class JavaExpressionTest {
     }
 
     @IssueKey( "1851" )
-    @Test
+    @ProcessorTest
     @WithClasses({
         Source.class,
         Target.class,

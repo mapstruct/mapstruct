@@ -5,22 +5,19 @@
  */
 package org.mapstruct.ap.test.java8stream.streamtononiterable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class })
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StreamToNonIterableMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldMapStringStreamToStringUsingCustomMapper() {
         Source source = new Source();
         source.setNames( Stream.of( "Alice", "Bob", "Jim" ) );
@@ -30,7 +27,7 @@ public class StreamToNonIterableMappingTest {
         assertThat( target.getNames() ).isEqualTo( "Alice-Bob-Jim" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapStringStreamToStringUsingCustomMapper() {
         Target target = new Target();
         target.setNames( "Alice-Bob-Jim" );

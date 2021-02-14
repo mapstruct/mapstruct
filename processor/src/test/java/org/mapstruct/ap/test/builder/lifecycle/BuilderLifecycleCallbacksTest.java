@@ -7,18 +7,15 @@ package org.mapstruct.ap.test.builder.lifecycle;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey( "1433" )
 @WithClasses( {
     Item.class,
@@ -30,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 public class BuilderLifecycleCallbacksTest {
 
-    @Test
+    @ProcessorTest
     public void lifecycleMethodsShouldBeInvoked() {
         OrderDto source = new OrderDto();
         source.setCreator( "Filip" );

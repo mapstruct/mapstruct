@@ -12,17 +12,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DatatypeFactory;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarFactorizedProperty;
 import org.mapstruct.ap.test.builtin.mapper.ToXmlGregCalMapper;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,23 +32,22 @@ import static org.assertj.core.api.Assertions.assertThat;
     DateProperty.class
 
 } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DatatypeFactoryTest {
 
     private TimeZone originalTimeZone;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         TimeZone.setDefault( originalTimeZone );
     }
 
-    @Test
+    @ProcessorTest
     public void testNoConflictsWithOwnDatatypeFactory() throws ParseException {
 
         DateProperty source1 = new DateProperty();

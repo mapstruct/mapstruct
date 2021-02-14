@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.inheritance.complex;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
-
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for propagation of attributes inherited from super types.
@@ -30,10 +27,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SourceExt.class, SourceExt2.class,
     TargetComposite.class, AdditionalFooSource.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ComplexInheritanceTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("34")
     @WithClasses({ StandaloneSourceCompositeTargetCompositeMapper.class })
     public void shouldMapAttributesWithSuperTypeInStandaloneMapper() {
@@ -47,7 +43,7 @@ public class ComplexInheritanceTest {
         assertThat( target.getProp5() ).containsOnly( 42, 999 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("34")
     @WithClasses({ SourceCompositeTargetCompositeMapper.class, SourceBaseMappingHelper.class })
     public void shouldMapAttributesWithSuperTypeUsingOtherMapper() {
@@ -61,7 +57,7 @@ public class ComplexInheritanceTest {
         assertThat( target.getProp5() ).containsOnly( 43, 1000 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("34")
     @WithClasses({ ErroneousSourceCompositeTargetCompositeMapper.class, AdditionalMappingHelper.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,

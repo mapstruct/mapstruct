@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2124;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,14 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2124")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CommitComment.class,
     Issue2124Mapper.class
 })
 public class Issue2124Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
         CommitComment clone = Issue2124Mapper.INSTANCE.clone( new CommitComment( 100 ), null );

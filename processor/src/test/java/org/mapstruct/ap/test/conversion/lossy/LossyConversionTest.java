@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.conversion.lossy;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.withinPercentage;
@@ -22,7 +20,6 @@ import static org.assertj.core.api.Assertions.withinPercentage;
  *
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     OversizedKitchenDrawerDto.class,
     RegularKitchenDrawerEntity.class,
@@ -35,7 +32,7 @@ import static org.assertj.core.api.Assertions.withinPercentage;
 @IssueKey("5")
 public class LossyConversionTest {
 
-    @Test
+    @ProcessorTest
     public void testNoErrorCase() {
 
         CutleryInventoryDto dto = new CutleryInventoryDto();
@@ -51,7 +48,7 @@ public class LossyConversionTest {
         assertThat( entity.getApproximateKnifeLength() ).isCloseTo( 3.7d, withinPercentage( 0.0001d ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper1.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -64,7 +61,7 @@ public class LossyConversionTest {
     public void testConversionFromLongToInt() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(KitchenDrawerMapper2.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -77,7 +74,7 @@ public class LossyConversionTest {
     public void testConversionFromBigIntegerToInteger() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper3.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -90,7 +87,7 @@ public class LossyConversionTest {
     public void test2StepConversionFromBigIntegerToLong() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper4.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -103,7 +100,7 @@ public class LossyConversionTest {
     public void testConversionFromDoubleToFloat() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper5.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -116,7 +113,7 @@ public class LossyConversionTest {
     public void testConversionFromBigDecimalToFloat() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(KitchenDrawerMapper6.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -128,7 +125,7 @@ public class LossyConversionTest {
     public void test2StepConversionFromDoubleToFloat() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ListMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -140,7 +137,7 @@ public class LossyConversionTest {
     public void testListElementConversion() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(MapMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {

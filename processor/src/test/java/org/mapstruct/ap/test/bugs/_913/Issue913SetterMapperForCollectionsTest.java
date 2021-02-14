@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * All these test cases test the possible combinations in the SetterMapperForCollections.
@@ -25,7 +23,6 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  *
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Domain.class,
     Dto.class,
@@ -38,8 +35,8 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         DomainDtoWithNvmsNullMapper.class,
         DomainDtoWithNvmsDefaultMapper.class,
         DomainDtoWithPresenceCheckMapper.class,
@@ -55,7 +52,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * variable for setting {@code strings} as a direct assignment and the copy constructor is used, in case the
      * assignment is {@code null} then {@code null} should be set for {@code string}
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForCreate() {
 
         Dto dto = new Dto();
@@ -71,7 +68,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForUpdate() {
 
         Dto dto = new Dto();
@@ -94,7 +91,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * target (stringsInitialized is Not Null) and source (stringInitialized is Null) target should
      * be explicitely set to null
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForUpdateWithNonNullTargetAndNullSource() {
 
         Dto dto = new Dto();
@@ -117,7 +114,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForNvmsReturnNullForUpdateWithReturn() {
 
         Dto dto = new Dto();
@@ -140,7 +137,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      * However, for plain mappings (strings to strings) the result will also be an empty collection.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForCreate() {
 
         Dto dto = new Dto();
@@ -158,7 +155,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      * However, for plain mappings (strings to strings) the result will also be an empty collection.
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdate() {
 
         Dto dto = new Dto();
@@ -184,7 +181,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * However, for plain mappings (strings to strings) the result will also be an empty collection.
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdateWithReturn() {
 
         Dto dto = new Dto();
@@ -211,7 +208,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * Test create method ICW presence checker. The presence checker is responsible for the null check.
      *
      */
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForCreateWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -229,7 +226,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      */
     @IssueKey( "#954")
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -252,7 +249,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      */
     @IssueKey( "#954")
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithReturnWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -277,7 +274,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      */
     @IssueKey( "#954")
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForCreateWithNcvsAlways() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -295,7 +292,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      */
     @IssueKey( "#954")
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithNcvsAlways() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
@@ -318,7 +315,7 @@ public class Issue913SetterMapperForCollectionsTest {
      *
      */
     @IssueKey( "#954")
-    @Test
+    @ProcessorTest
     public void shouldReturnNullForUpdateWithReturnWithNcvsAlways() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();

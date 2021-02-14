@@ -5,19 +5,17 @@
  */
 package org.mapstruct.ap.test.java8stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Source.class,
@@ -29,10 +27,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     StringHolder.class
 })
 @IssueKey( "962" )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StreamMappingTest {
 
-    @Test
+    @ProcessorTest
     public void shouldMapNullList() {
         Source source = new Source();
 
@@ -42,7 +39,7 @@ public class StreamMappingTest {
         assertThat( target.getStringList() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapNullList() {
         Target target = new Target();
 
@@ -52,7 +49,7 @@ public class StreamMappingTest {
         assertThat( source.getStringStream() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapList() {
         Source source = new Source();
         source.setStringStream( Stream.of( "Bob", "Alice" ) );
@@ -63,7 +60,7 @@ public class StreamMappingTest {
         assertThat( target.getStringList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapListWithoutSetter() {
         Source source = new Source();
         source.setStringStream2( Stream.of( "Bob", "Alice" ) );
@@ -74,7 +71,7 @@ public class StreamMappingTest {
         assertThat( target.getStringListNoSetter() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapList() {
         Target target = new Target();
         target.setStringList( Arrays.asList( "Bob", "Alice" ) );
@@ -85,7 +82,7 @@ public class StreamMappingTest {
         assertThat( source.getStringStream() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapArrayList() {
         Source source = new Source();
         source.setStringArrayStream( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ).stream() );
@@ -96,7 +93,7 @@ public class StreamMappingTest {
         assertThat( target.getStringArrayList() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapArrayList() {
         Target target = new Target();
         target.setStringArrayList( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ) );
@@ -107,7 +104,7 @@ public class StreamMappingTest {
         assertThat( source.getStringArrayStream() ).containsExactly( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapSet() {
         Source source = new Source();
         source.setStringStreamToSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ).stream() );
@@ -118,7 +115,7 @@ public class StreamMappingTest {
         assertThat( target.getStringSet() ).contains( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapSet() {
         Target target = new Target();
         target.setStringSet( new HashSet<>( Arrays.asList( "Bob", "Alice" ) ) );
@@ -129,7 +126,7 @@ public class StreamMappingTest {
         assertThat( source.getStringStreamToSet() ).contains( "Bob", "Alice" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapListToCollection() {
         Source source = new Source();
         source.setIntegerStream( Stream.of( 1, 2 ) );
@@ -140,7 +137,7 @@ public class StreamMappingTest {
         assertThat( target.getIntegerCollection() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapListToCollection() {
         Target target = new Target();
         target.setIntegerCollection( Arrays.asList( 1, 2 ) );
@@ -151,7 +148,7 @@ public class StreamMappingTest {
         assertThat( source.getIntegerStream() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIntegerSetToStringSet() {
         Source source = new Source();
         source.setAnotherIntegerStream( new HashSet<>( Arrays.asList( 1, 2 ) ).stream() );
@@ -162,7 +159,7 @@ public class StreamMappingTest {
         assertThat( target.getAnotherStringSet() ).containsOnly( "1", "2" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapIntegerSetToStringSet() {
         Target target = new Target();
         target.setAnotherStringSet( new HashSet<>( Arrays.asList( "1", "2" ) ) );
@@ -173,7 +170,7 @@ public class StreamMappingTest {
         assertThat( source.getAnotherIntegerStream() ).containsOnly( 1, 2 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapSetOfEnumToStringSet() {
         Source source = new Source();
         source.setColours( Stream.of( Colour.BLUE, Colour.GREEN ) );
@@ -184,7 +181,7 @@ public class StreamMappingTest {
         assertThat( target.getColours() ).containsOnly( "BLUE", "GREEN" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseMapSetOfEnumToStringSet() {
         Target target = new Target();
         target.setColours( new HashSet<>( Arrays.asList( "BLUE", "GREEN" ) ) );
@@ -195,7 +192,7 @@ public class StreamMappingTest {
         assertThat( source.getColours() ).containsOnly( Colour.GREEN, Colour.BLUE );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapIntegerStreamToNumberSet() {
         Set<Number> numbers = SourceTargetMapper.INSTANCE
             .integerStreamToNumberSet( Stream.of( 123, 456 ) );
@@ -204,7 +201,7 @@ public class StreamMappingTest {
         assertThat( numbers ).containsOnly( 123, 456 );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapNonGenericList() {
         Source source = new Source();
         source.setStringStream3( new ArrayList<>( Arrays.asList( "Bob", "Alice" ) ).stream() );

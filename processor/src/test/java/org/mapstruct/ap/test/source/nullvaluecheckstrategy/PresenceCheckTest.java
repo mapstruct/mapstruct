@@ -5,12 +5,11 @@
  */
 package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  *
@@ -25,10 +24,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     RockFestivalMapperOveridingConfig.class,
     Stage.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckTest {
 
-    @Test
+    @ProcessorTest
     public void testCallingMappingMethodWithNullSource() {
 
         RockFestivalSource source =  new RockFestivalSource();
@@ -41,7 +39,7 @@ public class PresenceCheckTest {
 
    }
 
-    @Test
+    @ProcessorTest
     public void testCallingMappingMethodWithNullSourceWithConfig() {
 
         RockFestivalSource source =  new RockFestivalSource();
@@ -54,10 +52,11 @@ public class PresenceCheckTest {
 
    }
 
-    @Test( expected = IllegalArgumentException.class )
+    @ProcessorTest
     public void testCallingMappingMethodWithNullSourceOveridingConfig() {
 
         RockFestivalSource source =  new RockFestivalSource();
-        RockFestivalMapperOveridingConfig.INSTANCE.map( source );
+        assertThatThrownBy( () -> RockFestivalMapperOveridingConfig.INSTANCE.map( source ) )
+            .isInstanceOf( IllegalArgumentException.class );
    }
 }

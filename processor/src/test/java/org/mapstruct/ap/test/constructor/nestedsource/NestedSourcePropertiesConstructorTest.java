@@ -7,9 +7,7 @@ package org.mapstruct.ap.test.constructor.nestedsource;
 
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.constructor.nestedsource._target.ChartEntry;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Artist;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Chart;
@@ -17,8 +15,8 @@ import org.mapstruct.ap.test.constructor.nestedsource.source.Label;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Song;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,13 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WithClasses({ Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class })
 @IssueKey("73")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSourcePropertiesConstructorTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForPropertyNamesOnly() {
         generatedSource.addComparisonToFixtureFor( ArtistToChartEntry.class );
@@ -58,7 +55,7 @@ public class NestedSourcePropertiesConstructorTest {
         assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForMultipleParam() {
 
@@ -113,7 +110,7 @@ public class NestedSourcePropertiesConstructorTest {
         assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldPickPropertyNameOverParameterName() {
 

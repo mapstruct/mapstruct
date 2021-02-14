@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._577;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "577" )
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue577Test {
 
-    @Test
+    @ProcessorTest
     public void shouldMapTwoArraysToCollections() {
         Source source = new Source();
 

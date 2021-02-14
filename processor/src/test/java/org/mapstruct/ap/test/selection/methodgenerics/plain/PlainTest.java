@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.plain;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PlainTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeIsTypeVarMapper.class )
     public void testGenericReturnTypeVar() {
 
@@ -33,7 +30,7 @@ public class PlainTest {
         assertThat( target.getProp() ).isEqualTo( "test" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceTypeIsTypeVarMapper.class )
     public void testGenericSourceTypeVar() {
 
@@ -46,7 +43,7 @@ public class PlainTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( BothParameterizedMapper.class )
     public void testBothParameterized() {
 
@@ -60,7 +57,7 @@ public class PlainTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeIsRawTypeMapper.class )
     public void testRaw() {
 

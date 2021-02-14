@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.value.spi;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CheeseType.class,
     CustomCheeseType.class,
@@ -33,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @WithServiceImplementation(CustomEnumMappingStrategy.class)
 public class CustomEnumMappingStrategyTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CustomCheeseMapper.class
     })
@@ -82,7 +79,7 @@ public class CustomEnumMappingStrategyTest {
         assertThat( mapper.mapStringToCustom( "UNKNOWN" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OverridesCustomCheeseMapper.class
     })
@@ -127,7 +124,7 @@ public class CustomEnumMappingStrategyTest {
         assertThat( mapper.mapStringToCustom( "UNKNOWN" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("2339")
     @WithClasses({
         CustomThrowingCheeseMapper.class

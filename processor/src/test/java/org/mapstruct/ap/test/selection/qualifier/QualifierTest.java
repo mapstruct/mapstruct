@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
@@ -28,11 +26,11 @@ import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.YetAnotherMapper;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -49,10 +47,9 @@ import static org.assertj.core.api.Assertions.entry;
     SomeOtherMapper.class,
     NonQualifierAnnotated.class
 } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class QualifierTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         Titles.class,
         Facts.class,
@@ -90,7 +87,7 @@ public class QualifierTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         YetAnotherMapper.class,
         ErroneousMapper.class
@@ -116,7 +113,7 @@ public class QualifierTest {
     public void shouldNotProduceMatchingMethod() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         MapperWithoutQualifiedBy.class,
         Facts.class,
@@ -136,7 +133,7 @@ public class QualifierTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         MovieFactoryMapper.class,
         ReleaseFactory.class,
@@ -171,7 +168,7 @@ public class QualifierTest {
         );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("342")
     @WithClasses({
         ErroneousMovieFactoryMapper.class

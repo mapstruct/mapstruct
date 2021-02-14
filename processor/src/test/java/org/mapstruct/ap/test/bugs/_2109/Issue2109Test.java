@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2109;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2109")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue2109Mapper.class,
     Source.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2109Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCorrectlyMapArrayInConstructorMapping() {
         Target target = Issue2109Mapper.INSTANCE.map( new Source( 100L, new byte[] { 100, 120, 40, 40 } ) );
 

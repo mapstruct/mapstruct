@@ -8,17 +8,15 @@ package org.mapstruct.ap.test.injectionstrategy.jsr330._default;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -42,33 +40,32 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomerJsr330DefaultCompileOptionFieldMapper.class,
     GenderJsr330DefaultCompileOptionFieldMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @ComponentScan(basePackageClasses = CustomerJsr330DefaultCompileOptionFieldMapper.class)
 @Configuration
 public class Jsr330DefaultCompileOptionFieldMapperTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Inject
     @Named
     private CustomerJsr330DefaultCompileOptionFieldMapper customerMapper;
     private ConfigurableApplicationContext context;
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConvertToTarget() {
         // given
         CustomerEntity customerEntity = new CustomerEntity();
@@ -84,7 +81,7 @@ public class Jsr330DefaultCompileOptionFieldMapperTest {
         assertThat( customerDto.getGender() ).isEqualTo( GenderDto.M );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldHaveFieldInjection() {
         generatedSource.forMapper( CustomerJsr330DefaultCompileOptionFieldMapper.class )
             .content()

@@ -28,4 +28,8 @@ public class GitlabTag {
         return callCounter;
     }
 
+    public static void resetCallCounter() {
+        callCounter = 0;
+    }
+
 }

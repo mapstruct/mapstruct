@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.imports.decorator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.imports.decorator.other.ActorMapperDecorator;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for having a decorator in another package than the mapper interface.
@@ -26,10 +24,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     ActorMapper.class,
     ActorMapperDecorator.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DecoratorInAnotherPackageTest {
 
-    @Test
+    @ProcessorTest
     public void shouldApplyDecoratorFromAnotherPackage() {
         Actor actor = new Actor();
         actor.setAwards( 3 );

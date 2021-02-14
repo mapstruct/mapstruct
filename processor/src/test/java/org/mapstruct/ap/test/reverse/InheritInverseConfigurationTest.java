@@ -7,18 +7,16 @@ package org.mapstruct.ap.test.reverse;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous1;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous2;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous3;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperNonMatchingName;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey("252")
 @WithClasses({ Source.class, Target.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritInverseConfigurationTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapper.class })
     public void shouldInheritInverseConfigurationMultipleCandidates() {
 
@@ -53,7 +50,7 @@ public class InheritInverseConfigurationTest {
         assertThat( source.getPropertyToIgnoreDownstream() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous1.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -72,7 +69,7 @@ public class InheritInverseConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodError() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous2.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -91,7 +88,7 @@ public class InheritInverseConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperAmbiguous3.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -112,7 +109,7 @@ public class InheritInverseConfigurationTest {
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ SourceTargetMapperNonMatchingName.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

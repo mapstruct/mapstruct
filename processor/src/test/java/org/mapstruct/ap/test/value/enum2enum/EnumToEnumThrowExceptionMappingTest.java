@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.value.enum2enum;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,11 +25,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
     OrderEntity.class,
     OrderType.class, ExternalOrderType.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumThrowExceptionMappingTest {
 
     @IssueKey("2339")
-    @Test
+    @ProcessorTest
     @WithClasses(DefaultOrderThrowExceptionMapper.class)
     public void shouldBeAbleToMapAnyUnmappedToThrowException() {
 
@@ -43,7 +40,7 @@ public class EnumToEnumThrowExceptionMappingTest {
     }
 
     @IssueKey("2339")
-    @Test
+    @ProcessorTest
     @WithClasses({ DefaultOrderThrowExceptionMapper.class, ErroneousOrderMapperThrowExceptionAsSourceType.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -59,7 +56,7 @@ public class EnumToEnumThrowExceptionMappingTest {
     }
 
     @IssueKey("2339")
-    @Test
+    @ProcessorTest
     @WithClasses({OrderThrowExceptionMapper.class, OrderDto.class})
     public void shouldIgnoreThrowExceptionWhenInverseValueMappings() {
 
@@ -68,7 +65,7 @@ public class EnumToEnumThrowExceptionMappingTest {
     }
 
     @IssueKey("2339")
-    @Test
+    @ProcessorTest
     @WithClasses({SpecialThrowExceptionMapper.class, OrderDto.class})
     public void shouldBeAbleToMapAnyRemainingToThrowException() {
 
@@ -80,7 +77,7 @@ public class EnumToEnumThrowExceptionMappingTest {
     }
 
     @IssueKey("2339")
-    @Test
+    @ProcessorTest
     @WithClasses({SpecialThrowExceptionMapper.class, OrderDto.class})
     public void shouldBeAbleToMapNullToThrowException() {
 

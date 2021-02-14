@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1566;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class
 })
 @IssueKey("1566")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue1566Test {
 
-    @Test
+    @ProcessorTest
     public void genericMapperIsCorrectlyUsed() {
         Source source = new Source();
         source.setId( "id-123" );

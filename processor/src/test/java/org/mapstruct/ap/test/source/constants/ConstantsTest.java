@@ -5,15 +5,13 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,18 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sjaak Derksen
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
     ConstantsMapper.class,
     ConstantsTarget.class
 } )
 public class ConstantsTest {
 
-    @Rule
-    public final GeneratedSource generatedSrc =
+    @RegisterExtension
+    final GeneratedSource generatedSrc =
         new GeneratedSource().addComparisonToFixtureFor( ConstantsMapper.class );
 
-    @Test
+    @ProcessorTest
     public void testNumericConstants() {
 
         ConstantsTarget target = ConstantsMapper.INSTANCE.mapFromConstants( "dummy" );
@@ -58,7 +55,7 @@ public class ConstantsTest {
         assertThat( target.getDoubleBoxedZero() ).isEqualTo( 0.0 );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("1458")
     @WithClasses({
         ConstantsTarget.class,

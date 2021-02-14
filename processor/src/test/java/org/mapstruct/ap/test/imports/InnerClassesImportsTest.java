@@ -5,11 +5,7 @@
  */
 package org.mapstruct.ap.test.imports;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.imports.innerclasses.BeanFacade;
 import org.mapstruct.ap.test.imports.innerclasses.BeanWithInnerEnum;
 import org.mapstruct.ap.test.imports.innerclasses.BeanWithInnerEnum.InnerEnum;
@@ -21,9 +17,11 @@ import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).
@@ -34,17 +32,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  SourceWithInnerClass.class, TargetWithInnerClass.class, InnerClassMapper.class, //
     BeanFacade.class, BeanWithInnerEnum.class, BeanWithInnerEnumMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class InnerClassesImportsTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     @IssueKey( "412" )
     public void mapperRequiresInnerClassImports() {
         SourceWithInnerClass source = new SourceWithInnerClass();
@@ -58,7 +51,7 @@ public class InnerClassesImportsTest {
         generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerClass.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "412" )
     public void mapperRequiresInnerInnerClassImports() {
         SourceInnerClass source = new SourceInnerClass();
@@ -72,7 +65,7 @@ public class InnerClassesImportsTest {
         generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerInnerClass.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "209" )
     public void mapperRequiresInnerEnumImports() {
         BeanWithInnerEnum source = new BeanWithInnerEnum();

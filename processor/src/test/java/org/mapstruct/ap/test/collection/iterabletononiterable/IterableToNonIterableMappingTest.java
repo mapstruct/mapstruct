@@ -10,18 +10,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class, FruitsMenu.class,
         FruitSalad.class, Fruit.class, FruitsMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class IterableToNonIterableMappingTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldMapStringListToStringUsingCustomMapper() {
         Source source = new Source();
@@ -34,7 +31,7 @@ public class IterableToNonIterableMappingTest {
         assertThat( target.publicNames ).isEqualTo( "Alice-Bob-Jim" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("6")
     public void shouldReverseMapStringListToStringUsingCustomMapper() {
         Target target = new Target();
@@ -48,7 +45,7 @@ public class IterableToNonIterableMappingTest {
         assertThat( source.publicNames ).isEqualTo( Arrays.asList( "Alice", "Bob", "Jim" ) );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("607")
     public void shouldMapIterableToNonIterable() {
         List<Fruit> fruits =  Arrays.asList( new Fruit( "mango" ), new Fruit( "apple" ),
@@ -60,7 +57,7 @@ public class IterableToNonIterableMappingTest {
         assertThat( salad.getFruits().get( 2 ).getType() ).isEqualTo( "banana" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("607")
     public void shouldMapNonIterableToIterable() {
         List<Fruit> fruits =  Arrays.asList( new Fruit( "mango" ), new Fruit( "apple" ),

@@ -7,8 +7,6 @@ package org.mapstruct.ap.test.bugs._2170;
 
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._2170.dto.AddressDto;
 import org.mapstruct.ap.test.bugs._2170.dto.PersonDto;
 import org.mapstruct.ap.test.bugs._2170.entity.Address;
@@ -17,8 +15,8 @@ import org.mapstruct.ap.test.bugs._2170.mapper.AddressMapper;
 import org.mapstruct.ap.test.bugs._2170.mapper.EntityMapper;
 import org.mapstruct.ap.test.bugs._2170.mapper.PersonMapper;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2170")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Address.class,
     Person.class,
@@ -38,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue2170Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCodeThatCompiles() {
 
         AddressDto addressDto = AddressMapper.INSTANCE.toDto( new Address(

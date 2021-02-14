@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._2122;
 
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,11 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Bandowski
  */
 @IssueKey("2122")
-@RunWith(AnnotationProcessorTestRunner.class)
-
 public class Issue2122Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2122Method2MethodMapper.class )
     public void shouldMapMethod2Method() {
         Issue2122Method2MethodMapper.Source source = new Issue2122Method2MethodMapper.Source();
@@ -47,7 +43,7 @@ public class Issue2122Test {
             .extracting( Issue2122Method2MethodMapper.EmbeddedTarget::getValue ).isEqualTo( "value" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2122TypeConversion2MethodMapper.class )
     public void shouldMapTypeConversion2Method() {
         Issue2122TypeConversion2MethodMapper.Source source = new Issue2122TypeConversion2MethodMapper.Source();
@@ -63,7 +59,7 @@ public class Issue2122Test {
             .isEqualTo( "5" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2122Method2TypeConversionMapper.class )
     public void shouldMapMethod2TypeConversion() {
         Issue2122Method2TypeConversionMapper.Source source = new Issue2122Method2TypeConversionMapper.Source();

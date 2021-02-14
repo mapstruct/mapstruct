@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.multiple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith( AnnotationProcessorTestRunner.class)
 public class MultipleTypeVarTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeHasMultipleTypeVarOneGenericMapper.class )
     public void testGenericSourceTypeVarOneGeneric() {
 
@@ -37,7 +34,7 @@ public class MultipleTypeVarTest {
         assertThat( target.getProp() ).containsExactly( entry( "test", 5L ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ReturnTypeHasMultipleTypeVarBothGenericMapper.class )
     public void testGenericReturnTypeVarBothGeneric() {
 
@@ -53,7 +50,7 @@ public class MultipleTypeVarTest {
         assertThat( target.getProp() ).containsExactly( entry( "test", 5L ) );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceTypeHasMultipleTypeVarBothGenericMapper.class )
     public void testGenericSourceTypeVarBothGeneric() {
 

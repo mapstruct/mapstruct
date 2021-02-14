@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._2117;
 
 import java.nio.file.AccessMode;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,13 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2117")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     Issue2117Mapper.class
 })
 public class Issue2117Test {
 
-    @Test
+    @ProcessorTest
     public void shouldCompile() {
 
         Issue2117Mapper.Target target = Issue2117Mapper.INSTANCE.toTarget( AccessMode.READ, null );

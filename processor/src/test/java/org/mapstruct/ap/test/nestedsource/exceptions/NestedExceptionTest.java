@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.nestedsource.exceptions;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  *
@@ -24,10 +22,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     ResourceMapper.class
 })
 @IssueKey("1332")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedExceptionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCodeThatCompiles() {
 
     }

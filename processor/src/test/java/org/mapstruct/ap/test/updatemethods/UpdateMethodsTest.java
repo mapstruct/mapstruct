@@ -5,15 +5,13 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  */
 @IssueKey("160")
-@RunWith(AnnotationProcessorTestRunner.class)
  @WithClasses({
     OrganizationDto.class,
     OrganizationEntity.class,
@@ -41,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class UpdateMethodsTest {
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         OrganizationMapper.class
     } )
@@ -73,7 +70,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         OrganizationMapper.class
     } )
@@ -98,7 +95,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         OrganizationMapper.class
     })
@@ -123,7 +120,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         CompanyMapper.class,
         DepartmentInBetween.class
@@ -144,7 +141,7 @@ public class UpdateMethodsTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {
         ErroneousOrganizationMapper1.class,
         OrganizationWithoutCompanyGetterEntity.class
@@ -160,7 +157,7 @@ public class UpdateMethodsTest {
    )
     public void testShouldFailOnPropertyMappingNoPropertyGetter() { }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousOrganizationMapper2.class,
         OrganizationWithoutTypeGetterEntity.class
@@ -181,7 +178,7 @@ public class UpdateMethodsTest {
     public void testShouldFailOnConstantMappingNoPropertyGetter() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         CompanyMapper1.class,
         DepartmentInBetween.class,

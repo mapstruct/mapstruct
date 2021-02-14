@@ -6,12 +6,13 @@
 package org.mapstruct.ap.internal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Ciaran Liedeman

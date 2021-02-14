@@ -9,11 +9,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1460")
 public class Issue1460Test {
 
-    @Test
+    @ProcessorTest
     public void shouldTestMappingLocalDates() {
         long dateInMs = 1524693600000L;
         String dateAsString = "2018-04-26";

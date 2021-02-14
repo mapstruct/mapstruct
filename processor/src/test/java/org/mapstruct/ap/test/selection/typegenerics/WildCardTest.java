@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.selection.typegenerics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigInteger;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class WildCardTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( SourceWildCardExtendsMapper.class )
     public void testWildCard() {
 

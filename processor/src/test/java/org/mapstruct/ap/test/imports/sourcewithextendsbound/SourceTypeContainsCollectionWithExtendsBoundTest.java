@@ -5,22 +5,20 @@
  */
 package org.mapstruct.ap.test.imports.sourcewithextendsbound;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.astronautmapper.AstronautMapper;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.dto.AstronautDto;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.dto.SpaceshipDto;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Astronaut;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Spaceship;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).
@@ -31,17 +29,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     Astronaut.class, Spaceship.class, AstronautDto.class, SpaceshipDto.class, SpaceshipMapper.class,
     AstronautMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class SourceTypeContainsCollectionWithExtendsBoundTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     @IssueKey("768")
     public void generatesImportsForCollectionWithExtendsBoundInSourceType() {
         Astronaut astronaut = new Astronaut();

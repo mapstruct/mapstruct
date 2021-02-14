@@ -7,14 +7,12 @@ package org.mapstruct.ap.test.erroneous.attributereference;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for using unknown attributes in {@code @Mapping}.
@@ -22,10 +20,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses({ Source.class, Target.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousMappingsTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey("11")
     @WithClasses( { ErroneousMapper.class, AnotherTarget.class } )
     @ExpectedCompilationOutcome(
@@ -58,7 +55,7 @@ public class ErroneousMappingsTest {
     public void shouldFailToGenerateMappings() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { ErroneousMapper1.class, DummySource.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -72,7 +69,7 @@ public class ErroneousMappingsTest {
     public void shouldFailToGenerateMappingsErrorOnMandatoryParameterName() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { ErroneousMapper2.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

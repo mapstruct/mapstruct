@@ -30,4 +30,8 @@ public class Commit {
         return callCounter;
     }
 
+    public static void resetCallCounter() {
+        callCounter = 0;
+    }
+
 }

@@ -7,15 +7,13 @@ package org.mapstruct.ap.test.erroneous.misbalancedbraces;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for making sure that expressions with too many closing braces are passed through, letting the compiler raise an
@@ -25,12 +23,11 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({ MapperWithMalformedExpression.class, Source.class, Target.class })
 @DisableCheckstyle
-@RunWith(AnnotationProcessorTestRunner.class)
 public class MisbalancedBracesTest {
 
     // the compiler messages due to the additional closing brace differ between JDK and Eclipse, hence we can only
     // assert on the line number but not the message
-    @Test
+    @ProcessorTest
     @IssueKey("1056")
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,

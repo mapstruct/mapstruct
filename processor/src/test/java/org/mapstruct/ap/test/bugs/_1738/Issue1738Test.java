@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1738;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1738")
 @WithClasses({
     Issue1738Mapper.class,
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1738Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCorrectSourceNestedMapping() {
         Source source = new Source();
         Source.Nested<Number> nested = new Source.Nested<>();

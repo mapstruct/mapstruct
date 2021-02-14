@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.bugs._1665;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Arne Seime
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1665")
 @WithClasses({
     Issue1665Mapper.class,
@@ -28,7 +25,7 @@ import java.util.List;
 })
 public class Issue1665Test {
 
-    @Test
+    @ProcessorTest
     public void shouldBoxIntPrimitive() {
         Source source = new Source();
         List<Integer> values = new ArrayList<>();

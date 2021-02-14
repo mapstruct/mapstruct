@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.erroneous.propertymapping;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @IssueKey("1504")
 @WithClasses({ Source.class, Target.class, UnmappableClass.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousPropertyMappingTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMapper1.class)
     @IssueKey("1504")
     @ExpectedCompilationOutcome(
@@ -34,7 +31,7 @@ public class ErroneousPropertyMappingTest {
     public void testUnmappableSourceProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMapper2.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -48,7 +45,7 @@ public class ErroneousPropertyMappingTest {
     public void testUnmappableSourcePropertyWithNoSourceDefinedInMapping() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMapper3.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -61,7 +58,7 @@ public class ErroneousPropertyMappingTest {
     public void testUnmappableConstantAssignment() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses(ErroneousMapper4.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

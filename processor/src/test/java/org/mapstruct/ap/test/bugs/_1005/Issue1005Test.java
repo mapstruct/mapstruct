@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._1005;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
 @IssueKey("1005")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     AbstractEntity.class,
     HasKey.class,
@@ -29,7 +26,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class Issue1005Test {
 
     @WithClasses(Issue1005ErroneousAbstractResultTypeMapper.class)
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Issue1005ErroneousAbstractResultTypeMapper.class,
@@ -41,7 +38,7 @@ public class Issue1005Test {
     }
 
     @WithClasses(Issue1005ErroneousAbstractReturnTypeMapper.class)
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Issue1005ErroneousAbstractReturnTypeMapper.class,
@@ -54,7 +51,7 @@ public class Issue1005Test {
     }
 
     @WithClasses(Issue1005ErroneousInterfaceResultTypeMapper.class)
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Issue1005ErroneousInterfaceResultTypeMapper.class,
@@ -66,7 +63,7 @@ public class Issue1005Test {
     }
 
     @WithClasses(Issue1005ErroneousInterfaceReturnTypeMapper.class)
-    @Test
+    @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = Issue1005ErroneousInterfaceReturnTypeMapper.class,

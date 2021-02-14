@@ -7,17 +7,14 @@ package org.mapstruct.ap.test.bugs._2278;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @IssueKey("2278")
-@RunWith( AnnotationProcessorTestRunner.class)
 public class Issue2278Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2278ReferenceMapper.class )
     public void testReferenceMergeBehaviour() {
 
@@ -37,7 +34,7 @@ public class Issue2278Test {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2278MapperA.class )
     public void shouldBehaveJustAsTestReferenceMergeBehaviour() {
 
@@ -57,7 +54,7 @@ public class Issue2278Test {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( Issue2278MapperB.class )
     public void shouldOverrideDetailsMappingWithRedefined() {
 

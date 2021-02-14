@@ -8,11 +8,11 @@ package org.mapstruct.ap.test.bugs._513;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/513.
@@ -34,10 +34,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
         MappingKeyException.class,
         MappingValueException.class
     } )
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue513Test {
 
-    @Test( expected = MappingException.class )
+    @ProcessorTest
     public void shouldThrowMappingException() throws Exception {
 
         Source source = new Source();
@@ -45,11 +44,12 @@ public class Issue513Test {
         sourceElement.setValue( "test" );
         source.setCollection( Arrays.asList( sourceElement ) );
 
-        Issue513Mapper.INSTANCE.map( source );
+        assertThatThrownBy( () -> Issue513Mapper.INSTANCE.map( source ) )
+            .isInstanceOf( MappingException.class );
 
     }
 
-    @Test( expected = MappingKeyException.class )
+    @ProcessorTest
     public void shouldThrowMappingKeyException() throws Exception {
 
         Source source = new Source();
@@ -60,11 +60,12 @@ public class Issue513Test {
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 
-        Issue513Mapper.INSTANCE.map( source );
+        assertThatThrownBy( () -> Issue513Mapper.INSTANCE.map( source ) )
+            .isInstanceOf( MappingKeyException.class );
 
     }
 
-    @Test( expected = MappingValueException.class )
+    @ProcessorTest
     public void shouldThrowMappingValueException() throws Exception {
 
         Source source = new Source();
@@ -75,11 +76,12 @@ public class Issue513Test {
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 
-        Issue513Mapper.INSTANCE.map( source );
+        assertThatThrownBy( () -> Issue513Mapper.INSTANCE.map( source ) )
+            .isInstanceOf( MappingValueException.class );
 
     }
 
-    @Test( expected = MappingException.class )
+    @ProcessorTest
     public void shouldThrowMappingCommonException() throws Exception {
 
         Source source = new Source();
@@ -90,7 +92,8 @@ public class Issue513Test {
         map.put( sourceKey, sourceValue );
         source.setMap( map );
 
-        Issue513Mapper.INSTANCE.map( source );
+        assertThatThrownBy( () -> Issue513Mapper.INSTANCE.map( source ) )
+            .isInstanceOf( MappingException.class );
 
     }
 }

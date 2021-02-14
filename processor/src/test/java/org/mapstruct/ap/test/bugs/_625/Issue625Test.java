@@ -5,20 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._625;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     ObjectFactory.class,
     Source.class,
@@ -27,7 +24,7 @@ import org.mapstruct.factory.Mappers;
 })
 @IssueKey("625")
 public class Issue625Test {
-    @Test
+    @ProcessorTest
     public void ignoresFactoryMethods() {
         Source s = new Source();
         s.setProp( "works" );

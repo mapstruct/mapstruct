@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._1541;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,11 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Issue1541Mapper.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1541")
 public class Issue1541Test {
 
-    @Test
+    @ProcessorTest
     public void testMappingWithVarArgs() {
         Target target = Issue1541Mapper.INSTANCE.mapWithVarArgs( "code", "1", "2" );
 
@@ -38,7 +35,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testMappingWithArray() {
         Target target = Issue1541Mapper.INSTANCE.mapWithArray( "code", new String[] { "1", "2" } );
 
@@ -52,7 +49,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testMappingWithVarArgsReassignment() {
         Target target = Issue1541Mapper.INSTANCE.mapWithReassigningVarArgs( "code", "1", "2" );
 
@@ -66,7 +63,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testMappingWithArrayAndVarArgs() {
         Target target = Issue1541Mapper.INSTANCE.mapWithArrayAndVarArgs( "code", new String[] { "1", "2" }, "3", "4" );
 
@@ -80,7 +77,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testVarArgsInAfterMappingAsArray() {
         Target target = Issue1541Mapper.INSTANCE.mapParametersAsArrayInAfterMapping( "code", "1", "2" );
 
@@ -94,7 +91,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testVarArgsInAfterMappingAsVarArgs() {
         Target target = Issue1541Mapper.INSTANCE.mapParametersAsVarArgsInAfterMapping( "code", "1", "2" );
 
@@ -108,7 +105,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testVarArgsInContextWithVarArgsAfterMapping() {
         Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithVarArgs(
             "code",
@@ -127,7 +124,7 @@ public class Issue1541Test {
         assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
-    @Test
+    @ProcessorTest
     public void testVarArgsInContextWithArrayAfterMapping() {
         Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithArray(
             "code",

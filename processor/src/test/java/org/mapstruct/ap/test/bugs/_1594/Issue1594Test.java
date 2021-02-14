@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.bugs._1594;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1594")
 @WithClasses({
     Issue1594Mapper.class
 })
 public class Issue1594Test {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCorrectMapping() {
         Issue1594Mapper.Dto dto = new Issue1594Mapper.Dto();
         dto.setFullAddress( "Switzerland-Zurich" );

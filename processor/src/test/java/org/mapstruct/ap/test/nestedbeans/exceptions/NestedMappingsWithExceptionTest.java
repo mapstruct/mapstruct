@@ -5,15 +5,13 @@
  */
 package org.mapstruct.ap.test.nestedbeans.exceptions;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedbeans.exceptions._target.DeveloperDto;
 import org.mapstruct.ap.test.nestedbeans.exceptions._target.ProjectDto;
 import org.mapstruct.ap.test.nestedbeans.exceptions.source.Developer;
 import org.mapstruct.ap.test.nestedbeans.exceptions.source.Project;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -28,10 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     EntityFactory.class
 })
 @IssueKey("1304")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedMappingsWithExceptionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldGenerateCodeThatCompiles() {
 
     }

@@ -5,18 +5,15 @@
  */
 package org.mapstruct.ap.test.builder.ignore;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1452")
 @WithClasses({
     BaseDto.class,
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class BuilderIgnoringTest {
 
-    @Test
+    @ProcessorTest
     @IssueKey( "1933" )
     public void shouldIgnoreBase() {
         PersonDto source = new PersonDto();
@@ -43,7 +40,7 @@ public class BuilderIgnoringTest {
         assertThat( target.getLastName() ).isEqualTo( "Doe" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapOnlyExplicit() {
         PersonDto source = new PersonDto();
         source.setId( 100L );
@@ -57,7 +54,7 @@ public class BuilderIgnoringTest {
         assertThat( target.getLastName() ).isNull();
     }
 
-    @Test
+    @ProcessorTest
     public void shouldMapAll() {
         PersonDto source = new PersonDto();
         source.setId( 100L );

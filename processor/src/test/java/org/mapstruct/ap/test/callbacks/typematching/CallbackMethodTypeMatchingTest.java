@@ -5,25 +5,22 @@
  */
 package org.mapstruct.ap.test.callbacks.typematching;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarDto;
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarEntity;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CarMapper.class
 })
 public class CallbackMethodTypeMatchingTest {
-    @Test
+    @ProcessorTest
     public void callbackMethodAreCalled() {
         CarEntity carEntity = CarMapper.INSTANCE.toCarEntity( new CarDto() );
 

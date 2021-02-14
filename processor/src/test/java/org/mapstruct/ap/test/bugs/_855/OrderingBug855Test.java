@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.bugs._855;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian
  *
  */
 @WithClasses({ OrderedSource.class, OrderedTarget.class, OrderDemoMapper.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class OrderingBug855Test {
 
-    @Test
+    @ProcessorTest
     @IssueKey("855")
     public void shouldApplyCorrectOrderingWithDependsOn() {
         OrderedSource source = new OrderedSource();
@@ -31,7 +28,7 @@ public class OrderingBug855Test {
         assertThat( target.getOrder() ).containsExactly( "field2", "field0", "field1", "field3", "field4" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldRetainDefaultOrderWithoutDependsOn() {
         OrderedSource source = new OrderedSource();
 

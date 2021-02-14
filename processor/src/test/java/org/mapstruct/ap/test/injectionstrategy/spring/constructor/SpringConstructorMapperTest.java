@@ -10,13 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordDto;
@@ -24,8 +22,8 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -54,45 +52,44 @@ import static org.assertj.core.api.Assertions.assertThat;
     ConstructorSpringConfig.class
 } )
 @IssueKey( "571" )
-@RunWith(AnnotationProcessorTestRunner.class)
 @ComponentScan(basePackageClasses = CustomerSpringConstructorMapper.class)
 @Configuration
 public class SpringConstructorMapperTest {
 
     private static TimeZone originalTimeZone;
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @Autowired
     private CustomerRecordSpringConstructorMapper customerRecordMapper;
     private ConfigurableApplicationContext context;
 
-    @BeforeClass
+    @BeforeAll
     public static void setDefaultTimeZoneToCet() {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreOriginalTimeZone() {
         TimeZone.setDefault( originalTimeZone );
     }
 
-    @Before
+    @BeforeEach
     public void springUp() {
         context = new AnnotationConfigApplicationContext( getClass() );
         context.getAutowireCapableBeanFactory().autowireBean( this );
     }
 
-    @After
+    @AfterEach
     public void springDown() {
         if ( context != null ) {
             context.close();
         }
     }
 
-    @Test
+    @ProcessorTest
     public void shouldConvertToTarget() throws Exception {
         // given
         CustomerEntity customerEntity = new CustomerEntity();
@@ -114,7 +111,7 @@ public class SpringConstructorMapperTest {
         assertThat( customerRecordDto.getRegistrationDate().toString() ).isEqualTo( "1982-08-31T10:20:56.000+02:00" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldHaveConstructorInjection() {
         generatedSource.forMapper( CustomerSpringConstructorMapper.class )
             .content()

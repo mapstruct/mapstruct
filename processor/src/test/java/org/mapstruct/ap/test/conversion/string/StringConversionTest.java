@@ -5,12 +5,10 @@
  */
 package org.mapstruct.ap.test.conversion.string;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,16 +18,15 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class,
     SourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class StringConversionTest {
 
     private static final String STRING_CONSTANT = "String constant";
 
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         SourceTargetMapper.class );
 
-    @Test
+    @ProcessorTest
     public void shouldApplyStringConversions() {
         Source source = new Source();
         source.setB( (byte) 1 );
@@ -72,7 +69,7 @@ public class StringConversionTest {
         assertThat( target.getSb() ).isEqualTo( "SB" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldApplyReverseStringConversions() {
         Target target = new Target();
         target.setB( "1" );
@@ -115,7 +112,7 @@ public class StringConversionTest {
         assertThat( source.getSb().toString() ).isEqualTo( "SB" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey( "328" )
     public void stringShouldBeMappedToObjectByReference() {
         Target target = new Target();

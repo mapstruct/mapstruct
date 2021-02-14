@@ -5,32 +5,25 @@
  */
 package org.mapstruct.ap.test.versioninfo;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Andreas Gudian
  *
  */
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey( "424" )
 @WithClasses( SimpleMapper.class )
 public class VersionInfoTest {
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     @ProcessorOption( name = "mapstruct.suppressGeneratorVersionInfoComment", value = "true" )
     public void includesNoComment() {
         generatedSource.forMapper( SimpleMapper.class ).content()
@@ -38,7 +31,7 @@ public class VersionInfoTest {
             .doesNotContain( "comments = \"version: " );
     }
 
-    @Test
+    @ProcessorTest
     @ProcessorOptions( {
         @ProcessorOption( name = "mapstruct.suppressGeneratorVersionInfoComment", value = "true" ),
         @ProcessorOption( name = "mapstruct.suppressGeneratorTimestamp", value = "true" )
@@ -49,7 +42,7 @@ public class VersionInfoTest {
             .doesNotContain( "comments = \"version: " );
     }
 
-    @Test
+    @ProcessorTest
     public void includesCommentAndTimestamp() {
         generatedSource.forMapper( SimpleMapper.class ).content()
             .contains( "date = \"" )

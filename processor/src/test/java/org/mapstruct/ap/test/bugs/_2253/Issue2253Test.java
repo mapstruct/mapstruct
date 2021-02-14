@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._2253;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,13 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2253")
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
     TestMapper.class,
 } )
 public class Issue2253Test {
 
-    @Test
+    @ProcessorTest
     public void shouldNotTreatMatchedSourceParameterAsBean() {
 
         TestMapper.Person person = TestMapper.INSTANCE.map( new TestMapper.PersonDto( 20 ), "Tester" );

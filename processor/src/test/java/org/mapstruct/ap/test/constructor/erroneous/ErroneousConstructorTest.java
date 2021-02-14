@@ -5,23 +5,20 @@
  */
 package org.mapstruct.ap.test.constructor.erroneous;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.constructor.ConstructorProperties;
 import org.mapstruct.ap.test.constructor.PersonDto;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousConstructorTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousAmbiguousConstructorsMapper.class,
         PersonDto.class
@@ -39,7 +36,7 @@ public class ErroneousConstructorTest {
     public void shouldUseMultipleConstructors() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ConstructorProperties.class,
         ErroneousConstructorPropertiesMapper.class,

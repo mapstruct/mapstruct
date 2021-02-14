@@ -5,14 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._2125;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Comment.class,
     Repository.class,
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class Issue2125Test {
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         Issue2125Mapper.class
     })
@@ -55,7 +52,7 @@ public class Issue2125Test {
         assertThat( comment.getIssueId() ).isEqualTo( 1001 );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         Issue2125ErroneousMapper.class
     })

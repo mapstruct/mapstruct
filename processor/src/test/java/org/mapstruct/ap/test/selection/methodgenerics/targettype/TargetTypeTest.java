@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.targettype;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
  *
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class TargetTypeTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( PlainTargetTypeMapper.class )
     public void testPlain() {
 
@@ -30,7 +27,7 @@ public class TargetTypeTest {
         assertThat( target.getProp().toPlainString() ).isEqualTo( "15" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( NestedTargetTypeMapper.class )
     public void testNestedTypeVar() {
         NestedTargetTypeMapper.Target target =

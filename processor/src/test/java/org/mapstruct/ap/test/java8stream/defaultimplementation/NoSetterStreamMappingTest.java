@@ -5,16 +5,14 @@
  */
 package org.mapstruct.ap.test.java8stream.defaultimplementation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisfaov
@@ -22,10 +20,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({ NoSetterMapper.class, NoSetterSource.class, NoSetterTarget.class })
 @IssueKey("962")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NoSetterStreamMappingTest {
 
-    @Test
+    @ProcessorTest
     public void compilesAndMapsCorrectly() {
         NoSetterSource source = new NoSetterSource();
         source.setListValues( Stream.of( "foo", "bar" ) );

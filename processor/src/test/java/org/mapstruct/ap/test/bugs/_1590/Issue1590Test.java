@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.bugs._1590;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,11 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     Book.class,
     BookShelf.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1590")
 public class Issue1590Test {
 
-    @Test
+    @ProcessorTest
     public void shouldTestMappingLocalDates() {
         BookShelf source = new BookShelf();
         source.setBooks( Arrays.asList( new Book() ) );

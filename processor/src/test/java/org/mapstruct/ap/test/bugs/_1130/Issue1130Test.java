@@ -5,18 +5,16 @@
  */
 package org.mapstruct.ap.test.bugs._1130;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.ADto;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.AEntity;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.BEntity;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests that when calling an update method for a previously null property, the factory method is called even if that
@@ -25,10 +23,9 @@ import org.mapstruct.factory.Mappers;
  * @author Andreas Gudian
  */
 @IssueKey("1130")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses(Issue1130Mapper.class)
 public class Issue1130Test {
-    @Test
+    @ProcessorTest
     public void factoryMethodWithTargetTypeInUpdateMethods() {
         AEntity aEntity = new AEntity();
         aEntity.setB( new BEntity() );

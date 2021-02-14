@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.factories.qualified;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Remo Meier
  */
 @WithClasses( { Foo10.class, Bar10.class, TestQualifier.class, Bar10Factory.class, QualifiedFactoryTestMapper.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
 public class QualifiedFactoryTest {
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryWithoutQualifier() {
         Foo10 foo10 = new Foo10();
         foo10.setProp( "foo10" );
@@ -31,7 +28,7 @@ public class QualifiedFactoryTest {
         assertThat( bar10.getSomeTypeProp() ).isEqualTo( "foo10" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryWithQualifier() {
         Foo10 foo10 = new Foo10();
         foo10.setProp( "foo10" );
@@ -43,7 +40,7 @@ public class QualifiedFactoryTest {
         assertThat( bar10.getSomeTypeProp() ).isEqualTo( "foo10" );
     }
 
-    @Test
+    @ProcessorTest
     public void shouldUseFactoryWithQualifierName() {
         Foo10 foo10 = new Foo10();
         foo10.setProp( "foo10" );

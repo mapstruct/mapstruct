@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.test.source.ignore;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Filip Hrisafov
@@ -19,11 +17,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Person.class,
     PersonDto.class
 })
-@RunWith( AnnotationProcessorTestRunner.class )
 @IssueKey("1317")
 public class IgnoreUnmappedSourcePropertiesTest {
 
-    @Test
+    @ProcessorTest
     public void shouldNotReportErrorOnIgnoredUnmappedSourceProperties() {
 
     }

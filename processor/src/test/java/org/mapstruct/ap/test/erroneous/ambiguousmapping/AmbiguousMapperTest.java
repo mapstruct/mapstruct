@@ -5,21 +5,18 @@
  */
 package org.mapstruct.ap.test.erroneous.ambiguousmapping;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @IssueKey("2156")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class AmbiguousMapperTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( ErroneousWithAmbiguousMethodsMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -38,7 +35,7 @@ public class AmbiguousMapperTest {
     public void testErrorMessageForAmbiguous() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -63,7 +60,7 @@ public class AmbiguousMapperTest {
     public void testErrorMessageForManyAmbiguous() {
     }
 
-    @Test
+    @ProcessorTest
     @ProcessorOption(name = "mapstruct.verbose", value = "true")
     @WithClasses( ErroneousWithMoreThanFiveAmbiguousMethodsMapper.class)
     @ExpectedCompilationOutcome(

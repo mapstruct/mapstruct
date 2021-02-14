@@ -20,7 +20,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.testutil.IssueKey;
 

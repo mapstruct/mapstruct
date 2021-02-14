@@ -5,13 +5,11 @@
  */
 package org.mapstruct.ap.test.selection.primitives;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -19,10 +17,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("205")
 @WithClasses({ Source.class, Target.class, MyLong.class })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class PrimitiveVsWrappedSelectionTest {
 
-    @Test
+    @ProcessorTest
     @WithClasses( { WrappedMapper.class, PrimitiveMapper.class, SourceTargetMapper.class } )
     public void shouldAlwaysSelectWrappedAndExplicitlyTypeConvertWrappedtoPrimitive() {
 
@@ -43,7 +40,7 @@ public class PrimitiveVsWrappedSelectionTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( {  PrimitiveMapper.class, SourceTargetMapperPrimitive.class } )
     public void shouldSelectPrimitiveMapperAlsoForWrapped() {
 
@@ -64,7 +61,7 @@ public class PrimitiveVsWrappedSelectionTest {
 
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses( { WrappedMapper.class, SourceTargetMapperWrapped.class } )
     public void shouldSelectWrappedMapperAlsoForPrimitive() {
 

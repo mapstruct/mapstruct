@@ -5,11 +5,7 @@
  */
 package org.mapstruct.ap.test.imports;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.imports.from.Foo;
 import org.mapstruct.ap.test.imports.from.FooWrapper;
 import org.mapstruct.ap.test.imports.referenced.GenericMapper;
@@ -17,9 +13,11 @@ import org.mapstruct.ap.test.imports.referenced.NotImportedDatatype;
 import org.mapstruct.ap.test.imports.referenced.Source;
 import org.mapstruct.ap.test.imports.referenced.Target;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.
@@ -43,17 +41,12 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     org.mapstruct.ap.test.imports.to.FooWrapper.class,
     SecondSourceTargetMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class ConflictingTypesNamesTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
-
-    @Test
+    @ProcessorTest
     public void mapperImportingTypesWithConflictingNamesCanBeGenerated() {
         Named source = new Named();
         source.setFoo( 123 );
@@ -71,7 +64,7 @@ public class ConflictingTypesNamesTest {
         assertThat( foo2.getName() ).isEqualTo( "bar" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("178")
     public void mapperHasNoUnnecessaryImports() {
         Source source = new Source();
@@ -91,7 +84,7 @@ public class ConflictingTypesNamesTest {
         generatedSource.forMapper( SecondSourceTargetMapper.class ).containsNoImportFor( NotImportedDatatype.class );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("156")
     public void importsForTargetTypes() {
         FooWrapper source = new FooWrapper();

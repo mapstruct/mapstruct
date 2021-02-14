@@ -5,35 +5,32 @@
  */
 package org.mapstruct.ap.test.destination;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DestinationClassNameTest {
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationClassNameMapper.class })
     public void shouldGenerateRightName() {
         DestinationClassNameMapper instance = DestinationClassNameMapper.INSTANCE;
         assertThat( instance.getClass().getSimpleName() ).isEqualTo( "MyDestinationClassNameMapperCustomImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationClassNameWithJsr330Mapper.class })
     public void shouldNotGenerateSpi() throws Exception {
 
         Class<DestinationClassNameWithJsr330Mapper> clazz = DestinationClassNameWithJsr330Mapper.class;
         try {
             Mappers.getMapper( clazz );
-            Assert.fail( "Should have thrown an ClassNotFoundException" );
+            fail( "Should have thrown an ClassNotFoundException" );
         }
         catch ( RuntimeException e ) {
             assertThat( e.getCause() ).isNotNull()
@@ -46,7 +43,7 @@ public class DestinationClassNameTest {
         assertThat( instance.getClass().getSimpleName() ).isEqualTo( "DestinationClassNameWithJsr330MapperJsr330Impl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationClassNameMapperConfig.class, DestinationClassNameMapperWithConfig.class })
     public void shouldGenerateRightNameWithConfig() {
         DestinationClassNameMapperWithConfig instance = DestinationClassNameMapperWithConfig.INSTANCE;
@@ -54,7 +51,7 @@ public class DestinationClassNameTest {
                 .isEqualTo( "MyDestinationClassNameMapperWithConfigConfigImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationClassNameMapperConfig.class, DestinationClassNameMapperWithConfigOverride.class })
     public void shouldGenerateRightNameWithConfigOverride() {
         DestinationClassNameMapperWithConfigOverride instance = DestinationClassNameMapperWithConfigOverride.INSTANCE;
@@ -62,7 +59,7 @@ public class DestinationClassNameTest {
                 .isEqualTo( "CustomDestinationClassNameMapperWithConfigOverrideMyImpl" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ DestinationClassNameMapperDecorated.class, DestinationClassNameMapperDecorator.class })
     public void shouldGenerateRightNameWithDecorator() {
         DestinationClassNameMapperDecorated instance = DestinationClassNameMapperDecorated.INSTANCE;
@@ -73,7 +70,7 @@ public class DestinationClassNameTest {
                 .isEqualTo( "MyDestinationClassNameMapperDecoratedCustomImpl_" );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({ AbstractDestinationClassNameMapper.class, AbstractDestinationPackageNameMapper.class })
     public void shouldWorkWithAbstractClasses() {
         AbstractDestinationClassNameMapper mapper1 = AbstractDestinationClassNameMapper.INSTANCE;

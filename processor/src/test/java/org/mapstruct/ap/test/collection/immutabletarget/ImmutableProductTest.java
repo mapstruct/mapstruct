@@ -5,30 +5,27 @@
  */
 package org.mapstruct.ap.test.collection.immutabletarget;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({CupboardDto.class, CupboardEntity.class, CupboardMapper.class})
 @IssueKey( "1126" )
 public class ImmutableProductTest {
 
-    @Test
+    @ProcessorTest
     public void shouldHandleImmutableTarget() {
 
         CupboardDto in = new CupboardDto();
@@ -42,7 +39,7 @@ public class ImmutableProductTest {
         assertThat( out.getContent() ).containsExactly( "cups", "soucers"  );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousCupboardMapper.class,
         CupboardEntityOnlyGetter.class

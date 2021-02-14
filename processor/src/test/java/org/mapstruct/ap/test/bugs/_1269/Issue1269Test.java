@@ -8,8 +8,6 @@ package org.mapstruct.ap.test.bugs._1269;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._1269.dto.VehicleDto;
 import org.mapstruct.ap.test.bugs._1269.dto.VehicleImageDto;
 import org.mapstruct.ap.test.bugs._1269.dto.VehicleInfoDto;
@@ -18,8 +16,8 @@ import org.mapstruct.ap.test.bugs._1269.model.Vehicle;
 import org.mapstruct.ap.test.bugs._1269.model.VehicleImage;
 import org.mapstruct.ap.test.bugs._1269.model.VehicleTypeInfo;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey( "1269" )
-@RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
     VehicleDto.class,
     VehicleImageDto.class,
@@ -39,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 public class Issue1269Test {
 
-    @Test
+    @ProcessorTest
     public void shouldMapNestedPropertiesCorrectly() {
 
         VehicleTypeInfo sourceTypeInfo = new VehicleTypeInfo( "Opel", "Corsa", 3 );

@@ -5,9 +5,7 @@
  */
 package org.mapstruct.ap.test.constructor.nestedtarget;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.constructor.nestedsource._target.ChartEntry;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Artist;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Chart;
@@ -15,8 +13,8 @@ import org.mapstruct.ap.test.constructor.nestedsource.source.Label;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Song;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,15 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
     ChartEntryToArtist.class,
 })
 @IssueKey("73")
-@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedProductPropertiesConstructorTest {
 
-    @Rule
-    public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+    @RegisterExtension
+    GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         ChartEntryToArtist.class
     );
 
-    @Test
+    @ProcessorTest
     public void shouldMapNestedTarget() {
 
         ChartEntry chartEntry = new ChartEntry(
@@ -72,7 +69,7 @@ public class NestedProductPropertiesConstructorTest {
 
     }
 
-    @Test
+    @ProcessorTest
     public void shouldReverseNestedTarget() {
 
         ChartEntry chartEntry = new ChartEntry(

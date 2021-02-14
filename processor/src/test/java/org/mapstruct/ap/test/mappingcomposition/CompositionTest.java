@@ -7,11 +7,9 @@ package org.mapstruct.ap.test.mappingcomposition;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,10 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     StorageMapper.class,
     ToEntity.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class CompositionTest {
 
-    @Test
+    @ProcessorTest
     public void shouldCompose() {
 
         Date now = new Date();

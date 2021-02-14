@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseCollectionElementPropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepListMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepMapKeyMapper;
@@ -59,11 +57,11 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapKe
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapValueMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnValuePropertyMapper;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     Car.class, CarDto.class, Color.class, ColorDto.class,
@@ -81,7 +79,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     BaseDeepNestingMapper.class,
     BaseValuePropertyMapper.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
 public class DottedErrorMessageTest {
 
     private static final String PROPERTY = "property";
@@ -89,7 +86,7 @@ public class DottedErrorMessageTest {
     private static final String MAP_KEY = "Map key";
     private static final String MAP_VALUE = "Map value";
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableDeepNestingMapper.class
     })
@@ -106,7 +103,7 @@ public class DottedErrorMessageTest {
     public void testDeepNestedBeans() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableDeepListMapper.class
     })
@@ -123,7 +120,7 @@ public class DottedErrorMessageTest {
     public void testIterables() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableDeepMapKeyMapper.class
     })
@@ -140,7 +137,7 @@ public class DottedErrorMessageTest {
     public void testMapKeys() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableDeepMapValueMapper.class
     })
@@ -157,7 +154,7 @@ public class DottedErrorMessageTest {
     public void testMapValues() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableCollectionElementPropertyMapper.class
     })
@@ -174,7 +171,7 @@ public class DottedErrorMessageTest {
     public void testCollectionElementProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableValuePropertyMapper.class
     })
@@ -191,7 +188,7 @@ public class DottedErrorMessageTest {
     public void testMapValueProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableEnumMapper.class
     })
@@ -211,7 +208,7 @@ public class DottedErrorMessageTest {
     public void testMapEnumProperty() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableWarnDeepNestingMapper.class,
         UnmappableWarnDeepListMapper.class,
@@ -258,7 +255,7 @@ public class DottedErrorMessageTest {
     public void testWarnUnmappedTargetProperties() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         UnmappableIgnoreDeepNestingMapper.class,
         UnmappableIgnoreDeepListMapper.class,

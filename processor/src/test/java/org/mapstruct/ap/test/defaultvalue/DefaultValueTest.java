@@ -5,27 +5,24 @@
  */
 package org.mapstruct.ap.test.defaultvalue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.defaultvalue.other.Continent;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("600")
-@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     CountryEntity.class,
     CountryDts.class,
     Continent.class
 })
 public class DefaultValueTest {
-    @Test
+    @ProcessorTest
     @WithClasses({
         Region.class,
         CountryMapper.class
@@ -55,7 +52,7 @@ public class DefaultValueTest {
         assertThat( countryDts.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         Region.class,
         CountryMapper.class
@@ -76,7 +73,7 @@ public class DefaultValueTest {
         assertThat( countryDts.getContinent() ).isEqualTo( Continent.NORTH_AMERICA );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         Region.class,
         CountryMapper.class
@@ -94,7 +91,7 @@ public class DefaultValueTest {
         assertThat( countryEntity.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         Region.class,
         CountryMapper.class
@@ -113,7 +110,7 @@ public class DefaultValueTest {
         assertThat( target.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousMapper.class,
         Region.class,
@@ -136,7 +133,7 @@ public class DefaultValueTest {
     public void errorOnDefaultValueAndConstant() {
     }
 
-    @Test
+    @ProcessorTest
     @WithClasses({
         ErroneousMapper2.class,
         Region.class,
@@ -159,7 +156,7 @@ public class DefaultValueTest {
     public void errorOnDefaultValueAndExpression() {
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("2214")
     @WithClasses({
         CountryMapperMultipleSources.class,
@@ -173,7 +170,7 @@ public class DefaultValueTest {
         assertThat( target.getCode() ).isEqualTo( "CH" );
     }
 
-    @Test
+    @ProcessorTest
     @IssueKey("2220")
     @WithClasses({
         ErroneousMissingSourceMapper.class,
