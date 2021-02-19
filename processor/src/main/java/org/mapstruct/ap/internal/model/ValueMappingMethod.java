@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -25,11 +24,13 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.NULL;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.THROW_EXCEPTION;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -313,7 +314,17 @@ public class ValueMappingMethod extends MappingMethod {
 
             for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
 
-                if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
+                if ( THROW_EXCEPTION.equals( mappedConstant.getSource() ) ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        mappedConstant.getMirror(),
+                        mappedConstant.getSourceAnnotationValue(),
+                        Message.VALUEMAPPING_THROW_EXCEPTION_SOURCE
+                    );
+                    foundIncorrectMapping = true;
+                }
+                else if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
+
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         mappedConstant.getMirror(),
@@ -361,6 +372,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
                 if ( !NULL.equals( mappedConstant.getTarget() )
+                    && !THROW_EXCEPTION.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),

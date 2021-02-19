@@ -11,8 +11,8 @@ import org.mapstruct.ap.test.value.OrderType;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-20T21:25:45+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2021-02-19T21:20:19+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_191 (Oracle Corporation)"
 )
 public class SpecialOrderMapperImpl implements SpecialOrderMapper {
 
@@ -45,6 +45,30 @@ public class SpecialOrderMapperImpl implements SpecialOrderMapper {
             case B2B: externalOrderType = ExternalOrderType.B2B;
             break;
             default: externalOrderType = ExternalOrderType.SPECIAL;
+        }
+
+        return externalOrderType;
+    }
+
+    @Override
+    public ExternalOrderType orderTypeToExternalOrderTypeWithException(OrderType orderType) {
+        if ( orderType == null ) {
+            return null;
+        }
+
+        ExternalOrderType externalOrderType;
+
+        switch ( orderType ) {
+            case RETAIL: externalOrderType = ExternalOrderType.RETAIL;
+            break;
+            case B2B: externalOrderType = ExternalOrderType.B2B;
+            break;
+            case STANDARD: externalOrderType = ExternalOrderType.SPECIAL;
+            break;
+            case NORMAL: externalOrderType = ExternalOrderType.DEFAULT;
+            break;
+            case EXTRA: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
         }
 
         return externalOrderType;

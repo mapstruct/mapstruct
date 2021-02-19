@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.value.enum2enum;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Rule;
@@ -22,14 +20,19 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 /**
  * Test for the generation and invocation of enum mapping methods.
  *
  * @author Gunnar Morling, Sjaak Derksen
  */
 @IssueKey("128")
-@WithClasses({  OrderMapper.class, SpecialOrderMapper.class, DefaultOrderMapper.class, OrderEntity.class,
-    OrderType.class, OrderDto.class, ExternalOrderType.class })
+@WithClasses({
+    OrderMapper.class, SpecialOrderMapper.class, DefaultOrderMapper.class, OrderEntity.class,
+    OrderType.class, OrderDto.class, ExternalOrderType.class
+})
 @RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumMappingTest {
 
@@ -74,16 +77,16 @@ public class EnumToEnumMappingTest {
     @Test
     public void shouldApplyReverseMappings() {
 
-        OrderType result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
+        OrderType result = OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
         assertThat( result ).isEqualTo( OrderType.EXTRA );
 
-        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
+        result = OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
         assertThat( result ).isEqualTo( OrderType.STANDARD );
 
-        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
+        result = OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
         assertThat( result ).isEqualTo( OrderType.RETAIL );
 
-        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
+        result = OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
         assertThat( result ).isEqualTo( OrderType.B2B );
 
     }
@@ -141,16 +144,16 @@ public class EnumToEnumMappingTest {
     @Test
     public void shouldApplyDefaultReverseMappings() {
 
-        OrderType result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
+        OrderType result = SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
         assertThat( result ).isEqualTo( OrderType.EXTRA );
 
-        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
+        result = SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
         assertThat( result ).isNull();
 
-        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
+        result = SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
         assertThat( result ).isEqualTo( OrderType.RETAIL );
 
-        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
+        result = SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
         assertThat( result ).isEqualTo( OrderType.B2B );
 
     }
@@ -186,7 +189,7 @@ public class EnumToEnumMappingTest {
 
     }
 
-    @IssueKey( "1091" )
+    @IssueKey("1091")
     @Test
     public void shouldMapAnyRemainingToNullCorrectly() {
         ExternalOrderType externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.RETAIL );
@@ -207,6 +210,32 @@ public class EnumToEnumMappingTest {
 
         externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.NORMAL );
         assertThat( externalOrderType ).isNull();
+    }
+
+    @IssueKey("2339")
+    @Test
+    public void shouldThrowExceptionWhenRequestingEnumsWithExpectedExceptions() {
+
+        assertThatThrownBy( () ->
+            SpecialOrderMapper.INSTANCE.orderTypeToExternalOrderTypeWithException( OrderType.EXTRA ) )
+            .isInstanceOf( IllegalArgumentException.class )
+            .hasMessage( "Unexpected enum constant: EXTRA" );
+    }
+
+    @IssueKey("2339")
+    @Test
+    @WithClasses(ErroneousOrderMapperThrowExceptionAsSourceType.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperThrowExceptionAsSourceType.class,
+                kind = Kind.ERROR,
+                line = 29,
+                message = "Source = \"<THROW_EXCEPTION>\" is not allowed. " +
+                    "Target = \"<THROW_EXCEPTION>\" can only be used.")
+        }
+    )
+    public void shouldRaiseErrorWhenThrowExceptionUsedAsSourceType() {
     }
 
     @Test
@@ -265,7 +294,7 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperDuplicateANY.class,
                 kind = Kind.ERROR,
                 line = 28,
-                message = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once." )
+                message = "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" can only be used once.")
         }
     )
     public void shouldRaiseErrorIfMappingsContainDuplicateANY() {

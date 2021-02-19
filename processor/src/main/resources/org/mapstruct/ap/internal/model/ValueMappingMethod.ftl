@@ -22,8 +22,8 @@
 
     switch ( ${sourceParameter.name} ) {
     <#list valueMappings as valueMapping>
-        case <@writeSource source=valueMapping.source/>: ${resultName} = <@writeTarget target=valueMapping.target/>;
-        break;
+        case <@writeSource source=valueMapping.source/>: <#if unexpectedValueMappingException?? && valueMapping.target?? && valueMapping.target="<THROW_EXCEPTION>">throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
+        break;</#if>
     </#list>
     default: <#if unexpectedValueMappingException??>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
