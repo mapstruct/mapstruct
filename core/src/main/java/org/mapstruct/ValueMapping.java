@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
  *
  * <pre>
  * <code>
- * public enum OrderType { RETAIL, B2B, EXTRA, STANDARD, NORMAL }
+ *
+ * public enum OrderType { RETAIL, B2B, C2C, EXTRA, STANDARD, NORMAL }
  *
  * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
  *
@@ -45,13 +46,12 @@ import java.lang.annotation.Target;
  * +---------------------+----------------------------+
  * </pre>
  *
- * MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found an
- * {@link java.lang.IllegalStateException} will be thrown.
  * <p>
  * <B>Example 2:</B>
  *
  * <pre>
  * <code>
+ *
  * &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
  * &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
  * &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
@@ -68,6 +68,26 @@ import java.lang.annotation.Target;
  * | OrderType.NORMAL    | ExternalOrderType.SPECIAL  |
  * | OrderType.EXTRA     | ExternalOrderType.SPECIAL  |
  * +---------------------+----------------------------+
+ * </pre>
+ *
+ * <p>
+ * <B>Example 3:</B>
+ * </p>
+ *
+ * <p></p>MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found, an
+ * {@link java.lang.IllegalStateException} will be thrown. This compile-time error can be avoided by
+ * using {@link MappingConstants#THROW_EXCEPTION} for {@link ValueMapping#target()}. It will result an
+ * {@link java.lang.IllegalArgumentException} at runtime.
+ * <pre>
+ * <code>
+ *
+ * &#64;ValueMapping( source = "STANDARD", target = "DEFAULT" ),
+ * &#64;ValueMapping( source = "C2C", target = MappingConstants.THROW_EXCEPTION )
+ * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+ * </code>
+ * Mapping result:
+ * {@link java.lang.IllegalArgumentException} with the error message:
+ * Unexpected enum constant: C2C
  * </pre>
  *
  * @author Sjaak Derksen
@@ -104,6 +124,7 @@ public @interface ValueMapping {
      * <ol>
      * <li>enum constant name</li>
      * <li>{@link MappingConstants#NULL}</li>
+     * <li>{@link MappingConstants#THROW_EXCEPTION}</li>
      * </ol>
      *
      * @return The target value.

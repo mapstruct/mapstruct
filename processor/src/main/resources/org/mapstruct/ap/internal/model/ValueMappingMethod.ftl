@@ -15,17 +15,17 @@
         </#if>
     </#list>
     if ( ${sourceParameter.name} == null ) {
-        return <@writeTarget target=nullTarget/>;
+        <#if nullAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget/>;</#if>
     }
 
     <@includeModel object=resultType/> ${resultName};
 
     switch ( ${sourceParameter.name} ) {
     <#list valueMappings as valueMapping>
-        case <@writeSource source=valueMapping.source/>: ${resultName} = <@writeTarget target=valueMapping.target/>;
-        break;
+        case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
+        break;</#if>
     </#list>
-    default: <#if unexpectedValueMappingException??>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
+    default: <#if defaultAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>

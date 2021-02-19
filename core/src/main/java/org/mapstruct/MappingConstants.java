@@ -37,6 +37,14 @@ public final class MappingConstants {
     public static final String ANY_UNMAPPED = "<ANY_UNMAPPED>";
 
     /**
+     * In an {@link ValueMapping} this represents any target that will be mapped to an
+     * {@link java.lang.IllegalArgumentException} which will be thrown at runtime.
+     * <p>
+     * NOTE: The value is only applicable to {@link ValueMapping#target()} and not to {@link ValueMapping#source()}.
+     */
+    public static final String THROW_EXCEPTION = "<THROW_EXCEPTION>";
+
+    /**
      * In an {@link EnumMapping} this represent the enum transformation strategy that adds a suffix to the source enum.
      *
      * @since 1.4

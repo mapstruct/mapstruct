@@ -21,6 +21,8 @@ public final class MappingConstantsGem {
 
     public static final String ANY_UNMAPPED = "<ANY_UNMAPPED>";
 
+    public static final String THROW_EXCEPTION = "<THROW_EXCEPTION>";
+
     public static final String SUFFIX_TRANSFORMATION = "suffix";
 
     public static final String STRIP_SUFFIX_TRANSFORMATION = "stripSuffix";

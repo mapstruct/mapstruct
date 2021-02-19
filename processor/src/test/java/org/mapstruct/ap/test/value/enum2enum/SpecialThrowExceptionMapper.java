@@ -17,12 +17,11 @@ import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Jude Niroshan
  */
 @Mapper
-public interface SpecialOrderMapper {
-
-    SpecialOrderMapper INSTANCE = Mappers.getMapper( SpecialOrderMapper.class );
+public interface SpecialThrowExceptionMapper {
+    SpecialThrowExceptionMapper INSTANCE = Mappers.getMapper( SpecialThrowExceptionMapper.class );
 
     @Mapping(target = "orderType", source = "orderType", qualifiedByName = "orderTypeToExternalOrderType")
     OrderDto orderEntityToDto(OrderEntity order);
@@ -31,7 +30,7 @@ public interface SpecialOrderMapper {
     @ValueMappings({
         @ValueMapping(source = MappingConstants.NULL, target = "DEFAULT"),
         @ValueMapping(source = "STANDARD", target = MappingConstants.NULL),
-        @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "SPECIAL")
+        @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.THROW_EXCEPTION)
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
@@ -40,9 +39,9 @@ public interface SpecialOrderMapper {
     OrderType externalOrderTypeToOrderType(ExternalOrderType orderType);
 
     @ValueMappings({
-        @ValueMapping(source = MappingConstants.NULL, target = "DEFAULT"),
+        @ValueMapping(source = MappingConstants.NULL, target = MappingConstants.THROW_EXCEPTION),
         @ValueMapping(source = "STANDARD", target = MappingConstants.NULL),
         @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     })
-    ExternalOrderType anyRemainingToNull(OrderType orderType);
+    ExternalOrderType anyRemainingToNullToException(OrderType orderType);
 }

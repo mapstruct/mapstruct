@@ -11,8 +11,8 @@ import org.mapstruct.ap.test.value.OrderType;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-20T21:25:45+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2021-02-19T21:20:19+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_191 (Oracle Corporation)"
 )
 public class SpecialOrderMapperImpl implements SpecialOrderMapper {
 
