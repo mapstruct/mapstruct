@@ -25,7 +25,7 @@
         case <@writeSource source=valueMapping.source/>: <#if unexpectedValueMappingException?? && valueMapping.target?? && valueMapping.target="<THROW_EXCEPTION>">throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
         break;</#if>
     </#list>
-    default: <#if unexpectedValueMappingException??>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
+    default: <#if unexpectedValueMappingException?? || (unexpectedValueMappingException?? && defaultTarget?? && defaultTarget="<THROW_EXCEPTION>")>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>

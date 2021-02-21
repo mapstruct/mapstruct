@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IssueKey("2339")
 @WithClasses({
-    DefaultOrderThrowExceptionMapper.class, OrderEntity.class,
+    OrderEntity.class,
     OrderType.class, ExternalOrderType.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
@@ -23,17 +23,18 @@ public class EnumToEnumThrowExceptionMappingTest {
 
     @IssueKey("2339")
     @Test
-    public void shouldThrowExceptionWhenRequestingEnumsWithExpectedExceptions() {
+    @WithClasses(DefaultOrderThrowExceptionMapper.class)
+    public void shouldThrowExceptionWhenRequestingAnyEnumWithExpectedExceptions() {
 
         assertThatThrownBy( () ->
-            DefaultOrderThrowExceptionMapper.INSTANCE.orderTypeToExternalOrderTypeWithException( OrderType.EXTRA ) )
+            DefaultOrderThrowExceptionMapper.INSTANCE.orderTypeToExternalOrderTypeAnyUnmappedToException( OrderType.EXTRA ) )
             .isInstanceOf( IllegalArgumentException.class )
             .hasMessage( "Unexpected enum constant: EXTRA" );
     }
 
     @IssueKey("2339")
     @Test
-    @WithClasses(ErroneousOrderMapperThrowExceptionAsSourceType.class)
+    @WithClasses({ DefaultOrderThrowExceptionMapper.class, ErroneousOrderMapperThrowExceptionAsSourceType.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {

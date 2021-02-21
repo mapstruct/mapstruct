@@ -386,7 +386,9 @@ public class ValueMappingMethod extends MappingMethod {
                 }
             }
 
-            if ( valueMappings.defaultTarget != null && !NULL.equals( valueMappings.defaultTarget.getTarget() )
+            if ( valueMappings.defaultTarget != null
+                && !THROW_EXCEPTION.equals( valueMappings.defaultTarget.getTarget() )
+                && !NULL.equals( valueMappings.defaultTarget.getTarget() )
                 && !targetEnumConstants.contains( valueMappings.defaultTarget.getTarget() ) ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
@@ -427,7 +429,8 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private Type determineUnexpectedValueMappingException() {
-            if ( !valueMappings.hasDefaultValue ) {
+            boolean noDefaultValueForSwitchCase = !valueMappings.hasDefaultValue;
+            if ( noDefaultValueForSwitchCase || valueMappings.defaultTargetValue.equals( THROW_EXCEPTION ) ) {
                 TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
                 if ( unexpectedValueMappingException != null ) {
                     return ctx.getTypeFactory().getType( unexpectedValueMappingException );

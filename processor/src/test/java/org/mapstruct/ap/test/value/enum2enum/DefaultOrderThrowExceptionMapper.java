@@ -12,7 +12,7 @@ import org.mapstruct.factory.Mappers;
 public interface DefaultOrderThrowExceptionMapper {
     DefaultOrderThrowExceptionMapper INSTANCE = Mappers.getMapper( DefaultOrderThrowExceptionMapper.class );
 
-    @Named("orderTypeToExternalOrderTypeWithException")
+    @Named("orderTypeToExternalOrderTypeAnyUnmappedToException")
     @ValueMapping(source = MappingConstants.ANY_UNMAPPED, target = MappingConstants.THROW_EXCEPTION)
-    ExternalOrderType orderTypeToExternalOrderTypeWithException(OrderType orderType);
+    ExternalOrderType orderTypeToExternalOrderTypeAnyUnmappedToException(OrderType orderType);
 }
