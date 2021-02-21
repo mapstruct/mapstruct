@@ -28,5 +28,5 @@ public interface ErroneousOrderMapperThrowExceptionAsSourceType {
         @ValueMapping(source = "<ANY_REMAINING>", target = "DEFAULT"),
         @ValueMapping(source = "<THROW_EXCEPTION>", target = "DEFAULT")
     })
-    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+    ExternalOrderType orderTypeToExternalOrderTypeWithErroneousSourceMapping(OrderType orderType);
 }
