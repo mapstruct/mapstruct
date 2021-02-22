@@ -5,16 +5,11 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.iterable;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.List;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Qualifier;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -62,18 +57,6 @@ public abstract class TopologyMapper {
             topologyFeatureEntity.setName(  dto.getName() );
         }
         return topologyFeatureEntity;
-    }
-
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    public @interface Rivers {
-    }
-
-    @Qualifier
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.CLASS)
-    public @interface Cities {
     }
 
 }

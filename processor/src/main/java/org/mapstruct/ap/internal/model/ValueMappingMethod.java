@@ -262,8 +262,8 @@ public class ValueMappingMethod extends MappingMethod {
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
             boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
-            boolean mandatoryMissing = !reportErrorIfAnyRemainingOrAnyUnMappedMissing( method );
-            if ( sourceErrorOccurred || mandatoryMissing ) {
+            reportWarningIfAnyRemainingOrAnyUnMappedMissing( method );
+            if ( sourceErrorOccurred ) {
                 return mappings;
             }
             Set<String> mappedSources = new LinkedHashSet<>();
@@ -344,17 +344,14 @@ public class ValueMappingMethod extends MappingMethod {
             return !foundIncorrectMapping;
         }
 
-        private boolean reportErrorIfAnyRemainingOrAnyUnMappedMissing(Method method) {
-            boolean foundIncorrectMapping = false;
+        private void reportWarningIfAnyRemainingOrAnyUnMappedMissing(Method method) {
 
             if ( !( valueMappings.hasMapAnyUnmapped || valueMappings.hasMapAnyRemaining ) ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING
                 );
-                foundIncorrectMapping = true;
             }
-            return !foundIncorrectMapping;
         }
 
         private boolean reportErrorIfMappedTargetEnumConstantsDontExist(Method method, Type targetType) {

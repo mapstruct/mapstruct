@@ -6,13 +6,15 @@
 package org.mapstruct.ap.test.injectionstrategy.jsr330._default;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 
 /**
  * @author Andrei Arlou
  */
-@Mapper(componentModel = "jsr330", uses = GenderJsr330DefaultCompileOptionFieldMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.JSR330,
+    uses = GenderJsr330DefaultCompileOptionFieldMapper.class)
 public interface CustomerJsr330DefaultCompileOptionFieldMapper {
 
     CustomerDto asTarget(CustomerEntity customerEntity);

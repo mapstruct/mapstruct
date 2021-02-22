@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.references.samename;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
 import org.mapstruct.ap.test.references.samename.model.Source;
 import org.mapstruct.ap.test.references.samename.model.Target;
@@ -15,7 +16,7 @@ import org.mapstruct.factory.Mappers;
  * @author Gunnar Morling
  */
 @Mapper(
-    componentModel = "jsr330",
+    componentModel = MappingConstants.ComponentModel.JSR330,
     uses = {
         CustomMapper.class,
         org.mapstruct.ap.test.references.samename.b.CustomMapper.class

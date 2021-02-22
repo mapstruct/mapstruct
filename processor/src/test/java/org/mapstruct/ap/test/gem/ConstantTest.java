@@ -30,4 +30,13 @@ public class ConstantTest {
         assertThat( MappingConstants.STRIP_PREFIX_TRANSFORMATION )
             .isEqualTo( MappingConstantsGem.STRIP_PREFIX_TRANSFORMATION );
     }
+
+    @Test
+    public void componentModelContantsShouldBeEqual() {
+        assertThat( MappingConstants.ComponentModel.DEFAULT )
+            .isEqualTo( MappingConstantsGem.ComponentModelGem.DEFAULT );
+        assertThat( MappingConstants.ComponentModel.CDI ).isEqualTo( MappingConstantsGem.ComponentModelGem.CDI );
+        assertThat( MappingConstants.ComponentModel.SPRING ).isEqualTo( MappingConstantsGem.ComponentModelGem.SPRING );
+        assertThat( MappingConstants.ComponentModel.JSR330 ).isEqualTo( MappingConstantsGem.ComponentModelGem.JSR330 );
+    }
 }

@@ -22,6 +22,8 @@ import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import javax.lang.model.element.AnnotationMirror;
+
 /**
  * Builder that can be used to build {@link ContainerMappingMethod}(s).
  *
@@ -37,6 +39,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
     private FormattingParameters formattingParameters;
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
+    private AnnotationMirror positionHint;
 
     ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
@@ -55,6 +58,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     public B callingContextTargetPropertyName(String callingContextTargetPropertyName) {
         this.callingContextTargetPropertyName = callingContextTargetPropertyName;
+        return myself;
+    }
+
+    public B positionHint(AnnotationMirror positionHint) {
+        this.positionHint = positionHint;
         return myself;
     }
 
@@ -88,7 +96,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             formattingParameters,
             criteria,
             sourceRHS,
-            null,
+            positionHint,
             () -> forge( sourceRHS, sourceElementType, targetElementType )
         );
 

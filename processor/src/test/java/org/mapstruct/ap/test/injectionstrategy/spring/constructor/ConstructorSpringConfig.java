@@ -7,10 +7,12 @@ package org.mapstruct.ap.test.injectionstrategy.spring.constructor;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MapperConfig;
+import org.mapstruct.MappingConstants;
 
 /**
  * @author Filip Hrisafov
  */
-@MapperConfig(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@MapperConfig(componentModel = MappingConstants.ComponentModel.SPRING,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ConstructorSpringConfig {
 }

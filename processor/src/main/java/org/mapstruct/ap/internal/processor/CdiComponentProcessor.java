@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 
@@ -23,7 +24,7 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
 
     @Override
     protected String getComponentModelIdentifier() {
-        return "cdi";
+        return MappingConstantsGem.ComponentModelGem.CDI;
     }
 
     @Override

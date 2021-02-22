@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 
@@ -23,7 +24,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProcessor {
     @Override
     protected String getComponentModelIdentifier() {
-        return "jsr330";
+        return MappingConstantsGem.ComponentModelGem.JSR330;
     }
 
     @Override
