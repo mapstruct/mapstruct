@@ -44,6 +44,7 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final String defaultTarget;
     private final String nullTarget;
+    private boolean nullAsException;
     private boolean defaultAsException;
 
     private final Type unexpectedValueMappingException;
@@ -121,6 +122,7 @@ public class ValueMappingMethod extends MappingMethod {
             return new ValueMappingMethod( method,
                 mappingEntries,
                 valueMappings.nullValueTarget,
+                valueMappings.hasNullValueAsException,
                 valueMappings.defaultTargetValue,
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
@@ -316,7 +318,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             for ( ValueMappingOptions mappedConstant : valueMappings.regularValueMappings ) {
 
-                if ( THROW_EXCEPTION.equals( mappedConstant.getSource() ) ) {
+                if ( !enumMapping.isInverse() && THROW_EXCEPTION.equals( mappedConstant.getSource() ) ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         mappedConstant.getMirror(),
@@ -432,7 +434,8 @@ public class ValueMappingMethod extends MappingMethod {
 
         private Type determineUnexpectedValueMappingException() {
             boolean noDefaultValueForSwitchCase = !valueMappings.hasDefaultValue;
-            if ( noDefaultValueForSwitchCase || valueMappings.hasAtLeastOneExceptionValue ) {
+            if ( noDefaultValueForSwitchCase || valueMappings.hasAtLeastOneExceptionValue
+                || valueMappings.hasNullValueAsException ) {
                 TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
                 if ( unexpectedValueMappingException != null ) {
                     return ctx.getTypeFactory().getType( unexpectedValueMappingException );
@@ -490,7 +493,7 @@ public class ValueMappingMethod extends MappingMethod {
         boolean hasMapAnyUnmapped = false;
         boolean hasMapAnyRemaining = false;
         boolean hasDefaultValue = false;
-        boolean hasNullValue = false;
+        boolean hasNullValueAsException = false;
         boolean hasAtLeastOneExceptionValue = false;
 
         ValueMappings(List<ValueMappingOptions> valueMappings) {
@@ -511,7 +514,9 @@ public class ValueMappingMethod extends MappingMethod {
                 else if ( NULL.equals( valueMapping.getSource() ) ) {
                     nullTarget = valueMapping;
                     nullValueTarget = getValue( nullTarget );
-                    hasNullValue = true;
+                    if ( THROW_EXCEPTION.equals( nullValueTarget ) ) {
+                        hasNullValueAsException = true;
+                    }
                 }
                 else {
                     regularValueMappings.add( valueMapping );
@@ -528,13 +533,18 @@ public class ValueMappingMethod extends MappingMethod {
         }
     }
 
-    private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
-        Type unexpectedValueMappingException,
-        List<LifecycleCallbackMethodReference> beforeMappingMethods,
-        List<LifecycleCallbackMethodReference> afterMappingMethods, boolean defaultAsException) {
+    private ValueMappingMethod(Method method,
+                               List<MappingEntry> enumMappings,
+                               String nullTarget,
+                               boolean hasNullTargetAsException,
+                               String defaultTarget,
+                               Type unexpectedValueMappingException,
+                               List<LifecycleCallbackMethodReference> beforeMappingMethods,
+                               List<LifecycleCallbackMethodReference> afterMappingMethods, boolean defaultAsException) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
+        this.nullAsException = hasNullTargetAsException;
         this.defaultTarget = defaultTarget;
         this.defaultAsException = defaultAsException;
         this.unexpectedValueMappingException = unexpectedValueMappingException;
@@ -562,6 +572,10 @@ public class ValueMappingMethod extends MappingMethod {
 
     public String getNullTarget() {
         return nullTarget;
+    }
+
+    public boolean isNullAsException() {
+        return nullAsException;
     }
 
     public Type getUnexpectedValueMappingException() {

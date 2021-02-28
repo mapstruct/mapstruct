@@ -16,6 +16,9 @@ import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Jude Niroshan
+ */
 @Mapper
 public interface SpecialThrowExceptionMapper {
     SpecialThrowExceptionMapper INSTANCE = Mappers.getMapper( SpecialThrowExceptionMapper.class );
@@ -40,5 +43,5 @@ public interface SpecialThrowExceptionMapper {
         @ValueMapping(source = "STANDARD", target = MappingConstants.NULL),
         @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     })
-    ExternalOrderType anyRemainingToNull(OrderType orderType);
+    ExternalOrderType anyRemainingToNullToException(OrderType orderType);
 }

@@ -13,6 +13,9 @@ import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Jude Niroshan
+ */
 @Mapper
 public interface DefaultOrderThrowExceptionMapper {
     DefaultOrderThrowExceptionMapper INSTANCE = Mappers.getMapper( DefaultOrderThrowExceptionMapper.class );

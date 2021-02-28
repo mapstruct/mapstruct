@@ -18,6 +18,7 @@ import org.mapstruct.ap.internal.util.Message;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
+import static org.mapstruct.ap.internal.gem.MappingConstantsGem.THROW_EXCEPTION;
 
 /**
  * Represents the mapping between one value constant and another.
@@ -112,7 +113,7 @@ public class ValueMappingOptions {
 
     public ValueMappingOptions inverse() {
         ValueMappingOptions result;
-        if ( !(ANY_REMAINING.equals( source ) || ANY_UNMAPPED.equals( source ) ) ) {
+        if ( !(ANY_REMAINING.equals( source ) || ANY_UNMAPPED.equals( source ) || THROW_EXCEPTION.equals( target ) ) ) {
             result = new ValueMappingOptions(
                 target,
                 source,

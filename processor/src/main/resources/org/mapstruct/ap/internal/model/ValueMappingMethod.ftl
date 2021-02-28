@@ -15,7 +15,7 @@
         </#if>
     </#list>
     if ( ${sourceParameter.name} == null ) {
-        return <@writeTarget target=nullTarget/>;
+        <#if nullAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget/>;</#if>
     }
 
     <@includeModel object=resultType/> ${resultName};

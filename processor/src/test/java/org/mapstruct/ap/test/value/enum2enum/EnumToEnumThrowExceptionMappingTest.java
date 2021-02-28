@@ -16,8 +16,12 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * @author Jude Niroshan
+ */
 @IssueKey("2339")
 @WithClasses({
     OrderEntity.class,
@@ -29,7 +33,7 @@ public class EnumToEnumThrowExceptionMappingTest {
     @IssueKey("2339")
     @Test
     @WithClasses(DefaultOrderThrowExceptionMapper.class)
-    public void shouldThrowExceptionWhenRequestingAnyEnumWithExpectedExceptions() {
+    public void shouldBeAbleToMapAnyUnmappedToThrowException() {
 
         assertThatThrownBy( () ->
             DefaultOrderThrowExceptionMapper.INSTANCE
@@ -52,5 +56,38 @@ public class EnumToEnumThrowExceptionMappingTest {
         }
     )
     public void shouldRaiseErrorWhenThrowExceptionUsedAsSourceType() {
+    }
+
+    @IssueKey("2339")
+    @Test
+    @WithClasses({OrderThrowExceptionMapper.class, OrderDto.class})
+    public void shouldIgnoreThrowExceptionWhenInverseValueMappings() {
+
+        OrderType target = OrderThrowExceptionMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
+        assertThat( target ).isEqualTo( OrderType.B2B );
+    }
+
+    @IssueKey("2339")
+    @Test
+    @WithClasses({SpecialThrowExceptionMapper.class, OrderDto.class})
+    public void shouldBeAbleToMapAnyRemainingToThrowException() {
+
+        assertThatThrownBy( () ->
+            SpecialThrowExceptionMapper.INSTANCE
+                .orderTypeToExternalOrderType( OrderType.EXTRA ) )
+            .isInstanceOf( IllegalArgumentException.class )
+            .hasMessage( "Unexpected enum constant: EXTRA" );
+    }
+
+    @IssueKey("2339")
+    @Test
+    @WithClasses({SpecialThrowExceptionMapper.class, OrderDto.class})
+    public void shouldBeAbleToMapNullToThrowException() {
+
+        assertThatThrownBy( () ->
+            SpecialThrowExceptionMapper.INSTANCE
+                .anyRemainingToNullToException( null ) )
+            .isInstanceOf( IllegalArgumentException.class )
+            .hasMessage( "Unexpected enum constant: null" );
     }
 }
