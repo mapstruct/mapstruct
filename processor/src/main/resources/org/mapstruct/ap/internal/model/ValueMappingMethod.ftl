@@ -22,10 +22,10 @@
 
     switch ( ${sourceParameter.name} ) {
     <#list valueMappings as valueMapping>
-        case <@writeSource source=valueMapping.source/>: <#if unexpectedValueMappingException?? && valueMapping.target?? && valueMapping.target="<THROW_EXCEPTION>">throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
+        case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
         break;</#if>
     </#list>
-    default: <#if unexpectedValueMappingException?? || (unexpectedValueMappingException?? && defaultTarget?? && defaultTarget="<THROW_EXCEPTION>")>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
+    default: <#if defaultAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>

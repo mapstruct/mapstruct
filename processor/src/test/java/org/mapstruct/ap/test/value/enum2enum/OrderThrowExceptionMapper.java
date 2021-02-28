@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.value.enum2enum;
 
 import org.mapstruct.InheritInverseConfiguration;
@@ -12,7 +17,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface OrderThrowExceptionMapper {
     OrderThrowExceptionMapper INSTANCE = Mappers.getMapper( OrderThrowExceptionMapper.class );
-
 
     OrderDto orderEntityToDto(OrderEntity order);
 

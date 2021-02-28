@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.value.enum2enum;
 
 import org.junit.Test;
@@ -27,7 +32,8 @@ public class EnumToEnumThrowExceptionMappingTest {
     public void shouldThrowExceptionWhenRequestingAnyEnumWithExpectedExceptions() {
 
         assertThatThrownBy( () ->
-            DefaultOrderThrowExceptionMapper.INSTANCE.orderTypeToExternalOrderTypeAnyUnmappedToException( OrderType.EXTRA ) )
+            DefaultOrderThrowExceptionMapper.INSTANCE
+                .orderTypeToExternalOrderTypeAnyUnmappedToException( OrderType.EXTRA ) )
             .isInstanceOf( IllegalArgumentException.class )
             .hasMessage( "Unexpected enum constant: EXTRA" );
     }

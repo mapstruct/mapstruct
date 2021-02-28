@@ -44,6 +44,7 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final String defaultTarget;
     private final String nullTarget;
+    private boolean defaultAsException;
 
     private final Type unexpectedValueMappingException;
 
@@ -123,7 +124,8 @@ public class ValueMappingMethod extends MappingMethod {
                 valueMappings.defaultTargetValue,
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                determineExceptionMappingForDefaultCase()
             );
         }
 
@@ -430,7 +432,7 @@ public class ValueMappingMethod extends MappingMethod {
 
         private Type determineUnexpectedValueMappingException() {
             boolean noDefaultValueForSwitchCase = !valueMappings.hasDefaultValue;
-            if ( noDefaultValueForSwitchCase || valueMappings.defaultTargetValue.equals( THROW_EXCEPTION ) ) {
+            if ( noDefaultValueForSwitchCase || valueMappings.hasAtLeastOneExceptionValue ) {
                 TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
                 if ( unexpectedValueMappingException != null ) {
                     return ctx.getTypeFactory().getType( unexpectedValueMappingException );
@@ -441,6 +443,15 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             return null;
+        }
+
+        private boolean determineExceptionMappingForDefaultCase() {
+            if ( valueMappings.hasDefaultValue ) {
+                return THROW_EXCEPTION.equals( valueMappings.defaultTargetValue );
+            }
+            else {
+                return true;
+            }
         }
     }
 
@@ -480,6 +491,7 @@ public class ValueMappingMethod extends MappingMethod {
         boolean hasMapAnyRemaining = false;
         boolean hasDefaultValue = false;
         boolean hasNullValue = false;
+        boolean hasAtLeastOneExceptionValue = false;
 
         ValueMappings(List<ValueMappingOptions> valueMappings) {
 
@@ -504,6 +516,10 @@ public class ValueMappingMethod extends MappingMethod {
                 else {
                     regularValueMappings.add( valueMapping );
                 }
+
+                if ( THROW_EXCEPTION.equals( valueMapping.getTarget() ) ) {
+                    hasAtLeastOneExceptionValue = true;
+                }
             }
         }
 
@@ -515,11 +531,12 @@ public class ValueMappingMethod extends MappingMethod {
     private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
         Type unexpectedValueMappingException,
         List<LifecycleCallbackMethodReference> beforeMappingMethods,
-        List<LifecycleCallbackMethodReference> afterMappingMethods) {
+        List<LifecycleCallbackMethodReference> afterMappingMethods, boolean defaultAsException) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
+        this.defaultAsException = defaultAsException;
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
     }
@@ -551,6 +568,10 @@ public class ValueMappingMethod extends MappingMethod {
         return unexpectedValueMappingException;
     }
 
+    public boolean isDefaultAsException() {
+        return defaultAsException;
+    }
+
     public Parameter getSourceParameter() {
         return first( getSourceParameters() );
     }
@@ -562,15 +583,23 @@ public class ValueMappingMethod extends MappingMethod {
     public static class MappingEntry {
         private final String source;
         private final String target;
+        private boolean targetAsException = false;
 
-        MappingEntry( String source, String target ) {
+        MappingEntry(String source, String target) {
             this.source = source;
             if ( !NULL.equals( target ) ) {
                 this.target = target;
+                if ( THROW_EXCEPTION.equals( target ) ) {
+                    this.targetAsException = true;
+                }
             }
             else {
                 this.target = null;
             }
+        }
+
+        public boolean isTargetAsException() {
+            return targetAsException;
         }
 
         public String getSource() {

@@ -51,30 +51,6 @@ public class SpecialOrderMapperImpl implements SpecialOrderMapper {
     }
 
     @Override
-    public ExternalOrderType orderTypeToExternalOrderTypeWithException(OrderType orderType) {
-        if ( orderType == null ) {
-            return null;
-        }
-
-        ExternalOrderType externalOrderType;
-
-        switch ( orderType ) {
-            case RETAIL: externalOrderType = ExternalOrderType.RETAIL;
-            break;
-            case B2B: externalOrderType = ExternalOrderType.B2B;
-            break;
-            case STANDARD: externalOrderType = ExternalOrderType.SPECIAL;
-            break;
-            case NORMAL: externalOrderType = ExternalOrderType.DEFAULT;
-            break;
-            case EXTRA: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
-            default: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
-        }
-
-        return externalOrderType;
-    }
-
-    @Override
     public OrderType externalOrderTypeToOrderType(ExternalOrderType orderType) {
         if ( orderType == null ) {
             return OrderType.STANDARD;
