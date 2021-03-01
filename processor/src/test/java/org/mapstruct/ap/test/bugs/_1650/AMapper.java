@@ -15,12 +15,12 @@ public interface AMapper {
 
     AMapper INSTANCE = Mappers.getMapper( AMapper.class );
 
-    @Mapping(source = "b.c", target = "cPrime")
+    @Mapping(target = "cPrime", source = "b.c")
     APrime toAPrime(A a, @MappingTarget APrime mappingTarget);
 
     CPrime toCPrime(C c, @MappingTarget CPrime mappingTarget);
 
-    @Mapping(source = "b.c", target = "cPrime")
+    @Mapping(target = "cPrime", source = "b.c")
     APrime toAPrime(A a);
 
     CPrime toCPrime(C c);

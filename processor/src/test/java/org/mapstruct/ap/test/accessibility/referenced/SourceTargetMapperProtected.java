@@ -18,6 +18,6 @@ public interface SourceTargetMapperProtected {
 
     SourceTargetMapperProtected INSTANCE = Mappers.getMapper( SourceTargetMapperProtected.class );
 
-    @Mapping(source = "referencedSource", target = "referencedTarget")
+    @Mapping(target = "referencedTarget", source = "referencedSource")
     Target toTarget(Source source);
 }

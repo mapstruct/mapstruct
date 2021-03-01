@@ -24,8 +24,8 @@ public interface CarMapper {
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
     @Mappings({
-        @Mapping(source = "numberOfSeats", target = "seatCount"),
-        @Mapping(source = "manufacturingDate", target = "manufacturingYear")
+        @Mapping(target = "seatCount", source = "numberOfSeats"),
+        @Mapping(target = "manufacturingYear", source = "manufacturingDate")
     })
     CarDto carToCarDto(Car car);
 

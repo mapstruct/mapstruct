@@ -16,9 +16,9 @@ public interface PersonGarageWrongTargetMapper {
 
     PersonGarageWrongTargetMapper MAPPER = Mappers.getMapper( PersonGarageWrongTargetMapper.class );
 
-    @Mapping(source = "garage.color.rgb", target = "garage.colour.rgb")
+    @Mapping(target = "garage.colour.rgb", source = "garage.color.rgb")
     Person mapPerson(PersonDto dto);
 
-    @Mapping(source = "garage.color", target = "garage.colour")
+    @Mapping(target = "garage.colour", source = "garage.color")
     Person mapPersonGarage(PersonDto dto);
 }

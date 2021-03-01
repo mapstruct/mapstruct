@@ -20,16 +20,16 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "stringPropX", target = "stringPropY"),
-        @Mapping(source = "integerPropX", target = "integerPropY"),
-        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+        @Mapping(target = "stringPropY", source = "stringPropX"),
+        @Mapping(target = "integerPropY", source = "integerPropX"),
+        @Mapping(target = "propertyNotToIgnoreUpstream", source = "propertyToIgnoreDownstream")
     })
     Target forward(Source source);
 
     @Mappings({
-        @Mapping(source = "stringPropX", target = "stringPropY"),
-        @Mapping(source = "integerPropX", target = "integerPropY"),
-        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+        @Mapping(target = "stringPropY", source = "stringPropX"),
+        @Mapping(target = "integerPropY", source = "integerPropX"),
+        @Mapping(target = "propertyNotToIgnoreUpstream", source = "propertyToIgnoreDownstream")
     })
     Target forwardNotToReverse(Source source);
 

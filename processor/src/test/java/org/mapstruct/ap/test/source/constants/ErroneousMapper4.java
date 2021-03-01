@@ -21,7 +21,7 @@ public interface ErroneousMapper4 {
     @Mappings({
         @Mapping(target = "stringConstant", constant = "stringConstant"),
         @Mapping(target = "emptyStringConstant", constant = ""),
-        @Mapping(source = "test", target = "integerConstant", expression = "java('test')"),
+        @Mapping(target = "integerConstant", source = "test", expression = "java('test')"),
         @Mapping(target = "longWrapperConstant", constant = "3001L"),
         @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
         @Mapping(target = "nameConstants", constant = "jack-jill-tom"),

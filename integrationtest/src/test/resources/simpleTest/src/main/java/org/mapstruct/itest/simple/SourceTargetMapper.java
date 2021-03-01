@@ -17,9 +17,9 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "qax", target = "baz"),
-        @Mapping(source = "baz", target = "qax"),
-        @Mapping(source = "forNested.value", target = "fromNested")
+        @Mapping(target = "baz", source = "qax"),
+        @Mapping(target = "qax", source = "baz"),
+        @Mapping(target = "fromNested", source = "forNested.value")
     })
     Target sourceToTarget(Source source);
 

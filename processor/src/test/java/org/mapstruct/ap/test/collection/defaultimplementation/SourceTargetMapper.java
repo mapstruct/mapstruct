@@ -26,7 +26,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "fooList", target = "fooListNoSetter")
+    @Mapping(target = "fooListNoSetter", source = "fooList")
     Target sourceToTarget(Source source);
 
     TargetFoo sourceFooToTargetFoo(SourceFoo sourceFoo);

@@ -18,7 +18,7 @@ public interface Issue849Mapper {
 
     Issue849Mapper INSTANCE = Mappers.getMapper( Issue849Mapper.class );
 
-    @Mapping(source = "sourceList", target = "targetList")
+    @Mapping(target = "targetList", source = "sourceList")
     Target mapSourceToTarget(Source source);
 
 }

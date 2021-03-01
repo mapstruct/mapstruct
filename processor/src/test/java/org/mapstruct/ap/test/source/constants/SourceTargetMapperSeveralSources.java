@@ -19,8 +19,8 @@ public interface SourceTargetMapperSeveralSources {
     SourceTargetMapperSeveralSources INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralSources.class );
 
     @Mappings({
-        @Mapping(source = "s1.someProp", target = "someProp" ),
-        @Mapping(source = "s2.anotherProp", target = "anotherProp" ),
+        @Mapping(target = "someProp", source = "s1.someProp"),
+        @Mapping(target = "anotherProp", source = "s2.anotherProp"),
         @Mapping(target = "someConstant", constant = "stringConstant"),
     })
     Target2 sourceToTarget(Source1 s1, Source2 s2);
