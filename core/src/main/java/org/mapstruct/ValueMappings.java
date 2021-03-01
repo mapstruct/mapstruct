@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
  * &#64;Mapper
  * public interface GenderMapper {
  *     &#64;ValueMappings({
- *         &#64;ValueMapping(source = "MALE", target = "M"),
- *         &#64;ValueMapping(source = "FEMALE", target = "F")
+ *         &#64;ValueMapping(target = "M", source = "MALE"),
+ *         &#64;ValueMapping(target = "F", source = "FEMALE")
  *     })
  *     GenderDto mapToDto(Gender gender);
  * }
@@ -32,8 +32,8 @@ import java.lang.annotation.Target;
  * //Java 8 and later
  * &#64;Mapper
  * public interface GenderMapper {
- *     &#64;ValueMapping(source = "MALE", target = "M"),
- *     &#64;ValueMapping(source = "FEMALE", target = "F")
+ *     &#64;ValueMapping(target = "M", source = "MALE"),
+ *     &#64;ValueMapping(target = "F", source = "FEMALE")
  *     GenderDto mapToDto(Gender gender);
  * }
  * </code></pre>
