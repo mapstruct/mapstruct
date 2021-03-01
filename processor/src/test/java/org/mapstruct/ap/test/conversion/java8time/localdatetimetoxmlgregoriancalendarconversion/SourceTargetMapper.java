@@ -17,9 +17,9 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "xmlGregorianCalendar", target = "localDateTime")
+    @Mapping(target = "localDateTime", source = "xmlGregorianCalendar")
     Target toTarget(Source source);
 
-    @Mapping(source = "localDateTime", target = "xmlGregorianCalendar")
+    @Mapping(target = "xmlGregorianCalendar", source = "localDateTime")
     Source toSource(Target target);
 }

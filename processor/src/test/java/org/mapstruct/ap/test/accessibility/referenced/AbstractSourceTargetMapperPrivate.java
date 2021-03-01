@@ -19,6 +19,6 @@ public abstract class AbstractSourceTargetMapperPrivate extends SourceTargetmapp
     public static final AbstractSourceTargetMapperPrivate INSTANCE =
             Mappers.getMapper( AbstractSourceTargetMapperPrivate.class );
 
-    @Mapping(source = "referencedSource", target = "referencedTarget")
+    @Mapping(target = "referencedTarget", source = "referencedSource")
     public abstract Target toTarget(Source source);
 }

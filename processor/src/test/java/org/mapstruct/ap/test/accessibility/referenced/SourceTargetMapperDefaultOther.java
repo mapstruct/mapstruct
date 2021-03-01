@@ -20,6 +20,6 @@ public interface SourceTargetMapperDefaultOther {
     SourceTargetMapperDefaultOther INSTANCE =
         Mappers.getMapper( SourceTargetMapperDefaultOther.class );
 
-    @Mapping(source = "referencedSource", target = "referencedTarget")
+    @Mapping(target = "referencedTarget", source = "referencedSource")
     Target toTarget(Source source);
 }

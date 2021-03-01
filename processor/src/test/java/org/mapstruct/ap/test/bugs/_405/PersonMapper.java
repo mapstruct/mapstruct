@@ -19,7 +19,7 @@ public abstract class PersonMapper {
     public static final PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
 
     @Mappings( {
-        @Mapping( source = "id", target = "name" ) }
+        @Mapping(target = "name",  source = "id") }
     )
     abstract People personToPeople(Person person);
 

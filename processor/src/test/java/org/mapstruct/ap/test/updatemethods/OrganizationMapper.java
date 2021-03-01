@@ -29,14 +29,14 @@ public interface OrganizationMapper {
     void toCompanyEntity(CompanyDto dto, @MappingTarget CompanyEntity entity);
 
     @Mappings({
-        @Mapping( target = "employees", ignore = true ),
-        @Mapping( target = "secretaryToEmployee", ignore = true )
+        @Mapping(target = "employees", ignore = true ),
+        @Mapping(target = "secretaryToEmployee", ignore = true )
     })
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
-    @Mapping(source = "type", target = "type")
+    @Mapping(target = "type", source = "type")
     void toName(String type, @MappingTarget OrganizationTypeEntity entity);
 
-    @Mapping(source = "number", target = "number")
+    @Mapping(target = "number", source = "number")
     void toNumber(Integer number, @MappingTarget OrganizationTypeNrEntity entity);
 }

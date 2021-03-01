@@ -16,7 +16,7 @@ public interface PersonNameMapper {
 
     PersonNameMapper MAPPER = Mappers.getMapper( PersonNameMapper.class );
 
-    @Mapping(source = "name", target = "fulName")
+    @Mapping(target = "fulName", source = "name")
     Person mapPerson(PersonDto dto);
 
 }

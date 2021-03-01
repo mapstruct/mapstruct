@@ -17,19 +17,19 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "address.houseNo", target = "houseNumber"),
-        @Mapping(source = "person.description", target = "description")
+        @Mapping(target = "houseNumber", source = "address.houseNo"),
+        @Mapping(target = "description", source = "person.description")
     })
     DeliveryAddress personAndAddressToDeliveryAddress(Person person, Address address);
 
     @Mappings({
-        @Mapping(source = "address.houseNo", target = "houseNumber"),
-        @Mapping(source = "person.description", target = "description")
+        @Mapping(target = "houseNumber", source = "address.houseNo"),
+        @Mapping(target = "description", source = "person.description")
     })
     void personAndAddressToDeliveryAddress(Person person, Address address,
                                            @MappingTarget DeliveryAddress deliveryAddress);
 
-    @Mapping( target = "description", source = "person.description")
+    @Mapping(target = "description", source = "person.description")
     DeliveryAddress personAndAddressToDeliveryAddress(Person person, Integer houseNumber, int zipCode,
             String street);
 

@@ -21,7 +21,7 @@ public interface CustomerNvpmsOnBeanMappingMethodMapper {
     void map(Customer customer, @MappingTarget CustomerDTO mappingTarget);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "houseNumber", target = "houseNo")
+    @Mapping(target = "houseNo", source = "houseNumber")
     void mapCustomerHouse(Address address, @MappingTarget AddressDTO addrDTO);
 
 }

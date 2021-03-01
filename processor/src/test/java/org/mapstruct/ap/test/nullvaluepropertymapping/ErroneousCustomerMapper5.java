@@ -21,7 +21,7 @@ public interface ErroneousCustomerMapper5 {
     @Mapping(target = "address", nullValuePropertyMappingStrategy = IGNORE)
     void map(Customer customer, @MappingTarget CustomerDTO mappingTarget);
 
-    @Mapping(source = "houseNumber", target = "houseNo")
+    @Mapping(target = "houseNo", source = "houseNumber")
     void mapCustomerHouse(Address address, @MappingTarget AddressDTO addrDTO);
 
 }

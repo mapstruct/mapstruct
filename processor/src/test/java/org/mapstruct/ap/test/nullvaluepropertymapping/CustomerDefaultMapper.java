@@ -16,10 +16,10 @@ public interface CustomerDefaultMapper {
 
     CustomerDefaultMapper INSTANCE = Mappers.getMapper( CustomerDefaultMapper.class );
 
-    @Mapping(source = "address", target = "homeDTO.addressDTO")
+    @Mapping(target = "homeDTO.addressDTO", source = "address")
     void mapCustomer(Customer customer, @MappingTarget UserDTO userDTO);
 
-    @Mapping(source = "houseNumber", target = "houseNo", defaultValue = "0")
+    @Mapping(target = "houseNo", defaultValue = "0", source = "houseNumber")
     void mapCustomerHouse(Address address, @MappingTarget AddressDTO addrDTO);
 
 }

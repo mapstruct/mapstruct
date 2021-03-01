@@ -25,7 +25,7 @@ public interface ErroneousOrganizationMapper2 {
 
     void toCompanyEntity(CompanyDto dto, @MappingTarget CompanyEntity entity);
 
-    @Mapping(source = "type", target = "type")
+    @Mapping(target = "type", source = "type")
     void toName(String type, @MappingTarget OrganizationTypeEntity entity);
 
     @Mappings({

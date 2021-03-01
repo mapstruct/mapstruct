@@ -42,6 +42,6 @@ public interface SourceTargetMapper {
 
     TargetViaTargetType toTargetViaTargetType(Source source);
 
-    @Mapping(source = "pet", target = "pets")
+    @Mapping(target = "pets", source = "pet")
     Target fromSingleElementSource(SingleElementSource source);
 }

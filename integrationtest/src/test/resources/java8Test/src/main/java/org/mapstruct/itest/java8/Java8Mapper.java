@@ -14,7 +14,7 @@ public interface Java8Mapper {
 
     Java8Mapper INSTANCE = Mappers.getMapper( Java8Mapper.class );
 
-    @Mapping(source = "firstName", target = "givenName")
-    @Mapping(source = "lastName", target = "surname")
+    @Mapping(target = "givenName", source = "firstName")
+    @Mapping(target = "surname", source = "lastName")
     Target sourceToTarget(Source source);
 }

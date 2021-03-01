@@ -15,7 +15,7 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface ResourceMapper {
 
-    @Mapping(source = "bucket.user.uuid", target = "userId")
+    @Mapping(target = "userId", source = "bucket.user.uuid")
     ResourceDto map(Resource r) throws NoSuchUser;
 
 }

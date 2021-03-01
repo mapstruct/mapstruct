@@ -16,7 +16,7 @@ public interface PersonAgeMapper {
 
     PersonAgeMapper MAPPER = Mappers.getMapper( PersonAgeMapper.class );
 
-    @Mapping(source = "agee", target = "fullAge")
+    @Mapping(target = "fullAge", source = "agee")
     Person mapPerson(PersonDto dto);
 
 }

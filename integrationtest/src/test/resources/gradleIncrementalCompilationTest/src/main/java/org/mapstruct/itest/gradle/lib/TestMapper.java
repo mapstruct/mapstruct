@@ -14,6 +14,6 @@ import org.mapstruct.itest.gradle.model.Source;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TestMapper {
-    @Mapping(source = "value", target = "field")
+    @Mapping(target = "field", source = "value")
     public Target toTarget(Source source);
 }

@@ -18,6 +18,6 @@ public interface SourceTargetMapperDefaultSame {
 
     SourceTargetMapperDefaultSame INSTANCE = Mappers.getMapper( SourceTargetMapperDefaultSame.class );
 
-    @Mapping(source = "referencedSource", target = "referencedTarget")
+    @Mapping(target = "referencedTarget", source = "referencedSource")
     Target toTarget(Source source);
 }
