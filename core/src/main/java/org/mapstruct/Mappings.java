@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
  * &#64;Mapper
  * public interface MyMapper {
  *     &#64;Mappings({
- *         &#64;Mapping(source = "first", target = "firstProperty"),
- *         &#64;Mapping(source = "second", target = "secondProperty")
+ *         &#64;Mapping(target = "firstProperty", source = "first"),
+ *         &#64;Mapping(target = "secondProperty", source = "second")
  *     })
  *     HumanDto toHumanDto(Human human);
  * }
@@ -33,8 +33,8 @@ import java.lang.annotation.Target;
  * // Java 8 and later
  * &#64;Mapper
  * public interface MyMapper {
- *     &#64;Mapping(source = "first", target = "firstProperty"),
- *     &#64;Mapping(source = "second", target = "secondProperty")
+ *     &#64;Mapping(target = "firstProperty", source = "first"),
+ *     &#64;Mapping(target = "secondProperty", source = "second")
  *     HumanDto toHumanDto(Human human);
  * }
  * </code></pre>

@@ -20,9 +20,9 @@ public interface OrderMapper {
     OrderMapper INSTANCE = Mappers.getMapper( OrderMapper.class );
 
     @ValueMappings({
-        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
-        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
-        @ValueMapping(source = "NORMAL", target = "DEFAULT")
+        @ValueMapping(target = "SPECIAL", source = "EXTRA"),
+        @ValueMapping(target = "DEFAULT", source = "STANDARD"),
+        @ValueMapping(target = "DEFAULT", source = "NORMAL")
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

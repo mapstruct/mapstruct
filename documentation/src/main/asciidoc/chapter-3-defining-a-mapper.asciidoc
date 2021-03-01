@@ -16,11 +16,11 @@ To create a mapper simply define a Java interface with the required mapping meth
 @Mapper
 public interface CarMapper {
 
-    @Mapping(source = "make", target = "manufacturer")
-    @Mapping(source = "numberOfSeats", target = "seatCount")
+    @Mapping(target = "manufacturer", source = "make")
+    @Mapping(target = "seatCount", source = "numberOfSeats")
     CarDto carToCarDto(Car car);
 
-    @Mapping(source = "name", target = "fullName")
+    @Mapping(target = "fullName", source = "name")
     PersonDto personToPersonDto(Person person);
 }
 ----
@@ -236,8 +236,8 @@ MapStruct also supports mapping methods with several source parameters. This is 
 @Mapper
 public interface AddressMapper {
 
-    @Mapping(source = "person.description", target = "description")
-    @Mapping(source = "address.houseNo", target = "houseNumber")
+    @Mapping(target = "description", source = "person.description")
+    @Mapping(target = "houseNumber", source = "address.houseNo")
     DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Address address);
 }
 ----
@@ -267,8 +267,8 @@ MapStruct also offers the possibility to directly refer to a source parameter.
 @Mapper
 public interface AddressMapper {
 
-    @Mapping(source = "person.description", target = "description")
-    @Mapping(source = "hn", target = "houseNumber")
+    @Mapping(target = "description", source = "person.description")
+    @Mapping(target = "houseNumber", source = "hn")
     DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn);
 }
 ----
@@ -368,7 +368,7 @@ public interface CustomerMapper {
 
     CustomerMapper INSTANCE = Mappers.getMapper( CustomerMapper.class );
 
-    @Mapping(source = "customerName", target = "name")
+    @Mapping(target = "name", source = "customerName")
     Customer toCustomer(CustomerDto customerDto);
 
     @InheritInverseConfiguration
