@@ -248,7 +248,7 @@ If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`,
 |`WARN`
 |===
 
-=== Using MapStruct on Java 9 and higher versions
+=== Using MapStruct with the Java Module System
 
 MapStruct can be used with Java 9 and higher versions.
 
