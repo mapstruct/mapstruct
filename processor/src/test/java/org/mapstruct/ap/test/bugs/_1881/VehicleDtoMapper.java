@@ -15,9 +15,9 @@ public interface VehicleDtoMapper {
 
   VehicleDtoMapper INSTANCE = Mappers.getMapper( VehicleDtoMapper.class );
 
-  @Mapping(source = "name", target = "name")
-  @Mapping(source = "size", target = "vehicleProperties.size")
-  @Mapping(source = "type", target = "vehicleProperties.type")
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "vehicleProperties.size", source = "size")
+  @Mapping(target = "vehicleProperties.type", source = "type")
   VehicleDto map(Vehicle vehicle);
 
   class VehicleDto {

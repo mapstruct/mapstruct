@@ -47,7 +47,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *      uses = MarkMapper.class,
  *      injectionStrategy = InjectionStrategy.CONSTRUCTOR)
  * public interface CarMapper {
- *     &#64;Mapping(source = "mark", target = "name")
+ *     &#64;Mapping(target = "name", source = "mark")
  *     CarDto convertMap(CarEntity carEntity);
  * }
  * </code></pre>

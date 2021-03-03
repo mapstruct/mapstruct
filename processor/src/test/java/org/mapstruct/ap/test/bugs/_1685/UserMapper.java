@@ -21,11 +21,11 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
 
     @Mappings({
-        @Mapping(source = "email", target = "contactDataDTO.email"),
-        @Mapping(source = "phone", target = "contactDataDTO.phone"),
-        @Mapping(source = "address", target = "contactDataDTO.address"),
-        @Mapping(source = "preferences", target = "contactDataDTO.preferences"),
-        @Mapping(source = "settings", target = "contactDataDTO.settings")
+        @Mapping(target = "contactDataDTO.email", source = "email" ),
+        @Mapping(target = "contactDataDTO.phone", source = "phone"),
+        @Mapping(target = "contactDataDTO.address", source = "address"),
+        @Mapping(target = "contactDataDTO.preferences", source = "preferences"),
+        @Mapping(target = "contactDataDTO.settings", source = "settings")
     })
     UserDTO userToUserDTO(User user);
 

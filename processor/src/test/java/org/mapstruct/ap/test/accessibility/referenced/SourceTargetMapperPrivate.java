@@ -18,6 +18,6 @@ public interface SourceTargetMapperPrivate {
 
     SourceTargetMapperPrivate INSTANCE = Mappers.getMapper( SourceTargetMapperPrivate.class );
 
-    @Mapping(source = "referencedSource", target = "referencedTarget")
+    @Mapping(target = "referencedTarget", source = "referencedSource")
     Target toTarget(Source source);
 }

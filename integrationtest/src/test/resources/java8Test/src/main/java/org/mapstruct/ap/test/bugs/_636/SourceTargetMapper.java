@@ -15,8 +15,8 @@ public interface SourceTargetMapper extends SourceTargetBaseMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "idFoo", target = "foo"),
-        @Mapping(source = "idBar", target = "bar")
+        @Mapping(target = "foo", source = "idFoo"),
+        @Mapping(target = "bar", source = "idBar")
     })
     Target mapSourceToTarget(Source source);
 }

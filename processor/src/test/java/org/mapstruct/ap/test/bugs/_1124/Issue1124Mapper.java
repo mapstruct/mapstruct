@@ -59,6 +59,6 @@ public interface Issue1124Mapper {
     class MappingContext {
     }
 
-    @Mapping(source = "entity.id", target = "id")
+    @Mapping(target = "id", source = "entity.id")
     DTO map(Entity entity, @Context MappingContext context);
 }

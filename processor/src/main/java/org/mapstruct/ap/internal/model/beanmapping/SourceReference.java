@@ -34,7 +34,7 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  * mapping method:
  *
  * <pre>
- * &#64;Mapping(source = "in.propA.propB" target = "propC")
+ * &#64;Mapping(target = "propC", source = "in.propA.propB")
  * TypeB mappingMethod(TypeA in);
  * </pre>
  *

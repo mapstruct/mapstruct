@@ -22,7 +22,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "fooStream", target = "fooListNoSetter")
+    @Mapping(target = "fooListNoSetter", source = "fooStream")
     Target sourceToTarget(Source source);
 
     TargetFoo sourceFooToTargetFoo(SourceFoo sourceFoo);

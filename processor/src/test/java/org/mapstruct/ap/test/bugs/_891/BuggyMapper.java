@@ -18,6 +18,6 @@ public interface BuggyMapper {
 
     BuggyMapper INSTANCE = Mappers.getMapper( BuggyMapper.class );
 
-    @Mapping(source = "nested.propInt", target = "propLong")
+    @Mapping(target = "propLong", source = "nested.propInt")
     Dest convert(Src src);
 }

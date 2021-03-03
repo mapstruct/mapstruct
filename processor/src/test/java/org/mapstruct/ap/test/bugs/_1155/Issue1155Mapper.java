@@ -17,6 +17,6 @@ public interface Issue1155Mapper {
 
     Issue1155Mapper INSTANCE = Mappers.getMapper( Issue1155Mapper.class );
 
-    @Mapping(source = "clientId", target = "client.id")
+    @Mapping(target = "client.id", source = "clientId")
     Entity toEntity(Entity.Dto dto);
 }

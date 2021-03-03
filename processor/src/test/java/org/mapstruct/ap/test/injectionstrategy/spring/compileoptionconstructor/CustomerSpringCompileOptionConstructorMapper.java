@@ -18,6 +18,6 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
     uses = GenderSpringCompileOptionConstructorMapper.class)
 public interface CustomerSpringCompileOptionConstructorMapper {
 
-    @Mapping( source = "gender", target = "gender" )
+    @Mapping(target = "gender", source = "gender")
     CustomerDto asTarget(CustomerEntity customerEntity);
 }

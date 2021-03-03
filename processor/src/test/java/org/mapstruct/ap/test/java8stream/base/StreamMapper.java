@@ -21,8 +21,8 @@ public interface StreamMapper {
     StreamMapper INSTANCE = Mappers.getMapper( StreamMapper.class );
 
     @Mappings( {
-        @Mapping( source = "stream", target = "targetStream"),
-        @Mapping( source = "sourceElements", target = "targetElements")
+        @Mapping(target = "targetStream", source = "stream"),
+        @Mapping(target = "targetElements", source = "sourceElements")
     } )
     Target map(Source source);
 

@@ -54,7 +54,7 @@ Use the annotation `@InheritInverseConfiguration` to indicate that a method shal
 @Mapper
 public interface CarMapper {
 
-    @Mapping(source = "numberOfSeats", target = "seatCount")
+    @Mapping(target = "seatCount", source = "numberOfSeats")
     CarDto carToDto(Car car);
 
     @InheritInverseConfiguration

@@ -21,13 +21,13 @@ public abstract class SourceTargetMapper {
     static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "integerList", target = "integerCollection"),
-        @Mapping(source = "integerSet", target = "set"),
-        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
-        @Mapping(source = "stringList2", target = "stringListNoSetter"),
-        @Mapping(source = "stringSet2", target = "stringListNoSetter2"),
-        @Mapping(source = "stringList3", target = "nonGenericStringList"),
-        @Mapping(source = "stringLongMapForNonGeneric", target = "nonGenericMapStringtoLong")
+        @Mapping(target = "integerCollection", source = "integerList"),
+        @Mapping(target = "set", source = "integerSet"),
+        @Mapping(target = "anotherStringSet", source = "anotherIntegerSet"),
+        @Mapping(target = "stringListNoSetter", source = "stringList2"),
+        @Mapping(target = "stringListNoSetter2", source = "stringSet2"),
+        @Mapping(target = "nonGenericStringList", source = "stringList3"),
+        @Mapping(target = "nonGenericMapStringtoLong", source = "stringLongMapForNonGeneric")
     })
     public abstract Target sourceToTarget(Source source);
 

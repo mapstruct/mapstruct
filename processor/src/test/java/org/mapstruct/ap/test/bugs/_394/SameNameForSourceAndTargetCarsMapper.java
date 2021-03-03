@@ -21,7 +21,7 @@ public interface SameNameForSourceAndTargetCarsMapper {
     SameNameForSourceAndTargetCarsMapper INSTANCE = Mappers.getMapper( SameNameForSourceAndTargetCarsMapper.class );
 
     @Mappings({
-        @Mapping(source = "numberOfSeats", target = "seatCount")
+        @Mapping(target = "seatCount", source = "numberOfSeats")
     })
     AnotherCar sourceCarToTargetCar(org.mapstruct.ap.test.bugs._394.source.AnotherCar car);
 

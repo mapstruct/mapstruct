@@ -18,7 +18,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "fieldOnlyWithGetter", target = "fieldWithMethods")
+    @Mapping(target = "fieldWithMethods", source = "fieldOnlyWithGetter")
     Target toSource(Source source);
 
     @InheritInverseConfiguration

@@ -14,7 +14,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "qax", target = "qux")
+    @Mapping(target = "qux", source = "qax")
     Target sourceToTarget(Source source);
 
     Source targetToSource(Target target);

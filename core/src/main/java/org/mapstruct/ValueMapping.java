@@ -27,9 +27,9 @@ import java.lang.annotation.Target;
  *
  * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
  *
- * &#64;ValueMapping(source = "EXTRA", target = "SPECIAL"),
- * &#64;ValueMapping(source = "STANDARD", target = "DEFAULT"),
- * &#64;ValueMapping(source = "NORMAL", target = "DEFAULT")
+ * &#64;ValueMapping(target = "SPECIAL", source = "EXTRA"),
+ * &#64;ValueMapping(target = "DEFAULT", source = "STANDARD"),
+ * &#64;ValueMapping(target = "DEFAULT", source = "NORMAL")
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
  * Mapping result:

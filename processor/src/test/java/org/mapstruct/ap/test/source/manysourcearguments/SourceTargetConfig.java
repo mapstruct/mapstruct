@@ -11,8 +11,8 @@ import org.mapstruct.Mapping;
 @MapperConfig
 public interface SourceTargetConfig {
 
-    @Mapping(source = "address.houseNo", target = "houseNumber")
-    @Mapping(source = "person.description", target = "description")
+    @Mapping(target = "houseNumber", source = "address.houseNo")
+    @Mapping(target = "description", source = "person.description")
     DeliveryAddress personAndAddressToDeliveryAddress(Person person, Address address);
 
 }

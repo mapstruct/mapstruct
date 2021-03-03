@@ -56,7 +56,7 @@ public class Mapper846 {
     @Mapper
     interface MyMapper {
 
-        @Mapping(source = "name", target = "aName")
+        @Mapping(target = "aName", source = "name")
         A convert(BInterface b);
 
         @InheritInverseConfiguration

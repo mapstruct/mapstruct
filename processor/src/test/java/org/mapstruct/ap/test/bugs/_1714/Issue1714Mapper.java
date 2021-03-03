@@ -15,7 +15,7 @@ public interface Issue1714Mapper {
 
     Issue1714Mapper INSTANCE = Mappers.getMapper( Issue1714Mapper.class );
 
-    @Mapping(source = "programInstance", target = "seasonNumber", qualifiedByName = "getSeasonNumber")
+    @Mapping(target = "seasonNumber", source = "programInstance", qualifiedByName = "getSeasonNumber")
     OfferEntity map(OnDemand offerStatusDTO);
 
     @Named("getTitle")
