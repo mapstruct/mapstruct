@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.value.spi;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -26,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     CustomCheeseType.class,
     CustomEnumMarker.class,
 })
-@Ignore
 @WithServiceImplementation(CustomErroneousEnumMappingStrategy.class)
 public class CustomErroneousEnumMappingStrategyTest {
 
