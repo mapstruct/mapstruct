@@ -1186,12 +1186,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             //check if there's a condition and if the method exists
             if ( mapping.getCondition() != null ) {
-                long methodsMatching = ctx.getSourceModel().stream()
-                        .filter( e -> e.getName().equals( mapping.getCondition() ) )
-                        .filter( e -> "boolean".equals( e.getReturnType().getName() ) )
-                        .count();
+                List<SelectedMethod<SourceMethod>> matchingMethods =
+                        ConditionMethodResolver.getConditionalMappingMethods(
+                                method, mapping.getSelectionParameters(), mapping.getCondition(), ctx );
 
-                if ( methodsMatching == 0 ) {
+                if ( matchingMethods.size() != 1 ) {
                     ctx.getMessager()
                             .printMessage(
                                     method.getExecutable(),

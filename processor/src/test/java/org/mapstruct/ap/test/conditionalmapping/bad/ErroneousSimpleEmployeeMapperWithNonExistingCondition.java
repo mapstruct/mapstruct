@@ -12,9 +12,9 @@ import org.mapstruct.ap.test.conditionalmapping.EmployeeDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SimpleEmployeeMapperWithNonExistingCondition {
-    SimpleEmployeeMapperWithNonExistingCondition INSTANCE =
-            Mappers.getMapper( SimpleEmployeeMapperWithNonExistingCondition.class );
+public interface ErroneousSimpleEmployeeMapperWithNonExistingCondition {
+    ErroneousSimpleEmployeeMapperWithNonExistingCondition INSTANCE =
+            Mappers.getMapper( ErroneousSimpleEmployeeMapperWithNonExistingCondition.class );
 
     @Mapping(source = "uniqueIdNumber", target = "nin", condition = "nonExisting")
     Employee mapEmployee( EmployeeDto employeeDto );

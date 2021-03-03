@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({
         Employee.class,
         EmployeeDto.class,
-        SimpleEmployeeMapper.class
+        SimpleEmployeeMapper.class,
+        StaticUtil.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleEmployeeMapperTest {

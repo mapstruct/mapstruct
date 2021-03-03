@@ -19,7 +19,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses({
         Employee.class,
         EmployeeDto.class,
-        SimpleEmployeeMapperWithNonExistingCondition.class
+        ErroneousSimpleEmployeeMapperWithNonExistingCondition.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleEmployeeMapperWithNonExistingConditionTest extends TestCase {
@@ -27,7 +27,7 @@ public class SimpleEmployeeMapperWithNonExistingConditionTest extends TestCase {
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
             @Diagnostic(
-                    type = SimpleEmployeeMapperWithNonExistingCondition.class,
+                    type = ErroneousSimpleEmployeeMapperWithNonExistingCondition.class,
                     kind = javax.tools.Diagnostic.Kind.ERROR,
                     message = "No conditional method named \"nonExisting\" " +
                             "found with correct return type to resolve target param \"nin\""

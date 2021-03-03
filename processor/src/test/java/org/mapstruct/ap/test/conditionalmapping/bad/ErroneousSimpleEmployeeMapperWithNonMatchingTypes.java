@@ -12,9 +12,9 @@ import org.mapstruct.ap.test.conditionalmapping.EmployeeDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SimpleEmployeeMapperWithNonMatchingTypes {
-    SimpleEmployeeMapperWithNonMatchingTypes INSTANCE =
-            Mappers.getMapper( SimpleEmployeeMapperWithNonMatchingTypes.class );
+public interface ErroneousSimpleEmployeeMapperWithNonMatchingTypes {
+    ErroneousSimpleEmployeeMapperWithNonMatchingTypes INSTANCE =
+            Mappers.getMapper( ErroneousSimpleEmployeeMapperWithNonMatchingTypes.class );
 
     @Mapping(source = "uniqueIdNumber", target = "ssid", condition = "isAmericanCitizen")
     Employee mapEmployee( EmployeeDto employeeDto );

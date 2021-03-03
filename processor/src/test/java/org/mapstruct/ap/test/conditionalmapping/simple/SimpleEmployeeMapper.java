@@ -11,19 +11,16 @@ import org.mapstruct.ap.test.conditionalmapping.Employee;
 import org.mapstruct.ap.test.conditionalmapping.EmployeeDto;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( uses = { StaticUtil.class } )
 public interface SimpleEmployeeMapper {
     SimpleEmployeeMapper INSTANCE = Mappers.getMapper( SimpleEmployeeMapper.class );
 
     @Mapping(source = "uniqueIdNumber", target = "ssid", condition = "isAmericanCitizen")
-    @Mapping(source = "uniqueIdNumber", target = "nin", condition = "isBritishCitizen")
-    Employee mapEmployee(EmployeeDto employeeDto);
+    @Mapping(source = "uniqueIdNumber", target = "nin", condition = "StaticUtil.isBritishCitizen")
+    Employee mapEmployee( EmployeeDto employeeDto );
 
-    default boolean isAmericanCitizen(EmployeeDto employerDto) {
+    default boolean isAmericanCitizen( EmployeeDto employerDto ) {
         return "US".equals( employerDto.getCountry() );
     }
 
-    default boolean isBritishCitizen(EmployeeDto employeeDto) {
-        return "UK".equals( employeeDto.getCountry() );
-    }
 }

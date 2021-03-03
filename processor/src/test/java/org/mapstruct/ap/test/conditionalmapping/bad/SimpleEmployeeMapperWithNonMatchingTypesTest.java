@@ -19,7 +19,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses({
         Employee.class,
         EmployeeDto.class,
-        SimpleEmployeeMapperWithNonMatchingTypes.class
+        ErroneousSimpleEmployeeMapperWithNonMatchingTypes.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleEmployeeMapperWithNonMatchingTypesTest extends TestCase {
@@ -27,7 +27,7 @@ public class SimpleEmployeeMapperWithNonMatchingTypesTest extends TestCase {
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
             @Diagnostic(
-                    type = SimpleEmployeeMapperWithNonMatchingTypes.class,
+                    type = ErroneousSimpleEmployeeMapperWithNonMatchingTypes.class,
                     kind = javax.tools.Diagnostic.Kind.ERROR,
                     message = "No conditional method named \"isAmericanCitizen\" " +
                             "found with correct return type to resolve target param \"ssid\""
