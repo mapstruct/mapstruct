@@ -16,6 +16,7 @@ Cornelius Dirmeier - https://github.com/cornzy
 David Feinblum - https://github.com/dvfeinblum
 Darren Rambaud - https://github.com/xyzst
 Dekel Pilli - https://github.com/dekelpilli
+Desislav Petrov - https://github.com/desislav-petrov
 Dilip Krishnan - https://github.com/dilipkrish
 Dmytro Polovinkin - https://github.com/navpil
 Eric Martineau - https://github.com/ericmartineau
