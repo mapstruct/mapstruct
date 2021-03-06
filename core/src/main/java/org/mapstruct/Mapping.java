@@ -284,7 +284,7 @@ public @interface Mapping {
     /**
      * A condition {@link String} based on which the specified target property is to be set.
      * <p>
-     * An example mapping would lookg like this
+     * An example mapping would look like this:
      * <pre><code>
      * &#64;Mapping(
      *     target = "someProp",
