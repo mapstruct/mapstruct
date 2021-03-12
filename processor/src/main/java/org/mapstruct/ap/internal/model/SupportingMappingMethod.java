@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,12 +17,10 @@ import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * A mapping method which is not based on an actual method declared in the original mapper interface but is added as
- * private method to map a certain source/target type combination. Based on a {@link BuiltInMethod}.
- *
- * Specific templates all point to this class, for instance:
- * {@link org.mapstruct.ap.internal.model.source.builtin.XmlGregorianCalendarToCalendar},
- * but also used fields and constructor elements, e.g.
- * {@link org.mapstruct.ap.internal.model.source.builtin.FinalField} and
+ * private method to map a certain source/target type combination. Based on a {@link BuiltInMethod}. Specific templates
+ * all point to this class, for instance:
+ * {@link org.mapstruct.ap.internal.model.source.builtin.XmlGregorianCalendarToCalendar}, but also used fields and
+ * constructor elements, e.g. {@link org.mapstruct.ap.internal.model.source.builtin.FinalField} and
  * {@link NewDatatypeFactoryConstructorFragment}
  *
  * @author Gunnar Morling
@@ -32,11 +31,13 @@ public class SupportingMappingMethod extends MappingMethod {
     private final Set<Type> importTypes;
     private final Field supportingField;
     private final SupportingConstructorFragment supportingConstructorFragment;
+    private final Map<String, Object> templateParameter;
 
     public SupportingMappingMethod(BuiltInMethod method, Set<Field> existingFields) {
         super( method );
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
+        this.templateParameter = null;
         if ( method.getFieldReference() != null ) {
             this.supportingField = getSafeField( method.getFieldReference(), existingFields );
         }
@@ -44,10 +45,8 @@ public class SupportingMappingMethod extends MappingMethod {
             this.supportingField = null;
         }
         if ( method.getConstructorFragment() != null ) {
-            this.supportingConstructorFragment = new SupportingConstructorFragment(
-                this,
-                method.getConstructorFragment()
-            );
+            this.supportingConstructorFragment =
+                new SupportingConstructorFragment( this, method.getConstructorFragment() );
         }
         else {
             this.supportingConstructorFragment = null;
@@ -77,6 +76,7 @@ public class SupportingMappingMethod extends MappingMethod {
         this.templateName = getTemplateNameForClass( method.getClass() );
         this.supportingField = null;
         this.supportingConstructorFragment = null;
+        this.templateParameter = method.getTemplateParameter();
     }
 
     @Override
@@ -94,9 +94,7 @@ public class SupportingMappingMethod extends MappingMethod {
      * names of the {@code importTypes}.
      *
      * @param name Fully-qualified or simple name of the type.
-     *
      * @return Found type, never <code>null</code>.
-     *
      * @throws IllegalArgumentException In case no {@link Type} was found for given name.
      */
     public Type findType(String name) {
@@ -120,11 +118,15 @@ public class SupportingMappingMethod extends MappingMethod {
         return supportingConstructorFragment;
     }
 
+    public Map<String, Object> getTemplateParameter() {
+        return templateParameter;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( templateName == null ) ? 0 : templateName.hashCode() );
+        result = prime * result + ( ( getName() == null ) ? 0 : getName().hashCode() );
         return result;
     }
 
@@ -141,7 +143,7 @@ public class SupportingMappingMethod extends MappingMethod {
         }
         SupportingMappingMethod other = (SupportingMappingMethod) obj;
 
-        if ( !Objects.equals( templateName, other.templateName ) ) {
+        if ( !Objects.equals( getName(), other.getName() ) ) {
             return false;
         }
 

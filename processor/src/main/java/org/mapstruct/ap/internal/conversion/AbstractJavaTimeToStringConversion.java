@@ -6,8 +6,11 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
@@ -18,12 +21,12 @@ import org.mapstruct.ap.internal.util.Strings;
  * Base type for mapping Java 8 time types to String and vice versa.
  * </p>
  * <p>
- * In general each type comes with a "parse" method to convert a string to this particular type.
- * For formatting a dedicated instance of {@link java.time.format.DateTimeFormatter} is used.
+ * In general each type comes with a "parse" method to convert a string to this particular type. For formatting a
+ * dedicated instance of {@link java.time.format.DateTimeFormatter} is used.
  * </p>
  * <p>
- * If no date format for mapping is specified predefined ISO* formatters from
- * {@link java.time.format.DateTimeFormatter} are used.
+ * If no date format for mapping is specified predefined ISO* formatters from {@link java.time.format.DateTimeFormatter}
+ * are used.
  * </p>
  * <p>
  * An overview of date and time types shipped with Java 8 can be found at
@@ -38,29 +41,28 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     }
 
     private String dateTimeFormatter(ConversionContext conversionContext) {
-        if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
-            return ConversionUtils.dateTimeFormatter( conversionContext )
-                + ".ofPattern( \"" + conversionContext.getDateFormat()
-                + "\" )";
-        }
-        else {
-            return ConversionUtils.dateTimeFormatter( conversionContext ) + "." + defaultFormatterSuffix();
-        }
+        return GetDateTimeFormatter.getDateTimeFormatterMethodName(
+            conversionContext.getDateFormat(),
+            defaultFormatterSuffix() ) + "()";
     }
 
     protected abstract String defaultFormatterSuffix();
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to parse Dates
-        return new StringBuilder().append( conversionContext.getTargetType().createReferenceName() )
+        // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how
+        // to parse Dates
+        return new StringBuilder()
+                                  .append( conversionContext.getTargetType().createReferenceName() )
                                   .append( ".parse( " )
                                   .append( parametersListForParsing( conversionContext ) )
-                                  .append( " )" ).toString();
+                                  .append( " )" )
+                                  .toString();
     }
 
     private String parametersListForParsing(ConversionContext conversionContext) {
-        // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to format Dates
+        // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how
+        // to format Dates
         StringBuilder parameterBuilder = new StringBuilder( "<SOURCE>" );
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
             parameterBuilder.append( ", " );
@@ -71,9 +73,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
 
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
-        return Collections.asSet(
-            conversionContext.getTypeFactory().getType( DateTimeFormatter.class )
-        );
+        return Collections.asSet( conversionContext.getTypeFactory().getType( DateTimeFormatter.class ) );
     }
 
     @Override
@@ -81,11 +81,20 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
             return Collections.asSet(
                 conversionContext.getTargetType(),
-                conversionContext.getTypeFactory().getType( DateTimeFormatter.class )
-            );
+                conversionContext.getTypeFactory().getType( DateTimeFormatter.class ) );
         }
 
         return Collections.asSet( conversionContext.getTargetType() );
     }
 
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        List<HelperMethod> helpers = new ArrayList<>();
+        helpers.add(
+            new GetDateTimeFormatter(
+                conversionContext.getTypeFactory(),
+                conversionContext.getDateFormat(),
+                defaultFormatterSuffix() ) );
+        return helpers;
+    }
 }

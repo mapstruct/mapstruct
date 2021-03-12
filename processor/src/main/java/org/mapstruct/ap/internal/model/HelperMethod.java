@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -21,22 +23,19 @@ import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
- * A non mapping method to be generated.
- *
- * Can be called from for instance conversions or built-in methods as shared helper method.
- *
- * One example of such method is the creation of a decimal formatter
- * {@link org.mapstruct.ap.internal.conversion.CreateDecimalFormat}, which is used in 2 conversions
- * (BigInteger to String and BigDecimal to String)
+ * A non mapping method to be generated. Can be called from for instance conversions or built-in methods as shared
+ * helper method. One example of such method is the creation of a decimal formatter
+ * {@link org.mapstruct.ap.internal.conversion.CreateDecimalFormat}, which is used in 2 conversions (BigInteger to
+ * String and BigDecimal to String)
  *
  * @author Sjaak Derksen
  */
 public abstract class HelperMethod implements Method {
-   /**
-    * {@inheritDoc }
-    *
-    * @return default method name is equal to class name of build in method name
-    */
+    /**
+     * {@inheritDoc }
+     *
+     * @return default method name is equal to class name of build in method name
+     */
     @Override
     public String getName() {
         return Strings.decapitalize( this.getClass().getSimpleName() );
@@ -56,12 +55,12 @@ public abstract class HelperMethod implements Method {
     /**
      * {@inheritDoc}
      * <p>
-     * Default the targetType should be assignable to the returnType and the sourceType to the parameter,
-     * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
+     * Default the targetType should be assignable to the returnType and the sourceType to the parameter, excluding
+     * generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
     @Override
     public boolean matches(List<Type> sourceTypes, Type targetType) {
-           throw new IllegalStateException( "Irrelevant." );
+        throw new IllegalStateException( "Irrelevant." );
 
     }
 
@@ -154,7 +153,6 @@ public abstract class HelperMethod implements Method {
      * equals based on class
      *
      * @param obj other class
-     *
      * @return true when classes are the same
      */
     @Override
@@ -211,7 +209,7 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public boolean overridesMethod() {
-        return  false;
+        return false;
     }
 
     @Override
@@ -242,5 +240,12 @@ public abstract class HelperMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return false; // irrelevant
+    }
+
+    /**
+     * @return additional template parameters
+     */
+    public Map<String, Object> getTemplateParameter() {
+        return null;
     }
 }
