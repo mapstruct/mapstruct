@@ -126,7 +126,6 @@ public class MethodMatcher {
 
         Type candidateReturnType = null;
         List<Type> candidateParTypes;
-        Integer positionMappingTargetType = null;
 
         private boolean lineUp() {
 
@@ -209,9 +208,6 @@ public class MethodMatcher {
                 Type sourceType = sourceTypes.get( i );
                 Parameter par = candidateMethod.getParameters().get( i );
                 Type parType = par.getType();
-                if ( par.isMappingTarget() ) {
-                    positionMappingTargetType = i;
-                }
                 boolean success = getCandidates( parType, sourceType, methodParCandidates );
                 if ( !success ) {
                     return false;
