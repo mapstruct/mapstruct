@@ -42,10 +42,8 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 public class ValueMappingMethod extends MappingMethod {
 
     private final List<MappingEntry> valueMappings;
-    private final String defaultTarget;
-    private final String nullTarget;
-    private boolean nullAsException;
-    private boolean defaultAsException;
+    private final MappingEntry defaultTarget;
+    private final MappingEntry nullTarget;
 
     private final Type unexpectedValueMappingException;
 
@@ -122,12 +120,10 @@ public class ValueMappingMethod extends MappingMethod {
             return new ValueMappingMethod( method,
                 mappingEntries,
                 valueMappings.nullValueTarget,
-                valueMappings.hasNullValueAsException,
                 valueMappings.defaultTargetValue,
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
-                afterMappingMethods,
-                determineExceptionMappingForDefaultCase()
+                afterMappingMethods
             );
         }
 
@@ -417,6 +413,7 @@ public class ValueMappingMethod extends MappingMethod {
                 foundIncorrectMapping = true;
             }
             else if ( valueMappings.nullTarget == null && valueMappings.nullValueTarget != null
+                && !valueMappings.nullValueTarget.equals( THROW_EXCEPTION )
                 && !targetEnumConstants.contains( valueMappings.nullValueTarget ) ) {
                 // if there is no nullTarget, but nullValueTarget has a value it means that there was an SPI
                 // which returned an enum for the target enum
@@ -433,28 +430,13 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         private Type determineUnexpectedValueMappingException() {
-            boolean noDefaultValueForSwitchCase = !valueMappings.hasDefaultValue;
-            if ( noDefaultValueForSwitchCase || valueMappings.hasAtLeastOneExceptionValue
-                || valueMappings.hasNullValueAsException ) {
-                TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
-                if ( unexpectedValueMappingException != null ) {
-                    return ctx.getTypeFactory().getType( unexpectedValueMappingException );
-                }
-
-                return ctx.getTypeFactory()
-                    .getType( ctx.getEnumMappingStrategy().getUnexpectedValueMappingExceptionType() );
+            TypeMirror unexpectedValueMappingException = enumMapping.getUnexpectedValueMappingException();
+            if ( unexpectedValueMappingException != null ) {
+                return ctx.getTypeFactory().getType( unexpectedValueMappingException );
             }
 
-            return null;
-        }
-
-        private boolean determineExceptionMappingForDefaultCase() {
-            if ( valueMappings.hasDefaultValue ) {
-                return THROW_EXCEPTION.equals( valueMappings.defaultTargetValue );
-            }
-            else {
-                return true;
-            }
+            return ctx.getTypeFactory()
+                .getType( ctx.getEnumMappingStrategy().getUnexpectedValueMappingExceptionType() );
         }
     }
 
@@ -493,7 +475,6 @@ public class ValueMappingMethod extends MappingMethod {
         boolean hasMapAnyUnmapped = false;
         boolean hasMapAnyRemaining = false;
         boolean hasDefaultValue = false;
-        boolean hasNullValueAsException = false;
         boolean hasAtLeastOneExceptionValue = false;
 
         ValueMappings(List<ValueMappingOptions> valueMappings) {
@@ -501,22 +482,19 @@ public class ValueMappingMethod extends MappingMethod {
             for ( ValueMappingOptions valueMapping : valueMappings ) {
                 if ( ANY_REMAINING.equals( valueMapping.getSource() ) ) {
                     defaultTarget = valueMapping;
-                    defaultTargetValue = getValue( defaultTarget );
+                    defaultTargetValue = defaultTarget.getTarget();
                     hasDefaultValue = true;
                     hasMapAnyRemaining = true;
                 }
                 else if ( ANY_UNMAPPED.equals( valueMapping.getSource() ) ) {
                     defaultTarget = valueMapping;
-                    defaultTargetValue = getValue( defaultTarget );
+                    defaultTargetValue = defaultTarget.getTarget();
                     hasDefaultValue = true;
                     hasMapAnyUnmapped = true;
                 }
                 else if ( NULL.equals( valueMapping.getSource() ) ) {
                     nullTarget = valueMapping;
                     nullValueTarget = getValue( nullTarget );
-                    if ( THROW_EXCEPTION.equals( nullValueTarget ) ) {
-                        hasNullValueAsException = true;
-                    }
                 }
                 else {
                     regularValueMappings.add( valueMapping );
@@ -536,17 +514,14 @@ public class ValueMappingMethod extends MappingMethod {
     private ValueMappingMethod(Method method,
                                List<MappingEntry> enumMappings,
                                String nullTarget,
-                               boolean hasNullTargetAsException,
                                String defaultTarget,
                                Type unexpectedValueMappingException,
                                List<LifecycleCallbackMethodReference> beforeMappingMethods,
-                               List<LifecycleCallbackMethodReference> afterMappingMethods, boolean defaultAsException) {
+                               List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
-        this.nullTarget = nullTarget;
-        this.nullAsException = hasNullTargetAsException;
-        this.defaultTarget = defaultTarget;
-        this.defaultAsException = defaultAsException;
+        this.nullTarget = new MappingEntry( null, nullTarget );
+        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION);
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
     }
@@ -556,34 +531,35 @@ public class ValueMappingMethod extends MappingMethod {
         Set<Type> importTypes = super.getImportTypes();
 
         if ( unexpectedValueMappingException != null && !unexpectedValueMappingException.isJavaLangType() ) {
-            importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
+            if ( defaultTarget.isTargetAsException() || nullTarget.isTargetAsException() ||
+                hasMappingWithTargetAsException() ) {
+                importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
+            }
         }
 
         return importTypes;
+    }
+
+    protected boolean hasMappingWithTargetAsException() {
+        return getValueMappings()
+            .stream()
+            .anyMatch( MappingEntry::isTargetAsException );
     }
 
     public List<MappingEntry> getValueMappings() {
         return valueMappings;
     }
 
-    public String getDefaultTarget() {
+    public MappingEntry getDefaultTarget() {
         return defaultTarget;
     }
 
-    public String getNullTarget() {
+    public MappingEntry getNullTarget() {
         return nullTarget;
-    }
-
-    public boolean isNullAsException() {
-        return nullAsException;
     }
 
     public Type getUnexpectedValueMappingException() {
         return unexpectedValueMappingException;
-    }
-
-    public boolean isDefaultAsException() {
-        return defaultAsException;
     }
 
     public Parameter getSourceParameter() {

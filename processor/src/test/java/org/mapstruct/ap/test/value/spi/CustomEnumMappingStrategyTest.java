@@ -9,12 +9,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.value.CustomIllegalArgumentException;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Filip Hrisafov
@@ -24,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     CheeseType.class,
     CustomCheeseType.class,
     CustomEnumMarker.class,
+    CustomThrowingCheeseType.class,
+    CustomThrowingEnumMarker.class,
     CustomIllegalArgumentException.class,
 })
 @WithServiceImplementation(CustomEnumMappingStrategy.class)
@@ -121,5 +125,24 @@ public class CustomEnumMappingStrategyTest {
         assertThat( mapper.mapStringToCustom( "BRIE" ) ).isEqualTo( CustomCheeseType.CUSTOM_ROQUEFORT );
         assertThat( mapper.mapStringToCustom( "ROQUEFORT" ) ).isEqualTo( CustomCheeseType.CUSTOM_ROQUEFORT );
         assertThat( mapper.mapStringToCustom( "UNKNOWN" ) ).isEqualTo( CustomCheeseType.CUSTOM_BRIE );
+    }
+
+    @Test
+    @IssueKey("2339")
+    @WithClasses({
+        CustomThrowingCheeseMapper.class
+    })
+    public void shouldApplyCustomEnumMappingStrategyWithThrowingException() {
+        CustomThrowingCheeseMapper mapper = CustomThrowingCheeseMapper.INSTANCE;
+
+        // CustomCheeseType -> CustomThrowingCheeseType
+        assertThatThrownBy( () -> mapper.map( (CheeseType) null ) )
+            .isInstanceOf( CustomIllegalArgumentException.class )
+            .hasMessage( "Unexpected enum constant: null" );
+        assertThat( mapper.map( CheeseType.BRIE ) ).isEqualTo( CustomThrowingCheeseType.CUSTOM_BRIE );
+
+        // CustomThrowingCheeseType -> CustomCheeseType
+        assertThat( mapper.map( (CustomThrowingCheeseType) null ) ).isNull();
+        assertThat( mapper.map( CustomThrowingCheeseType.CUSTOM_BRIE ) ).isEqualTo( CheeseType.BRIE );
     }
 }

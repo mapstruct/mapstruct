@@ -15,7 +15,7 @@
         </#if>
     </#list>
     if ( ${sourceParameter.name} == null ) {
-        <#if nullAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget/>;</#if>
+        <#if nullTarget.targetAsException>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget.target/>;</#if>
     }
 
     <@includeModel object=resultType/> ${resultName};
@@ -25,7 +25,7 @@
         case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
         break;</#if>
     </#list>
-    default: <#if defaultAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget/></#if>;
+    default: <#if defaultTarget.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget.target/></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>
@@ -40,7 +40,7 @@
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
 
-    <#if !(valueMappings.empty && unexpectedValueMappingException??)>
+    <#if !(valueMappings.empty && defaultTarget.targetAsException)>
     return ${resultName};
     </#if>
 }

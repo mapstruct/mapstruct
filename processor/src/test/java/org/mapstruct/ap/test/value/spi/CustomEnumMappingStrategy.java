@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.value.spi;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.spi.DefaultEnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
@@ -20,6 +21,10 @@ public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy implem
 
     @Override
     public String getDefaultNullEnumConstant(TypeElement enumType) {
+        if ( isCustomThrowingEnum( enumType ) ) {
+            return MappingConstants.THROW_EXCEPTION;
+        }
+
         if ( isCustomEnum( enumType ) ) {
             return "UNSPECIFIED";
         }
@@ -29,6 +34,10 @@ public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy implem
 
     @Override
     public String getEnumConstant(TypeElement enumType, String enumConstant) {
+        if ( isCustomThrowingEnum( enumType ) ) {
+            return getCustomEnumConstant( enumConstant );
+        }
+
         if ( isCustomEnum( enumType ) ) {
             return getCustomEnumConstant( enumConstant );
         }
@@ -46,6 +55,18 @@ public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy implem
     protected boolean isCustomEnum(TypeElement enumType) {
         for ( TypeMirror enumTypeInterface : enumType.getInterfaces() ) {
             if ( typeUtils.asElement( enumTypeInterface ).getSimpleName().contentEquals( "CustomEnumMarker" ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isCustomThrowingEnum(TypeElement enumType) {
+        for ( TypeMirror enumTypeInterface : enumType.getInterfaces() ) {
+            if ( typeUtils.asElement( enumTypeInterface )
+                .getSimpleName()
+                .contentEquals( "CustomThrowingEnumMarker" ) ) {
                 return true;
             }
         }
