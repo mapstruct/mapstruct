@@ -184,7 +184,8 @@ public class MethodMatcher {
                 this.candidateParTypes = candidateMethod.getParameters().stream()
                     .map( Parameter::getType )
                     .collect( Collectors.toList() );
-                this.candidateReturnType = candidateMethod.getReturnType();
+                // TODO this is a try-out.
+                this.candidateReturnType = candidateMethod.getResultType();
             }
             return true;
         }
