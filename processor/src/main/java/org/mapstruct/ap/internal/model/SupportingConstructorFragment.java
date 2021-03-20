@@ -20,13 +20,22 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInConstructorFragment
  */
 public class SupportingConstructorFragment extends ModelElement {
 
+    private final String variableName;
     private final String templateName;
     private final SupportingMappingMethod definingMethod;
 
     public SupportingConstructorFragment(SupportingMappingMethod definingMethod,
-                                         BuiltInConstructorFragment constructorFragment) {
+                                         BuiltInConstructorFragment constructorFragment, String variableName) {
         this.templateName = getTemplateNameForClass( constructorFragment.getClass() );
         this.definingMethod = definingMethod;
+        this.variableName = variableName;
+    }
+
+    public SupportingConstructorFragment(SupportingMappingMethod definingMethod,
+                                         HelperConstructorFragment constructorFragment, String variableName) {
+        this.templateName = getTemplateNameForClass( constructorFragment.getClass() );
+        this.definingMethod = definingMethod;
+        this.variableName = variableName;
     }
 
     @Override
@@ -43,10 +52,15 @@ public class SupportingConstructorFragment extends ModelElement {
         return definingMethod;
     }
 
+    public String getVariableName() {
+        return variableName;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ( ( variableName == null ) ? 0 : variableName.hashCode() );
         result = prime * result + ( ( templateName == null ) ? 0 : templateName.hashCode() );
         return result;
     }
@@ -64,10 +78,12 @@ public class SupportingConstructorFragment extends ModelElement {
         }
         SupportingConstructorFragment other = (SupportingConstructorFragment) obj;
 
+        if ( !Objects.equals( variableName, other.variableName ) ) {
+            return false;
+        }
         if ( !Objects.equals( templateName, other.templateName ) ) {
             return false;
         }
-
         return true;
     }
 

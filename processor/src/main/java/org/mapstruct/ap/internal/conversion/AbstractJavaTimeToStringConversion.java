@@ -6,8 +6,10 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
@@ -39,9 +41,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
 
     private String dateTimeFormatter(ConversionContext conversionContext) {
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
-            return ConversionUtils.dateTimeFormatter( conversionContext )
-                + ".ofPattern( \"" + conversionContext.getDateFormat()
-                + "\" )";
+            return GetDateTimeFormatter.getDateTimeFormatterFieldName( conversionContext.getDateFormat() );
         }
         else {
             return ConversionUtils.dateTimeFormatter( conversionContext ) + "." + defaultFormatterSuffix();
@@ -88,4 +88,13 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
         return Collections.asSet( conversionContext.getTargetType() );
     }
 
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        if ( Strings.isNotEmpty( conversionContext.getDateFormat() ) ) {
+            return java.util.Collections.singletonList(
+                new GetDateTimeFormatter( conversionContext.getTypeFactory(), conversionContext.getDateFormat() ) );
+        }
+
+        return super.getRequiredHelperMethods( conversionContext );
+    }
 }

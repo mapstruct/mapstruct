@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -211,7 +213,7 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public boolean overridesMethod() {
-        return  false;
+        return false;
     }
 
     @Override
@@ -242,5 +244,20 @@ public abstract class HelperMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return false; // irrelevant
+    }
+
+    public HelperFieldReference getFieldReference() {
+        return null;
+    }
+
+    public HelperConstructorFragment getConstructorFragment() {
+        return null;
+    }
+
+    /**
+     * @return additional template parameters
+     */
+    public Map<String, Object> getTemplateParameter() {
+        return null;
     }
 }

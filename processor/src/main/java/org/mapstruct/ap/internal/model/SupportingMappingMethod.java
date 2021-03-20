@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,11 +33,13 @@ public class SupportingMappingMethod extends MappingMethod {
     private final Set<Type> importTypes;
     private final Field supportingField;
     private final SupportingConstructorFragment supportingConstructorFragment;
+    private final Map<String, Object> templateParameter;
 
     public SupportingMappingMethod(BuiltInMethod method, Set<Field> existingFields) {
         super( method );
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
+        this.templateParameter = null;
         if ( method.getFieldReference() != null ) {
             this.supportingField = getSafeField( method.getFieldReference(), existingFields );
         }
@@ -46,8 +49,32 @@ public class SupportingMappingMethod extends MappingMethod {
         if ( method.getConstructorFragment() != null ) {
             this.supportingConstructorFragment = new SupportingConstructorFragment(
                 this,
-                method.getConstructorFragment()
+                method.getConstructorFragment(),
+                this.supportingField != null ? this.supportingField.getVariableName() : null
             );
+        }
+        else {
+            this.supportingConstructorFragment = null;
+        }
+    }
+
+    public SupportingMappingMethod(HelperMethod method, Set<Field> existingFields) {
+        super( method );
+        this.importTypes = method.getImportTypes();
+        this.templateName = getTemplateNameForClass( method.getClass() );
+        this.templateParameter = method.getTemplateParameter();
+        if ( method.getFieldReference() != null ) {
+            this.supportingField = getSafeField( method.getFieldReference(), existingFields );
+        }
+        else {
+            this.supportingField = null;
+        }
+        if ( method.getConstructorFragment() != null ) {
+            this.supportingConstructorFragment =
+                new SupportingConstructorFragment(
+                    this,
+                    method.getConstructorFragment(),
+                    this.supportingField != null ? this.supportingField.getVariableName() : null );
         }
         else {
             this.supportingConstructorFragment = null;
@@ -57,26 +84,27 @@ public class SupportingMappingMethod extends MappingMethod {
     private Field getSafeField(BuiltInFieldReference ref, Set<Field> existingFields) {
         String name = ref.getVariableName();
         for ( Field existingField : existingFields ) {
-            if ( existingField.getType().equals( ref.getType() ) ) {
-                // field type already exist, use that one
+            if ( existingField.getVariableName().equals( ref.getVariableName() )
+                && existingField.getType().equals( ref.getType() ) ) {
+                // field already exists, use that one
                 return existingField;
             }
         }
-        for ( Field existingField : existingFields ) {
-            if ( existingField.getVariableName().equals( ref.getVariableName() ) ) {
-                // field with name exist, however its a wrong type
-                name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
-            }
-        }
+        name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
         return new SupportingField( this, ref, name );
     }
 
-    public SupportingMappingMethod(HelperMethod method) {
-        super( method );
-        this.importTypes = method.getImportTypes();
-        this.templateName = getTemplateNameForClass( method.getClass() );
-        this.supportingField = null;
-        this.supportingConstructorFragment = null;
+    private Field getSafeField(HelperFieldReference ref, Set<Field> existingFields) {
+        String name = ref.getVariableName();
+        for ( Field existingField : existingFields ) {
+            if ( existingField.getVariableName().equals( ref.getVariableName() )
+                && existingField.getType().equals( ref.getType() ) ) {
+                // field already exists, use that one
+                return existingField;
+            }
+        }
+        name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
+        return new SupportingField( this, ref, name );
     }
 
     @Override
@@ -120,11 +148,15 @@ public class SupportingMappingMethod extends MappingMethod {
         return supportingConstructorFragment;
     }
 
+    public Map<String, Object> getTemplateParameter() {
+        return templateParameter;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( templateName == null ) ? 0 : templateName.hashCode() );
+        result = prime * result + ( ( getName() == null ) ? 0 : getName().hashCode() );
         return result;
     }
 
@@ -141,7 +173,7 @@ public class SupportingMappingMethod extends MappingMethod {
         }
         SupportingMappingMethod other = (SupportingMappingMethod) obj;
 
-        if ( !Objects.equals( templateName, other.templateName ) ) {
+        if ( !Objects.equals( getName(), other.getName() ) ) {
             return false;
         }
 
