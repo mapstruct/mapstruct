@@ -46,7 +46,9 @@ public class XmlElementDeclSelector implements MethodSelector {
     @Override
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
                                                                          List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes, Type mappingTargetType, Type returnType,
+                                                                         List<Type> sourceTypes,
+                                                                         Type mappingTargetType,
+                                                                         Type returnType,
                                                                          SelectionCriteria criteria) {
 
         List<SelectedMethod<T>> nameMatches = new ArrayList<>();

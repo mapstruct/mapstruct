@@ -23,7 +23,9 @@ public class MethodFamilySelector implements MethodSelector {
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
                                                                          List<SelectedMethod<T>> methods,
                                                                          List<Type> sourceTypes,
-                                                                         Type mappingTargetType, Type returnType, SelectionCriteria criteria) {
+                                                                         Type mappingTargetType,
+                                                                         Type returnType,
+                                                                         SelectionCriteria criteria) {
 
         List<SelectedMethod<T>> result = new ArrayList<>( methods.size() );
         for ( SelectedMethod<T> method : methods ) {
