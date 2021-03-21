@@ -348,7 +348,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
      *
      * Note that its use is only permitted on a definition (not on the place where its used). For instance:
-     * @<code><T super Number> T map( T in)</code>
+     * {@code<T super Number> T map( T in)}
      *
      * @return true if the bound has a type variable lower bound (e.g. T super Number)
      */
@@ -365,7 +365,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
      *
      * Note that its use is only permitted on a definition  (not on the place where its used). For instance:
-     * @<code><T extends Number> T map( T in)</code>
+     * {@code><T extends Number> T map( T in)}
      *
      * @return true if the bound has a type variable upper bound (e.g. T extends Number)
      */
@@ -1204,6 +1204,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * the provided parameterized type where this typeVar type is used.
      *
      * For example:
+     * {@code
      * this: T
      * declaredType: JAXBElement<String>
      * parameterizedType: JAXBElement<T>
@@ -1214,6 +1215,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * declaredType: E.g. Callable<? extends T>
      * parameterizedType: Callable<BigDecimal>
      * return: BigDecimal
+     * }
      *
      * @param declared the type
      * @param parameterized the parameterized type

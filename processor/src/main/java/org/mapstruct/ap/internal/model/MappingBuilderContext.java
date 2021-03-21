@@ -78,12 +78,13 @@ public class MappingBuilderContext {
          * returns a parameter assignment
          *
          * @param mappingMethod target mapping method
-         * @param description
+         * @param description the description source
          * @param targetType return type to match
          * @param formattingParameters used for formatting dates and numbers
          * @param criteria parameters criteria in the selection process
          * @param sourceRHS source information
          * @param positionHint the mirror for reporting problems
+         * @param forger the supplier of the callback method to forge a method
          *
          * @return an assignment to a method parameter, which can either be:
          * <ol>
