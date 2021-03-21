@@ -26,12 +26,15 @@ interface MethodSelector {
      * @param mappingMethod mapping method, defined in Mapper for which this selection is carried out
      * @param candidates list of available methods
      * @param sourceTypes parameter type(s) that should be matched
-     * @param targetType result type that should be matched
+     * @param mappingTargetType mappingTargetType that should be matched
+     * @param returnType return type that should be matched
      * @param criteria criteria used in the selection process
      * @return list of methods that passes the matching process
      */
     <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                   List<SelectedMethod<T>> candidates,
-                                                                   List<Type> sourceTypes,
-                                                                   Type targetType, SelectionCriteria criteria);
+                                                                  List<SelectedMethod<T>> candidates,
+                                                                  List<Type> sourceTypes,
+                                                                  Type mappingTargetType,
+                                                                  Type returnType,
+                                                                  SelectionCriteria criteria);
 }

@@ -460,6 +460,7 @@ public class MappingResolverImpl implements MappingResolver {
                 methods,
                 singletonList( source ),
                 target,
+                target,
                 selectionCriteria
             );
         }

@@ -141,6 +141,7 @@ public final class LifecycleMethodResolver {
             callbackMethods,
             Collections.emptyList(),
             targetType,
+            method.getReturnType(),
             SelectionCriteria.forLifecycleMethods( selectionParameters ) );
 
         return toLifecycleCallbackMethodRefs(
