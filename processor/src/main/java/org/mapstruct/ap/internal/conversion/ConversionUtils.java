@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.UUID;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
@@ -241,5 +242,16 @@ public final class ConversionUtils {
      */
     public static String stringBuilder(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, StringBuilder.class );
+    }
+
+    /**
+     * Name for {@link java.util.UUID}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String uuid(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, UUID.class );
     }
 }

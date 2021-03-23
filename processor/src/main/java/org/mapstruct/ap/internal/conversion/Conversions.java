@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -190,6 +191,8 @@ public class Conversions {
 
         // java.util.Currency <~> String
         register( Currency.class, String.class, new CurrencyToStringConversion() );
+
+        register( UUID.class, String.class, new UUIDToStringConversion() );
     }
 
     private void registerJodaConversions() {
