@@ -16,6 +16,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests conversions between {@link java.util.UUID} and String.
@@ -24,13 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 public class UUIDConversionTest {
-
-    private final GeneratedSource generatedSource = new GeneratedSource();
-
-    @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
 
     @Test
     @IssueKey("2391")
@@ -58,13 +53,14 @@ public class UUIDConversionTest {
         assertThat( source.getUUIDA() ).isEqualTo( UUID.fromString( target.getUUIDA() ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     @IssueKey("2391")
     @WithClasses( { UUIDSource.class, UUIDTarget.class, UUIDMapper.class } )
     public void shouldHandleInvalidUUIDString() {
         UUIDTarget target = new UUIDTarget();
         target.setInvalidUUID( "XXXXXXXXX" );
 
-        UUIDMapper.INSTANCE.targetToSource( target );
+        assertThatExceptionOfType( IllegalArgumentException.class )
+            .isThrownBy( () -> UUIDMapper.INSTANCE.targetToSource( target ) );
     }
 }
