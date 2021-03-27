@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
@@ -197,7 +198,7 @@ public class MethodReference extends ModelElement implements Assignment {
     }
 
     @Override
-    public String getSourcePresenceCheckerReference() {
+    public PresenceCheck getSourcePresenceCheckerReference() {
         return assignment.getSourcePresenceCheckerReference();
     }
 

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -79,7 +80,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public String getSourcePresenceCheckerReference() {
+    public PresenceCheck getSourcePresenceCheckerReference() {
         return assignment.getSourcePresenceCheckerReference();
     }
 

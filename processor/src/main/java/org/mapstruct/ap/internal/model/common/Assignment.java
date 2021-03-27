@@ -90,7 +90,7 @@ public interface Assignment {
      *
      * @return source reference
      */
-    String getSourcePresenceCheckerReference();
+    PresenceCheck getSourcePresenceCheckerReference();
 
     /**
      * the source type used in the matching process
