@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -30,7 +31,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     private String sourceLoopVarName;
     private final Set<String> existingVariableNames;
     private final String sourceErrorMessagePart;
-    private final String sourcePresenceCheckerReference;
+    private final PresenceCheck sourcePresenceCheckerReference;
     private boolean useElementAsSourceTypeForMatching = false;
     private final String sourceParameterName;
 
@@ -39,7 +40,7 @@ public class SourceRHS extends ModelElement implements Assignment {
         this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
-    public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
+    public SourceRHS(String sourceParameterName, String sourceReference, PresenceCheck sourcePresenceCheckerReference,
         Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
@@ -60,7 +61,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public String getSourcePresenceCheckerReference() {
+    public PresenceCheck getSourcePresenceCheckerReference() {
         return sourcePresenceCheckerReference;
     }
 
@@ -96,6 +97,10 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     @Override
     public Set<Type> getImportTypes() {
+        if ( sourcePresenceCheckerReference != null ) {
+            return sourcePresenceCheckerReference.getImportTypes();
+        }
+
         return Collections.emptySet();
     }
 

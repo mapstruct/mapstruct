@@ -11,8 +11,10 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
+import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 
@@ -52,17 +54,27 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         public NestedPropertyMappingMethod build() {
             List<String> existingVariableNames = new ArrayList<>();
+            Parameter sourceParameter = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 existingVariableNames.add( parameter.getName() );
+                if ( sourceParameter == null && !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
+                    sourceParameter = parameter;
+                }
             }
             final List<Type> thrownTypes = new ArrayList<>();
             List<SafePropertyEntry> safePropertyEntries = new ArrayList<>();
+            if ( sourceParameter == null ) {
+                throw new IllegalStateException( "Method " + method + " has no source parameter." );
+            }
+
+            String previousPropertyName = sourceParameter.getName();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
                 String safeName = Strings.getSafeVariableName( propertyEntry.getName(), existingVariableNames );
-                safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
+                safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName, previousPropertyName ) );
                 existingVariableNames.add( safeName );
                 thrownTypes.addAll( ctx.getTypeFactory().getThrownTypes(
                         propertyEntry.getReadAccessor() ) );
+                previousPropertyName = safeName;
             }
             method.addThrownTypes( thrownTypes );
             return new NestedPropertyMappingMethod( method, safePropertyEntries );
@@ -92,6 +104,9 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         Set<Type> types = super.getImportTypes();
         for ( SafePropertyEntry propertyEntry : safePropertyEntries) {
             types.add( propertyEntry.getType() );
+            if ( propertyEntry.getPresenceChecker() != null ) {
+                types.addAll( propertyEntry.getPresenceChecker().getImportTypes() );
+            }
         }
         return types;
     }
@@ -143,18 +158,23 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         private final String safeName;
         private final String readAccessorName;
-        private final String presenceCheckerName;
+        private final PresenceCheck presenceChecker;
+        private final String previousPropertyName;
         private final Type type;
 
-        public SafePropertyEntry(PropertyEntry entry, String safeName) {
+        public SafePropertyEntry(PropertyEntry entry, String safeName, String previousPropertyName) {
             this.safeName = safeName;
             this.readAccessorName = ValueProvider.of( entry.getReadAccessor() ).getValue();
             if ( entry.getPresenceChecker() != null ) {
-                this.presenceCheckerName = entry.getPresenceChecker().getSimpleName();
+                this.presenceChecker = new SourceReferenceMethodPresenceCheck(
+                    previousPropertyName,
+                    entry.getPresenceChecker().getSimpleName()
+                );
             }
             else {
-                this.presenceCheckerName = null;
+                this.presenceChecker = null;
             }
+            this.previousPropertyName = previousPropertyName;
             this.type = entry.getType();
         }
 
@@ -166,8 +186,12 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             return readAccessorName;
         }
 
-        public String getPresenceCheckerName() {
-            return presenceCheckerName;
+        public PresenceCheck getPresenceChecker() {
+            return presenceChecker;
+        }
+
+        public String getPreviousPropertyName() {
+            return previousPropertyName;
         }
 
         public Type getType() {
@@ -189,7 +213,11 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                 return false;
             }
 
-            if ( !Objects.equals( presenceCheckerName, that.presenceCheckerName ) ) {
+            if ( !Objects.equals( presenceChecker, that.presenceChecker ) ) {
+                return false;
+            }
+
+            if ( !Objects.equals( previousPropertyName, that.previousPropertyName ) ) {
                 return false;
             }
 
@@ -203,7 +231,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         @Override
         public int hashCode() {
             int result = readAccessorName != null ? readAccessorName.hashCode() : 0;
-            result = 31 * result + ( presenceCheckerName != null ? presenceCheckerName.hashCode() : 0 );
+            result = 31 * result + ( presenceChecker != null ? presenceChecker.hashCode() : 0 );
             result = 31 * result + ( type != null ? type.hashCode() : 0 );
             return result;
         }

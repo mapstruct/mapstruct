@@ -11,13 +11,13 @@
         return ${returnType.null};
     }
 <#list propertyEntries as entry>
-    <#if entry.presenceCheckerName?? >
-    if ( <#if entry_index != 0><@localVarName index=entry_index/> == null || </#if>!<@localVarName index=entry_index/>.${entry.presenceCheckerName}() ) {
+    <#if entry.presenceChecker?? >
+    if ( <#if entry_index != 0>${entry.previousPropertyName} == null || </#if>!<@includeModel object=entry.presenceChecker /> ) {
         return ${returnType.null};
     }
     </#if>
-    <@includeModel object=entry.type.typeBound/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName};
-    <#if !entry.presenceCheckerName?? >
+    <@includeModel object=entry.type.typeBound/> ${entry.name} = ${entry.previousPropertyName}.${entry.accessorName};
+    <#if !entry.presenceChecker?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
         return ${returnType.null};
@@ -29,7 +29,6 @@
     </#if>
 </#list>
 }
-<#macro localVarName index><#if index == 0>${sourceParameter.name}<#else>${propertyEntries[index-1].name}</#if></#macro>
 <#macro throws>
     <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
         <#list thrownTypes as exceptionType>

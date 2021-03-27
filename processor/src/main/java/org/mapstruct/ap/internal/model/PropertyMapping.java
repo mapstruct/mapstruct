@@ -28,8 +28,12 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -609,29 +613,42 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private String getSourcePresenceCheckerRef( SourceReference sourceReference ) {
-            String sourcePresenceChecker = null;
+        private PresenceCheck getSourcePresenceCheckerRef(SourceReference sourceReference ) {
+            PresenceCheck sourcePresenceChecker = null;
             if ( !sourceReference.getPropertyEntries().isEmpty() ) {
                 Parameter sourceParam = sourceReference.getParameter();
                 // TODO is first correct here?? shouldn't it be last since the remainer is checked
                 // in the forged method?
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
-                    sourcePresenceChecker = sourceParam.getName()
-                        + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+                    List<PresenceCheck> presenceChecks = new ArrayList<>();
+                    presenceChecks.add( new SourceReferenceMethodPresenceCheck(
+                        sourceParam.getName(),
+                        propertyEntry.getPresenceChecker().getSimpleName()
+                    ) );
 
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getSimpleName() + "()";
                     for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
                         if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
-                            sourcePresenceChecker += " && " + variableName + " != null && "
-                                + variableName + "." + entry.getPresenceChecker().getSimpleName() + "()";
+                            presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            presenceChecks.add( new SourceReferenceMethodPresenceCheck(
+                                variableName,
+                                entry.getPresenceChecker().getSimpleName()
+                            ) );
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
                         }
                         else {
                             break;
                         }
+                    }
+
+                    if ( presenceChecks.size() == 1 ) {
+                        sourcePresenceChecker = presenceChecks.get( 0 );
+                    }
+                    else {
+                        sourcePresenceChecker = new AllPresenceChecksPresenceCheck( presenceChecks );
                     }
                 }
             }
