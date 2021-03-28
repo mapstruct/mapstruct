@@ -513,14 +513,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
                 return false;
             }
-            if ( typeParameter.isWildCardExtendsBound() ) {
+            if ( typeParameter.hasExtendsBound() ) {
                 messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
                 return false;
             }
         }
 
         for ( Type typeParameter : parameterType.getTypeParameters() ) {
-            if ( typeParameter.isWildCardSuperBound() ) {
+            if ( typeParameter.hasSuperBound() ) {
                 messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
                 return false;
             }

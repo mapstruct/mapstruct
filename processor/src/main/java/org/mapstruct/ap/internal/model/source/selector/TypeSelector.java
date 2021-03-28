@@ -39,9 +39,11 @@ public class TypeSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-            List<SelectedMethod<T>> methods,
-            List<Type> sourceTypes, Type targetType,
-            SelectionCriteria criteria) {
+                                                                         List<SelectedMethod<T>> methods,
+                                                                         List<Type> sourceTypes,
+                                                                         Type mappingTargetType,
+                                                                         Type returnType,
+                                                                         SelectionCriteria criteria) {
 
         if ( methods.isEmpty() ) {
             return methods;
@@ -54,12 +56,16 @@ public class TypeSelector implements MethodSelector {
             // if no source types are given, we have a factory or lifecycle method
             availableBindings = getAvailableParameterBindingsFromMethod(
                 mappingMethod,
-                targetType,
+                mappingTargetType,
                 criteria.getSourceRHS()
             );
         }
         else {
-            availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
+            availableBindings = getAvailableParameterBindingsFromSourceTypes(
+                sourceTypes,
+                mappingTargetType,
+                mappingMethod
+            );
         }
 
         for ( SelectedMethod<T> method : methods ) {
@@ -68,7 +74,7 @@ public class TypeSelector implements MethodSelector {
 
             if ( parameterBindingPermutations != null ) {
                 SelectedMethod<T> matchingMethod =
-                    getMatchingParameterBinding( targetType, mappingMethod, method, parameterBindingPermutations );
+                    getMatchingParameterBinding( returnType, mappingMethod, method, parameterBindingPermutations );
 
                 if ( matchingMethod != null ) {
                     result.add( matchingMethod );
@@ -143,7 +149,7 @@ public class TypeSelector implements MethodSelector {
         }
     }
 
-    private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type targetType,
+    private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type returnType,
             Method mappingMethod, SelectedMethod<T> selectedMethodInfo,
             List<List<ParameterBinding>> parameterAssignmentVariants) {
 
@@ -155,7 +161,7 @@ public class TypeSelector implements MethodSelector {
 
         // remove all assignment variants that doesn't match the types from the method
         matchingParameterAssignmentVariants.removeIf( parameterAssignments ->
-            !selectedMethod.matches( extractTypes( parameterAssignments ), targetType )
+            !selectedMethod.matches( extractTypes( parameterAssignments ), returnType )
         );
 
         if ( matchingParameterAssignmentVariants.isEmpty() ) {

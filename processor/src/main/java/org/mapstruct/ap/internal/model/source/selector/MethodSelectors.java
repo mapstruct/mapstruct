@@ -8,13 +8,13 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * Applies all known {@link MethodSelector}s in order.
@@ -45,13 +45,17 @@ public class MethodSelectors {
      * @param mappingMethod mapping method, defined in Mapper for which this selection is carried out
      * @param methods list of available methods
      * @param sourceTypes parameter type(s) that should be matched
-     * @param targetType return type that should be matched
+     * @param mappingTargetType the mapping target type that should be matched
+     * @param returnType return type that should be matched
      * @param criteria criteria used in the selection process
      * @return list of methods that passes the matching process
      */
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                                          List<Type> sourceTypes, Type targetType,
-                                                                          SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                         List<T> methods,
+                                                                         List<Type> sourceTypes,
+                                                                         Type mappingTargetType,
+                                                                         Type returnType,
+                                                                         SelectionCriteria criteria) {
 
         List<SelectedMethod<T>> candidates = new ArrayList<>( methods.size() );
         for ( T method : methods ) {
@@ -63,7 +67,8 @@ public class MethodSelectors {
                 mappingMethod,
                 candidates,
                 sourceTypes,
-                targetType,
+                mappingTargetType,
+                returnType,
                 criteria );
         }
         return candidates;

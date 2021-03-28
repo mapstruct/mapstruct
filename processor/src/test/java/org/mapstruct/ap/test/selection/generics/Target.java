@@ -17,10 +17,7 @@ public class Target {
     private BigDecimal fooNested;
     private TypeB fooUpperBoundCorrect;
     private String fooWildCardExtendsString;
-    private TypeC fooWildCardExtendsTypeCCorrect;
-    private TypeB fooWildCardExtendsTypeBCorrect;
     private String fooWildCardSuperString;
-    private TypeC fooWildCardExtendsMBTypeCCorrect;
     private TypeB fooWildCardSuperTypeBCorrect;
 
     public Integer getFooInteger() {
@@ -87,36 +84,12 @@ public class Target {
         this.fooWildCardExtendsString = fooWildCardExtendsString;
     }
 
-    public TypeC getFooWildCardExtendsTypeCCorrect() {
-        return fooWildCardExtendsTypeCCorrect;
-    }
-
-    public void setFooWildCardExtendsTypeCCorrect(TypeC fooWildCardExtendsTypeCCorrect) {
-        this.fooWildCardExtendsTypeCCorrect = fooWildCardExtendsTypeCCorrect;
-    }
-
-    public TypeB getFooWildCardExtendsTypeBCorrect() {
-        return fooWildCardExtendsTypeBCorrect;
-    }
-
-    public void setFooWildCardExtendsTypeBCorrect(TypeB fooWildCardExtendsTypeBCorrect) {
-        this.fooWildCardExtendsTypeBCorrect = fooWildCardExtendsTypeBCorrect;
-    }
-
     public String getFooWildCardSuperString() {
         return fooWildCardSuperString;
     }
 
     public void setFooWildCardSuperString(String fooWildCardSuperString) {
         this.fooWildCardSuperString = fooWildCardSuperString;
-    }
-
-    public TypeC getFooWildCardExtendsMBTypeCCorrect() {
-        return fooWildCardExtendsMBTypeCCorrect;
-    }
-
-    public void setFooWildCardExtendsMBTypeCCorrect(TypeC fooWildCardExtendsMBTypeCCorrect) {
-        this.fooWildCardExtendsMBTypeCCorrect = fooWildCardExtendsMBTypeCCorrect;
     }
 
     public TypeB getFooWildCardSuperTypeBCorrect() {

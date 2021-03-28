@@ -20,9 +20,9 @@ public abstract class TargetSourceMapper {
     @Mapping(target = "wrapper", source = "bigDecimal")
     abstract Source2 map(Target target);
 
-    protected <T extends Enum<T>> Enum<T> map(String in, @TargetType  Class<T>clz ) {
+    protected <T extends Enum<T>> T map(String in, @TargetType Class<T>clz ) {
         if ( clz.isAssignableFrom( SourceEnum.class )) {
-            return (Enum<T>) SourceEnum.valueOf( in );
+            return (T) SourceEnum.valueOf( in );
         }
         return null;
     }

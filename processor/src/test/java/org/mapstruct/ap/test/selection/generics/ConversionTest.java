@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.selection.generics;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -16,8 +18,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the invocation of generic methods for mapping bean properties.
@@ -39,7 +39,6 @@ public class ConversionTest {
 
         // setup used types
         TypeB typeB = new TypeB();
-        TypeC typeC = new TypeC();
 
         // setup source
         Source source = new Source();
@@ -51,10 +50,7 @@ public class ConversionTest {
         source.setFooNested( new Wrapper<>( new Wrapper<>( new BigDecimal( 5 ) ) ) );
         source.setFooUpperBoundCorrect( new UpperBoundWrapper<>( typeB ) );
         source.setFooWildCardExtendsString( new WildCardExtendsWrapper<>( "test3" ) );
-        source.setFooWildCardExtendsTypeCCorrect( new WildCardExtendsWrapper<>( typeC ) );
-        source.setFooWildCardExtendsTypeBCorrect( new WildCardExtendsWrapper<>( typeB ) );
         source.setFooWildCardSuperString( new WildCardSuperWrapper<>( "test4" ) );
-        source.setFooWildCardExtendsMBTypeCCorrect( new WildCardExtendsMBWrapper<>( typeC ) );
         source.setFooWildCardSuperTypeBCorrect( new WildCardSuperWrapper<>( typeB ) );
 
         // define wrapper
@@ -71,12 +67,8 @@ public class ConversionTest {
         assertThat( target.getFooNested() ).isEqualTo( new BigDecimal( 5 ) );
         assertThat( target.getFooUpperBoundCorrect() ).isEqualTo( typeB );
         assertThat( target.getFooWildCardExtendsString() ).isEqualTo( "test3" );
-        assertThat( target.getFooWildCardExtendsTypeCCorrect() ).isEqualTo( typeC );
-        assertThat( target.getFooWildCardExtendsTypeBCorrect() ).isEqualTo( typeB );
         assertThat( target.getFooWildCardSuperString() ).isEqualTo( "test4" );
-        assertThat( target.getFooWildCardExtendsMBTypeCCorrect() ).isEqualTo( typeC );
         assertThat( target.getFooWildCardSuperTypeBCorrect() ).isEqualTo( typeB );
-
     }
 
     @Test
@@ -138,20 +130,6 @@ public class ConversionTest {
                     "\"TypeA map(WildCardSuperWrapper<TypeA> value)\".")
         })
     public void shouldFailOnSuperBounds1() {
-    }
-
-    @Test
-    @WithClasses({ ErroneousSource5.class, ErroneousTarget5.class, ErroneousSourceTargetMapper5.class })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousSourceTargetMapper5.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 16,
-                message = "No target bean properties found: can't map property \"WildCardSuperWrapper<TypeC> " +
-                    "fooWildCardSuperTypeCFailure\" to \"TypeC fooWildCardSuperTypeCFailure\". " +
-                    "Consider to declare/implement a mapping method: \"TypeC map(WildCardSuperWrapper<TypeC> value)\".")
-        })
-    public void shouldFailOnSuperBounds2() {
     }
 
     @Test

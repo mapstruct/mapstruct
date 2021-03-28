@@ -12,15 +12,18 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
@@ -102,6 +105,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Map<String, Accessor> constructorAccessors = null;
 
     private Type boundingBase = null;
+
+    private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
 
@@ -311,7 +316,12 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isStream;
     }
 
-    public boolean isWildCardSuperBound() {
+    /**
+     * A wild card type can have two types of bounds (mutual exclusive): extends and super.
+     *
+     * @return true if the bound has a wild card super bound (e.g. ? super Number)
+     */
+    public boolean hasSuperBound() {
         boolean result = false;
         if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
             WildcardType wildcardType = (WildcardType) typeMirror;
@@ -320,11 +330,50 @@ public class Type extends ModelElement implements Comparable<Type> {
         return result;
     }
 
-    public boolean isWildCardExtendsBound() {
+    /**
+     * A wild card type can have two types of bounds (mutual exclusive): extends and super.
+     *
+     * @return true if the bound has a wild card super bound (e.g. ? extends Number)
+     */
+    public boolean hasExtendsBound() {
         boolean result = false;
         if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
             WildcardType wildcardType = (WildcardType) typeMirror;
             result = wildcardType.getExtendsBound() != null;
+        }
+        return result;
+    }
+
+    /**
+     * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
+     *
+     * Note that its use is only permitted on a definition (not on the place where its used). For instance:
+     * {@code<T super Number> T map( T in)}
+     *
+     * @return true if the bound has a type variable lower bound (e.g. T super Number)
+     */
+    public boolean hasLowerBound() {
+        boolean result = false;
+        if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
+            TypeVariable typeVarType = (TypeVariable) typeMirror;
+            result = typeVarType.getLowerBound() != null;
+        }
+        return result;
+    }
+
+    /**
+     * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
+     *
+     * Note that its use is only permitted on a definition  (not on the place where its used). For instance:
+     * {@code><T extends Number> T map( T in)}
+     *
+     * @return true if the bound has a type variable upper bound (e.g. T extends Number)
+     */
+    public boolean hasUpperBound() {
+        boolean result = false;
+        if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
+            TypeVariable typeVarType = (TypeVariable) typeMirror;
+            result = typeVarType.getUpperBound() != null;
         }
         return result;
     }
@@ -356,7 +405,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.addAll( parameter.getImportTypes() );
         }
 
-        if ( ( isWildCardExtendsBound() || isWildCardSuperBound() ) && getTypeBound() != null ) {
+        if ( ( hasExtendsBound() || hasSuperBound() ) && getTypeBound() != null ) {
             result.addAll( getTypeBound().getImportTypes() );
         }
 
@@ -470,22 +519,19 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Whether this type is assignable to the given other type.
+     * Whether this type is assignable to the given other type, considering the "extends / upper bounds"
+     * as well.
      *
      * @param other The other type.
      *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
-    // TODO This doesn't yet take super wild card types into account;
-    // e.g. Number wouldn't be assignable to ? super Number atm. (is there any practical use case)
     public boolean isAssignableTo(Type other) {
-        if ( equals( other ) ) {
-            return true;
+        if ( TypeKind.WILDCARD == typeMirror.getKind() ) {
+            return typeUtils.contains( typeMirror, other.typeMirror );
         }
 
-        TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
-
-        return typeUtils.isAssignable( typeMirrorToMatch, other.typeMirror );
+        return typeUtils.isAssignable( typeMirror, other.typeMirror );
     }
 
     /**
@@ -504,6 +550,19 @@ public class Type extends ModelElement implements Comparable<Type> {
             return true;
         }
         return typeUtils.isAssignable( typeUtils.erasure( typeMirror ), typeUtils.erasure( other.typeMirror ) );
+    }
+
+    /**
+     * removes any bounds from this type.
+     * @return the raw type
+     */
+    public Type asRawType() {
+        if ( getTypeBound() != null ) {
+            return typeFactory.getType( typeUtils.erasure( typeMirror ) );
+        }
+        else {
+            return this;
+        }
     }
 
     /**
@@ -1004,7 +1063,14 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         Type other = (Type) obj;
 
-        return typeUtils.isSameType( typeMirror, other.typeMirror );
+        if ( this.isWildCardBoundByTypeVar() && other.isWildCardBoundByTypeVar() ) {
+            return  ( this.hasExtendsBound() == this.hasExtendsBound()
+                || this.hasSuperBound() == this.hasSuperBound() )
+                && typeUtils.isSameType( getTypeBound().getTypeMirror(), other.getTypeBound().getTypeMirror() );
+        }
+        else {
+            return typeUtils.isSameType( typeMirror, other.typeMirror );
+        }
     }
 
     @Override
@@ -1086,6 +1152,19 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * Returns the direct supertypes of a type.  The interface types, if any,
+     * will appear last in the list.
+     *
+     * @return the direct supertypes, or an empty list if none
+     */
+    public List<Type> getDirectSuperTypes() {
+        return typeUtils.directSupertypes( typeMirror )
+            .stream()
+            .map( typeFactory::getType )
+            .collect( Collectors.toList() );
+    }
+
+    /**
      * Searches for the given superclass and collects all type arguments for the given class
      *
      * @param superclass the superclass or interface the generic type arguments are searched for
@@ -1121,59 +1200,239 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Steps through the declaredType in order to find a match for this typevar Type. It allignes with
+     * Steps through the declaredType in order to find a match for this typeVar Type. It aligns with
      * the provided parameterized type where this typeVar type is used.
      *
-     * @param declaredType the type
-     * @param parameterizedType the parameterized type
+     * For example:
+     * {@code
+     * this: T
+     * declaredType: JAXBElement<String>
+     * parameterizedType: JAXBElement<T>
+     * result: String
      *
-     * @return the matching declared type.
+     *
+     * this: T, T[] or ? extends T,
+     * declaredType: E.g. Callable<? extends T>
+     * parameterizedType: Callable<BigDecimal>
+     * return: BigDecimal
+     * }
+     *
+     * @param declared the type
+     * @param parameterized the parameterized type
+     *
+     * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)
+     *         - the matching parameter in the parameterized type when this is a type var when found
+     *         - null in all other cases
      */
-    public Type resolveTypeVarToType(Type declaredType, Type parameterizedType) {
-        if ( isTypeVar() ) {
-            TypeVarMatcher typeVarMatcher = new TypeVarMatcher( typeUtils, this );
-            return typeVarMatcher.visit( parameterizedType.getTypeMirror(), declaredType );
+    public ResolvedPair resolveParameterToType(Type declared, Type parameterized) {
+        if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
+            TypeVarMatcher typeVarMatcher = new TypeVarMatcher( typeFactory, typeUtils, this );
+            return typeVarMatcher.visit( parameterized.getTypeMirror(), declared );
         }
-        return this;
+        return new ResolvedPair( this, this );
     }
 
-    private static class TypeVarMatcher extends SimpleTypeVisitor8<Type, Type> {
+    public boolean isWildCardBoundByTypeVar() {
+        return ( hasExtendsBound() || hasSuperBound() ) && getTypeBound().isTypeVar();
+    }
 
-        private TypeVariable typeVarToMatch;
-        private TypeUtils types;
+    public boolean isArrayTypeVar() {
+        return  isArrayType() && getComponentType().isTypeVar();
+    }
 
-        TypeVarMatcher(TypeUtils types, Type typeVarToMatch ) {
-            super( null );
-            this.typeVarToMatch = (TypeVariable) typeVarToMatch.getTypeMirror();
+    private static class TypeVarMatcher extends SimpleTypeVisitor8<ResolvedPair, Type> {
+
+        private final TypeFactory typeFactory;
+        private final Type typeToMatch;
+        private final TypeUtils types;
+
+        /**
+         * @param typeFactory factory
+         * @param types type utils
+         * @param typeToMatch the typeVar or wildcard with typeVar bound
+         */
+        TypeVarMatcher(TypeFactory typeFactory, TypeUtils types, Type typeToMatch) {
+            super( new ResolvedPair( typeToMatch, null ) );
+            this.typeFactory = typeFactory;
+            this.typeToMatch = typeToMatch;
             this.types = types;
         }
 
         @Override
-        public Type visitTypeVariable(TypeVariable t, Type parameterized) {
-            if ( types.isSameType( t, typeVarToMatch ) ) {
-                return parameterized;
+        public ResolvedPair visitTypeVariable(TypeVariable parameterized, Type declared) {
+            if ( typeToMatch.isTypeVar() && types.isSameType( parameterized, typeToMatch.getTypeMirror() ) ) {
+                return new ResolvedPair(  typeFactory.getType( parameterized ), declared );
             }
-            return super.visitTypeVariable( t, parameterized );
+            return super.DEFAULT_VALUE;
+        }
+
+        /**
+         * If ? extends SomeTime equals the boundary set in typeVarToMatch (NOTE: you can't compare the wildcard itself)
+         * then return a result;
+          */
+        @Override
+        public ResolvedPair visitWildcard(WildcardType parameterized, Type declared) {
+            if ( typeToMatch.hasExtendsBound() && parameterized.getExtendsBound() != null
+                && types.isSameType( typeToMatch.getTypeBound().getTypeMirror(), parameterized.getExtendsBound() ) ) {
+                return new ResolvedPair( typeToMatch, declared);
+            }
+            else if ( typeToMatch.hasSuperBound() && parameterized.getSuperBound() != null
+                && types.isSameType( typeToMatch.getTypeBound().getTypeMirror(), parameterized.getSuperBound() ) ) {
+                return new ResolvedPair( typeToMatch, declared);
+            }
+            if ( parameterized.getExtendsBound() != null ) {
+                ResolvedPair match = visit( parameterized.getExtendsBound(), declared );
+                if ( match.match != null ) {
+                    return new ResolvedPair( typeFactory.getType( parameterized ), declared );
+                }
+            }
+            else if (parameterized.getSuperBound() != null ) {
+                ResolvedPair match = visit( parameterized.getSuperBound(), declared );
+                if ( match.match != null ) {
+                    return new ResolvedPair( typeFactory.getType( parameterized ), declared );
+                }
+
+            }
+            return super.DEFAULT_VALUE;
         }
 
         @Override
-        public Type visitDeclared(DeclaredType t, Type parameterized) {
-            if ( types.isAssignable( types.erasure( t ), types.erasure( parameterized.getTypeMirror() ) ) ) {
+        public ResolvedPair visitArray(ArrayType parameterized, Type declared) {
+            if ( types.isSameType( parameterized.getComponentType(), typeToMatch.getTypeMirror() ) ) {
+                return new ResolvedPair( typeFactory.getType( parameterized ), declared );
+            }
+            if ( declared.isArrayType() ) {
+                return visit( parameterized.getComponentType(), declared.getComponentType() );
+            }
+            return super.DEFAULT_VALUE;
+        }
+
+        @Override
+        public ResolvedPair visitDeclared(DeclaredType parameterized, Type declared) {
+
+            List<ResolvedPair> results = new ArrayList<>(  );
+            if ( parameterized.getTypeArguments().isEmpty() ) {
+                return super.DEFAULT_VALUE;
+            }
+            else if ( types.isSameType( types.erasure( parameterized ), types.erasure( declared.getTypeMirror() ) ) ) {
                 // We can't assume that the type args are the same
                 // e.g. List<T> is assignable to Object
-                if ( t.getTypeArguments().size() != parameterized.getTypeParameters().size() ) {
-                    return super.visitDeclared( t, parameterized );
+                if ( parameterized.getTypeArguments().size() != declared.getTypeParameters().size() ) {
+                    return super.visitDeclared( parameterized, declared );
                 }
 
-                for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
-                    Type result = visit( t.getTypeArguments().get( i ), parameterized.getTypeParameters().get( i ) );
-                    if ( result != null ) {
-                        return result;
+                // only possible to compare parameters when the types are exactly the same
+                for ( int i = 0; i < parameterized.getTypeArguments().size(); i++ ) {
+                    TypeMirror parameterizedTypeArg = parameterized.getTypeArguments().get( i );
+                    Type declaredTypeArg = declared.getTypeParameters().get( i );
+                    ResolvedPair result = visit( parameterizedTypeArg, declaredTypeArg );
+                    if ( result != super.DEFAULT_VALUE ) {
+                        results.add( result );
                     }
                 }
             }
-            return super.visitDeclared( t, parameterized );
+            else {
+                // Also check whether the implemented interfaces are parameterized
+                for ( Type declaredSuperType : declared.getDirectSuperTypes() ) {
+                    if ( Object.class.getName().equals( declaredSuperType.getFullyQualifiedName() ) ) {
+                        continue;
+                    }
+                    ResolvedPair result = visitDeclared( parameterized, declaredSuperType );
+                    if ( result != super.DEFAULT_VALUE  ) {
+                        results.add( result );
+                    }
+                }
+
+                for ( TypeMirror parameterizedSuper : types.directSupertypes( parameterized ) ) {
+                    if ( isJavaLangObject( parameterizedSuper ) ) {
+                        continue;
+                    }
+                    ResolvedPair result = visitDeclared( (DeclaredType) parameterizedSuper, declared );
+                    if ( result != super.DEFAULT_VALUE  ) {
+                        results.add( result );
+                    }
+                }
+            }
+            if ( results.isEmpty() ) {
+                return super.DEFAULT_VALUE;
+            }
+            else {
+                return results.stream().allMatch( results.get( 0 )::equals ) ? results.get( 0 ) : super.DEFAULT_VALUE;
+            }
         }
+
+        private boolean isJavaLangObject(TypeMirror type) {
+            if ( type instanceof DeclaredType ) {
+                return ( (TypeElement) ( (DeclaredType) type ).asElement() ).getQualifiedName()
+                                                                            .contentEquals( Object.class.getName() );
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Reflects any Resolved Pair, examples are
+     * T, String
+     * ? extends T, BigDecimal
+     * T[], Integer[]
+     */
+    public static class ResolvedPair {
+
+        public ResolvedPair(Type parameter, Type match) {
+            this.parameter = parameter;
+            this.match = match;
+        }
+
+        /**
+         * parameter, e.g. T, ? extends T or T[]
+         */
+        private Type parameter;
+
+        /**
+         * match, e.g. String, BigDecimal, Integer[]
+         */
+        private Type match;
+
+        public Type getParameter() {
+            return parameter;
+        }
+
+        public Type getMatch() {
+            return match;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            ResolvedPair that = (ResolvedPair) o;
+            return Objects.equals( parameter, that.parameter ) && Objects.equals( match, that.match );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash( parameter );
+        }
+    }
+
+    /**
+     * Gets the boxed equivalent type if the type is primitive, int will return Integer
+     *
+     * @return boxed equivalent
+     */
+    public Type getBoxedEquivalent() {
+        if ( boxedEquivalent != null ) {
+            return boxedEquivalent;
+        }
+        else if ( isPrimitive() ) {
+            boxedEquivalent = typeFactory.getType( typeUtils.boxedClass( (PrimitiveType) typeMirror ) );
+            return boxedEquivalent;
+        }
+        return this;
     }
 
     /**

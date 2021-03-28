@@ -613,7 +613,11 @@ public class TypeFactory {
             if ( typeVariableType.getUpperBound() != null ) {
                 return typeVariableType.getUpperBound();
             }
-            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
+            // lower bounds ( T super Number ) cannot be used for argument parameters, but can be used for
+            // method parameters: e.g.  <T super Number> T map (T in);
+            if ( typeVariableType.getLowerBound() != null ) {
+                return typeVariableType.getLowerBound();
+            }
         }
 
         return typeMirror;

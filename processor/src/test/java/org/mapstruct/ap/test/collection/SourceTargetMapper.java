@@ -37,8 +37,6 @@ public abstract class SourceTargetMapper {
     @InheritConfiguration
     public abstract Target sourceToTargetTwoArg(Source source, @MappingTarget Target target);
 
-    public abstract Set<String> integerSetToStringSet(Set<Integer> integers);
-
     @InheritInverseConfiguration
     public abstract Set<Integer> stringSetToIntegerSet(Set<String> strings);
 

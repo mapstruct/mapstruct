@@ -460,6 +460,7 @@ public class MappingResolverImpl implements MappingResolver {
                 methods,
                 singletonList( source ),
                 target,
+                target,
                 selectionCriteria
             );
         }
@@ -758,7 +759,7 @@ public class MappingResolverImpl implements MappingResolver {
             attempt.selectionCriteria.setPreferUpdateMapping( false );
             for ( T2 yCandidate : yMethods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
-                ySourceType = ySourceType.resolveTypeVarToType( targetType, yCandidate.getResultType() );
+                ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
                 Type yTargetType = yCandidate.getResultType();
                 if ( ySourceType == null
                     || !yTargetType.isRawAssignableTo( targetType )
@@ -876,7 +877,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             for ( T yCandidate : methods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
-                ySourceType = ySourceType.resolveTypeVarToType( targetType, yCandidate.getResultType() );
+                ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
                 Type yTargetType = yCandidate.getResultType();
                 if ( ySourceType == null
                     || !yTargetType.isRawAssignableTo( targetType )
@@ -993,7 +994,7 @@ public class MappingResolverImpl implements MappingResolver {
             for ( T xCandidate : methods ) {
                 Type xTargetType = xCandidate.getReturnType();
                 Type xSourceType = xCandidate.getMappingSourceType();
-                xTargetType = xTargetType.resolveTypeVarToType( sourceType, xSourceType );
+                xTargetType = xTargetType.resolveParameterToType( sourceType, xSourceType ).getMatch();
                 if ( xTargetType == null
                     || xCandidate.isUpdateMethod()
                     || !sourceType.isRawAssignableTo( xSourceType )
