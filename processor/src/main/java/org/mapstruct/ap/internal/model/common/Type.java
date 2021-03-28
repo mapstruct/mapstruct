@@ -554,7 +554,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * removes any bounds from this type.
-     * @return the raw type (TODO: check whether T remains after applying this to T extends Number
+     * @return the raw type
      */
     public Type asRawType() {
         if ( getTypeBound() != null ) {
