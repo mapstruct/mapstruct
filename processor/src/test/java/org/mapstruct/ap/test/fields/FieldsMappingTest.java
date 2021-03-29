@@ -29,7 +29,7 @@ public class FieldsMappingTest {
         source.normalList = Lists.newArrayList( 10, 11, 12 );
         source.fieldOnlyWithGetter = 20;
 
-        Target target = SourceTargetMapper.INSTANCE.toSource( source );
+        Target target = SourceTargetMapper.INSTANCE.toTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.finalInt ).isEqualTo( "10" );
