@@ -426,13 +426,11 @@ public class MappingResolverImpl implements MappingResolver {
             // add helper methods required in conversion
             Set<Field> allUsedFields = new HashSet<>( mapperReferences );
             SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
                 SupportingMappingMethod supportingMappingMethod =
                     new SupportingMappingMethod( helperMethod, allUsedFields );
-                if ( supportingMappingMethod.getSupportingField() != null ) {
-                    allUsedFields.add( supportingMappingMethod.getSupportingField() );
-                }
-
+                SupportingField.addAllFieldsIn( Collections.asSet( supportingMappingMethod ), allUsedFields );
                 usedSupportedMappings.add( supportingMappingMethod );
             }
 

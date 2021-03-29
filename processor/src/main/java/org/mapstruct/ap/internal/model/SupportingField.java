@@ -7,7 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.source.builtin.BuiltInFieldReference;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 
 /**
  * supports the
@@ -19,13 +19,7 @@ public class SupportingField extends Field {
     private final String templateName;
     private final SupportingMappingMethod definingMethod;
 
-    public SupportingField(SupportingMappingMethod definingMethod, BuiltInFieldReference fieldReference, String name) {
-        super( fieldReference.getType(), name, true );
-        this.templateName = getTemplateNameForClass( fieldReference.getClass() );
-        this.definingMethod = definingMethod;
-    }
-
-    public SupportingField(SupportingMappingMethod definingMethod, HelperFieldReference fieldReference, String name) {
+    public SupportingField(SupportingMappingMethod definingMethod, FieldReference fieldReference, String name) {
         super( fieldReference.getType(), name, true );
         this.templateName = getTemplateNameForClass( fieldReference.getClass() );
         this.definingMethod = definingMethod;

@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.builtin.BuiltInConstructorFragment;
 
 /**
  * A mapper instance field, initialized as null
@@ -25,14 +25,7 @@ public class SupportingConstructorFragment extends ModelElement {
     private final SupportingMappingMethod definingMethod;
 
     public SupportingConstructorFragment(SupportingMappingMethod definingMethod,
-                                         BuiltInConstructorFragment constructorFragment, String variableName) {
-        this.templateName = getTemplateNameForClass( constructorFragment.getClass() );
-        this.definingMethod = definingMethod;
-        this.variableName = variableName;
-    }
-
-    public SupportingConstructorFragment(SupportingMappingMethod definingMethod,
-                                         HelperConstructorFragment constructorFragment, String variableName) {
+                                         ConstructorFragment constructorFragment, String variableName) {
         this.templateName = getTemplateNameForClass( constructorFragment.getClass() );
         this.definingMethod = definingMethod;
         this.variableName = variableName;

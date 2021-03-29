@@ -15,7 +15,9 @@ import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -246,11 +248,11 @@ public abstract class HelperMethod implements Method {
         return false; // irrelevant
     }
 
-    public HelperFieldReference getFieldReference() {
+    public FieldReference getFieldReference() {
         return null;
     }
 
-    public HelperConstructorFragment getConstructorFragment() {
+    public ConstructorFragment getConstructorFragment() {
         return null;
     }
 

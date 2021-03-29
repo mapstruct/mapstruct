@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.HelperConstructorFragment;
-import org.mapstruct.ap.internal.model.HelperFieldReference;
-import org.mapstruct.ap.internal.model.HelperFinalField;
 import org.mapstruct.ap.internal.model.HelperMethod;
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
+import org.mapstruct.ap.internal.model.common.FieldReference;
+import org.mapstruct.ap.internal.model.common.FinalField;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -38,8 +38,7 @@ public class GetDateTimeFormatter extends HelperMethod {
     private final String name;
     private final String dateFormat;
 
-    private final HelperFinalField fieldReference;
-    private final GetDateTimeFormatterConstructorFragment constructorFragment;
+    private final GetDateTimeFormatterField fieldReference;
 
     public GetDateTimeFormatter(TypeFactory typeFactory, String dateFormat) {
         this.returnType = typeFactory.getType( DateTimeFormatter.class );
@@ -48,8 +47,7 @@ public class GetDateTimeFormatter extends HelperMethod {
         this.name = getDateTimeFormatterFieldName( dateFormat );
 
         this.fieldReference =
-            new HelperFinalField( typeFactory.getType( DateTimeFormatter.class ), this.name );
-        this.constructorFragment = new GetDateTimeFormatterConstructorFragment();
+            new GetDateTimeFormatterField( typeFactory.getType( DateTimeFormatter.class ), this.name );
     }
 
     @Override
@@ -150,16 +148,20 @@ public class GetDateTimeFormatter extends HelperMethod {
     }
 
     @Override
-    public HelperFieldReference getFieldReference() {
+    public FieldReference getFieldReference() {
         return fieldReference;
     }
 
     @Override
-    public HelperConstructorFragment getConstructorFragment() {
-        return constructorFragment;
+    public ConstructorFragment getConstructorFragment() {
+        return null;
     }
 
-    public static class GetDateTimeFormatterConstructorFragment implements HelperConstructorFragment {
+    public static class GetDateTimeFormatterField extends FinalField implements FieldReference {
+
+        public GetDateTimeFormatterField(Type type, String variableName) {
+            super( type, variableName );
+        }
 
     }
 }

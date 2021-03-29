@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.builtin.BuiltInFieldReference;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.builtin.NewDatatypeFactoryConstructorFragment;
 import org.mapstruct.ap.internal.util.Strings;
@@ -22,7 +23,7 @@ import org.mapstruct.ap.internal.util.Strings;
  * Specific templates all point to this class, for instance:
  * {@link org.mapstruct.ap.internal.model.source.builtin.XmlGregorianCalendarToCalendar},
  * but also used fields and constructor elements, e.g.
- * {@link org.mapstruct.ap.internal.model.source.builtin.FinalField} and
+ * {@link org.mapstruct.ap.internal.model.common.FinalField} and
  * {@link NewDatatypeFactoryConstructorFragment}
  *
  * @author Gunnar Morling
@@ -40,22 +41,9 @@ public class SupportingMappingMethod extends MappingMethod {
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
         this.templateParameter = null;
-        if ( method.getFieldReference() != null ) {
-            this.supportingField = getSafeField( method.getFieldReference(), existingFields );
-        }
-        else {
-            this.supportingField = null;
-        }
-        if ( method.getConstructorFragment() != null ) {
-            this.supportingConstructorFragment = new SupportingConstructorFragment(
-                this,
-                method.getConstructorFragment(),
-                this.supportingField != null ? this.supportingField.getVariableName() : null
-            );
-        }
-        else {
-            this.supportingConstructorFragment = null;
-        }
+        this.supportingField = getSafeField( method.getFieldReference(), existingFields );
+        this.supportingConstructorFragment =
+            getSafeConstructorFragment( method.getConstructorFragment(), this.supportingField );
     }
 
     public SupportingMappingMethod(HelperMethod method, Set<Field> existingFields) {
@@ -63,25 +51,16 @@ public class SupportingMappingMethod extends MappingMethod {
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
         this.templateParameter = method.getTemplateParameter();
-        if ( method.getFieldReference() != null ) {
-            this.supportingField = getSafeField( method.getFieldReference(), existingFields );
-        }
-        else {
-            this.supportingField = null;
-        }
-        if ( method.getConstructorFragment() != null ) {
-            this.supportingConstructorFragment =
-                new SupportingConstructorFragment(
-                    this,
-                    method.getConstructorFragment(),
-                    this.supportingField != null ? this.supportingField.getVariableName() : null );
-        }
-        else {
-            this.supportingConstructorFragment = null;
-        }
+        this.supportingField = getSafeField( method.getFieldReference(), existingFields );
+        this.supportingConstructorFragment =
+            getSafeConstructorFragment( method.getConstructorFragment(), this.supportingField );
     }
 
-    private Field getSafeField(BuiltInFieldReference ref, Set<Field> existingFields) {
+    private Field getSafeField(FieldReference ref, Set<Field> existingFields) {
+        if ( ref == null ) {
+            return null;
+        }
+
         String name = ref.getVariableName();
         for ( Field existingField : existingFields ) {
             if ( existingField.getVariableName().equals( ref.getVariableName() )
@@ -94,17 +73,16 @@ public class SupportingMappingMethod extends MappingMethod {
         return new SupportingField( this, ref, name );
     }
 
-    private Field getSafeField(HelperFieldReference ref, Set<Field> existingFields) {
-        String name = ref.getVariableName();
-        for ( Field existingField : existingFields ) {
-            if ( existingField.getVariableName().equals( ref.getVariableName() )
-                && existingField.getType().equals( ref.getType() ) ) {
-                // field already exists, use that one
-                return existingField;
-            }
+    private SupportingConstructorFragment getSafeConstructorFragment(ConstructorFragment fragment,
+                                                                     Field supportingField) {
+        if ( fragment == null ) {
+            return null;
         }
-        name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
-        return new SupportingField( this, ref, name );
+
+        return new SupportingConstructorFragment(
+            this,
+            fragment,
+            supportingField != null ? supportingField.getVariableName() : null );
     }
 
     @Override

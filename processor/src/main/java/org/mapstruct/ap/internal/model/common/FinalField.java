@@ -3,16 +3,14 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model.source.builtin;
-
-import org.mapstruct.ap.internal.model.common.Type;
+package org.mapstruct.ap.internal.model.common;
 
 /**
  * A mapper instance field, initialized as null
  *
  * @author Sjaak Derksen
  */
-public class FinalField implements BuiltInFieldReference {
+public class FinalField implements FieldReference {
 
     private final Type type;
     private String variableName;

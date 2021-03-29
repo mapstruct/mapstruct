@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.SupportingField" -->
-private final <@includeModel object=type/> ${variableName};
+private final <@includeModel object=type/> ${variableName} = <@includeModel object=type/>.ofPattern( "${definingMethod.templateParameter['dateFormat']}" );
