@@ -79,14 +79,12 @@
             <artifactId>javax.inject</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!-- plexus-container-default is a runtime-dependency of the tycho-compiler -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
