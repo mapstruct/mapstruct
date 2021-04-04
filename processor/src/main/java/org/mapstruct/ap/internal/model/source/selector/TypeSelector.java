@@ -89,7 +89,7 @@ public class TypeSelector implements MethodSelector {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
 
         if ( sourceRHS != null ) {
-            availableParams.addAll( ParameterBinding.fromParameters( method.getContextParameters() ) );
+            availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
             availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
         }
         else {

@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -31,7 +30,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     private String sourceLoopVarName;
     private final Set<String> existingVariableNames;
     private final String sourceErrorMessagePart;
-    private final PresenceCheck sourcePresenceCheckerReference;
+    private PresenceCheck sourcePresenceCheckerReference;
     private boolean useElementAsSourceTypeForMatching = false;
     private final String sourceParameterName;
 
@@ -63,6 +62,10 @@ public class SourceRHS extends ModelElement implements Assignment {
     @Override
     public PresenceCheck getSourcePresenceCheckerReference() {
         return sourcePresenceCheckerReference;
+    }
+
+    public void setSourcePresenceCheckerReference(PresenceCheck sourcePresenceCheckerReference) {
+        this.sourcePresenceCheckerReference = sourcePresenceCheckerReference;
     }
 
     @Override

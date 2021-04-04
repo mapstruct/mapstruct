@@ -35,6 +35,7 @@ public class MethodSelectors {
             new XmlElementDeclSelector( typeUtils ),
             new InheritanceSelector(),
             new CreateOrUpdateSelector(),
+            new SourceRhsSelector(),
             new FactoryParameterSelector() );
     }
 

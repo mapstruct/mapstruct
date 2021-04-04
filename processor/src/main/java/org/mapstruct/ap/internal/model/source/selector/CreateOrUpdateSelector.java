@@ -36,7 +36,8 @@ public class CreateOrUpdateSelector implements MethodSelector {
                                                                          Type returnType,
                                                                          SelectionCriteria criteria) {
 
-        if ( criteria.isLifecycleCallbackRequired() || criteria.isObjectFactoryRequired() ) {
+        if ( criteria.isLifecycleCallbackRequired() || criteria.isObjectFactoryRequired()
+            || criteria.isPresenceCheckRequired() ) {
             return methods;
         }
 

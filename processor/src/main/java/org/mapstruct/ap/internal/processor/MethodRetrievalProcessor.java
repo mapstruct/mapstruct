@@ -23,6 +23,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
+import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -225,7 +226,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
-            || isValidLifecycleCallbackMethod( method ) ) {
+            || isValidLifecycleCallbackMethod( method )
+            || isValidPresenceCheckMethod( method, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -333,7 +335,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
-                if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory() ) {
+                if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory()
+                    || sourceMethod.isPresenceCheck() ) {
                     contextProvidedMethods.add( sourceMethod );
                 }
             }
@@ -389,8 +392,20 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return ObjectFactoryGem.instanceOn( method ) != null;
     }
 
+    private boolean isValidPresenceCheckMethod(ExecutableElement method, Type returnType) {
+        return isBoolean( returnType ) && hasConditionAnnotation( method );
+    }
+
+    private boolean hasConditionAnnotation(ExecutableElement method) {
+        return ConditionGem.instanceOn( method ) != null;
+    }
+
     private boolean isVoid(Type returnType) {
         return returnType.getTypeMirror().getKind() == TypeKind.VOID;
+    }
+
+    private boolean isBoolean(Type returnType) {
+        return Boolean.class.getCanonicalName().equals( returnType.getBoxedEquivalent().getFullyQualifiedName() );
     }
 
     private boolean isValidReferencedOrFactoryMethod(int sourceParamCount, int targetParamCount,

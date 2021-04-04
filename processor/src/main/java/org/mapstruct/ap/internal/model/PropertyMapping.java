@@ -13,6 +13,9 @@ import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
@@ -32,6 +35,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
@@ -40,9 +44,6 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.internal.gem.BuilderGem;
-import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
@@ -52,12 +53,12 @@ import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
 import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
 import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -142,6 +143,7 @@ public class PropertyMapping extends ModelElement {
         // initial properties
         private String defaultValue;
         private String defaultJavaExpression;
+        private String conditionJavaExpression;
         private SourceReference sourceReference;
         private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
@@ -179,6 +181,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder defaultJavaExpression(String defaultJavaExpression) {
             this.defaultJavaExpression = defaultJavaExpression;
+            return this;
+        }
+
+        public PropertyMappingBuilder conditionJavaExpression(String conditionJavaExpression) {
+            this.conditionJavaExpression = conditionJavaExpression;
             return this;
         }
 
@@ -557,13 +564,19 @@ public class PropertyMapping extends ModelElement {
             // simple property
             else if ( !sourceReference.isNested() ) {
                 String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
-                return new SourceRHS( sourceParam.getName(),
-                                      sourceRef,
-                                      getSourcePresenceCheckerRef( sourceReference ),
-                                      propertyEntry.getType(),
-                                      existingVariableNames,
-                                      sourceReference.toString()
+                SourceRHS sourceRHS = new SourceRHS(
+                    sourceParam.getName(),
+                    sourceRef,
+                    null,
+                    propertyEntry.getType(),
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
+                sourceRHS.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
+                    sourceReference,
+                    sourceRHS
+                ) );
+                return sourceRHS;
             }
             // nested property given as dot path
             else {
@@ -598,11 +611,15 @@ public class PropertyMapping extends ModelElement {
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
                 SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
                                                      sourceRef,
-                                                     getSourcePresenceCheckerRef( sourceReference ),
+                                                     null,
                                                      sourceType,
                                                      existingVariableNames,
                                                      sourceReference.toString()
                 );
+                sourceRhs.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
+                    sourceReference,
+                    sourceRhs
+                ) );
 
                 // create a local variable to which forged method can be assigned.
                 String desiredName = propertyEntry.getName();
@@ -613,7 +630,25 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private PresenceCheck getSourcePresenceCheckerRef(SourceReference sourceReference ) {
+        private PresenceCheck getSourcePresenceCheckerRef(SourceReference sourceReference,
+                                                          SourceRHS sourceRHS) {
+
+            if ( conditionJavaExpression != null ) {
+                return new JavaExpressionPresenceCheck( conditionJavaExpression );
+            }
+
+            SelectionParameters selectionParameters = this.selectionParameters != null ?
+                this.selectionParameters.withSourceRHS( sourceRHS ) :
+                SelectionParameters.forSourceRHS( sourceRHS );
+            PresenceCheck presenceCheck = PresenceCheckMethodResolver.getPresenceCheck(
+                method,
+                selectionParameters,
+                ctx
+            );
+            if ( presenceCheck != null ) {
+                return presenceCheck;
+            }
+
             PresenceCheck sourcePresenceChecker = null;
             if ( !sourceReference.getPropertyEntries().isEmpty() ) {
                 Parameter sourceParam = sourceReference.getParameter();
