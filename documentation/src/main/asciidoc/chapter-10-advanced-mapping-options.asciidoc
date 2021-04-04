@@ -229,6 +229,78 @@ The source presence checker name can be changed in the MapStruct service provide
 Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
 null check, regardless the value of the `NullValueCheckStrategy` to avoid addition of `null` to the target collection or map.
 ====
+
+[[conditional-mapping]]
+=== Conditional Mapping
+
+Conditional Mapping is a type of <<source-presence-check>>.
+The difference is that it allows users to write custom condition methods that will be invoked to check if a property needs to be mapped or not.
+
+A custom condition method is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
+
+e.g. if you only want to map a String property when it is not `null, and it is not empty then you can do something like:
+
+.Mapper using custom condition check method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+
+    @Condition
+    default boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+The generated mapper will look like:
+
+.try-catch block in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+
+        if ( isNotEmpty( car.getOwner() ) ) {
+            carDto.setOwner( car.getOwner() );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
+[IMPORTANT]
+====
+If there is a custom `@Condition` method applicable for the property it will have a precedence over a presence check method in the bean itself.
+====
+
+[NOTE]
+====
+Methods annotated with `@Condition` in addition to the value of the source property can also have the source parameter as an input.
+====
+
+<<selection-based-on-qualifiers>> is also valid for `@Condition` methods.
+In order to use a more specific condition method you will need to use one of `Mapping#conditionQualifiedByName` or `Mapping#conditionQualifiedBy`.
+
 [[exceptions]]
 === Exceptions
 

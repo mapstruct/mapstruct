@@ -12,6 +12,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Builder;
+import org.mapstruct.Condition;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.EnumMapping;
@@ -61,6 +62,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(ValueMappings.class)
 @GemDefinition(Context.class)
 @GemDefinition(Builder.class)
+@GemDefinition(Condition.class)
 
 @GemDefinition(MappingControl.class)
 @GemDefinition(MappingControls.class)

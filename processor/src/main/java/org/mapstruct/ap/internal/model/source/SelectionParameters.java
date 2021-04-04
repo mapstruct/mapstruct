@@ -23,6 +23,8 @@ public class SelectionParameters {
 
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
+    private final List<TypeMirror> conditionQualifiers;
+    private final List<String> conditionQualifyingNames;
     private final TypeMirror resultType;
     private final TypeUtils typeUtils;
     private final SourceRHS sourceRHS;
@@ -39,6 +41,8 @@ public class SelectionParameters {
         return new SelectionParameters(
             selectionParameters.qualifiers,
             selectionParameters.qualifyingNames,
+            selectionParameters.conditionQualifiers,
+            selectionParameters.conditionQualifyingNames,
             null,
             selectionParameters.typeUtils
         );
@@ -46,13 +50,32 @@ public class SelectionParameters {
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         TypeUtils typeUtils) {
-        this( qualifiers, qualifyingNames, resultType, typeUtils, null );
+        this(
+            qualifiers,
+            qualifyingNames,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            resultType,
+            typeUtils,
+            null
+        );
     }
 
-    private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
+    public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames,
+                               List<TypeMirror> conditionQualifiers, List<String> conditionQualifyingNames,
+                               TypeMirror resultType,
+                               TypeUtils typeUtils) {
+        this( qualifiers, qualifyingNames, conditionQualifiers, conditionQualifyingNames, resultType, typeUtils, null );
+    }
+
+    private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames,
+                                List<TypeMirror> conditionQualifiers, List<String> conditionQualifyingNames,
+                                TypeMirror resultType,
                                 TypeUtils typeUtils, SourceRHS sourceRHS) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
+        this.conditionQualifiers = conditionQualifiers;
+        this.conditionQualifyingNames = conditionQualifyingNames;
         this.resultType = resultType;
         this.typeUtils = typeUtils;
         this.sourceRHS = sourceRHS;
@@ -72,6 +95,21 @@ public class SelectionParameters {
      */
     public List<String> getQualifyingNames() {
         return qualifyingNames;
+    }
+
+    /**
+     * @return qualifiers used for further select the appropriate presence check method based on class and name
+     */
+    public List<TypeMirror> getConditionQualifiers() {
+        return conditionQualifiers;
+    }
+
+    /**
+     * @return qualifyingNames, used in combination with with @Named
+     * @see #getConditionQualifiers()
+     */
+    public List<String> getConditionQualifyingNames() {
+        return conditionQualifyingNames;
     }
 
     /**
@@ -119,6 +157,14 @@ public class SelectionParameters {
             return false;
         }
 
+        if ( !Objects.equals( this.conditionQualifiers, other.conditionQualifiers ) ) {
+            return false;
+        }
+
+        if ( !Objects.equals( this.conditionQualifyingNames, other.conditionQualifyingNames ) ) {
+            return false;
+        }
+
         if ( !Objects.equals( this.sourceRHS, other.sourceRHS ) ) {
             return false;
         }
@@ -151,8 +197,22 @@ public class SelectionParameters {
         }
     }
 
+    public SelectionParameters withSourceRHS(SourceRHS sourceRHS) {
+        return new SelectionParameters(
+            this.qualifiers,
+            this.qualifyingNames,
+            this.conditionQualifiers,
+            this.conditionQualifyingNames,
+            null,
+            this.typeUtils,
+            sourceRHS
+        );
+    }
+
     public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
         return new SelectionParameters(
+            Collections.emptyList(),
+            Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
             null,

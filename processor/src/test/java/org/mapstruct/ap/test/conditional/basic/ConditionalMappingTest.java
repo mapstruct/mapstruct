@@ -1,0 +1,229 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.mapstruct.ap.test.conditional.basic;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * @author Filip Hrisafov
+ */
+@IssueKey("2051")
+@WithClasses({
+    BasicEmployee.class,
+    BasicEmployeeDto.class
+})
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ConditionalMappingTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
+
+    @Test
+    @WithClasses({
+        ConditionalMethodInMapper.class
+    })
+    public void conditionalMethodInMapper() {
+        generatedSource.addComparisonToFixtureFor( ConditionalMethodInMapper.class );
+        ConditionalMethodInMapper mapper = ConditionalMethodInMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "Tester" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( new BasicEmployeeDto( "" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "    " ) );
+        assertThat( employee.getName() ).isNull();
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodAndBeanPresenceCheckMapper.class
+    })
+    public void conditionalMethodAndBeanPresenceCheckMapper() {
+        ConditionalMethodAndBeanPresenceCheckMapper mapper = ConditionalMethodAndBeanPresenceCheckMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new ConditionalMethodAndBeanPresenceCheckMapper.EmployeeDto( "Tester" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( new ConditionalMethodAndBeanPresenceCheckMapper.EmployeeDto( "" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new ConditionalMethodAndBeanPresenceCheckMapper.EmployeeDto( "    " ) );
+        assertThat( employee.getName() ).isNull();
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodInUsesMapper.class
+    })
+    public void conditionalMethodInUsesMapper() {
+        ConditionalMethodInUsesMapper mapper = ConditionalMethodInUsesMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "Tester" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( new BasicEmployeeDto( "" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "    " ) );
+        assertThat( employee.getName() ).isNull();
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodInUsesStaticMapper.class
+    })
+    public void conditionalMethodInUsesStaticMapper() {
+        ConditionalMethodInUsesStaticMapper mapper = ConditionalMethodInUsesStaticMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "Tester" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( new BasicEmployeeDto( "" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "    " ) );
+        assertThat( employee.getName() ).isNull();
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodInContextMapper.class
+    })
+    public void conditionalMethodInUsesContextMapper() {
+        ConditionalMethodInContextMapper mapper = ConditionalMethodInContextMapper.INSTANCE;
+
+        ConditionalMethodInContextMapper.PresenceUtils utils = new ConditionalMethodInContextMapper.PresenceUtils();
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "Tester" ), utils );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( new BasicEmployeeDto( "" ), utils );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "    " ), utils );
+        assertThat( employee.getName() ).isNull();
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodWithSourceParameterMapper.class
+    })
+    public void conditionalMethodWithSourceParameter() {
+        ConditionalMethodWithSourceParameterMapper mapper = ConditionalMethodWithSourceParameterMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "Tester" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "Tester", "map" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodWithSourceParameterAndValueMapper.class
+    })
+    public void conditionalMethodWithSourceParameterAndValue() {
+        generatedSource.addComparisonToFixtureFor( ConditionalMethodWithSourceParameterAndValueMapper.class );
+        ConditionalMethodWithSourceParameterAndValueMapper mapper =
+            ConditionalMethodWithSourceParameterAndValueMapper.INSTANCE;
+
+        BasicEmployee employee = mapper.map( new BasicEmployeeDto( "    ", "empty" ) );
+        assertThat( employee.getName() ).isEqualTo( "    " );
+
+        employee = mapper.map( new BasicEmployeeDto( "    ", "blank" ) );
+        assertThat( employee.getName() ).isNull();
+
+        employee = mapper.map( new BasicEmployeeDto( "Tester", "blank" ) );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+    }
+
+    @Test
+    @WithClasses({
+        ErroneousAmbiguousConditionalMethodMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousAmbiguousConditionalMethodMapper.class,
+                line = 17,
+                message = "Ambiguous presence check methods found for checking String: " +
+                    "boolean isNotBlank(String value), " +
+                    "boolean isNotEmpty(String value). " +
+                    "See https://mapstruct.org/faq/#ambiguous for more info."
+            )
+        }
+    )
+    public void ambiguousConditionalMethod() {
+
+    }
+
+    @Test
+    @WithClasses({
+        ConditionalMethodForCollectionMapper.class
+    })
+    public void conditionalMethodForCollection() {
+        ConditionalMethodForCollectionMapper mapper = ConditionalMethodForCollectionMapper.INSTANCE;
+
+        ConditionalMethodForCollectionMapper.Author author = new ConditionalMethodForCollectionMapper.Author();
+        ConditionalMethodForCollectionMapper.AuthorDto dto = mapper.map( author );
+
+        assertThat( dto.getBooks() ).isNull();
+
+        author.setBooks( Collections.emptyList() );
+        dto = mapper.map( author );
+
+        assertThat( dto.getBooks() ).isNull();
+
+        author.setBooks( Arrays.asList(
+            new ConditionalMethodForCollectionMapper.Book( "Test" ),
+            new ConditionalMethodForCollectionMapper.Book( "Test Vol. 2" )
+        ) );
+        dto = mapper.map( author );
+
+        assertThat( dto.getBooks() )
+            .extracting( ConditionalMethodForCollectionMapper.BookDto::getName )
+            .containsExactly( "Test", "Test Vol. 2" );
+    }
+
+    @Test
+    @WithClasses({
+        OptionalLikeConditionalMapper.class
+    })
+    @IssueKey("2084")
+    public void optionalLikeConditional() {
+        OptionalLikeConditionalMapper mapper = OptionalLikeConditionalMapper.INSTANCE;
+
+        OptionalLikeConditionalMapper.Target target = mapper.map( new OptionalLikeConditionalMapper.Source(
+            OptionalLikeConditionalMapper.Nullable.ofNullable( "test" ) ) );
+
+        assertThat( target.getValue() ).isEqualTo( "test" );
+
+        target = mapper.map(
+            new OptionalLikeConditionalMapper.Source( OptionalLikeConditionalMapper.Nullable.undefined() )
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "initial" );
+
+    }
+
+}

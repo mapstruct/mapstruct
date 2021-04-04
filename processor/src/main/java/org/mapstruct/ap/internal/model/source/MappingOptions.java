@@ -43,6 +43,7 @@ public class MappingOptions extends DelegatingOptions {
     private final String constant;
     private final String javaExpression;
     private final String defaultJavaExpression;
+    private final String conditionJavaExpression;
     private final String targetName;
     private final String defaultValue;
     private final FormattingParameters formattingParameters;
@@ -114,6 +115,7 @@ public class MappingOptions extends DelegatingOptions {
         String constant = mapping.constant().getValue();
         String expression = getExpression( mapping, method, messager );
         String defaultExpression = getDefaultExpression( mapping, method, messager );
+        String conditionExpression = getConditionExpression( mapping, method, messager );
         String dateFormat = mapping.dateFormat().getValue();
         String numberFormat = mapping.numberFormat().getValue();
         String defaultValue = mapping.defaultValue().getValue();
@@ -132,6 +134,8 @@ public class MappingOptions extends DelegatingOptions {
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),
             mapping.qualifiedByName().get(),
+            mapping.conditionQualifiedBy().get(),
+            mapping.conditionQualifiedByName().get(),
             mapping.resultType().getValue(),
             typeUtils
         );
@@ -145,6 +149,7 @@ public class MappingOptions extends DelegatingOptions {
             constant,
             expression,
             defaultExpression,
+            conditionExpression,
             defaultValue,
             mapping.ignore().get(),
             formattingParam,
@@ -166,6 +171,7 @@ public class MappingOptions extends DelegatingOptions {
    public static MappingOptions forIgnore(String targetName) {
         return new MappingOptions(
             targetName,
+            null,
             null,
             null,
             null,
@@ -261,6 +267,7 @@ public class MappingOptions extends DelegatingOptions {
                            String constant,
                            String javaExpression,
                            String defaultJavaExpression,
+                           String conditionJavaExpression,
                            String defaultValue,
                            boolean isIgnored,
                            FormattingParameters formattingParameters,
@@ -279,6 +286,7 @@ public class MappingOptions extends DelegatingOptions {
         this.constant = constant;
         this.javaExpression = javaExpression;
         this.defaultJavaExpression = defaultJavaExpression;
+        this.conditionJavaExpression = conditionJavaExpression;
         this.defaultValue = defaultValue;
         this.isIgnored = isIgnored;
         this.formattingParameters = formattingParameters;
@@ -330,6 +338,27 @@ public class MappingOptions extends DelegatingOptions {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
+    private static String getConditionExpression(MappingGem mapping, ExecutableElement element,
+                                        FormattingMessager messager) {
+        if ( !mapping.conditionExpression().hasValue() ) {
+            return null;
+        }
+
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mapping.conditionExpression().get() );
+
+        if ( !javaExpressionMatcher.matches() ) {
+            messager.printMessage(
+                element,
+                mapping.mirror(),
+                mapping.conditionExpression().getAnnotationValue(),
+                Message.PROPERTYMAPPING_INVALID_CONDITION_EXPRESSION
+            );
+            return null;
+        }
+
+        return javaExpressionMatcher.group( 1 ).trim();
+    }
+
     public String getTargetName() {
         return targetName;
     }
@@ -362,6 +391,10 @@ public class MappingOptions extends DelegatingOptions {
 
     public String getDefaultJavaExpression() {
         return defaultJavaExpression;
+    }
+
+    public String getConditionJavaExpression() {
+        return conditionJavaExpression;
     }
 
     public String getDefaultValue() {
@@ -452,6 +485,7 @@ public class MappingOptions extends DelegatingOptions {
             null, // constant
             null, // expression
             null, // defaultExpression
+            null, // conditionExpression
             null,
             isIgnored,
             formattingParameters,
@@ -481,6 +515,7 @@ public class MappingOptions extends DelegatingOptions {
             constant,
             javaExpression,
             defaultJavaExpression,
+            conditionJavaExpression,
             defaultValue,
             isIgnored,
             formattingParameters,

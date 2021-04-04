@@ -1155,6 +1155,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .dependsOn( mapping.getDependsOn() )
                             .defaultValue( mapping.getDefaultValue() )
                             .defaultJavaExpression( mapping.getDefaultJavaExpression() )
+                            .conditionJavaExpression( mapping.getConditionJavaExpression() )
                             .mirror( mapping.getMirror() )
                             .options( mapping )
                             .build();

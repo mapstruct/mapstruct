@@ -26,20 +26,23 @@ public class SelectionCriteria {
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private final SourceRHS sourceRHS;
-    private boolean preferUpdateMapping;
-    private final boolean objectFactoryRequired;
-    private final boolean lifecycleCallbackRequired;
+    private Type type;
     private final boolean allowDirect;
     private final boolean allowConversion;
     private final boolean allowMappingMethod;
     private final boolean allow2Steps;
 
     public SelectionCriteria(SelectionParameters selectionParameters, MappingControl mappingControl,
-                             String targetPropertyName, boolean preferUpdateMapping, boolean objectFactoryRequired,
-                             boolean lifecycleCallbackRequired) {
+                             String targetPropertyName, Type type) {
         if ( selectionParameters != null ) {
-            qualifiers.addAll( selectionParameters.getQualifiers() );
-            qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
+            if ( type == Type.PRESENCE_CHECK ) {
+                qualifiers.addAll( selectionParameters.getConditionQualifiers() );
+                qualifiedByNames.addAll( selectionParameters.getConditionQualifyingNames() );
+            }
+            else {
+                qualifiers.addAll( selectionParameters.getQualifiers() );
+                qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
+            }
             qualifyingResultType = selectionParameters.getResultType();
             sourceRHS = selectionParameters.getSourceRHS();
         }
@@ -60,23 +63,28 @@ public class SelectionCriteria {
             this.allow2Steps = true;
         }
         this.targetPropertyName = targetPropertyName;
-        this.preferUpdateMapping = preferUpdateMapping;
-        this.objectFactoryRequired = objectFactoryRequired;
-        this.lifecycleCallbackRequired = lifecycleCallbackRequired;
+        this.type = type;
     }
 
     /**
      * @return true if factory methods should be selected, false otherwise.
      */
     public boolean isObjectFactoryRequired() {
-        return objectFactoryRequired;
+        return type == Type.OBJECT_FACTORY;
     }
 
     /**
      * @return true if lifecycle callback methods should be selected, false otherwise.
      */
     public boolean isLifecycleCallbackRequired() {
-        return lifecycleCallbackRequired;
+        return type == Type.LIFECYCLE_CALLBACK;
+    }
+
+    /**
+     * @return {@code true} if presence check methods should be selected, {@code false} otherwise
+     */
+    public boolean isPresenceCheckRequired() {
+        return type == Type.PRESENCE_CHECK;
     }
 
     public List<TypeMirror> getQualifiers() {
@@ -96,7 +104,7 @@ public class SelectionCriteria {
     }
 
     public boolean isPreferUpdateMapping() {
-        return preferUpdateMapping;
+        return type == Type.PREFER_UPDATE_MAPPING;
     }
 
     public SourceRHS getSourceRHS() {
@@ -104,7 +112,7 @@ public class SelectionCriteria {
     }
 
     public void setPreferUpdateMapping(boolean preferUpdateMapping) {
-        this.preferUpdateMapping = preferUpdateMapping;
+        this.type = preferUpdateMapping ? Type.PREFER_UPDATE_MAPPING : null;
     }
 
     public boolean hasQualfiers() {
@@ -135,17 +143,26 @@ public class SelectionCriteria {
             selectionParameters,
             mappingControl,
             targetPropertyName,
-            preferUpdateMapping,
-            false,
-            false
+            preferUpdateMapping ? Type.PREFER_UPDATE_MAPPING : null
         );
     }
 
     public static SelectionCriteria forFactoryMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, null, false, true, false );
+        return new SelectionCriteria( selectionParameters, null, null, Type.OBJECT_FACTORY );
     }
 
     public static SelectionCriteria forLifecycleMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, null, false, false, true );
+        return new SelectionCriteria( selectionParameters, null, null, Type.LIFECYCLE_CALLBACK );
+    }
+
+    public static SelectionCriteria forPresenceCheckMethods(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, null, Type.PRESENCE_CHECK );
+    }
+
+    public enum Type {
+        PREFER_UPDATE_MAPPING,
+        OBJECT_FACTORY,
+        LIFECYCLE_CALLBACK,
+        PRESENCE_CHECK,
     }
 }
