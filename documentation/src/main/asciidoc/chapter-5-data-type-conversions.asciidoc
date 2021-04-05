@@ -117,6 +117,8 @@ public interface CarMapper {
 * Between `java.util.Currency` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/ISO_4217[ISO-4217] alphabetic code otherwise an `IllegalArgumentException` is thrown
 
+* Between `String` and `StringBuilder`
+
 [[mapping-object-references]]
 === Mapping object references
 
