@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -90,13 +89,14 @@ public class Mapper extends GeneratedType {
             if ( !fragments.isEmpty() ) {
                 constructor = new NoArgumentConstructor( implementationName, fragments );
             }
+
+            Type definitionType = typeFactory.getType( element );
+
             return new Mapper(
                 typeFactory,
                 packageName,
                 implementationName,
-                element.getKind() != ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
-                elementPackage,
-                element.getKind() == ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
+                definitionType,
                 customPackage,
                 customName,
                 methods,
@@ -117,8 +117,9 @@ public class Mapper extends GeneratedType {
     private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
-    private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfacePackage, String interfaceName, boolean customPackage, boolean customImplName,
+    private Mapper(TypeFactory typeFactory, String packageName, String name,
+                   Type mapperDefinitionType,
+                   boolean customPackage, boolean customImplName,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
                    Accessibility accessibility, List<Field> fields, Constructor constructor,
                    Decorator decorator, SortedSet<Type> extraImportedTypes ) {
@@ -127,9 +128,7 @@ public class Mapper extends GeneratedType {
             typeFactory,
             packageName,
             name,
-            superClassName,
-            interfacePackage,
-            interfaceName,
+            mapperDefinitionType,
             methods,
             fields,
             options,
