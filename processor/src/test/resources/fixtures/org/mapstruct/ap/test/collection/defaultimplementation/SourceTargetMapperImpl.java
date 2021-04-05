@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.collection.defaultimplementation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -82,7 +82,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        Set<TargetFoo> set = new HashSet<TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        Set<TargetFoo> set = new LinkedHashSet<TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
         for ( SourceFoo sourceFoo : foos ) {
             set.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -178,7 +178,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        Map<String, TargetFoo> map = new HashMap<String, TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        Map<String, TargetFoo> map = new LinkedHashMap<String, TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );

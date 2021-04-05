@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.bugs._913;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Generated;
@@ -30,12 +30,12 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
 
         if ( source.hasStrings() ) {
             List<String> list = source.getStrings();
-            domain.setStrings( new HashSet<String>( list ) );
+            domain.setStrings( new LinkedHashSet<String>( list ) );
         }
         domain.setLongs( stringListToLongSet( source.getStrings() ) );
         if ( source.hasStringsInitialized() ) {
             List<String> list1 = source.getStringsInitialized();
-            domain.setStringsInitialized( new HashSet<String>( list1 ) );
+            domain.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
         }
         domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
         if ( source.hasStringsWithDefault() ) {
@@ -64,7 +64,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStrings() ) {
                 List<String> list = source.getStrings();
-                target.setStrings( new HashSet<String>( list ) );
+                target.setStrings( new LinkedHashSet<String>( list ) );
             }
         }
         if ( target.getLongs() != null ) {
@@ -87,7 +87,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsInitialized() ) {
                 List<String> list1 = source.getStringsInitialized();
-                target.setStringsInitialized( new HashSet<String>( list1 ) );
+                target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
             }
         }
         if ( target.getLongsInitialized() != null ) {
@@ -136,7 +136,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStrings() ) {
                 List<String> list = source.getStrings();
-                target.setStrings( new HashSet<String>( list ) );
+                target.setStrings( new LinkedHashSet<String>( list ) );
             }
         }
         if ( target.getLongs() != null ) {
@@ -159,7 +159,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsInitialized() ) {
                 List<String> list1 = source.getStringsInitialized();
-                target.setStringsInitialized( new HashSet<String>( list1 ) );
+                target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
             }
         }
         if ( target.getLongsInitialized() != null ) {
@@ -200,7 +200,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
             return null;
         }
 
-        Set<Long> set = new HashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
+        Set<Long> set = new LinkedHashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
             set.add( Long.parseLong( string ) );
         }

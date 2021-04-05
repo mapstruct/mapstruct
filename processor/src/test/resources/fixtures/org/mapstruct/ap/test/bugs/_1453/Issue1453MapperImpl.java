@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.bugs._1453;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
@@ -68,7 +68,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<AuctionDto, AuctionDto> map = new HashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
+        Map<AuctionDto, AuctionDto> map = new LinkedHashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<? extends Auction, ? extends Auction> entry : auctions.entrySet() ) {
             AuctionDto key = map( entry.getKey() );
@@ -85,7 +85,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<? super AuctionDto, ? super AuctionDto> map = new HashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
+        Map<? super AuctionDto, ? super AuctionDto> map = new LinkedHashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Auction, Auction> entry : auctions.entrySet() ) {
             AuctionDto key = map( entry.getKey() );
@@ -126,7 +126,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<PaymentDto, PaymentDto> map1 = new HashMap<PaymentDto, PaymentDto>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
+        Map<PaymentDto, PaymentDto> map1 = new LinkedHashMap<PaymentDto, PaymentDto>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Payment, Payment> entry : map.entrySet() ) {
             PaymentDto key = paymentToPaymentDto( entry.getKey() );

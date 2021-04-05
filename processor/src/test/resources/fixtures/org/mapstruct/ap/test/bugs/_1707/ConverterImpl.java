@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._1707;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,10 +24,10 @@ public class ConverterImpl extends Converter {
             return null;
         }
 
-        Set<Target> set = new HashSet<Target>();
+        Set<Target> set = new LinkedHashSet<Target>();
 
         set.addAll( source.map( source1 -> convert( source1 ) )
-            .collect( Collectors.toCollection( HashSet<Target>::new ) )
+            .collect( Collectors.toCollection( LinkedHashSet<Target>::new ) )
         );
 
         addCustomValue( set );

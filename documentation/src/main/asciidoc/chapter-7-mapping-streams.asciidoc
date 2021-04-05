@@ -42,7 +42,7 @@ public Set<String> integerStreamToStringSet(Stream<Integer> integers) {
     }
 
     return integers.map( integer -> String.valueOf( integer ) )
-        .collect( Collectors.toCollection( HashSet<String>::new ) );
+        .collect( Collectors.toCollection( LinkedHashSet<String>::new ) );
 }
 
 @Override

@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Generated;
 
@@ -83,7 +83,7 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
             return null;
         }
 
-        Map<SecretaryEntity, EmployeeEntity> map1 = new HashMap<SecretaryEntity, EmployeeEntity>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
+        Map<SecretaryEntity, EmployeeEntity> map1 = new LinkedHashMap<SecretaryEntity, EmployeeEntity>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<SecretaryDto, EmployeeDto> entry : map.entrySet() ) {
             SecretaryEntity key = secretaryDtoToSecretaryEntity( entry.getKey() );

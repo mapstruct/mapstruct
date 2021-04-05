@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.updatemethods.selection;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
@@ -42,7 +42,7 @@ public class DepartmentMapperImpl implements DepartmentMapper {
         }
         if ( dto.getSecretaryToEmployee() != null ) {
             if ( entity.getSecretaryToEmployee() == null ) {
-                entity.setSecretaryToEmployee( new HashMap<SecretaryEntity, EmployeeEntity>() );
+                entity.setSecretaryToEmployee( new LinkedHashMap<SecretaryEntity, EmployeeEntity>() );
             }
             externalHandWrittenMapper.toSecretaryEmployeeEntityMap( dto.getSecretaryToEmployee(), entity.getSecretaryToEmployee() );
         }
