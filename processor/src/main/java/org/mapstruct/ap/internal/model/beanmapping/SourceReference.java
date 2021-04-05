@@ -421,8 +421,13 @@ public class SourceReference extends AbstractReference {
         if ( deepestProperty != null ) {
             Type type = deepestProperty.getType();
             Map<String, Accessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
+            String parameterName = getParameter().getName();
+            String deepestPropertyFullName = deepestProperty.getFullName();
             for ( Map.Entry<String, Accessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
-                String newFullName = deepestProperty.getFullName() + "." + newDeepestReadAccessorEntry.getKey();
+                // Always include the parameter name in the new full name.
+                // Otherwise multi source parameters might be reported incorrectly
+                String newFullName =
+                    parameterName + "." + deepestPropertyFullName + "." + newDeepestReadAccessorEntry.getKey();
                 SourceReference sourceReference = new BuilderFromMapping()
                     .sourceName( newFullName )
                     .method( method )
