@@ -36,7 +36,7 @@ public Set<String> integerSetToStringSet(Set<Integer> integers) {
         return null;
     }
 
-    Set<String> set = new HashSet<String>();
+    Set<String> set = new LinkedHashSet<String>();
 
     for ( Integer integer : integers ) {
         set.add( String.valueOf( integer ) );
@@ -125,7 +125,7 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
         return null;
     }
 
-    Map<Long, Date> map = new HashMap<Long, Date>();
+    Map<Long, Date> map = new LinkedHashMap<Long, Date>();
 
     for ( Map.Entry<String, String> entry : source.entrySet() ) {
 
@@ -210,13 +210,13 @@ When an iterable or map mapping method declares an interface type as return type
 
 |`List`|`ArrayList`
 
-|`Set`|`HashSet`
+|`Set`|`LinkedHashSet`
 
 |`SortedSet`|`TreeSet`
 
 |`NavigableSet`|`TreeSet`
 
-|`Map`|`HashMap`
+|`Map`|`LinkedHashMap`
 
 |`SortedMap`|`TreeMap`
 

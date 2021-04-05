@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.bugs._913;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Generated;
@@ -28,12 +28,12 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
         if ( source != null ) {
             List<String> list = source.getStrings();
             if ( list != null ) {
-                domain.setStrings( new HashSet<String>( list ) );
+                domain.setStrings( new LinkedHashSet<String>( list ) );
             }
             domain.setLongs( stringListToLongSet( source.getStrings() ) );
             List<String> list1 = source.getStringsInitialized();
             if ( list1 != null ) {
-                domain.setStringsInitialized( new HashSet<String>( list1 ) );
+                domain.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
             }
             domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
             List<String> list2 = source.getStringsWithDefault();
@@ -59,13 +59,13 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStrings().addAll( list );
                 }
                 else {
-                    target.setStrings( new HashSet<String>() );
+                    target.setStrings( new LinkedHashSet<String>() );
                 }
             }
             else {
                 List<String> list = source.getStrings();
                 if ( list != null ) {
-                    target.setStrings( new HashSet<String>( list ) );
+                    target.setStrings( new LinkedHashSet<String>( list ) );
                 }
             }
             if ( target.getLongs() != null ) {
@@ -75,7 +75,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongs().addAll( set );
                 }
                 else {
-                    target.setLongs( new HashSet<Long>() );
+                    target.setLongs( new LinkedHashSet<Long>() );
                 }
             }
             else {
@@ -91,13 +91,13 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStringsInitialized().addAll( list1 );
                 }
                 else {
-                    target.setStringsInitialized( new HashSet<String>() );
+                    target.setStringsInitialized( new LinkedHashSet<String>() );
                 }
             }
             else {
                 List<String> list1 = source.getStringsInitialized();
                 if ( list1 != null ) {
-                    target.setStringsInitialized( new HashSet<String>( list1 ) );
+                    target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
                 }
             }
             if ( target.getLongsInitialized() != null ) {
@@ -107,7 +107,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {
-                    target.setLongsInitialized( new HashSet<Long>() );
+                    target.setLongsInitialized( new LinkedHashSet<Long>() );
                 }
             }
             else {
@@ -149,13 +149,13 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStrings().addAll( list );
                 }
                 else {
-                    target.setStrings( new HashSet<String>() );
+                    target.setStrings( new LinkedHashSet<String>() );
                 }
             }
             else {
                 List<String> list = source.getStrings();
                 if ( list != null ) {
-                    target.setStrings( new HashSet<String>( list ) );
+                    target.setStrings( new LinkedHashSet<String>( list ) );
                 }
             }
             if ( target.getLongs() != null ) {
@@ -165,7 +165,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongs().addAll( set );
                 }
                 else {
-                    target.setLongs( new HashSet<Long>() );
+                    target.setLongs( new LinkedHashSet<Long>() );
                 }
             }
             else {
@@ -181,13 +181,13 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStringsInitialized().addAll( list1 );
                 }
                 else {
-                    target.setStringsInitialized( new HashSet<String>() );
+                    target.setStringsInitialized( new LinkedHashSet<String>() );
                 }
             }
             else {
                 List<String> list1 = source.getStringsInitialized();
                 if ( list1 != null ) {
-                    target.setStringsInitialized( new HashSet<String>( list1 ) );
+                    target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
                 }
             }
             if ( target.getLongsInitialized() != null ) {
@@ -197,7 +197,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {
-                    target.setLongsInitialized( new HashSet<Long>() );
+                    target.setLongsInitialized( new LinkedHashSet<Long>() );
                 }
             }
             else {
@@ -232,10 +232,10 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
 
     protected Set<Long> stringListToLongSet(List<String> list) {
         if ( list == null ) {
-            return new HashSet<Long>();
+            return new LinkedHashSet<Long>();
         }
 
-        Set<Long> set = new HashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
+        Set<Long> set = new LinkedHashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
             set.add( Long.parseLong( string ) );
         }

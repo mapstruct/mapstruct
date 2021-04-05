@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -116,11 +118,11 @@ public class TypeFactory {
         implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
         implementationTypes.put( List.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
 
-        implementationTypes.put( Set.class.getName(), withLoadFactorAdjustment( getType( HashSet.class ) ) );
+        implementationTypes.put( Set.class.getName(), withLoadFactorAdjustment( getType( LinkedHashSet.class ) ) );
         implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
         implementationTypes.put( NavigableSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
 
-        implementationTypes.put( Map.class.getName(), withLoadFactorAdjustment( getType( HashMap.class ) ) );
+        implementationTypes.put( Map.class.getName(), withLoadFactorAdjustment( getType( LinkedHashMap.class ) ) );
         implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put( NavigableMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put(

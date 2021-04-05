@@ -180,7 +180,7 @@ By default the target property will be set to null.
 However:
 
 1. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result can be altered to return *default* values.
-For `List` MapStruct generates an `ArrayList`, for `Map` a `HashMap`, for arrays an empty array, for `String` `""` and for primitive / boxed types a representation of `false` or `0`.
+For `List` MapStruct generates an `ArrayList`, for `Map` a `LinkedHashMap`, for arrays an empty array, for `String` `""` and for primitive / boxed types a representation of `false` or `0`.
 For all other objects an new instance is created. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`.
 
 2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
