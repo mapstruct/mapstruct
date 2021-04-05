@@ -12,9 +12,11 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
+import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.ServicesEntry;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MapperOptions;
 import org.mapstruct.ap.internal.writer.ModelWriter;
 
@@ -55,15 +57,28 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
 
     private void writeToSourceFile(Filer filer, Mapper model) {
         ModelWriter modelWriter = new ModelWriter();
-        ServicesEntry servicesEntry = getServicesEntry( model.getDecorator() == null ? model : model.getDecorator() );
+        ServicesEntry servicesEntry = getServicesEntry( model );
 
         createSourceFile( servicesEntry, modelWriter, filer );
     }
 
-    private ServicesEntry getServicesEntry(GeneratedType model) {
-        String mapperName = model.getInterfaceName() != null ? model.getInterfaceName() : model.getSuperClassName();
+    private ServicesEntry getServicesEntry(Mapper mapper) {
+        if ( mapper.getDecorator() != null ) {
+            return getServicesEntry( mapper.getDecorator() );
+        }
 
-        return new ServicesEntry(model.getInterfacePackage(), mapperName,
+        return getServicesEntry( mapper.getMapperDefinitionType(), mapper );
+    }
+
+    private ServicesEntry getServicesEntry(Decorator decorator) {
+        return getServicesEntry( decorator.getMapperType(), decorator );
+    }
+
+    private ServicesEntry getServicesEntry(Type mapperType, GeneratedType model) {
+        String mapperName = mapperType.getName();
+        String mapperPackageName = mapperType.getPackageName();
+
+        return new ServicesEntry(mapperPackageName, mapperName,
                                  model.getPackageName(), model.getName());
     }
 

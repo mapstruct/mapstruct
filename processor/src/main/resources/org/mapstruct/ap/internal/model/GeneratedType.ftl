@@ -24,7 +24,7 @@ import ${importedType};
 <#list annotations as annotation>
 <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} class ${name}<#if superClassName??> extends ${superClassName}</#if><#if interfaceName??> implements ${interfaceName}</#if> {
+<#lt>${accessibility.keyword} class ${name} <#if mapperDefinitionType.interface>implements<#else>extends</#if> <@includeModel object=mapperDefinitionType/> {
 
 <#list fields as field><#if field.used><#nt>    <@includeModel object=field/>
 </#if></#list>

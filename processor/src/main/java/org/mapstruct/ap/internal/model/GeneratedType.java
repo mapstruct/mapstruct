@@ -80,9 +80,7 @@ public abstract class GeneratedType extends ModelElement {
 
     private final String packageName;
     private final String name;
-    private final String superClassName;
-    private final String interfacePackage;
-    private final String interfaceName;
+    private final Type mapperDefinitionType;
 
     private final List<Annotation> annotations;
     private final List<MappingMethod> methods;
@@ -102,15 +100,13 @@ public abstract class GeneratedType extends ModelElement {
     private final boolean generatedTypeAvailable;
 
     // CHECKSTYLE:OFF
-    protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                            String interfacePackage, String interfaceName, List<MappingMethod> methods,
+    protected GeneratedType(TypeFactory typeFactory, String packageName, String name,
+                            Type mapperDefinitionType, List<MappingMethod> methods,
                             List<Field> fields, Options options, VersionInformation versionInformation,
                             Accessibility accessibility, SortedSet<Type> extraImportedTypes, Constructor constructor) {
         this.packageName = packageName;
         this.name = name;
-        this.superClassName = superClassName;
-        this.interfacePackage = interfacePackage;
-        this.interfaceName = interfaceName;
+        this.mapperDefinitionType = mapperDefinitionType;
         this.extraImportedTypes = extraImportedTypes;
 
         this.annotations = new ArrayList<>();
@@ -153,16 +149,8 @@ public abstract class GeneratedType extends ModelElement {
         return name;
     }
 
-    public String getSuperClassName() {
-        return superClassName;
-    }
-
-    public String getInterfacePackage() {
-        return interfacePackage;
-    }
-
-    public String getInterfaceName() {
-        return interfaceName;
+    public Type getMapperDefinitionType() {
+        return mapperDefinitionType;
     }
 
     public List<Annotation> getAnnotations() {
@@ -213,6 +201,8 @@ public abstract class GeneratedType extends ModelElement {
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<>();
         addIfImportRequired( importedTypes, generatedType );
+
+        addIfImportRequired( importedTypes, mapperDefinitionType );
 
         for ( MappingMethod mappingMethod : methods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {

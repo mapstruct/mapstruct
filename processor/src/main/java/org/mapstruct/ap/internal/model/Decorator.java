@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -74,7 +73,8 @@ public class Decorator extends GeneratedType {
                 hasDelegateConstructor );
 
 
-            String elementPackage = elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString();
+            Type mapperType = typeFactory.getType( mapperElement );
+            String elementPackage = mapperType.getPackageName();
             String packageName = implPackage.replace( Mapper.PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
             return new Decorator(
@@ -82,10 +82,8 @@ public class Decorator extends GeneratedType {
                 packageName,
                 implementationName,
                 decoratorType,
-                elementPackage,
-                mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
+                mapperType,
                 methods,
-                Arrays.asList( new Field( typeFactory.getType( mapperElement ), "delegate", true ) ),
                 options,
                 versionInformation,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),
@@ -96,22 +94,22 @@ public class Decorator extends GeneratedType {
     }
 
     private final Type decoratorType;
+    private final Type mapperType;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Decorator(TypeFactory typeFactory, String packageName, String name, Type decoratorType,
-                      String interfacePackage, String interfaceName, List<MappingMethod> methods,
-                      List<Field> fields, Options options, VersionInformation versionInformation,
+                      Type mapperType,
+                      List<MappingMethod> methods,
+                      Options options, VersionInformation versionInformation,
                       Accessibility accessibility, SortedSet<Type> extraImports,
                       DecoratorConstructor decoratorConstructor) {
         super(
             typeFactory,
             packageName,
             name,
-            decoratorType.getName(),
-            interfacePackage,
-            interfaceName,
+            decoratorType,
             methods,
-            fields,
+            Arrays.asList( new Field( mapperType, "delegate", true ) ),
             options,
             versionInformation,
             accessibility,
@@ -120,6 +118,7 @@ public class Decorator extends GeneratedType {
         );
 
         this.decoratorType = decoratorType;
+        this.mapperType = mapperType;
     }
 
     @Override
@@ -147,5 +146,9 @@ public class Decorator extends GeneratedType {
     @Override
     protected String getTemplateName() {
         return getTemplateNameForClass( GeneratedType.class );
+    }
+
+    public Type getMapperType() {
+        return mapperType;
     }
 }
