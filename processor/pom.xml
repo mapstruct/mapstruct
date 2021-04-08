@@ -79,6 +79,26 @@
             <artifactId>javax.inject</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- osgi test start -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- osgi test end -->
+
         <!-- plexus-container-default is a runtime-dependency of the tycho-compiler -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>

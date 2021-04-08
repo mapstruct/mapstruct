@@ -131,6 +131,8 @@ abstract class CompilingStatement extends Statement {
                 "javax.inject",
                 "spring-beans",
                 "spring-context",
+                "org.osgi.service.component.annotations",
+                "slf4j-api",
                 "jaxb-api",
                 "joda-time" };
 
@@ -144,6 +146,8 @@ abstract class CompilingStatement extends Statement {
                 "freemarker",
                 "javax.inject",
                 "spring-context",
+                "org.osgi.service.component.annotations",
+                "slf4j-api",
                 "gem-api",
                 "joda-time" };
 
