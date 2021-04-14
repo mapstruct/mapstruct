@@ -1390,6 +1390,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
+            if ( method.getOptions().getBeanMapping() != null ) {
+                return method.getOptions().getBeanMapping().unmappedTargetPolicy();
+            }
             return method.getOptions().getMapper().unmappedTargetPolicy();
         }
 

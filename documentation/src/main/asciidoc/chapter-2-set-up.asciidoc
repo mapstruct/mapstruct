@@ -245,6 +245,7 @@ Supported values are:
 * `IGNORE`: unmapped target properties are ignored
 
 If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`, the value from the annotation takes precedence.
+If a policy is given for a specific bean mapping via `@BeanMapping#unmappedTargetPolicy()`, it takes precedence over both `@Mapper#unmappedTargetPolicy()` and the option.
 |`WARN`
 |===
 

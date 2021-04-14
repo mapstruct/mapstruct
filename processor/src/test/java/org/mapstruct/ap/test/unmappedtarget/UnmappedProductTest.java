@@ -87,4 +87,38 @@ public class UnmappedProductTest {
     )
     public void shouldRaiseErrorDueToUnsetTargetPropertyWithPolicySetViaProcessorOption() {
     }
+
+    @ProcessorTest
+    @IssueKey("2132")
+    @WithClasses({ Source.class, Target.class, ErroneousBeanMappingStrictSourceTargetMapper.class })
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(type = ErroneousBeanMappingStrictSourceTargetMapper.class,
+                            kind = Kind.ERROR,
+                            line = 20,
+                            message = "Unmapped target property: \"bar\"."),
+                    @Diagnostic(type = ErroneousBeanMappingStrictSourceTargetMapper.class,
+                            kind = Kind.WARNING,
+                            line = 22,
+                            message = "Unmapped target property: \"qux\".")
+            }
+    )
+    public void shouldRaiseErrorDueToUnsetTargetPropertyWithPolicySetViaBeanMapping() {
+    }
+
+    @ProcessorTest
+    @IssueKey("2132")
+    @WithClasses({ Source.class, Target.class, BeanMappingSourceTargetMapper.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = BeanMappingSourceTargetMapper.class,
+                kind = Kind.WARNING,
+                line = 19,
+                message = "Unmapped target property: \"bar\".")
+        }
+    )
+    public void shouldLeaveUnmappedTargetPropertyUnsetWithWarnPolicySetViaBeanMapping() {
+    }
 }
