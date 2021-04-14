@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
@@ -88,6 +90,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValueCheckStrategy().hasValue()
             && !gem.nullValuePropertyMappingStrategy().hasValue()
             && !gem.nullValueMappingStrategy().hasValue()
+            && !gem.unmappedTargetPolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
             && !gem.builder().hasValue() ) {
 
@@ -132,6 +135,15 @@ public class BeanMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
             .orElse( next().getNullValueMappingStrategy() );
+    }
+
+    @Override
+    public ReportingPolicyGem unmappedTargetPolicy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::unmappedTargetPolicy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( ReportingPolicyGem::valueOf )
+                .orElse( next().unmappedTargetPolicy() );
     }
 
     @Override
