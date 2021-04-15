@@ -32,8 +32,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
@@ -49,6 +47,7 @@ import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -60,11 +59,13 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -97,6 +98,11 @@ public class MappingResolverImpl implements MappingResolver {
      * types.
      */
     private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
+
+    /**
+     * Private fields which are added to map certain property types.
+     */
+    private final Set<Field> usedSupportedFields = new HashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -142,6 +148,11 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Set<SupportingMappingMethod> getUsedSupportedMappings() {
         return usedSupportedMappings;
+    }
+
+    @Override
+    public Set<Field> getUsedSupportedFields() {
+        return usedSupportedFields;
     }
 
     private MapperReference findMapperReference(Method method) {
@@ -424,8 +435,20 @@ public class MappingResolverImpl implements MappingResolver {
             );
 
             // add helper methods required in conversion
+            Set<Field> allUsedFields = new HashSet<>( mapperReferences );
+            SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+
+            for ( FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx )) {
+                Field field = SupportingField.getSafeField( null, helperField, allUsedFields );
+                allUsedFields.add( field );
+                usedSupportedFields.add( field );
+            }
+
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
-                usedSupportedMappings.add( new SupportingMappingMethod( helperMethod ) );
+                SupportingMappingMethod supportingMappingMethod =
+                    new SupportingMappingMethod( helperMethod );
+                SupportingField.addAllFieldsIn( Collections.asSet( supportingMappingMethod ), allUsedFields );
+                usedSupportedMappings.add( supportingMappingMethod );
             }
 
             Assignment conversion = conversionProvider.to( ctx );

@@ -22,9 +22,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.DecoratedWithGem;
+import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
+import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
+import org.mapstruct.ap.internal.gem.MapperGem;
+import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -50,18 +55,13 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.gem.BuilderGem;
-import org.mapstruct.ap.internal.gem.DecoratedWithGem;
-import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
-import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
-import org.mapstruct.ap.internal.gem.MapperGem;
-import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static javax.lang.model.element.Modifier.FINAL;
@@ -182,7 +182,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // handle fields
         List<Field> fields = new ArrayList<>( mappingContext.getMapperReferences() );
-        Set<Field> supportingFieldSet = new LinkedHashSet<>();
+        Set<Field> supportingFieldSet = new LinkedHashSet<>(mappingContext.getUsedSupportedFields());
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 

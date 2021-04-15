@@ -5,16 +5,20 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Set;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
+import org.mapstruct.ap.internal.model.common.FieldReference;
+import org.mapstruct.ap.internal.model.common.FinalField;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen
@@ -46,12 +50,12 @@ public abstract class AbstractToXmlGregorianCalendar extends BuiltInMethod {
     }
 
     @Override
-    public BuiltInFieldReference getFieldReference() {
+    public FieldReference getFieldReference() {
         return new FinalField( dataTypeFactoryType, Strings.decapitalize( DatatypeFactory.class.getSimpleName() ) );
     }
 
     @Override
-    public BuiltInConstructorFragment getConstructorFragment() {
+    public ConstructorFragment getConstructorFragment() {
         return new NewDatatypeFactoryConstructorFragment( );
     }
 }

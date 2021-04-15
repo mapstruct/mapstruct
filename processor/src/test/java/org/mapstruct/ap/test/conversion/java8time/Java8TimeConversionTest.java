@@ -19,9 +19,11 @@ import java.util.TimeZone;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("121")
 public class Java8TimeConversionTest {
+
+    @RegisterExtension
+    GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( SourceTargetMapper.class );
 
     private TimeZone originalTimeZone;
 

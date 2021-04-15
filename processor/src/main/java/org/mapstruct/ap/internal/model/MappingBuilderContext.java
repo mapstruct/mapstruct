@@ -15,8 +15,6 @@ import java.util.function.Supplier;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -28,8 +26,10 @@ import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
@@ -101,6 +101,8 @@ public class MappingBuilderContext {
                                        Supplier<Assignment> forger);
 
         Set<SupportingMappingMethod> getUsedSupportedMappings();
+
+        Set<Field> getUsedSupportedFields();
     }
 
     private final TypeFactory typeFactory;
@@ -239,6 +241,10 @@ public class MappingBuilderContext {
 
     public Set<SupportingMappingMethod> getUsedSupportedMappings() {
         return mappingResolver.getUsedSupportedMappings();
+    }
+
+    public Set<Field> getUsedSupportedFields() {
+        return mappingResolver.getUsedSupportedFields();
     }
 
     /**
