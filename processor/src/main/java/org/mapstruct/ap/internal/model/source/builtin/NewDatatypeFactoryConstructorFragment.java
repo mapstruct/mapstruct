@@ -5,7 +5,9 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-public class NewDatatypeFactoryConstructorFragment implements BuiltInConstructorFragment {
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
+
+public class NewDatatypeFactoryConstructorFragment implements ConstructorFragment {
 
     public NewDatatypeFactoryConstructorFragment() {
     }
