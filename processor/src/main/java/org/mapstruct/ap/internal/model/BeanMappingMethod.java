@@ -262,10 +262,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            if ( !mappingReferences.isRestrictToDefinedMappings() ) {
+            // apply name based mapping from a source reference
+            applyTargetThisMapping();
 
-                // apply name based mapping from a source reference
-                applyTargetThisMapping();
+            if ( !mappingReferences.isRestrictToDefinedMappings() ) {
 
                 // map properties without a mapping
                 applyPropertyNameBasedMapping();
