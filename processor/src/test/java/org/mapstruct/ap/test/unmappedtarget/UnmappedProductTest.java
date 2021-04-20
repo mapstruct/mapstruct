@@ -118,7 +118,7 @@ public class UnmappedProductTest {
         diagnostics = {
             @Diagnostic(type = BeanMappingSourceTargetMapper.class,
                 kind = Kind.WARNING,
-                line = 14,
+                line = 19,
                 message = "Unmapped target property: \"bar\".")
         }
     )
