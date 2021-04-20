@@ -109,4 +109,19 @@ public class UnmappedProductTest {
     )
     public void shouldRaiseErrorDueToUnsetTargetPropertyWithPolicySetViaBeanMapping() {
     }
+
+    @Test
+    @IssueKey("2132")
+    @WithClasses({ Source.class, Target.class, BeanMappingSourceTargetMapper.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = BeanMappingSourceTargetMapper.class,
+                kind = Kind.WARNING,
+                line = 14,
+                message = "Unmapped target property: \"bar\".")
+        }
+    )
+    public void shouldLeaveUnmappedTargetPropertyUnsetWithWarnPolicySetViaBeanMapping() {
+    }
 }
