@@ -140,7 +140,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
 
-        List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
+        List<Annotation> mapperReferenceAnnotations = getConstructorMapperReferenceAnnotations();
 
         removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
 
@@ -163,7 +163,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
 
-        List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
+        List<Annotation> mapperReferenceAnnotations = getConstructorMapperReferenceAnnotations();
 
         removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
 
@@ -260,6 +260,13 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @return the annotation of the field for the mapper reference
      */
     protected abstract List<Annotation> getMapperReferenceAnnotations();
+
+    /**
+     * @return the annotation of the constructor of the mapper reference, used when annotated constructor is generated
+     */
+    protected List<Annotation> getConstructorMapperReferenceAnnotations() {
+        return getMapperReferenceAnnotations();
+    }
 
     /**
      * @return if a decorator (sub-)class needs to be generated or not

@@ -37,6 +37,8 @@ public class ConstantTest {
         assertThat( MappingConstants.ComponentModel.DEFAULT )
             .isEqualTo( MappingConstantsGem.ComponentModelGem.DEFAULT );
         assertThat( MappingConstants.ComponentModel.CDI ).isEqualTo( MappingConstantsGem.ComponentModelGem.CDI );
+        assertThat( MappingConstants.ComponentModel.OSGI_DS )
+                .isEqualTo( MappingConstantsGem.ComponentModelGem.OSGI_DS );
         assertThat( MappingConstants.ComponentModel.SPRING ).isEqualTo( MappingConstantsGem.ComponentModelGem.SPRING );
         assertThat( MappingConstants.ComponentModel.JSR330 ).isEqualTo( MappingConstantsGem.ComponentModelGem.JSR330 );
     }

@@ -117,6 +117,13 @@ public final class MappingConstants {
          */
         public static final String JSR330 = "jsr330";
 
+        /**
+         * The generated mapper is annotated with @org.osgi.service.component.annotations.Component,
+         * and can be retrieved via @org.osgi.service.component.annotations.Reference
+         *
+         */
+        public static final String OSGI_DS = "osgi-ds";
+
     }
 
 }

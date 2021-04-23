@@ -47,6 +47,8 @@ public final class MappingConstantsGem {
         public static final String SPRING = "spring";
 
         public static final String JSR330 = "jsr330";
+
+        public static final String OSGI_DS = "osgi-ds";
      }
 
 }
