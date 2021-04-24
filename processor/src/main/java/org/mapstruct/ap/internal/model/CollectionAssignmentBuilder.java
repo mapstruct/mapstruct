@@ -22,6 +22,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
@@ -168,8 +169,7 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
-                nvcs == NullValueCheckStrategyGem.ALWAYS ) {
+            else if ( setterWrapperNeedsSourceNullCheck( result ) ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -210,6 +210,30 @@ public class CollectionAssignmentBuilder {
         }
 
         return result;
+    }
+
+    /**
+     * Checks whether the setter wrapper should include a null / presence check or not
+     *
+     * @param rhs the source right hand side
+     * @return whether to include a null / presence check or not
+     */
+    private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs) {
+        if ( rhs.getSourcePresenceCheckerReference() != null ) {
+            // If there is a source presence check then we should do a null check
+            return true;
+        }
+
+        if ( nvcs == ALWAYS ) {
+            // NullValueCheckStrategy is ALWAYS -> do a null check
+            return true;
+        }
+
+        if ( rhs.getType().isDirect() ) {
+            return true;
+        }
+
+        return false;
     }
 
 }

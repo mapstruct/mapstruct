@@ -32,12 +32,16 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
             List<String> list = source.getStrings();
             domain.setStrings( new LinkedHashSet<String>( list ) );
         }
-        domain.setLongs( stringListToLongSet( source.getStrings() ) );
+        if ( source.hasStrings() ) {
+            domain.setLongs( stringListToLongSet( source.getStrings() ) );
+        }
         if ( source.hasStringsInitialized() ) {
             List<String> list1 = source.getStringsInitialized();
             domain.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
         }
-        domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+        if ( source.hasStringsInitialized() ) {
+            domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+        }
         if ( source.hasStringsWithDefault() ) {
             List<String> list2 = source.getStringsWithDefault();
             domain.setStringsWithDefault( new ArrayList<String>( list2 ) );

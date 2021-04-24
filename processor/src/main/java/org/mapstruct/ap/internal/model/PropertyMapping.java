@@ -454,6 +454,11 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
+            if ( rhs.getSourcePresenceCheckerReference() != null ) {
+                // There is an explicit source presence check method -> do a null / presence check
+                return true;
+            }
+
             if ( nvpms == SET_TO_DEFAULT || nvpms == IGNORE ) {
                 // NullValuePropertyMapping is SET_TO_DEFAULT or IGNORE -> do a null check
                 return true;
