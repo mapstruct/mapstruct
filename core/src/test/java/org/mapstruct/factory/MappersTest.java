@@ -7,7 +7,7 @@ package org.mapstruct.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.test.model.Foo;
 import org.mapstruct.test.model.SomeClass;
 
