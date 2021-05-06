@@ -6,12 +6,11 @@
 package org.mapstruct.ap.test.value.nametransformation;
 
 /**
- * @author Filip Hrisafov
+ * @author jpbassinello
  */
-public enum CheeseTypeSuffixed {
+public enum CheeseTypeCapital {
 
-    DEFAULT,
-    BRIE_CHEESE_TYPE,
-    ROQUEFORT_CHEESE_TYPE,
-    COLBY_JACK_CHEESE_TYPE
+    Brie,
+    Roquefort,
+    Colby_Jack
 }

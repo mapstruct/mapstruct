@@ -30,6 +30,7 @@ public class ConstantTest {
         assertThat( MappingConstants.PREFIX_TRANSFORMATION ).isEqualTo( MappingConstantsGem.PREFIX_TRANSFORMATION );
         assertThat( MappingConstants.STRIP_PREFIX_TRANSFORMATION )
             .isEqualTo( MappingConstantsGem.STRIP_PREFIX_TRANSFORMATION );
+        assertThat( MappingConstants.CASE_TRANSFORMATION ).isEqualTo( MappingConstantsGem.CASE_TRANSFORMATION );
     }
 
     @Test

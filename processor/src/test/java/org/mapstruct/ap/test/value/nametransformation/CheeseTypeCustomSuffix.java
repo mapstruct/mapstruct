@@ -12,4 +12,5 @@ public enum CheeseTypeCustomSuffix {
 
     brie_TYPE,
     roquefort_TYPE,
+    colby_jack_TYPE
 }

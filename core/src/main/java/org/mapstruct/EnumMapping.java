@@ -104,6 +104,18 @@ public @interface EnumMapping {
      *     prefix to the source enum</li>
      *     <li>{@link MappingConstants#STRIP_PREFIX_TRANSFORMATION} - strips the given {@link #configuration()} from
      *     the start of the source enum</li>
+     *     <li>
+     *         {@link MappingConstants#CASE_TRANSFORMATION} - applies the given {@link #configuration()} case
+     *         transformation to the source enum. Supported configurations are:
+     *         <ul>
+     *             <li><i>upper</i> - Performs upper case transformation to the source enum</li>
+     *             <li><i>lower</i> - Performs lower case transformation to the source enum</li>
+     *             <li>
+     *                 <i>capital</i> - Performs capitalisation of the first character of every word in the source enum
+     *                 and everything else to lower case. A word is split by "_".
+     *             </li>
+     *         </ul>
+     *     </li>
      * </ul>
      *
      * It is possible to use custom name transformation strategies by implementing the {@code

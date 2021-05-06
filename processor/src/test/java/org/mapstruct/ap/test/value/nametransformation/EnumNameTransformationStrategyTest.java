@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     CheeseTypeSuffixed.class,
     CheeseTypePrefixed.class,
     CheeseTypeCustomSuffix.class,
+    CheeseTypeLower.class,
+    CheeseTypeCapital.class
 })
 public class EnumNameTransformationStrategyTest {
 
@@ -92,7 +94,7 @@ public class EnumNameTransformationStrategyTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 20,
                 message = "There is no registered EnumTransformationStrategy for 'custom'. Registered strategies are:" +
-                    " prefix, stripPrefix, stripSuffix, suffix."
+                    " prefix, stripPrefix, stripSuffix, suffix, case."
             )
         }
     )
@@ -109,4 +111,72 @@ public class EnumNameTransformationStrategyTest {
             .isEqualTo( CheeseTypeCustomSuffix.brie_TYPE );
     }
 
+    @ProcessorTest
+    @WithClasses({
+        CheeseCaseMapper.class
+    })
+    public void shouldConvertCaseOnEnumToEnumMapping() {
+        CheeseCaseMapper mapper = CheeseCaseMapper.INSTANCE;
+
+        assertThat( mapper.mapToLower( CheeseType.BRIE ) )
+            .isEqualTo( CheeseTypeLower.brie );
+
+        assertThat( mapper.mapToLowerInverse( CheeseTypeLower.brie ) )
+            .isEqualTo( CheeseType.BRIE );
+
+        assertThat( mapper.mapToLower( CheeseTypeCapital.Colby_Jack ) )
+            .isEqualTo( CheeseTypeLower.colby_jack );
+
+        assertThat( mapper.mapToUpper( CheeseTypeLower.roquefort ) )
+            .isEqualTo( CheeseType.ROQUEFORT );
+
+        assertThat( mapper.mapToUpper( CheeseTypeCapital.Colby_Jack ) )
+            .isEqualTo( CheeseType.COLBY_JACK );
+
+        assertThat( mapper.mapToUpperInverse( CheeseType.COLBY_JACK ) )
+            .isEqualTo( CheeseTypeCapital.Colby_Jack );
+
+        assertThat( mapper.mapToCapital( CheeseTypeLower.brie ) )
+            .isEqualTo( CheeseTypeCapital.Brie );
+
+        assertThat( mapper.mapToCapital( CheeseType.ROQUEFORT ) )
+            .isEqualTo( CheeseTypeCapital.Roquefort );
+
+        assertThat( mapper.mapToCapital( CheeseType.COLBY_JACK ) )
+            .isEqualTo( CheeseTypeCapital.Colby_Jack );
+
+        assertThat( mapper.mapToCapitalInverse( CheeseTypeCapital.Roquefort ) )
+            .isEqualTo( CheeseType.ROQUEFORT );
+
+        assertThat( mapper.mapToCapitalInverse( CheeseTypeCapital.Colby_Jack ) )
+            .isEqualTo( CheeseType.COLBY_JACK );
+
+        assertThat( mapper.mapToCapital( CheeseTypeLower.colby_jack ) )
+            .isEqualTo( CheeseTypeCapital.Colby_Jack );
+
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        CheeseCaseMapper.class
+    })
+    public void shouldConvertCaseOnEnumToStringMapping() {
+        CheeseCaseMapper mapper = CheeseCaseMapper.INSTANCE;
+
+        assertThat( mapper.mapToLowerString( CheeseType.BRIE ) )
+            .isEqualTo( "brie" );
+        assertThat( mapper.mapToLowerString( CheeseType.COLBY_JACK ) )
+            .isEqualTo( "colby_jack" );
+
+        assertThat( mapper.mapToUpperString( CheeseType.ROQUEFORT ) )
+            .isEqualTo( "ROQUEFORT" );
+        assertThat( mapper.mapToUpperString( CheeseType.COLBY_JACK ) )
+            .isEqualTo( "COLBY_JACK" );
+
+        assertThat( mapper.mapToCapitalString( CheeseType.ROQUEFORT ) )
+            .isEqualTo( "Roquefort" );
+        assertThat( mapper.mapToCapitalString( CheeseType.COLBY_JACK ) )
+            .isEqualTo( "Colby_Jack" );
+
+    }
 }

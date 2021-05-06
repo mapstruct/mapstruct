@@ -259,6 +259,10 @@ MapStruct provides the following out of the box enum name transformation strateg
 * _stripSuffix_ - Strips a suffix from the source enum
 * _prefix_ - Applies a prefix on the source enum
 * _stripPrefix_ - Strips a prefix from the source enum
+* _case_ - Applies case transformation to the source enum. Supported _case_ transformations are:
+** _upper_ - Performs upper case transformation to the source enum
+** _lower_ - Performs lower case transformation to the source enum
+** _capital_ - Performs capitalisation of the first character of every word in the source enum and everything else to lowercase. A word is split by "_"
 
 It is also possible to register custom strategies.
 For more information on how to do that have a look at <<custom-enum-transformation-strategy>>

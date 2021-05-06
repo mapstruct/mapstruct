@@ -11,5 +11,6 @@ package org.mapstruct.ap.test.value.nametransformation;
 public enum CheeseType {
 
     BRIE,
-    ROQUEFORT
+    ROQUEFORT,
+    COLBY_JACK
 }
