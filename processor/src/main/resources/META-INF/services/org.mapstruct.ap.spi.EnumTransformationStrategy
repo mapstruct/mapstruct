@@ -6,3 +6,4 @@ org.mapstruct.ap.spi.PrefixEnumTransformationStrategy
 org.mapstruct.ap.spi.StripPrefixEnumTransformationStrategy
 org.mapstruct.ap.spi.StripSuffixEnumTransformationStrategy
 org.mapstruct.ap.spi.SuffixEnumTransformationStrategy
+org.mapstruct.ap.spi.CaseEnumTransformationStrategy

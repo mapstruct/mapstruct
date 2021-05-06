@@ -104,6 +104,8 @@ public @interface EnumMapping {
      *     prefix to the source enum</li>
      *     <li>{@link MappingConstants#STRIP_PREFIX_TRANSFORMATION} - strips the given {@link #configuration()} from
      *     the start of the source enum</li>
+     *     <li>{@link MappingConstants#CASE_TRANSFORMATION} - applies the given {@link #configuration()} case
+     *     transformation to the source enum</li>
      * </ul>
      *
      * It is possible to use custom name transformation strategies by implementing the {@code

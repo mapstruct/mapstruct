@@ -75,6 +75,13 @@ public final class MappingConstants {
     public static final String STRIP_PREFIX_TRANSFORMATION = "stripPrefix";
 
     /**
+     * In an {@link EnumMapping} this represent the enum transformation strategy that applies case transformation at the source
+     *
+     * @since 1.5
+     */
+    public static final String CASE_TRANSFORMATION = "case";
+
+    /**
     * Specifies the component model constants to which the generated mapper should adhere.
     * It can be used with the annotation {@link Mapper#componentModel()} or {@link MapperConfig#componentModel()}
     *

@@ -13,4 +13,5 @@ public enum CheeseTypePrefixed {
     DEFAULT,
     SWISS_BRIE,
     SWISS_ROQUEFORT,
+    SWISS_COLBY_JACK
 }

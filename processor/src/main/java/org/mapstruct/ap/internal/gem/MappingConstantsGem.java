@@ -31,6 +31,8 @@ public final class MappingConstantsGem {
 
     public static final String STRIP_PREFIX_TRANSFORMATION = "stripPrefix";
 
+    public static final String CASE_TRANSFORMATION = "case";
+
     /**
      * Gem for the class {@link org.mapstruct.MappingConstants.ComponentModel}
      *
