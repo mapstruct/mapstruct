@@ -141,9 +141,9 @@ public @interface BeanMapping {
     String[] ignoreUnmappedSourceProperties() default {};
 
     /**
-     * How unmapped properties of the target type of a mapping should be
-     * reported. The method overrides an unmappedTargetPolicy set by {@link Mapper#unmappedSourcePolicy()} or
-     * {@link MapperConfig#unmappedTargetPolicy() }
+     * How unmapped properties of the target type of a mapping should be reported.
+     * If no policy is configured, the policy given via {@link MapperConfig#unmappedTargetPolicy()} or
+     * {@link Mapper#unmappedTargetPolicy()} will be applied, using {@link ReportingPolicy#WARN} by default.
      *
      * @return The reporting policy for unmapped target properties.
      */
