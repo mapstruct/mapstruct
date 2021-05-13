@@ -75,7 +75,8 @@ public final class MappingConstants {
     public static final String STRIP_PREFIX_TRANSFORMATION = "stripPrefix";
 
     /**
-     * In an {@link EnumMapping} this represent the enum transformation strategy that applies case transformation at the source
+     * In an {@link EnumMapping} this represent the enum transformation strategy that applies case transformation
+     * at the source.
      *
      * @since 1.5
      */
