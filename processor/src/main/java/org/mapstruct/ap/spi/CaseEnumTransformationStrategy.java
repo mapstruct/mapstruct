@@ -1,6 +1,7 @@
 package org.mapstruct.ap.spi;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +26,13 @@ public class CaseEnumTransformationStrategy implements EnumTransformationStrateg
     public String transform(String value, String configuration) {
         switch (configuration.toLowerCase()) {
             case UPPER:
-                return value.toUpperCase();
+                return value.toUpperCase(Locale.ROOT);
             case LOWER:
-                return value.toLowerCase();
+                return value.toLowerCase(Locale.ROOT);
             case CAPITAL:
                 return capitalize(value);
             default:
-                return value;
+                throw new IllegalArgumentException( "Unexpected configuration for enum case transformation: " + configuration );
         }
     }
 
