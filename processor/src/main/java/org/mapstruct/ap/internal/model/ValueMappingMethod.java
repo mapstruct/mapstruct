@@ -56,6 +56,7 @@ public class ValueMappingMethod extends MappingMethod {
         private ValueMappings valueMappings;
         private EnumMappingOptions enumMapping;
         private EnumTransformationStrategyInvoker enumTransformationInvoker;
+        private boolean enumTransformationIllegalReported = false;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -144,6 +145,25 @@ public class ValueMappingMethod extends MappingMethod {
 
         }
 
+        private String transform(String source) {
+            try {
+                return enumTransformationInvoker.transform( source );
+            }
+            catch ( IllegalArgumentException ex ) {
+                if ( !enumTransformationIllegalReported ) {
+                    enumTransformationIllegalReported = true;
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        enumMapping.getMirror(),
+                        Message.ENUMMAPPING_ILLEGAL_TRANSFORMATION,
+                        enumTransformationInvoker.transformationStrategy.getStrategyName(),
+                        ex.getMessage()
+                    );
+                }
+                return source;
+            }
+        }
+
         private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType ) {
 
             List<MappingEntry> mappings = new ArrayList<>();
@@ -175,7 +195,7 @@ public class ValueMappingMethod extends MappingMethod {
                     if ( enumMappingInverse ) {
                         // If the mapping is inverse we have to change the target enum constant
                         targetConstants.put(
-                            enumTransformationInvoker.transform( targetNameEnum ),
+                            transform( targetNameEnum ),
                             targetEnumConstant
                         );
                     }
@@ -189,7 +209,7 @@ public class ValueMappingMethod extends MappingMethod {
                     String sourceNameConstant = getEnumConstant( sourceTypeElement, sourceConstant );
                     String targetConstant;
                     if ( !enumMappingInverse ) {
-                        targetConstant = enumTransformationInvoker.transform( sourceNameConstant );
+                        targetConstant = transform( sourceNameConstant );
                     }
                     else {
                         targetConstant = sourceNameConstant;
@@ -251,7 +271,7 @@ public class ValueMappingMethod extends MappingMethod {
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
                     String sourceNameConstant = getEnumConstant( sourceTypeElement, sourceConstant );
-                    String targetConstant = enumTransformationInvoker.transform( sourceNameConstant );
+                    String targetConstant = transform( sourceNameConstant );
                     mappings.add( new MappingEntry( sourceConstant, targetConstant ) );
                 }
             }
@@ -283,7 +303,7 @@ public class ValueMappingMethod extends MappingMethod {
                 // all remaining constants are mapped
                 for ( String sourceConstant : unmappedSourceConstants ) {
                     String sourceNameConstant = getEnumConstant( targetTypeElement, sourceConstant );
-                    String stringConstant = enumTransformationInvoker.transform( sourceNameConstant );
+                    String stringConstant = transform( sourceNameConstant );
                     if ( !mappedSources.contains( stringConstant ) ) {
                         mappings.add( new MappingEntry( stringConstant, sourceConstant ) );
                     }

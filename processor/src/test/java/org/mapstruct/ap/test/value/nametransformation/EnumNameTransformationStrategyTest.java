@@ -103,6 +103,24 @@ public class EnumNameTransformationStrategyTest {
 
     @ProcessorTest
     @WithClasses({
+        ErroneousCaseTransformStrategyMapper.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                type = ErroneousCaseTransformStrategyMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 18,
+                message = "Illegal transformation for 'case' EnumTransformationStrategy." +
+                    " Error: 'Unexpected configuration for enum case transformation: unknown'."
+            )
+        }
+    )
+    public void shouldGiveCompileErrorWhenUsingUnknownConfigurationForCaseTransformStrategy() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
         ErroneousNameTransformStrategyMapper.class
     })
     @WithServiceImplementation(CustomEnumTransformationStrategy.class)

@@ -110,6 +110,7 @@ public enum Message {
     ENUMMAPPING_INCORRECT_TRANSFORMATION_STRATEGY( "There is no registered EnumTransformationStrategy for '%s'. Registered strategies are: %s." ),
     ENUMMAPPING_MISSING_CONFIGURATION( "Configuration has to be defined when strategy is defined." ),
     ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
+    ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 

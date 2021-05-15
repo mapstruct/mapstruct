@@ -6,6 +6,8 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.Map;
+import java.util.Optional;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -62,6 +64,10 @@ public class EnumMappingOptions extends DelegatingOptions {
         }
 
         return next().getUnexpectedValueMappingException();
+    }
+
+    public AnnotationMirror getMirror() {
+        return Optional.ofNullable( enumMapping ).map( EnumMappingGem::mirror ).orElse( null );
     }
 
     public boolean isInverse() {
