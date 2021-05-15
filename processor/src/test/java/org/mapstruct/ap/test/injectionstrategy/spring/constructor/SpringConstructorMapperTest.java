@@ -10,11 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordDto;
@@ -54,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey( "571" )
 @ComponentScan(basePackageClasses = CustomerSpringConstructorMapper.class)
 @Configuration
+@DefaultTimeZone("Europe/Berlin")
 public class SpringConstructorMapperTest {
 
     private static TimeZone originalTimeZone;
@@ -64,17 +64,6 @@ public class SpringConstructorMapperTest {
     @Autowired
     private CustomerRecordSpringConstructorMapper customerRecordMapper;
     private ConfigurableApplicationContext context;
-
-    @BeforeAll
-    public static void setDefaultTimeZoneToCet() {
-        originalTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
-    }
-
-    @AfterAll
-    public static void restoreOriginalTimeZone() {
-        TimeZone.setDefault( originalTimeZone );
-    }
 
     @BeforeEach
     public void springUp() {

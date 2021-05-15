@@ -9,29 +9,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.DefaultLocale;
 
 /**
  * @author Filip Hrisafov
  */
 public class StringsTest {
-
-    private static final Locale TURKEY_LOCALE = getTurkeyLocale();
-    private Locale defaultLocale;
-
-    @BeforeEach
-    public void before() {
-        defaultLocale = Locale.getDefault();
-    }
-
-    @AfterEach
-    public void after() {
-        Locale.setDefault( defaultLocale );
-    }
 
     @Test
     public void testCapitalize() {
@@ -137,40 +122,31 @@ public class StringsTest {
     }
 
     @Test
+    @DefaultLocale("en")
     public void capitalizeEnglish() {
-        Locale.setDefault( Locale.ENGLISH );
         String international = Strings.capitalize( "international" );
         assertThat( international ).isEqualTo( "International" );
     }
 
     @Test
+    @DefaultLocale("en")
     public void decapitalizeEnglish() {
-        Locale.setDefault( Locale.ENGLISH );
         String international = Strings.decapitalize( "International" );
         assertThat( international ).isEqualTo( "international" );
     }
 
     @Test
+    @DefaultLocale("tr")
     public void capitalizeTurkish() {
-        Locale.setDefault( TURKEY_LOCALE );
         String international = Strings.capitalize( "international" );
         assertThat( international ).isEqualTo( "International" );
     }
 
     @Test
+    @DefaultLocale("tr")
     public void decapitalizeTurkish() {
-        Locale.setDefault( TURKEY_LOCALE );
         String international = Strings.decapitalize( "International" );
         assertThat( international ).isEqualTo( "international" );
     }
 
-    private static Locale getTurkeyLocale() {
-        Locale turkeyLocale = Locale.forLanguageTag( "tr" );
-
-        if ( turkeyLocale == null ) {
-            throw new IllegalStateException( "Can't find Turkey locale." );
-        }
-
-        return turkeyLocale;
-    }
 }

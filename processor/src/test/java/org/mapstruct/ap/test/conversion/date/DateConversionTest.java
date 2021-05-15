@@ -12,13 +12,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -36,20 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     SourceTargetMapper.class
 })
 @IssueKey("43")
+@DefaultLocale("de")
 public class DateConversionTest {
-
-    private Locale originalLocale;
-
-    @BeforeEach
-    public void setDefaultLocale() {
-        originalLocale = Locale.getDefault();
-        Locale.setDefault( Locale.GERMAN );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        Locale.setDefault( originalLocale );
-    }
 
     @ProcessorTest
     @EnabledOnJre( JRE.JAVA_8 )

@@ -17,8 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -36,18 +35,6 @@ public class Java8TimeConversionTest {
 
     @RegisterExtension
     GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( SourceTargetMapper.class );
-
-    private TimeZone originalTimeZone;
-
-    @BeforeEach
-    public void setUp() {
-        originalTimeZone = TimeZone.getDefault();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        TimeZone.setDefault( originalTimeZone );
-    }
 
     @ProcessorTest
     public void testDateTimeToString() {
@@ -226,8 +213,8 @@ public class Java8TimeConversionTest {
     }
 
     @ProcessorTest
+    @DefaultTimeZone("UTC")
     public void testZonedDateTimeToDateMapping() {
-        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
         Source source = new Source();
         ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
         source.setForDateConversionWithZonedDateTime(
@@ -266,8 +253,8 @@ public class Java8TimeConversionTest {
     }
 
     @ProcessorTest
+    @DefaultTimeZone("Australia/Melbourne")
     public void testLocalDateTimeToDateMapping() {
-        TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
         Source source = new Source();
         LocalDateTime dateTime = LocalDateTime.of( 2014, 1, 1, 0, 0 );
@@ -292,8 +279,8 @@ public class Java8TimeConversionTest {
     }
 
     @ProcessorTest
+    @DefaultTimeZone("Australia/Melbourne")
     public void testLocalDateToDateMapping() {
-        TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
         Source source = new Source();
         LocalDate localDate = LocalDate.of( 2016, 3, 1 );
@@ -316,8 +303,8 @@ public class Java8TimeConversionTest {
     }
 
     @ProcessorTest
+    @DefaultTimeZone("Australia/Melbourne")
     public void testLocalDateToSqlDateMapping() {
-        TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
 
         Source source = new Source();
         LocalDate localDate = LocalDate.of( 2016, 3, 1 );

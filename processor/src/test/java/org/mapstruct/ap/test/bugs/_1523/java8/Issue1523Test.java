@@ -9,8 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -31,23 +30,11 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class
 })
 @IssueKey("1523")
+// we want to test that the timezone will correctly be used in mapped XMLGregorianCalendar and not the
+// default one, so we must ensure that we use a different timezone than the default one -> set the default
+// one explicitly to UTC
+@DefaultTimeZone("UTC")
 public class Issue1523Test {
-
-    private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
-
-    @BeforeAll
-    public static void before() {
-        // we want to test that the timezone will correctly be used in mapped XMLGregorianCalendar and not the
-        // default one, so we must ensure that we use a different timezone than the default one -> set the default
-        // one explicitly to UTC
-        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
-    }
-
-    @AfterAll
-    public static void after() {
-        // revert the changed default TZ
-        TimeZone.setDefault( DEFAULT_TIMEZONE );
-    }
 
     @ProcessorTest
     public void testThatCorrectTimeZoneWillBeUsedInTarget() {

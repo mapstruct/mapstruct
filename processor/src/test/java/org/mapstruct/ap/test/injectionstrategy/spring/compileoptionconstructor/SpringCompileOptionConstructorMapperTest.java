@@ -8,13 +8,11 @@ package org.mapstruct.ap.test.injectionstrategy.spring.compileoptionconstructor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerRecordDto;
@@ -54,9 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ProcessorOption( name = "mapstruct.defaultInjectionStrategy", value = "constructor")
 @ComponentScan(basePackageClasses = CustomerSpringCompileOptionConstructorMapper.class)
 @Configuration
+@DefaultTimeZone("Europe/Berlin")
 public class SpringCompileOptionConstructorMapperTest {
-
-    private static TimeZone originalTimeZone;
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
@@ -64,17 +61,6 @@ public class SpringCompileOptionConstructorMapperTest {
     @Autowired
     private CustomerRecordSpringCompileOptionConstructorMapper customerRecordMapper;
     private ConfigurableApplicationContext context;
-
-    @BeforeAll
-    public static void setDefaultTimeZoneToCet() {
-        originalTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
-    }
-
-    @AfterAll
-    public static void restoreOriginalTimeZone() {
-        TimeZone.setDefault( originalTimeZone );
-    }
 
     @BeforeEach
     public void springUp() {

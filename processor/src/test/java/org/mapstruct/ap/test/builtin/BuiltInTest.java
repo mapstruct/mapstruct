@@ -17,15 +17,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.builtin._target.IterableTarget;
 import org.mapstruct.ap.test.builtin._target.MapTarget;
 import org.mapstruct.ap.test.builtin.bean.BigDecimalProperty;
@@ -85,20 +83,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     IterableSource.class,
     MapSource.class
 })
+@DefaultTimeZone("Europe/Berlin")
 public class BuiltInTest {
-
-    private static TimeZone originalTimeZone;
-
-    @BeforeAll
-    public static void setDefaultTimeZoneToCet() {
-        originalTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
-    }
-
-    @AfterAll
-    public static void restoreOriginalTimeZone() {
-        TimeZone.setDefault( originalTimeZone );
-    }
 
     @ProcessorTest
     @WithClasses( JaxbMapper.class )

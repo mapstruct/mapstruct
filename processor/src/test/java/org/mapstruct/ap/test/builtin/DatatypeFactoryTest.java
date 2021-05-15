@@ -10,10 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DatatypeFactory;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
@@ -32,20 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     DateProperty.class
 
 } )
+@DefaultTimeZone("Europe/Berlin")
 public class DatatypeFactoryTest {
-
-    private TimeZone originalTimeZone;
-
-    @BeforeEach
-    public void setUp() {
-        originalTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        TimeZone.setDefault( originalTimeZone );
-    }
 
     @ProcessorTest
     public void testNoConflictsWithOwnDatatypeFactory() throws ParseException {
