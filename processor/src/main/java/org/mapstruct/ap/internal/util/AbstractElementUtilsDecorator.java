@@ -7,6 +7,8 @@ package org.mapstruct.ap.internal.util;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -118,7 +120,7 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
     public List<ExecutableElement> getAllEnclosedExecutableElements(TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<>();
         element = replaceTypeElementIfNecessary( element );
-        addEnclosedMethodsInHierarchy( enclosedElements, element, element );
+        addEnclosedMethodsInHierarchy( enclosedElements, new HashSet<>(), element, element );
 
         return enclosedElements;
     }
@@ -132,7 +134,9 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
         return enclosedElements;
     }
 
-    private void addEnclosedMethodsInHierarchy(List<ExecutableElement> alreadyAdded, TypeElement element,
+    private void addEnclosedMethodsInHierarchy(List<ExecutableElement> alreadyAdded,
+                                               Collection<String> alreadyVisitedElements,
+                                               TypeElement element,
                                                TypeElement parentType) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( element );
@@ -142,11 +146,17 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
             throw new TypeHierarchyErroneousException( element );
         }
 
+        if ( !alreadyVisitedElements.add( element.getQualifiedName().toString() ) ) {
+            // If we already visited the element we should not go into it again.
+            // This can happen when diamond inheritance is used with interfaces
+            return;
+        }
         addMethodNotYetOverridden( alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
 
         if ( hasNonObjectSuperclass( element ) ) {
             addEnclosedMethodsInHierarchy(
                 alreadyAdded,
+                alreadyVisitedElements,
                 asTypeElement( element.getSuperclass() ),
                 parentType
             );
@@ -155,6 +165,7 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
         for ( TypeMirror interfaceType : element.getInterfaces() ) {
             addEnclosedMethodsInHierarchy(
                 alreadyAdded,
+                alreadyVisitedElements,
                 asTypeElement( interfaceType ),
                 parentType
             );
