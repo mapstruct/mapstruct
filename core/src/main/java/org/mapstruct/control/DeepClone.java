@@ -20,5 +20,6 @@ import org.mapstruct.util.Experimental;
 @Retention(RetentionPolicy.CLASS)
 @Experimental
 @MappingControl( MappingControl.Use.MAPPING_METHOD )
+@MappingControl( MappingControl.Use.BUILT_IN_CONVERSION )
 public @interface DeepClone {
 }
