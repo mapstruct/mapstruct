@@ -5,6 +5,6 @@
  */
 package org.mapstruct.itest.kotlin.data;
 
-data class CustomerDto(var name: String?, var email: String?) {
+data class CustomerDto(val name: String? = null, var email: String?) {
 
 }
