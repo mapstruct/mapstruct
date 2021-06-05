@@ -107,6 +107,13 @@ public class MavenIntegrationTest {
     void recordsTest() {
     }
 
+    @ProcessorTest(baseDir = "recordsCrossModuleTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void recordsCrossModuleTest() {
+    }
+
     @ProcessorTest(baseDir = "kotlinDataTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     }, forkJvm = true)
