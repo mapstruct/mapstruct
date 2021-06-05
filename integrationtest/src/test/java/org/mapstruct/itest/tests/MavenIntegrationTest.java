@@ -5,6 +5,7 @@
  */
 package org.mapstruct.itest.tests;
 
+import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.parallel.Execution;
@@ -25,6 +26,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "cdiTest")
+    @DisabledForJreRange(min = JRE.JAVA_16)
     void cdiTest() {
     }
 
