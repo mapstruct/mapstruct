@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -693,7 +694,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public List<Element> getRecordComponents() {
         if ( recordComponents == null ) {
-            recordComponents = filters.recordComponentsIn( typeElement );
+            recordComponents = nullSafeTypeElementListConversion( filters::recordComponentsIn );
         }
 
         return recordComponents;
@@ -720,7 +721,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> getAllMethods() {
         if ( allMethods == null ) {
-            allMethods = elementUtils.getAllEnclosedExecutableElements( typeElement );
+            allMethods = nullSafeTypeElementListConversion( elementUtils::getAllEnclosedExecutableElements );
         }
 
         return allMethods;
@@ -728,10 +729,18 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<VariableElement> getAllFields() {
         if ( allFields == null ) {
-            allFields = elementUtils.getAllEnclosedFields( typeElement );
+            allFields = nullSafeTypeElementListConversion( elementUtils::getAllEnclosedFields );
         }
 
         return allFields;
+    }
+
+    private <T> List<T> nullSafeTypeElementListConversion(Function<TypeElement, List<T>> conversionFunction) {
+        if ( typeElement != null ) {
+            return conversionFunction.apply( typeElement );
+        }
+
+        return Collections.emptyList();
     }
 
     private String getPropertyName(Accessor accessor ) {

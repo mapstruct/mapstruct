@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
@@ -277,17 +278,30 @@ public class SourceReference extends AbstractReference {
                     notFoundPropertyIndex = entries.size();
                     sourceType = last( entries ).getType();
                 }
-                String mostSimilarWord = Strings.getMostSimilarWord(
-                    propertyNames[notFoundPropertyIndex],
-                    sourceType.getPropertyReadAccessors().keySet()
-                );
-                List<String> elements = new ArrayList<>(
-                    Arrays.asList( propertyNames ).subList( 0, notFoundPropertyIndex )
-                );
-                elements.add( mostSimilarWord );
-                reportMappingError(
-                    Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, sourceName, Strings.join( elements, "." )
-                );
+
+                Set<String> readProperties = sourceType.getPropertyReadAccessors().keySet();
+
+                if ( !readProperties.isEmpty() ) {
+                    String mostSimilarWord = Strings.getMostSimilarWord(
+                        propertyNames[notFoundPropertyIndex],
+                        readProperties
+                    );
+
+                    List<String> elements = new ArrayList<>(
+                        Arrays.asList( propertyNames ).subList( 0, notFoundPropertyIndex )
+                    );
+                    elements.add( mostSimilarWord );
+                    reportMappingError(
+                        Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, sourceName, Strings.join( elements, "." )
+                    );
+                }
+                else {
+                    reportMappingError(
+                        Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME_SOURCE_HAS_NO_PROPERTIES,
+                        sourceName,
+                        sourceType.describe()
+                    );
+                }
             }
         }
 
