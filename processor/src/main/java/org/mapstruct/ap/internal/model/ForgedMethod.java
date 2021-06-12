@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
@@ -125,7 +126,16 @@ public class ForgedMethod implements Method {
                          boolean forgedNameBased) {
 
         // establish name
-        String sourceParamSafeName = Strings.getSafeVariableName( sourceType.getName() );
+        String sourceParamSafeName;
+        if ( additionalParameters.isEmpty() ) {
+            sourceParamSafeName = Strings.getSafeVariableName( sourceType.getName() );
+        }
+        else {
+            sourceParamSafeName = Strings.getSafeVariableName(
+                sourceType.getName(),
+                additionalParameters.stream().map( Parameter::getName ).collect( Collectors.toList() )
+            );
+        }
 
         // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
