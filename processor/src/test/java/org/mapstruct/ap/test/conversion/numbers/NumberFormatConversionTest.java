@@ -10,11 +10,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
@@ -26,20 +24,8 @@ import static org.assertj.core.api.Assertions.entry;
         Target.class,
         SourceTargetMapper.class
 })
+@DefaultLocale("en")
 public class NumberFormatConversionTest {
-
-    private Locale originalLocale;
-
-    @BeforeEach
-    public void setDefaultLocale() {
-        originalLocale = Locale.getDefault();
-        Locale.setDefault( Locale.ENGLISH );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        Locale.setDefault( originalLocale );
-    }
 
     @ProcessorTest
     public void shouldApplyStringConversions() {

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -17,8 +16,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -31,22 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  */
 @IssueKey("134")
+@DefaultLocale("de")
 public class NestedMappingMethodInvocationTest {
 
     public static final QName QNAME = new QName( "dont-care" );
-
-    private Locale originalLocale;
-
-    @BeforeEach
-    public void setDefaultLocale() {
-        originalLocale = Locale.getDefault();
-        Locale.setDefault( Locale.GERMAN );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        Locale.setDefault( originalLocale );
-    }
 
     @ProcessorTest
     @WithClasses( {

@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.conversion.jodatime;
 
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
@@ -14,11 +13,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -32,20 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("75")
+@DefaultLocale("de")
 public class JodaConversionTest {
-
-    private Locale originalLocale;
-
-    @BeforeEach
-    public void setDefaultLocale() {
-        originalLocale = Locale.getDefault();
-        Locale.setDefault( Locale.GERMAN );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        Locale.setDefault( originalLocale );
-    }
 
     @ProcessorTest
     public void testDateTimeToString() {
