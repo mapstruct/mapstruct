@@ -162,6 +162,10 @@ public class Mapper extends GeneratedType {
 
     /**
      * Returns the same as {@link Class#getName()} but without the package declaration.
+     *
+     * @param element the element that should be flattened
+     *
+     * @return the flat name for the type element
      */
     public static String getFlatName(TypeElement element) {
         if (!(element.getEnclosingElement() instanceof TypeElement)) {

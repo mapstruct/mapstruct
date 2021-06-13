@@ -80,7 +80,7 @@ public class TargetReference {
     }
 
     /**
-     * returns the property name on the shallowest nesting level
+     * @return the property name on the shallowest nesting level
      */
     public String getShallowestPropertyName() {
         if ( propertyEntries.isEmpty() ) {

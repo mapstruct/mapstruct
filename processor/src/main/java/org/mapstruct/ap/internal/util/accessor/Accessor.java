@@ -45,9 +45,7 @@ public interface Accessor {
     Element getElement();
 
     /**
-     * The accessor type
-     *
-     * @return
+     * @return type of the accessor
      */
     AccessorType getAccessorType();
 }

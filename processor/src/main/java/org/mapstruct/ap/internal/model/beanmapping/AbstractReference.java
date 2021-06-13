@@ -56,8 +56,7 @@ public abstract class AbstractReference {
     }
 
     /**
-     * returns the property name on the shallowest nesting level
-     * @return
+     * @return the property name on the shallowest nesting level
      */
     public PropertyEntry getShallowestProperty() {
         if ( propertyEntries.isEmpty() ) {
@@ -67,8 +66,7 @@ public abstract class AbstractReference {
     }
 
     /**
-     * returns the property name on the shallowest nesting level
-     * @return
+     * @return the property name on the shallowest nesting level
      */
     public String getShallowestPropertyName() {
         if ( propertyEntries.isEmpty() ) {
@@ -78,8 +76,7 @@ public abstract class AbstractReference {
     }
 
     /**
-     * returns the property name on the deepest nesting level
-     * @return
+     * @return the property name on the deepest nesting level
      */
     public PropertyEntry getDeepestProperty() {
         if ( propertyEntries.isEmpty() ) {
@@ -89,8 +86,7 @@ public abstract class AbstractReference {
     }
 
     /**
-     * returns the property name on the deepest nesting level
-     * @return
+     * @return the property name on the deepest nesting level
      */
     public String getDeepestPropertyName() {
         if ( propertyEntries.isEmpty() ) {

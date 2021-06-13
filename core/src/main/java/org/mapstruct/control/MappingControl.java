@@ -132,7 +132,7 @@ public @interface MappingControl {
          * This means if source type and target type are of the same type, MapStruct will not perform
          * any mappings anymore and assign the target to the source direct.
          * <p>
-         * An exception are types from the package {@link java}, which will be mapped always directly.
+         * An exception are types from the package {@code java}, which will be mapped always directly.
          *
          * @since 1.4
          */

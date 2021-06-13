@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
  *      }
  * }
  * </code></pre>
- * <p>
+ *
  * <pre><code class='java'>
  * &#64;Mapper
  * public interface CarMapper {

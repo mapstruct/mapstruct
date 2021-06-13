@@ -39,6 +39,8 @@ public class BeanMappingOptions extends DelegatingOptions {
     /**
      * creates a mapping for inheritance. Will set
      *
+     * @param beanMapping the bean mapping options that should be used
+     *
      * @return new mapping
      */
     public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
