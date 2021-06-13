@@ -372,7 +372,6 @@ public @interface Mapping {
      *     }
      * </code></pre>
      * <p>
-     * <p>
      * Any types referenced in expressions must be given via their fully-qualified name. Alternatively, types can be
      * imported via {@link Mapper#imports()}.
      * <p>

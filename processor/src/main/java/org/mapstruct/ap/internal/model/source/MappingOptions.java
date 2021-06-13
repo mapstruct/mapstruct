@@ -502,6 +502,9 @@ public class MappingOptions extends DelegatingOptions {
     /**
      * Creates a copy of this mapping
      *
+     * @param templateMethod the template method for the inheritance
+     * @param beanMappingOptions the bean mapping options
+     *
      * @return the copy
      */
     public MappingOptions copyForForwardInheritance(SourceMethod templateMethod,

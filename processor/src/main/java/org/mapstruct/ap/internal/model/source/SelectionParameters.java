@@ -34,8 +34,9 @@ public class SelectionParameters {
      *
      * ResultType is not inherited.
      *
-     * @param selectionParameters
-     * @return
+     * @param selectionParameters the selection parameters that need to be copied
+     *
+     * @return the selection parameters based on the given ones
      */
     public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
         return new SelectionParameters(

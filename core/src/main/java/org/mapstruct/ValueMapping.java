@@ -18,12 +18,9 @@ import java.lang.annotation.Target;
  * <ol>
  * <li>Enumeration to Enumeration</li>
  * </ol>
- * <p>
- * <B>Example 1:</B>
+ * <b>Example 1:</b>
  *
- * <pre>
- * <code>
- *
+ * <pre><code>
  * public enum OrderType { RETAIL, B2B, C2C, EXTRA, STANDARD, NORMAL }
  *
  * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
@@ -46,12 +43,9 @@ import java.lang.annotation.Target;
  * +---------------------+----------------------------+
  * </pre>
  *
- * <p>
- * <B>Example 2:</B>
+ * <b>Example 2:</b>
  *
- * <pre>
- * <code>
- *
+ * <pre><code>
  * &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
  * &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
  * &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
@@ -70,17 +64,13 @@ import java.lang.annotation.Target;
  * +---------------------+----------------------------+
  * </pre>
  *
- * <p>
- * <B>Example 3:</B>
- * </p>
+ * <b>Example 3:</b>
  *
- * <p></p>MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found, an
+ * MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found, an
  * {@link java.lang.IllegalStateException} will be thrown. This compile-time error can be avoided by
  * using {@link MappingConstants#THROW_EXCEPTION} for {@link ValueMapping#target()}. It will result an
  * {@link java.lang.IllegalArgumentException} at runtime.
- * <pre>
- * <code>
- *
+ * <pre><code>
  * &#64;ValueMapping( source = "STANDARD", target = "DEFAULT" ),
  * &#64;ValueMapping( source = "C2C", target = MappingConstants.THROW_EXCEPTION )
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);

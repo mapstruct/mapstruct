@@ -40,10 +40,9 @@ public class ObjectFactoryMethodResolver {
      *
      * @param method target mapping method
      * @param selectionParameters parameters used in the selection process
-     * @param ctx
+     * @param ctx the mapping builder context
      *
      * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
-     *
      */
     public static MethodReference getFactoryMethod( Method method,
                                                     SelectionParameters selectionParameters,
@@ -57,7 +56,7 @@ public class ObjectFactoryMethodResolver {
      * @param method target mapping method
      * @param alternativeTarget alternative to {@link Method#getResultType()} e.g. when target is abstract
      * @param selectionParameters parameters used in the selection process
-     * @param ctx
+     * @param ctx the mapping builder context
      *
      * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
      *

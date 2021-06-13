@@ -54,6 +54,10 @@ public class BuilderInfo {
         private Collection<ExecutableElement> buildMethods;
 
         /**
+         * @param method The creation method for the builder
+         *
+         * @return the builder for chaining
+         *
          * @see BuilderInfo#getBuilderCreationMethod()
          */
         public Builder builderCreationMethod(ExecutableElement method) {
@@ -62,6 +66,10 @@ public class BuilderInfo {
         }
 
         /**
+         * @param methods the build methods for the type
+         *
+         * @return the builder for chaining
+         *
          * @see BuilderInfo#getBuildMethods()
          */
         public Builder buildMethod(Collection<ExecutableElement> methods) {
@@ -71,6 +79,9 @@ public class BuilderInfo {
 
         /**
          * Create the {@link BuilderInfo}.
+         *
+         * @return the created {@link BuilderInfo}
+         *
          * @throws IllegalArgumentException if the builder creation or build methods are {@code null}
          */
         public BuilderInfo build() {
