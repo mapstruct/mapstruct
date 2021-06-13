@@ -37,6 +37,7 @@ public enum Message {
     BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR( "Unmapped target %s. Mapping from %s to %s." ),
     BEANMAPPING_UNMAPPED_SOURCES_WARNING( "Unmapped source %s.", Diagnostic.Kind.WARNING ),
     BEANMAPPING_UNMAPPED_SOURCES_ERROR( "Unmapped source %s." ),
+    BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR( "Ignored unknown source %s." ),
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),

@@ -85,7 +85,6 @@ public class MapperOptions extends DelegatingOptions {
     public ReportingPolicyGem unmappedTargetPolicy() {
         return mapper.unmappedTargetPolicy().hasValue() ?
             ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().get() ) : next().unmappedTargetPolicy();
-
     }
 
     @Override
