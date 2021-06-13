@@ -98,6 +98,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Map<String, Accessor> unprocessedConstructorProperties;
         private Map<String, Accessor> unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
+        private Set<String> missingIgnoredSourceProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
@@ -248,9 +249,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // get bean mapping (when specified as annotation )
+            this.missingIgnoredSourceProperties = new HashSet<>();
             if ( beanMapping != null ) {
                 for ( String ignoreUnmapped : beanMapping.getIgnoreUnmappedSourceProperties() ) {
-                    unprocessedSourceProperties.remove( ignoreUnmapped );
+                    if ( unprocessedSourceProperties.remove( ignoreUnmapped ) == null ) {
+                        missingIgnoredSourceProperties.add( ignoreUnmapped );
+                    }
                 }
             }
 
@@ -283,6 +287,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
             reportErrorForUnmappedSourcePropertiesIfRequired();
+            reportErrorForMissingIgnoredSourceProperties();
 
             // mapNullToDefault
             boolean mapNullToDefault = method.getOptions()
@@ -1507,6 +1512,24 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     msg,
+                    args
+                );
+            }
+        }
+
+        private void reportErrorForMissingIgnoredSourceProperties() {
+            if ( !missingIgnoredSourceProperties.isEmpty() ) {
+                Object[] args = new Object[] {
+                        MessageFormat.format(
+                                "{0,choice,1#property|1<properties}: \"{1}\"",
+                                missingIgnoredSourceProperties.size(),
+                                Strings.join( missingIgnoredSourceProperties, ", " )
+                        )
+                };
+
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR,
                     args
                 );
             }
