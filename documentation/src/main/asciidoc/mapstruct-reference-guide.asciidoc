@@ -2,6 +2,7 @@
 :revdate: {docdate}
 :toc: right
 :sectanchors:
+:source-highlighter: coderay
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
 :processor-dir: ../../../../processor
 :processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
