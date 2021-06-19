@@ -66,6 +66,38 @@
             </dependencies>
         </profile>
         <profile>
+            <id>generate-via-compiler-plugin-with-annotation-processor-paths</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <compilerArgument combine.self="override"></compilerArgument>
+                            <compilerId>\${compiler-id}</compilerId>
+                            <annotationProcessorPaths>
+                                <annotationProcessorPath>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mapstruct-processor</artifactId>
+                                    <version>${mapstruct.version}</version>
+                                </annotationProcessorPath>
+                            </annotationProcessorPaths>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.eclipse.tycho</groupId>
+                                <artifactId>tycho-compiler-jdt</artifactId>
+                                <version>${org.eclipse.tycho.compiler-jdt.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>generate-via-processor-plugin</id>
             <activation>
                 <activeByDefault>false</activeByDefault>

@@ -12,19 +12,14 @@ package org.mapstruct.ap.internal.util;
  */
 public final class XmlConstants {
 
-    public static final String JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
-    private static final boolean IS_XML_GREGORIAN_CALENDAR_PRESENT = ClassUtils.isPresent(
-        JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR,
-        XmlConstants.class.getClassLoader()
-    );
+    // CHECKSTYLE:OFF
+    public static final String JAVAX_XML_XML_GREGORIAN_CALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
+    public static final String JAVAX_XML_DATATYPE_CONFIGURATION_EXCEPTION = "javax.xml.datatype.DatatypeConfigurationException";
+    public static final String JAVAX_XML_DATATYPE_FACTORY = "javax.xml.datatype.DatatypeFactory";
+    public static final String JAVAX_XML_DATATYPE_CONSTANTS = "javax.xml.datatype.DatatypeConstants";
+    // CHECKSTYLE:ON
 
     private XmlConstants() {
     }
 
-    /**
-     * @return {@code true} if the {@link javax.xml.datatype.XMLGregorianCalendar} is present, {@code false} otherwise
-     */
-    public static boolean isXmlGregorianCalendarPresent() {
-        return IS_XML_GREGORIAN_CALENDAR_PRESENT;
-    }
 }

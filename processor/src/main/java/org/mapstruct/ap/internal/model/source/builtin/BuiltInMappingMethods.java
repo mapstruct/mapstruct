@@ -59,12 +59,11 @@ public class BuiltInMappingMethods {
     }
 
     private static boolean isJaxbAvailable(TypeFactory typeFactory) {
-        return JaxbConstants.isJaxbElementPresent() && typeFactory.isTypeAvailable( JaxbConstants.JAXB_ELEMENT_FQN );
+        return typeFactory.isTypeAvailable( JaxbConstants.JAXB_ELEMENT_FQN );
     }
 
     private static boolean isXmlGregorianCalendarAvailable(TypeFactory typeFactory) {
-        return XmlConstants.isXmlGregorianCalendarPresent() &&
-            typeFactory.isTypeAvailable( XmlConstants.JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR );
+        return typeFactory.isTypeAvailable( XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR );
     }
 
     private static boolean isJodaTimeAvailable(TypeFactory typeFactory) {

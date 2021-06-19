@@ -75,7 +75,7 @@ final class DateFormatValidatorFactory {
 
     private static boolean isXmlGregorianCalendarSupposedToBeMapped(Type sourceType, Type targetType) {
         return typesEqualsOneOf(
-                        sourceType, targetType, XmlConstants.JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR );
+                        sourceType, targetType, XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR );
     }
 
     private static boolean isJodaDateTimeSupposed(Type sourceType, Type targetType) {

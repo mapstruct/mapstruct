@@ -44,6 +44,7 @@ public @interface ProcessorTest {
     enum ProcessorType {
 
         JAVAC( "javac" ),
+        JAVAC_WITH_PATHS( "javac", JRE.OTHER, "generate-via-compiler-plugin-with-annotation-processor-paths" ),
 
         ECLIPSE_JDT( "jdt", JRE.JAVA_8 ),
 
@@ -51,14 +52,20 @@ public @interface ProcessorTest {
 
         private final String compilerId;
         private final JRE max;
+        private final String profile;
 
         ProcessorType(String compilerId) {
             this( compilerId, JRE.OTHER );
         }
 
         ProcessorType(String compilerId, JRE max) {
+            this( compilerId, max, null );
+        }
+
+        ProcessorType(String compilerId, JRE max, String profile) {
             this.compilerId = compilerId;
             this.max = max;
+            this.profile = profile;
         }
 
         public String getCompilerId() {
@@ -67,6 +74,10 @@ public @interface ProcessorTest {
 
         public JRE maxJre() {
             return max;
+        }
+
+        public String getProfile() {
+            return profile;
         }
     }
 
@@ -98,6 +109,7 @@ public @interface ProcessorTest {
      */
     ProcessorType[] processorTypes() default {
         ProcessorType.JAVAC,
+        ProcessorType.JAVAC_WITH_PATHS,
         ProcessorType.ECLIPSE_JDT,
         ProcessorType.PROCESSOR_PLUGIN
     };

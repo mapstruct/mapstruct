@@ -136,7 +136,11 @@ public class ProcessorInvocationInterceptor implements InvocationInterceptor {
     private void configureProcessor(Verifier verifier) {
         String compilerId = processorTestContext.getProcessor().getCompilerId();
         if ( compilerId != null ) {
-            verifier.addCliOption( "-Pgenerate-via-compiler-plugin" );
+            String profile = processorTestContext.getProcessor().getProfile();
+            if ( profile == null ) {
+                profile = "generate-via-compiler-plugin";
+            }
+            verifier.addCliOption( "-P" + profile );
             verifier.addCliOption( "-Dcompiler-id=" + compilerId );
         }
         else {
