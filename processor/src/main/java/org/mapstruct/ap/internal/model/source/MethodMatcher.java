@@ -248,10 +248,12 @@ public class MethodMatcher {
                 // e.g. <T> String method( List<? extends T> in )
 
                 Type.ResolvedPair resolved = mthdParType.resolveParameterToType( matchingType, aCandidateMethodType );
-                if ( resolved == null ) {
-                    // cannot find a candidate type, but should have since the typeFromCandidateMethod had parameters
-                    // to be resolved
-                    return !hasGenericTypeParameters( aCandidateMethodType );
+                if ( resolved.getMatch() == null ) {
+                    // we should be dealing with something containing a type parameter at this point. This is
+                    // covered with the checks above. Therefore resolved itself cannot be null.
+                    // If there is no match here, continue with the next candidate, perhaps there will a match with
+                    // the next method type parameter
+                    continue;
                 }
 
                 // resolved something at this point, a candidate can be fetched or created
@@ -270,13 +272,10 @@ public class MethodMatcher {
                     // it might be already set, but we just checked if its an equivalent type
                     if ( typeVarCandidate.match == null ) {
                         typeVarCandidate.match = resolved.getMatch();
-                        if ( typeVarCandidate.match == null) {
-                            return false;
-                        }
                         typeVarCandidate.pairs.add( resolved );
                     }
                     else if ( !areEquivalent( resolved.getMatch(), typeVarCandidate.match ) ) {
-                        // type has been resolved twice, but with a different candidate (conflict)
+                        // type has been resolved twice, but with a different candidate (conflict). Stop
                         return false;
                     }
 

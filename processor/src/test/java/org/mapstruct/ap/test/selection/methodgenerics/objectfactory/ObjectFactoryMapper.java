@@ -17,8 +17,6 @@ public interface ObjectFactoryMapper {
 
     TargetA toTarget(SourceA source);
 
-    TargetB toTarget(SourceB source);
-
     @ObjectFactory
     default <T extends Target, S extends Source> T createTarget(S source, @TargetType Class<T> targetType) {
         if ( source.isA() ) {

@@ -51,6 +51,22 @@ public class MultipleTypeVarTest {
     }
 
     @ProcessorTest
+    @WithClasses( ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.class )
+    public void testGenericReturnTypeVarBothGenericArgumentsFlipped() {
+
+        ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.Pair pair
+            = new ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.Pair( "test", 5L );
+        ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.Source src =
+            new ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.Source( pair );
+        ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.Target target =
+            ReturnTypeHasMultipleTypeVarBothArgumentsFlippedGenericMapper.INSTANCE.toTarget( src );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp() ).containsExactly( entry( "test", 5L ) );
+    }
+
+    @ProcessorTest
     @WithClasses( SourceTypeHasMultipleTypeVarBothGenericMapper.class )
     public void testGenericSourceTypeVarBothGeneric() {
 
