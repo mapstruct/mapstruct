@@ -28,7 +28,7 @@
     <repositories>
         <repository>
             <id>gradle</id>
-            <url>https://repo.gradle.org/gradle/libs-releases</url>
+            <url>https://repo.gradle.org/artifactory/libs-releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
