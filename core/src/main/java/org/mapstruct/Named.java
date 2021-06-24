@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * Marks mapping methods with the given qualifier name. Can be used to qualify a single method or all methods of a given
  * type by specifying this annotation on the type level.
  * <p>
- * Will be used to to select the correct mapping methods when mapping a bean property type, element of an iterable type
+ * Will be used to select the correct mapping methods when mapping a bean property type, element of an iterable type
  * or the key/value of a map type.
  * <p>
  * Example (both methods of {@code Titles} are capable to convert a string, but the ambiguity is resolved by applying
