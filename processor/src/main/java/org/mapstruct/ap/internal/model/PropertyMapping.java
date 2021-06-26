@@ -37,6 +37,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.SourceReferenceContainsKeyPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
@@ -306,6 +307,9 @@ public class PropertyMapping extends ModelElement {
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
+            }
+            else if ( sourceType.isMapType() && !targetType.isMapType()) {
+                assignment = forgeMapToBeanMapping( sourceType, targetType, rightHandSide );
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
@@ -656,6 +660,13 @@ public class PropertyMapping extends ModelElement {
                 // in the forged method?
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
+                    if (propertyEntry.getPresenceChecker().getAccessorType() == AccessorType.MAP_CONTAINS ) {
+                        return new SourceReferenceContainsKeyPresenceCheck(
+                            sourceParam.getName(),
+                            propertyEntry.getPresenceChecker().getSimpleName()
+                        );
+                    }
+
                     List<PresenceCheck> presenceChecks = new ArrayList<>();
                     presenceChecks.add( new SourceReferenceMethodPresenceCheck(
                         sourceParam.getName(),
@@ -740,6 +751,19 @@ public class PropertyMapping extends ModelElement {
                 .build();
 
             return createForgedAssignment( source, methodRef, mapMappingMethod );
+        }
+
+        private Assignment forgeMapToBeanMapping(Type sourceType, Type targetType, SourceRHS source) {
+
+            targetType = targetType.withoutBounds();
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
+
+            BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
+            final BeanMappingMethod mapToBeanMappingMethod = builder.mappingContext( ctx )
+                .forgedMethod( methodRef )
+                .build();
+
+            return createForgedAssignment( source, methodRef, mapToBeanMappingMethod );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {

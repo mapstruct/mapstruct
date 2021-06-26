@@ -650,3 +650,68 @@ public class PersonMapperImpl implements PersonMapper {
 }
 ----
 ====
+
+[[mapping-map-to-bean]]
+=== Mapping Map to Bean
+
+There are situations when a mapping from a `Map<String, ???>` into a specific bean is needed.
+MapStruct offers a transparent way of doing such a mapping by using the target bean properties (or defined through `Mapping#source`) to extract the values from the map.
+Such a mapping looks like:
+
+.Example classes for mapping map to bean
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Customer {
+
+    private Long id;
+    private String name;
+
+    //getters and setter omitted for brevity
+}
+
+@Mapper
+public interface CustomerMapper {
+
+    @Mapping(target = "name", source = "customerName")
+    Customer toCustomer(Map<String, String> map);
+
+}
+----
+====
+
+.Generated mapper for mapping map to bean
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CustomerMapperImpl implements CustomerMapper {
+
+    @Override
+    public Customer toCustomer(Map<String, String> map) {
+        // ...
+        if ( map.containsKey( "id" ) ) {
+            customer.setId( Integer.parseInt( map.get( "id" ) ) );
+        }
+        if ( map.containsKey( "customerName" ) ) {
+            customer.setName( source.get( "customerName" ) );
+        }
+        // ...
+    }
+}
+----
+====
+
+[NOTE]
+====
+All existing rules about mapping between different types and using other mappers defined with `Mapper#uses` or custom methods in the mappers are applied.
+i.e. You can map from `Map<String, Integer>` where for each property a conversion from `Integer` into the respective property will be needed.
+====
+
+[WARNING]
+====
+When a raw map or a map that does not have a String as a key is used, then a warning will be generated.
+The warning is not generated if the map itself is mapped into some other target property directly as is.
+====

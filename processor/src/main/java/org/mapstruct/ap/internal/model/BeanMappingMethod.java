@@ -238,9 +238,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
 
-                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
+                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ||
+                    sourceParameter.getType().isMapType() ) {
                     continue;
                 }
+
                 Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
 
                 for ( Entry<String, Accessor> entry : readAccessors.entrySet() ) {
@@ -276,6 +278,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 // map parameters without a mapping
                 applyParameterNameBasedMapping();
+
             }
 
             // Process the unprocessed defined targets
@@ -288,6 +291,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
             reportErrorForUnmappedSourcePropertiesIfRequired();
             reportErrorForMissingIgnoredSourceProperties();
+            reportErrorForUnusedSourceParameters();
 
             // mapNullToDefault
             boolean mapNullToDefault = method.getOptions()
@@ -1364,6 +1368,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return sourceRef;
             }
 
+            if ( sourceParameter.getType().isMapType() ) {
+                List<Type> typeParameters = sourceParameter.getType().getTypeParameters();
+                if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
+                    return SourceReference.fromMapSource(
+                        new String[] { targetPropertyName },
+                        sourceParameter
+                    );
+                }
+            }
+
             Accessor sourceReadAccessor =
                 sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
             if ( sourceReadAccessor != null ) {
@@ -1532,6 +1546,33 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message.BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR,
                     args
                 );
+            }
+        }
+
+        private void reportErrorForUnusedSourceParameters() {
+            for ( Parameter sourceParameter : unprocessedSourceParameters ) {
+                Type parameterType = sourceParameter.getType();
+                if ( parameterType.isMapType() ) {
+                    // We are only going to output a warning for the source parameter if it was unused
+                    // i.e. the intention of the user was most likely to use it as a mapping from Bean to Map
+                    List<Type> typeParameters = parameterType.getTypeParameters();
+                    if ( typeParameters.size() != 2 || !typeParameters.get( 0 ).isString() ) {
+                        Message message = typeParameters.isEmpty() ?
+                            Message.MAPTOBEANMAPPING_RAW_MAP :
+                            Message.MAPTOBEANMAPPING_WRONG_KEY_TYPE;
+                        ctx.getMessager()
+                            .printMessage(
+                                method.getExecutable(),
+                                message,
+                                sourceParameter.getName(),
+                                String.format(
+                                    "Map<%s,%s>",
+                                    !typeParameters.isEmpty() ? typeParameters.get( 0 ).describe() : "",
+                                    typeParameters.size() > 1 ? typeParameters.get( 1 ).describe() : ""
+                                )
+                            );
+                    }
+                }
             }
         }
     }
