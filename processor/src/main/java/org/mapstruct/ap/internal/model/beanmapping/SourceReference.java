@@ -7,13 +7,16 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -24,6 +27,8 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
+import org.mapstruct.ap.internal.util.accessor.MapValuePresenceChecker;
 
 import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.last;
@@ -51,6 +56,26 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  * @author Sjaak Derksen
  */
 public class SourceReference extends AbstractReference {
+
+    public static SourceReference fromMapSource(String[] segments, Parameter parameter) {
+        Type parameterType = parameter.getType();
+        Type valueType = parameterType.getTypeParameters().get( 1 );
+
+        TypeElement typeElement = parameterType.getTypeElement();
+        TypeMirror typeMirror = valueType.getTypeMirror();
+        String simpleName = String.join( ".", segments );
+
+        MapValueAccessor mapValueAccessor = new MapValueAccessor( typeElement, typeMirror, simpleName );
+        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(
+            typeElement,
+            typeMirror,
+            simpleName
+        );
+        List<PropertyEntry> entries = Collections.singletonList(
+            PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType )
+        );
+        return new SourceReference( parameter, entries, true );
+    }
 
     /**
      * Builds a {@link SourceReference} from an {@code @Mappping}.
@@ -149,6 +174,10 @@ public class SourceReference extends AbstractReference {
          */
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
 
+            if ( canBeTreatedAsMapSourceType( parameter.getType() ) ) {
+                return fromMapSource( segments, parameter );
+            }
+
             boolean foundEntryMatch;
 
             String[] propertyNames = segments;
@@ -185,6 +214,14 @@ public class SourceReference extends AbstractReference {
          */
         private SourceReference buildFromMultipleSourceParameters(String[] segments, Parameter parameter) {
 
+            if (parameter != null && canBeTreatedAsMapSourceType( parameter.getType() )) {
+                String[] propertyNames = new String[0];
+                if ( segments.length > 1 ) {
+                    propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+                }
+                return fromMapSource( propertyNames, parameter );
+            }
+
             boolean foundEntryMatch;
 
             String[] propertyNames = new String[0];
@@ -205,6 +242,15 @@ public class SourceReference extends AbstractReference {
             }
 
             return new SourceReference( parameter, entries, foundEntryMatch );
+        }
+
+        private boolean canBeTreatedAsMapSourceType(Type type) {
+            if ( !type.isMapType() ) {
+                return false;
+            }
+
+            List<Type> typeParameters = type.getTypeParameters();
+            return typeParameters.size() == 2 && typeParameters.get( 0 ).isString();
         }
 
         /**

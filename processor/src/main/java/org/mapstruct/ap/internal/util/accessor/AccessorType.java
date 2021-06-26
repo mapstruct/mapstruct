@@ -12,6 +12,8 @@ public enum AccessorType {
     GETTER,
     SETTER,
     ADDER,
+    MAP_GET,
+    MAP_CONTAINS,
     PRESENCE_CHECKER;
 
     public boolean isFieldAssignment() {

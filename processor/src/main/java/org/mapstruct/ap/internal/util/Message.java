@@ -181,7 +181,11 @@ public enum Message {
     VALUEMAPPING_ANY_REMAINING_OR_UNMAPPED_MISSING( "Source = \"<ANY_REMAINING>\" or \"<ANY_UNMAPPED>\" is advisable for mapping of type String to an enum type.", Diagnostic.Kind.WARNING  ),
     VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI( "Constant %s doesn't exist in enum type %s. Constant was returned from EnumMappingStrategy: %s"),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
-    VALUEMAPPING_THROW_EXCEPTION_SOURCE( "Source = \"<THROW_EXCEPTION>\" is not allowed. Target = \"<THROW_EXCEPTION>\" can only be used." );
+    VALUEMAPPING_THROW_EXCEPTION_SOURCE( "Source = \"<THROW_EXCEPTION>\" is not allowed. Target = \"<THROW_EXCEPTION>\" can only be used." ),
+
+    MAPTOBEANMAPPING_WRONG_KEY_TYPE( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
+    MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),
+    ;
     // CHECKSTYLE:ON
 
 
