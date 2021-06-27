@@ -18,17 +18,26 @@ Darren Rambaud - https://github.com/xyzst
 Dekel Pilli - https://github.com/dekelpilli
 Dilip Krishnan - https://github.com/dilipkrish
 Dmytro Polovinkin - https://github.com/navpil
+Ewald Volkert - https://github.com/eforest
 Eric Martineau - https://github.com/ericmartineau
 Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
 Florian Tavares - https://github.com/neoXfire
 Gervais Blaise - https://github.com/gervaisb
+Gibou Damien - https://github.com/dmngb
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
+Jason Bodnar - https://github.com/Blackbaud-JasonBodnar
+Jeroen van Wilgenburg - https://github.com/jvwilge
 Jeff Smyth - https://github.com/smythie86
+João Paulo Bassinello - https://github.com/jpbassinello
 Jonathan Kraska - https://github.com/jakraska
 Joshua Spoerri - https://github.com/spoerri
+Jude Niroshan - https://github.com/JudeNiroshan
+Kemal Özcan - https://github.com/yekeoe
 Kevin Grüneberg - https://github.com/kevcodez
+Lukas Lazar - https://github.com/LukeLaz
+Nikolas Charalambidis - https://github.com/Nikolas-Charalambidis
 Michael Pardo - https://github.com/pardom
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat
@@ -48,6 +57,8 @@ Sjaak Derksen - https://github.com/sjaakd
 Stefan May - https://github.com/osthus-sm
 Taras Mychaskiw - https://github.com/twentylemon
 Thibault Duperron - https://github.com/Zomzog
+Tomáš Poledný - https://github.com/Saljack
+Tobias Meggendorfer - https://github.com/incaseoftrouble
 Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
