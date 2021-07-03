@@ -383,6 +383,10 @@ public class MappingResolverImpl implements MappingResolver {
                 return true;
             }
 
+            if ( type.isEnumType() ) {
+                return true;
+            }
+
             if ( type.isArrayType() ) {
                 return type.isJavaLangType() || type.getComponentType().isPrimitive();
             }

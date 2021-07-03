@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._2505;
 
-import java.util.Optional;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.control.DeepClone;
 import org.mapstruct.factory.Mappers;
