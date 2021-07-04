@@ -80,6 +80,21 @@ public class Nouns {
      * @return singular form, if available
      */
     public static String singularize(String plural) {
+        String singular = singularizeHuman( plural );
+        if ( plural.equals( singular ) ) {
+            return singularizeDali( plural );
+        }
+        return singular;
+    }
+
+    /**
+     * Converts given pluralized noun into the singular human form. If no singular form could be determined, the given word
+     * itself is returned.
+     *
+     * @param plural plural word
+     * @return singular human form, if available
+     */
+    public static String singularizeHuman(String plural) {
         for ( ReplaceRule replaceRule : SINGULAR_RULES ) {
             String match = replaceRule.apply( plural );
             if ( match != null ) {
@@ -87,6 +102,17 @@ public class Nouns {
             }
         }
 
+        return plural;
+    }
+
+    /**
+     * Converts given pluralized noun into the singular dali form. If no singular form could be determined, the given word
+     * itself is returned.
+     *
+     * @param plural plural word
+     * @return singular dali form, if available
+     */
+    public static String singularizeDali(String plural) {
         for ( ReplaceRule replaceRule : SINGULAR_DALI_RULES ) {
             String match = replaceRule.apply( plural );
             if ( match != null ) {
