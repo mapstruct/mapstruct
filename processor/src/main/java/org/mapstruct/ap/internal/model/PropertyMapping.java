@@ -337,7 +337,7 @@ public class PropertyMapping extends ModelElement {
             if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
                 // The history that is part of the ForgedMethod misses the information from the current right hand
                 // side. Therefore we need to extract the most relevant history and use that in the error reporting.
-                ForgedMethodHistory history = getForgedMethodHistory( rightHandSide );
+                MethodDescription history = getForgedMethodHistory( rightHandSide );
                 reportCannotCreateMapping(
                     method,
                     positionHint,
@@ -735,7 +735,7 @@ public class PropertyMapping extends ModelElement {
             name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             // copy mapper configuration from the source method, its the same mapper
-            ForgedMethodHistory forgedMethodHistory = getForgedMethodHistory( source, suffix );
+            MethodDescription forgedMethodHistory = getForgedMethodHistory( source, suffix );
             return forElementMapping( name, sourceType, targetType, method, forgedMethodHistory, forgedNamedBased );
         }
 
@@ -813,17 +813,17 @@ public class PropertyMapping extends ModelElement {
             return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
         }
 
-        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
+        private MethodDescription getForgedMethodHistory(SourceRHS sourceRHS) {
             return getForgedMethodHistory( sourceRHS, "" );
         }
 
-        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS, String suffix) {
-            ForgedMethodHistory history = null;
+        private MethodDescription getForgedMethodHistory(SourceRHS sourceRHS, String suffix) {
+            MethodDescription history = null;
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod method = (ForgedMethod) this.method;
                 history = method.getHistory();
             }
-            return new ForgedMethodHistory( history, getSourceElementName() + suffix,
+            return new MethodDescription( history, getSourceElementName() + suffix,
                 targetPropertyName + suffix, sourceRHS.getSourceType(), targetType, true, "property"
             );
         }

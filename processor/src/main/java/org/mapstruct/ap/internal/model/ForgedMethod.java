@@ -33,7 +33,7 @@ public class ForgedMethod implements Method {
     private final Type returnType;
     private final String name;
     private final List<Type> thrownTypes;
-    private final ForgedMethodHistory history;
+    private final MethodDescription history;
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
@@ -81,7 +81,7 @@ public class ForgedMethod implements Method {
      */
     public static ForgedMethod forPropertyMapping(String name, Type sourceType, Type returnType,
                                                   List<Parameter> parameters, Method basedOn,
-                                                  ForgedMethodHistory history, MappingReferences mappingReferences,
+                                                  MethodDescription history, MappingReferences mappingReferences,
                                                   boolean forgedNameBased) {
         return new ForgedMethod(
             name,
@@ -108,7 +108,7 @@ public class ForgedMethod implements Method {
      * @return a new forge method
      */
     public static ForgedMethod forElementMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 ForgedMethodHistory history, boolean forgedNameBased) {
+                                                 MethodDescription history, boolean forgedNameBased) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -122,7 +122,7 @@ public class ForgedMethod implements Method {
     }
 
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
-                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
+                         Method basedOn, MethodDescription history, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
 
         // establish name
@@ -259,7 +259,7 @@ public class ForgedMethod implements Method {
         return thrownTypes;
     }
 
-    public ForgedMethodHistory getHistory() {
+    public MethodDescription getHistory() {
         return history;
     }
 

@@ -13,9 +13,9 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Dmytro Polovinkin
  */
-public class ForgedMethodHistory {
+public class MethodDescription {
 
-    private final ForgedMethodHistory prevHistory;
+    private final MethodDescription prevHistory;
     private final String sourceElement;
     private final String targetPropertyName;
     private final Type targetType;
@@ -23,8 +23,8 @@ public class ForgedMethodHistory {
     private final boolean usePropertyNames;
     private String elementType;
 
-    public ForgedMethodHistory(ForgedMethodHistory history, String sourceElement, String targetPropertyName,
-                               Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
+    public MethodDescription(MethodDescription history, String sourceElement, String targetPropertyName,
+                             Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
         prevHistory = history;
         this.sourceElement = sourceElement;
         this.targetPropertyName = targetPropertyName;

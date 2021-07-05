@@ -27,10 +27,10 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     public abstract M build();
 
-    private ForgedMethodHistory description;
+    private MethodDescription description;
 
     /**
-     * @return {@code true} if property names should be used for the creation of the {@link ForgedMethodHistory}.
+     * @return {@code true} if property names should be used for the creation of the {@link MethodDescription}.
      */
     protected abstract boolean shouldUsePropertyNamesInHistory();
 
@@ -41,12 +41,12 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
         String name = getName( sourceType, targetType );
         name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
-        ForgedMethodHistory history = null;
+        MethodDescription history = null;
         if ( method instanceof ForgedMethod ) {
             history = ( (ForgedMethod) method ).getHistory();
         }
 
-        description = new ForgedMethodHistory(
+        description = new MethodDescription(
             history,
             Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
             Strings.stubPropertyName( targetType.getName() ),
@@ -80,7 +80,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         return builder.toString();
     }
 
-    public ForgedMethodHistory getDescription() {
+    public MethodDescription getDescription() {
         return description;
     }
 
