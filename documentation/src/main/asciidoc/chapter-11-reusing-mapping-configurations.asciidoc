@@ -152,7 +152,7 @@ public interface SourceTargetMapper {
     @Mapping(target = "numberOfSeats", source = "seatCount")
     // additionally inherited from CentralConfig, because Car extends BaseEntity and CarDto extends BaseDto:
     // @Mapping(target = "primaryKey", source = "technicalKey")
-    Car toCar(CarDto car)
+    Car toCar(CarDto car);
 }
 ----
 ====
@@ -163,3 +163,32 @@ The attributes `@Mapper#mappingInheritanceStrategy()` / `@MapperConfig#mappingIn
 * `AUTO_INHERIT_FROM_CONFIG`: the configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritConfiguration(name = ...)` which will cause `AUTO_INHERIT_FROM_CONFIG` to be ignored.
 * `AUTO_INHERIT_REVERSE_FROM_CONFIG`: the inverse configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritInverseConfiguration(name = ...)` which will cause ``AUTO_INHERIT_REVERSE_FROM_CONFIG` to be ignored.
 * `AUTO_INHERIT_ALL_FROM_CONFIG`: both the configuration and the inverse configuration will be inherited automatically. The same rules apply as for `AUTO_INHERIT_FROM_CONFIG` or `AUTO_INHERIT_REVERSE_FROM_CONFIG`.
+
+It is also possible to overload the shared configuration's parameters. To do so requires that the `MapperConfig` mapping includes the source variable name.
+
+.Mapper configuration with overloaded method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@MapperConfig
+public interface CentralConfig {
+
+    @Mapping(target = "primaryKey", source = "dto.technicalKey")
+    BaseEntity anyDtoToEntity(BaseDto dto);
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(config = CentralConfig.class)
+public interface SourceTargetMapper {
+
+    @InheritConfiguration
+    @Mapping(target = "numberOfSeats", source = "seatCount")
+    // additionally inherited from CentralConfig, because Car extends BaseEntity and CarDto extends BaseDto:
+    // @Mapping(target = "primaryKey", source = "car.technicalKey")
+    Car map(CarDto car, Wheels wheels);
+}
+----
+====
