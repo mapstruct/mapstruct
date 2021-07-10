@@ -13,7 +13,6 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
@@ -24,11 +23,9 @@ public interface CarMapperSettingOnConfig {
 
     CarMapperSettingOnConfig INSTANCE = Mappers.getMapper( CarMapperSettingOnConfig.class );
 
-    @Mappings({
-        @Mapping(target = "seatCount", source = "numberOfSeats"),
-        @Mapping(target = "model", constant = "ModelT"),
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "numberOfSeats")
+    @Mapping(target = "model", constant = "ModelT")
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car);
 
     @IterableMapping(dateFormat = "dummy")

@@ -30,11 +30,11 @@ public class IterableMappingOptions extends DelegatingOptions {
     private final IterableMappingGem iterableMapping;
 
     public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
-                                                 MapperOptions mappperOptions, ExecutableElement method,
+                                                 MapperOptions mapperOptions, ExecutableElement method,
                                                  FormattingMessager messager, TypeUtils typeUtils) {
 
         if ( iterableMapping == null || !isConsistent( iterableMapping, method, messager ) ) {
-            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mappperOptions );
+            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mapperOptions );
             return options;
         }
 
@@ -54,7 +54,7 @@ public class IterableMappingOptions extends DelegatingOptions {
         );
 
         IterableMappingOptions options =
-            new IterableMappingOptions( formatting, selection, iterableMapping, mappperOptions );
+            new IterableMappingOptions( formatting, selection, iterableMapping, mapperOptions );
         return options;
     }
 
@@ -99,7 +99,7 @@ public class IterableMappingOptions extends DelegatingOptions {
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
-            .orElse( next().getNullValueMappingStrategy() );
+            .orElse( next().getNullValueIterableMappingStrategy() );
     }
 
     public MappingControl getElementMappingControl(ElementUtils elementUtils) {

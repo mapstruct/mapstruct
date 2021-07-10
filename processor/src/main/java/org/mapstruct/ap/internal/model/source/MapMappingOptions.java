@@ -144,7 +144,7 @@ public class MapMappingOptions extends DelegatingOptions {
             .filter( GemValue::hasValue )
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
-            .orElse( next().getNullValueMappingStrategy() );
+            .orElse( next().getNullValueMapMappingStrategy() );
     }
 
     public MappingControl getKeyMappingControl(ElementUtils elementUtils) {
