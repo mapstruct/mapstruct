@@ -127,6 +127,24 @@ public class MapperConfigOptions extends DelegatingOptions {
     }
 
     @Override
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        return mapperConfig.nullValueIterableMappingStrategy().hasValue() ?
+            NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueIterableMappingStrategy().get() ) :
+            mapperConfig.nullValueMappingStrategy().hasValue() ?
+            NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueMappingStrategy().get() ) :
+            next().getNullValueIterableMappingStrategy();
+    }
+
+    @Override
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        return mapperConfig.nullValueMapMappingStrategy().hasValue() ?
+            NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueMapMappingStrategy().get() ) :
+            mapperConfig.nullValueMappingStrategy().hasValue() ?
+            NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueMappingStrategy().get() ) :
+            next().getNullValueMapMappingStrategy();
+    }
+
+    @Override
     public BuilderGem getBuilder() {
         return mapperConfig.builder().hasValue() ? mapperConfig.builder().get() : next().getBuilder();
     }

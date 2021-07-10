@@ -33,8 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
     DriverAndCarDto.class,
     CarMapper.class,
     CarMapperSettingOnMapper.class,
+    CarMapperIterableSettingOnMapper.class,
+    CarMapperMapSettingOnMapper.class,
     CentralConfig.class,
-    CarMapperSettingOnConfig.class
+    CarMapperSettingOnConfig.class,
+    CentralIterableMappingConfig.class,
+    CarMapperIterableSettingOnConfig.class,
+    CentralMapMappingConfig.class,
+    CarMapperMapSettingOnConfig.class,
 })
 public class NullValueMappingTest {
 
@@ -161,8 +167,7 @@ public class NullValueMappingTest {
         List<CarDto> carDtos = CarMapperSettingOnMapper.INSTANCE.carsToCarDtos( null );
 
         //then
-        assertThat( carDtos ).isNotNull();
-        assertThat( carDtos.isEmpty() ).isTrue();
+        assertThat( carDtos ).isEmpty();
     }
 
     @ProcessorTest
@@ -170,6 +175,74 @@ public class NullValueMappingTest {
 
         //when
         Map<Integer, CarDto> carDtoMap = CarMapperSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
+
+        //then
+        assertThat( carDtoMap ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapExpressionAndConstantRegardlessOfIterableNullArgOnMapper() {
+
+        //when
+        CarDto carDto = CarMapperIterableSettingOnMapper.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapIterableToNullWithIterableNullArgOnMapper() {
+
+        //when
+        List<CarDto> carDtos = CarMapperIterableSettingOnMapper.INSTANCE.carsToCarDtos( null );
+
+        //then
+        assertThat( carDtos ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapMapRegardlessOfIterableNullArgOnMapper() {
+
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperIterableSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
+
+        //then
+        assertThat( carDtoMap ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapExpressionAndConstantRegardlessMapNullArgOnMapper() {
+
+        //when
+        CarDto carDto = CarMapperMapSettingOnMapper.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapIterableRegardlessOfMapNullArgOnMapper() {
+
+        //when
+        List<CarDto> carDtos = CarMapperMapSettingOnMapper.INSTANCE.carsToCarDtos( null );
+
+        //then
+        assertThat( carDtos ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapMapToWithMapNullArgOnMapper() {
+
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperMapSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
 
         //then
         assertThat( carDtoMap ).isNull();
@@ -196,8 +269,7 @@ public class NullValueMappingTest {
         List<CarDto> carDtos = CarMapperSettingOnConfig.INSTANCE.carsToCarDtos( null );
 
         //then
-        assertThat( carDtos ).isNotNull();
-        assertThat( carDtos.isEmpty() ).isTrue();
+        assertThat( carDtos ).isEmpty();
     }
 
     @ProcessorTest
@@ -205,6 +277,74 @@ public class NullValueMappingTest {
 
         //when
         Map<Integer, CarDto> carDtoMap = CarMapperSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
+
+        //then
+        assertThat( carDtoMap ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapExpressionAndConstantRegardlessOfIterableNullArgOnConfig() {
+
+        //when
+        CarDto carDto = CarMapperIterableSettingOnConfig.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapIterableToNullWithIterableNullArgOnConfig() {
+
+        //when
+        List<CarDto> carDtos = CarMapperIterableSettingOnConfig.INSTANCE.carsToCarDtos( null );
+
+        //then
+        assertThat( carDtos ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapMapRegardlessOfIterableNullArgOnConfig() {
+
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperIterableSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
+
+        //then
+        assertThat( carDtoMap ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapExpressionAndConstantRegardlessOfMapNullArgOnConfig() {
+
+        //when
+        CarDto carDto = CarMapperMapSettingOnConfig.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapIterableRegardlessOfMapNullArgOnConfig() {
+
+        //when
+        List<CarDto> carDtos = CarMapperMapSettingOnConfig.INSTANCE.carsToCarDtos( null );
+
+        //then
+        assertThat( carDtos ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapMapToNullWithMapNullArgOnConfig() {
+
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperMapSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
 
         //then
         assertThat( carDtoMap ).isNull();

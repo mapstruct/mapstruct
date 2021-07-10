@@ -116,6 +116,14 @@ public class DefaultOptions extends DelegatingOptions {
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().getDefaultValue() );
     }
 
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        return NullValueMappingStrategyGem.valueOf( mapper.nullValueIterableMappingStrategy().getDefaultValue() );
+    }
+
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().getDefaultValue() );
+    }
+
     public BuilderGem getBuilder() {
         // TODO: I realized this is not correct, however it needs to be null in order to keep downward compatibility
         // but assuming a default @Builder will make testcases fail. Not having a default means that you need to
