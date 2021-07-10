@@ -67,9 +67,9 @@ import static javax.lang.model.element.ElementKind.CLASS;
  * <li>if no error occurred, write out the model into Java source files</li>
  * </ul>
  * <p>
- * For reading annotation attributes, gems as generated with help of the <a
- * href="https://java.net/projects/hickory">Hickory</a> tool are used. These gems allow a comfortable access to
- * annotations and their attributes without depending on their class objects.
+ * For reading annotation attributes, gems as generated with help of <a
+ * href="https://github.com/mapstruct/tools-gem">Gem Tools</a>. These gems allow comfortable access to annotations and
+ * their attributes without depending on their class objects.
  * <p>
  * The creation of Java source files is done using the <a href="http://freemarker.org/"> FreeMarker</a> template engine.
  * Each node of the mapper model has a corresponding FreeMarker template file which provides the Java representation of
