@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
@@ -347,7 +348,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public MappingMethodOptions getOptions() {
-        return basedOn.getOptions();
+        return MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
     }
 
     @Override

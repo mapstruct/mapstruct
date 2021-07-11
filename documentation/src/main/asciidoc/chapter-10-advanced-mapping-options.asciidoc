@@ -110,6 +110,34 @@ public interface SourceTargetMapper {
 
 The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation (see <<expressions>>).
 
+[[sub-class-mappings]]
+=== Subclass Mapping
+
+When both input and result types have an inheritance relation, you would want the correct specialization be mapped to the matching specialization. Suppose an Apple and a Banana, which are both specializations of Fruit.
+
+.Specifying the sub class mappings of a fruit mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FruitMapper {
+
+    @SubClassMapping( sourceClass = AppleDto.class, targetClass = Apple.class )
+    @SubClassMapping( sourceClass = BananaDto.class, targetClass = Banana.class )
+    Fruit map( FruitDto source );
+
+}
+----
+====
+
+If you would just use a normal mapping both the AppleDto and the BananaDto would be made into a Fruit object, instead of an Apple and a Banana object. By using the SubClassMapping an AppleDtoToApple mapping will be done for Apples, and an BananaDtoToBanana mapping will be done for Banana's. If you would try to map a GrapeDto it would still turn into a Fruit. In the case that the Fruit type is an abstract class or an interface, you would get an IllegalArgumentException because it is unknown how to map a GrapeDto. Adding the missing (`@SubClassMapping`) for it will fix that.
+
+[TIP]
+====
+If the mapping method for the subClasses does not exist it will be created and any other annotations on the fruit mapping method are inherited by the newly generated mappings.
+====
+
 [[determining-result-type]]
 === Determining the result type
 
