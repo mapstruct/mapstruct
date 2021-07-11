@@ -24,6 +24,19 @@
     }
     </#if>
 
+    <#if hasSubClassMappings()>
+        <#assign first = true />
+        <#list constructSubClassMappings(parameters) as subClass>
+            <#if !first>else</#if> if (${subClass.sourceArgument} instanceof <@includeModel object=subClass.sourceType/>) {
+                <@includeModel object=subClass.assignment existingInstanceMapping=existingInstanceMapping/>
+            }
+            <#assign first = false />
+        </#list>
+        else {
+    </#if>
+    <#if isAbstractReturnType()>
+        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${parameters[0].name}.getClass());
+    <#else>
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>
             <#if (sourceParameters?size > 1)>
@@ -119,6 +132,10 @@
     <#else>
         return ${resultName};
     </#if>
+    </#if>
+    </#if>
+    <#if hasSubClassMappings()>
+        }
     </#if>
 }
 <#macro throws>

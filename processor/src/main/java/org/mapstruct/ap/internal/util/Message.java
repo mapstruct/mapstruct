@@ -114,6 +114,9 @@ public enum Message {
     ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
     ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
+    SUBCLASSMAPPING_ILLEGAL_SUBCLASS("Class '%s' is not a subclass of '%s'."),
+    SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED("SubClassMapping annotation can not be used on Suppliers and Runnables."),
+
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
@@ -187,7 +190,6 @@ public enum Message {
     MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),
     ;
     // CHECKSTYLE:ON
-
 
     private final String description;
     private final Diagnostic.Kind kind;

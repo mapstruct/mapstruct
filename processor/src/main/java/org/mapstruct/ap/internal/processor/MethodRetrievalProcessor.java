@@ -42,6 +42,7 @@ import org.mapstruct.ap.internal.model.source.MapperOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.SubClassMappingOptions;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -299,6 +300,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager
         );
 
+        List<SubClassMappingOptions> subClassMappingOptions =
+            SubClassMappingOptions.getInstanceOn(
+                method,
+                mapperOptions,
+                messager,
+                typeUtils
+            );
+
         return new SourceMethod.Builder()
             .setExecutable( method )
             .setParameters( parameters )
@@ -311,6 +320,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setMapMappingOptions( mapMappingOptions )
             .setValueMappingOptionss( getValueMappings( method ) )
             .setEnumMappingOptions( enumMappingOptions )
+            .setSubClassMappings( subClassMappingOptions )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
