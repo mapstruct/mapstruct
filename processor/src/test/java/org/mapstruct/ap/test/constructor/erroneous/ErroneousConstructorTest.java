@@ -12,14 +12,13 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.Compiler;
 
 /**
  * @author Filip Hrisafov
  */
 public class ErroneousConstructorTest {
 
-    @ProcessorTest(Compiler.JDK)
+    @ProcessorTest
     @WithClasses({
         ErroneousAmbiguousConstructorsMapper.class,
         PersonDto.class
@@ -37,25 +36,6 @@ public class ErroneousConstructorTest {
         )
     })
     public void shouldUseMultipleConstructorsCompilerJdk() {
-    }
-
-    @ProcessorTest(Compiler.ECLIPSE)
-    @WithClasses({
-        ErroneousAmbiguousConstructorsMapper.class,
-        PersonDto.class
-    })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic(
-            type = ErroneousAmbiguousConstructorsMapper.class,
-            kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 17,
-            message = "Ambiguous constructors found for creating org.mapstruct.ap.test.constructor.erroneous" +
-                ".ErroneousAmbiguousConstructorsMapper.PersonWithMultipleConstructors: " +
-                "public void <init>(java.lang.String) , public void <init>(java.lang.String, int) . Either declare " +
-                "parameterless constructor or annotate the default constructor with an annotation named @Default."
-        )
-    })
-    public void shouldUseMultipleConstructorsCompilerEclipse() {
     }
 
     @ProcessorTest

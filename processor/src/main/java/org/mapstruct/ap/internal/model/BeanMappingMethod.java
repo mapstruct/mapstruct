@@ -26,6 +26,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -699,7 +700,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     GENERAL_AMBIGUOUS_CONSTRUCTORS,
                     type,
-                    Strings.join( constructors, ", " )
+                    constructors.stream()
+                        .map( ExecutableElement::getParameters )
+                        .map( ps -> ps.stream()
+                            .map( VariableElement::asType )
+                            .map( String::valueOf )
+                            .collect( Collectors.joining( ",", type.getName() + "(", ")" ) )
+                        )
+                        .collect( Collectors.joining( ", " ) )
                 );
                 return null;
             }
