@@ -35,7 +35,7 @@ public class ErroneousConstructorTest {
                 "or annotate the default constructor with an annotation named @Default."
         )
     })
-    public void shouldUseMultipleConstructorsCompilerJdk() {
+    public void shouldUseMultipleConstructors() {
     }
 
     @ProcessorTest
