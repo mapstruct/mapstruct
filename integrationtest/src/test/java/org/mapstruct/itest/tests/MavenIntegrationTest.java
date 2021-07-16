@@ -180,4 +180,8 @@ public class MavenIntegrationTest {
     void faultyAstModifyingProcessor() {
     }
 
+    @ProcessorTest(baseDir = "dagger2Test")
+    void dagger2Test() {
+    }
+
 }

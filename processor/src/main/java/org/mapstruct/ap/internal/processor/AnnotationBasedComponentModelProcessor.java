@@ -111,10 +111,12 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     }
 
     private void buildConstructors(Mapper mapper) {
-        if ( !toMapperReferences( mapper.getFields() ).isEmpty() ) {
+        boolean constructorIsRequired = requiresGenerationOfConstructor();
+
+        if ( constructorIsRequired || !toMapperReferences( mapper.getFields() ).isEmpty() ) {
             AnnotatedConstructor annotatedConstructor = buildAnnotatedConstructorForMapper( mapper );
 
-            if ( !annotatedConstructor.getMapperReferences().isEmpty() ) {
+            if ( constructorIsRequired || !annotatedConstructor.getMapperReferences().isEmpty() ) {
                 mapper.setConstructor( annotatedConstructor );
             }
         }
@@ -209,6 +211,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     }
 
     protected boolean additionalPublicEmptyConstructor() {
+        return false;
+    }
+
+    protected boolean requiresGenerationOfConstructor() {
         return false;
     }
 

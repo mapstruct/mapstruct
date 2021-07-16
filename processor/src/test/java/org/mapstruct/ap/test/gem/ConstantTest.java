@@ -40,5 +40,7 @@ public class ConstantTest {
         assertThat( MappingConstants.ComponentModel.CDI ).isEqualTo( MappingConstantsGem.ComponentModelGem.CDI );
         assertThat( MappingConstants.ComponentModel.SPRING ).isEqualTo( MappingConstantsGem.ComponentModelGem.SPRING );
         assertThat( MappingConstants.ComponentModel.JSR330 ).isEqualTo( MappingConstantsGem.ComponentModelGem.JSR330 );
+        assertThat( MappingConstants.ComponentModel.DAGGER2 )
+            .isEqualTo( MappingConstantsGem.ComponentModelGem.DAGGER2 );
     }
 }
