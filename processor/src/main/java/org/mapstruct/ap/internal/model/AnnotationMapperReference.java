@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -28,12 +29,16 @@ public class AnnotationMapperReference extends MapperReference {
 
     private final boolean includeAnnotationsOnField;
 
+    private final Accessibility accessibility;
+
     public AnnotationMapperReference(Type type, String variableName, List<Annotation> annotations, boolean isUsed,
-                                     boolean fieldFinal, boolean includeAnnotationsOnField) {
+                                     boolean fieldFinal, boolean includeAnnotationsOnField,
+                                     Accessibility accessibility) {
         super( type, variableName, isUsed );
         this.annotations = annotations;
         this.fieldFinal = fieldFinal;
         this.includeAnnotationsOnField = includeAnnotationsOnField;
+        this.accessibility = accessibility;
     }
 
     public List<Annotation> getAnnotations() {
@@ -60,6 +65,10 @@ public class AnnotationMapperReference extends MapperReference {
         return includeAnnotationsOnField;
     }
 
+    public Accessibility getAccessibility() {
+        return accessibility;
+    }
+
     public AnnotationMapperReference withNewAnnotations(List<Annotation> annotations) {
         return new AnnotationMapperReference(
             getType(),
@@ -67,6 +76,7 @@ public class AnnotationMapperReference extends MapperReference {
             annotations,
             isUsed(),
             isFieldFinal(),
-            isIncludeAnnotationsOnField() );
+            isIncludeAnnotationsOnField(),
+            getAccessibility() );
     }
 }

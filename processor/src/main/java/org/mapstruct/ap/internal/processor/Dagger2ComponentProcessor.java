@@ -5,8 +5,10 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.common.Accessibility;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -24,5 +26,10 @@ public class Dagger2ComponentProcessor extends Jsr330ComponentProcessor {
     @Override
     protected boolean requiresGenerationOfConstructor() {
         return true;
+    }
+
+    @Override
+    protected Accessibility getMapperReferenceAccessibility(InjectionStrategyGem injectionStrategy) {
+        return injectionStrategy == InjectionStrategyGem.CONSTRUCTOR ? Accessibility.PRIVATE : Accessibility.DEFAULT;
     }
 }

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.injectionstrategy.dagger2._default;
+package org.mapstruct.ap.test.injectionstrategy.dagger2.field;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,26 +27,27 @@ import static java.lang.System.lineSeparator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test default injection for component model dagger2.
+ * Test field injection for component model dagger2.
  */
 @WithClasses({
     CustomerDto.class,
     CustomerEntity.class,
     Gender.class,
     GenderDto.class,
-    CustomerDagger2DefaultCompileOptionFieldMapper.class,
-    GenderDagger2DefaultCompileOptionFieldMapper.class
+    CustomerDagger2FieldMapper.class,
+    GenderDagger2FieldMapper.class,
+    FieldDagger2Config.class
 })
-@ComponentScan(basePackageClasses = CustomerDagger2DefaultCompileOptionFieldMapper.class)
+@ComponentScan(basePackageClasses = CustomerDagger2FieldMapper.class)
 @Configuration
-public class Dagger2DefaultCompileOptionFieldMapperTest {
+public class Dagger2FieldMapperTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @Inject
     @Named
-    private CustomerDagger2DefaultCompileOptionFieldMapper customerMapper;
+    private CustomerDagger2FieldMapper customerMapper;
     private ConfigurableApplicationContext context;
 
     @BeforeEach
@@ -80,9 +81,9 @@ public class Dagger2DefaultCompileOptionFieldMapperTest {
 
     @ProcessorTest
     public void shouldHaveFieldInjection() {
-        generatedSource.forMapper( CustomerDagger2DefaultCompileOptionFieldMapper.class )
+        generatedSource.forMapper( CustomerDagger2FieldMapper.class )
             .content()
-            .contains( "@Inject" + lineSeparator() + "    GenderDagger2DefaultCompileOptionFieldMapper" )
-            .doesNotContain( "public CustomerDagger2DefaultCompileOptionFieldMapperImpl(" );
+            .contains( "@Inject" + lineSeparator() + "    GenderDagger2FieldMapper" )
+            .doesNotContain( "public CustomerDagger2FieldMapperImpl(" );
     }
 }

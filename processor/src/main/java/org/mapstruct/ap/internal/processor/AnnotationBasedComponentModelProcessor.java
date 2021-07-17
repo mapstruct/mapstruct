@@ -21,6 +21,7 @@ import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
+import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
@@ -241,7 +242,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             annotations,
             originalReference.isUsed(),
             finalField,
-            includeAnnotationsOnField );
+            includeAnnotationsOnField,
+            getMapperReferenceAccessibility( injectionStrategy ) );
     }
 
     /**
@@ -266,6 +268,14 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @return the annotation of the field for the mapper reference
      */
     protected abstract List<Annotation> getMapperReferenceAnnotations();
+
+    /**
+     * @param injectionStrategy the injection strategy
+     * @return the mapper reference field's accessibility
+     */
+    protected Accessibility getMapperReferenceAccessibility(InjectionStrategyGem injectionStrategy) {
+        return Accessibility.PRIVATE;
+    }
 
     /**
      * @return if a decorator (sub-)class needs to be generated or not

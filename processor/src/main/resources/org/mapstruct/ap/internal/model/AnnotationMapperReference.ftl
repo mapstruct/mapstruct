@@ -11,4 +11,4 @@
         <#nt><@includeModel object=annotation/>
     </#list>
 </#if>
-private <#if fieldFinal>final </#if><@includeModel object=type/> ${variableName};
+${accessibility.keyword} <#if fieldFinal>final </#if><@includeModel object=type/> ${variableName};
