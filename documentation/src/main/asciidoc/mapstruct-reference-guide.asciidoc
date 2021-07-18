@@ -12,7 +12,7 @@
 [[Preface]]
 == Preface
 This is the reference documentation of MapStruct, an annotation processor for generating type-safe, performant and dependency-free bean mapping code.
-This guide covers all the functionality provided by MapStruct. In case this guide doesn't answer all your questions just join the MapStruct https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users[Google group] to get help.
+This guide covers all the functionality provided by MapStruct. In case this guide doesn't answer all your questions just join the MapStruct https://github.com/mapstruct/mapstruct/discussions[GitHub Discussions] to get help.
 
 You found a typo or other error in this guide? Please let us know by opening an issue in the https://github.com/mapstruct/mapstruct[MapStruct GitHub repository],
 or, better yet, help the community and send a pull request for fixing it!
