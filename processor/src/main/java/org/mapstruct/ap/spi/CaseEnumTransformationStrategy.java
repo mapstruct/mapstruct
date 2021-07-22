@@ -20,6 +20,7 @@ public class CaseEnumTransformationStrategy implements EnumTransformationStrateg
     private static final String UPPER = "upper";
     private static final String LOWER = "lower";
     private static final String CAPITAL = "capital";
+    private static final String CASE_ENUM_TRANSFORMATION_STRATEGIES = UPPER + ", " + LOWER + ", " + CAPITAL;
 
     @Override
     public String getStrategyName() {
@@ -37,7 +38,8 @@ public class CaseEnumTransformationStrategy implements EnumTransformationStrateg
                 return capitalize( value );
             default:
                 throw new IllegalArgumentException(
-                    "Unexpected configuration for enum case transformation: " + configuration );
+                    "Unexpected configuration for enum case transformation: " + configuration +
+                    ". Allowed values: " + CASE_ENUM_TRANSFORMATION_STRATEGIES);
         }
     }
 
