@@ -112,7 +112,8 @@ public class EnumNameTransformationStrategyTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 18,
                 message = "Illegal transformation for 'case' EnumTransformationStrategy." +
-                    " Error: 'Unexpected configuration for enum case transformation: unknown'."
+                    " Error: 'Unexpected configuration for enum case transformation: unknown. " +
+                    "Allowed values: upper, lower, capital'."
             )
         }
     )
