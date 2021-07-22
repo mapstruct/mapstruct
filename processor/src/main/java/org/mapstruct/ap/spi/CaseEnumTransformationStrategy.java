@@ -38,8 +38,8 @@ public class CaseEnumTransformationStrategy implements EnumTransformationStrateg
                 return capitalize( value );
             default:
                 throw new IllegalArgumentException(
-                        "Unexpected configuration for enum case transformation: " + configuration +
-                                ". Allowed values: " + CASE_ENUM_TRANSFORMATION_STRATEGIES);
+                    "Unexpected configuration for enum case transformation: " + configuration +
+                    ". Allowed values: " + CASE_ENUM_TRANSFORMATION_STRATEGIES);
         }
     }
 
