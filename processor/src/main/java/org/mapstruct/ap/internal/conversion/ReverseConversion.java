@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import java.util.Collections;
 import java.util.List;
+
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.FieldReference;
-import org.mapstruct.ap.internal.model.HelperMethod;
 
 /**
  *  * A {@link ConversionProvider} which creates the inversed conversions for a
@@ -42,7 +42,7 @@ public class ReverseConversion implements ConversionProvider {
 
     @Override
     public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
-        return Collections.emptyList();
+        return conversionProvider.getRequiredHelperMethods( conversionContext );
     }
 
     @Override
