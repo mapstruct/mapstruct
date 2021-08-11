@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._2537;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -14,6 +15,7 @@ import org.mapstruct.ReportingPolicy;
  */
 @Mapper( unmappedSourcePolicy = ReportingPolicy.ERROR )
 public interface UnmappedSourcePolicyWithImplicitSourceMapper {
+    @BeanMapping( ignoreByDefault = true )
     @Mapping( target = "property" )
     Target map(Source source);
 

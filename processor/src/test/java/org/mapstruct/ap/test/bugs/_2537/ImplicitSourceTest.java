@@ -21,7 +21,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 public class ImplicitSourceTest {
 
     @ProcessorTest
-    @ExpectedCompilationOutcome( value = CompilationResult.SUCCEEDED, diagnostics = {} )
-    public void reportsProperWarningsAndError() {
+    public void situationCompilesWithoutErrors() {
     }
 }
