@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.HelperMethod;
 
 /**
@@ -44,4 +45,8 @@ public class ReverseConversion implements ConversionProvider {
         return Collections.emptyList();
     }
 
+    @Override
+    public List<FieldReference> getRequiredHelperFields(ConversionContext conversionContext) {
+        return conversionProvider.getRequiredHelperFields( conversionContext );
+    }
 }
