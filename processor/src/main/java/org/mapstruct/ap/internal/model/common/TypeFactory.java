@@ -278,7 +278,17 @@ public class TypeFactory {
             isInterface = false;
             // When the component type is primitive and is annotated with ElementType.TYPE_USE then
             // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
-            name = mirror.getKind().isPrimitive() ? NativeTypes.getName( mirror.getKind() ) : mirror.toString();
+            if ( mirror.getKind().isPrimitive() ) {
+                name = NativeTypes.getName( mirror.getKind() );
+            }
+            // When the component type is type var and is annotated with ElementType.TYPE_USE then
+            // the typeMirror#toString returns (@CustomAnnotation T) for the errorprone javac compiler
+            else if ( mirror.getKind() == TypeKind.TYPEVAR ) {
+                name = ( (TypeVariable) mirror ).asElement().getSimpleName().toString();
+            }
+            else {
+                name = mirror.toString();
+            }
             packageName = null;
             qualifiedName = name;
             typeElement = null;
