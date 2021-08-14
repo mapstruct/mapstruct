@@ -1170,6 +1170,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .build();
                         handledTargets.add( targetPropertyName );
                         unprocessedSourceParameters.remove( sourceRef.getParameter() );
+                        unprocessedSourceProperties.remove( sourceRef.getShallowestPropertyName() );
                     }
                     else {
                         errorOccured = true;
