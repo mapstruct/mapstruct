@@ -705,7 +705,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .map( ps -> ps.stream()
                             .map( VariableElement::asType )
                             .map( String::valueOf )
-                            .collect( Collectors.joining( ",", type.getName() + "(", ")" ) )
+                            .collect( Collectors.joining( ", ", type.getName() + "(", ")" ) )
                         )
                         .collect( Collectors.joining( ", " ) )
                 );
