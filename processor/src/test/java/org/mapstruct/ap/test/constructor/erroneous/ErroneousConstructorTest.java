@@ -29,8 +29,10 @@ public class ErroneousConstructorTest {
             kind = javax.tools.Diagnostic.Kind.ERROR,
             line = 17,
             message = "Ambiguous constructors found for creating org.mapstruct.ap.test.constructor.erroneous" +
-                ".ErroneousAmbiguousConstructorsMapper.PersonWithMultipleConstructors. Either declare parameterless " +
-                "constructor or annotate the default constructor with an annotation named @Default."
+                ".ErroneousAmbiguousConstructorsMapper.PersonWithMultipleConstructors: " +
+                "PersonWithMultipleConstructors(java.lang.String), " +
+                "PersonWithMultipleConstructors(java.lang.String, int). Either declare parameterless constructor " +
+                "or annotate the default constructor with an annotation named @Default."
         )
     })
     public void shouldUseMultipleConstructors() {
