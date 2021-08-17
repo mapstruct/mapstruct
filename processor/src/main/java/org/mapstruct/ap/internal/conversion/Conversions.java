@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -193,6 +194,8 @@ public class Conversions {
         register( Currency.class, String.class, new CurrencyToStringConversion() );
 
         register( UUID.class, String.class, new UUIDToStringConversion() );
+
+        registerURLConversion();
     }
 
     private void registerJodaConversions() {
@@ -292,6 +295,16 @@ public class Conversions {
         else {
             register( BigDecimal.class, targetType, new BigDecimalToWrapperConversion( targetType ) );
         }
+    }
+
+    private void registerURLConversion() {
+        if ( isJavaURLAvailable() ) {
+            register( URL.class, String.class, new URLToStringConversion() );
+        }
+    }
+
+    private boolean isJavaURLAvailable() {
+        return typeFactory.isTypeAvailable( "java.net.URL" );
     }
 
     private void register(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
