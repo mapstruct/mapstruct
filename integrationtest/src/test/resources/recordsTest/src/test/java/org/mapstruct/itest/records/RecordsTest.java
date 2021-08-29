@@ -5,6 +5,8 @@
  */
 package org.mapstruct.itest.records;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
@@ -46,5 +48,17 @@ public class RecordsTest {
 
         assertThat( value ).isNotNull();
         assertThat( value.value() ).isEqualTo( "Kermit" );
+    }
+
+    @Test
+    public void shouldMapIntoRecordWithList() {
+        Car car = new Car();
+        car.setWheelPositions( Arrays.asList( new WheelPosition( "left" ) ) );
+
+        CarDto carDto = CarAndWheelMapper.INSTANCE.carDtoFromCar(car);
+
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.wheelPositions() )
+            .containsExactly( "left" );
     }
 }
