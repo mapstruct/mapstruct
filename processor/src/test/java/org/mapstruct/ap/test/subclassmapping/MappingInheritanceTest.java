@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._2438;
+package org.mapstruct.ap.test.subclassmapping;
 
 import org.assertj.core.api.Assertions;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -13,10 +13,10 @@ import org.mapstruct.factory.Mappers;
 
 @IssueKey( "2438" )
 @WithClasses( { Source.class, SourceSubclass.class, SubclassMapper.class, Target.class } )
-class Issue2438Test {
+class MappingInheritenceTest {
 
     @ProcessorTest
-    void inheretenceTest() {
+    void inheritanceTest() {
         SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
         SourceSubclass sourceSubclass = new SourceSubclass( "f1", "f2", "f3", "f4", "f5" );
 
