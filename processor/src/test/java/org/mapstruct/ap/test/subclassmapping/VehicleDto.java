@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._131.domain;
+package org.mapstruct.ap.test.subclassmapping;
 
-public class Vehicle {
+public class VehicleDto {
     private String name;
 
     public String getName() {
