@@ -874,6 +874,13 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable list of alternative target accessors.
      */
     private List<Accessor> getAlternativeTargetAccessors() {
+        if ( alternativeTargetAccessors != null ) {
+            return alternativeTargetAccessors;
+        }
+
+        if ( isRecord() ) {
+            alternativeTargetAccessors = Collections.emptyList();
+        }
 
         if ( alternativeTargetAccessors == null ) {
 
