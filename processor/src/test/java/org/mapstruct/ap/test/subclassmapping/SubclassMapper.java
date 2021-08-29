@@ -13,7 +13,7 @@ import org.mapstruct.SubClassMapping;
 @Mapper
 public interface SubclassMapper {
 
-    @SubClassMapping( sourceClass = SourceSubclass.class, targetClass = Target.class )
+    @SubClassMapping( source = SourceSubclass.class, target = Target.class )
     @Mapping( target = "target1", source = "property1" )
     @Mapping( target = "target2", source = "property2" )
     @Mapping( target = "target3", source = "property3" )

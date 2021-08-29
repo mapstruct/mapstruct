@@ -20,9 +20,9 @@ public interface SubclassWithAbstractSuperclassMapper {
 
     org.mapstruct.ap.test.subclassmapping.abstractsuperclass.BikeDto map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Bike bike);
 
-    @SubClassMapping( sourceClass = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Car.class,
-                    targetClass = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.CarDto.class )
-    @SubClassMapping( sourceClass = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Bike.class,
-                    targetClass = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.BikeDto.class )
+    @SubClassMapping( source = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Car.class,
+                    target = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.CarDto.class )
+    @SubClassMapping( source = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Bike.class,
+                    target = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.BikeDto.class )
     org.mapstruct.ap.test.subclassmapping.abstractsuperclass.VehicleDto map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.AbstractVehicle vehicle);
 }

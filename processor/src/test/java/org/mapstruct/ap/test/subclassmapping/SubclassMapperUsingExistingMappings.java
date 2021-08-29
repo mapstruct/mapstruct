@@ -21,7 +21,7 @@ public interface SubclassMapperUsingExistingMappings {
         return dto;
     }
 
-    @SubClassMapping( sourceClass = Car.class, targetClass = CarDto.class )
-    @SubClassMapping( sourceClass = Bike.class, targetClass = BikeDto.class )
+    @SubClassMapping( source = Car.class, target = CarDto.class )
+    @SubClassMapping( source = Bike.class, target = BikeDto.class )
     VehicleDto map(Vehicle vehicle);
 }

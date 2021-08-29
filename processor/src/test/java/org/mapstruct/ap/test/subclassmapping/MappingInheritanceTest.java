@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 
 @IssueKey( "2438" )
 @WithClasses( { Source.class, SourceSubclass.class, SubclassMapper.class, Target.class } )
-class MappingInheritenceTest {
+class MappingInheritanceTest {
 
     @ProcessorTest
     void inheritanceTest() {

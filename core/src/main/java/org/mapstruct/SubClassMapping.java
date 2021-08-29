@@ -14,10 +14,8 @@ import java.lang.annotation.Target;
 /**
  * Configures the mapping to handle hierarchy of the source type.
  * <p>
- * The subclass to be mapped is to be specified via {@link #sourceClass()}.
- * The subclass to map to is to be specified via {@link #targetClass()}.
- * It currently is also required that a mapping method exist that has the {@link #targetClass()}
- * as the return type and the {@link #sourceClass()} as the only argument.
+ * The subclass to be mapped is to be specified via {@link #source()}.
+ * The subclass to map to is to be specified via {@link #target()}.
  * </p>
  * <p>
  * This annotation can be combined with &#64;Mapping annotations.
@@ -75,10 +73,10 @@ public @interface SubClassMapping {
     /**
      * @return the source subclass to check for before using the default mapping as fallback.
      */
-    Class<?> sourceClass();
+    Class<?> source();
 
     /**
      * @return the target subclass to map the sourceSubClass to.
      */
-    Class<?> targetClass();
+    Class<?> target();
 }

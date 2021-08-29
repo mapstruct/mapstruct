@@ -67,8 +67,8 @@ public class SubClassMappingOptions extends DelegatingOptions {
                 continue;
             }
 
-            TypeMirror sourceSubClass = subClassMapping.sourceClass().getValue();
-            TypeMirror targetSubClass = subClassMapping.targetClass().getValue();
+            TypeMirror sourceSubClass = subClassMapping.source().getValue();
+            TypeMirror targetSubClass = subClassMapping.target().getValue();
 
             subClassMappingOptions
                                   .add(
@@ -92,8 +92,8 @@ public class SubClassMappingOptions extends DelegatingOptions {
             return false;
         }
 
-        TypeMirror sourceSubClass = gem.sourceClass().getValue();
-        TypeMirror targetSubClass = gem.targetClass().getValue();
+        TypeMirror sourceSubClass = gem.source().getValue();
+        TypeMirror targetSubClass = gem.target().getValue();
         TypeMirror sourceParentType = method.getParameters().get( 0 ).asType();
         TypeMirror targetParentType = method.getReturnType();
         boolean isConsistent = true;

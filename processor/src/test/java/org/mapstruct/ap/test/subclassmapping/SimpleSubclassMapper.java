@@ -15,7 +15,7 @@ public interface SimpleSubclassMapper {
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 
-    @SubClassMapping( sourceClass = Car.class, targetClass = CarDto.class )
-    @SubClassMapping( sourceClass = Bike.class, targetClass = BikeDto.class )
+    @SubClassMapping( source = Car.class, target = CarDto.class )
+    @SubClassMapping( source = Bike.class, target = BikeDto.class )
     VehicleDto map(Vehicle vehicle);
 }
