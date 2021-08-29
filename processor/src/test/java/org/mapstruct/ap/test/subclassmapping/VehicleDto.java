@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.subclassmapping;
 
 public class VehicleDto {
     private String name;
+    private String maker;
 
     public String getName() {
         return name;
@@ -14,5 +15,13 @@ public class VehicleDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMaker() {
+        return maker;
+    }
+
+    public void setMaker(String maker) {
+        this.maker = maker;
     }
 }

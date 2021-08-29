@@ -122,6 +122,33 @@ public class ForgedMethod implements Method {
         );
     }
 
+    /**
+     * Creates a new forged method for mapping a SubclassMapping element
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param returnType the return type.
+     * @param basedOn the method that (originally) triggered this nested method generation.
+     * @param history a parent forged method if this is a forged method within a forged method
+     * @param forgedNameBased forges a name based (matched) mapping method
+     *
+     * @return a new forge method
+     */
+    public static ForgedMethod forSubClassMapping(String name, Type sourceType, Type returnType, Method basedOn,
+                                                 MappingReferences mappingReferences, ForgedMethodHistory history,
+                                                 boolean forgedNameBased) {
+        return new ForgedMethod(
+            name,
+            sourceType,
+            returnType,
+            basedOn.getContextParameters(),
+            basedOn,
+            history,
+            mappingReferences == null ? MappingReferences.empty() : mappingReferences,
+            forgedNameBased
+        );
+    }
+
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
                          Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
                          boolean forgedNameBased) {

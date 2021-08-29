@@ -41,4 +41,18 @@ public class SubclassMappingTest {
                                           .extracting( VehicleDto::getName )
                                           .containsExactly( "created through existing mapping." );
     }
+
+    @ProcessorTest
+    void subclassMappingInheritsMappingTest() {
+        VehicleCollection vehicles = new VehicleCollection();
+        Car car = new Car();
+        car.setVehicleManufacturingCompany( "BenZ" );
+        vehicles.getVehicles().add( car );
+
+        VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
+
+        assertThat( result.getVehicles() )
+                                          .extracting( VehicleDto::getMaker )
+                                          .containsExactly( "BenZ" );
+    }
 }

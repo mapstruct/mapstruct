@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.subclassmapping;
 
 public class Vehicle {
     private String name;
+    private String vehicleManufacturingCompany;
 
     public String getName() {
         return name;
@@ -14,5 +15,13 @@ public class Vehicle {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getVehicleManufacturingCompany() {
+        return vehicleManufacturingCompany;
+    }
+
+    public void setVehicleManufacturingCompany(String vehicleManufacturingCompany) {
+        this.vehicleManufacturingCompany = vehicleManufacturingCompany;
     }
 }

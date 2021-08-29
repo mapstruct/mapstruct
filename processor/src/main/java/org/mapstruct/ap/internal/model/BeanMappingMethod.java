@@ -380,7 +380,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private boolean hasSubClassMappingsAndIsEitherAbstractOrCanBeConstructed(Type returnTypeImpl) {
             return hasSubclassMappings()
-                && isReturnTypeAbstractOrcanBeConstructed( returnTypeImpl );
+                && isReturnTypeAbstractOrCanBeConstructed( returnTypeImpl );
         }
 
         private SubClassMapping createSubClassMapping(SubClassMappingOptions subClassMappingOptions) {
@@ -414,7 +414,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                        criteria,
                                        rightHandSide,
                                        null,
-                                           () -> forgeMapping( rightHandSide, sourceType, targetType ) );
+                                           () -> forgeSubclassMapping( rightHandSide, sourceType, targetType, mappingReferences ) );
             return new SubClassMapping( sourceType, targetType, assignment, ctx.getTypeUtils() );
         }
 
@@ -629,7 +629,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return error;
         }
 
-        private boolean isReturnTypeAbstractOrcanBeConstructed(Type returnType) {
+        private boolean isReturnTypeAbstractOrCanBeConstructed(Type returnType) {
             boolean error = true;
             if ( !returnType.isAbstract() && !returnType.hasAccessibleConstructor() ) {
                 ctx

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.subclassmapping;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.SubClassMapping;
 import org.mapstruct.factory.Mappers;
 
@@ -17,5 +18,6 @@ public interface SimpleSubclassMapper {
 
     @SubClassMapping( source = Car.class, target = CarDto.class )
     @SubClassMapping( source = Bike.class, target = BikeDto.class )
+    @Mapping( source = "vehicleManufacturingCompany", target = "maker")
     VehicleDto map(Vehicle vehicle);
 }

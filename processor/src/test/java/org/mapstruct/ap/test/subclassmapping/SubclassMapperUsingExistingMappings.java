@@ -6,10 +6,11 @@
 package org.mapstruct.ap.test.subclassmapping;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.SubClassMapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( unmappedTargetPolicy = ReportingPolicy.IGNORE )
 public interface SubclassMapperUsingExistingMappings {
     SubclassMapperUsingExistingMappings INSTANCE = Mappers.getMapper( SubclassMapperUsingExistingMappings.class );
 
