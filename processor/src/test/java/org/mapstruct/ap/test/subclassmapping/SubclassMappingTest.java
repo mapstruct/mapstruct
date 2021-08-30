@@ -7,6 +7,14 @@ package org.mapstruct.ap.test.subclassmapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
+import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.Car;
+import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
+import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollection;
+import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

@@ -9,6 +9,9 @@ import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.SubClassMapping;
+import org.mapstruct.ap.test.subclassmapping.mappables.Source;
+import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubclass;
+import org.mapstruct.ap.test.subclassmapping.mappables.Target;
 
 @Mapper
 public interface SubclassMapper {

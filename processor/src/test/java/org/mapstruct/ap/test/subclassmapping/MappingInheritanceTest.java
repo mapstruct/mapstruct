@@ -6,6 +6,9 @@
 package org.mapstruct.ap.test.subclassmapping;
 
 import org.assertj.core.api.Assertions;
+import org.mapstruct.ap.test.subclassmapping.mappables.Source;
+import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubclass;
+import org.mapstruct.ap.test.subclassmapping.mappables.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

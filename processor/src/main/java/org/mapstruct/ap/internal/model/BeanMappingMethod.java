@@ -1792,6 +1792,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 types.addAll( propertyMapping.getTargetType().getImportTypes() );
             }
         }
+        for ( SubClassMapping subClassMapping : subClasses ) {
+            types.addAll( subClassMapping.getImportTypes() );
+        }
 
         if ( returnTypeToConstruct != null  ) {
             types.addAll( returnTypeToConstruct.getImportTypes() );

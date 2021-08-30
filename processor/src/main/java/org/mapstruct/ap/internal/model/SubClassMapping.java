@@ -47,7 +47,7 @@ public class SubClassMapping extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return new HashSet<>( Arrays.asList( sourceType, targetType ) );
+        return new HashSet<>( Arrays.asList( sourceType ) );
     }
 
     public AssignmentWrapper getAssignment() {
