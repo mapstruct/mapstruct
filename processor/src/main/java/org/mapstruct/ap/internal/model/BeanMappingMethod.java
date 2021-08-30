@@ -1514,13 +1514,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
+            // If we have ignoreByDefault = true, unprocessed source properties are not an issue.
+            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
+                return ReportingPolicyGem.IGNORE;
+            }
             return method.getOptions().getMapper().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
             ReportingPolicyGem unmappedSourcePolicy = getUnmappedSourcePolicy();
 
-            if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
+            if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport()) {
 
                 Message msg = unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
                     Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR : Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
