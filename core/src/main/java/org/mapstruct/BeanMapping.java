@@ -118,7 +118,7 @@ public @interface BeanMapping {
 
     /**
      * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No
-     * warning will be issued on missing target properties.
+     * warning will be issued on missing source or target properties.
      *
      * @return The ignore strategy (default false).
      *
