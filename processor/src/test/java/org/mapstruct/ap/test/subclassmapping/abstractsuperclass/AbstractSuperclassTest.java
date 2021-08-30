@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.subclassmapping.abstractsuperclass;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.assertj.core.api.Assertions;
 import org.mapstruct.ap.testutil.IssueKey;

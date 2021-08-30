@@ -13,16 +13,13 @@ import org.mapstruct.factory.Mappers;
 public interface SubclassWithAbstractSuperclassMapper {
     SubclassWithAbstractSuperclassMapper INSTANCE = Mappers.getMapper( SubclassWithAbstractSuperclassMapper.class );
 
-    org.mapstruct.ap.test.subclassmapping.abstractsuperclass.VehicleCollectionDto
-                    map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.VehicleCollection vehicles);
+    VehicleCollectionDto map(VehicleCollection vehicles);
 
-    org.mapstruct.ap.test.subclassmapping.abstractsuperclass.CarDto map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Car car);
+    CarDto map(Car car);
 
-    org.mapstruct.ap.test.subclassmapping.abstractsuperclass.BikeDto map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Bike bike);
+    BikeDto map(Bike bike);
 
-    @SubClassMapping( source = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Car.class,
-                    target = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.CarDto.class )
-    @SubClassMapping( source = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Bike.class,
-                    target = org.mapstruct.ap.test.subclassmapping.abstractsuperclass.BikeDto.class )
-    org.mapstruct.ap.test.subclassmapping.abstractsuperclass.VehicleDto map(org.mapstruct.ap.test.subclassmapping.abstractsuperclass.AbstractVehicle vehicle);
+    @SubClassMapping( source = Car.class, target = CarDto.class )
+    @SubClassMapping( source = Bike.class, target = BikeDto.class )
+    VehicleDto map(AbstractVehicle vehicle);
 }

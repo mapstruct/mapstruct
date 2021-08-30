@@ -5,22 +5,21 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
 
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
  * @author Filip Hrisafov
  */
-public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>, M extends MappingMethod>
+public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>,
+                M extends MappingMethod>
     extends AbstractBaseBuilder<B> {
 
     public AbstractMappingMethodBuilder(Class<B> selfType) {
