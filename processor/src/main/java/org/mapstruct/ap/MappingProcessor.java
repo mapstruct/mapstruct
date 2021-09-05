@@ -84,6 +84,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
     MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
     MappingProcessor.UNMAPPED_TARGET_POLICY,
+    MappingProcessor.UNMAPPED_SOURCE_POLICY,
     MappingProcessor.DEFAULT_COMPONENT_MODEL,
     MappingProcessor.DEFAULT_INJECTION_STRATEGY,
     MappingProcessor.VERBOSE
@@ -99,6 +100,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT =
         "mapstruct.suppressGeneratorVersionInfoComment";
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
+    protected static final String UNMAPPED_SOURCE_POLICY = "mapstruct.unmappedSourcePolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
     protected static final String DEFAULT_INJECTION_STRATEGY = "mapstruct.defaultInjectionStrategy";
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
@@ -134,11 +136,13 @@ public class MappingProcessor extends AbstractProcessor {
 
     private Options createOptions() {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
+        String unmappedSourcePolicy = processingEnv.getOptions().get( UNMAPPED_SOURCE_POLICY );
 
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicyGem.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
+            unmappedSourcePolicy != null ? ReportingPolicyGem.valueOf( unmappedSourcePolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
             processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
             Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
