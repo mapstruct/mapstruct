@@ -29,7 +29,7 @@ public class SubClassMapping extends ModelElement {
     private Type targetType;
     private Assignment assignment;
     private String sourceArgument;
-    
+
     public SubClassMapping(Type sourceType, String sourceArgument, Type targetType, Assignment assignment) {
         this.sourceType = sourceType;
         this.sourceArgument = sourceArgument;
