@@ -15,10 +15,11 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
 
 @IssueKey( "2438" )
-@WithClasses( { Source.class, SourceSubclass.class, SubclassMapper.class, Target.class } )
+@WithClasses( { Source.class, SourceSubclass.class, Target.class } )
 class MappingInheritanceTest {
 
     @ProcessorTest
+    @WithClasses( { SubclassMapper.class } )
     void inheritanceTest() {
         SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
         SourceSubclass sourceSubclass = new SourceSubclass( "f1", "f2", "f3", "f4", "f5" );
@@ -33,6 +34,7 @@ class MappingInheritanceTest {
     }
 
     @ProcessorTest
+    @WithClasses( { SubclassMapper.class } )
     void superclassTest() {
         SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
         Source source = new Source( "f1", "f2", "f3" );

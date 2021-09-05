@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.subclassmapping;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
@@ -18,6 +16,11 @@ import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "131" )
 @WithClasses( { SubclassMapperUsingExistingMappings.class, SimpleSubclassMapper.class, VehicleCollection.class,
@@ -63,4 +66,32 @@ public class SubclassMappingTest {
                                           .extracting( VehicleDto::getMaker )
                                           .containsExactly( "BenZ" );
     }
+
+    @ProcessorTest
+    @WithClasses( { UnsupportedSubclassMapper.class } )
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic( type = UnsupportedSubclassMapper.class,
+                     kind = javax.tools.Diagnostic.Kind.ERROR,
+                     line = 21,
+                     message = "SubClassMapping annotation can not be used for update mappings."
+                   ) } )
+    void unsupportedMethodTest() { }
+
+    @ProcessorTest
+    @WithClasses( { ErroneousSubclassMapper.class } )
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic( type = ErroneousSubclassMapper.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 21,
+                        message = "Could not find a parameter that is a superclass for "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.Bike'."
+                        ),
+        @Diagnostic( type = ErroneousSubclassMapper.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 21,
+                        message = "Class 'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'"
+                            + " is not a subclass of "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.BikeDto'."
+                        ) } )
+    void erroneousMethodTest() { }
 }
