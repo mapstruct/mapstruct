@@ -43,6 +43,7 @@ public class ForgedMethod implements Method {
 
     private final Method basedOn;
     private final boolean forgedNameBased;
+    private MappingMethodOptions options;
 
     /**
      * Creates a new forged method with the given name for mapping a method parameter to a property.
@@ -183,6 +184,8 @@ public class ForgedMethod implements Method {
         this.history = history;
         this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
+
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
     }
 
     /**
@@ -205,6 +208,8 @@ public class ForgedMethod implements Method {
 
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
+
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
     }
 
     @Override
@@ -375,7 +380,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public MappingMethodOptions getOptions() {
-        return MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
+        return options;
     }
 
     @Override
