@@ -113,7 +113,7 @@ The example demonstrates how to use defaultExpression to set an `ID` field if th
 [[sub-class-mappings]]
 === Subclass Mapping
 
-When both input and result types have an inheritance relation, you would want the correct specialization be mapped to the matching specialization. Suppose an Apple and a Banana, which are both specializations of Fruit.
+When both input and result types have an inheritance relation, you would want the correct specialization be mapped to the matching specialization. Suppose an `Apple` and a `Banana`, which are both specializations of `Fruit`.
 
 .Specifying the sub class mappings of a fruit mapping
 ====
@@ -131,11 +131,17 @@ public interface FruitMapper {
 ----
 ====
 
-If you would just use a normal mapping both the AppleDto and the BananaDto would be made into a Fruit object, instead of an Apple and a Banana object. By using the SubClassMapping an AppleDtoToApple mapping will be done for Apples, and an BananaDtoToBanana mapping will be done for Banana's. If you would try to map a GrapeDto it would still turn into a Fruit. In the case that the Fruit type is an abstract class or an interface, you would get an IllegalArgumentException because it is unknown how to map a GrapeDto. Adding the missing (`@SubClassMapping`) for it will fix that.
+If you would just use a normal mapping both the `AppleDto` and the `BananaDto` would be made into a `Fruit` object, instead of an `Apple` and a `Banana` object. By using the subclass mapping an `AppleDtoToApple` mapping will be used for `AppleDto` objects, and an `BananaDtoToBanana` mapping will be used for `BananaDto` objects. If you would try to map a `GrapeDto` it would still turn into a `Fruit`. In the case that the `Fruit` is an abstract class or an interface, you would get an `IllegalArgumentException` because it is unknown how to map a `GrapeDto`. Adding the missing (`@SubClassMapping`) for it will fix that.
 
 [TIP]
 ====
 If the mapping method for the subClasses does not exist it will be created and any other annotations on the fruit mapping method are inherited by the newly generated mappings.
+====
+
+[NOTE]
+====
+Combining `@SubClassMapping` with update methods is not supported. If you use an update method with a return value then the subclass mappings will return a new instance based on the mapping, but it will not take into account the `@MappingTarget` parameter.
+The same issue exists for the `@Context` and `@TargetType` parameters.
 ====
 
 [[determining-result-type]]
