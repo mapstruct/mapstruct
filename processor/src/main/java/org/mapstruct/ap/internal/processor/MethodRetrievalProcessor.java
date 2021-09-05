@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -29,6 +30,8 @@ import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.SubClassMappingGem;
+import org.mapstruct.ap.internal.gem.SubClassMappingsGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -53,6 +56,7 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
+import org.mapstruct.tools.gem.Gem;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -68,6 +72,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
     private static final String MAPPING_FQN = "org.mapstruct.Mapping";
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
+    private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubClassMapping";
+    private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubClassMappings";
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
@@ -274,8 +280,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeUtils,
             typeFactory );
 
-        Set<MappingOptions> mappingOptions =
-            getMappings( method, method, beanMappingOptions, new LinkedHashSet<>(), new HashSet<>() );
+        RepeatableMappings repeatableMappings = new RepeatableMappings();
+        Set<MappingOptions> mappingOptions = repeatableMappings
+                                                               .getMappings(
+                                                                   method,
+                                                                   method,
+                                                                   beanMappingOptions,
+                                                                   new LinkedHashSet<>(),
+                                                                   new HashSet<>() );
 
         IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromGem(
             IterableMappingGem.instanceOn( method ),
@@ -300,13 +312,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager
         );
 
-        List<SubClassMappingOptions> subClassMappingOptions =
-            SubClassMappingOptions.getInstanceOn(
-                method,
-                mapperOptions,
-                messager,
-                typeUtils
-            );
+        RepeatableSubClassMappings repeatableSubClassMappings = new RepeatableSubClassMappings();
+        Set<SubClassMappingOptions> subClassMappingOptions = repeatableSubClassMappings
+                                                                                       .getMappings(
+                                                                                           method,
+                                                                                           method,
+                                                                                           beanMappingOptions,
+                                                                                           new LinkedHashSet<>(),
+                                                                                           new HashSet<>() );
 
         return new SourceMethod.Builder()
             .setExecutable( method )
@@ -320,13 +333,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setMapMappingOptions( mapMappingOptions )
             .setValueMappingOptionss( getValueMappings( method ) )
             .setEnumMappingOptions( enumMappingOptions )
-            .setSubClassMappings( subClassMappingOptions )
+            .setSubClassMappings( sortSubClassMappings( subClassMappingOptions ) )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
             .setVerboseLogging( options.isVerbose() )
             .build();
+    }
+
+    private List<SubClassMappingOptions> sortSubClassMappings(Set<SubClassMappingOptions> subClassMappingOptions) {
+        return subClassMappingOptions.stream().sorted( new SubClassInheritenceSorter() ).collect( Collectors.toList() );
     }
 
     private ParameterProvidedMethods retrieveContextProvidedMethods(
@@ -563,57 +580,131 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return type.isStreamType() || ( type.isIterableType() && type.isJavaLangType() );
     }
 
-    /**
-     * Retrieves the mappings configured via {@code @Mapping} from the given
-     * method.
-     *
-     * @param method The method of interest
-     * @param element Element of interest: method, or (meta) annotation
-     * @param beanMapping options coming from bean mapping method
-     * @param mappingOptions LinkedSet of mappings found so far
-     *
-     * @return The mappings for the given method, keyed by target property name
-     */
-    private Set<MappingOptions> getMappings(ExecutableElement method, Element element,
-                                            BeanMappingOptions beanMapping, Set<MappingOptions> mappingOptions,
-                                            Set<Element> handledElements) {
-
-        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-            Element lElement = annotationMirror.getAnnotationType().asElement();
-            if ( isAnnotation( lElement, MAPPING_FQN ) ) {
-                // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingGem mapping = MappingGem.instanceOn( element );
-                MappingOptions.addInstance( mapping, method, beanMapping, messager, typeUtils, mappingOptions );
-            }
-            else if ( isAnnotation( lElement, MAPPINGS_FQN ) ) {
-                // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                MappingsGem mappings = MappingsGem.instanceOn( element );
-                MappingOptions.addInstances( mappings, method, beanMapping, messager, typeUtils, mappingOptions );
-            }
-            else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
-                && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
-                && !handledElements.contains( lElement )
-            ) {
-                // recur over annotation mirrors
-                handledElements.add( lElement );
-                getMappings( method, lElement, beanMapping, mappingOptions, handledElements );
-            }
+    private class RepeatableMappings extends RepeatableMappingAnnotations<MappingGem, MappingsGem, MappingOptions> {
+        RepeatableMappings() {
+            super( MAPPING_FQN, MAPPINGS_FQN );
         }
-        return mappingOptions;
+
+        @Override
+        MappingGem singularInstanceOn(Element element) {
+            return MappingGem.instanceOn( element );
+        }
+
+        @Override
+        MappingsGem multipleInstanceOn(Element element) {
+            return MappingsGem.instanceOn( element );
+        }
+
+        @Override
+        void addInstance(MappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                         FormattingMessager messager, TypeUtils typeUtils, Set<MappingOptions> mappings) {
+            MappingOptions.addInstance( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        }
+
+        @Override
+        void addInstances(MappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                          FormattingMessager messager, TypeUtils typeUtils, Set<MappingOptions> mappings) {
+            MappingOptions.addInstances( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        }
     }
 
-    private boolean isAnnotationInPackage(Element element, String packageFQN ) {
-        if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
-            return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
+    private class RepeatableSubClassMappings
+        extends RepeatableMappingAnnotations<SubClassMappingGem, SubClassMappingsGem, SubClassMappingOptions> {
+        RepeatableSubClassMappings() {
+            super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
         }
-        return false;
+
+        @Override
+        SubClassMappingGem singularInstanceOn(Element element) {
+            return SubClassMappingGem.instanceOn( element );
+        }
+
+        @Override
+        SubClassMappingsGem multipleInstanceOn(Element element) {
+            return SubClassMappingsGem.instanceOn( element );
+        }
+
+        @Override
+        void addInstance(SubClassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                         FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
+            SubClassMappingOptions.addInstance( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        }
+
+        @Override
+        void addInstances(SubClassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                          FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
+            SubClassMappingOptions.addInstances( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        }
     }
 
-    private boolean isAnnotation(Element element, String annotationFQN) {
-        if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
-            return annotationFQN.equals( ( (TypeElement) element ).getQualifiedName().toString() );
+    private abstract class RepeatableMappingAnnotations<SINGULAR extends Gem, MULTIPLE extends Gem, OPTIONS> {
+
+        private String singularFqn;
+        private String multipleFqn;
+
+        RepeatableMappingAnnotations(String singularFqn, String multipleFqn) {
+            this.singularFqn = singularFqn;
+            this.multipleFqn = multipleFqn;
         }
-        return false;
+
+        abstract SINGULAR singularInstanceOn(Element element);
+
+        abstract MULTIPLE multipleInstanceOn(Element element);
+
+        abstract void addInstance(SINGULAR gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                                  FormattingMessager messager, TypeUtils typeUtils, Set<OPTIONS> mappings);
+
+        abstract void addInstances(MULTIPLE gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                                   FormattingMessager messager, TypeUtils typeUtils, Set<OPTIONS> mappings);
+
+        /**
+         * Retrieves the mappings configured via {@code @Mapping} from the given method.
+         *
+         * @param method The method of interest
+         * @param element Element of interest: method, or (meta) annotation
+         * @param beanMapping options coming from bean mapping method
+         * @param mappingOptions LinkedSet of mappings found so far
+         * @return The mappings for the given method, keyed by target property name
+         */
+        public Set<OPTIONS> getMappings(ExecutableElement method, Element element, BeanMappingOptions beanMapping,
+                                        Set<OPTIONS> mappingOptions, Set<Element> handledElements) {
+
+            for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+                Element lElement = annotationMirror.getAnnotationType().asElement();
+                if ( isAnnotation( lElement, singularFqn ) ) {
+                    // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                    SINGULAR mapping = singularInstanceOn( element );
+                    addInstance( mapping, method, beanMapping, messager, typeUtils, mappingOptions );
+                }
+                else if ( isAnnotation( lElement, multipleFqn ) ) {
+                    // although getInstanceOn does a search on annotation mirrors, the order is preserved
+                    MULTIPLE mappings = multipleInstanceOn( element );
+                    addInstances( mappings, method, beanMapping, messager, typeUtils, mappingOptions );
+                }
+                else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
+                    && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
+                    && !handledElements.contains( lElement ) ) {
+                    // recur over annotation mirrors
+                    handledElements.add( lElement );
+                    getMappings( method, lElement, beanMapping, mappingOptions, handledElements );
+                }
+            }
+            return mappingOptions;
+        }
+
+        private boolean isAnnotationInPackage(Element element, String packageFQN) {
+            if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
+                return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
+            }
+            return false;
+        }
+
+        private boolean isAnnotation(Element element, String annotationFQN) {
+            if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
+                return annotationFQN.equals( ( (TypeElement) element ).getQualifiedName().toString() );
+            }
+            return false;
+        }
     }
 
     /**

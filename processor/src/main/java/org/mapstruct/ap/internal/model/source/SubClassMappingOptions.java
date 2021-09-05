@@ -5,12 +5,9 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -19,9 +16,9 @@ import org.mapstruct.ap.internal.gem.SubClassMappingsGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
-import static java.util.Objects.nonNull;
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_ILLEGAL_SUBCLASS;
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED;
+import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_NO_VALID_SUPERCLASS;
 
 /**
  * Represents a sub class mapping as configured via {@code @SubClassMapping}.
@@ -44,67 +41,30 @@ public class SubClassMappingOptions extends DelegatingOptions {
         return sourceClass != null && targetClass != null;
     }
 
-    public static List<SubClassMappingOptions> getInstanceOn(ExecutableElement method, MapperOptions mapperOptions,
-                                                       FormattingMessager messager, TypeUtils typeUtils) {
-
-        SubClassMappingsGem subClassMappings = SubClassMappingsGem.instanceOn( method );
-        List<SubClassMappingGem> subClassMappingAnnotations;
-        if ( nonNull( subClassMappings ) ) {
-            subClassMappingAnnotations = subClassMappings.value().get();
-        }
-        else if ( nonNull( SubClassMappingGem.instanceOn( method ) ) ) {
-            subClassMappingAnnotations = Arrays.asList( SubClassMappingGem.instanceOn( method ) );
-        }
-        else {
-            return Collections.emptyList();
-        }
-
-        List<SubClassMappingOptions> subClassMappingOptions = new ArrayList<>();
-
-        for ( SubClassMappingGem subClassMapping : subClassMappingAnnotations ) {
-
-            if ( !isConsistent( subClassMapping, method, messager, typeUtils ) ) {
-                continue;
-            }
-
-            TypeMirror sourceSubClass = subClassMapping.source().getValue();
-            TypeMirror targetSubClass = subClassMapping.target().getValue();
-
-            subClassMappingOptions
-                                  .add(
-                                      new SubClassMappingOptions(
-                                          sourceSubClass,
-                                          targetSubClass,
-                                          mapperOptions ) );
-        }
-        return subClassMappingOptions;
-    }
-
     private static boolean isConsistent(SubClassMappingGem gem, ExecutableElement method, FormattingMessager messager,
                                         TypeUtils typeUtils) {
 
-        if ( method.getParameters().isEmpty() || method.getReturnType().getKind() == TypeKind.VOID ) {
-            messager
-                    .printMessage(
-                        method,
-                        gem.mirror(),
-                        SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED );
+        if ( method.getReturnType().getKind() == TypeKind.VOID ) {
+            messager.printMessage( method, gem.mirror(), SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED );
             return false;
         }
 
         TypeMirror sourceSubClass = gem.source().getValue();
         TypeMirror targetSubClass = gem.target().getValue();
-        TypeMirror sourceParentType = method.getParameters().get( 0 ).asType();
         TypeMirror targetParentType = method.getReturnType();
         boolean isConsistent = true;
 
-        if ( !isChildOfParent( typeUtils, sourceSubClass, sourceParentType ) ) {
+        boolean isChildOfAParameter = false;
+        for ( VariableElement parameter : method.getParameters() ) {
+            TypeMirror sourceParentType = parameter.asType();
+            isChildOfAParameter = isChildOfAParameter || isChildOfParent( typeUtils, sourceSubClass, sourceParentType );
+        }
+        if ( !isChildOfAParameter ) {
             messager
                     .printMessage(
                         method,
                         gem.mirror(),
-                        SUBCLASSMAPPING_ILLEGAL_SUBCLASS,
-                        sourceParentType.toString(),
+                        SUBCLASSMAPPING_NO_VALID_SUPERCLASS,
                         sourceSubClass.toString() );
             isConsistent = false;
         }
@@ -131,5 +91,26 @@ public class SubClassMappingOptions extends DelegatingOptions {
 
     public TypeMirror getTargetClass() {
         return targetClass;
+    }
+
+    public static void addInstances(SubClassMappingsGem gem, ExecutableElement method,
+                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager,
+                                    TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
+        for ( SubClassMappingGem subClassMappingGem : gem.value().get() ) {
+            addInstance( subClassMappingGem, method, beanMappingOptions, messager, typeUtils, mappings );
+        }
+    }
+
+    public static void addInstance(SubClassMappingGem subClassMapping, ExecutableElement method,
+                                   BeanMappingOptions beanMappingOptions, FormattingMessager messager,
+                                   TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
+        if ( !isConsistent( subClassMapping, method, messager, typeUtils ) ) {
+            return;
+        }
+
+        TypeMirror sourceSubClass = subClassMapping.source().getValue();
+        TypeMirror targetSubClass = subClassMapping.target().getValue();
+
+        mappings.add( new SubClassMappingOptions( sourceSubClass, targetSubClass, beanMappingOptions ) );
     }
 }

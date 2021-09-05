@@ -115,7 +115,8 @@ public enum Message {
     ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
     SUBCLASSMAPPING_ILLEGAL_SUBCLASS("Class '%s' is not a subclass of '%s'."),
-    SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED("SubClassMapping annotation can not be used on Suppliers and Runnables."),
+    SUBCLASSMAPPING_NO_VALID_SUPERCLASS( "Could not find a parameter that is a superclass for '%s'." ),
+    SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED( "SubClassMapping annotation can not be used for update mappings." ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
 
