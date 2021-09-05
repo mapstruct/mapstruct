@@ -25,12 +25,10 @@
     </#if>
 
     <#if hasSubClassMappings()>
-        <#assign first = true />
         <#list subClassMappings as subClass>
-            <#if !first>else</#if> if (${subClass.sourceArgument} instanceof <@includeModel object=subClass.sourceType/>) {
+            <#if subClass_index &gt; 0>else</#if> if (${subClass.sourceArgument} instanceof <@includeModel object=subClass.sourceType/>) {
                 <@includeModel object=subClass.assignment existingInstanceMapping=existingInstanceMapping/>
             }
-            <#assign first = false />
         </#list>
         else {
     </#if>
