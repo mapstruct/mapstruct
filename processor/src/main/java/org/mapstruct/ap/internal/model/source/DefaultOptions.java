@@ -63,6 +63,9 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public ReportingPolicyGem unmappedSourcePolicy() {
+        if ( options.getUnmappedSourcePolicy() != null ) {
+            return options.getUnmappedSourcePolicy();
+        }
         return ReportingPolicyGem.valueOf( mapper.unmappedSourcePolicy().getDefaultValue() );
     }
 

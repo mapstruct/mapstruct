@@ -14,6 +14,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,5 +67,47 @@ public class UnmappedSourceTest {
         }
     )
     public void shouldRaiseErrorDueToUnsetSourceProperty() {
+    }
+
+    @ProcessorTest
+    @WithClasses({ Source.class, Target.class,
+            org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class })
+    @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "IGNORE")
+    @ProcessorOption(name = "mapstruct.unmappedSourcePolicy", value = "ERROR")
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(type = org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class,
+                            kind = Kind.ERROR,
+                            line = 22,
+                            message = "Unmapped source property: \"qux\"."),
+                    @Diagnostic(type = org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class,
+                            kind = Kind.ERROR,
+                            line = 24,
+                            message = "Unmapped source property: \"bar\".")
+            }
+    )
+    public void shouldRaiseErrorDueToUnsetSourcePropertyWithPolicySetViaProcessorOption() {
+    }
+
+    @ProcessorTest
+    @WithClasses({ Source.class, Target.class,
+            org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class })
+    @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "IGNORE")
+    @ProcessorOption(name = "mapstruct.unmappedSourcePolicy", value = "WARN")
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.SUCCEEDED,
+            diagnostics = {
+                    @Diagnostic(type = org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class,
+                            kind = Kind.WARNING,
+                            line = 22,
+                            message = "Unmapped source property: \"qux\"."),
+                    @Diagnostic(type = org.mapstruct.ap.test.unmappedsource.SourceTargetMapperWithoutMapperConfig.class,
+                            kind = Kind.WARNING,
+                            line = 24,
+                            message = "Unmapped source property: \"bar\".")
+            }
+    )
+    public void shouldLeaveUnmappedSourcePropertyUnsetWithWarnPolicySetViaProcessorOption() {
     }
 }
