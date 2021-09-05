@@ -88,12 +88,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final List<PropertyMapping> constructorConstantMappings;
+    private final List<SubClassMapping> subClassMappings;
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
 
     private final MappingReferences mappingReferences;
-    private List<SubClassMapping> subClasses;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
@@ -419,7 +419,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                sourceType,
                                                targetType,
                                                mappingReferences ) );
-            return new SubClassMapping( sourceType, targetType, assignment, ctx.getTypeUtils() );
+            String sourceArgument = null;
+            for ( Parameter parameter : method.getSourceParameters() ) {
+                if ( ctx
+                        .getTypeUtils()
+                        .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
+                    sourceArgument = parameter.getName();
+                    assignment.setSourceLocalVarName( "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                }
+            }
+            return new SubClassMapping( sourceType, sourceArgument, targetType, assignment );
         }
 
         private boolean hasSubclassMappings() {
@@ -1734,7 +1743,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
-        this.subClasses = subClasses;
+        this.subClassMappings = subClasses;
     }
 
     public List<PropertyMapping> getConstantMappings() {
@@ -1743,6 +1752,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<PropertyMapping> getConstructorConstantMappings() {
         return constructorConstantMappings;
+    }
+
+    public List<SubClassMapping> getSubClassMappings() {
+        return subClassMappings;
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
@@ -1760,12 +1773,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public boolean hasSubClassMappings() {
-        return !subClasses.isEmpty();
-    }
-
-    public List<SubClassMapping> constructSubClassMappings(List<Parameter> parameters) {
-        subClasses.forEach( subClass -> subClass.updateWithParameters( parameters ) );
-        return subClasses;
+        return !subClassMappings.isEmpty();
     }
 
     public boolean isAbstractReturnType() {
@@ -1792,7 +1800,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 types.addAll( propertyMapping.getTargetType().getImportTypes() );
             }
         }
-        for ( SubClassMapping subClassMapping : subClasses ) {
+        for ( SubClassMapping subClassMapping : subClassMappings ) {
             types.addAll( subClassMapping.getImportTypes() );
         }
 

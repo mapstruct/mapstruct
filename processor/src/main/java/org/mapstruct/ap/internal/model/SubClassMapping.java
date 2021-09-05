@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,9 +14,7 @@ import org.mapstruct.ap.internal.model.assignment.AssignmentWrapper;
 import org.mapstruct.ap.internal.model.assignment.ReturnWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * Represents the mapping between a SubClass and its mapping target. This will be used by a {@link BeanMappingMethod}
@@ -32,13 +29,12 @@ public class SubClassMapping extends ModelElement {
     private Type targetType;
     private Assignment assignment;
     private String sourceArgument;
-    private TypeUtils typeUtils;
-
-    public SubClassMapping(Type sourceType, Type targetType, Assignment assignment, TypeUtils typeUtils) {
+    
+    public SubClassMapping(Type sourceType, String sourceArgument, Type targetType, Assignment assignment) {
         this.sourceType = sourceType;
+        this.sourceArgument = sourceArgument;
         this.targetType = targetType;
         this.assignment = assignment;
-        this.typeUtils = typeUtils;
     }
 
     public Type getSourceType() {
@@ -52,15 +48,6 @@ public class SubClassMapping extends ModelElement {
 
     public AssignmentWrapper getAssignment() {
         return new ReturnWrapper( assignment );
-    }
-
-    public void updateWithParameters(List<Parameter> parameters) {
-        for ( Parameter parameter : parameters ) {
-            if ( typeUtils.isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
-                sourceArgument = parameter.getName();
-                assignment.setSourceLocalVarName( "(" + sourceType.createReferenceName() + ") " + sourceArgument );
-            }
-        }
     }
 
     public String getSourceArgument() {

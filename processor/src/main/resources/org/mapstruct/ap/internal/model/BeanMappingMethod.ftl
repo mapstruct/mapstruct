@@ -26,7 +26,7 @@
 
     <#if hasSubClassMappings()>
         <#assign first = true />
-        <#list constructSubClassMappings(parameters) as subClass>
+        <#list subClassMappings as subClass>
             <#if !first>else</#if> if (${subClass.sourceArgument} instanceof <@includeModel object=subClass.sourceType/>) {
                 <@includeModel object=subClass.assignment existingInstanceMapping=existingInstanceMapping/>
             }
