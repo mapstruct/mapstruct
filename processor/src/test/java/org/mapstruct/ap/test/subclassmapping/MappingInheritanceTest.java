@@ -7,7 +7,7 @@ package org.mapstruct.ap.test.subclassmapping;
 
 import org.assertj.core.api.Assertions;
 import org.mapstruct.ap.test.subclassmapping.mappables.Source;
-import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubclass;
+import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubClass;
 import org.mapstruct.ap.test.subclassmapping.mappables.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -15,14 +15,14 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
 
 @IssueKey( "2438" )
-@WithClasses( { Source.class, SourceSubclass.class, Target.class } )
+@WithClasses( { Source.class, SourceSubClass.class, Target.class } )
 class MappingInheritanceTest {
 
     @ProcessorTest
-    @WithClasses( { SubclassMapper.class } )
+    @WithClasses( { SubClassMapper.class } )
     void inheritanceTest() {
-        SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
-        SourceSubclass sourceSubclass = new SourceSubclass( "f1", "f2", "f3", "f4", "f5" );
+        SubClassMapper mapper = Mappers.getMapper( SubClassMapper.class );
+        SourceSubClass sourceSubclass = new SourceSubClass( "f1", "f2", "f3", "f4", "f5" );
 
         Target result = mapper.mapSuperclass( sourceSubclass );
 
@@ -34,9 +34,9 @@ class MappingInheritanceTest {
     }
 
     @ProcessorTest
-    @WithClasses( { SubclassMapper.class } )
+    @WithClasses( { SubClassMapper.class } )
     void superclassTest() {
-        SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
+        SubClassMapper mapper = Mappers.getMapper( SubClassMapper.class );
         Source source = new Source( "f1", "f2", "f3" );
 
         Target result = mapper.mapSuperclass( source );

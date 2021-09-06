@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.subclassmapping;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
 import org.mapstruct.SubClassMapping;
 import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
@@ -18,19 +18,14 @@ import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( unmappedTargetPolicy = ReportingPolicy.IGNORE )
-public interface SubclassMapperUsingExistingMappings {
-    SubclassMapperUsingExistingMappings INSTANCE = Mappers.getMapper( SubclassMapperUsingExistingMappings.class );
+@Mapper
+public interface SimpleSubClassMapper {
+    SimpleSubClassMapper INSTANCE = Mappers.getMapper( SimpleSubClassMapper.class );
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 
-    default CarDto existingMappingMethod(Car domein) {
-        CarDto dto = new CarDto();
-        dto.setName( "created through existing mapping." );
-        return dto;
-    }
-
     @SubClassMapping( source = Car.class, target = CarDto.class )
     @SubClassMapping( source = Bike.class, target = BikeDto.class )
+    @Mapping( source = "vehicleManufacturingCompany", target = "maker")
     VehicleDto map(Vehicle vehicle);
 }

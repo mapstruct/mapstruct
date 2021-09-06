@@ -15,8 +15,8 @@ import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface UnsupportedSubclassMapper {
-    UnsupportedSubclassMapper INSTANCE = Mappers.getMapper( UnsupportedSubclassMapper.class );
+public interface ErroneousSubClassMapper2 {
+    ErroneousSubClassMapper2 INSTANCE = Mappers.getMapper( ErroneousSubClassMapper2.class );
 
     @SubClassMapping( source = Car.class, target = CarDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker" )

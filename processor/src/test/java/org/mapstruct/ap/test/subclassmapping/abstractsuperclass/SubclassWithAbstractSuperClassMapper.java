@@ -10,8 +10,8 @@ import org.mapstruct.SubClassMapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SubclassWithAbstractSuperclassMapper {
-    SubclassWithAbstractSuperclassMapper INSTANCE = Mappers.getMapper( SubclassWithAbstractSuperclassMapper.class );
+public interface SubclassWithAbstractSuperClassMapper {
+    SubclassWithAbstractSuperClassMapper INSTANCE = Mappers.getMapper( SubclassWithAbstractSuperClassMapper.class );
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 

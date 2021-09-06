@@ -15,8 +15,8 @@ import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ErroneousSubclassMapper {
-    ErroneousSubclassMapper INSTANCE = Mappers.getMapper( ErroneousSubclassMapper.class );
+public interface ErroneousSubClassMapper1 {
+    ErroneousSubClassMapper1 INSTANCE = Mappers.getMapper( ErroneousSubClassMapper1.class );
 
     @SubClassMapping( source = Bike.class, target = BikeDto.class )
     @Mapping( target = "maker", ignore = true )

@@ -13,9 +13,9 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
 @IssueKey( "366" )
-@WithClasses( { SubclassWithAbstractSuperclassMapper.class, VehicleCollection.class, AbstractVehicle.class, Car.class,
+@WithClasses( { SubclassWithAbstractSuperClassMapper.class, VehicleCollection.class, AbstractVehicle.class, Car.class,
     Bike.class, VehicleCollectionDto.class, VehicleDto.class, CarDto.class, BikeDto.class, } )
-public class AbstractSuperclassTest {
+public class AbstractSuperClassTest {
 
     @ProcessorTest
     void issue366MappingTest() {
@@ -23,7 +23,7 @@ public class AbstractSuperclassTest {
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
 
-        VehicleCollectionDto result = SubclassWithAbstractSuperclassMapper.INSTANCE.map( vehicles );
+        VehicleCollectionDto result = SubclassWithAbstractSuperClassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
@@ -38,7 +38,7 @@ public class AbstractSuperclassTest {
         vehicles.getVehicles().add( new Motorcycle() );
 
         Assertions
-                  .assertThatThrownBy( () -> SubclassWithAbstractSuperclassMapper.INSTANCE.map( vehicles ) )
+                  .assertThatThrownBy( () -> SubclassWithAbstractSuperClassMapper.INSTANCE.map( vehicles ) )
                   .isInstanceOf( IllegalArgumentException.class )
                   .hasMessage(
                       "Not all subclasses are supported for this mapping. "

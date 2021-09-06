@@ -10,13 +10,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.SubClassMapping;
 import org.mapstruct.ap.test.subclassmapping.mappables.Source;
-import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubclass;
+import org.mapstruct.ap.test.subclassmapping.mappables.SourceSubClass;
 import org.mapstruct.ap.test.subclassmapping.mappables.Target;
 
 @Mapper
-public interface SubclassMapper {
+public interface SubClassMapper {
 
-    @SubClassMapping( source = SourceSubclass.class, target = Target.class )
+    @SubClassMapping( source = SourceSubClass.class, target = Target.class )
     @Mapping( target = "target1", source = "property1" )
     @Mapping( target = "target2", source = "property2" )
     @Mapping( target = "target3", source = "property3" )
@@ -27,5 +27,5 @@ public interface SubclassMapper {
     @InheritConfiguration( name = "mapSuperclass" )
     @Mapping( target = "target4", source = "subclassProperty" )
     @Mapping( target = "target5" ) // Have to declare in order to override ignore with default behavior
-    Target mapSubclass(SourceSubclass source);
+    Target mapSubclass(SourceSubClass source);
 }
