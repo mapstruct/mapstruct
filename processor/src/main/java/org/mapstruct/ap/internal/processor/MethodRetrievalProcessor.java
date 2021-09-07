@@ -312,7 +312,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager
         );
 
-        RepeatableSubClassMappings repeatableSubClassMappings = new RepeatableSubClassMappings();
+        RepeatableSubClassMappings repeatableSubClassMappings =
+            new RepeatableSubClassMappings( parameters, resultType );
         Set<SubClassMappingOptions> subClassMappingOptions = repeatableSubClassMappings
                                                                                        .getMappings(
                                                                                            method,
@@ -610,8 +611,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private class RepeatableSubClassMappings
         extends RepeatableMappingAnnotations<SubClassMappingGem, SubClassMappingsGem, SubClassMappingOptions> {
-        RepeatableSubClassMappings() {
+        private List<Parameter> parameters;
+        private Type resultType;
+
+        RepeatableSubClassMappings(List<Parameter> parameters, Type resultType) {
             super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
+            this.parameters = parameters;
+            this.resultType = resultType;
         }
 
         @Override
@@ -627,13 +633,31 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         @Override
         void addInstance(SubClassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
                          FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
-            SubClassMappingOptions.addInstance( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+            SubClassMappingOptions
+                                  .addInstance(
+                                      gem,
+                                      method,
+                                      beanMappingOptions,
+                                      messager,
+                                      typeUtils,
+                                      mappings,
+                                      parameters,
+                                      resultType );
         }
 
         @Override
         void addInstances(SubClassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
                           FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
-            SubClassMappingOptions.addInstances( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+            SubClassMappingOptions
+                                  .addInstances(
+                                      gem,
+                                      method,
+                                      beanMappingOptions,
+                                      messager,
+                                      typeUtils,
+                                      mappings,
+                                      parameters,
+                                      resultType );
         }
     }
 

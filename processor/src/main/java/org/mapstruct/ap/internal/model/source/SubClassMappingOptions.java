@@ -5,14 +5,16 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.SubClassMappingGem;
 import org.mapstruct.ap.internal.gem.SubClassMappingsGem;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
@@ -42,7 +44,7 @@ public class SubClassMappingOptions extends DelegatingOptions {
     }
 
     private static boolean isConsistent(SubClassMappingGem gem, ExecutableElement method, FormattingMessager messager,
-                                        TypeUtils typeUtils) {
+                                        TypeUtils typeUtils, List<Parameter> parameters, Type resultType) {
 
         if ( method.getReturnType().getKind() == TypeKind.VOID ) {
             messager.printMessage( method, gem.mirror(), SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED );
@@ -51,12 +53,12 @@ public class SubClassMappingOptions extends DelegatingOptions {
 
         TypeMirror sourceSubClass = gem.source().getValue();
         TypeMirror targetSubClass = gem.target().getValue();
-        TypeMirror targetParentType = method.getReturnType();
+        TypeMirror targetParentType = resultType.getTypeMirror();
         boolean isConsistent = true;
 
         boolean isChildOfAParameter = false;
-        for ( VariableElement parameter : method.getParameters() ) {
-            TypeMirror sourceParentType = parameter.asType();
+        for ( Parameter parameter : Parameter.getSourceParameters( parameters ) ) {
+            TypeMirror sourceParentType = parameter.getType().getTypeMirror();
             isChildOfAParameter = isChildOfAParameter || isChildOfParent( typeUtils, sourceSubClass, sourceParentType );
         }
         if ( !isChildOfAParameter ) {
@@ -95,16 +97,26 @@ public class SubClassMappingOptions extends DelegatingOptions {
 
     public static void addInstances(SubClassMappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
-                                    TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
+                                    TypeUtils typeUtils, Set<SubClassMappingOptions> mappings,
+                                    List<Parameter> parameters, Type resultType) {
         for ( SubClassMappingGem subClassMappingGem : gem.value().get() ) {
-            addInstance( subClassMappingGem, method, beanMappingOptions, messager, typeUtils, mappings );
+            addInstance(
+                subClassMappingGem,
+                method,
+                beanMappingOptions,
+                messager,
+                typeUtils,
+                mappings,
+                parameters,
+                resultType );
         }
     }
 
     public static void addInstance(SubClassMappingGem subClassMapping, ExecutableElement method,
                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager,
-                                   TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
-        if ( !isConsistent( subClassMapping, method, messager, typeUtils ) ) {
+                                   TypeUtils typeUtils, Set<SubClassMappingOptions> mappings,
+                                   List<Parameter> parameters, Type resultType) {
+        if ( !isConsistent( subClassMapping, method, messager, typeUtils, parameters, resultType ) ) {
             return;
         }
 
