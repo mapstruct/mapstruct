@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_ILLEGAL_SUBCLASS;
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED;
@@ -54,11 +55,14 @@ public class SubClassMappingOptions extends DelegatingOptions {
         TypeMirror sourceSubClass = gem.source().getValue();
         TypeMirror targetSubClass = gem.target().getValue();
         TypeMirror targetParentType = resultType.getTypeMirror();
+        validateTypeMirrors( sourceSubClass, targetSubClass, targetParentType );
+
         boolean isConsistent = true;
 
         boolean isChildOfAParameter = false;
         for ( Parameter parameter : Parameter.getSourceParameters( parameters ) ) {
             TypeMirror sourceParentType = parameter.getType().getTypeMirror();
+            validateTypeMirrors( sourceParentType );
             isChildOfAParameter = isChildOfAParameter || isChildOfParent( typeUtils, sourceSubClass, sourceParentType );
         }
         if ( !isChildOfAParameter ) {
@@ -81,6 +85,18 @@ public class SubClassMappingOptions extends DelegatingOptions {
             isConsistent = false;
         }
         return isConsistent;
+    }
+
+    private static void validateTypeMirrors(TypeMirror... typeMirrors) {
+        for ( TypeMirror typeMirror : typeMirrors ) {
+            if ( typeMirror == null ) {
+                // When a class used in uses or imports is created by another annotation processor
+                // then javac will not return correct TypeMirror with TypeKind#ERROR, but rather a string "<error>"
+                // the gem tools would return a null TypeMirror in that case.
+                // Therefore throw TypeHierarchyErroneousException so we can postpone the generation of the mapper
+                throw new TypeHierarchyErroneousException( typeMirror );
+            }
+        }
     }
 
     private static boolean isChildOfParent(TypeUtils typeUtils, TypeMirror childType, TypeMirror parentType) {
