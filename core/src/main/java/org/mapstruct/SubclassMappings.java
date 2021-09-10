@@ -11,10 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Configures the SubClassMappings of several subclasses.
+ * Configures the SubclassMappings of several subclasses.
  * <p>
- * <strong>TIP: When using java 8 or later, you can omit the @SubClassMappings
- * Wrapper annotation and directly specify several @SubClassMapping annotations
+ * <strong>TIP: When using java 8 or later, you can omit the @SubclassMappings
+ * Wrapper annotation and directly specify several @SubclassMapping annotations
  * on one method.</strong>
  * </p>
  * <p>These two examples are equal.
@@ -23,10 +23,10 @@ import java.lang.annotation.Target;
  * // before java 8
  * &#64;Mapper
  * public interface MyMapper {
- *     &#64;SubClassMappings({
- *         &#64;SubClassMapping(sourceClass = firstSub.class,
+ *     &#64;SubclassMappings({
+ *         &#64;SubclassMapping(sourceClass = firstSub.class,
  *                          targetClass = firstTargetSub.class),
- *         &#64;SubClassMapping(sourceClass = secondSub.class,
+ *         &#64;SubclassMapping(sourceClass = secondSub.class,
  *                          targetClass = secondTargetSub.class)
  *     })
  *     ParentTarget toParentTarget(Parent parent);
@@ -36,9 +36,9 @@ import java.lang.annotation.Target;
  * // java 8 and later
  * &#64;Mapper
  * public interface MyMapper {
- *     &#64;SubClassMapping(sourceClass = firstSub.class,
+ *     &#64;SubclassMapping(sourceClass = firstSub.class,
  *                      targetClass = firstTargetSub.class),
- *     &#64;SubClassMapping(sourceClass = secondSub.class,
+ *     &#64;SubclassMapping(sourceClass = secondSub.class,
  *                      targetClass = secondTargetSub.class)
  *     ParentTarget toParentTarget(Parent parent);
  * }
@@ -49,11 +49,11 @@ import java.lang.annotation.Target;
  */
 @Target( ElementType.METHOD )
 @Retention( RetentionPolicy.CLASS )
-public @interface SubClassMappings {
+public @interface SubclassMappings {
 
     /**
-     * @return the subClassMappings to apply.
+     * @return the subclassMappings to apply.
      */
-    SubClassMapping[] value();
+    SubclassMapping[] value();
 
 }

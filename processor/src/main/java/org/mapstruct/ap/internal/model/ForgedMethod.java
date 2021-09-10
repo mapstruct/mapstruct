@@ -135,7 +135,7 @@ public class ForgedMethod implements Method {
      *
      * @return a new forge method
      */
-    public static ForgedMethod forSubClassMapping(String name, Type sourceType, Type returnType, Method basedOn,
+    public static ForgedMethod forSubclassMapping(String name, Type sourceType, Type returnType, Method basedOn,
                                                  MappingReferences mappingReferences, ForgedMethodHistory history,
                                                  boolean forgedNameBased) {
         return new ForgedMethod(

@@ -24,11 +24,11 @@ import java.lang.annotation.Target;
  * <pre><code class='java'>
  * &#64;Mapper
  * public interface MyMapper {
- *    &#64;SubClassMapping (sourceClass = SourceSubClass.class,
- *                      targetClass = TargetSubClass.class)
+ *    &#64;SubclassMapping (sourceClass = SourceSubclass.class,
+ *                      targetClass = TargetSubclass.class)
  *    TargetParent mapParent(SourceParent parent);
  *
- *    TargetSubClass mapSubClass(SourceSubClass subInstant);
+ *    TargetSubclass mapSubclass(SourceSubclass subInstant);
  * }
  * </code></pre>
  * Below follow examples of the implementation for the mapParent method.
@@ -37,8 +37,8 @@ import java.lang.annotation.Target;
  * // generates
  * &#64;Override
  * public TargetParent mapParent(SourceParent parent) {
- *     if (parent instanceof SourceSubClass) {
- *         return mapSubClass( (SourceSubClass) parent );
+ *     if (parent instanceof SourceSubclass) {
+ *         return mapSubclass( (SourceSubclass) parent );
  *     }
  *     else {
  *         throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for "
@@ -53,8 +53,8 @@ import java.lang.annotation.Target;
  * &#64;Override
  * public TargetParent mapParent(SourceParent parent) {
  *     TargetParent targetParent1;
- *     if (parent instanceof SourceSubClass) {
- *         targetParent1 = mapSubClass( (SourceSubClass) parent );
+ *     if (parent instanceof SourceSubclass) {
+ *         targetParent1 = mapSubclass( (SourceSubclass) parent );
  *     }
  *     else {
  *         targetParent1 = new TargetParent();
@@ -66,17 +66,17 @@ import java.lang.annotation.Target;
  * @author Ben Zegveld
  * @since 1.5
  */
-@Repeatable( value = SubClassMappings.class )
+@Repeatable( value = SubclassMappings.class )
 @Retention( RetentionPolicy.CLASS )
 @Target( { ElementType.METHOD, ElementType.ANNOTATION_TYPE } )
-public @interface SubClassMapping {
+public @interface SubclassMapping {
     /**
      * @return the source subclass to check for before using the default mapping as fallback.
      */
     Class<?> source();
 
     /**
-     * @return the target subclass to map the sourceSubClass to.
+     * @return the target subclass to map the sourceSubclass to.
      */
     Class<?> target();
 }

@@ -24,16 +24,16 @@
     }
     </#if>
 
-    <#if hasSubClassMappings()>
-        <#list subClassMappings as subClass>
-            <#if subClass_index &gt; 0>else</#if> if (${subClass.sourceArgument} instanceof <@includeModel object=subClass.sourceType/>) {
-                <@includeModel object=subClass.assignment existingInstanceMapping=existingInstanceMapping/>
+    <#if hasSubclassMappings()>
+        <#list subclassMappings as subclass>
+            <#if subclass_index &gt; 0>else</#if> if (${subclass.sourceArgument} instanceof <@includeModel object=subclass.sourceType/>) {
+                <@includeModel object=subclass.assignment existingInstanceMapping=existingInstanceMapping/>
             }
         </#list>
         else {
     </#if>
     <#if isAbstractReturnType()>
-        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${subClassMappings[0].sourceArgument}.getClass());
+        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
     <#else>
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>
@@ -132,7 +132,7 @@
     </#if>
     </#if>
     </#if>
-    <#if hasSubClassMappings()>
+    <#if hasSubclassMappings()>
         }
     </#if>
 }

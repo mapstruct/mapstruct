@@ -7,15 +7,15 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.Comparator;
 
-import org.mapstruct.ap.internal.model.source.SubClassMappingOptions;
+import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 
 /**
  * @author Ben Zegveld
  */
-class SubClassInheritenceSorter implements Comparator<SubClassMappingOptions> {
+class SubclassInheritenceSorter implements Comparator<SubclassMappingOptions> {
 
     @Override
-    public int compare(SubClassMappingOptions o1, SubClassMappingOptions o2) {
+    public int compare(SubclassMappingOptions o1, SubclassMappingOptions o2) {
         // TODO enforce sorting so the more abstract the class the further to the back it goes.
         return 0;
     }

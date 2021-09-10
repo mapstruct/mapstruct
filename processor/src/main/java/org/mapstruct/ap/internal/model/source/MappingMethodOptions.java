@@ -46,14 +46,14 @@ public class MappingMethodOptions {
     private EnumMappingOptions enumMappingOptions;
     private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
-    private List<SubClassMappingOptions> subClassMapping;
+    private List<SubclassMappingOptions> subclassMapping;
 
     public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
-                                List<SubClassMappingOptions> subClassMapping) {
+                                List<SubclassMappingOptions> subclassMapping) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -61,7 +61,7 @@ public class MappingMethodOptions {
         this.beanMapping = beanMapping;
         this.enumMappingOptions = enumMappingOptions;
         this.valueMappings = valueMappings;
-        this.subClassMapping = subClassMapping;
+        this.subclassMapping = subclassMapping;
     }
 
     /**
@@ -101,8 +101,8 @@ public class MappingMethodOptions {
         return valueMappings;
     }
 
-    public List<SubClassMappingOptions> getSubClassMappings() {
-        return subClassMapping;
+    public List<SubclassMappingOptions> getSubclassMappings() {
+        return subclassMapping;
     }
 
     public void setIterableMapping(IterableMappingOptions iterableMapping) {
@@ -125,8 +125,8 @@ public class MappingMethodOptions {
         this.valueMappings = valueMappings;
     }
 
-    public void setSubClassMappings(List<SubClassMappingOptions> subClassMapping) {
-        this.subClassMapping = subClassMapping;
+    public void setSubclassMappings(List<SubclassMappingOptions> subclassMapping) {
+        this.subclassMapping = subclassMapping;
     }
 
     public MapperOptions getMapper() {
@@ -330,9 +330,9 @@ public class MappingMethodOptions {
     }
 
     /**
-     * SubClassMappingOptions are not inherited to forged methods. They would result in an infinite loop if they were.
+     * SubclassMappingOptions are not inherited to forged methods. They would result in an infinite loop if they were.
      *
-     * @return a MappingMethodOptions without SubClassMappingOptions.
+     * @return a MappingMethodOptions without SubclassMappingOptions.
      */
     public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
         return new MappingMethodOptions(

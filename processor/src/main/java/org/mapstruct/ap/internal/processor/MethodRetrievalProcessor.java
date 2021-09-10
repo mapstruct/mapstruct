@@ -30,8 +30,8 @@ import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
-import org.mapstruct.ap.internal.gem.SubClassMappingGem;
-import org.mapstruct.ap.internal.gem.SubClassMappingsGem;
+import org.mapstruct.ap.internal.gem.SubclassMappingGem;
+import org.mapstruct.ap.internal.gem.SubclassMappingsGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -45,7 +45,7 @@ import org.mapstruct.ap.internal.model.source.MapperOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.SubClassMappingOptions;
+import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -72,8 +72,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
     private static final String MAPPING_FQN = "org.mapstruct.Mapping";
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
-    private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubClassMapping";
-    private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubClassMappings";
+    private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubclassMapping";
+    private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubclassMappings";
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
@@ -312,9 +312,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager
         );
 
-        RepeatableSubClassMappings repeatableSubClassMappings =
-            new RepeatableSubClassMappings( parameters, resultType );
-        Set<SubClassMappingOptions> subClassMappingOptions = repeatableSubClassMappings
+        RepeatableSubclassMappings repeatableSubclassMappings =
+            new RepeatableSubclassMappings( parameters, resultType );
+        Set<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
                                                                                        .getMappings(
                                                                                            method,
                                                                                            method,
@@ -334,7 +334,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setMapMappingOptions( mapMappingOptions )
             .setValueMappingOptionss( getValueMappings( method ) )
             .setEnumMappingOptions( enumMappingOptions )
-            .setSubClassMappings( sortSubClassMappings( subClassMappingOptions ) )
+            .setSubclassMappings( sortSubclassMappings( subclassMappingOptions ) )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
@@ -343,8 +343,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .build();
     }
 
-    private List<SubClassMappingOptions> sortSubClassMappings(Set<SubClassMappingOptions> subClassMappingOptions) {
-        return subClassMappingOptions.stream().sorted( new SubClassInheritenceSorter() ).collect( Collectors.toList() );
+    private List<SubclassMappingOptions> sortSubclassMappings(Set<SubclassMappingOptions> subclassMappingOptions) {
+        return subclassMappingOptions.stream().sorted( new SubclassInheritenceSorter() ).collect( Collectors.toList() );
     }
 
     private ParameterProvidedMethods retrieveContextProvidedMethods(
@@ -609,31 +609,31 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
     }
 
-    private class RepeatableSubClassMappings
-        extends RepeatableMappingAnnotations<SubClassMappingGem, SubClassMappingsGem, SubClassMappingOptions> {
+    private class RepeatableSubclassMappings
+        extends RepeatableMappingAnnotations<SubclassMappingGem, SubclassMappingsGem, SubclassMappingOptions> {
         private List<Parameter> parameters;
         private Type resultType;
 
-        RepeatableSubClassMappings(List<Parameter> parameters, Type resultType) {
+        RepeatableSubclassMappings(List<Parameter> parameters, Type resultType) {
             super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
             this.parameters = parameters;
             this.resultType = resultType;
         }
 
         @Override
-        SubClassMappingGem singularInstanceOn(Element element) {
-            return SubClassMappingGem.instanceOn( element );
+        SubclassMappingGem singularInstanceOn(Element element) {
+            return SubclassMappingGem.instanceOn( element );
         }
 
         @Override
-        SubClassMappingsGem multipleInstanceOn(Element element) {
-            return SubClassMappingsGem.instanceOn( element );
+        SubclassMappingsGem multipleInstanceOn(Element element) {
+            return SubclassMappingsGem.instanceOn( element );
         }
 
         @Override
-        void addInstance(SubClassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                         FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
-            SubClassMappingOptions
+        void addInstance(SubclassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                         FormattingMessager messager, TypeUtils typeUtils, Set<SubclassMappingOptions> mappings) {
+            SubclassMappingOptions
                                   .addInstance(
                                       gem,
                                       method,
@@ -646,9 +646,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         @Override
-        void addInstances(SubClassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                          FormattingMessager messager, TypeUtils typeUtils, Set<SubClassMappingOptions> mappings) {
-            SubClassMappingOptions
+        void addInstances(SubclassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
+                          FormattingMessager messager, TypeUtils typeUtils, Set<SubclassMappingOptions> mappings) {
+            SubclassMappingOptions
                                   .addInstances(
                                       gem,
                                       method,

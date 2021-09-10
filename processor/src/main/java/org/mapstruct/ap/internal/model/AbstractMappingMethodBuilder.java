@@ -33,7 +33,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         static ForgeMethodCreator forSubclassMapping(MappingReferences mappingReferences) {
             return (name, sourceType, targetType, method, description,
                     forgedNameBased) -> ForgedMethod
-                                                    .forSubClassMapping(
+                                                    .forSubclassMapping(
                                                         name,
                                                         sourceType,
                                                         targetType,

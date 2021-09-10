@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.subclassmapping.mappables;
 
-public class SourceSubClass extends Source {
+public class SourceSubclass extends Source {
     private String subclassProperty;
     private String target5;
 
-    public SourceSubClass(String prop1, String prop2, String prop3, String subProp, String target5) {
+    public SourceSubclass(String prop1, String prop2, String prop3, String subProp, String target5) {
         super( prop1, prop2, prop3 );
         setSubclassProperty( subProp );
         setTarget5( target5 );

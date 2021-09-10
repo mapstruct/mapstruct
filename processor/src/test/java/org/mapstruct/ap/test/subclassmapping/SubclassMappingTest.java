@@ -23,9 +23,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "131" )
-@WithClasses( { SubClassMapperUsingExistingMappings.class, SimpleSubClassMapper.class, VehicleCollection.class,
+@WithClasses( { SubclassMapperUsingExistingMappings.class, SimpleSubclassMapper.class, VehicleCollection.class,
     Vehicle.class, Car.class, Bike.class, VehicleCollectionDto.class, VehicleDto.class, CarDto.class, BikeDto.class } )
-public class SubClassMappingTest {
+public class SubclassMappingTest {
 
     @ProcessorTest
     void mappingIsDoneUsingSubclassMappingTest() {
@@ -33,7 +33,7 @@ public class SubClassMappingTest {
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
 
-        VehicleCollectionDto result = SimpleSubClassMapper.INSTANCE.map( vehicles );
+        VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
@@ -46,7 +46,7 @@ public class SubClassMappingTest {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
 
-        VehicleCollectionDto result = SubClassMapperUsingExistingMappings.INSTANCE.map( vehicles );
+        VehicleCollectionDto result = SubclassMapperUsingExistingMappings.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() )
                                           .extracting( VehicleDto::getName )
@@ -60,7 +60,7 @@ public class SubClassMappingTest {
         car.setVehicleManufacturingCompany( "BenZ" );
         vehicles.getVehicles().add( car );
 
-        VehicleCollectionDto result = SimpleSubClassMapper.INSTANCE.map( vehicles );
+        VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() )
                                           .extracting( VehicleDto::getMaker )
@@ -68,25 +68,25 @@ public class SubClassMappingTest {
     }
 
     @ProcessorTest
-    @WithClasses( { ErroneousSubClassMapper2.class } )
+    @WithClasses( { ErroneousSubclassMapper2.class } )
     @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic( type = ErroneousSubClassMapper2.class,
+        @Diagnostic( type = ErroneousSubclassMapper2.class,
                      kind = javax.tools.Diagnostic.Kind.ERROR,
                      line = 21,
-                     message = "SubClassMapping annotation can not be used for update mappings."
+                     message = "SubclassMapping annotation can not be used for update mappings."
                    ) } )
     void unsupportedMethodTest() { }
 
     @ProcessorTest
-    @WithClasses( { ErroneousSubClassMapper1.class } )
+    @WithClasses( { ErroneousSubclassMapper1.class } )
     @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic( type = ErroneousSubClassMapper1.class,
+        @Diagnostic( type = ErroneousSubclassMapper1.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 21,
                         message = "Could not find a parameter that is a superclass for "
                             + "'org.mapstruct.ap.test.subclassmapping.mappables.Bike'."
                         ),
-        @Diagnostic( type = ErroneousSubClassMapper1.class,
+        @Diagnostic( type = ErroneousSubclassMapper1.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 21,
                         message = "Class 'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'"

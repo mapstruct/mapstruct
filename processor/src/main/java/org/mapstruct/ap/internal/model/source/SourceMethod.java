@@ -95,7 +95,7 @@ public class SourceMethod implements Method {
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
         private List<Type> typeParameters;
-        private List<SubClassMappingOptions> subClassMappings = Collections.emptyList();
+        private List<SubclassMappingOptions> subclassMappings = Collections.emptyList();
 
         private boolean verboseLogging;
 
@@ -154,8 +154,8 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setSubClassMappings(List<SubClassMappingOptions> subClassMappings) {
-            this.subClassMappings = subClassMappings;
+        public Builder setSubclassMappings(List<SubclassMappingOptions> subclassMappings) {
+            this.subclassMappings = subclassMappings;
             return this;
         }
 
@@ -208,7 +208,7 @@ public class SourceMethod implements Method {
                 beanMapping,
                 enumMappingOptions,
                 valueMappings,
-                subClassMappings
+                subclassMappings
             );
 
             this.typeParameters = this.executable.getTypeParameters()

@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.subclassmapping.abstractsuperclass;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.SubClassMapping;
+import org.mapstruct.SubclassMapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -19,7 +19,7 @@ public interface SubclassWithAbstractSuperClassMapper {
 
     BikeDto map(Bike bike);
 
-    @SubClassMapping( source = Car.class, target = CarDto.class )
-    @SubClassMapping( source = Bike.class, target = BikeDto.class )
+    @SubclassMapping( source = Car.class, target = CarDto.class )
+    @SubclassMapping( source = Bike.class, target = BikeDto.class )
     VehicleDto map(AbstractVehicle vehicle);
 }
