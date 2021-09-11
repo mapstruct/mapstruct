@@ -45,7 +45,8 @@ public class SubclassMappingOptions extends DelegatingOptions {
     }
 
     private static boolean isConsistent(SubclassMappingGem gem, ExecutableElement method, FormattingMessager messager,
-                                        TypeUtils typeUtils, List<Parameter> parameters, Type resultType) {
+                                        TypeUtils typeUtils, List<Parameter> parameters, Type resultType,
+                                        SubclassValidator subclassValidator) {
 
         if ( method.getReturnType().getKind() == TypeKind.VOID ) {
             messager.printMessage( method, gem.mirror(), SUBCLASSMAPPING_METHOD_SIGNATURE_NOT_SUPPORTED );
@@ -84,6 +85,7 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
+        subclassValidator.isInCorrectOrder( method, gem.mirror(), targetSubclass );
         return isConsistent;
     }
 
@@ -115,8 +117,9 @@ public class SubclassMappingOptions extends DelegatingOptions {
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                     TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
                                     List<Parameter> parameters, Type resultType) {
+        SubclassValidator subclassValidator = new SubclassValidator( messager, typeUtils );
         for ( SubclassMappingGem subclassMappingGem : gem.value().get() ) {
-            addInstance(
+            addAndValidateInstance(
                 subclassMappingGem,
                 method,
                 beanMappingOptions,
@@ -124,7 +127,8 @@ public class SubclassMappingOptions extends DelegatingOptions {
                 typeUtils,
                 mappings,
                 parameters,
-                resultType );
+                resultType,
+                subclassValidator );
         }
     }
 
@@ -132,7 +136,31 @@ public class SubclassMappingOptions extends DelegatingOptions {
                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                    TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
                                    List<Parameter> parameters, Type resultType) {
-        if ( !isConsistent( subclassMapping, method, messager, typeUtils, parameters, resultType ) ) {
+        addAndValidateInstance(
+            subclassMapping,
+            method,
+            beanMappingOptions,
+            messager,
+            typeUtils,
+            mappings,
+            parameters,
+            resultType,
+            new SubclassValidator( messager, typeUtils ) );
+    }
+
+    private static void addAndValidateInstance(SubclassMappingGem subclassMapping, ExecutableElement method,
+                                               BeanMappingOptions beanMappingOptions, FormattingMessager messager,
+                                               TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
+                                               List<Parameter> parameters, Type resultType,
+                                               SubclassValidator subclassValidator) {
+        if ( !isConsistent(
+            subclassMapping,
+            method,
+            messager,
+            typeUtils,
+            parameters,
+            resultType,
+            subclassValidator ) ) {
             return;
         }
 

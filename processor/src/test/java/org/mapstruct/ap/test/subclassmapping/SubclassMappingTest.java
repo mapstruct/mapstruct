@@ -9,6 +9,8 @@ import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
 import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.HatchBack;
+import org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollection;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
@@ -66,6 +68,21 @@ public class SubclassMappingTest {
                                           .extracting( VehicleDto::getMaker )
                                           .containsExactly( "BenZ" );
     }
+
+    @ProcessorTest
+    @WithClasses( { SubclassOrderWarningMapper.class, HatchBack.class, HatchBackDto.class } )
+    @ExpectedCompilationOutcome( value = CompilationResult.SUCCEEDED, diagnostics = {
+        @Diagnostic( type = SubclassOrderWarningMapper.class,
+                     kind = javax.tools.Diagnostic.Kind.WARNING,
+                     line = 28,
+                     alternativeLine = 30,
+                     message = "SubclassMapping annotation for "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' found after "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto', but all "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' "
+                            + "objects are also instances of "
+                            + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'." ) } )
+    void subclassOrderWarningTest() { }
 
     @ProcessorTest
     @WithClasses( { ErroneousSubclassMapper2.class } )
