@@ -1697,7 +1697,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
-                              List<SubclassMapping> subclasses) {
+                              List<SubclassMapping> subclassMappings) {
         super(
             method,
             existingVariableNames,
@@ -1743,7 +1743,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
-        this.subclassMappings = subclasses;
+        this.subclassMappings = subclassMappings;
     }
 
     public List<PropertyMapping> getConstantMappings() {

@@ -29,31 +29,31 @@ import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTa
 public class MappingMethodOptions {
     private static final MappingMethodOptions EMPTY = new MappingMethodOptions(
         null,
-        Collections.emptySet(),
+        new LinkedHashSet<>(),
         null,
         null,
         null,
         null,
         Collections.emptyList(),
-        Collections.emptyList()
+        new LinkedHashSet<>()
     );
 
     private MapperOptions mapper;
-    private Set<MappingOptions> mappings;
+    private LinkedHashSet<MappingOptions> mappings;
     private IterableMappingOptions iterableMapping;
     private MapMappingOptions mapMapping;
     private BeanMappingOptions beanMapping;
     private EnumMappingOptions enumMappingOptions;
     private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
-    private List<SubclassMappingOptions> subclassMapping;
+    private LinkedHashSet<SubclassMappingOptions> subclassMapping;
 
-    public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
+    public MappingMethodOptions(MapperOptions mapper, LinkedHashSet<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
-                                List<SubclassMappingOptions> subclassMapping) {
+                                LinkedHashSet<SubclassMappingOptions> subclassMapping) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -77,7 +77,7 @@ public class MappingMethodOptions {
      * @return the {@link MappingOptions}s configured for this method, keyed by target property name. Only for enum
      * mapping methods a target will be mapped by several sources.
      */
-    public Set<MappingOptions> getMappings() {
+    public LinkedHashSet<MappingOptions> getMappings() {
         return mappings;
     }
 
@@ -101,7 +101,7 @@ public class MappingMethodOptions {
         return valueMappings;
     }
 
-    public List<SubclassMappingOptions> getSubclassMappings() {
+    public LinkedHashSet<SubclassMappingOptions> getSubclassMappings() {
         return subclassMapping;
     }
 
@@ -125,7 +125,7 @@ public class MappingMethodOptions {
         this.valueMappings = valueMappings;
     }
 
-    public void setSubclassMappings(List<SubclassMappingOptions> subclassMapping) {
+    public void setSubclassMappings(LinkedHashSet<SubclassMappingOptions> subclassMapping) {
         this.subclassMapping = subclassMapping;
     }
 
@@ -343,7 +343,7 @@ public class MappingMethodOptions {
             options.beanMapping,
             options.enumMappingOptions,
             options.valueMappings,
-            Collections.emptyList() );
+            new LinkedHashSet<>() );
     }
 
 }

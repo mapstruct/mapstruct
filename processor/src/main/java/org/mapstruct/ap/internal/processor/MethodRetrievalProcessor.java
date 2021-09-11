@@ -12,7 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -281,7 +280,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeFactory );
 
         RepeatableMappings repeatableMappings = new RepeatableMappings();
-        Set<MappingOptions> mappingOptions = repeatableMappings
+        LinkedHashSet<MappingOptions> mappingOptions = repeatableMappings
                                                                .getMappings(
                                                                    method,
                                                                    method,
@@ -314,7 +313,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         RepeatableSubclassMappings repeatableSubclassMappings =
             new RepeatableSubclassMappings( parameters, resultType );
-        Set<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
+        LinkedHashSet<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
                                                                                        .getMappings(
                                                                                            method,
                                                                                            method,
@@ -334,17 +333,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setMapMappingOptions( mapMappingOptions )
             .setValueMappingOptionss( getValueMappings( method ) )
             .setEnumMappingOptions( enumMappingOptions )
-            .setSubclassMappings( sortSubclassMappings( subclassMappingOptions ) )
+            .setSubclassMappings( subclassMappingOptions )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
             .setVerboseLogging( options.isVerbose() )
             .build();
-    }
-
-    private List<SubclassMappingOptions> sortSubclassMappings(Set<SubclassMappingOptions> subclassMappingOptions) {
-        return subclassMappingOptions.stream().sorted( new SubclassInheritenceSorter() ).collect( Collectors.toList() );
     }
 
     private ParameterProvidedMethods retrieveContextProvidedMethods(
@@ -690,8 +685,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
          * @param mappingOptions LinkedSet of mappings found so far
          * @return The mappings for the given method, keyed by target property name
          */
-        public Set<OPTIONS> getMappings(ExecutableElement method, Element element, BeanMappingOptions beanMapping,
-                                        Set<OPTIONS> mappingOptions, Set<Element> handledElements) {
+        public LinkedHashSet<OPTIONS> getMappings(ExecutableElement method, Element element,
+                                                  BeanMappingOptions beanMapping, LinkedHashSet<OPTIONS> mappingOptions,
+                                                  Set<Element> handledElements) {
 
             for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
                 Element lElement = annotationMirror.getAnnotationType().asElement();
