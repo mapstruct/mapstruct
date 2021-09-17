@@ -28,7 +28,5 @@
     target innner check and assignment
 -->
 <#macro assignToExistingTarget>
-    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
-    }
+  ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
 </#macro>
