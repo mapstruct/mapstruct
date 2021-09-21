@@ -54,7 +54,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * <p><strong>Example 2:</strong> Mapping properties with different names</p>
  * <pre><code class='java'>
  * // We need map Human.companyName to HumanDto.company
- * // we can use &#64;Mapping with parameters {@link #source()} and {@link #source()}
+ * // we can use &#64;Mapping with parameters {@link #source()} and {@link #target()}
  * &#64;Mapper
  * public interface HumanMapper {
  *    &#64;Mapping(source="companyName", target="company")
@@ -475,7 +475,5 @@ public @interface Mapping {
      * @see org.mapstruct.control.MappingControl
      */
     Class<? extends Annotation> mappingControl() default MappingControl.class;
-
-
 
 }
