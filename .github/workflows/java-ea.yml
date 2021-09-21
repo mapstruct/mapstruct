@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [17-ea]
+        java: [18-ea]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
@@ -21,4 +21,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: 'Test'
-        run: ./mvnw ${MAVEN_ARGS} install -DskipDistribution=true
+        run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true
