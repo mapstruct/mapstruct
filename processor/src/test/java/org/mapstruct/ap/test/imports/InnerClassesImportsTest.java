@@ -14,7 +14,6 @@ import org.mapstruct.ap.test.imports.innerclasses.InnerClassMapper;
 import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass.SourceInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass;
-import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -47,8 +46,7 @@ public class InnerClassesImportsTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getInnerClassMember().getValue() ).isEqualTo( 412 );
-        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( SourceInnerClass.class );
-        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerClass.class );
+        generatedSource.addComparisonToFixtureFor( InnerClassMapper.class );
     }
 
     @ProcessorTest
@@ -61,8 +59,7 @@ public class InnerClassesImportsTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getValue() ).isEqualTo( 412 );
-        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( SourceInnerClass.class );
-        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerInnerClass.class );
+        generatedSource.addComparisonToFixtureFor( InnerClassMapper.class );
     }
 
     @ProcessorTest
@@ -82,6 +79,6 @@ public class InnerClassesImportsTest {
         assertThat( sourceAgain ).isNotNull();
         assertThat( sourceAgain.getInnerEnum() ).isEqualTo( InnerEnum.A );
 
-        generatedSource.forMapper( BeanWithInnerEnumMapper.class ).containsImportFor( InnerEnum.class );
+        generatedSource.addComparisonToFixtureFor( BeanWithInnerEnumMapper.class );
     }
 }
