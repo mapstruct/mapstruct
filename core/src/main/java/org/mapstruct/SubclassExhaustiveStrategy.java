@@ -21,7 +21,7 @@ public enum SubclassExhaustiveStrategy {
 
     /**
      * If there is no valid constructor or known method to create the return value of a with `@SubclassMapping`
-     * annotated mapping then an {@link IllegalStateException} will be thrown if a call is made with a type for which
+     * annotated mapping then an {@link IllegalArgumentException} will be thrown if a call is made with a type for which
      * there is no {@link SubclassMapping} available.
      */
     RUNTIME_EXCEPTION;
