@@ -5,14 +5,6 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.lang.model.element.Modifier.STATIC;
-import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
-import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.join;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -72,6 +63,14 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
+import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
+import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.join;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -199,11 +198,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .options( options )
             .versionInformation( versionInformation )
             .decorator( getDecorator( element, methods, mapperOptions.implementationName(),
-                                                mapperOptions.implementationPackage(),
-                                                getExtraImports( element, mapperOptions, methods ) ) )
+                mapperOptions.implementationPackage(), getExtraImports( element, mapperOptions ) ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
-            .extraImports( getExtraImports( element, mapperOptions, methods ) )
+            .extraImports( getExtraImports( element, mapperOptions ) )
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
             .build();
@@ -296,9 +294,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return decorator;
     }
 
-    private SortedSet<Type> getExtraImports(TypeElement element, MapperOptions mapperOptions,
-                                            List<SourceMethod> methods) {
+    private SortedSet<Type> getExtraImports(TypeElement element,  MapperOptions mapperOptions) {
         SortedSet<Type> extraImports = new TreeSet<>();
+
 
         for ( TypeMirror extraImport : mapperOptions.imports() ) {
             Type type = typeFactory.getType( extraImport );
