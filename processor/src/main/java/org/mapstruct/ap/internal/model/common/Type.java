@@ -444,8 +444,11 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private boolean shouldUseSimpleName() {
-        String fqn = notToBeImportedTypes.get( name );
-        return this.qualifiedName.equals( fqn );
+        // Using trimSimpleClassName since the same is used in the isToBeImported()
+        // to check whether notToBeImportedTypes contains it
+        String trimmedName = trimSimpleClassName( name );
+        String fqn = notToBeImportedTypes.get( trimmedName );
+        return trimSimpleClassName( this.qualifiedName ).equals( fqn );
     }
 
     public Type erasure() {
