@@ -5,8 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,9 +25,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class SubclassMapping extends ModelElement {
 
     private final Type sourceType;
-    private Type targetType;
-    private Assignment assignment;
-    private String sourceArgument;
+    private final Type targetType;
+    private final Assignment assignment;
+    private final String sourceArgument;
 
     public SubclassMapping(Type sourceType, String sourceArgument, Type targetType, Assignment assignment) {
         this.sourceType = sourceType;
@@ -43,7 +42,7 @@ public class SubclassMapping extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return new HashSet<>( Arrays.asList( sourceType ) );
+        return Collections.singleton( sourceType );
     }
 
     public AssignmentWrapper getAssignment() {

@@ -6,33 +6,48 @@
 package org.mapstruct.ap.test.subclassmapping.fixture;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-@WithClasses( { AbstractParentSource.class, AbstractParentTarget.class,
-    InterfaceParentSource.class, InterfaceParentTarget.class,
-    ImplementedParentSource.class, ImplementedParentTarget.class,
-    SubSource.class, SubSourceOther.class, SubTarget.class, SubTargetOther.class,
-    SubclassAbstractMapper.class, SubclassImplementedMapper.class, SubclassInterfaceMapper.class } )
+@WithClasses({
+    AbstractParentSource.class,
+    AbstractParentTarget.class,
+    ImplementedParentSource.class,
+    ImplementedParentTarget.class,
+    InterfaceParentSource.class,
+    InterfaceParentTarget.class,
+    SubSource.class,
+    SubSourceOther.class,
+    SubTarget.class,
+    SubTargetOther.class,
+})
 public class SubclassFixtureTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
-    void subclassInterfaceParentFixtureTest() {
+    @WithClasses( {
+        SubclassInterfaceMapper.class,
+    } )
+    void subclassInterfaceParentFixture() {
         generatedSource.addComparisonToFixtureFor( SubclassInterfaceMapper.class );
     }
 
     @ProcessorTest
-    void subclassAbstractParentFixtureTest() {
+    @WithClasses( {
+        SubclassAbstractMapper.class,
+    } )
+    void subclassAbstractParentFixture() {
         generatedSource.addComparisonToFixtureFor( SubclassAbstractMapper.class );
     }
 
     @ProcessorTest
-    void subclassImplementationParentFixtureTest() {
+    @WithClasses( {
+        SubclassImplementedMapper.class,
+    } )
+    void subclassImplementationParentFixture() {
         generatedSource.addComparisonToFixtureFor( SubclassImplementedMapper.class );
     }
 }

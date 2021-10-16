@@ -5,20 +5,29 @@
  */
 package org.mapstruct.ap.test.subclassmapping.abstractsuperclass;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.assertj.core.api.Assertions;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
-@IssueKey( "366" )
-@WithClasses( { SubclassWithAbstractSuperClassMapper.class, VehicleCollection.class, AbstractVehicle.class, Car.class,
-    Bike.class, VehicleCollectionDto.class, VehicleDto.class, CarDto.class, BikeDto.class, } )
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@IssueKey("366")
+@WithClasses({
+    AbstractVehicle.class,
+    VehicleCollection.class,
+    Bike.class,
+    BikeDto.class,
+    Car.class,
+    CarDto.class,
+    SubclassWithAbstractSuperClassMapper.class,
+    VehicleCollectionDto.class,
+    VehicleDto.class,
+})
 public class AbstractSuperClassTest {
 
     @ProcessorTest
-    void issue366MappingTest() {
+    void downcastMappingInCollection() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
@@ -27,8 +36,8 @@ public class AbstractSuperClassTest {
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
-                                          .extracting( vehicle -> (Class) vehicle.getClass() )
-                                          .containsExactly( CarDto.class, BikeDto.class );
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( CarDto.class, BikeDto.class );
     }
 
     @ProcessorTest
@@ -37,11 +46,9 @@ public class AbstractSuperClassTest {
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Motorcycle() );
 
-        Assertions
-                  .assertThatThrownBy( () -> SubclassWithAbstractSuperClassMapper.INSTANCE.map( vehicles ) )
-                  .isInstanceOf( IllegalArgumentException.class )
-                  .hasMessage(
-                      "Not all subclasses are supported for this mapping. "
-                          + "Missing for class org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Motorcycle" );
+        assertThatThrownBy( () -> SubclassWithAbstractSuperClassMapper.INSTANCE.map( vehicles ) )
+            .isInstanceOf( IllegalArgumentException.class )
+            .hasMessage( "Not all subclasses are supported for this mapping. "
+                + "Missing for class org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Motorcycle" );
     }
 }

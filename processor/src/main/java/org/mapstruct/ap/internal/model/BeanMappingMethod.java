@@ -134,12 +134,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         public Builder sourceMethod(SourceMethod sourceMethod) {
-            super.method( sourceMethod );
+            method( sourceMethod );
             return this;
         }
 
         public Builder forgedMethod(ForgedMethod forgedMethod) {
-            super.method( forgedMethod );
+            method( forgedMethod );
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
             for ( MappingReference mappingReference: mappingReferences.getMappingReferences() ) {

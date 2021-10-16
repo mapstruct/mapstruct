@@ -20,7 +20,7 @@ class MappingInheritanceTest {
 
     @ProcessorTest
     @WithClasses( { SubclassMapper.class } )
-    void inheritanceTest() {
+    void inheritance() {
         SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
         SourceSubclass sourceSubclass = new SourceSubclass( "f1", "f2", "f3", "f4", "f5" );
 
@@ -35,7 +35,7 @@ class MappingInheritanceTest {
 
     @ProcessorTest
     @WithClasses( { SubclassMapper.class } )
-    void superclassTest() {
+    void superclass() {
         SubclassMapper mapper = Mappers.getMapper( SubclassMapper.class );
         Source source = new Source( "f1", "f2", "f3" );
 

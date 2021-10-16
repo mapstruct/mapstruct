@@ -22,9 +22,9 @@ import org.mapstruct.ap.internal.util.TypeUtils;
  */
 class SubclassValidator {
 
-    private FormattingMessager messager;
-    private List<TypeMirror> handledSubclasses = new ArrayList<>();
-    private TypeUtils typeUtils;
+    private final FormattingMessager messager;
+    private final List<TypeMirror> handledSubclasses = new ArrayList<>();
+    private final TypeUtils typeUtils;
 
     SubclassValidator(FormattingMessager messager, TypeUtils typeUtils) {
         this.messager = messager;

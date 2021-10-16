@@ -24,13 +24,23 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IssueKey( "131" )
-@WithClasses( { SubclassMapperUsingExistingMappings.class, SimpleSubclassMapper.class, VehicleCollection.class,
-    Vehicle.class, Car.class, Bike.class, VehicleCollectionDto.class, VehicleDto.class, CarDto.class, BikeDto.class } )
+@IssueKey("131")
+@WithClasses({
+    Bike.class,
+    BikeDto.class,
+    Car.class,
+    CarDto.class,
+    VehicleCollection.class,
+    VehicleCollectionDto.class,
+    Vehicle.class,
+    VehicleDto.class,
+    SimpleSubclassMapper.class,
+    SubclassMapperUsingExistingMappings.class,
+})
 public class SubclassMappingTest {
 
     @ProcessorTest
-    void mappingIsDoneUsingSubclassMappingTest() {
+    void mappingIsDoneUsingSubclassMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
@@ -39,24 +49,24 @@ public class SubclassMappingTest {
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
-                                          .extracting( vehicle -> (Class) vehicle.getClass() )
-                                          .containsExactly( CarDto.class, BikeDto.class );
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( CarDto.class, BikeDto.class );
     }
 
     @ProcessorTest
-    void existingMappingsAreUsedWhenFoundTest() {
+    void existingMappingsAreUsedWhenFound() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
 
         VehicleCollectionDto result = SubclassMapperUsingExistingMappings.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() )
-                                          .extracting( VehicleDto::getName )
-                                          .containsExactly( "created through existing mapping." );
+            .extracting( VehicleDto::getName )
+            .containsExactly( "created through existing mapping." );
     }
 
     @ProcessorTest
-    void subclassMappingInheritsMappingTest() {
+    void subclassMappingInheritsMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         Car car = new Car();
         car.setVehicleManufacturingCompany( "BenZ" );
@@ -65,55 +75,65 @@ public class SubclassMappingTest {
         VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() )
-                                          .extracting( VehicleDto::getMaker )
-                                          .containsExactly( "BenZ" );
+            .extracting( VehicleDto::getMaker )
+            .containsExactly( "BenZ" );
     }
 
     @ProcessorTest
-    @WithClasses( { SubclassOrderWarningMapper.class, HatchBack.class, HatchBackDto.class } )
-    @ExpectedCompilationOutcome( value = CompilationResult.SUCCEEDED, diagnostics = {
-        @Diagnostic( type = SubclassOrderWarningMapper.class,
-                     kind = javax.tools.Diagnostic.Kind.WARNING,
-                     line = 28,
-                     alternativeLine = 30,
-                     message = "SubclassMapping annotation for "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' found after "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto', but all "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' "
-                            + "objects are also instances of "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'." ) } )
-    void subclassOrderWarningTest() { }
+    @WithClasses({
+        HatchBack.class,
+        HatchBackDto.class,
+        SubclassOrderWarningMapper.class,
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED, diagnostics = {
+        @Diagnostic(type = SubclassOrderWarningMapper.class,
+            kind = javax.tools.Diagnostic.Kind.WARNING,
+            line = 28,
+            alternativeLine = 30,
+            message = "SubclassMapping annotation for "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' found after "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto', but all "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' "
+                + "objects are also instances of "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'.")
+    })
+    void subclassOrderWarning() {
+    }
 
     @ProcessorTest
-    @WithClasses( { ErroneousSubclassMapper2.class } )
-    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic( type = ErroneousSubclassMapper2.class,
-                     kind = javax.tools.Diagnostic.Kind.ERROR,
-                     line = 21,
-                     message = "SubclassMapping annotation can not be used for update methods."
-                   ),
-        @Diagnostic( type = ErroneousSubclassMapper2.class,
-                     kind = javax.tools.Diagnostic.Kind.ERROR,
-                     line = 25,
-                     message = "SubclassMapping annotation can not be used for update methods."
-                   ) } )
-    void unsupportedMethodTest() { }
+    @WithClasses({ ErroneousSubclassUpdateMapper.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(type = ErroneousSubclassUpdateMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 21,
+            message = "SubclassMapping annotation can not be used for update methods."
+        ),
+        @Diagnostic(type = ErroneousSubclassUpdateMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 25,
+            message = "SubclassMapping annotation can not be used for update methods."
+        )
+    })
+    void unsupportedUpdateMethod() {
+    }
 
     @ProcessorTest
-    @WithClasses( { ErroneousSubclassMapper1.class } )
-    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic( type = ErroneousSubclassMapper1.class,
-                        kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 21,
-                        message = "Could not find a parameter that is a superclass for "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.Bike'."
-                        ),
-        @Diagnostic( type = ErroneousSubclassMapper1.class,
-                        kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 21,
-                        message = "Class 'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'"
-                            + " is not a subclass of "
-                            + "'org.mapstruct.ap.test.subclassmapping.mappables.BikeDto'."
-                        ) } )
-    void erroneousMethodTest() { }
+    @WithClasses({ ErroneousSubclassMapper1.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(type = ErroneousSubclassMapper1.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 21,
+            message = "Could not find a parameter that is a superclass for "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.Bike'."
+        ),
+        @Diagnostic(type = ErroneousSubclassMapper1.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 21,
+            message = "Class 'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'"
+                + " is not a subclass of "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.BikeDto'."
+        )
+    })
+    void erroneousMethodWithSourceTargetType() {
+    }
 }

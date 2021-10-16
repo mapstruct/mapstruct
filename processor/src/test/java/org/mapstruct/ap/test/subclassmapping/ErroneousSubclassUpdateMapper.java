@@ -15,8 +15,8 @@ import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ErroneousSubclassMapper2 {
-    ErroneousSubclassMapper2 INSTANCE = Mappers.getMapper( ErroneousSubclassMapper2.class );
+public interface ErroneousSubclassUpdateMapper {
+    ErroneousSubclassUpdateMapper INSTANCE = Mappers.getMapper( ErroneousSubclassUpdateMapper.class );
 
     @SubclassMapping( source = Car.class, target = CarDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker" )

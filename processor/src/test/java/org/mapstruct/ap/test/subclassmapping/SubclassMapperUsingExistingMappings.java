@@ -24,7 +24,7 @@ public interface SubclassMapperUsingExistingMappings {
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 
-    default CarDto existingMappingMethod(Car domein) {
+    default CarDto existingMappingMethod(Car domain) {
         CarDto dto = new CarDto();
         dto.setName( "created through existing mapping." );
         return dto;
