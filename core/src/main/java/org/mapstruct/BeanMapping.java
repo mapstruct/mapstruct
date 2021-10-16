@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 import org.mapstruct.control.MappingControl;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 
 /**
  * Configures the mapping between two bean types.
@@ -115,6 +116,17 @@ public @interface BeanMapping {
      * @return strategy how to do null checking
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
+
+    /**
+     * Determines how to handle missing implementation for super classes when using the {@link SubclassMapping}.
+     *
+     * Overrides the setting on {@link MapperConfig} and {@link Mapper}.
+     *
+     * @return strategy to handle missing implementation combined with {@link SubclassMappings}.
+     *
+     * @since 1.5
+     */
+    SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
      * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No

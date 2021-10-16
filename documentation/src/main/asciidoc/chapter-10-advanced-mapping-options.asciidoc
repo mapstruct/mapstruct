@@ -135,7 +135,10 @@ public interface FruitMapper {
 If you would just use a normal mapping both the `AppleDto` and the `BananaDto` would be made into a `Fruit` object, instead of an `Apple` and a `Banana` object.
 By using the subclass mapping an `AppleDtoToApple` mapping will be used for `AppleDto` objects, and an `BananaDtoToBanana` mapping will be used for `BananaDto` objects.
 If you try to map a `GrapeDto` it would still turn it into a `Fruit`.
-In the case that the `Fruit` is an abstract class or an interface, you would get an `IllegalArgumentException` because it is unknown how to map a `GrapeDto`.
+
+In the case that the `Fruit` is an abstract class or an interface, you would get a compile error.
+
+To allow mappings for abstract classes or interfaces you need to set the `subclassExhaustiveStrategy` to `RUNTIME_EXCEPTION`, you can do this at the `@MapperConfig`, `@Mapper` or `@BeanMapping` annotations. If you then pass a `GrapeDto` an `IllegalArgumentException` will be thrown because it is unknown how to map a `GrapeDto`.
 Adding the missing (`@SubclassMapping`) for it will fix that.
 
 [TIP]
@@ -146,7 +149,7 @@ If the mapping method for the subclasses does not exist it will be created and a
 [NOTE]
 ====
 Combining `@SubclassMapping` with update methods is not supported.
-If you try ro use subclass mappings there will be a compile error.
+If you try to use subclass mappings there will be a compile error.
 The same issue exists for the `@Context` and `@TargetType` parameters.
 ====
 

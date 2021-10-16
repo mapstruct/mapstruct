@@ -10,9 +10,10 @@ import org.mapstruct.SubclassExhaustiveStrategy;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( subclassExhaustiveStrategy = SubclassExhaustiveStrategy.RUNTIME_EXCEPTION )
-public interface SubclassWithAbstractSuperClassMapper {
-    SubclassWithAbstractSuperClassMapper INSTANCE = Mappers.getMapper( SubclassWithAbstractSuperClassMapper.class );
+@Mapper( subclassExhaustiveStrategy = SubclassExhaustiveStrategy.COMPILE_ERROR )
+public interface ErroneousSubclassWithAbstractSuperClassMapper {
+    ErroneousSubclassWithAbstractSuperClassMapper INSTANCE =
+        Mappers.getMapper( ErroneousSubclassWithAbstractSuperClassMapper.class );
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 

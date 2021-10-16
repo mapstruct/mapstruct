@@ -12,18 +12,18 @@ import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 
-import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
-
-import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
+import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -92,6 +92,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValueCheckStrategy().hasValue()
             && !gem.nullValuePropertyMappingStrategy().hasValue()
             && !gem.nullValueMappingStrategy().hasValue()
+            && !gem.subclassExhaustiveStrategy().hasValue()
             && !gem.unmappedTargetPolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
             && !gem.builder().hasValue() ) {
@@ -137,6 +138,15 @@ public class BeanMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
             .orElse( next().getNullValueMappingStrategy() );
+    }
+
+    @Override
+    public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::subclassExhaustiveStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( SubclassExhaustiveStrategyGem::valueOf )
+            .orElse( next().getSubclassExhaustiveStrategy() );
     }
 
     @Override

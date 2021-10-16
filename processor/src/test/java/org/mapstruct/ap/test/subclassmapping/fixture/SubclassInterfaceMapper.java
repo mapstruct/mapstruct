@@ -8,7 +8,9 @@ package org.mapstruct.ap.test.subclassmapping.fixture;
 import org.mapstruct.Mapper;
 import org.mapstruct.SubclassMapping;
 
-@Mapper
+import static org.mapstruct.SubclassExhaustiveStrategy.RUNTIME_EXCEPTION;
+
+@Mapper( subclassExhaustiveStrategy = RUNTIME_EXCEPTION )
 public interface SubclassInterfaceMapper {
 
     @SubclassMapping( source = SubSource.class, target = SubTarget.class )

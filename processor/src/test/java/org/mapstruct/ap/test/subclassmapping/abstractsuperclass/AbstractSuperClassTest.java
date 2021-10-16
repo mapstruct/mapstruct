@@ -8,6 +8,9 @@ package org.mapstruct.ap.test.subclassmapping.abstractsuperclass;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
     BikeDto.class,
     Car.class,
     CarDto.class,
-    SubclassWithAbstractSuperClassMapper.class,
     VehicleCollectionDto.class,
     VehicleDto.class,
 })
 public class AbstractSuperClassTest {
 
     @ProcessorTest
+    @WithClasses( SubclassWithAbstractSuperClassMapper.class )
     void downcastMappingInCollection() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -41,6 +44,7 @@ public class AbstractSuperClassTest {
     }
 
     @ProcessorTest
+    @WithClasses( SubclassWithAbstractSuperClassMapper.class )
     void mappingOfUnknownChildThrowsIllegalArgumentException() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -50,5 +54,17 @@ public class AbstractSuperClassTest {
             .isInstanceOf( IllegalArgumentException.class )
             .hasMessage( "Not all subclasses are supported for this mapping. "
                 + "Missing for class org.mapstruct.ap.test.subclassmapping.abstractsuperclass.Motorcycle" );
+    }
+
+    @WithClasses( ErroneousSubclassWithAbstractSuperClassMapper.class )
+    @ProcessorTest
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(type = ErroneousSubclassWithAbstractSuperClassMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 26,
+            message = "The return type VehicleDto is an abstract class or interface. "
+                + "Provide a non abstract / non interface result type or a factory method.")
+    })
+    void compileErrorWithAbstractClass() {
     }
 }

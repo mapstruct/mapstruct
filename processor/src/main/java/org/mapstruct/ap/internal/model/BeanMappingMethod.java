@@ -174,8 +174,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     returnTypeImpl = returnTypeBuilder.getBuilder();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null
-                        || hasSubclassMappingsAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
-                        || doesNotHaveSubclassMappingsAndCanBeConstructed( returnTypeImpl ) ) {
+                        || allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
+                        || doesNotAllowAbstractReturnTypeAndCanBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -196,8 +196,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     returnTypeImpl = method.getReturnType();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null
-                        || hasSubclassMappingsAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
-                        || doesNotHaveSubclassMappingsAndCanBeConstructed( returnTypeImpl ) ) {
+                        || allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
+                        || doesNotAllowAbstractReturnTypeAndCanBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -372,13 +372,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
         }
 
-        private boolean doesNotHaveSubclassMappingsAndCanBeConstructed(Type returnTypeImpl) {
-            return !hasSubclassMappings()
+        private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {
+            return !isAbstractReturnTypeAllowed()
                 && canReturnTypeBeConstructed( returnTypeImpl );
         }
 
-        private boolean hasSubclassMappingsAndIsEitherAbstractOrCanBeConstructed(Type returnTypeImpl) {
-            return hasSubclassMappings()
+        private boolean allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed(Type returnTypeImpl) {
+            return isAbstractReturnTypeAllowed()
                 && isReturnTypeAbstractOrCanBeConstructed( returnTypeImpl );
         }
 
@@ -430,8 +430,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
         }
 
-        private boolean hasSubclassMappings() {
-            return !method.getOptions().getSubclassMappings().isEmpty();
+        private boolean isAbstractReturnTypeAllowed() {
+            return method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
+                && !method.getOptions().getSubclassMappings().isEmpty();
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {
