@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,14 +16,15 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import org.mapstruct.ap.internal.gem.ConditionGem;
-import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.util.TypeUtils;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -83,7 +83,7 @@ public class SourceMethod implements Method {
         private List<Parameter> parameters;
         private Type returnType = null;
         private List<Type> exceptionTypes;
-        private LinkedHashSet<MappingOptions> mappings = new LinkedHashSet<>();
+        private Set<MappingOptions> mappings;
         private IterableMappingOptions iterableMapping = null;
         private MapMappingOptions mapMapping = null;
         private BeanMappingOptions beanMapping = null;
@@ -95,7 +95,7 @@ public class SourceMethod implements Method {
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
         private List<Type> typeParameters;
-        private LinkedHashSet<SubclassMappingOptions> subclassMappings = new LinkedHashSet<>();
+        private Set<SubclassMappingOptions> subclassMappings;
 
         private boolean verboseLogging;
 
@@ -124,7 +124,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMappingOptions(LinkedHashSet<MappingOptions> mappings) {
+        public Builder setMappingOptions(Set<MappingOptions> mappings) {
             this.mappings = mappings;
             return this;
         }
@@ -154,7 +154,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setSubclassMappings(LinkedHashSet<SubclassMappingOptions> subclassMappings) {
+        public Builder setSubclassMappings(Set<SubclassMappingOptions> subclassMappings) {
             this.subclassMappings = subclassMappings;
             return this;
         }
@@ -195,6 +195,14 @@ public class SourceMethod implements Method {
         }
 
         public SourceMethod build() {
+
+            if ( mappings == null ) {
+                mappings = Collections.emptySet();
+            }
+
+            if ( subclassMappings == null ) {
+                subclassMappings = Collections.emptySet();
+            }
 
             MappingMethodOptions mappingMethodOptions = new MappingMethodOptions(
                 mapper,

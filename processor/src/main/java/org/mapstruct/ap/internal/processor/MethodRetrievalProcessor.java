@@ -280,7 +280,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeFactory );
 
         RepeatableMappings repeatableMappings = new RepeatableMappings();
-        LinkedHashSet<MappingOptions> mappingOptions = repeatableMappings
+        Set<MappingOptions> mappingOptions = repeatableMappings
                                                                .getMappings(
                                                                    method,
                                                                    method,
@@ -313,7 +313,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         RepeatableSubclassMappings repeatableSubclassMappings =
             new RepeatableSubclassMappings( parameters, resultType );
-        LinkedHashSet<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
+        Set<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
                                                                                        .getMappings(
                                                                                            method,
                                                                                            method,
@@ -685,7 +685,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
          * @param mappingOptions LinkedSet of mappings found so far
          * @return The mappings for the given method, keyed by target property name
          */
-        public LinkedHashSet<OPTIONS> getMappings(ExecutableElement method, Element element,
+        public Set<OPTIONS> getMappings(ExecutableElement method, Element element,
                                                   BeanMappingOptions beanMapping, LinkedHashSet<OPTIONS> mappingOptions,
                                                   Set<Element> handledElements) {
 
