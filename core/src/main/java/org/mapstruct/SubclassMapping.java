@@ -11,6 +11,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.util.Experimental;
+
 /**
  * Configures the mapping to handle hierarchy of the source type.
  * <p>
@@ -24,8 +26,7 @@ import java.lang.annotation.Target;
  * <pre><code class='java'>
  * &#64;Mapper
  * public interface MyMapper {
- *    &#64;SubclassMapping (sourceClass = SourceSubclass.class,
- *                      targetClass = TargetSubclass.class)
+ *    &#64;SubclassMapping (target = TargetSubclass.class, source = SourceSubclass.class)
  *    TargetParent mapParent(SourceParent parent);
  *
  *    TargetSubclass mapSubclass(SourceSubclass subInstant);
@@ -66,9 +67,10 @@ import java.lang.annotation.Target;
  * @author Ben Zegveld
  * @since 1.5
  */
-@Repeatable( value = SubclassMappings.class )
-@Retention( RetentionPolicy.CLASS )
-@Target( { ElementType.METHOD, ElementType.ANNOTATION_TYPE } )
+@Repeatable(value = SubclassMappings.class)
+@Retention(RetentionPolicy.CLASS)
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Experimental
 public @interface SubclassMapping {
     /**
      * @return the source subclass to check for before using the default mapping as fallback.
@@ -76,7 +78,7 @@ public @interface SubclassMapping {
     Class<?> source();
 
     /**
-     * @return the target subclass to map the sourceSubclass to.
+     * @return the target subclass to map the source to.
      */
     Class<?> target();
 }

@@ -10,6 +10,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.util.Experimental;
+
 /**
  * Configures the SubclassMappings of several subclasses.
  * <p>
@@ -24,10 +26,8 @@ import java.lang.annotation.Target;
  * &#64;Mapper
  * public interface MyMapper {
  *     &#64;SubclassMappings({
- *         &#64;SubclassMapping(sourceClass = firstSub.class,
- *                          targetClass = firstTargetSub.class),
- *         &#64;SubclassMapping(sourceClass = secondSub.class,
- *                          targetClass = secondTargetSub.class)
+ *         &#64;SubclassMapping(source = FirstSub.class, target = FirstTargetSub.class),
+ *         &#64;SubclassMapping(source = SecondSub.class, target = SecondTargetSub.class)
  *     })
  *     ParentTarget toParentTarget(Parent parent);
  * }
@@ -36,10 +36,8 @@ import java.lang.annotation.Target;
  * // java 8 and later
  * &#64;Mapper
  * public interface MyMapper {
- *     &#64;SubclassMapping(sourceClass = firstSub.class,
- *                      targetClass = firstTargetSub.class),
- *     &#64;SubclassMapping(sourceClass = secondSub.class,
- *                      targetClass = secondTargetSub.class)
+ *     &#64;SubclassMapping(source = First.class, target = FirstTargetSub.class),
+ *     &#64;SubclassMapping(source = SecondSub.class, target = SecondTargetSub.class)
  *     ParentTarget toParentTarget(Parent parent);
  * }
  * </code></pre>
@@ -47,8 +45,9 @@ import java.lang.annotation.Target;
  * @author Ben Zegveld
  * @since 1.5
  */
-@Target( ElementType.METHOD )
-@Retention( RetentionPolicy.CLASS )
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+@Experimental
 public @interface SubclassMappings {
 
     /**

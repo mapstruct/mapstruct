@@ -384,8 +384,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private SubclassMapping createSubclassMapping(SubclassMappingOptions subclassMappingOptions) {
             TypeFactory typeFactory = ctx.getTypeFactory();
-            Type sourceType = typeFactory.getType( subclassMappingOptions.getSourceClass() );
-            Type targetType = typeFactory.getType( subclassMappingOptions.getTargetClass() );
+            Type sourceType = typeFactory.getType( subclassMappingOptions.getSource() );
+            Type targetType = typeFactory.getType( subclassMappingOptions.getTarget() );
 
             SourceRHS rightHandSide = new SourceRHS(
                 "subclassMapping",
@@ -398,7 +398,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                      new SelectionParameters(
                                          Collections.emptyList(),
                                          Collections.emptyList(),
-                                         subclassMappingOptions.getTargetClass(),
+                                         subclassMappingOptions.getTarget(),
                                          ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
                                      null,
                                      null,

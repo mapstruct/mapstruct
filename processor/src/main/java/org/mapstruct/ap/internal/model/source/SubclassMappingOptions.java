@@ -24,24 +24,24 @@ import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_METHOD_SIGN
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_NO_VALID_SUPERCLASS;
 
 /**
- * Represents a sub class mapping as configured via {@code @SubclassMapping}.
+ * Represents a subclass mapping as configured via {@code @SubclassMapping}.
  *
  * @author Ben Zegveld
  */
 public class SubclassMappingOptions extends DelegatingOptions {
 
-    private TypeMirror sourceClass;
-    private TypeMirror targetClass;
+    private final TypeMirror source;
+    private final TypeMirror target;
 
-    public SubclassMappingOptions(TypeMirror sourceClass, TypeMirror targetClass, DelegatingOptions next) {
+    public SubclassMappingOptions(TypeMirror source, TypeMirror target, DelegatingOptions next) {
         super( next );
-        this.sourceClass = sourceClass;
-        this.targetClass = targetClass;
+        this.source = source;
+        this.target = target;
     }
 
     @Override
     public boolean hasAnnotation() {
-        return sourceClass != null && targetClass != null;
+        return source != null && target != null;
     }
 
     private static boolean isConsistent(SubclassMappingGem gem, ExecutableElement method, FormattingMessager messager,
@@ -105,12 +105,12 @@ public class SubclassMappingOptions extends DelegatingOptions {
         return typeUtils.isSubtype( childType, parentType );
     }
 
-    public TypeMirror getSourceClass() {
-        return sourceClass;
+    public TypeMirror getSource() {
+        return source;
     }
 
-    public TypeMirror getTargetClass() {
-        return targetClass;
+    public TypeMirror getTarget() {
+        return target;
     }
 
     public static void addInstances(SubclassMappingsGem gem, ExecutableElement method,
