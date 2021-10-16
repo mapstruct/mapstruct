@@ -146,7 +146,7 @@ If the mapping method for the subclasses does not exist it will be created and a
 [NOTE]
 ====
 Combining `@SubclassMapping` with update methods is not supported.
-If you use an update method with a return value then the subclass mappings will return a new instance based on the mapping, but it will not take into account the `@MappingTarget` parameter.
+If you try ro use subclass mappings there will be a compile error.
 The same issue exists for the `@Context` and `@TargetType` parameters.
 ====
 

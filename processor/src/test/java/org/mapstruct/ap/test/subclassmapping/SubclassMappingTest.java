@@ -90,7 +90,12 @@ public class SubclassMappingTest {
         @Diagnostic( type = ErroneousSubclassMapper2.class,
                      kind = javax.tools.Diagnostic.Kind.ERROR,
                      line = 21,
-                     message = "SubclassMapping annotation can not be used for update mappings."
+                     message = "SubclassMapping annotation can not be used for update methods."
+                   ),
+        @Diagnostic( type = ErroneousSubclassMapper2.class,
+                     kind = javax.tools.Diagnostic.Kind.ERROR,
+                     line = 25,
+                     message = "SubclassMapping annotation can not be used for update methods."
                    ) } )
     void unsupportedMethodTest() { }
 

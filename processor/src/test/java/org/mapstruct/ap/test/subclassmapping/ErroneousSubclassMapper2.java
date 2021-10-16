@@ -21,4 +21,8 @@ public interface ErroneousSubclassMapper2 {
     @SubclassMapping( source = Car.class, target = CarDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker" )
     void map(@MappingTarget VehicleDto target, Car vehicle);
+
+    @SubclassMapping( source = Car.class, target = CarDto.class )
+    @Mapping( source = "vehicleManufacturingCompany", target = "maker" )
+    VehicleDto mapWithReturnType(@MappingTarget VehicleDto target, Car vehicle);
 }

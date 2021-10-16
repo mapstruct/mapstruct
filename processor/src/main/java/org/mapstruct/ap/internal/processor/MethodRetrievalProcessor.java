@@ -311,8 +311,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager
         );
 
+        // We want to get as much error reporting as possible.
+        // If targetParameter is not null it means we have an update method
         RepeatableSubclassMappings repeatableSubclassMappings =
-            new RepeatableSubclassMappings( parameters, resultType );
+            new RepeatableSubclassMappings( sourceParameters, targetParameter != null ? null : resultType );
         Set<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
                                                                                        .getMappings(
                                                                                            method,
@@ -606,12 +608,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private class RepeatableSubclassMappings
         extends RepeatableMappingAnnotations<SubclassMappingGem, SubclassMappingsGem, SubclassMappingOptions> {
-        private List<Parameter> parameters;
-        private Type resultType;
+        private final List<Parameter> sourceParameters;
+        private final Type resultType;
 
-        RepeatableSubclassMappings(List<Parameter> parameters, Type resultType) {
+        RepeatableSubclassMappings(List<Parameter> sourceParameters, Type resultType) {
             super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
-            this.parameters = parameters;
+            this.sourceParameters = sourceParameters;
             this.resultType = resultType;
         }
 
@@ -636,7 +638,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                       messager,
                                       typeUtils,
                                       mappings,
-                                      parameters,
+                                      sourceParameters,
                                       resultType );
         }
 
@@ -651,7 +653,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                       messager,
                                       typeUtils,
                                       mappings,
-                                      parameters,
+                                      sourceParameters,
                                       resultType );
         }
     }
