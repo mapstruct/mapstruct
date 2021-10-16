@@ -280,13 +280,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeFactory );
 
         RepeatableMappings repeatableMappings = new RepeatableMappings();
-        Set<MappingOptions> mappingOptions = repeatableMappings
-                                                               .getMappings(
-                                                                   method,
-                                                                   method,
-                                                                   beanMappingOptions,
-                                                                   new LinkedHashSet<>(),
-                                                                   new HashSet<>() );
+        Set<MappingOptions> mappingOptions = repeatableMappings.getMappings( method, beanMappingOptions );
 
         IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromGem(
             IterableMappingGem.instanceOn( method ),
@@ -313,15 +307,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         // We want to get as much error reporting as possible.
         // If targetParameter is not null it means we have an update method
-        RepeatableSubclassMappings repeatableSubclassMappings =
-            new RepeatableSubclassMappings( sourceParameters, targetParameter != null ? null : resultType );
-        Set<SubclassMappingOptions> subclassMappingOptions = repeatableSubclassMappings
-                                                                                       .getMappings(
-                                                                                           method,
-                                                                                           method,
-                                                                                           beanMappingOptions,
-                                                                                           new LinkedHashSet<>(),
-                                                                                           new HashSet<>() );
+        Set<SubclassMappingOptions> subclassMappingOptions = getSubclassMappings(
+            sourceParameters,
+            targetParameter != null ? null : resultType,
+            method,
+            beanMappingOptions
+        );
 
         return new SourceMethod.Builder()
             .setExecutable( method )
@@ -578,6 +569,30 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return type.isStreamType() || ( type.isIterableType() && type.isJavaLangType() );
     }
 
+    /**
+     * Retrieves the mappings configured via {@code @Mapping} from the given method.
+     *
+     * @param method The method of interest
+     * @param beanMapping options coming from bean mapping method
+     * @return The mappings for the given method, keyed by target property name
+     */
+    private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
+        return new RepeatableMappings().getMappings( method, beanMapping );
+    }
+
+    /**
+     * Retrieves the subclass mappings configured via {@code @SubclassMapping} from the given method.
+     *
+     * @param method The method of interest
+     * @param beanMapping options coming from bean mapping method
+     *
+     * @return The subclass mappings for the given method
+     */
+    private Set<SubclassMappingOptions> getSubclassMappings(List<Parameter> sourceParameters, Type resultType,
+                                                            ExecutableElement method, BeanMappingOptions beanMapping) {
+        return new RepeatableSubclassMappings( sourceParameters, resultType ).getMappings( method, beanMapping );
+    }
+
     private class RepeatableMappings extends RepeatableMappingAnnotations<MappingGem, MappingsGem, MappingOptions> {
         RepeatableMappings() {
             super( MAPPING_FQN, MAPPINGS_FQN );
@@ -595,13 +610,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         @Override
         void addInstance(MappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                         FormattingMessager messager, TypeUtils typeUtils, Set<MappingOptions> mappings) {
+                         Set<MappingOptions> mappings) {
             MappingOptions.addInstance( gem, method, beanMappingOptions, messager, typeUtils, mappings );
         }
 
         @Override
         void addInstances(MappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                          FormattingMessager messager, TypeUtils typeUtils, Set<MappingOptions> mappings) {
+                          Set<MappingOptions> mappings) {
             MappingOptions.addInstances( gem, method, beanMappingOptions, messager, typeUtils, mappings );
         }
     }
@@ -629,7 +644,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         @Override
         void addInstance(SubclassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                         FormattingMessager messager, TypeUtils typeUtils, Set<SubclassMappingOptions> mappings) {
+                         Set<SubclassMappingOptions> mappings) {
             SubclassMappingOptions
                                   .addInstance(
                                       gem,
@@ -644,7 +659,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         @Override
         void addInstances(SubclassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                          FormattingMessager messager, TypeUtils typeUtils, Set<SubclassMappingOptions> mappings) {
+                          Set<SubclassMappingOptions> mappings) {
             SubclassMappingOptions
                                   .addInstances(
                                       gem,
@@ -660,8 +675,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private abstract class RepeatableMappingAnnotations<SINGULAR extends Gem, MULTIPLE extends Gem, OPTIONS> {
 
-        private String singularFqn;
-        private String multipleFqn;
+        private final String singularFqn;
+        private final String multipleFqn;
 
         RepeatableMappingAnnotations(String singularFqn, String multipleFqn) {
             this.singularFqn = singularFqn;
@@ -673,10 +688,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         abstract MULTIPLE multipleInstanceOn(Element element);
 
         abstract void addInstance(SINGULAR gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                                  FormattingMessager messager, TypeUtils typeUtils, Set<OPTIONS> mappings);
+                                  Set<OPTIONS> mappings);
 
         abstract void addInstances(MULTIPLE gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                                   FormattingMessager messager, TypeUtils typeUtils, Set<OPTIONS> mappings);
+                                   Set<OPTIONS> mappings);
+
+        /**
+         * Retrieves the mappings configured via {@code @Mapping} from the given method.
+         *
+         * @param method The method of interest
+         * @param beanMapping options coming from bean mapping method
+         * @return The mappings for the given method, keyed by target property name
+         */
+        public Set<OPTIONS> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
+            return getMappings( method, method, beanMapping, new LinkedHashSet<>(), new HashSet<>() );
+        }
 
         /**
          * Retrieves the mappings configured via {@code @Mapping} from the given method.
@@ -687,7 +713,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
          * @param mappingOptions LinkedSet of mappings found so far
          * @return The mappings for the given method, keyed by target property name
          */
-        public Set<OPTIONS> getMappings(ExecutableElement method, Element element,
+        private Set<OPTIONS> getMappings(ExecutableElement method, Element element,
                                                   BeanMappingOptions beanMapping, LinkedHashSet<OPTIONS> mappingOptions,
                                                   Set<Element> handledElements) {
 
@@ -696,12 +722,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 if ( isAnnotation( lElement, singularFqn ) ) {
                     // although getInstanceOn does a search on annotation mirrors, the order is preserved
                     SINGULAR mapping = singularInstanceOn( element );
-                    addInstance( mapping, method, beanMapping, messager, typeUtils, mappingOptions );
+                    addInstance( mapping, method, beanMapping, mappingOptions );
                 }
                 else if ( isAnnotation( lElement, multipleFqn ) ) {
                     // although getInstanceOn does a search on annotation mirrors, the order is preserved
                     MULTIPLE mappings = multipleInstanceOn( element );
-                    addInstances( mappings, method, beanMapping, messager, typeUtils, mappingOptions );
+                    addInstances( mappings, method, beanMapping, mappingOptions );
                 }
                 else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
                     && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
