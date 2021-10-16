@@ -576,14 +576,33 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, Accessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
-            List<Accessor> getterList = filters.getterMethodsIn( getAllMethods() );
             Map<String, Accessor> modifiableGetters = new LinkedHashMap<>();
+
+            Map<String, Accessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
+            modifiableGetters.putAll( recordAccessors );
+
+            List<Accessor> getterList = filters.getterMethodsIn( getAllMethods() );
             for ( Accessor getter : getterList ) {
+                String simpleName = getter.getSimpleName();
+                if ( recordAccessors.containsKey( simpleName ) ) {
+                    // If there is already a record accessor that contains the simple name
+                    // then it means that the getter is actually a record component.
+                    // In that case we need to ignore it.
+                    // e.g. record component named isActive.
+                    // The DefaultAccessorNamingStrategy will return active as property name,
+                    // but the property name is isActive, since it is a record
+                    continue;
+                }
                 String propertyName = getPropertyName( getter );
+
+                if ( recordAccessors.containsKey( propertyName ) ) {
+                    // If there is already a record accessor, the property needs to be ignored
+                    continue;
+                }
                 if ( modifiableGetters.containsKey( propertyName ) ) {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
-                    if ( !getter.getSimpleName().startsWith( "is" ) ) {
+                    if ( !simpleName.startsWith( "is" ) ) {
                         modifiableGetters.put( propertyName, getter );
                     }
 
@@ -591,11 +610,6 @@ public class Type extends ModelElement implements Comparable<Type> {
                 else {
                     modifiableGetters.put( propertyName, getter );
                 }
-            }
-
-            Map<String, Accessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
-            for ( Map.Entry<String, Accessor> recordEntry : recordAccessors.entrySet() ) {
-                modifiableGetters.putIfAbsent( recordEntry.getKey(), recordEntry.getValue() );
             }
 
             List<Accessor> fieldsList = filters.fieldsIn( getAllFields() );
