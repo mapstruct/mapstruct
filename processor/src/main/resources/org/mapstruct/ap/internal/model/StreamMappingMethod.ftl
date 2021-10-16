@@ -55,7 +55,7 @@
         <#if needVarDefine>
             <#assign needVarDefine = false />
             <#-- We create a null array which later will be directly assigned from the stream-->
-            ${resultElementType}[] ${resultName} = null;
+            <@includeModel object=resultElementType/>[] ${resultName} = null;
         </#if>
     <#elseif resultType.iterableType>
         <#if existingInstanceMapping>

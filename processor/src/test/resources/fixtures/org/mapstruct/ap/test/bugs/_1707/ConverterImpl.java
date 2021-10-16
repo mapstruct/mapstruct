@@ -36,12 +36,12 @@ public class ConverterImpl extends Converter {
     }
 
     @Override
-    public org.mapstruct.ap.test.bugs._1707.Converter.Target[] convertArray(Stream<Source> source) {
+    public Target[] convertArray(Stream<Source> source) {
         if ( source == null ) {
             return null;
         }
 
-        org.mapstruct.ap.test.bugs._1707.Converter.Target[] targetTmp = null;
+        Target[] targetTmp = null;
 
         targetTmp = source.map( source1 -> convert( source1 ) )
         .toArray( Target[]::new );
