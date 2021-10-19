@@ -15,6 +15,7 @@ import org.mapstruct.control.MappingControl;
 import org.mapstruct.factory.Mappers;
 
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 
 /**
  * Marks an interface or abstract class as a mapper and activates the generation of a implementation of that type via
@@ -236,6 +237,17 @@ public @interface Mapper {
      * @return strategy how to do null checking
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
+
+    /**
+     * Determines how to handle missing implementation for super classes when using the {@link SubclassMapping}.
+     *
+     * Can be overridden by the one on {@link BeanMapping}, but overrides {@link MapperConfig}.
+     *
+     * @return strategy to handle missing implementation combined with {@link SubclassMappings}.
+     *
+     * @since 1.5
+     */
+    SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
      * Determines whether to use field or constructor injection. This is only used on annotated based component models

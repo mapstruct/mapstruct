@@ -34,7 +34,8 @@ public class MappingMethodOptions {
         null,
         null,
         null,
-        Collections.emptyList()
+        Collections.emptyList(),
+        Collections.emptySet()
     );
 
     private MapperOptions mapper;
@@ -45,12 +46,14 @@ public class MappingMethodOptions {
     private EnumMappingOptions enumMappingOptions;
     private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
+    private Set<SubclassMappingOptions> subclassMapping;
 
     public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
-                                List<ValueMappingOptions> valueMappings) {
+                                List<ValueMappingOptions> valueMappings,
+                                Set<SubclassMappingOptions> subclassMapping) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -58,6 +61,7 @@ public class MappingMethodOptions {
         this.beanMapping = beanMapping;
         this.enumMappingOptions = enumMappingOptions;
         this.valueMappings = valueMappings;
+        this.subclassMapping = subclassMapping;
     }
 
     /**
@@ -95,6 +99,10 @@ public class MappingMethodOptions {
 
     public List<ValueMappingOptions> getValueMappings() {
         return valueMappings;
+    }
+
+    public Set<SubclassMappingOptions> getSubclassMappings() {
+        return subclassMapping;
     }
 
     public void setIterableMapping(IterableMappingOptions iterableMapping) {
@@ -187,6 +195,8 @@ public class MappingMethodOptions {
                     }
                 }
             }
+
+            // Do NOT inherit subclass mapping options!!!
 
             Set<MappingOptions> newMappings = new LinkedHashSet<>();
             for ( MappingOptions mapping : templateOptions.getMappings() ) {
@@ -313,6 +323,23 @@ public class MappingMethodOptions {
         }
 
         return getPropertyEntries( mapping )[0];
+    }
+
+    /**
+     * SubclassMappingOptions are not inherited to forged methods. They would result in an infinite loop if they were.
+     *
+     * @return a MappingMethodOptions without SubclassMappingOptions.
+     */
+    public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
+        return new MappingMethodOptions(
+            options.mapper,
+            options.mappings,
+            options.iterableMapping,
+            options.mapMapping,
+            options.beanMapping,
+            options.enumMappingOptions,
+            options.valueMappings,
+            Collections.emptySet() );
     }
 
 }

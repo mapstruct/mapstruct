@@ -41,10 +41,14 @@ import org.mapstruct.ap.internal.model.beanmapping.MappingReference;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.BuilderType;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
@@ -52,7 +56,9 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -82,16 +88,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final List<PropertyMapping> constructorConstantMappings;
+    private final List<SubclassMapping> subclassMappings;
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
 
     private final MappingReferences mappingReferences;
 
-    public static class Builder {
+    public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
-        private MappingBuilderContext ctx;
-        private Method method;
         private Type userDefinedReturnType;
 
         /* returnType to construct can have a builder */
@@ -110,9 +115,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private MethodReference factoryMethod;
         private boolean hasFactoryMethod;
 
-        public Builder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
+        public Builder() {
+            super( Builder.class );
+        }
+
+        @Override
+        protected boolean shouldUsePropertyNamesInHistory() {
+            return true;
         }
 
         public Builder userDefinedReturnType(Type userDefinedReturnType) {
@@ -126,12 +135,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         public Builder sourceMethod(SourceMethod sourceMethod) {
-            this.method = sourceMethod;
+            method( sourceMethod );
             return this;
         }
 
         public Builder forgedMethod(ForgedMethod forgedMethod) {
-            this.method = forgedMethod;
+            method( forgedMethod );
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
             for ( MappingReference mappingReference: mappingReferences.getMappingReferences() ) {
@@ -165,7 +174,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     // the userDefinedReturn type can also require a builder. That buildertype is already set
                     returnTypeImpl = returnTypeBuilder.getBuilder();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null
+                        || allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
+                        || doesNotAllowAbstractReturnTypeAndCanBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -185,7 +196,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 else if ( !method.isUpdateMethod() ) {
                     returnTypeImpl = method.getReturnType();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
-                    if ( factoryMethod != null || canReturnTypeBeConstructed( returnTypeImpl ) ) {
+                    if ( factoryMethod != null
+                        || allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
+                        || doesNotAllowAbstractReturnTypeAndCanBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
                     }
                     else {
@@ -333,6 +346,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             }
 
+            List<SubclassMapping> subclasses = new ArrayList<>();
+            for ( SubclassMappingOptions subclassMappingOptions : method.getOptions().getSubclassMappings() ) {
+                subclasses.add( createSubclassMapping( subclassMappingOptions ) );
+            }
+
             MethodReference finalizeMethod = null;
 
             if ( shouldCallFinalizerMethod( returnTypeToConstruct ) ) {
@@ -350,8 +368,72 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 beforeMappingMethods,
                 afterMappingMethods,
                 finalizeMethod,
-                mappingReferences
+                mappingReferences,
+                subclasses
             );
+        }
+
+        private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {
+            return !isAbstractReturnTypeAllowed()
+                && canReturnTypeBeConstructed( returnTypeImpl );
+        }
+
+        private boolean allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed(Type returnTypeImpl) {
+            return isAbstractReturnTypeAllowed()
+                && isReturnTypeAbstractOrCanBeConstructed( returnTypeImpl );
+        }
+
+        private SubclassMapping createSubclassMapping(SubclassMappingOptions subclassMappingOptions) {
+            TypeFactory typeFactory = ctx.getTypeFactory();
+            Type sourceType = typeFactory.getType( subclassMappingOptions.getSource() );
+            Type targetType = typeFactory.getType( subclassMappingOptions.getTarget() );
+
+            SourceRHS rightHandSide = new SourceRHS(
+                "subclassMapping",
+                sourceType,
+                Collections.emptySet(),
+                "SubclassMapping for " + sourceType.getFullyQualifiedName() );
+            SelectionCriteria criteria =
+                SelectionCriteria
+                                 .forMappingMethods(
+                                     new SelectionParameters(
+                                         Collections.emptyList(),
+                                         Collections.emptyList(),
+                                         subclassMappingOptions.getTarget(),
+                                         ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
+                                     null,
+                                     null,
+                                     false );
+            Assignment assignment = ctx
+                                   .getMappingResolver()
+                                   .getTargetAssignment(
+                                       method,
+                                       null,
+                                       targetType,
+                                       FormattingParameters.EMPTY,
+                                       criteria,
+                                       rightHandSide,
+                                       null,
+                                           () -> forgeSubclassMapping(
+                                               rightHandSide,
+                                               sourceType,
+                                               targetType,
+                                               mappingReferences ) );
+            String sourceArgument = null;
+            for ( Parameter parameter : method.getSourceParameters() ) {
+                if ( ctx
+                        .getTypeUtils()
+                        .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
+                    sourceArgument = parameter.getName();
+                    assignment.setSourceLocalVarName( "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                }
+            }
+            return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
+        }
+
+        private boolean isAbstractReturnTypeAllowed() {
+            return method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
+                && !method.getOptions().getSubclassMappings().isEmpty();
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {
@@ -556,6 +638,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                     returnType.describe()
                 );
+                error = false;
+            }
+            return error;
+        }
+
+        private boolean isReturnTypeAbstractOrCanBeConstructed(Type returnType) {
+            boolean error = true;
+            if ( !returnType.isAbstract() && !returnType.hasAccessibleConstructor() ) {
+                ctx
+                   .getMessager()
+                   .printMessage(
+                       method.getExecutable(),
+                       Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                       returnType.describe() );
                 error = false;
             }
             return error;
@@ -1613,7 +1709,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
                               MethodReference finalizerMethod,
-                              MappingReferences mappingReferences) {
+                              MappingReferences mappingReferences,
+                              List<SubclassMapping> subclassMappings) {
         super(
             method,
             existingVariableNames,
@@ -1659,6 +1756,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
+        this.subclassMappings = subclassMappings;
     }
 
     public List<PropertyMapping> getConstantMappings() {
@@ -1667,6 +1765,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<PropertyMapping> getConstructorConstantMappings() {
         return constructorConstantMappings;
+    }
+
+    public List<SubclassMapping> getSubclassMappings() {
+        return subclassMappings;
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
@@ -1681,6 +1783,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public Type getReturnTypeToConstruct() {
         return returnTypeToConstruct;
+    }
+
+    public boolean hasSubclassMappings() {
+        return !subclassMappings.isEmpty();
+    }
+
+    public boolean isAbstractReturnType() {
+        return getFactoryMethod() == null && !hasConstructorMappings() && returnTypeToConstruct != null
+            && returnTypeToConstruct.isAbstract();
     }
 
     public boolean hasConstructorMappings() {
@@ -1701,6 +1812,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 // We need to add the target type imports for a constructor mapper since we define its parameters
                 types.addAll( propertyMapping.getTargetType().getImportTypes() );
             }
+        }
+        for ( SubclassMapping subclassMapping : subclassMappings ) {
+            types.addAll( subclassMapping.getImportTypes() );
         }
 
         if ( returnTypeToConstruct != null  ) {

@@ -25,6 +25,7 @@ import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
+import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
 
 public class MapperOptions extends DelegatingOptions {
 
@@ -153,6 +154,13 @@ public class MapperOptions extends DelegatingOptions {
         return mapper.nullValueMappingStrategy().hasValue() ?
             NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() ) :
             next().getNullValueMappingStrategy();
+    }
+
+    @Override
+    public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
+        return mapper.subclassExhaustiveStrategy().hasValue() ?
+            SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().get() ) :
+            next().getSubclassExhaustiveStrategy();
     }
 
     @Override

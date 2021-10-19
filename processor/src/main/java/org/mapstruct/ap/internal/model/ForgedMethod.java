@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
@@ -42,6 +43,7 @@ public class ForgedMethod implements Method {
 
     private final Method basedOn;
     private final boolean forgedNameBased;
+    private MappingMethodOptions options;
 
     /**
      * Creates a new forged method with the given name for mapping a method parameter to a property.
@@ -121,6 +123,33 @@ public class ForgedMethod implements Method {
         );
     }
 
+    /**
+     * Creates a new forged method for mapping a SubclassMapping element
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param returnType the return type.
+     * @param basedOn the method that (originally) triggered this nested method generation.
+     * @param history a parent forged method if this is a forged method within a forged method
+     * @param forgedNameBased forges a name based (matched) mapping method
+     *
+     * @return a new forge method
+     */
+    public static ForgedMethod forSubclassMapping(String name, Type sourceType, Type returnType, Method basedOn,
+                                                 MappingReferences mappingReferences, ForgedMethodHistory history,
+                                                 boolean forgedNameBased) {
+        return new ForgedMethod(
+            name,
+            sourceType,
+            returnType,
+            basedOn.getContextParameters(),
+            basedOn,
+            history,
+            mappingReferences == null ? MappingReferences.empty() : mappingReferences,
+            forgedNameBased
+        );
+    }
+
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
                          Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
@@ -155,6 +184,8 @@ public class ForgedMethod implements Method {
         this.history = history;
         this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
+
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
     }
 
     /**
@@ -177,6 +208,8 @@ public class ForgedMethod implements Method {
 
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
+
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
     }
 
     @Override
@@ -347,7 +380,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public MappingMethodOptions getOptions() {
-        return basedOn.getOptions();
+        return options;
     }
 
     @Override
