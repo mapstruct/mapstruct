@@ -77,4 +77,8 @@ public interface FormattingMessager {
     void note(int level, Message log, Object... args);
 
     boolean isErroneous();
+
+    default String messagePreProcessing(String message) {
+        return message;
+    }
 }
