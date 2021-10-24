@@ -309,7 +309,7 @@ public class PropertyMapping extends ModelElement {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && !targetType.isMapType()) {
-                assignment = forgeMapToBeanMapping( sourceType, targetType, rightHandSide );
+                assignment = forgeMapping( sourceType, targetType.withoutBounds(), rightHandSide );
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
@@ -753,19 +753,6 @@ public class PropertyMapping extends ModelElement {
             return createForgedAssignment( source, methodRef, mapMappingMethod );
         }
 
-        private Assignment forgeMapToBeanMapping(Type sourceType, Type targetType, SourceRHS source) {
-
-            targetType = targetType.withoutBounds();
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
-
-            BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-            final BeanMappingMethod mapToBeanMappingMethod = builder.mappingContext( ctx )
-                .forgedMethod( methodRef )
-                .build();
-
-            return createForgedAssignment( source, methodRef, mapToBeanMappingMethod );
-        }
-
         private Assignment forgeMapping(SourceRHS sourceRHS) {
             Type sourceType;
             if ( targetWriteAccessorType == AccessorType.ADDER ) {
@@ -778,6 +765,10 @@ public class PropertyMapping extends ModelElement {
                 return null;
             }
 
+            return forgeMapping( sourceType, targetType, sourceRHS );
+        }
+
+        private Assignment forgeMapping(Type sourceType, Type targetType, SourceRHS sourceRHS) {
 
             //Fail fast. If we could not find the method by now, no need to try
             if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {
