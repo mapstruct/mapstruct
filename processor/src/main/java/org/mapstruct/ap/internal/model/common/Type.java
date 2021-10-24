@@ -205,8 +205,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * <p>
      * If the {@code java.time} variant is referred to first, the {@code java.time.LocalDateTime} will be imported
      * and the {@code org.joda} variant will be referred to with its FQN.
+     * <p>
+     * If the type is nested and its top level type is to be imported
+     * then the name including its top level type will be returned.
      *
-     * @return Just the name if this {@link Type} will be imported, otherwise the fully-qualified name.
+     * @return Just the name if this {@link Type} will be imported, the name up to the top level {@link Type}
+     * (if the top level type is important, otherwise the fully-qualified name.
      */
     public String createReferenceName() {
         if ( isToBeImported() || shouldUseSimpleName() ) {

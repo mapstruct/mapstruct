@@ -6,13 +6,13 @@
 package org.mapstruct.ap.test.imports.nested;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.imports.nested.other.Source;
+import org.mapstruct.ap.test.imports.nested.other.SourceInOtherPackage;
 
 /**
  * @author Filip Hrisafov
  */
 @Mapper
-public interface SourceTargetMapper {
+public interface SourceInOtherPackageMapper {
 
-    Target map(Source source);
+    Target map(SourceInOtherPackage source);
 }

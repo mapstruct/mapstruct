@@ -6,17 +6,17 @@
 package org.mapstruct.ap.test.imports.nested;
 
 import javax.annotation.Generated;
-import org.mapstruct.ap.test.imports.nested.other.Source;
+import org.mapstruct.ap.test.imports.nested.other.SourceInOtherPackage;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2018-08-19T19:13:35+0200",
     comments = "version: , compiler: javac, environment: Java 1.8.0_161 (Oracle Corporation)"
 )
-public class SourceTargetMapperImpl implements SourceTargetMapper {
+public class SourceInOtherPackageMapperImpl implements SourceInOtherPackageMapper {
 
     @Override
-    public Target map(Source source) {
+    public Target map(SourceInOtherPackage source) {
         if ( source == null ) {
             return null;
         }
@@ -28,7 +28,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         return target;
     }
 
-    protected Target.Nested.Inner innerToInner(Source.Nested.Inner inner) {
+    protected Target.Nested.Inner innerToInner(SourceInOtherPackage.Nested.Inner inner) {
         if ( inner == null ) {
             return null;
         }
@@ -40,7 +40,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         return inner1;
     }
 
-    protected Target.Nested nestedToNested(Source.Nested nested) {
+    protected Target.Nested nestedToNested(SourceInOtherPackage.Nested nested) {
         if ( nested == null ) {
             return null;
         }
