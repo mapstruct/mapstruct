@@ -33,8 +33,15 @@ class NestedImportsTest {
         SourceInOtherPackageMapper.class
     } )
     void shouldGenerateNestedInnerClassesForSourceInOtherPackage() {
-
         generatedSource.addComparisonToFixtureFor( SourceInOtherPackageMapper.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( {
+        NestedSourceInOtherPackageMapper.class
+    } )
+    void shouldGenerateCorrectImportsForTopLevelClassesFromOnlyNestedInnerClasses() {
+        generatedSource.addComparisonToFixtureFor( NestedSourceInOtherPackageMapper.class );
     }
 
     @ProcessorTest
@@ -42,7 +49,6 @@ class NestedImportsTest {
         TargetInOtherPackageMapper.class
     } )
     void shouldGenerateNestedInnerClassesForTargetInOtherPackage() {
-
         generatedSource.addComparisonToFixtureFor( TargetInOtherPackageMapper.class );
     }
 }

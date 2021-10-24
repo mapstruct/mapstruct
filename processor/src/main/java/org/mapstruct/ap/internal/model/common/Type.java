@@ -78,6 +78,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final String packageName;
     private final String name;
+    private final String nameWithTopLevelTypeName;
     private final String qualifiedName;
 
     private final boolean isInterface;
@@ -178,6 +179,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.loggingVerbose = loggingVerbose;
 
         this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
+        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement );
     }
     //CHECKSTYLE:ON
 
@@ -217,8 +219,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() ) {
-            return nameWithinTopLevelName( typeElement );
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
+            return nameWithTopLevelTypeName;
         }
 
         return qualifiedName;
@@ -1501,7 +1503,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return trimmedClassName;
     }
 
-    private static String nameWithinTopLevelName(TypeElement element) {
+    private static String nameWithTopLevelTypeName(TypeElement element) {
+        if ( element == null ) {
+            return null;
+        }
         if ( !element.getNestingKind().isNested() ) {
             return element.getSimpleName().toString();
         }
