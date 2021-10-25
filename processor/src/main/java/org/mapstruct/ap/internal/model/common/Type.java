@@ -5,9 +5,11 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -71,9 +74,11 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final ImplementationType implementationType;
     private final Type componentType;
+    private final Type topLevelType;
 
     private final String packageName;
     private final String name;
+    private final String nameWithTopLevelTypeName;
     private final String qualifiedName;
 
     private final boolean isInterface;
@@ -172,6 +177,9 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.filters = new Filters( accessorNaming, typeUtils, typeMirror );
 
         this.loggingVerbose = loggingVerbose;
+
+        this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
+        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement );
     }
     //CHECKSTYLE:ON
 
@@ -199,11 +207,23 @@ public class Type extends ModelElement implements Comparable<Type> {
      * <p>
      * If the {@code java.time} variant is referred to first, the {@code java.time.LocalDateTime} will be imported
      * and the {@code org.joda} variant will be referred to with its FQN.
+     * <p>
+     * If the type is nested and its top level type is to be imported
+     * then the name including its top level type will be returned.
      *
-     * @return Just the name if this {@link Type} will be imported, otherwise the fully-qualified name.
+     * @return Just the name if this {@link Type} will be imported, the name up to the top level {@link Type}
+     * (if the top level type is important, otherwise the fully-qualified name.
      */
     public String createReferenceName() {
-        return isToBeImported() ? name :  ( shouldUseSimpleName() ? name : qualifiedName );
+        if ( isToBeImported() || shouldUseSimpleName() ) {
+            return name;
+        }
+
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
+            return nameWithTopLevelTypeName;
+        }
+
+        return qualifiedName;
     }
 
     public List<Type> getTypeParameters() {
@@ -402,6 +422,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.addAll( componentType.getImportTypes() );
         }
 
+        if ( topLevelType != null ) {
+            result.addAll( topLevelType.getImportTypes() );
+        }
+
         for ( Type parameter : typeParameters ) {
             result.addAll( parameter.getImportTypes() );
         }
@@ -411,6 +435,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         return result;
+    }
+
+    protected boolean isTopLevelTypeToBeImported() {
+        return topLevelType != null && topLevelType.isToBeImported();
     }
 
     /**
@@ -435,7 +463,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     isToBeImported = true;
                 }
             }
-            else {
+            else if ( typeElement == null || !typeElement.getNestingKind().isNested() ) {
                 toBeImportedTypes.put( trimmedName, trimmedQualifiedName );
                 isToBeImported = true;
             }
@@ -1490,6 +1518,41 @@ public class Type extends ModelElement implements Comparable<Type> {
             trimmedClassName = trimmedClassName.substring( 0, trimmedClassName.length() - 2 );
         }
         return trimmedClassName;
+    }
+
+    private static String nameWithTopLevelTypeName(TypeElement element) {
+        if ( element == null ) {
+            return null;
+        }
+        if ( !element.getNestingKind().isNested() ) {
+            return element.getSimpleName().toString();
+        }
+
+        Deque<CharSequence> elements = new ArrayDeque<>();
+        elements.addFirst( element.getSimpleName() );
+        Element parent = element.getEnclosingElement();
+        while ( parent != null && parent.getKind() != ElementKind.PACKAGE ) {
+            elements.addFirst( parent.getSimpleName() );
+            parent = parent.getEnclosingElement();
+        }
+
+        return String.join( ".", elements );
+    }
+
+    private static Type topLevelType(TypeElement typeElement, TypeFactory typeFactory) {
+        if ( typeElement == null || typeElement.getNestingKind() == NestingKind.TOP_LEVEL ) {
+            return null;
+        }
+
+        Element parent = typeElement.getEnclosingElement();
+        while ( parent != null ) {
+            if ( parent.getEnclosingElement() != null &&
+                parent.getEnclosingElement().getKind() == ElementKind.PACKAGE ) {
+                break;
+            }
+            parent = parent.getEnclosingElement();
+        }
+        return parent == null ? null : typeFactory.getType( parent.asType() );
     }
 
 }

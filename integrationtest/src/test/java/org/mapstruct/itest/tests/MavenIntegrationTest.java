@@ -128,6 +128,11 @@ public class MavenIntegrationTest {
     void simpleTest() {
     }
 
+    // for issue #2593
+    @ProcessorTest(baseDir = "defaultPackage")
+    void defaultPackageTest() {
+    }
+
     @ProcessorTest(baseDir = "springTest")
     void springTest() {
     }
