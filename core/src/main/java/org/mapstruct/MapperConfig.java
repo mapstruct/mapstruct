@@ -178,6 +178,28 @@ public @interface MapperConfig {
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
+     * The strategy to be applied when {@code null} is passed as source argument value to an {@link IterableMapping}.
+     * If no strategy is configured, the strategy given via {@link #nullValueMappingStrategy()} will be applied, using
+     * {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     *
+     * @since 1.5
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to an {@link IterableMapping}.
+     */
+    NullValueMappingStrategy nullValueIterableMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * The strategy to be applied when {@code null} is passed as source argument value to a {@link MapMapping}.
+     * If no strategy is configured, the strategy given via {@link #nullValueMappingStrategy()} will be applied, using
+     * {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     *
+     * @since 1.5
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to a {@link MapMapping}.
+     */
+    NullValueMappingStrategy nullValueMapMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
      * The strategy to be applied when a source bean property is {@code null} or not present. If no strategy is
      * configured, {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
      *

@@ -102,6 +102,14 @@ public abstract class DelegatingOptions {
         return next.getSubclassExhaustiveStrategy();
     }
 
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        return next.getNullValueIterableMappingStrategy();
+    }
+
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        return next.getNullValueMapMappingStrategy();
+    }
+
     public BuilderGem getBuilder() {
         return next.getBuilder();
     }

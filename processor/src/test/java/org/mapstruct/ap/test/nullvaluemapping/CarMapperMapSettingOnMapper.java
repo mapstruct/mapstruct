@@ -18,19 +18,23 @@ import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(imports = UUID.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-public interface CarMapperSettingOnMapper {
+@Mapper(
+    imports = UUID.class,
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
+    nullValueMapMappingStrategy = NullValueMappingStrategy.RETURN_NULL
+)
+public interface CarMapperMapSettingOnMapper {
 
-    CarMapperSettingOnMapper INSTANCE = Mappers.getMapper( CarMapperSettingOnMapper.class );
+    CarMapperMapSettingOnMapper INSTANCE = Mappers.getMapper( CarMapperMapSettingOnMapper.class );
 
     @Mapping(target = "seatCount", source = "numberOfSeats")
     @Mapping(target = "model", constant = "ModelT")
     @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car);
 
-    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    @IterableMapping(dateFormat = "dummy")
     List<CarDto> carsToCarDtos(List<Car> cars);
 
-    @MapMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL)
+    @MapMapping(valueDateFormat = "dummy")
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
 }
