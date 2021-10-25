@@ -16,7 +16,6 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
@@ -29,18 +28,14 @@ public interface CarMapper {
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
     @BeanMapping(nullValueMappingStrategy = RETURN_DEFAULT)
-    @Mappings({
-        @Mapping(target = "seatCount", source = "numberOfSeats"),
-        @Mapping(target = "model", constant = "ModelT"),
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "numberOfSeats")
+    @Mapping(target = "model", constant = "ModelT")
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car);
 
     @BeanMapping(nullValueMappingStrategy = RETURN_DEFAULT)
-    @Mappings({
-        @Mapping(target = "seatCount", source = "car.numberOfSeats"),
-        @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
-    })
+    @Mapping(target = "seatCount", source = "car.numberOfSeats")
+    @Mapping(target = "catalogId", expression = "java( UUID.randomUUID().toString() )")
     CarDto carToCarDto(Car car, String model);
 
     @IterableMapping(nullValueMappingStrategy = RETURN_DEFAULT)
