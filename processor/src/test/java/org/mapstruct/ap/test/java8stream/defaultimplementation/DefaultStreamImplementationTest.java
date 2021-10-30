@@ -142,11 +142,38 @@ public class DefaultStreamImplementationTest {
     }
 
     @ProcessorTest
+    @IssueKey("1752")
+    public void shouldUseAndReturnTargetParameterArrayForNullSource() {
+        TargetFoo[] target = new TargetFoo[1];
+        target[0] = new TargetFoo( "Bob" );
+        TargetFoo[] result =
+            SourceTargetMapper.INSTANCE.streamToArrayUsingTargetParameterAndReturn( null, target );
+
+        assertThat( result ).isSameAs( target );
+        assertThat( target ).isNotNull();
+        assertThat( target ).containsOnly( new TargetFoo( "Bob" ) );
+    }
+
+    @ProcessorTest
     public void shouldUseAndReturnTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<>();
         Iterable<TargetFoo> result =
             SourceTargetMapper.INSTANCE
                 .sourceFoosToTargetFoosUsingTargetParameterAndReturn( createSourceFooStream(), target );
+
+        assertThat( result ).isSameAs( target );
+        assertResultList( target );
+    }
+
+    @ProcessorTest
+    @IssueKey("1752")
+    public void shouldUseAndReturnTargetParameterForNullMapping() {
+        List<TargetFoo> target = new ArrayList<>();
+        target.add( new TargetFoo( "Bob" ) );
+        target.add( new TargetFoo( "Alice" ) );
+        Iterable<TargetFoo> result =
+            SourceTargetMapper.INSTANCE
+                .sourceFoosToTargetFoosUsingTargetParameterAndReturn( null, target );
 
         assertThat( result ).isSameAs( target );
         assertResultList( target );

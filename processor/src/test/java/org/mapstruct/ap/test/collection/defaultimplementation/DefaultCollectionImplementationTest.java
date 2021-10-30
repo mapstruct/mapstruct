@@ -159,7 +159,21 @@ public class DefaultCollectionImplementationTest {
             SourceTargetMapper.INSTANCE
                 .sourceFoosToTargetFoosUsingTargetParameterAndReturn( createSourceFooList(), target );
 
-        assertThat( target == result ).isTrue();
+        assertThat( result ).isSameAs( target );
+        assertResultList( target );
+    }
+
+    @ProcessorTest
+    @IssueKey("1752")
+    public void shouldUseAndReturnTargetParameterForNullMapping() {
+        List<TargetFoo> target = new ArrayList<>();
+        target.add( new TargetFoo( "Bob" ) );
+        target.add( new TargetFoo( "Alice" ) );
+        Iterable<TargetFoo> result =
+            SourceTargetMapper.INSTANCE
+                .sourceFoosToTargetFoosUsingTargetParameterAndReturn( null, target );
+
+        assertThat( result ).isSameAs( target );
         assertResultList( target );
     }
 

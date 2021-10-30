@@ -128,7 +128,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
     @Override
     public Domain updateWithReturn(DtoWithPresenceCheck source, Domain target) {
         if ( source == null ) {
-            return null;
+            return target;
         }
 
         if ( target.getStrings() != null ) {

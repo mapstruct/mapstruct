@@ -123,15 +123,15 @@ public class ArrayMappingTest {
     }
 
     @ProcessorTest
-    public void shouldMapTargetToNullWhenNullSource() {
-        // TODO: What about existing target?
+    public void shouldReturnMapTargetWhenNullSource() {
 
         ScientistDto[] existingTarget =
                 new ScientistDto[]{ new ScientistDto( "Jim" ) };
 
         ScientistDto[] target = ScienceMapper.INSTANCE.scientistsToDtos( null, existingTarget );
 
-        assertThat( target ).isNull();
+        assertThat( target ).isNotNull();
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).extracting( "name" ).containsOnly( "Jim" );
     }
 
@@ -143,6 +143,7 @@ public class ArrayMappingTest {
         boolean[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( false );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( false );
 
         assertThat( ScienceMapper.INSTANCE.nvmMapping( null ) ).isEmpty();
@@ -154,6 +155,7 @@ public class ArrayMappingTest {
         short[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( new short[] { 0 } );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( new short[] { 0 } );
     }
 
@@ -163,6 +165,7 @@ public class ArrayMappingTest {
         char[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( new char[] { 0 } );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( new char[] { 0 } );
     }
 
@@ -172,6 +175,7 @@ public class ArrayMappingTest {
         int[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( 0 );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( 0 );
     }
 
@@ -181,6 +185,7 @@ public class ArrayMappingTest {
         long[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( 0L );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( 0L );
     }
 
@@ -190,6 +195,7 @@ public class ArrayMappingTest {
         float[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( 0.0f );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( 0.0f );
     }
 
@@ -199,6 +205,7 @@ public class ArrayMappingTest {
         double[] target = ScienceMapper.INSTANCE.nvmMapping( null, existingTarget );
 
         assertThat( target ).containsOnly( 0.0d );
+        assertThat( target ).isEqualTo( existingTarget );
         assertThat( existingTarget ).containsOnly( 0.0d );
     }
 

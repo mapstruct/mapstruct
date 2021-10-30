@@ -133,7 +133,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
     @Override
     public Iterable<TargetFoo> sourceFoosToTargetFoosUsingTargetParameterAndReturn(Iterable<SourceFoo> sourceFoos, List<TargetFoo> targetFoos) {
         if ( sourceFoos == null ) {
-            return null;
+            return targetFoos;
         }
 
         targetFoos.clear();

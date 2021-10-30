@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
@@ -32,6 +33,18 @@ public class BuilderInfoTargetTest {
             source,
             SimpleImmutableTarget.builder()
         );
+        assertThat( targetObject.getAge() ).isEqualTo( 3 );
+        assertThat( targetObject.getName() ).isEqualTo( "Bob" );
+    }
+
+    @ProcessorTest
+    @IssueKey("1752")
+    public void testSimpleImmutableBuilderFromNullSource() {
+        SimpleImmutableTarget targetObject = SimpleBuilderMapper.INSTANCE.toImmutable(
+            null,
+            SimpleImmutableTarget.builder().age( 3 ).name( "Bob" )
+        );
+        assertThat( targetObject ).isNotNull();
         assertThat( targetObject.getAge() ).isEqualTo( 3 );
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
     }
