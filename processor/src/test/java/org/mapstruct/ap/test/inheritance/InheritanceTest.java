@@ -53,6 +53,20 @@ public class InheritanceTest {
         assertResult( target );
     }
 
+    @ProcessorTest
+    @IssueKey("1752")
+    public void shouldMapAttributeFromSuperTypeUsingReturnedTargetParameterAndNullSource() {
+
+        TargetExt target = new TargetExt();
+        target.setFoo( 42L );
+        target.publicFoo = 52L;
+        target.setBar( 23 );
+        TargetBase result = SourceTargetMapper.INSTANCE.sourceToTargetWithTargetParameterAndReturn( null, target );
+
+        assertThat( target ).isSameAs( result );
+        assertResult( target );
+    }
+
     private void assertResult(TargetExt target) {
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );

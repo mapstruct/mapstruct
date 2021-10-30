@@ -128,7 +128,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
     @Override
     public Domain updateWithReturn(DtoWithPresenceCheck source, Domain target) {
         if ( source == null ) {
-            return null;
+            return target;
         }
 
         if ( target.getStrings() != null ) {

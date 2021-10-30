@@ -41,7 +41,8 @@ public class Issue374Test {
 
         Target target2 = new Target();
         Target result2 = Issue374Mapper.INSTANCE.map2( null, target2 );
-        assertThat( result2 ).isNull();
+        assertThat( result2 ).isNotNull();
+        assertThat( result2 ).isEqualTo( target2 );
         assertThat( target2.getTest() ).isNull();
         assertThat( target2.getConstant() ).isNull();
     }
