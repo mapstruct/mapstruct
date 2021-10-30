@@ -106,6 +106,13 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
+    public boolean suppressGeneratorTimestamp() {
+        return mapper.suppressGeneratorTimestamp().hasValue() ?
+            mapper.suppressGeneratorTimestamp().get() :
+            next().suppressGeneratorTimestamp();
+    }
+
+    @Override
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return mapper.mappingInheritanceStrategy().hasValue() ?
             MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().get() ) :

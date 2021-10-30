@@ -83,6 +83,13 @@ public class DefaultOptions extends DelegatingOptions {
         return mapper.componentModel().getDefaultValue();
     }
 
+    public boolean suppressGeneratorTimestamp() {
+        if ( mapper.suppressGeneratorTimestamp().hasValue() ) {
+            return mapper.suppressGeneratorTimestamp().getValue();
+        }
+        return options.isSuppressGeneratorTimestamp();
+    }
+
     @Override
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().getDefaultValue() );

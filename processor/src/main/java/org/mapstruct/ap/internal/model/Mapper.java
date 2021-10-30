@@ -42,6 +42,7 @@ public class Mapper extends GeneratedType {
         private boolean customName;
         private String implPackage;
         private boolean customPackage;
+        private boolean suppressGeneratorTimestamp;
 
         public Builder() {
             super( Builder.class );
@@ -79,6 +80,11 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder suppressGeneratorTimestamp(boolean suppressGeneratorTimestamp) {
+            this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
+            return this;
+        }
+
         public Mapper build() {
             String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
                 ( decorator == null ? "" : "_" );
@@ -102,6 +108,7 @@ public class Mapper extends GeneratedType {
                 methods,
                 options,
                 versionInformation,
+                suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 fields,
                 constructor,
@@ -121,6 +128,7 @@ public class Mapper extends GeneratedType {
                    Type mapperDefinitionType,
                    boolean customPackage, boolean customImplName,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
+                   boolean suppressGeneratorTimestamp,
                    Accessibility accessibility, List<Field> fields, Constructor constructor,
                    Decorator decorator, SortedSet<Type> extraImportedTypes ) {
 
@@ -133,6 +141,7 @@ public class Mapper extends GeneratedType {
             fields,
             options,
             versionInformation,
+            suppressGeneratorTimestamp,
             accessibility,
             extraImportedTypes,
             constructor
