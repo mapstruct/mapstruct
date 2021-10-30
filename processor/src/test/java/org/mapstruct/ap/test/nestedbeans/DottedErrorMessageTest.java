@@ -93,11 +93,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseDeepNestingMapper.class,
+            @Diagnostic(type = UnmappableDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
-                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\".")
+                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepNestingMapper'.")
         }
     )
     public void testDeepNestedBeans() {
@@ -110,11 +111,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseDeepListMapper.class,
+            @Diagnostic(type = UnmappableDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
-                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\".")
+                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepListMapper'.")
         }
     )
     public void testIterables() {
@@ -127,11 +129,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseDeepMapKeyMapper.class,
+            @Diagnostic(type = UnmappableDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
-                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\".")
+                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepMapKeyMapper'.")
         }
     )
     public void testMapKeys() {
@@ -144,11 +147,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseDeepMapValueMapper.class,
+            @Diagnostic(type = UnmappableDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
-                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\".")
+                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepMapValueMapper'.")
         }
     )
     public void testMapValues() {
@@ -161,11 +165,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
+            @Diagnostic(type = UnmappableCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"Info computers[].info\" to \"InfoDto computers[].info\".")
+                    " \"Info computers[].info\" to \"InfoDto computers[].info\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseCollectionElementPropertyMapper'.")
         }
     )
     public void testCollectionElementProperty() {
@@ -178,11 +183,12 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BaseValuePropertyMapper.class,
+            @Diagnostic(type = UnmappableValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 10,
+                line = 14,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\".")
+                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseValuePropertyMapper'.")
         }
     )
     public void testMapValueProperty() {
@@ -220,36 +226,42 @@ public class DottedErrorMessageTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = {
-            @Diagnostic(type = BaseDeepNestingMapper.class,
+            @Diagnostic(type = UnmappableWarnDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"rgb\". Mapping from " + PROPERTY +
-                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\"."),
-            @Diagnostic(type = BaseDeepListMapper.class,
+                    " \"Color house.roof.color\" to \"ColorDto house.roof.color\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepNestingMapper'."),
+            @Diagnostic(type = UnmappableWarnDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"left\". Mapping from " + COLLECTION_ELEMENT +
-                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\"."),
-            @Diagnostic(type = BaseDeepMapKeyMapper.class,
+                    " \"Wheel car.wheels\" to \"WheelDto car.wheels\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepListMapper'."),
+            @Diagnostic(type = UnmappableWarnDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_KEY +
-                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\"."),
-            @Diagnostic(type = BaseDeepMapValueMapper.class,
+                    " \"Word dictionary.wordMap{:key}\" to \"WordDto dictionary.wordMap{:key}\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepMapKeyMapper'."),
+            @Diagnostic(type = UnmappableWarnDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"pronunciation\". Mapping from " + MAP_VALUE +
-                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\"."),
-            @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
+                    " \"ForeignWord dictionary.wordMap{:value}\" to \"ForeignWordDto dictionary.wordMap{:value}\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseDeepMapValueMapper'."),
+            @Diagnostic(type = UnmappableWarnCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"Info computers[].info\" to \"InfoDto computers[].info\"."),
-            @Diagnostic(type = BaseValuePropertyMapper.class,
+                    " \"Info computers[].info\" to \"InfoDto computers[].info\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseCollectionElementPropertyMapper'."),
+            @Diagnostic(type = UnmappableWarnValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 10,
+                line = 13,
                 message = "Unmapped target property: \"color\". Mapping from " + PROPERTY +
-                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\".")
+                    " \"Info catNameMap{:value}.info\" to \"InfoDto catNameMap{:value}.info\"." +
+                    " Occured at 'UserDto userToUserDto(User user)' in 'BaseValuePropertyMapper'.")
         }
     )
     public void testWarnUnmappedTargetProperties() {

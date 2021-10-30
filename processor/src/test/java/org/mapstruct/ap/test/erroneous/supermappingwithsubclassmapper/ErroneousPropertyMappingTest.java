@@ -28,7 +28,7 @@ public class ErroneousPropertyMappingTest {
                 line = 11,
                 messageRegExp = "Can't map property \"UnmappableClass property\" to \"String property\"\\. " +
                     "Consider to declare/implement a mapping method: \"String map\\(UnmappableClass value\\)\"\\. " +
-                    "Occured at '(?:public abstract TARGET )?map\\(SOURCE\\) ?' in 'AbstractMapper'\\.")
+                    "Occured at 'TARGET map\\(SOURCE source\\)' in 'AbstractMapper'\\.")
         }
     )
     public void testUnmappableSourcePropertyInSuperclass() {
