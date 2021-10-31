@@ -15,7 +15,7 @@ import org.mapstruct.MapperConfig;
 public interface SuppressTimestampViaMapperConfig {
     Object toObject(Object object);
 
-    @MapperConfig(suppressGeneratorTimestamp = true)
+    @MapperConfig(suppressTimestampInGenerated = true)
     interface Config {
 
     }

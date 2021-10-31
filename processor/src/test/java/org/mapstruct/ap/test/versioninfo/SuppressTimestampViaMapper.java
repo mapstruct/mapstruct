@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
 /**
  * @author Filip Hrisafov
  */
-@Mapper(suppressGeneratorTimestamp = true)
+@Mapper(suppressTimestampInGenerated = true)
 public interface SuppressTimestampViaMapper {
     Object toObject(Object object);
 }

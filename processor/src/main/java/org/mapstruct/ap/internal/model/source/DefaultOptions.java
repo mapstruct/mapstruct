@@ -83,9 +83,9 @@ public class DefaultOptions extends DelegatingOptions {
         return mapper.componentModel().getDefaultValue();
     }
 
-    public boolean suppressGeneratorTimestamp() {
-        if ( mapper.suppressGeneratorTimestamp().hasValue() ) {
-            return mapper.suppressGeneratorTimestamp().getValue();
+    public boolean suppressTimestampInGenerated() {
+        if ( mapper.suppressTimestampInGenerated().hasValue() ) {
+            return mapper.suppressTimestampInGenerated().getValue();
         }
         return options.isSuppressGeneratorTimestamp();
     }

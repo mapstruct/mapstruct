@@ -203,7 +203,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .extraImports( getExtraImports( element, mapperOptions ) )
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
-            .suppressGeneratorTimestamp( mapperOptions.suppressGeneratorTimestamp() )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -288,7 +288,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
             .extraImports( getExtraImports( element, mapperOptions ) )
-            .suppressGeneratorTimestamp( mapperOptions.suppressGeneratorTimestamp() )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .build();
 
         return decorator;
