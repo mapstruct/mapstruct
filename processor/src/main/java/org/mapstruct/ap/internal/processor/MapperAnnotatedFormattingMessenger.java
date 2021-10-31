@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -100,20 +101,18 @@ public class MapperAnnotatedFormattingMessenger implements FormattingMessager {
             method.append( " " );
             method.append( ee.getSimpleName() );
             method.append( "(" );
-            boolean first = true;
-            for ( VariableElement element : ee.getParameters() ) {
-                if ( !first ) {
-                    method.append( ", " );
-                }
-                method.append( typeUtils.asElement( element.asType() ).getSimpleName() );
-                method.append( " " );
-                method.append( element.getSimpleName() );
-                first = false;
-            }
+            method.append( ee.getParameters()
+                    .stream()
+                    .map( this::parameterToString )
+                    .collect( Collectors.joining( ", " ) ) );
             method.append( ")" );
             return method.toString();
         }
         return e.toString();
+    }
+
+    private String parameterToString(VariableElement element) {
+        return typeUtils.asElement( element.asType() ).getSimpleName() + " " + element.getSimpleName();
     }
 
     private Message determineDelegationMessage(Element e, Message msg) {
