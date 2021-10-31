@@ -96,7 +96,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
         this.typeUtils = context.getTypeUtils();
-        this.messager = context.getMessager();
+        this.messager =
+            new MapperAnnotatedFormattingMessenger( context.getMessager(), mapperTypeElement, context.getTypeUtils() );
         this.options = context.getOptions();
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
