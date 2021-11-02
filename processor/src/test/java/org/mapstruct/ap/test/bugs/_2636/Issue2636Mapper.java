@@ -38,10 +38,10 @@ class DirectoryNode {
 }
 
 class Folder {
-    private String id;
+    private UUID id;
     private Folder ancestor;
 
-    Folder(String id, Folder ancestor) {
+    Folder(UUID id, Folder ancestor) {
         this.id = id;
         this.ancestor = ancestor;
     }
@@ -50,7 +50,7 @@ class Folder {
         return ancestor;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 }

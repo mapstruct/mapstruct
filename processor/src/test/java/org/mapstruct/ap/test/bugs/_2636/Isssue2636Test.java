@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._2636;
 
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -19,7 +20,7 @@ public class Isssue2636Test {
 
     @ProcessorTest
     void defaultValueShouldBeUsedInsteadOfMapped() {
-        Folder rootFolder = new Folder( "primaryFolder", null );
+        Folder rootFolder = new Folder( UUID.randomUUID(), null );
 
         DirectoryNode directoryNode = Mappers.getMapper( Issue2636Mapper.class ).convert( rootFolder );
 
