@@ -123,6 +123,16 @@
     	</#if>
     	<@includeModel object=callback targetBeanName=resultName targetType=targetType/>
     </#list>
+
+    <#if returnType.name != "void" && collapseObjectsWithNullValuesToNull>
+            <#assign outputWritten = false/>
+            if (   <#list sourceParameters as sourceParam><#if (propertyMappingsByParameter(sourceParam)?size > 0)><#list propertyMappingsByParameter(sourceParam) as propertyMapping><#if outputWritten> && </#if>( <#if propertyMapping.assignment.sourceLocalVarName??>${propertyMapping.assignment.sourceLocalVarName}<#else>${resultName}.${propertyMapping.targetReadAccessorName}</#if> == null ) <#assign outputWritten=true/>
+                        </#list>
+                    </#if>
+                </#list>
+            ) return null;
+    </#if>
+
     <#if returnType.name != "void">
 
     <#if finalizerMethod??>

@@ -12,16 +12,25 @@ package org.mapstruct.ap.internal.gem;
  */
 public enum NullValueMappingStrategyGem {
 
-    RETURN_NULL( false ),
-    RETURN_DEFAULT( true );
+    RETURN_NULL( false , false),
+    RETURN_DEFAULT( true, false ),
+    RETURN_NULL_ON_ALL_NULL_VALUES ( false , true);
 
     private final boolean returnDefault;
 
-    NullValueMappingStrategyGem(boolean returnDefault) {
+    private final boolean returnNullOnAllNullValues;
+
+    NullValueMappingStrategyGem(boolean returnDefault, boolean returnNullOnAllNull) {
         this.returnDefault = returnDefault;
+        this.returnNullOnAllNullValues = returnNullOnAllNull;
     }
 
     public boolean isReturnDefault() {
         return returnDefault;
     }
+
+    public boolean isReturnNullOnAllNullValues() {
+        return returnNullOnAllNullValues;
+    }
+
 }

@@ -30,5 +30,12 @@ public enum NullValueMappingStrategy {
      * <li>For map mapping methods an empty map will be returned.</li>
      * </ul>
      */
-    RETURN_DEFAULT;
+    RETURN_DEFAULT,
+
+    /**
+     * If {@code null} is passed to a mapping method, or if all the mapped values from the passed object are null, then
+     * {@code null} will be returned.
+     */
+    RETURN_NULL_ON_ALL_NULL_VALUES;
+
 }

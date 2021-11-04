@@ -182,6 +182,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             boolean mapNullToDefault =
                 method.getOptions().getMapMapping().getNullValueMappingStrategy().isReturnDefault();
 
+            boolean mapAllNullValuesToNull =
+                    method.getOptions().getMapMapping().getNullValueMappingStrategy().isReturnNullOnAllNullValues();
+
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
                 factoryMethod = ObjectFactoryMethodResolver
@@ -204,6 +207,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 valueAssignment,
                 factoryMethod,
                 mapNullToDefault,
+                mapAllNullValuesToNull,
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -225,10 +229,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     }
 
     private MapMappingMethod(Method method, Collection<String> existingVariableNames, Assignment keyAssignment,
-                             Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
+                             Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault, boolean mapAllNullValuesToNull,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
+        super( method, existingVariableNames, factoryMethod, mapNullToDefault, mapAllNullValuesToNull, beforeMappingReferences,
             afterMappingReferences );
 
         this.keyAssignment = keyAssignment;

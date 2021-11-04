@@ -131,6 +131,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             .getNullValueMappingStrategy()
             .isReturnDefault();
 
+        boolean mapAllNullValuesToNull = method.getOptions()
+                .getIterableMapping()
+                .getNullValueMappingStrategy()
+                .isReturnNullOnAllNullValues();
+
         MethodReference factoryMethod = null;
         if ( !method.isUpdateMethod() ) {
             factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, null, ctx );
@@ -158,6 +163,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             assignment,
             factoryMethod,
             mapNullToDefault,
+            mapAllNullValuesToNull,
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
@@ -175,7 +181,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
                                                   Assignment assignment, MethodReference factoryMethod,
-                                                  boolean mapNullToDefault, String loopVariableName,
+                                                  boolean mapNullToDefault, boolean mapAllNullValuesToNull, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
         SelectionParameters selectionParameters);

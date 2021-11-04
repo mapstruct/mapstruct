@@ -49,7 +49,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
 
         @Override
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, boolean mapAllNullValuesToNull, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
 
@@ -70,6 +70,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
+                mapAllNullValuesToNull,
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
@@ -80,7 +81,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
     }
 
     private StreamMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
-                                MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                MethodReference factoryMethod, boolean mapNullToDefault, boolean mapAllNullValuesToNull, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, Set<Type> helperImports) {
@@ -90,6 +91,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             parameterAssignment,
             factoryMethod,
             mapNullToDefault,
+            mapAllNullValuesToNull,
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,

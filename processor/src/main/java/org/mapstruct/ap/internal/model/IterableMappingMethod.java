@@ -52,7 +52,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
 
         @Override
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, boolean mapAllNullValuesToNull, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
@@ -61,6 +61,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
+                mapAllNullValuesToNull,
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
@@ -70,7 +71,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
     }
 
     private IterableMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
-                                  MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                  MethodReference factoryMethod, boolean mapNullToDefault, boolean mapAllNullValuesToNull, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
@@ -80,6 +81,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             parameterAssignment,
             factoryMethod,
             mapNullToDefault,
+            mapAllNullValuesToNull,
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
