@@ -1931,10 +1931,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         for (Parameter sourceParam:getSourceParameters()) {
             if (propertyMappingsByParameter(sourceParam).size()>0) {
                 for (PropertyMapping propertyMapping:propertyMappingsByParameter(sourceParam)) {
-                    if (!propertyMapping.getAssignment().getSourceType().isPrimitive() && !propertyMapping.getAssignment().getSourceType().isEnumType()) {
+                    if (!propertyMapping.getAssignment().getSourceType().isPrimitive()) {
                         atLeastOneToCheck = true;
                     }
-                    if (propertyMapping.getAssignment().getSourceType().isPrimitive() || propertyMapping.getAssignment().getSourceType().isEnumType()) {
+                    if (propertyMapping.getAssignment().getSourceType().isPrimitive()) {
                         atLeastOneToIgnore = true;
                     }
                 }
