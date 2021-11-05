@@ -28,7 +28,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     private interface ForgeMethodCreator {
         ForgedMethod createMethod(String name, Type sourceType, Type returnType, Method basedOn,
-                                  MethodDescription description, boolean forgedNameBased);
+                                  MappingDescription description, boolean forgedNameBased);
 
         static ForgeMethodCreator forSubclassMapping(MappingReferences mappingReferences) {
             return (name, sourceType, targetType, method, description,
@@ -46,10 +46,10 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     public abstract M build();
 
-    private MethodDescription description;
+    private MappingDescription description;
 
     /**
-     * @return {@code true} if property names should be used for the creation of the {@link MethodDescription}.
+     * @return {@code true} if property names should be used for the creation of the {@link MappingDescription}.
      */
     protected abstract boolean shouldUsePropertyNamesInHistory();
 
@@ -74,12 +74,12 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
         String name = getName( sourceType, targetType );
         name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
-        MethodDescription description = null;
+        MappingDescription description = null;
         if ( method instanceof ForgedMethod ) {
             description = ( (ForgedMethod) method ).getDescription();
         }
 
-        this.description = new MethodDescription(
+        this.description = new MappingDescription(
             description,
             Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
             Strings.stubPropertyName( targetType.getName() ),
@@ -113,7 +113,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         return builder.toString();
     }
 
-    public MethodDescription getDescription() {
+    public MappingDescription getDescription() {
         return description;
     }
 

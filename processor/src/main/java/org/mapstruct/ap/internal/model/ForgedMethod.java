@@ -34,7 +34,7 @@ public class ForgedMethod implements Method {
     private final Type returnType;
     private final String name;
     private final List<Type> thrownTypes;
-    private final MethodDescription description;
+    private final MappingDescription description;
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
@@ -83,7 +83,7 @@ public class ForgedMethod implements Method {
      */
     public static ForgedMethod forPropertyMapping(String name, Type sourceType, Type returnType,
                                                   List<Parameter> parameters, Method basedOn,
-                                                  MethodDescription description, MappingReferences mappingReferences,
+                                                  MappingDescription description, MappingReferences mappingReferences,
                                                   boolean forgedNameBased) {
         return new ForgedMethod(
             name,
@@ -110,7 +110,7 @@ public class ForgedMethod implements Method {
      * @return a new forge method
      */
     public static ForgedMethod forElementMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 MethodDescription description, boolean forgedNameBased) {
+                                                 MappingDescription description, boolean forgedNameBased) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -136,7 +136,7 @@ public class ForgedMethod implements Method {
      * @return a new forge method
      */
     public static ForgedMethod forSubclassMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 MappingReferences mappingReferences, MethodDescription description,
+                                                 MappingReferences mappingReferences, MappingDescription description,
                                                  boolean forgedNameBased) {
         return new ForgedMethod(
             name,
@@ -151,7 +151,7 @@ public class ForgedMethod implements Method {
     }
 
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
-                         Method basedOn, MethodDescription description, MappingReferences mappingReferences,
+                         Method basedOn, MappingDescription description, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
 
         // establish name
@@ -287,7 +287,7 @@ public class ForgedMethod implements Method {
         return thrownTypes;
     }
 
-    public MethodDescription getDescription() {
+    public MappingDescription getDescription() {
         return description;
     }
 

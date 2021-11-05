@@ -229,7 +229,7 @@ public class ValueMappingMethod extends MappingMethod {
                     String sourceMessage = "source";
                     String targetMessage = "target";
                     if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getDescription() != null ) {
-                        MethodDescription description = ( (ForgedMethod) method ).getDescription();
+                        MappingDescription description = ( (ForgedMethod) method ).getDescription();
                         sourceMessage = description.createSourcePropertyErrorMessage();
                         targetMessage = "\"" + description.getTargetType().describe() + " "
                             + description.createTargetPropertyName() + "\"";

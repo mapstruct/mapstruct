@@ -1541,7 +1541,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
                 else {
-                    MethodDescription description = forgedMethod.getDescription();
+                    MappingDescription description = forgedMethod.getDescription();
                     ctx.getMessager().printMessage(
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND,
@@ -1579,7 +1579,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
                     String targetErrorMessage = method.getReturnType().describe();
                     if ( ( (ForgedMethod) method ).getDescription() != null ) {
-                        MethodDescription description = ( (ForgedMethod) method ).getDescription();
+                        MappingDescription description = ( (ForgedMethod) method ).getDescription();
                         sourceErrorMessage = description.createSourcePropertyErrorMessage();
                         targetErrorMessage = MessageFormat.format(
                             "\"{0} {1}\"",

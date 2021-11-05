@@ -256,7 +256,7 @@ public class PropertyMapping extends ModelElement {
             if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
-                    getMethodDescription( rightHandSide ),
+                    getMappingDescription( rightHandSide ),
                     targetType,
                     formattingParameters,
                     criteria,
@@ -337,7 +337,7 @@ public class PropertyMapping extends ModelElement {
             if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getDescription() != null ) {
                 // The history that is part of the ForgedMethod misses the information from the current right hand
                 // side. Therefore we need to extract the most relevant history and use that in the error reporting.
-                MethodDescription description = getMethodDescription( rightHandSide );
+                MappingDescription description = getMappingDescription( rightHandSide );
                 reportCannotCreateMapping(
                     method,
                     positionHint,
@@ -735,7 +735,7 @@ public class PropertyMapping extends ModelElement {
             name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             // copy mapper configuration from the source method, its the same mapper
-            MethodDescription description = getMethodDescription( source, suffix );
+            MappingDescription description = getMappingDescription( source, suffix );
             return forElementMapping( name, sourceType, targetType, method, description, forgedNamedBased );
         }
 
@@ -797,24 +797,24 @@ public class PropertyMapping extends ModelElement {
                 returnType,
                 parameters,
                 method,
-                getMethodDescription( sourceRHS ),
+                getMappingDescription( sourceRHS ),
                 forgeMethodWithMappingReferences,
                 forgedNamedBased
             );
             return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
         }
 
-        private MethodDescription getMethodDescription(SourceRHS sourceRHS) {
-            return getMethodDescription( sourceRHS, "" );
+        private MappingDescription getMappingDescription(SourceRHS sourceRHS) {
+            return getMappingDescription( sourceRHS, "" );
         }
 
-        private MethodDescription getMethodDescription(SourceRHS sourceRHS, String suffix) {
-            MethodDescription description = null;
+        private MappingDescription getMappingDescription(SourceRHS sourceRHS, String suffix) {
+            MappingDescription description = null;
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod method = (ForgedMethod) this.method;
                 description = method.getDescription();
             }
-            return new MethodDescription( description, getSourceElementName() + suffix,
+            return new MappingDescription( description, getSourceElementName() + suffix,
                 targetPropertyName + suffix, sourceRHS.getSourceType(), targetType, true, "property"
             );
         }

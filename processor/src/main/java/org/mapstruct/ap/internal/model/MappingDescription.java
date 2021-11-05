@@ -13,9 +13,9 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Dmytro Polovinkin
  */
-public class MethodDescription {
+public class MappingDescription {
 
-    private final MethodDescription parent;
+    private final MappingDescription parent;
     private final String sourceElement;
     private final String targetPropertyName;
     private final Type targetType;
@@ -23,8 +23,8 @@ public class MethodDescription {
     private final boolean usePropertyNames;
     private String elementType;
 
-    public MethodDescription(MethodDescription parent, String sourceElement, String targetPropertyName,
-                             Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
+    public MappingDescription(MappingDescription parent, String sourceElement, String targetPropertyName,
+                              Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
         this.parent = parent;
         this.sourceElement = sourceElement;
         this.targetPropertyName = targetPropertyName;
