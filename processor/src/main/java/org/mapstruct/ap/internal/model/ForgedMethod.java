@@ -34,7 +34,7 @@ public class ForgedMethod implements Method {
     private final Type returnType;
     private final String name;
     private final List<Type> thrownTypes;
-    private final ForgedMethodHistory history;
+    private final MethodDescription description;
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
@@ -76,14 +76,14 @@ public class ForgedMethod implements Method {
      * @param returnType the return type.
      * @param parameters other parameters (including the context + @MappingTarget
      * @param basedOn the method that (originally) triggered this nested method generation.
-     * @param history a parent forged method if this is a forged method within a forged method
+     * @param description the description of the parent method
      * @param mappingReferences the mapping options for this method
      * @param forgedNameBased forges a name based (matched) mapping method
      * @return a new forge method
      */
     public static ForgedMethod forPropertyMapping(String name, Type sourceType, Type returnType,
                                                   List<Parameter> parameters, Method basedOn,
-                                                  ForgedMethodHistory history, MappingReferences mappingReferences,
+                                                  MethodDescription description, MappingReferences mappingReferences,
                                                   boolean forgedNameBased) {
         return new ForgedMethod(
             name,
@@ -91,7 +91,7 @@ public class ForgedMethod implements Method {
             returnType,
             parameters,
             basedOn,
-            history,
+            description,
             mappingReferences == null ? MappingReferences.empty() : mappingReferences,
             forgedNameBased
         );
@@ -104,20 +104,20 @@ public class ForgedMethod implements Method {
      * @param sourceType the source type
      * @param returnType the return type.
      * @param basedOn the method that (originally) triggered this nested method generation.
-     * @param history a parent forged method if this is a forged method within a forged method
+     * @param description the description of the parent method
      * @param forgedNameBased forges a name based (matched) mapping method
      *
      * @return a new forge method
      */
     public static ForgedMethod forElementMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 ForgedMethodHistory history, boolean forgedNameBased) {
+                                                 MethodDescription description, boolean forgedNameBased) {
         return new ForgedMethod(
             name,
             sourceType,
             returnType,
             basedOn.getContextParameters(),
             basedOn,
-            history,
+            description,
             MappingReferences.empty(),
             forgedNameBased
         );
@@ -130,13 +130,13 @@ public class ForgedMethod implements Method {
      * @param sourceType the source type
      * @param returnType the return type.
      * @param basedOn the method that (originally) triggered this nested method generation.
-     * @param history a parent forged method if this is a forged method within a forged method
+     * @param description the description of the parent method
      * @param forgedNameBased forges a name based (matched) mapping method
      *
      * @return a new forge method
      */
     public static ForgedMethod forSubclassMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 MappingReferences mappingReferences, ForgedMethodHistory history,
+                                                 MappingReferences mappingReferences, MethodDescription description,
                                                  boolean forgedNameBased) {
         return new ForgedMethod(
             name,
@@ -144,14 +144,14 @@ public class ForgedMethod implements Method {
             returnType,
             basedOn.getContextParameters(),
             basedOn,
-            history,
+            description,
             mappingReferences == null ? MappingReferences.empty() : mappingReferences,
             forgedNameBased
         );
     }
 
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
-                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
+                         Method basedOn, MethodDescription description, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
 
         // establish name
@@ -181,7 +181,7 @@ public class ForgedMethod implements Method {
         this.basedOn = basedOn;
 
         this.name = Strings.sanitizeIdentifierName( name );
-        this.history = history;
+        this.description = description;
         this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
 
@@ -197,7 +197,7 @@ public class ForgedMethod implements Method {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
         this.thrownTypes = new ArrayList<>();
-        this.history = forgedMethod.history;
+        this.description = forgedMethod.description;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
@@ -292,8 +292,8 @@ public class ForgedMethod implements Method {
         return thrownTypes;
     }
 
-    public ForgedMethodHistory getHistory() {
-        return history;
+    public MethodDescription getDescription() {
+        return description;
     }
 
     public boolean isForgedNamedBased() {

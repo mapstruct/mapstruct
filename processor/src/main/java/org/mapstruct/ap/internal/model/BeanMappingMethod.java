@@ -169,7 +169,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine which return type to construct
             boolean cannotConstructReturnType = false;
             if ( !method.getReturnType().isVoid() ) {
-                Type returnTypeImpl = null;
+                Type returnTypeImpl;
                 if ( isBuilderRequired() ) {
                     // the userDefinedReturn type can also require a builder. That buildertype is already set
                     returnTypeImpl = returnTypeBuilder.getBuilder();
@@ -1528,7 +1528,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( method instanceof ForgedMethod && targetProperties.isEmpty() ) {
                 //TODO until we solve 1140 we report this error when the target properties are empty
                 ForgedMethod forgedMethod = (ForgedMethod) method;
-                if ( forgedMethod.getHistory() == null ) {
+                if ( forgedMethod.getDescription() == null ) {
                     Type sourceType = this.method.getParameters().get( 0 ).getType();
                     Type targetType = this.method.getReturnType();
                     ctx.getMessager().printMessage(
@@ -1541,15 +1541,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
                 else {
-                    ForgedMethodHistory history = forgedMethod.getHistory();
+                    MethodDescription description = forgedMethod.getDescription();
                     ctx.getMessager().printMessage(
                         this.method.getExecutable(),
                         Message.PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND,
-                        history.createSourcePropertyErrorMessage(),
-                        history.getTargetType().describe(),
-                        history.createTargetPropertyName(),
-                        history.getTargetType().describe(),
-                        history.getSourceType().describe()
+                        description.createSourcePropertyErrorMessage(),
+                        description.getTargetType().describe(),
+                        description.createTargetPropertyName(),
+                        description.getTargetType().describe(),
+                        description.getSourceType().describe()
                     );
                 }
             }
@@ -1578,13 +1578,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
                     String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
                     String targetErrorMessage = method.getReturnType().describe();
-                    if ( ( (ForgedMethod) method ).getHistory() != null ) {
-                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
-                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
+                    if ( ( (ForgedMethod) method ).getDescription() != null ) {
+                        MethodDescription description = ( (ForgedMethod) method ).getDescription();
+                        sourceErrorMessage = description.createSourcePropertyErrorMessage();
                         targetErrorMessage = MessageFormat.format(
                             "\"{0} {1}\"",
-                            history.getTargetType().describe(),
-                            history.createTargetPropertyName()
+                            description.getTargetType().describe(),
+                            description.createTargetPropertyName()
                         );
                     }
                     Object[] args = new Object[] {
