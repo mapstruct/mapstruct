@@ -173,7 +173,7 @@ public class ForgedMethod implements Method {
         this.parameters.addAll( additionalParameters );
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
-        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters ).orElse( null );
         this.returnType = returnType;
         this.thrownTypes = new ArrayList<>();
 
@@ -201,7 +201,7 @@ public class ForgedMethod implements Method {
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
-        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters ).orElse( null );
         this.mappingReferences = forgedMethod.mappingReferences;
 
         this.basedOn = forgedMethod.basedOn;

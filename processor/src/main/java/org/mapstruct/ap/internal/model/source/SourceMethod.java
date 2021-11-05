@@ -239,7 +239,7 @@ public class SourceMethod implements Method {
         this.contextProvidedMethods = builder.contextProvidedMethods;
         this.typeParameters = builder.typeParameters;
 
-        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters ).orElse( null );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
         this.isPresenceCheck = determineIfIsPresenceCheck();
@@ -499,15 +499,6 @@ public class SourceMethod implements Method {
     public boolean matches(List<Type> sourceTypes, Type targetType) {
         MethodMatcher matcher = new MethodMatcher( typeUtils, typeFactory, this );
         return matcher.matches( sourceTypes, targetType );
-    }
-
-    /**
-     * @param parameters the parameter list to check
-     *
-     * @return {@code true} if the parameter list contains a parameter annotated with {@code @TargetType}
-     */
-    public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
-        return parameters.stream().anyMatch( Parameter::isTargetType );
     }
 
     @Override
