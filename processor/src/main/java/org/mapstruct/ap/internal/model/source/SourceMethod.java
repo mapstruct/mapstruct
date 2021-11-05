@@ -47,7 +47,6 @@ public class SourceMethod implements Method {
     private final ExecutableElement executable;
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
-    private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final boolean isPresenceCheck;
     private final Type returnType;
@@ -241,7 +240,6 @@ public class SourceMethod implements Method {
         this.typeParameters = builder.typeParameters;
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
         this.isPresenceCheck = determineIfIsPresenceCheck();
@@ -366,11 +364,6 @@ public class SourceMethod implements Method {
     @Override
     public boolean isObjectFactory() {
         return isObjectFactory;
-    }
-
-    @Override
-    public Parameter getTargetTypeParameter() {
-        return targetTypeParameter;
     }
 
     public boolean isIterableMapping() {

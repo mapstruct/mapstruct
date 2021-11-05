@@ -48,7 +48,7 @@ public class MethodDescription {
     }
 
     /**
-     * Capitalization mostly matters to avoid the funny "Can't map map key" message. However it's irrelevant for the
+     * Capitalization mostly matters to avoid the funny "Can't map map key" message. However, it's irrelevant for the
      * "Can't map property" message.
      *
      * @return capitalized or non-capitalized element type

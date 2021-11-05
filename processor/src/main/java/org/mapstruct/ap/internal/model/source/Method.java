@@ -99,14 +99,6 @@ public interface Method {
     }
 
     /**
-     * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
-     *
-     * @return target type parameter (when present) null otherwise.
-     */
-    Parameter getTargetTypeParameter();
-
-
-    /**
      * Returns the {@link Accessibility} of this method.
      *
      * @return the {@link Accessibility} of this method

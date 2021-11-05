@@ -273,11 +273,6 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public Parameter getTargetTypeParameter() {
-        return null;
-    }
-
-    @Override
     public Accessibility getAccessibility() {
         return Accessibility.PROTECTED;
     }
@@ -294,10 +289,6 @@ public class ForgedMethod implements Method {
 
     public MethodDescription getDescription() {
         return description;
-    }
-
-    public boolean isForgedNamedBased() {
-        return forgedNameBased;
     }
 
     public void addThrownTypes(List<Type> thrownTypesToAdd) {
