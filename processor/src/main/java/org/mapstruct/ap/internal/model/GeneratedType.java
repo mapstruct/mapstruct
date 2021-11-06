@@ -103,6 +103,7 @@ public abstract class GeneratedType extends ModelElement {
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name,
                             Type mapperDefinitionType, List<MappingMethod> methods,
                             List<Field> fields, Options options, VersionInformation versionInformation,
+                            boolean suppressGeneratorTimestamp,
                             Accessibility accessibility, SortedSet<Type> extraImportedTypes, Constructor constructor) {
         this.packageName = packageName;
         this.name = name;
@@ -113,7 +114,7 @@ public abstract class GeneratedType extends ModelElement {
         this.methods = methods;
         this.fields = fields;
 
-        this.suppressGeneratorTimestamp = options.isSuppressGeneratorTimestamp();
+        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = options.isSuppressGeneratorVersionComment();
         this.versionInformation = versionInformation;
         this.accessibility = accessibility;

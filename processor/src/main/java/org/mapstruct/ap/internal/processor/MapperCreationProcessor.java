@@ -198,13 +198,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .constructorFragments(  constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods, mapperOptions.implementationName(),
-                mapperOptions.implementationPackage(), getExtraImports( element, mapperOptions ) ) )
+            .decorator( getDecorator( element, methods, mapperOptions ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .extraImports( getExtraImports( element, mapperOptions ) )
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -226,8 +226,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mapper;
     }
 
-    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
-                                   String implPackage, SortedSet<Type> extraImports) {
+    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, MapperOptions mapperOptions) {
         DecoratedWithGem decoratedWith = DecoratedWithGem.instanceOn( element );
 
         if ( decoratedWith == null ) {
@@ -287,9 +286,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .hasDelegateConstructor( hasDelegateConstructor )
             .options( options )
             .versionInformation( versionInformation )
-            .implName( implName )
-            .implPackage( implPackage )
-            .extraImports( extraImports )
+            .implName( mapperOptions.implementationName() )
+            .implPackage( mapperOptions.implementationPackage() )
+            .extraImports( getExtraImports( element, mapperOptions ) )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .build();
 
         return decorator;

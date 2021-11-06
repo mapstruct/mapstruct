@@ -49,4 +49,20 @@ public class VersionInfoTest {
             .contains( "comments = \"version: " );
     }
 
+    @ProcessorTest
+    @WithClasses(SuppressTimestampViaMapper.class)
+    @IssueKey("2225")
+    void includesNoTimestampViaMapper() {
+        generatedSource.forMapper( SuppressTimestampViaMapper.class ).content()
+            .doesNotContain( "date = \"" );
+    }
+
+    @ProcessorTest
+    @WithClasses(SuppressTimestampViaMapperConfig.class)
+    @IssueKey("2225")
+    void includesNoTimestampViaMapperConfig() {
+        generatedSource.forMapper( SuppressTimestampViaMapperConfig.class ).content()
+            .doesNotContain( "date = \"" );
+    }
+
 }

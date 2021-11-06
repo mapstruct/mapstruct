@@ -68,6 +68,10 @@ public abstract class DelegatingOptions {
         return next.componentModel();
     }
 
+    public boolean suppressTimestampInGenerated() {
+        return next.suppressTimestampInGenerated();
+    }
+
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return next.getMappingInheritanceStrategy();
     }

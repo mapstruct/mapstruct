@@ -357,4 +357,17 @@ public @interface Mapper {
      * @since 1.4
      */
     Class<? extends Exception> unexpectedValueMappingException() default IllegalArgumentException.class;
+
+    /**
+     * Flag indicating whether the addition of a time stamp in the {@code @Generated} annotation should be suppressed.
+     * i.e. not be added.
+     *
+     * The method overrides the flag set in a central configuration set by {@link #config()}
+     * or through an annotation processor option.
+     *
+     * @return whether the addition of a timestamp should be suppressed
+     *
+     * @since 1.5
+     */
+    boolean suppressTimestampInGenerated() default false;
 }
