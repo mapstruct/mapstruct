@@ -512,25 +512,39 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
         }
 
-        Type parameterType = sourceParameters.get( 0 ).getType();
+        if ( sourceParameters.size() == 1 ) {
+            Type parameterType = sourceParameters.get( 0 ).getType();
 
-        if ( isStreamTypeOrIterableFromJavaStdLib( parameterType ) && !resultType.isIterableOrStreamType() ) {
-            messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
-            return false;
+            if ( isStreamTypeOrIterableFromJavaStdLib( parameterType ) && !resultType.isIterableOrStreamType() ) {
+                messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
+                return false;
+            }
+
+            if ( !parameterType.isIterableOrStreamType() && isStreamTypeOrIterableFromJavaStdLib( resultType ) ) {
+                messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ITERABLE );
+                return false;
+            }
+
+            if ( parameterType.isPrimitive() ) {
+                messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
+                return false;
+            }
+
+            for ( Type typeParameter : parameterType.getTypeParameters() ) {
+                if ( typeParameter.hasSuperBound() ) {
+                    messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
+                    return false;
+                }
+
+                if ( typeParameter.isTypeVar() ) {
+                    messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                    return false;
+                }
+            }
         }
 
         if ( containsTargetTypeParameter ) {
             messager.printMessage( method, Message.RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER );
-            return false;
-        }
-
-        if ( !parameterType.isIterableOrStreamType() && isStreamTypeOrIterableFromJavaStdLib( resultType ) ) {
-            messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ITERABLE );
-            return false;
-        }
-
-        if ( parameterType.isPrimitive() ) {
-            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
             return false;
         }
 
@@ -546,18 +560,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
             if ( typeParameter.hasExtendsBound() ) {
                 messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
-                return false;
-            }
-        }
-
-        for ( Type typeParameter : parameterType.getTypeParameters() ) {
-            if ( typeParameter.hasSuperBound() ) {
-                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
-                return false;
-            }
-
-            if ( typeParameter.isTypeVar() ) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                 return false;
             }
         }
