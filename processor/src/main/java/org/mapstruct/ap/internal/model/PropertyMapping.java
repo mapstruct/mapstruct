@@ -917,11 +917,7 @@ public class PropertyMapping extends ModelElement {
             );
 
             Assignment assignment = null;
-            if ( targetType.equals( sourceType ) ) { // No need to lookup a mapping.
-                assignment =
-                    new SourceRHS( constantExpression, sourceType, existingVariableNames, sourceErrorMessagePart );
-            }
-            else if ( !targetType.isEnumType() ) {
+            if ( !targetType.isEnumType() ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
                     null, // TODO description for constant

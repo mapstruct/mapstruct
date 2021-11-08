@@ -703,3 +703,40 @@ public interface MovieMapper {
 ====
 Although the used mechanism is the same, the user has to be a bit more careful. Refactoring the name of a defined qualifier in an IDE will neatly refactor all other occurrences as well. This is obviously not the case for changing a name.
 ====
+
+=== Combining qualifiers with defaults
+When using `defaultValue` with `qualifiedByName` or `qualifiedBy` be aware that the default value will the passed into the conversion method. In the case that this is not wanted you need to use `defaultExpression` instead of `defaultValue`.
+
+.Mapper using defaultValue
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = DatabaseEnumConverter.class )
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultValue = "DEFAULT" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+In the above example in case that category is null, the method `CategoryToString(Category.DEFAULT)` will be called and the result will be set to the category field.
+
+.Mapper using defaultExpression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = DatabaseEnumConverter.class )
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultExpression = "java(\"Unknown\")" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+In the above example in case that category is null, the value `"Unknown"` will set to the category field.
