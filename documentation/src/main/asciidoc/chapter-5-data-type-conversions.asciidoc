@@ -705,7 +705,7 @@ Although the used mechanism is the same, the user has to be a bit more careful. 
 ====
 
 === Combining qualifiers with defaults
-Please note that the Mapping#defaultValue is in essence a String, which needs to be converted to the Mapping#target. Providing a Mapping#qualifiedByName or Mapping#qualifiedBy will force MapStruct to use that method. If you want different behavior for the Mapping#defaultValue, then please provide an appropriate mapping method. This mapping method needs to transforms a String into the desired type of Mapping#target and also be annotated so that it can be found by the Mapping#qualifiedByName or Mapping#qualifiedBy.
+Please note that the `Mapping#defaultValue` is in essence a `String`, which needs to be converted to the `Mapping#target`. Providing a `Mapping#qualifiedByName` or `Mapping#qualifiedBy` will force MapStruct to use that method. If you want different behavior for the `Mapping#defaultValue`, then please provide an appropriate mapping method. This mapping method needs to transforms a `String` into the desired type of `Mapping#target` and also be annotated so that it can be found by the `Mapping#qualifiedByName` or `Mapping#qualifiedBy`.
 
 .Mapper using defaultValue
 ====
