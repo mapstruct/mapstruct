@@ -642,7 +642,7 @@ public class NestedTargetPropertyMappingHolder {
                                                                      boolean forceUpdateMethod) {
 
             Accessor targetWriteAccessor = targetPropertiesWriteAccessors.get( targetPropertyName );
-            Accessor targetReadAccessor = targetType.getPropertyReadAccessors().get( targetPropertyName );
+            Accessor targetReadAccessor = targetType.getReadAccessor( targetPropertyName );
             if ( targetWriteAccessor == null ) {
                 Set<String> readAccessors = targetType.getPropertyReadAccessors().keySet();
                 String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );

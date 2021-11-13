@@ -48,6 +48,8 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
+import org.mapstruct.ap.internal.util.accessor.MapValuePresenceChecker;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -60,6 +62,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * through {@link TypeFactory}.
  *
  * @author Gunnar Morling
+ * @author Filip Hrisafov
  */
 public class Type extends ModelElement implements Comparable<Type> {
 
@@ -595,6 +598,48 @@ public class Type extends ModelElement implements Comparable<Type> {
         else {
             return this;
         }
+    }
+
+    public Accessor getReadAccessor(String propertyName) {
+        if ( isMapType() ) {
+            List<Type> typeParameters = getTypeParameters();
+            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
+                ExecutableElement getMethod = getAllMethods()
+                    .stream()
+                    .filter( m -> m.getSimpleName().contentEquals( "get" ) )
+                    .filter( m -> m.getParameters().size() == 1 )
+                    .findAny()
+                    .orElse( null );
+                return new MapValueAccessor( getMethod, typeParameters.get( 1 ).getTypeMirror(), propertyName );
+            }
+        }
+
+        Map<String, Accessor> readAccessors = getPropertyReadAccessors();
+
+        return readAccessors.get( propertyName );
+    }
+
+    public Accessor getPresenceChecker(String propertyName) {
+        if ( isMapType() ) {
+            List<Type> typeParameters = getTypeParameters();
+            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
+                ExecutableElement containsKeyMethod = getAllMethods()
+                    .stream()
+                    .filter( m -> m.getSimpleName().contentEquals( "containsKey" ) )
+                    .filter( m -> m.getParameters().size() == 1 )
+                    .findAny()
+                    .orElse( null );
+
+                return new MapValuePresenceChecker(
+                    containsKeyMethod,
+                    typeParameters.get( 1 ).getTypeMirror(),
+                    propertyName
+                );
+            }
+        }
+
+        Map<String, Accessor> presenceCheckers = getPropertyPresenceCheckers();
+        return presenceCheckers.get( propertyName );
     }
 
     /**
