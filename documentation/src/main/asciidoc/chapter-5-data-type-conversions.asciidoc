@@ -705,7 +705,7 @@ Although the used mechanism is the same, the user has to be a bit more careful. 
 ====
 
 === Combining qualifiers with defaults
-When using `defaultValue` with `qualifiedByName` or `qualifiedBy` be aware that the default value will the passed into the conversion method. In the case that this is not wanted you need to use `defaultExpression` instead of `defaultValue`.
+Please note that the Mapping#defaultValue is in essence a String, which needs to be converted to the Mapping#target. Providing a Mapping#qualifiedByName or Mapping#qualifiedBy will force MapStruct to use that method. If you want different behavior for the Mapping#defaultValue, then please provide an appropriate mapping method. This mapping method needs to transforms a String into the desired type of Mapping#target and also be annotated so that it can be found by the Mapping#qualifiedByName or Mapping#qualifiedBy.
 
 .Mapper using defaultValue
 ====
@@ -722,7 +722,29 @@ public interface MovieMapper {
 ----
 ====
 
-In the above example in case that category is null, the method `CategoryToString(Category.DEFAULT)` will be called and the result will be set to the category field.
+In the above example in case that category is null, the method `CategoryToString( Enum.valueOf( Category.class, "DEFAULT" ) )` will be called and the result will be set to the category field.
+
+.Mapper using defaultValue and default method.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = DatabaseEnumConverter.class )
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultValue = "Unknown" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(String value) {
+         return value;
+     }
+}
+----
+====
+In the above example in case that category is null, the method `defaultValueForQualifier( "Unknown" )` will be called and the result will be set to the category field.
+
+If the above mentioned methods do not work there is the option to use `defaultExpression` to set the default value.
 
 .Mapper using defaultExpression
 ====
@@ -738,5 +760,3 @@ public interface MovieMapper {
 }
 ----
 ====
-
-In the above example in case that category is null, the value `"Unknown"` will set to the category field.

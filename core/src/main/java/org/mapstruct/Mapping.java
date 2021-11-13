@@ -295,6 +295,8 @@ public @interface Mapping {
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
      * mapping methods (hand written or generated) qualify and thus would result in an 'Ambiguous mapping methods found'
      * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
+     * <p>
+     * Note that {@link #defaultValue()} usage will also be converted using this qualifier.
      *
      * @return the qualifiers
      * @see Qualifier
@@ -309,6 +311,8 @@ public @interface Mapping {
      * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
      * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
      * number of qualifiers as no custom annotation types are needed.
+     * <p>
+     * Note that {@link #defaultValue()} usage will also be converted using this qualifier.
      *
      * @return One or more qualifier name(s)
      * @see #qualifiedBy()
