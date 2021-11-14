@@ -218,6 +218,10 @@ public @interface Mapping {
      * </li>
      * </ol>
      * <p>
+     * You can use {@link #qualifiedBy()} or {@link #qualifiedByName()} to force the use of a conversion method
+     * even when one would not apply. (e.g. {@code String} to {@code String})
+     * </p>
+     * <p>
      * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
      * {@link #defaultExpression()} or {@link #expression()}.
      *

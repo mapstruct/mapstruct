@@ -712,12 +712,16 @@ Please note that the `Mapping#defaultValue` is in essence a `String`, which need
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-@Mapper( uses = DatabaseEnumConverter.class )
+@Mapper
 public interface MovieMapper {
 
-     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultValue = "DEFAULT" )
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultValue = "DEFAULT" )
      GermanRelease toGerman( OriginalRelease movies );
 
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
 }
 ----
 ====
@@ -729,11 +733,16 @@ In the above example in case that category is null, the method `CategoryToString
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-@Mapper( uses = DatabaseEnumConverter.class )
+@Mapper
 public interface MovieMapper {
 
-     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultValue = "Unknown" )
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultValue = "Unknown" )
      GermanRelease toGerman( OriginalRelease movies );
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
 
      @Named("CategoryToString")
      default String defaultValueForQualifier(String value) {
@@ -751,12 +760,16 @@ If the above mentioned methods do not work there is the option to use `defaultEx
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-@Mapper( uses = DatabaseEnumConverter.class )
+@Mapper
 public interface MovieMapper {
 
-     @Mapping( target = "category", qualifiedByName = { "CategoryToString" }, defaultExpression = "java(\"Unknown\")" )
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultExpression = "java(\"Unknown\")" )
      GermanRelease toGerman( OriginalRelease movies );
 
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
 }
 ----
 ====
