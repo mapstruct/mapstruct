@@ -207,15 +207,6 @@ public class SourceReference extends AbstractReference {
             return new SourceReference( parameter, entries, foundEntryMatch );
         }
 
-        private boolean canBeTreatedAsMapSourceType(Type type) {
-            if ( !type.isMapType() ) {
-                return false;
-            }
-
-            List<Type> typeParameters = type.getTypeParameters();
-            return typeParameters.size() == 2 && typeParameters.get( 0 ).isString();
-        }
-
         /**
          * When there are more than one source parameters, the first segment name of the property
          * needs to match the parameter name to avoid ambiguity

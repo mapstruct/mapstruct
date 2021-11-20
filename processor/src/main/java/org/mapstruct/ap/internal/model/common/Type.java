@@ -311,6 +311,17 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isMapType;
     }
 
+    private boolean hasStringMapSignature() {
+        if ( isMapType() ) {
+            List<Type> typeParameters = getTypeParameters();
+            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean isCollectionOrMapType() {
         return isCollectionType || isMapType;
     }
@@ -601,17 +612,14 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public Accessor getReadAccessor(String propertyName) {
-        if ( isMapType() ) {
-            List<Type> typeParameters = getTypeParameters();
-            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
-                ExecutableElement getMethod = getAllMethods()
-                    .stream()
-                    .filter( m -> m.getSimpleName().contentEquals( "get" ) )
-                    .filter( m -> m.getParameters().size() == 1 )
-                    .findAny()
-                    .orElse( null );
-                return new MapValueAccessor( getMethod, typeParameters.get( 1 ).getTypeMirror(), propertyName );
-            }
+        if ( hasStringMapSignature() ) {
+            ExecutableElement getMethod = getAllMethods()
+                .stream()
+                .filter( m -> m.getSimpleName().contentEquals( "get" ) )
+                .filter( m -> m.getParameters().size() == 1 )
+                .findAny()
+                .orElse( null );
+            return new MapValueAccessor( getMethod, typeParameters.get( 1 ).getTypeMirror(), propertyName );
         }
 
         Map<String, Accessor> readAccessors = getPropertyReadAccessors();
@@ -620,22 +628,19 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public Accessor getPresenceChecker(String propertyName) {
-        if ( isMapType() ) {
-            List<Type> typeParameters = getTypeParameters();
-            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
-                ExecutableElement containsKeyMethod = getAllMethods()
-                    .stream()
-                    .filter( m -> m.getSimpleName().contentEquals( "containsKey" ) )
-                    .filter( m -> m.getParameters().size() == 1 )
-                    .findAny()
-                    .orElse( null );
+        if ( hasStringMapSignature() ) {
+            ExecutableElement containsKeyMethod = getAllMethods()
+                .stream()
+                .filter( m -> m.getSimpleName().contentEquals( "containsKey" ) )
+                .filter( m -> m.getParameters().size() == 1 )
+                .findAny()
+                .orElse( null );
 
-                return new MapValuePresenceChecker(
-                    containsKeyMethod,
-                    typeParameters.get( 1 ).getTypeMirror(),
-                    propertyName
-                );
-            }
+            return new MapValuePresenceChecker(
+                containsKeyMethod,
+                typeParameters.get( 1 ).getTypeMirror(),
+                propertyName
+            );
         }
 
         Map<String, Accessor> presenceCheckers = getPropertyPresenceCheckers();
