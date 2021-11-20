@@ -7,9 +7,10 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Arrays;
 
+import org.mapstruct.ap.internal.model.common.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * A PropertyEntry contains information on the name, readAccessor and presenceCheck (for source)
@@ -18,8 +19,8 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 public class PropertyEntry {
 
     private final String[] fullName;
-    private final Accessor readAccessor;
-    private final Accessor presenceChecker;
+    private final ReadAccessor readAccessor;
+    private final PresenceCheckAccessor presenceChecker;
     private final Type type;
 
     /**
@@ -29,7 +30,8 @@ public class PropertyEntry {
      * @param readAccessor
      * @param type
      */
-    private PropertyEntry(String[] fullName, Accessor readAccessor, Accessor presenceChecker, Type type) {
+    private PropertyEntry(String[] fullName, ReadAccessor readAccessor, PresenceCheckAccessor presenceChecker,
+                          Type type) {
         this.fullName = fullName;
         this.readAccessor = readAccessor;
         this.presenceChecker = presenceChecker;
@@ -45,8 +47,8 @@ public class PropertyEntry {
      * @param type type of the property
      * @return the property entry for given parameters.
      */
-    public static PropertyEntry forSourceReference(String[] name, Accessor readAccessor,
-                                                   Accessor presenceChecker, Type type) {
+    public static PropertyEntry forSourceReference(String[] name, ReadAccessor readAccessor,
+                                                   PresenceCheckAccessor presenceChecker, Type type) {
         return new PropertyEntry( name, readAccessor, presenceChecker, type );
     }
 
@@ -54,11 +56,11 @@ public class PropertyEntry {
         return fullName[fullName.length - 1];
     }
 
-    public Accessor getReadAccessor() {
+    public ReadAccessor getReadAccessor() {
         return readAccessor;
     }
 
-    public Accessor getPresenceChecker() {
+    public PresenceCheckAccessor getPresenceChecker() {
         return presenceChecker;
     }
 

@@ -16,22 +16,22 @@ import org.mapstruct.ap.internal.model.common.Type;
 /**
  * @author Filip Hrisafov
  */
-public class SourceReferenceMethodPresenceCheck extends ModelElement implements PresenceCheck {
+public class SuffixPresenceCheck extends ModelElement implements PresenceCheck {
 
     private final String sourceReference;
-    private final String methodName;
+    private final String suffix;
 
-    public SourceReferenceMethodPresenceCheck(String sourceReference, String methodName) {
+    public SuffixPresenceCheck(String sourceReference, String suffix) {
         this.sourceReference = sourceReference;
-        this.methodName = methodName;
+        this.suffix = suffix;
     }
 
     public String getSourceReference() {
         return sourceReference;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public String getSuffix() {
+        return suffix;
     }
 
     @Override
@@ -47,13 +47,12 @@ public class SourceReferenceMethodPresenceCheck extends ModelElement implements 
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        SourceReferenceMethodPresenceCheck that = (SourceReferenceMethodPresenceCheck) o;
-        return Objects.equals( sourceReference, that.sourceReference ) &&
-            Objects.equals( methodName, that.methodName );
+        SuffixPresenceCheck that = (SuffixPresenceCheck) o;
+        return Objects.equals( sourceReference, that.sourceReference );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( sourceReference, methodName );
+        return Objects.hash( sourceReference );
     }
 }
