@@ -48,11 +48,12 @@ public class SuffixPresenceCheck extends ModelElement implements PresenceCheck {
             return false;
         }
         SuffixPresenceCheck that = (SuffixPresenceCheck) o;
-        return Objects.equals( sourceReference, that.sourceReference );
+        return Objects.equals( sourceReference, that.sourceReference )
+            && Objects.equals( suffix, that.suffix );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( sourceReference );
+        return Objects.hash( sourceReference, suffix );
     }
 }
