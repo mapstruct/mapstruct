@@ -14,9 +14,12 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
+import org.mapstruct.ap.internal.model.presence.SourceReferenceContainsKeyPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 /**
  * This method is used to convert the nested properties as listed in propertyEntries into a method
@@ -165,11 +168,20 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         public SafePropertyEntry(PropertyEntry entry, String safeName, String previousPropertyName) {
             this.safeName = safeName;
             this.readAccessorName = ValueProvider.of( entry.getReadAccessor() ).getValue();
-            if ( entry.getPresenceChecker() != null ) {
-                this.presenceChecker = new SourceReferenceMethodPresenceCheck(
-                    previousPropertyName,
-                    entry.getPresenceChecker().getSimpleName()
-                );
+            Accessor presenceChecker = entry.getPresenceChecker();
+            if ( presenceChecker != null ) {
+                if ( presenceChecker.getAccessorType() == AccessorType.MAP_CONTAINS ) {
+                    this.presenceChecker = new SourceReferenceContainsKeyPresenceCheck(
+                        previousPropertyName,
+                        presenceChecker.getSimpleName()
+                    );
+                }
+                else {
+                    this.presenceChecker = new SourceReferenceMethodPresenceCheck(
+                        previousPropertyName,
+                        presenceChecker.getSimpleName()
+                    );
+                }
             }
             else {
                 this.presenceChecker = null;
