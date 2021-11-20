@@ -3,9 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._2377;
-
-import java.util.List;
+package org.mapstruct.ap.test.bugs._2663;
 
 /**
  * @author Filip Hrisafov
@@ -13,7 +11,7 @@ import java.util.List;
 public class Request {
 
     private Nullable<String> name = Nullable.undefined();
-    private Nullable<List<ChildRequest>> children = Nullable.undefined();
+    private Nullable<ChildRequest> child = Nullable.undefined();
 
     public Nullable<String> getName() {
         return name;
@@ -23,12 +21,12 @@ public class Request {
         this.name = name;
     }
 
-    public Nullable<List<ChildRequest>> getChildren() {
-        return children;
+    public Nullable<ChildRequest> getChild() {
+        return child;
     }
 
-    public void setChildren(Nullable<List<ChildRequest>> children) {
-        this.children = children;
+    public void setChild(Nullable<ChildRequest> child) {
+        this.child = child;
     }
 
     public static class ChildRequest {

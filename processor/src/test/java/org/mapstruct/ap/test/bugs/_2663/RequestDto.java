@@ -3,9 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._2377;
-
-import java.util.List;
+package org.mapstruct.ap.test.bugs._2663;
 
 /**
  * @author Filip Hrisafov
@@ -13,7 +11,7 @@ import java.util.List;
 public class RequestDto {
 
     private JsonNullable<String> name = JsonNullable.undefined();
-    private JsonNullable<List<ChildRequestDto>> children = JsonNullable.undefined();
+    private JsonNullable<ChildRequestDto> child = JsonNullable.undefined();
 
     public JsonNullable<String> getName() {
         return name;
@@ -23,12 +21,12 @@ public class RequestDto {
         this.name = name;
     }
 
-    public JsonNullable<List<ChildRequestDto>> getChildren() {
-        return children;
+    public JsonNullable<ChildRequestDto> getChild() {
+        return child;
     }
 
-    public void setChildren(JsonNullable<List<ChildRequestDto>> children) {
-        this.children = children;
+    public void setChild(JsonNullable<ChildRequestDto> child) {
+        this.child = child;
     }
 
     public static class ChildRequestDto {
