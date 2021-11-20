@@ -13,10 +13,10 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
-import org.mapstruct.ap.internal.model.common.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 
 /**
  * This method is used to convert the nested properties as listed in propertyEntries into a method

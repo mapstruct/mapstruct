@@ -7,10 +7,10 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.Arrays;
 
-import org.mapstruct.ap.internal.model.common.PresenceCheckAccessor;
-import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 /**
  * A PropertyEntry contains information on the name, readAccessor and presenceCheck (for source)

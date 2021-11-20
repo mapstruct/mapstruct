@@ -16,8 +16,6 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.PresenceCheckAccessor;
-import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -25,6 +23,8 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.last;
