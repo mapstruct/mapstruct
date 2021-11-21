@@ -696,7 +696,7 @@ public class CustomerMapperImpl implements CustomerMapper {
             customer.setId( Integer.parseInt( map.get( "id" ) ) );
         }
         if ( map.containsKey( "customerName" ) ) {
-            customer.setName( source.get( "customerName" ) );
+            customer.setName( map.get( "customerName" ) );
         }
         // ...
     }
