@@ -558,11 +558,17 @@ public class PropertyMapping extends ModelElement {
 
             // parameter reference
             if ( propertyEntry == null ) {
-                return new SourceRHS( sourceParam.getName(),
-                                      sourceParam.getType(),
-                                      existingVariableNames,
-                                      sourceReference.toString()
+                SourceRHS sourceRHS = new SourceRHS(
+                    sourceParam.getName(),
+                    sourceParam.getType(),
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
+                sourceRHS.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
+                    sourceReference,
+                    sourceRHS
+                ) );
+                return sourceRHS;
             }
             // simple property
             else if ( !sourceReference.isNested() ) {

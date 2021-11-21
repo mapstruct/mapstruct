@@ -75,6 +75,43 @@ public class ConditionalExpressionTest {
     }
 
     @ProcessorTest
+    @WithClasses({
+        ConditionalWithSourceToTargetExpressionMapper.class
+    })
+    @IssueKey("2666")
+    public void conditionalExpressionForSourceToTarget() {
+        ConditionalWithSourceToTargetExpressionMapper mapper = ConditionalWithSourceToTargetExpressionMapper.INSTANCE;
+
+        ConditionalWithSourceToTargetExpressionMapper.OrderDTO orderDto =
+            new ConditionalWithSourceToTargetExpressionMapper.OrderDTO();
+
+        ConditionalWithSourceToTargetExpressionMapper.Order order = mapper.convertToOrder( orderDto );
+        assertThat( order ).isNotNull();
+        assertThat( order.getCustomer() ).isNull();
+
+        orderDto = new ConditionalWithSourceToTargetExpressionMapper.OrderDTO();
+        orderDto.setCustomerName( "Tester" );
+        order = mapper.convertToOrder( orderDto );
+
+        assertThat( order ).isNotNull();
+        assertThat( order.getCustomer() ).isNotNull();
+        assertThat( order.getCustomer().getName() ).isEqualTo( "Tester" );
+        assertThat( order.getCustomer().getAddress() ).isNull();
+
+        orderDto = new ConditionalWithSourceToTargetExpressionMapper.OrderDTO();
+        orderDto.setLine1( "Line 1" );
+        order = mapper.convertToOrder( orderDto );
+
+        assertThat( order ).isNotNull();
+        assertThat( order.getCustomer() ).isNotNull();
+        assertThat( order.getCustomer().getName() ).isNull();
+        assertThat( order.getCustomer().getAddress() ).isNotNull();
+        assertThat( order.getCustomer().getAddress().getLine1() ).isEqualTo( "Line 1" );
+        assertThat( order.getCustomer().getAddress().getLine2() ).isNull();
+
+    }
+
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
