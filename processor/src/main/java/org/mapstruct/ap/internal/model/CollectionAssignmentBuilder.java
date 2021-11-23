@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAnd
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMapsWithNullCheck;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.Assignment.AssignmentType;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -171,7 +172,7 @@ public class CollectionAssignmentBuilder {
                 );
             }
             else if ( setterWrapperNeedsSourceNullCheck( result )
-                && ( targetType.hasCopyConstructor() || targetType.isEnumSet() ) ) {
+                && canBeMappedOrDirectlyAssigned( result ) ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -181,7 +182,7 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else if ( targetType.hasCopyConstructor() || targetType.isEnumSet() ) {
+            else if ( canBeMappedOrDirectlyAssigned( result ) ) {
                 //TODO init default value
 
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
@@ -199,7 +200,8 @@ public class CollectionAssignmentBuilder {
                     targetType,
                     ctx.getTypeFactory(),
                     targetAccessorType.isFieldAssignment() );
-            }else {
+            }
+            else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR,
@@ -226,6 +228,12 @@ public class CollectionAssignmentBuilder {
         }
 
         return result;
+    }
+
+    private boolean canBeMappedOrDirectlyAssigned(Assignment result) {
+        return result.getType() != AssignmentType.DIRECT
+                  || targetType.hasCopyConstructor()
+                  || targetType.isEnumSet();
     }
 
     /**

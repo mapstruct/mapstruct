@@ -176,13 +176,24 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         if ( isCollectionType || isMapType ) {
-            for ( Element element : typeElement.getEnclosedElements() ) {
-                if ( element.getKind() == ElementKind.CONSTRUCTOR && element.getModifiers().contains( Modifier.PUBLIC ) ) {
-                    if (isCopyConstructor( (ExecutableElement) element ) ) {
-                        this.hasCopyConstructor = true;
-                    }
-                    else if ( ( (ExecutableElement) element ).getParameters().isEmpty() ) {
-                        this.hasNoArgsConstructor = true;
+            if ( "java.util".equals( packageName ) ) {
+                hasCopyConstructor = true;
+                hasNoArgsConstructor = true;
+            }
+            else {
+                Element sourceElement =
+                    implementationType != null ? implementationType.getType().getTypeElement() : typeElement;
+                if ( sourceElement != null ) {
+                    for ( Element element : sourceElement.getEnclosedElements() ) {
+                        if ( element.getKind() == ElementKind.CONSTRUCTOR
+                            && element.getModifiers().contains( Modifier.PUBLIC ) ) {
+                            if ( isCopyConstructor( (ExecutableElement) element ) ) {
+                                this.hasCopyConstructor = true;
+                            }
+                            else if ( ( (ExecutableElement) element ).getParameters().isEmpty() ) {
+                                this.hasNoArgsConstructor = true;
+                            }
+                        }
                     }
                 }
             }
