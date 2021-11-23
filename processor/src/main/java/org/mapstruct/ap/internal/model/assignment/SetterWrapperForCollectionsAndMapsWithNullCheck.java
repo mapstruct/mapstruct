@@ -68,7 +68,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
     }
 
     public boolean isEnumSet() {
-        return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
+        return targetType.isEnumSet();
     }
 
 }

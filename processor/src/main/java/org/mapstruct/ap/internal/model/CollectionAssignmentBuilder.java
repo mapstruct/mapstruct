@@ -5,8 +5,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.NewInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMapsWithNullCheck;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
@@ -15,9 +19,6 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -169,7 +170,8 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else if ( setterWrapperNeedsSourceNullCheck( result ) ) {
+            else if ( setterWrapperNeedsSourceNullCheck( result )
+                && ( targetType.hasCopyConstructor() || targetType.isEnumSet() ) ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -179,7 +181,7 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else {
+            else if ( targetType.hasCopyConstructor() || targetType.isEnumSet() ) {
                 //TODO init default value
 
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
@@ -188,6 +190,20 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     targetAccessorType.isFieldAssignment()
+                );
+            }
+            else if ( targetType.hasNoArgsConstructor() ) {
+                result = new NewInstanceSetterWrapperForCollectionsAndMaps(
+                    result,
+                    method.getThrownTypes(),
+                    targetType,
+                    ctx.getTypeFactory(),
+                    targetAccessorType.isFieldAssignment() );
+            }else {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR,
+                    targetType
                 );
             }
         }

@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -118,6 +117,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private boolean hasCopyConstructor;
+    private boolean hasNoArgsConstructor;
 
     private final Filters filters;
 
@@ -174,6 +175,19 @@ public class Type extends ModelElement implements Comparable<Type> {
             enumConstants = Collections.emptyList();
         }
 
+        if ( isCollectionType || isMapType ) {
+            for ( Element element : typeElement.getEnclosedElements() ) {
+                if ( element.getKind() == ElementKind.CONSTRUCTOR && element.getModifiers().contains( Modifier.PUBLIC ) ) {
+                    if (isCopyConstructor( (ExecutableElement) element ) ) {
+                        this.hasCopyConstructor = true;
+                    }
+                    else if ( ( (ExecutableElement) element ).getParameters().isEmpty() ) {
+                        this.hasNoArgsConstructor = true;
+                    }
+                }
+            }
+        }
+
         this.isToBeImported = isToBeImported;
         this.toBeImportedTypes = toBeImportedTypes;
         this.notToBeImportedTypes = notToBeImportedTypes;
@@ -183,6 +197,11 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
         this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement );
+    }
+
+    private boolean isCopyConstructor(ExecutableElement ee) {
+        return ee.getParameters().size() == 1
+            && typeUtils.isAssignable( typeMirror, ee.getParameters().get( 0 ).asType() );
     }
     //CHECKSTYLE:ON
 
@@ -1603,6 +1622,24 @@ public class Type extends ModelElement implements Comparable<Type> {
             parent = parent.getEnclosingElement();
         }
         return parent == null ? null : typeFactory.getType( parent.asType() );
+    }
+
+    public boolean isEnumSet() {
+        return "java.util.EnumSet".equals( getFullyQualifiedName() );
+    }
+
+    /**
+     * Only set for collections and maps.
+     */
+    public boolean hasCopyConstructor() {
+        return hasCopyConstructor;
+    }
+
+    /**
+     * Only set for collections and maps.
+     */
+    public boolean hasNoArgsConstructor() {
+        return hasNoArgsConstructor;
     }
 
 }
