@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
@@ -239,6 +238,8 @@ public class MethodMatcher {
                 return true;
             }
 
+            boolean foundAMatch = false;
+
             for ( Type mthdParType : candidateMethod.getTypeParameters() ) {
 
                 // typeFromCandidateMethod itself is a generic type, e.g. <T> String method( T par );
@@ -255,6 +256,8 @@ public class MethodMatcher {
                     // the next method type parameter
                     continue;
                 }
+
+                foundAMatch = true; // there is a rare case where we do not arrive here at all.
 
                 // resolved something at this point, a candidate can be fetched or created
                 TypeVarCandidate typeVarCandidate;
@@ -297,7 +300,7 @@ public class MethodMatcher {
                     return false;
                 }
             }
-            return true;
+            return foundAMatch;
         }
 
         /**
