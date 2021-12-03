@@ -29,38 +29,38 @@ public interface Issue2673Mapper {
     }
 
     class Target {
-        private final int a;
-        private final String b;
+        private final int primitive;
+        private final String nonPrimitive;
 
-        public Target(int a, String b) {
-            this.a = a;
-            this.b = b;
+        public Target(int primitive, String nonPrimitive) {
+            this.primitive = primitive;
+            this.nonPrimitive = nonPrimitive;
         }
 
-        public int getA() {
-            return a;
+        public int getPrimitive() {
+            return primitive;
         }
 
-        public String getB() {
-            return b;
+        public String getNonPrimitive() {
+            return nonPrimitive;
         }
     }
 
     class Source {
-        private final int a;
-        private final Optional<String> b;
+        private final int primitive;
+        private final Optional<String> nonPrimitive;
 
-        public Source(int a, Optional<String> b) {
-            this.a = a;
-            this.b = b;
+        public Source(int primitive, Optional<String> nonPrimitive) {
+            this.primitive = primitive;
+            this.nonPrimitive = nonPrimitive;
         }
 
-        public int getA() {
-            return a;
+        public int getPrimitive() {
+            return primitive;
         }
 
-        public Optional<String> getB() {
-            return b;
+        public Optional<String> getNonPrimitive() {
+            return nonPrimitive;
         }
     }
 }

@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.bugs._2673;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.Compiler;
 
 /**
  * @author Ben Zegveld
@@ -18,9 +17,8 @@ import org.mapstruct.ap.testutil.runner.Compiler;
 })
 class Issue2673Test {
 
-    @ProcessorTest( Compiler.JDK )
+    @ProcessorTest
     @IssueKey( "2673" )
-    void shouldcompileWithTheJdkCompiler() {
-        // This issue does not cause a problem for the eclipse compiler.
+    void shouldcompile() {
     }
 }
