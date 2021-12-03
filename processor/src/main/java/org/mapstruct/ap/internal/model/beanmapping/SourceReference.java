@@ -23,7 +23,8 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.last;
@@ -310,9 +311,9 @@ public class SourceReference extends AbstractReference {
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
-                Accessor readAccessor = newType.getReadAccessor( entryNames[i] );
+                ReadAccessor readAccessor = newType.getReadAccessor( entryNames[i] );
                 if ( readAccessor != null ) {
-                    Accessor presenceChecker = newType.getPresenceChecker( entryNames[i] );
+                    PresenceCheckAccessor presenceChecker = newType.getPresenceChecker( entryNames[i] );
                     newType = typeFactory.getReturnType(
                         (DeclaredType) newType.getTypeMirror(),
                         readAccessor
@@ -343,8 +344,8 @@ public class SourceReference extends AbstractReference {
     public static class BuilderFromProperty {
 
         private String name;
-        private Accessor readAccessor;
-        private Accessor presenceChecker;
+        private ReadAccessor readAccessor;
+        private PresenceCheckAccessor presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -353,12 +354,12 @@ public class SourceReference extends AbstractReference {
             return this;
         }
 
-        public BuilderFromProperty readAccessor(Accessor readAccessor) {
+        public BuilderFromProperty readAccessor(ReadAccessor readAccessor) {
             this.readAccessor = readAccessor;
             return this;
         }
 
-        public BuilderFromProperty presenceChecker(Accessor presenceChecker) {
+        public BuilderFromProperty presenceChecker(PresenceCheckAccessor presenceChecker) {
             this.presenceChecker = presenceChecker;
             return this;
         }
@@ -430,10 +431,10 @@ public class SourceReference extends AbstractReference {
         PropertyEntry deepestProperty = getDeepestProperty();
         if ( deepestProperty != null ) {
             Type type = deepestProperty.getType();
-            Map<String, Accessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
+            Map<String, ReadAccessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
             String parameterName = getParameter().getName();
             String deepestPropertyFullName = deepestProperty.getFullName();
-            for ( Map.Entry<String, Accessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
+            for ( Map.Entry<String, ReadAccessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
                 // Always include the parameter name in the new full name.
                 // Otherwise multi source parameters might be reported incorrectly
                 String newFullName =
