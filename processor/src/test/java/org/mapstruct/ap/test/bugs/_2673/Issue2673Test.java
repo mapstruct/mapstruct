@@ -19,6 +19,6 @@ class Issue2673Test {
 
     @ProcessorTest
     @IssueKey( "2673" )
-    void shouldcompile() {
+    void shouldCompile() {
     }
 }
