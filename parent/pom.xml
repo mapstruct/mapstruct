@@ -11,7 +11,7 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.5.0.Beta2</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
@@ -64,7 +64,7 @@
         <connection>scm:git:git://github.com/mapstruct/mapstruct.git</connection>
         <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
         <url>https://github.com/mapstruct/mapstruct/</url>
-      <tag>1.5.0.Beta2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <distributionManagement>
