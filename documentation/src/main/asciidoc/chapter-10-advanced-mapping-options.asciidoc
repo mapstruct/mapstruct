@@ -303,7 +303,7 @@ public interface CarMapper {
 
 The generated mapper will look like:
 
-.try-catch block in generated implementation
+.Custom condition check in generated implementation
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
