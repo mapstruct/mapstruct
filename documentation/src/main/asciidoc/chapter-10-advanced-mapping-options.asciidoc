@@ -212,6 +212,29 @@ However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETU
 
 The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MapperConfig#nullValueMappingStrategy`.
 
+[[mapping-result-for-null-collection-or-map-arguments]]
+=== Controlling mapping result for 'null' collection or map arguments
+
+With <<mapping-result-for-null-arguments>> it is possible to control how the return type should be constructed when the source argument of the mapping method is `null`.
+That is applied for all mapping methods (bean, iterable or map mapping methods).
+
+However, MapStruct also offers a more dedicated way to control how collections / maps should be mapped.
+e.g. return default (empty) collections / maps, but return `null` for beans.
+
+For collections (iterables) this can be controlled through:
+
+* `MapperConfig#nullValueIterableMappingStrategy`
+* `Mapper#nullValueIterableMappingStrategy`
+* `IterableMapping#nullValueMappingStrategy`
+
+For maps this can be controlled through:
+
+* `MapperConfig#nullValueMapMappingStrategy`
+* `Mapper#nullValueMapMappingStrategy`
+* `MapMapping#nullValueMappingStrategy`
+
+How the value of the `NullValueMappingStrategy` is applied is the same as in <<mapping-result-for-null-arguments>>
+
 
 [[mapping-result-for-null-properties]]
 === Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).
