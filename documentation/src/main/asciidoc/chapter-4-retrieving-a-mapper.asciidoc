@@ -117,7 +117,7 @@ public interface CarMapper {
 ----
 ====
 
-The generated mapper will inject all classes defined in the **uses** attribute.
+The generated mapper will inject all classes defined in the **uses** attribute and MapStruct has detected that they are actually used on some of the mappings.
 When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't.
 When `InjectionStrategy#FIELD` is used, the annotation is on the field itself.
 For now, the default injection strategy is field injection, but it can be configured with <<configuration-options>>.
