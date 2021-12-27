@@ -88,7 +88,7 @@ Default expressions are a combination of default values and expressions. They wi
 
 The same warnings and restrictions apply to default expressions that apply to expressions. Only Java is supported, and MapStruct will not validate the expression at generation-time.
 
-The example below demonstrates how two source properties can be mapped to one target:
+The example below demonstrates how a default expression can be used to set a value when the source attribute is `null`:
 
 .Mapping method using a default expression
 ====
