@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -188,7 +188,8 @@ public class SubclassMappingOptions extends DelegatingOptions {
     public static Set<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
                                                                         SourceMethod sourceMethod,
                                                                         BeanMappingOptions beanMappingOptions) {
-        HashSet<SubclassMappingOptions> mappings = new HashSet<>();
+        // we want to keep the order of the mappings, so we are using a LinkedHashSet.
+        Set<SubclassMappingOptions> mappings = new LinkedHashSet<>();
         SubclassValidator validator = null;
         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
             if ( validator == null ) {

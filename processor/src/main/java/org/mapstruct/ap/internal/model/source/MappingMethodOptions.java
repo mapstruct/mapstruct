@@ -189,7 +189,7 @@ public class MappingMethodOptions {
             }
             else {
                 if ( templateOptions.getValueMappings() != null ) {
-                    // iff there are also inherited mappings, we inverse and add them.
+                    // if there are also inherited mappings, we inverse and add them.
                     for ( ValueMappingOptions inheritedValueMapping : templateOptions.getValueMappings() ) {
                         ValueMappingOptions valueMapping =
                             isInverse ? inheritedValueMapping.inverse() : inheritedValueMapping;
@@ -202,6 +202,7 @@ public class MappingMethodOptions {
             }
 
             if ( isInverse ) {
+                // normal inheritence of subclass mappings will result runtime in infinite loops.
                 setSubclassMapping( SubclassMappingOptions.copyForInverseInheritance(
                           templateOptions.getSubclassMappings(),
                           sourceMethod,
