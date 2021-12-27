@@ -34,12 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
     VehicleCollectionDto.class,
     Vehicle.class,
     VehicleDto.class,
-    SimpleSubclassMapper.class,
-    SubclassMapperUsingExistingMappings.class,
 })
 public class SubclassMappingTest {
 
     @ProcessorTest
+    @WithClasses( SimpleSubclassMapper.class )
     void mappingIsDoneUsingSubclassMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -54,6 +53,22 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
+    @WithClasses( SimpleSubclassMapper.class )
+    void inverseMappingIsDoneUsingSubclassMapping() {
+        VehicleCollectionDto vehicles = new VehicleCollectionDto();
+        vehicles.getVehicles().add( new CarDto() );
+        vehicles.getVehicles().add( new BikeDto() );
+
+        VehicleCollection result = SimpleSubclassMapper.INSTANCE.mapInverse( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class, Bike.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( SubclassMapperUsingExistingMappings.class )
     void existingMappingsAreUsedWhenFound() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -66,6 +81,7 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
+    @WithClasses( SimpleSubclassMapper.class )
     void subclassMappingInheritsMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         Car car = new Car();
@@ -135,5 +151,27 @@ public class SubclassMappingTest {
         )
     })
     void erroneousMethodWithSourceTargetType() {
+    }
+
+    @ProcessorTest
+    @WithClasses({ ErroneousInverseSubclassMapper.class })
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(type = ErroneousInverseSubclassMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 25,
+            alternativeLine = 23,
+            message = "Subclass "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
+                + " is already defined as a source."
+        ),
+        @Diagnostic(type = ErroneousInverseSubclassMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 28,
+            message = "Subclass "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
+                + " is already defined as a source."
+        )
+    })
+    void inverseSubclassMappingNotPossible() {
     }
 }

@@ -116,6 +116,7 @@ public enum Message {
     ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
     ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
+    SUBCLASSMAPPING_DOUBLE_SOURCE_SUBCLASS( "Subclass '%s' is already defined as a source." ),
     SUBCLASSMAPPING_ILLEGAL_SUBCLASS( "Class '%s' is not a subclass of '%s'." ),
     SUBCLASSMAPPING_NO_VALID_SUPERCLASS( "Could not find a parameter that is a superclass for '%s'." ),
     SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED( "SubclassMapping annotation can not be used for update methods." ),

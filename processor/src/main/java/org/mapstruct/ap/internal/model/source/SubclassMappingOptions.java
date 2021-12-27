@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -31,9 +32,16 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
     private final TypeMirror source;
     private final TypeMirror target;
+    private final FormattingMessager messager;
+    private final TypeUtils typeUtils;
+    private final SubclassMappingGem subclassMapping;
 
-    public SubclassMappingOptions(TypeMirror source, TypeMirror target, DelegatingOptions next) {
+    public SubclassMappingOptions(FormattingMessager messager, TypeUtils typeUtils, SubclassMappingGem subclassMapping,
+                                  TypeMirror source, TypeMirror target, DelegatingOptions next) {
         super( next );
+        this.messager = messager;
+        this.typeUtils = typeUtils;
+        this.subclassMapping = subclassMapping;
         this.source = source;
         this.target = target;
     }
@@ -84,7 +92,7 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
-        subclassValidator.isInCorrectOrder( method, gem.mirror(), targetSubclass );
+        subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass );
         return isConsistent;
     }
 
@@ -166,6 +174,40 @@ public class SubclassMappingOptions extends DelegatingOptions {
         TypeMirror sourceSubclass = subclassMapping.source().getValue();
         TypeMirror targetSubclass = subclassMapping.target().getValue();
 
-        mappings.add( new SubclassMappingOptions( sourceSubclass, targetSubclass, beanMappingOptions ) );
+        mappings
+                .add(
+                    new SubclassMappingOptions(
+                        messager,
+                        typeUtils,
+                        subclassMapping,
+                        sourceSubclass,
+                        targetSubclass,
+                        beanMappingOptions ) );
+    }
+
+    public static Set<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
+                                                                        SourceMethod sourceMethod,
+                                                                        BeanMappingOptions beanMappingOptions) {
+        HashSet<SubclassMappingOptions> mappings = new HashSet<>();
+        SubclassValidator validator = null;
+        for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
+            if ( validator == null ) {
+                validator = new SubclassValidator( subclassMapping.messager, subclassMapping.typeUtils );
+            }
+            if ( validator.isValidUsage(
+                         sourceMethod.getExecutable(),
+                         subclassMapping.subclassMapping.mirror(),
+                              subclassMapping.target ) ) {
+                mappings.add(
+                        new SubclassMappingOptions(
+                                       subclassMapping.messager,
+                                       subclassMapping.typeUtils,
+                                       subclassMapping.subclassMapping,
+                                       subclassMapping.target,
+                                       subclassMapping.source,
+                            beanMappingOptions ) );
+            }
+        }
+        return mappings;
     }
 }

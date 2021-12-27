@@ -497,10 +497,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
         if ( forwardTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( forwardTemplateMethod, false );
+            mappingOptions.applyInheritedOptions( method, forwardTemplateMethod, false );
         }
         if ( inverseTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( inverseTemplateMethod, true );
+            mappingOptions.applyInheritedOptions( method, inverseTemplateMethod, true );
         }
 
         // apply auto inherited options
@@ -510,7 +510,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // but.. there should not be an @InheritedConfiguration
             if ( forwardTemplateMethod == null && inheritanceStrategy.isApplyForward() ) {
                 if ( applicablePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( first( applicablePrototypeMethods ), false );
+                    mappingOptions.applyInheritedOptions( method, first( applicablePrototypeMethods ), false );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -523,7 +523,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // or no @InheritInverseConfiguration
             if ( inverseTemplateMethod == null && inheritanceStrategy.isApplyReverse() ) {
                 if ( applicableReversePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( first( applicableReversePrototypeMethods ), true );
+                    mappingOptions.applyInheritedOptions( method, first( applicableReversePrototypeMethods ), true );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {
                     messager.printMessage(

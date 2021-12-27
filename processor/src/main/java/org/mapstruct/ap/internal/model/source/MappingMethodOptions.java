@@ -125,6 +125,10 @@ public class MappingMethodOptions {
         this.valueMappings = valueMappings;
     }
 
+    public void setSubclassMapping(Set<SubclassMappingOptions> subclassMapping) {
+        this.subclassMapping = subclassMapping;
+    }
+
     public MapperOptions getMapper() {
         return mapper;
     }
@@ -144,10 +148,11 @@ public class MappingMethodOptions {
     /**
      * Merges in all the mapping options configured, giving the already defined options precedence.
      *
+     * @param sourceMethod the method which inherits the options.
      * @param templateMethod the template method with the options to inherit, may be {@code null}
      * @param isInverse if {@code true}, the specified options are from an inverse method
      */
-    public void applyInheritedOptions(SourceMethod templateMethod, boolean isInverse) {
+    public void applyInheritedOptions(SourceMethod sourceMethod, SourceMethod templateMethod, boolean isInverse) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
         if ( null != templateOptions ) {
             if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
@@ -196,7 +201,12 @@ public class MappingMethodOptions {
                 }
             }
 
-            // Do NOT inherit subclass mapping options!!!
+            if ( isInverse ) {
+                setSubclassMapping( SubclassMappingOptions.copyForInverseInheritance(
+                          templateOptions.getSubclassMappings(),
+                          sourceMethod,
+                          getBeanMapping() ) );
+            }
 
             Set<MappingOptions> newMappings = new LinkedHashSet<>();
             for ( MappingOptions mapping : templateOptions.getMappings() ) {

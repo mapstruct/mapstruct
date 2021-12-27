@@ -31,8 +31,17 @@ class SubclassValidator {
         this.typeUtils = typeUtils;
     }
 
-    public boolean isInCorrectOrder(Element e, AnnotationMirror annotation, TypeMirror sourceType) {
+    public boolean isValidUsage(Element e, AnnotationMirror annotation, TypeMirror sourceType) {
         for ( TypeMirror typeMirror : handledSubclasses ) {
+            if ( typeUtils.isSameType( sourceType, typeMirror ) ) {
+                messager
+                        .printMessage(
+                            e,
+                            annotation,
+                            Message.SUBCLASSMAPPING_DOUBLE_SOURCE_SUBCLASS,
+                            sourceType );
+                return false;
+            }
             if ( typeUtils.isAssignable( sourceType, typeMirror ) ) {
                 messager
                         .printMessage(
@@ -43,11 +52,11 @@ class SubclassValidator {
                             typeMirror,
                             sourceType,
                             typeMirror );
-                return true;
+                return false;
             }
         }
         handledSubclasses.add( sourceType );
-        return false;
+        return true;
     }
 
 }
