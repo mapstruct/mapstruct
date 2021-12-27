@@ -315,6 +315,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 .getNullValueMappingStrategy()
                 .isReturnDefault();
 
+            // mapNullToDefault
+            boolean mapAllNullValuesToNull = method.getOptions()
+                    .getBeanMapping()
+                    .getNullValueMappingStrategy()
+                    .isReturnNullOnAllNullValues();
+
             // sort
             sortPropertyMappingsByDependencies();
 
@@ -365,6 +371,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 propertyMappings,
                 factoryMethod,
                 mapNullToDefault,
+                mapAllNullValuesToNull,
                 returnTypeToConstruct,
                 returnTypeBuilder,
                 beforeMappingMethods,
@@ -1696,6 +1703,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
+                              boolean mapAllNullValuesToNull,
                               Type returnTypeToConstruct,
                               BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
@@ -1708,6 +1716,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             existingVariableNames,
             factoryMethod,
             mapNullToDefault,
+            mapAllNullValuesToNull,
             beforeMappingReferences,
             afterMappingReferences
         );
@@ -1898,6 +1907,33 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
 
         return true;
+    }
+
+    /**
+     * Indicates if the object's values are all nullable then the method is a candadate to collapse null objects to null.
+     *
+     * @return A null object must return null instead of an empty object
+     */
+    public boolean isCollapseObjectsWithNullValuesToNull() {
+        if (!this.isMapAllNullValuesToNull()) return false;
+
+        boolean atLeastOneToCheck = false;
+        boolean atLeastOneToIgnore = false;
+
+        for (Parameter sourceParam:getSourceParameters()) {
+            if (propertyMappingsByParameter(sourceParam).size()>0) {
+                for (PropertyMapping propertyMapping:propertyMappingsByParameter(sourceParam)) {
+                    if (!propertyMapping.getAssignment().getSourceType().isPrimitive()) {
+                        atLeastOneToCheck = true;
+                    }
+                    if (propertyMapping.getAssignment().getSourceType().isPrimitive()) {
+                        atLeastOneToIgnore = true;
+                    }
+                }
+            }
+        }
+
+        return atLeastOneToCheck && !atLeastOneToIgnore;
     }
 
 }

@@ -212,6 +212,50 @@ However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETU
 
 The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MapperConfig#nullValueMappingStrategy`.
 
+[[mapping-result-for-all-null-mapping-values]
+=== Controlling mapping result for all-'null' properties in source bean mappings (excludes update mapping methods)
+
+Mapstruct offers control over the object to create when the value of all source argument mapping methods equal 'null'.  By default the value returned wis controlled only considers whether the source object is null and returns 'null' if the object is 'null'.
+
+By specifying 'nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL_ON_ALL_NULL_VALUES` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MapperConfig`, the mapping result can be altered to a 'null' value.  This means for:
+
+* *Bean mappings*: an 'null' target bean will be returned if all mapping methods are null.
+* *Iterables / Arrays*: an empty iterable will be returned.
+* *Maps*: an empty map will be returned.
+
+The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MapperConfig#nullValueMappingStrategy`.
+
+.generated all mapped value null check
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+protected Address orderDTOToAddress(OrderDTO orderDTO) {
+    if ( orderDTO == null ) {
+        return null;
+    }
+
+    Address address = new Address();
+
+    address.setLine1( orderDTO.getLine1() );
+    address.setLine2( orderDTO.getLine2() );
+    address.setLine3( orderDTO.getLine3() );
+
+    if (   ( address . getLine1() == null )
+        && ( address . getLine2() == null )
+        && ( address . getLine3() == null )
+    ) return null;
+
+    return address;
+}
+----
+====
+
+[NOTE]
+====
+Any default value assigned, or any primitive value that can not be part of a null check, will result in the all-value null check not being performed.
+====
+
 
 [[mapping-result-for-null-properties]]
 === Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).

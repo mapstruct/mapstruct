@@ -23,15 +23,17 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean overridden;
     private final boolean mapNullToDefault;
+    private final boolean mapAllNullValuesToNull;
 
     NormalTypeMappingMethod(Method method, Collection<String> existingVariableNames, MethodReference factoryMethod,
-        boolean mapNullToDefault,
+        boolean mapNullToDefault,boolean mapAllNullValuesToNull,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
+        this.mapAllNullValuesToNull = mapAllNullValuesToNull;
     }
 
     @Override
@@ -50,6 +52,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
 
     public boolean isMapNullToDefault() {
         return mapNullToDefault;
+    }
+
+    public boolean isMapAllNullValuesToNull() {
+        return mapAllNullValuesToNull;
     }
 
     public boolean isOverridden() {
