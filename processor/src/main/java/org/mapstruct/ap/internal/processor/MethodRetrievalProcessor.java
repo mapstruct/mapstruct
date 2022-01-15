@@ -45,6 +45,7 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
+import org.mapstruct.ap.internal.model.source.SubclassValidator;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -307,11 +308,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         // We want to get as much error reporting as possible.
         // If targetParameter is not null it means we have an update method
+        SubclassValidator subclassValidator = new SubclassValidator( messager, typeUtils );
         Set<SubclassMappingOptions> subclassMappingOptions = getSubclassMappings(
             sourceParameters,
             targetParameter != null ? null : resultType,
             method,
-            beanMappingOptions
+            beanMappingOptions,
+            subclassValidator
         );
 
         return new SourceMethod.Builder()
@@ -327,6 +330,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setValueMappingOptionss( getValueMappings( method ) )
             .setEnumMappingOptions( enumMappingOptions )
             .setSubclassMappings( subclassMappingOptions )
+            .setSubclassValidator( subclassValidator )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
             .setPrototypeMethods( prototypeMethods )
@@ -591,8 +595,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The subclass mappings for the given method
      */
     private Set<SubclassMappingOptions> getSubclassMappings(List<Parameter> sourceParameters, Type resultType,
-                                                            ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableSubclassMappings( sourceParameters, resultType ).getMappings( method, beanMapping );
+                                                            ExecutableElement method, BeanMappingOptions beanMapping,
+                                                            SubclassValidator validator) {
+        return new RepeatableSubclassMappings( sourceParameters, resultType, validator )
+                        .getMappings( method, beanMapping );
     }
 
     private class RepeatableMappings extends RepeatableMappingAnnotations<MappingGem, MappingsGem, MappingOptions> {
@@ -627,11 +633,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         extends RepeatableMappingAnnotations<SubclassMappingGem, SubclassMappingsGem, SubclassMappingOptions> {
         private final List<Parameter> sourceParameters;
         private final Type resultType;
+        private SubclassValidator validator;
 
-        RepeatableSubclassMappings(List<Parameter> sourceParameters, Type resultType) {
+        RepeatableSubclassMappings(List<Parameter> sourceParameters, Type resultType, SubclassValidator validator) {
             super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
             this.sourceParameters = sourceParameters;
             this.resultType = resultType;
+            this.validator = validator;
         }
 
         @Override
@@ -656,7 +664,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                       typeUtils,
                                       mappings,
                                       sourceParameters,
-                                      resultType );
+                                      resultType,
+                                      validator );
         }
 
         @Override
@@ -671,7 +680,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                       typeUtils,
                                       mappings,
                                       sourceParameters,
-                                      resultType );
+                                      resultType,
+                                      validator );
         }
     }
 

@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -32,16 +33,9 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
     private final TypeMirror source;
     private final TypeMirror target;
-    private final FormattingMessager messager;
-    private final TypeUtils typeUtils;
-    private final SubclassMappingGem subclassMapping;
 
-    public SubclassMappingOptions(FormattingMessager messager, TypeUtils typeUtils, SubclassMappingGem subclassMapping,
-                                  TypeMirror source, TypeMirror target, DelegatingOptions next) {
+    public SubclassMappingOptions(TypeMirror source, TypeMirror target, DelegatingOptions next) {
         super( next );
-        this.messager = messager;
-        this.typeUtils = typeUtils;
-        this.subclassMapping = subclassMapping;
         this.source = source;
         this.target = target;
     }
@@ -92,7 +86,7 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
-        subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass );
+        isConsistent = isConsistent & subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass );
         return isConsistent;
     }
 
@@ -123,10 +117,10 @@ public class SubclassMappingOptions extends DelegatingOptions {
     public static void addInstances(SubclassMappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                     TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                    List<Parameter> sourceParameters, Type resultType) {
-        SubclassValidator subclassValidator = new SubclassValidator( messager, typeUtils );
+                                    List<Parameter> sourceParameters, Type resultType,
+                                    SubclassValidator subclassValidator) {
         for ( SubclassMappingGem subclassMappingGem : gem.value().get() ) {
-            addAndValidateInstance(
+            addInstance(
                 subclassMappingGem,
                 method,
                 beanMappingOptions,
@@ -142,24 +136,8 @@ public class SubclassMappingOptions extends DelegatingOptions {
     public static void addInstance(SubclassMappingGem subclassMapping, ExecutableElement method,
                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                    TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                   List<Parameter> sourceParameters, Type resultType) {
-        addAndValidateInstance(
-            subclassMapping,
-            method,
-            beanMappingOptions,
-            messager,
-            typeUtils,
-            mappings,
-            sourceParameters,
-            resultType,
-            new SubclassValidator( messager, typeUtils ) );
-    }
-
-    private static void addAndValidateInstance(SubclassMappingGem subclassMapping, ExecutableElement method,
-                                               BeanMappingOptions beanMappingOptions, FormattingMessager messager,
-                                               TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                               List<Parameter> sourceParameters, Type resultType,
-                                               SubclassValidator subclassValidator) {
+                                   List<Parameter> sourceParameters, Type resultType,
+                                   SubclassValidator subclassValidator) {
         if ( !isConsistent(
             subclassMapping,
             method,
@@ -177,9 +155,6 @@ public class SubclassMappingOptions extends DelegatingOptions {
         mappings
                 .add(
                     new SubclassMappingOptions(
-                        messager,
-                        typeUtils,
-                        subclassMapping,
                         sourceSubclass,
                         targetSubclass,
                         beanMappingOptions ) );
@@ -187,26 +162,21 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
     public static Set<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
                                                                         SourceMethod sourceMethod,
-                                                                        BeanMappingOptions beanMappingOptions) {
+                                                                        BeanMappingOptions beanMappingOptions,
+                                                                        SubclassValidator validator,
+                                                                        AnnotationMirror mirror) {
         // we want to keep the order of the mappings, so we are using a LinkedHashSet.
         Set<SubclassMappingOptions> mappings = new LinkedHashSet<>();
-        SubclassValidator validator = null;
         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
-            if ( validator == null ) {
-                validator = new SubclassValidator( subclassMapping.messager, subclassMapping.typeUtils );
-            }
             if ( validator.isValidUsage(
                          sourceMethod.getExecutable(),
-                         subclassMapping.subclassMapping.mirror(),
-                              subclassMapping.target ) ) {
+                         mirror,
+                         subclassMapping.target ) ) {
                 mappings.add(
                         new SubclassMappingOptions(
-                                       subclassMapping.messager,
-                                       subclassMapping.typeUtils,
-                                       subclassMapping.subclassMapping,
                                        subclassMapping.target,
                                        subclassMapping.source,
-                            beanMappingOptions ) );
+                                       beanMappingOptions ) );
             }
         }
         return mappings;

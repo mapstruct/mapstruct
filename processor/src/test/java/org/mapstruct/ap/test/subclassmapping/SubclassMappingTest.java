@@ -163,13 +163,6 @@ public class SubclassMappingTest {
             message = "Subclass "
                 + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
                 + " is already defined as a source."
-        ),
-        @Diagnostic(type = ErroneousInverseSubclassMapper.class,
-            kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 28,
-            message = "Subclass "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
-                + " is already defined as a source."
         )
     })
     void inverseSubclassMappingNotPossible() {

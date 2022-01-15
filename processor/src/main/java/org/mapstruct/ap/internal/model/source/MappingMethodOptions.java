@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -35,7 +36,8 @@ public class MappingMethodOptions {
         null,
         null,
         Collections.emptyList(),
-        Collections.emptySet()
+        Collections.emptySet(),
+        null
     );
 
     private MapperOptions mapper;
@@ -48,12 +50,14 @@ public class MappingMethodOptions {
     private boolean fullyInitialized;
     private Set<SubclassMappingOptions> subclassMapping;
 
+    private SubclassValidator subclassValidator;
+
     public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
-                                Set<SubclassMappingOptions> subclassMapping) {
+                                Set<SubclassMappingOptions> subclassMapping, SubclassValidator subclassValidator) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -62,6 +66,7 @@ public class MappingMethodOptions {
         this.enumMappingOptions = enumMappingOptions;
         this.valueMappings = valueMappings;
         this.subclassMapping = subclassMapping;
+        this.subclassValidator = subclassValidator;
     }
 
     /**
@@ -151,8 +156,10 @@ public class MappingMethodOptions {
      * @param sourceMethod the method which inherits the options.
      * @param templateMethod the template method with the options to inherit, may be {@code null}
      * @param isInverse if {@code true}, the specified options are from an inverse method
+     * @param annotationMirror the annotation on which the compile errors will be shown.
      */
-    public void applyInheritedOptions(SourceMethod sourceMethod, SourceMethod templateMethod, boolean isInverse) {
+    public void applyInheritedOptions(SourceMethod sourceMethod, SourceMethod templateMethod, boolean isInverse,
+                                      AnnotationMirror annotationMirror) {
         MappingMethodOptions templateOptions = templateMethod.getOptions();
         if ( null != templateOptions ) {
             if ( !getIterableMapping().hasAnnotation() && templateOptions.getIterableMapping().hasAnnotation() ) {
@@ -206,7 +213,9 @@ public class MappingMethodOptions {
                 setSubclassMapping( SubclassMappingOptions.copyForInverseInheritance(
                           templateOptions.getSubclassMappings(),
                           sourceMethod,
-                          getBeanMapping() ) );
+                          getBeanMapping(),
+                    subclassValidator,
+                    annotationMirror ) );
             }
 
             Set<MappingOptions> newMappings = new LinkedHashSet<>();
@@ -339,7 +348,7 @@ public class MappingMethodOptions {
     /**
      * SubclassMappingOptions are not inherited to forged methods. They would result in an infinite loop if they were.
      *
-     * @return a MappingMethodOptions without SubclassMappingOptions.
+     * @return a MappingMethodOptions without SubclassMappingOptions or SubclassValidator.
      */
     public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
         return new MappingMethodOptions(
@@ -350,7 +359,8 @@ public class MappingMethodOptions {
             options.beanMapping,
             options.enumMappingOptions,
             options.valueMappings,
-            Collections.emptySet() );
+            Collections.emptySet(),
+            null );
     }
 
 }

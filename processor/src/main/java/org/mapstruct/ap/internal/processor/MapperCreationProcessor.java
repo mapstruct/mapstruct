@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -320,7 +321,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-            mergeInheritedOptions( method, mapperAnnotation, methods, new ArrayList<>() );
+            mergeInheritedOptions( method, mapperAnnotation, methods, new ArrayList<>(), null );
 
             MappingMethodOptions mappingOptions = method.getOptions();
 
@@ -462,7 +463,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void mergeInheritedOptions(SourceMethod method, MapperOptions mapperConfig,
-                                       List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods) {
+                                       List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods,
+                                       AnnotationMirror annotationMirror) {
         if ( initializingMethods.contains( method ) ) {
             // cycle detected
 
@@ -497,10 +499,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
         if ( forwardTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( method, forwardTemplateMethod, false );
+            mappingOptions.applyInheritedOptions( method, forwardTemplateMethod, false, annotationMirror );
         }
         if ( inverseTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( method, inverseTemplateMethod, true );
+            mappingOptions.applyInheritedOptions( method, inverseTemplateMethod, true, annotationMirror );
         }
 
         // apply auto inherited options
@@ -510,7 +512,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // but.. there should not be an @InheritedConfiguration
             if ( forwardTemplateMethod == null && inheritanceStrategy.isApplyForward() ) {
                 if ( applicablePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( method, first( applicablePrototypeMethods ), false );
+                    mappingOptions.applyInheritedOptions( method, first( applicablePrototypeMethods ), false,
+                        annotationMirror );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -523,7 +526,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // or no @InheritInverseConfiguration
             if ( inverseTemplateMethod == null && inheritanceStrategy.isApplyReverse() ) {
                 if ( applicableReversePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( method, first( applicableReversePrototypeMethods ), true );
+                    mappingOptions.applyInheritedOptions( method, first( applicableReversePrototypeMethods ), true,
+                        annotationMirror );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -607,16 +611,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
 
-        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods,
+            getAnnotationMirror( inverseConfiguration ) );
+    }
+
+    private AnnotationMirror getAnnotationMirror(InheritInverseConfigurationGem inverseConfiguration) {
+        return inverseConfiguration == null ? null : inverseConfiguration.mirror();
     }
 
     private SourceMethod extractInitializedOptions(SourceMethod resultMethod,
                                                      List<SourceMethod> rawMethods,
                                                      MapperOptions mapperConfig,
-                                                     List<SourceMethod> initializingMethods) {
+                                                     List<SourceMethod> initializingMethods,
+                                                     AnnotationMirror annotationMirror) {
         if ( resultMethod != null ) {
             if ( !resultMethod.getOptions().isFullyInitialized() ) {
-                mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods );
+                mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods,
+                    annotationMirror );
             }
 
             return resultMethod;
@@ -684,7 +695,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
 
-        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods,
+                                          getAnnotationMirror( inheritConfiguration ) );
+    }
+
+    private AnnotationMirror getAnnotationMirror(InheritConfigurationGem inheritConfiguration) {
+        return inheritConfiguration == null ? null : inheritConfiguration.mirror();
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,

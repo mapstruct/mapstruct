@@ -157,6 +157,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
+        @Override
         public BeanMappingMethod build() {
 
             BeanMappingOptions beanMapping = method.getOptions().getBeanMapping();

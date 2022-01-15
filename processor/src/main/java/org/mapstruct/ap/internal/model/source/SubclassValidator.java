@@ -20,13 +20,13 @@ import org.mapstruct.ap.internal.util.TypeUtils;
  *
  * @author Ben Zegveld
  */
-class SubclassValidator {
+public class SubclassValidator {
 
     private final FormattingMessager messager;
     private final List<TypeMirror> handledSubclasses = new ArrayList<>();
     private final TypeUtils typeUtils;
 
-    SubclassValidator(FormattingMessager messager, TypeUtils typeUtils) {
+    public SubclassValidator(FormattingMessager messager, TypeUtils typeUtils) {
         this.messager = messager;
         this.typeUtils = typeUtils;
     }
