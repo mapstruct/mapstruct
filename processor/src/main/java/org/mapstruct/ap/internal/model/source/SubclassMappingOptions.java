@@ -86,7 +86,9 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
-        isConsistent = isConsistent & subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass );
+        if ( !subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass ) ) {
+            isConsistent = false;
+        }
         return isConsistent;
     }
 
