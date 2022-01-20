@@ -445,6 +445,11 @@ The <<object-factories>> are also considered for the builder type.
 E.g. If an object factory exists for our `PersonBuilder` then this factory would be used instead of the builder creation method.
 ======
 
+[NOTE]
+======
+Detected builders influence `@BeforeMapping` and `@AfterMapping` behavior. See chapter `Mapping customization with before-mapping and after-mapping methods` for more information.
+======
+
 .Person with Builder example
 ====
 [source, java, linenums]
