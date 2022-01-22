@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.mapstruct.gem.version>1.0.0.Alpha2</org.mapstruct.gem.version>
+        <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
         <org.apache.maven.plugins.enforcer.version>3.0.0-M3</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.0.0-M5</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
