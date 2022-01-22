@@ -5,6 +5,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.function.Predicate;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
@@ -193,7 +199,7 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else if ( targetType.hasNoArgsConstructor() ) {
+            else if ( hasNoArgsConstructor() ) {
                 result = new NewInstanceSetterWrapperForCollectionsAndMaps(
                     result,
                     method.getThrownTypes(),
@@ -232,7 +238,7 @@ public class CollectionAssignmentBuilder {
 
     private boolean canBeMappedOrDirectlyAssigned(Assignment result) {
         return result.getType() != AssignmentType.DIRECT
-                  || targetType.hasCopyConstructor()
+                  || hasCopyConstructor()
                   || targetType.isEnumSet();
     }
 
@@ -260,4 +266,48 @@ public class CollectionAssignmentBuilder {
         return false;
     }
 
+    private boolean hasCopyConstructor() {
+        return checkConstructorForPredicate( element -> hasCopyConstructor( element ) );
+    }
+
+    private boolean hasNoArgsConstructor() {
+        return checkConstructorForPredicate( this::hasNoArgsConstructor );
+    }
+
+    private boolean checkConstructorForPredicate(Predicate<Element> predicate) {
+        if ( targetType.isCollectionOrMapType() ) {
+            if ( "java.util".equals( targetType.getPackageName() ) ) {
+                return true;
+            }
+            else {
+                Element sourceElement = targetType.getImplementationType() != null
+                                      ? targetType.getImplementationType().getTypeElement()
+                                      : targetType.getTypeElement();
+                if ( sourceElement != null ) {
+                    for ( Element element : sourceElement.getEnclosedElements() ) {
+                        if ( element.getKind() == ElementKind.CONSTRUCTOR
+                            && element.getModifiers().contains( Modifier.PUBLIC ) ) {
+                            if ( predicate.test( element ) ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasNoArgsConstructor(Element element) {
+        return ( (ExecutableElement) element ).getParameters().isEmpty();
+    }
+
+    private boolean hasCopyConstructor(Element element) {
+        if ( element instanceof ExecutableElement ) {
+            ExecutableElement ee = (ExecutableElement) element;
+            return ee.getParameters().size() == 1
+                && ctx.getTypeUtils().isAssignable( targetType.getTypeMirror(), ee.getParameters().get( 0 ).asType() );
+        }
+        return false;
+    }
 }
