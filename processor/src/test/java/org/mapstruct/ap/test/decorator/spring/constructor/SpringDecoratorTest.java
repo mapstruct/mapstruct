@@ -16,6 +16,7 @@ import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithSpring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("592")
 @ComponentScan(basePackageClasses = SpringDecoratorTest.class)
 @Configuration
+@WithSpring
 public class SpringDecoratorTest {
 
     @Autowired

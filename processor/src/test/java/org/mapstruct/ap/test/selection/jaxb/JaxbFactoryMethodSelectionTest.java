@@ -13,6 +13,7 @@ import org.mapstruct.ap.test.selection.jaxb.test2.OrderShippingDetailsType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     OrderDto.class, OrderShippingDetailsDto.class, OrderType.class, OrderShippingDetailsType.class,
     OrderMapper.class
 })
+@WithJavaxJaxb
 public class JaxbFactoryMethodSelectionTest {
 
     @ProcessorTest

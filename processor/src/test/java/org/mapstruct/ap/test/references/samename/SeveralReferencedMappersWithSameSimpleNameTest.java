@@ -12,6 +12,7 @@ import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     Jsr330SourceTargetMapper.class,
     AnotherSourceTargetMapper.class
 })
+@WithJavaxInject
 public class SeveralReferencedMappersWithSameSimpleNameTest {
 
     @ProcessorTest

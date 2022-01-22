@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
+import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
@@ -98,37 +99,38 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return "_" + compiler.name().toLowerCase();
     }
 
+    /**
+     * Build the default test compilation classpath
+     * needed for compiling the generated sources once the processor has run.
+     */
     private static List<String> buildTestCompilationClasspath() {
-        String[] whitelist =
-            new String[] {
+        Collection<String> whitelist =Arrays.asList(
                 // MapStruct annotations in multi-module reactor build or IDE
                 "core" + File.separator + "target",
                 // MapStruct annotations in single module build
                 "org" + File.separator + "mapstruct" + File.separator + "mapstruct" + File.separator,
-                "guava",
-                "javax.inject",
-                "spring-beans",
-                "spring-context",
-                "jaxb-api",
-                "joda-time" };
+                "guava"
+        );
 
         return filterBootClassPath( whitelist );
     }
 
+    /**
+     * Build the annotation processor classpath.
+     * i.e. the classpath that is needed to run the annotation processor with its own dependencies only.
+     * The optional dependencies are not needed in this classpath.
+     */
     private static List<String> buildProcessorClasspath() {
-        String[] whitelist =
-            new String[] {
+        Collection<String> whitelist = Arrays.asList(
                 "processor" + File.separator + "target",  // the processor itself,
                 "freemarker",
-                "javax.inject",
-                "spring-context",
-                "gem-api",
-                "joda-time" };
+                "gem-api"
+        );
 
         return filterBootClassPath( whitelist );
     }
 
-    protected static List<String> filterBootClassPath(String[] whitelist) {
+    protected static List<String> filterBootClassPath(Collection<String> whitelist) {
         String[] bootClasspath =
             System.getProperty( "java.class.path" ).split( File.pathSeparator );
         String testClasses = "target" + File.separator + "test-classes";
@@ -143,8 +145,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return classpath;
     }
 
-    private static boolean isWhitelisted(String path, String[] whitelist) {
-        return Stream.of( whitelist ).anyMatch( path::contains );
+    private static boolean isWhitelisted(String path, Collection<String> whitelist) {
+        return whitelist.stream().anyMatch( path::contains );
     }
 
     @Override
@@ -368,6 +370,17 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return services;
     }
 
+    private Collection<String> getAdditionalTestDependencies(Method testMethod, Class<?> testClass) {
+        Collection<String> testDependencies = new HashSet<>();
+        findRepeatableAnnotations( testMethod, WithTestDependency.class )
+            .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
+
+        findRepeatableAnnotations( testClass, WithTestDependency.class )
+            .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
+
+        return testDependencies;
+    }
+
     private void addServices(Map<Class<?>, Class<?>> services, List<WithServiceImplementation> withImplementations) {
         for ( WithServiceImplementation withImplementation : withImplementations ) {
             addService( services, withImplementation );
@@ -446,7 +459,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
             compiler,
             getTestClasses( testMethod, testClass ),
             getServices( testMethod, testClass ),
-            getProcessorOptions( testMethod, testClass )
+            getProcessorOptions( testMethod, testClass ),
+            getAdditionalTestDependencies( testMethod, testClass )
         );
 
         ExtensionContext.Store rootStore = context.getRoot().getStore( NAMESPACE );
