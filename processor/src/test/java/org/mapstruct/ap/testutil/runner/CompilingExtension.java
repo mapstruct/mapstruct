@@ -104,7 +104,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
      * needed for compiling the generated sources once the processor has run.
      */
     private static List<String> buildTestCompilationClasspath() {
-        Collection<String> whitelist =Arrays.asList(
+        Collection<String> whitelist = Arrays.asList(
                 // MapStruct annotations in multi-module reactor build or IDE
                 "core" + File.separator + "target",
                 // MapStruct annotations in single module build
