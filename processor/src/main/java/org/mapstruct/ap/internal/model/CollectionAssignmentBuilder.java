@@ -267,7 +267,7 @@ public class CollectionAssignmentBuilder {
     }
 
     private boolean hasCopyConstructor() {
-        return checkConstructorForPredicate( element -> hasCopyConstructor( element ) );
+        return checkConstructorForPredicate( this::hasCopyConstructor );
     }
 
     private boolean hasNoArgsConstructor() {
