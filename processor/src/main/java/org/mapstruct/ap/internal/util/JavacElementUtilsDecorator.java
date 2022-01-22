@@ -10,8 +10,8 @@ import javax.lang.model.element.TypeElement;
 
 public class JavacElementUtilsDecorator extends AbstractElementUtilsDecorator {
 
-    JavacElementUtilsDecorator(ProcessingEnvironment processingEnv) {
-        super( processingEnv );
+    JavacElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
+        super( processingEnv, mapperElement );
     }
 
     @Override

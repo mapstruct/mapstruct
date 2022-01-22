@@ -16,12 +16,13 @@ import org.mapstruct.ap.internal.version.VersionInformation;
 
 public interface ElementUtils extends Elements {
 
-     static ElementUtils create(ProcessingEnvironment processingEnvironment, VersionInformation info ) {
+     static ElementUtils create(ProcessingEnvironment processingEnvironment, VersionInformation info,
+                                TypeElement mapperElement) {
         if ( info.isEclipseJDTCompiler() ) {
-            return new EclipseElementUtilsDecorator( processingEnvironment );
+            return new EclipseElementUtilsDecorator( processingEnvironment, mapperElement );
         }
         else {
-            return new JavacElementUtilsDecorator( processingEnvironment );
+            return new JavacElementUtilsDecorator( processingEnvironment, mapperElement );
         }
     }
 

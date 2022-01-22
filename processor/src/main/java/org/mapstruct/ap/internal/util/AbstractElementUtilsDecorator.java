@@ -6,6 +6,8 @@
 package org.mapstruct.ap.internal.util;
 
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,20 +36,91 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 
 public abstract class AbstractElementUtilsDecorator implements ElementUtils {
 
-    private final Elements delegate;
+    private static final Method MODULE_OF_METHOD;
+    private static final Method GET_TYPE_ELEMENT_WITH_MODULE_METHOD;
+    private static final Method GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD;
 
-    AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv) {
+    static {
+        Method moduleOfMethod;
+        Method getTypeElementWithModuleMethod;
+        Method getPackageElementWithModuleMethod;
+        try {
+            moduleOfMethod = ElementUtils.class.getMethod( "getModuleOf", Element.class );
+            Class<?> moduleElementClass = Class.forName( "javax.lang.model.element.ModuleElement" );
+            getTypeElementWithModuleMethod = ElementUtils.class.getMethod(
+                "getTypeElement",
+                moduleElementClass,
+                CharSequence.class
+            );
+            getPackageElementWithModuleMethod = ElementUtils.class.getMethod(
+                "getPackageElement",
+                moduleElementClass,
+                CharSequence.class
+            );
+
+        }
+        catch ( NoSuchMethodException | ClassNotFoundException e ) {
+            moduleOfMethod = null;
+            getTypeElementWithModuleMethod = null;
+            getPackageElementWithModuleMethod = null;
+        }
+
+        MODULE_OF_METHOD = moduleOfMethod;
+        GET_TYPE_ELEMENT_WITH_MODULE_METHOD = getTypeElementWithModuleMethod;
+        GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD = getPackageElementWithModuleMethod;
+    }
+
+    private final Elements delegate;
+    /**
+     * The module element when running with the module system.
+     * {@code null} otherwise.
+     */
+    private final Element moduleElement;
+
+    AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
         this.delegate = processingEnv.getElementUtils();
+        Element moduleElement;
+        if ( MODULE_OF_METHOD == null ) {
+            moduleElement = null;
+        }
+        else {
+            try {
+                moduleElement = (Element) MODULE_OF_METHOD.invoke( this.delegate, mapperElement );
+            }
+            catch ( IllegalAccessException | InvocationTargetException e ) {
+                moduleElement = null;
+            }
+        }
+
+        this.moduleElement = moduleElement;
     }
 
     @Override
     public PackageElement getPackageElement(CharSequence name) {
-        return delegate.getPackageElement( name );
+        if ( moduleElement == null ) {
+            return delegate.getPackageElement( name );
+        }
+
+        try {
+            return (PackageElement) GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD.invoke( delegate, moduleElement, name );
+        }
+        catch ( IllegalAccessException | InvocationTargetException e ) {
+            return delegate.getPackageElement( name );
+        }
     }
 
     @Override
     public TypeElement getTypeElement(CharSequence name) {
-        return delegate.getTypeElement( name );
+        if ( moduleElement == null ) {
+            return delegate.getTypeElement( name );
+        }
+
+        try {
+            return (TypeElement) GET_TYPE_ELEMENT_WITH_MODULE_METHOD.invoke( delegate, moduleElement, name );
+        }
+        catch ( IllegalAccessException | InvocationTargetException e ) {
+            return delegate.getTypeElement( name );
+        }
     }
 
     @Override
