@@ -87,6 +87,9 @@ public class Jsr330DefaultCompileOptionFieldMapperTest {
     public void shouldHaveFieldInjection() {
         generatedSource.forMapper( CustomerJsr330DefaultCompileOptionFieldMapper.class )
             .content()
+            .contains( "import javax.inject.Inject;" )
+            .contains( "import javax.inject.Named;" )
+            .contains( "import javax.inject.Singleton;" )
             .contains( "@Inject" + lineSeparator() + "    private GenderJsr330DefaultCompileOptionFieldMapper" )
             .doesNotContain( "public CustomerJsr330DefaultCompileOptionFieldMapperImpl(" );
     }

@@ -4,6 +4,7 @@
 
 org.mapstruct.ap.internal.processor.CdiComponentProcessor
 org.mapstruct.ap.internal.processor.Jsr330ComponentProcessor
+org.mapstruct.ap.internal.processor.JakartaComponentProcessor
 org.mapstruct.ap.internal.processor.MapperCreationProcessor
 org.mapstruct.ap.internal.processor.MapperRenderingProcessor
 org.mapstruct.ap.internal.processor.MethodRetrievalProcessor

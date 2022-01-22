@@ -217,7 +217,8 @@ Supported values are:
 * `default`: the mapper uses no component model, instances are typically retrieved via `Mappers#getMapper(Class)`
 * `cdi`: the generated mapper is an application-scoped CDI bean and can be retrieved via `@Inject`
 * `spring`: the generated mapper is a singleton-scoped Spring bean and can be retrieved via `@Autowired`
-* `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject`, e.g. using Spring
+* `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from javax.inject or jakarta.inject, depending which one is available with javax.inject having priority), e.g. using Spring
+* `jakarta`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from jakarta.inject), e.g. using Spring
 
 If a component model is given for a specific mapper via `@Mapper#componentModel()`, the value from the annotation takes precedence.
 |`default`

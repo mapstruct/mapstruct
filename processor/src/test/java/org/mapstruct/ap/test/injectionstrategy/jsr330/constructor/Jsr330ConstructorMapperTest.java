@@ -86,6 +86,9 @@ public class Jsr330ConstructorMapperTest {
     public void shouldHaveConstructorInjection() {
         generatedSource.forMapper( CustomerJsr330ConstructorMapper.class )
             .content()
+            .contains( "import javax.inject.Inject;" )
+            .contains( "import javax.inject.Named;" )
+            .contains( "import javax.inject.Singleton;" )
             .contains( "private final GenderJsr330ConstructorMapper" )
             .contains( "@Inject" + lineSeparator() +
                 "    public CustomerJsr330ConstructorMapperImpl(GenderJsr330ConstructorMapper" );
