@@ -89,6 +89,9 @@ public class Jsr330FieldMapperTest {
     public void shouldHaveFieldInjection() {
         generatedSource.forMapper( CustomerJsr330FieldMapper.class )
             .content()
+            .contains( "import javax.inject.Inject;" )
+            .contains( "import javax.inject.Named;" )
+            .contains( "import javax.inject.Singleton;" )
             .contains( "@Inject" + lineSeparator() + "    private GenderJsr330FieldMapper" )
             .doesNotContain( "public CustomerJsr330FieldMapperImpl(" );
     }
