@@ -17,16 +17,15 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 /**
  * @author Ben Zegveld
  */
+@IssueKey( "2668" )
 class Issue2668Test {
 
     @ProcessorTest
-    @IssueKey( "2668" )
     @WithClasses( Issue2668Mapper.class )
     void shouldCompileCorrectlyWithAvailableConstructors() {
     }
 
     @ProcessorTest
-    @IssueKey( "2668" )
     @WithClasses( Erroneous2668ListMapper.class )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -43,7 +42,6 @@ class Issue2668Test {
     }
 
     @ProcessorTest
-    @IssueKey( "2668" )
     @WithClasses( Erroneous2668MapMapper.class )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
