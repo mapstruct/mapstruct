@@ -21,13 +21,16 @@ public class Options {
     private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
     private final String defaultInjectionStrategy;
+    private final boolean disableBuilders;
     private final boolean verbose;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
                    ReportingPolicyGem unmappedTargetPolicy,
                    ReportingPolicyGem unmappedSourcePolicy,
                    String defaultComponentModel, String defaultInjectionStrategy,
-                   boolean alwaysGenerateSpi, boolean verbose) {
+                   boolean alwaysGenerateSpi,
+                   boolean disableBuilders,
+                   boolean verbose) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
@@ -35,6 +38,7 @@ public class Options {
         this.defaultComponentModel = defaultComponentModel;
         this.defaultInjectionStrategy = defaultInjectionStrategy;
         this.alwaysGenerateSpi = alwaysGenerateSpi;
+        this.disableBuilders = disableBuilders;
         this.verbose = verbose;
     }
 
@@ -64,6 +68,10 @@ public class Options {
 
     public boolean isAlwaysGenerateSpi() {
         return alwaysGenerateSpi;
+    }
+
+    public boolean isDisableBuilders() {
+        return disableBuilders;
     }
 
     public boolean isVerbose() {

@@ -9,12 +9,14 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@IssueKey("1743")
+@IssueKey("1661")
 @WithClasses({
     SimpleMutablePerson.class,
     SimpleNotRealyImmutablePerson.class
@@ -28,6 +30,20 @@ public class SimpleNotRealyImmutableBuilderTest {
     @WithClasses({ SimpleMapper.class })
     public void testSimpleImmutableBuilderHappyPath() {
         SimpleMapper mapper = Mappers.getMapper( SimpleMapper.class );
+        SimpleMutablePerson source = new SimpleMutablePerson();
+        source.setFullName( "Bob" );
+
+        SimpleNotRealyImmutablePerson targetObject = mapper.toNotRealyImmutable( source );
+
+        assertThat( targetObject.getName() ).isEqualTo( "Bob" );
+
+    }
+
+    @ProcessorTest
+    @WithClasses({ SimpleWithBuilderMapper.class })
+    @ProcessorOption( name = "mapstruct.disableBuilders", value = "true")
+    public void builderGloballyDisabled() {
+        SimpleWithBuilderMapper mapper = Mappers.getMapper( SimpleWithBuilderMapper.class );
         SimpleMutablePerson source = new SimpleMutablePerson();
         source.setFullName( "Bob" );
 
