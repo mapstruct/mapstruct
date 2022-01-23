@@ -152,7 +152,7 @@
             <dependency>
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
-                <version>1.2</version>
+                <version>2.0.SP1</version>
             </dependency>
             <dependency>
                 <groupId>javax.inject</groupId>
@@ -162,19 +162,20 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.0.2.Final</version>
+                <version>1.6.0.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-                <version>1.0.0.CR7</version>
+                <version>1.0.0.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core</artifactId>
-                <version>2.3.2.Final</version>
+                <artifactId>weld-core-impl</artifactId>
+                <version>3.1.8.Final</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.glassfish</groupId>

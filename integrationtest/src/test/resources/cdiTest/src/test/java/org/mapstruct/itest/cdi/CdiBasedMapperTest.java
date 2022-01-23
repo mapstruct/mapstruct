@@ -38,7 +38,9 @@ public class CdiBasedMapperTest {
             .addPackage( SourceTargetMapper.class.getPackage() )
             .addPackage( DateMapper.class.getPackage() )
             .addAsManifestResource(
-                    new StringAsset("<decorators><class>org.mapstruct.itest.cdi.SourceTargetMapperDecorator</class></decorators>"),
+                    new StringAsset("<beans version=\"1.1\">" +
+                        "<decorators><class>org.mapstruct.itest.cdi.SourceTargetMapperDecorator</class></decorators>" +
+                        "</beans>"),
                     "beans.xml" );
     }
 
