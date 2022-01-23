@@ -419,6 +419,28 @@ public class PropertyMapping extends ModelElement {
 
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
+
+                if ( factory == null && targetBuilderType != null) {
+                    // If there is no dedicated factory method and the target has a builder we will try to use that
+                    MethodReference builderFactoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod(
+                        targetType,
+                        targetBuilderType
+                    );
+
+                    if ( builderFactoryMethod != null ) {
+
+                        MethodReference finisherMethod = BuilderFinisherMethodResolver.getBuilderFinisherMethod(
+                            method,
+                            targetBuilderType,
+                            ctx
+                        );
+
+                        if ( finisherMethod != null ) {
+                            factory = MethodReference.forMethodChaining( builderFactoryMethod, finisherMethod );
+                        }
+                    }
+
+                }
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),

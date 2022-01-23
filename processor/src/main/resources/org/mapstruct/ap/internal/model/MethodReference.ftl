@@ -18,6 +18,8 @@
         <@includeModel object=definingType/>.<@methodCall/>
     <#elseif constructor>
         new <@includeModel object=definingType/><#if (parameterBindings?size > 0)>( <@arguments/> )<#else>()</#if>
+    <#elseif methodChaining>
+        <#list methodsToChain as methodToChain><@includeModel object=methodToChain /><#if methodToChain_has_next>.</#if></#list>
     <#else>
         <@methodCall/>
     </#if>
