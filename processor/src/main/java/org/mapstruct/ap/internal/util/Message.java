@@ -167,8 +167,8 @@ public enum Message {
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
     RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE( "The types of @Context parameters must be unique." ),
     RETRIEVAL_MAPPER_USES_CYCLE( "The mapper %s is referenced itself in Mapper#uses.", Diagnostic.Kind.WARNING ),
-    RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED( "AfterMapping can only be applied to an implemented method." ),
-    RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED( "BeforeMapping can only be applied to an implemented method." ),
+    RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED( "@AfterMapping can only be applied to an implemented method." ),
+    RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED( "@BeforeMapping can only be applied to an implemented method." ),
 
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
