@@ -564,6 +564,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
 
+        if ( Executables.isAfterMappingMethod( method ) ) {
+            messager.printMessage( method, Message.RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED );
+            return false;
+        }
+
+        if ( Executables.isBeforeMappingMethod( method ) ) {
+            messager.printMessage( method, Message.RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED );
+            return false;
+        }
+
         return true;
     }
 
