@@ -27,12 +27,12 @@ public class Issue2674Test {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapping.class,
                 kind = Kind.ERROR,
-                line = 15,
-                message = "BeforeMapping can only be applied to an implemented method."),
+                line = 20,
+                message = "@BeforeMapping can only be applied to an implemented method."),
             @Diagnostic(type = ErroneousSourceTargetMapping.class,
                 kind = Kind.ERROR,
-                line = 18,
-                message = "AfterMapping can only be applied to an implemented method.")
+                line = 23,
+                message = "@AfterMapping can only be applied to an implemented method.")
         }
     )
     public void shouldRaiseErrorIfThereIsNoAfterOrBeforeMethodImplementation() {
