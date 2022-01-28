@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -113,7 +112,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
     private List<Accessor> alternativeTargetAccessors = null;
-    private Map<String, Accessor> constructorAccessors = null;
 
     private Type boundingBase = null;
 
@@ -1601,6 +1599,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             parent = parent.getEnclosingElement();
         }
         return parent == null ? null : typeFactory.getType( parent.asType() );
+    }
+
+    public boolean isEnumSet() {
+        return "java.util.EnumSet".equals( getFullyQualifiedName() );
     }
 
 }
