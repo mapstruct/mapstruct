@@ -145,7 +145,7 @@ import java.lang.annotation.Target;
  * @author Gunnar Morling
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface DecoratedWith {
 
     /**
