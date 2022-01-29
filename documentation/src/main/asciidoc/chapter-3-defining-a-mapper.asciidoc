@@ -532,7 +532,7 @@ Otherwise, you would need to write a custom `BuilderProvider`
 
 [TIP]
 ====
-In case you want to disable using builders then you can use the `NoOpBuilderProvider` by creating a `org.mapstruct.ap.spi.BuilderProvider` file in the `META-INF/services` directory with `org.mapstruct.ap.spi.NoOpBuilderProvider` as it's content.
+In case you want to disable using builders then you can pass the MapStruct processor option `mapstruct.disableBuilders` to the compiler. e.g. `-Amapstruct.disableBuilders=true`.
 ====
 
 [[mapping-with-constructors]]

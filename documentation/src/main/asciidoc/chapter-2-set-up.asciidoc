@@ -260,6 +260,11 @@ Supported values are:
 If a policy is given for a specific mapper via `@Mapper#unmappedSourcePolicy()`, the value from the annotation takes precedence.
 If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappedSourceProperties()`, it takes precedence over both `@Mapper#unmappedSourcePolicy()` and the option.
 |`WARN`
+
+|`mapstruct.
+disableBuilders`
+|If set to `true`, then MapStruct will not use builder patterns when doing the mapping. This is equivalent to doing `@Mapper( builder = @Builder( disableBuilder = true ) )` for all of your mappers.
+|`false`
 |===
 
 === Using MapStruct with the Java Module System
