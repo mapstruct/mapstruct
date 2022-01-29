@@ -17,6 +17,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     GenderJsr330DefaultCompileOptionFieldMapper.class
 })
 @ComponentScan(basePackageClasses = CustomerJsr330DefaultCompileOptionFieldMapper.class)
+@WithJavaxInject
 @Configuration
 public class Jsr330DefaultCompileOptionFieldMapperTest {
 

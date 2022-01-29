@@ -58,6 +58,7 @@ import org.mapstruct.ap.test.builtin.source.MapSource;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,8 +72,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     MapTarget.class,
     CalendarProperty.class,
     DateProperty.class,
-    JaxbElementListProperty.class,
-    JaxbElementProperty.class,
     StringListProperty.class,
     StringProperty.class,
     BigDecimalProperty.class,
@@ -81,13 +80,16 @@ import static org.assertj.core.api.Assertions.assertThat;
     XmlGregorianCalendarProperty.class,
     ZonedDateTimeProperty.class,
     IterableSource.class,
-    MapSource.class
 })
 @DefaultTimeZone("Europe/Berlin")
 public class BuiltInTest {
 
     @ProcessorTest
-    @WithClasses( JaxbMapper.class )
+    @WithClasses( {
+        JaxbMapper.class,
+        JaxbElementProperty.class,
+    } )
+    @WithJavaxJaxb
     public void shouldApplyBuiltInOnJAXBElement()  {
         JaxbElementProperty source = new JaxbElementProperty();
         source.setProp( createJaxb( "TEST" ) );
@@ -100,7 +102,11 @@ public class BuiltInTest {
     }
 
     @ProcessorTest
-    @WithClasses( JaxbMapper.class )
+    @WithClasses( {
+        JaxbMapper.class,
+        JaxbElementProperty.class,
+    } )
+    @WithJavaxJaxb
     @IssueKey( "1698" )
     public void shouldApplyBuiltInOnJAXBElementExtra()  {
         JaxbElementProperty source = new JaxbElementProperty();
@@ -123,7 +129,11 @@ public class BuiltInTest {
     }
 
     @ProcessorTest
-    @WithClasses( JaxbListMapper.class )
+    @WithClasses( {
+        JaxbListMapper.class,
+        JaxbElementListProperty.class,
+    } )
+    @WithJavaxJaxb
     @IssueKey( "141" )
     public void shouldApplyBuiltInOnJAXBElementList() {
 
@@ -347,7 +357,11 @@ public class BuiltInTest {
     }
 
     @ProcessorTest
-    @WithClasses( MapSourceTargetMapper.class )
+    @WithClasses( {
+        MapSourceTargetMapper.class,
+        MapSource.class,
+    } )
+    @WithJavaxJaxb
     public void shouldApplyBuiltInOnMap() throws DatatypeConfigurationException {
 
         MapSource source = new MapSource();

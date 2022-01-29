@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,13 +18,15 @@ public class CompilationRequest {
     private final Set<Class<?>> sourceClasses;
     private final Map<Class<?>, Class<?>> services;
     private final List<String> processorOptions;
+    private final Collection<String> testDependencies;
 
     CompilationRequest(Compiler compiler, Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services,
-                       List<String> processorOptions) {
+                       List<String> processorOptions, Collection<String> testDependencies) {
         this.compiler = compiler;
         this.sourceClasses = sourceClasses;
         this.services = services;
         this.processorOptions = processorOptions;
+        this.testDependencies = testDependencies;
     }
 
     @Override
@@ -34,6 +37,7 @@ public class CompilationRequest {
         result = prime * result + ( ( processorOptions == null ) ? 0 : processorOptions.hashCode() );
         result = prime * result + ( ( services == null ) ? 0 : services.hashCode() );
         result = prime * result + ( ( sourceClasses == null ) ? 0 : sourceClasses.hashCode() );
+        result = prime * result + ( ( testDependencies == null ) ? 0 : testDependencies.hashCode() );
         return result;
     }
 
@@ -53,6 +57,7 @@ public class CompilationRequest {
         return compiler.equals( other.compiler )
             && processorOptions.equals( other.processorOptions )
             && services.equals( other.services )
+            && testDependencies.equals( other.testDependencies )
             && sourceClasses.equals( other.sourceClasses );
     }
 
@@ -66,5 +71,9 @@ public class CompilationRequest {
 
     public Map<Class<?>, Class<?>> getServices() {
         return services;
+    }
+
+    public Collection<String> getTestDependencies() {
+        return testDependencies;
     }
 }

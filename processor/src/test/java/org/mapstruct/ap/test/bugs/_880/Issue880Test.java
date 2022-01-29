@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithSpring;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 @ProcessorOptions({
     @ProcessorOption(name = "mapstruct.defaultComponentModel", value = MappingConstants.ComponentModel.SPRING),
     @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "ignore") })
+@WithSpring
 public class Issue880Test {
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

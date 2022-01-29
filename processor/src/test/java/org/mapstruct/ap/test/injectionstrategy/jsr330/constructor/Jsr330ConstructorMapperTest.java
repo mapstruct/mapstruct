@@ -15,6 +15,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("571")
 @ComponentScan(basePackageClasses = CustomerJsr330ConstructorMapper.class)
 @Configuration
+@WithJavaxInject
 public class Jsr330ConstructorMapperTest {
 
     @RegisterExtension

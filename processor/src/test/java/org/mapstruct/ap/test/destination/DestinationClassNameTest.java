@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.destination;
 
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,7 @@ public class DestinationClassNameTest {
 
     @ProcessorTest
     @WithClasses({ DestinationClassNameWithJsr330Mapper.class })
+    @WithJavaxInject
     public void shouldNotGenerateSpi() throws Exception {
 
         Class<DestinationClassNameWithJsr330Mapper> clazz = DestinationClassNameWithJsr330Mapper.class;

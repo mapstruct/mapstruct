@@ -14,6 +14,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ProcessorOption( name = "mapstruct.defaultInjectionStrategy", value = "constructor")
 @ComponentScan(basePackageClasses = CustomerJsr330CompileOptionConstructorMapper.class)
 @Configuration
+@WithJavaxInject
 public class Jsr330CompileOptionConstructorMapperTest {
 
     @RegisterExtension

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
@@ -133,6 +134,7 @@ public class WildCardTest {
 
     @ProcessorTest
     @WithClasses( { BeanMapper.class, GoodIdea.class, CunningPlan.class } )
+    @WithJavaxJaxb
     public void shouldMapBean() {
 
         GoodIdea aGoodIdea = new GoodIdea();
