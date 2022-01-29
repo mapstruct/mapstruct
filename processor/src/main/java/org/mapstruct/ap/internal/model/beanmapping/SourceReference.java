@@ -311,11 +311,12 @@ public class SourceReference extends AbstractReference {
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
-                ReadAccessor readAccessor = newType.getReadAccessor( entryNames[i] );
+                Type noBoundsType = newType.withoutBounds();
+                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i] );
                 if ( readAccessor != null ) {
-                    PresenceCheckAccessor presenceChecker = newType.getPresenceChecker( entryNames[i] );
+                    PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
                     newType = typeFactory.getReturnType(
-                        (DeclaredType) newType.getTypeMirror(),
+                        (DeclaredType) noBoundsType.getTypeMirror(),
                         readAccessor
                     );
                     sourceEntries.add( forSourceReference(
