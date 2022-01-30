@@ -46,7 +46,7 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
     @IgnoreJRERequirement
     AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
         this.delegate = processingEnv.getElementUtils();
-        if ( SourceVersion.RELEASE_8.compareTo( processingEnv.getSourceVersion() ) <= 0 ) {
+        if ( SourceVersion.RELEASE_8.compareTo( processingEnv.getSourceVersion() ) >= 0 ) {
             // We are running with Java 8 or lower
             this.moduleElement = null;
         }
