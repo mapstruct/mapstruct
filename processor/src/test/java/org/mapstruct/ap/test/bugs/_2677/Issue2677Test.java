@@ -57,5 +57,36 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "implicit" );
         assertThat( output.getId() ).isEqualTo( 15 );
 
+        Issue2677Mapper.Wrapper<String> result = Issue2677Mapper.INSTANCE.mapToWrapper(
+            "test",
+            new Issue2677Mapper.Wrapper<>(
+                child,
+                "super"
+            )
+        );
+
+        assertThat( result.getStatus() ).isEqualTo( "super" );
+        assertThat( result.getValue() ).isEqualTo( "test" );
+
+        output = Issue2677Mapper.INSTANCE.mapWithPresenceCheck(
+            new Issue2677Mapper.Wrapper<>(
+                new Issue2677Mapper.ParentWithPresenceCheck( 8 ),
+                "presenceCheck"
+            )
+        );
+
+        assertThat( output.getStatus() ).isEqualTo( "presenceCheck" );
+        assertThat( output.getId() ).isEqualTo( 0 );
+
+        output = Issue2677Mapper.INSTANCE.mapWithPresenceCheck(
+            new Issue2677Mapper.Wrapper<>(
+                new Issue2677Mapper.ParentWithPresenceCheck( 15 ),
+                "presenceCheck"
+            )
+        );
+
+        assertThat( output.getStatus() ).isEqualTo( "presenceCheck" );
+        assertThat( output.getId() ).isEqualTo( 15 );
+
     }
 }

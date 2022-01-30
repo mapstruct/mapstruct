@@ -29,6 +29,12 @@ public interface Issue2677Mapper {
     @Mapping(target = "id", source = "value.id")
     Output mapFromChild(Wrapper<Child> in);
 
+    @Mapping( target = "value", source = "wrapperValue")
+    Wrapper<String> mapToWrapper(String wrapperValue, Wrapper<? super Parent> wrapper);
+
+    @Mapping(target = "id", source = "value.id")
+    Output mapWithPresenceCheck(Wrapper<? extends ParentWithPresenceCheck> in);
+
     class Wrapper<T> {
         private final T value;
         private final String status;
@@ -69,6 +75,22 @@ public interface Issue2677Mapper {
 
         public String getWhatever() {
             return whatever;
+        }
+    }
+
+    class ParentWithPresenceCheck {
+        private final int id;
+
+        public ParentWithPresenceCheck(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public boolean hasId() {
+            return id > 10;
         }
     }
 
