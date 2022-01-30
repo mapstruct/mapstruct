@@ -6,8 +6,6 @@
 package org.mapstruct.ap.internal.util;
 
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,11 +13,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -36,91 +36,45 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 
 public abstract class AbstractElementUtilsDecorator implements ElementUtils {
 
-    private static final Method MODULE_OF_METHOD;
-    private static final Method GET_TYPE_ELEMENT_WITH_MODULE_METHOD;
-    private static final Method GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD;
-
-    static {
-        Method moduleOfMethod;
-        Method getTypeElementWithModuleMethod;
-        Method getPackageElementWithModuleMethod;
-        try {
-            moduleOfMethod = ElementUtils.class.getMethod( "getModuleOf", Element.class );
-            Class<?> moduleElementClass = Class.forName( "javax.lang.model.element.ModuleElement" );
-            getTypeElementWithModuleMethod = ElementUtils.class.getMethod(
-                "getTypeElement",
-                moduleElementClass,
-                CharSequence.class
-            );
-            getPackageElementWithModuleMethod = ElementUtils.class.getMethod(
-                "getPackageElement",
-                moduleElementClass,
-                CharSequence.class
-            );
-
-        }
-        catch ( NoSuchMethodException | ClassNotFoundException e ) {
-            moduleOfMethod = null;
-            getTypeElementWithModuleMethod = null;
-            getPackageElementWithModuleMethod = null;
-        }
-
-        MODULE_OF_METHOD = moduleOfMethod;
-        GET_TYPE_ELEMENT_WITH_MODULE_METHOD = getTypeElementWithModuleMethod;
-        GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD = getPackageElementWithModuleMethod;
-    }
-
     private final Elements delegate;
     /**
-     * The module element when running with the module system.
+     * The module element when running with the module system,
      * {@code null} otherwise.
      */
     private final Element moduleElement;
 
+    @IgnoreJRERequirement
     AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
         this.delegate = processingEnv.getElementUtils();
-        Element moduleElement;
-        if ( MODULE_OF_METHOD == null ) {
-            moduleElement = null;
+        if ( SourceVersion.RELEASE_8.compareTo( processingEnv.getSourceVersion() ) <= 0 ) {
+            // We are running with Java 8 or lower
+            this.moduleElement = null;
         }
         else {
-            try {
-                moduleElement = (Element) MODULE_OF_METHOD.invoke( this.delegate, mapperElement );
-            }
-            catch ( IllegalAccessException | InvocationTargetException e ) {
-                moduleElement = null;
-            }
+            this.moduleElement = this.delegate.getModuleOf( mapperElement );
         }
-
-        this.moduleElement = moduleElement;
     }
 
     @Override
+    @IgnoreJRERequirement
     public PackageElement getPackageElement(CharSequence name) {
-        if ( moduleElement == null ) {
-            return delegate.getPackageElement( name );
+        if ( this.moduleElement == null ) {
+            return this.delegate.getPackageElement( name );
         }
 
-        try {
-            return (PackageElement) GET_PACKAGE_ELEMENT_WITH_MODULE_METHOD.invoke( delegate, moduleElement, name );
-        }
-        catch ( IllegalAccessException | InvocationTargetException e ) {
-            return delegate.getPackageElement( name );
-        }
+        // If the module element is not null then we must be running on Java 8+
+        return this.delegate.getPackageElement( (ModuleElement) moduleElement, name );
     }
 
     @Override
+    @IgnoreJRERequirement
     public TypeElement getTypeElement(CharSequence name) {
-        if ( moduleElement == null ) {
-            return delegate.getTypeElement( name );
+        if ( this.moduleElement == null ) {
+            return this.delegate.getTypeElement( name );
         }
 
-        try {
-            return (TypeElement) GET_TYPE_ELEMENT_WITH_MODULE_METHOD.invoke( delegate, moduleElement, name );
-        }
-        catch ( IllegalAccessException | InvocationTargetException e ) {
-            return delegate.getTypeElement( name );
-        }
+        // If the module element is not null then we must be running on Java 8+
+        return this.delegate.getTypeElement( (ModuleElement) moduleElement, name );
     }
 
     @Override
