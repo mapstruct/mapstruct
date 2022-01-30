@@ -85,6 +85,14 @@ public class MavenIntegrationTest {
     void lombokBuilderTest() {
     }
 
+    @ProcessorTest(baseDir = "lombokModuleTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC,
+        ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
+    })
+    @EnabledForJreRange(min = JRE.JAVA_11)
+    void lombokModuleTest() {
+    }
+
     @ProcessorTest(baseDir = "namingStrategyTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })

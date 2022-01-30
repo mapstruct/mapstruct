@@ -269,7 +269,11 @@ public class MappingProcessor extends AbstractProcessor {
                 // of one outer interface
                 List<? extends Element> tst = mapperElement.getEnclosedElements();
                 ProcessorContext context = new DefaultModelElementProcessorContext(
-                        processingEnv, options, roundContext, getDeclaredTypesNotToBeImported( mapperElement )
+                    processingEnv,
+                    options,
+                    roundContext,
+                    getDeclaredTypesNotToBeImported( mapperElement ),
+                    mapperElement
                 );
 
                 processMapperTypeElement( context, mapperElement );

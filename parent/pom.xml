@@ -36,6 +36,11 @@
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the gem tools processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+        <!--
+            The minimum Java Version that is needed to build a module in MapStruct.
+            The processor module needs at least Java 11.
+         -->
+        <minimum.java.version>1.8</minimum.java.version>
     </properties>
 
     <licenses>
@@ -214,7 +219,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.20</version>
+                <version>1.18.22</version>
             </dependency>
             <dependency>
                 <groupId>org.immutables</groupId>
@@ -666,6 +671,9 @@
                                 <artifactId>java18</artifactId>
                                 <version>1.0</version>
                             </signature>
+                            <annotations>
+                                <annotation>org.mapstruct.ap.internal.util.IgnoreJRERequirement</annotation>
+                            </annotations>
                         </configuration>
                     </execution>
                 </executions>
@@ -685,7 +693,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[1.8,)</version>
+                                    <version>[${minimum.java.version},)</version>
                                 </requireJavaVersion>
                                 <DependencyConvergence />
                                 <requirePluginVersions />
