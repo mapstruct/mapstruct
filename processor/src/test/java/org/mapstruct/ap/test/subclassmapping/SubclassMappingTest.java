@@ -82,13 +82,31 @@ public class SubclassMappingTest {
 
     @ProcessorTest
     @WithClasses( SimpleSubclassMapper.class )
-    void subclassMappingInheritsMapping() {
+    void subclassMappingInheritsInverseMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         Car car = new Car();
         car.setVehicleManufacturingCompany( "BenZ" );
         vehicles.getVehicles().add( car );
 
         VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
+
+        assertThat( result.getVehicles() )
+            .extracting( VehicleDto::getMaker )
+            .containsExactly( "BenZ" );
+    }
+
+    @ProcessorTest
+    @WithClasses( {
+        HatchBack.class,
+        InverseOrderSubclassMapper.class
+    } )
+    void subclassMappingOverridesInverseInheritsMapping() {
+        VehicleCollection vehicles = new VehicleCollection();
+        Car car = new Car();
+        car.setVehicleManufacturingCompany( "BenZ" );
+        vehicles.getVehicles().add( car );
+
+        VehicleCollectionDto result = InverseOrderSubclassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() )
             .extracting( VehicleDto::getMaker )
@@ -107,11 +125,11 @@ public class SubclassMappingTest {
             line = 28,
             alternativeLine = 30,
             message = "SubclassMapping annotation for "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' found after "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto', but all "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBack' found after "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.Car', but all "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBack' "
                 + "objects are also instances of "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'.")
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.Car'.")
     })
     void subclassOrderWarning() {
     }
@@ -158,8 +176,7 @@ public class SubclassMappingTest {
     @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
         @Diagnostic(type = ErroneousInverseSubclassMapper.class,
             kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 25,
-            alternativeLine = 23,
+            line = 28,
             message = "Subclass "
                 + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
                 + " is already defined as a source."

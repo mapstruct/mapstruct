@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -86,7 +85,7 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
-        if ( !subclassValidator.isValidUsage( method, gem.mirror(), targetSubclass ) ) {
+        if ( !subclassValidator.isValidUsage( method, gem.mirror(), sourceSubclass ) ) {
             isConsistent = false;
         }
         return isConsistent;
@@ -163,23 +162,15 @@ public class SubclassMappingOptions extends DelegatingOptions {
     }
 
     public static Set<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
-                                                                        SourceMethod sourceMethod,
-                                                                        BeanMappingOptions beanMappingOptions,
-                                                                        SubclassValidator validator,
-                                                                        AnnotationMirror mirror) {
+                                                                        BeanMappingOptions beanMappingOptions) {
         // we want to keep the order of the mappings, so we are using a LinkedHashSet.
         Set<SubclassMappingOptions> mappings = new LinkedHashSet<>();
         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
-            if ( validator.isValidUsage(
-                         sourceMethod.getExecutable(),
-                         mirror,
-                         subclassMapping.target ) ) {
-                mappings.add(
-                        new SubclassMappingOptions(
-                                       subclassMapping.target,
-                                       subclassMapping.source,
-                                       beanMappingOptions ) );
-            }
+            mappings.add(
+                    new SubclassMappingOptions(
+                                   subclassMapping.target,
+                                   subclassMapping.source,
+                                   beanMappingOptions ) );
         }
         return mappings;
     }
