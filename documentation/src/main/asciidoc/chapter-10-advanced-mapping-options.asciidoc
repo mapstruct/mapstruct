@@ -344,6 +344,8 @@ public class CarMapperImpl implements CarMapper {
 
         if ( isNotEmpty( car.getOwner() ) ) {
             carDto.setOwner( car.getOwner() );
+        } else {
+            carDto.setOwner( null );
         }
 
         // Mapping of other properties
@@ -362,6 +364,11 @@ If there is a custom `@Condition` method applicable for the property it will hav
 [NOTE]
 ====
 Methods annotated with `@Condition` in addition to the value of the source property can also have the source parameter as an input.
+====
+
+[NOTE]
+====
+`nullValuePropertyMappingStrategy` will influence what to do when the condition is not met.
 ====
 
 <<selection-based-on-qualifiers>> is also valid for `@Condition` methods.
