@@ -3,6 +3,12 @@
 
 To use a custom SPI implementation, it must be located in a separate JAR file together with a file named after the SPI (e.g. `org.mapstruct.ap.spi.AccessorNamingStrategy`) in `META-INF/services/` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This JAR file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
 
+
+[NOTE]
+====
+It might also be necessary to add the jar to your IDE's annotation processor factory path. Otherwise you might get an error stating that it cannot be found, while a run using your build tool does succeed.
+====
+
 === Custom Accessor Naming Strategy
 
 SPI name: `org.mapstruct.ap.spi.AccessorNamingStrategy`
