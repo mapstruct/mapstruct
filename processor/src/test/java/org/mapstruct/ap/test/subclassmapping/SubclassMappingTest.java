@@ -83,15 +83,15 @@ public class SubclassMappingTest {
     @ProcessorTest
     @WithClasses( SimpleSubclassMapper.class )
     void subclassMappingInheritsInverseMapping() {
-        VehicleCollection vehicles = new VehicleCollection();
-        Car car = new Car();
-        car.setVehicleManufacturingCompany( "BenZ" );
-        vehicles.getVehicles().add( car );
+        VehicleCollectionDto vehiclesDto = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehiclesDto.getVehicles().add( carDto );
 
-        VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
+        VehicleCollection result = SimpleSubclassMapper.INSTANCE.mapInverse( vehiclesDto );
 
         assertThat( result.getVehicles() )
-            .extracting( VehicleDto::getMaker )
+            .extracting( Vehicle::getVehicleManufacturingCompany )
             .containsExactly( "BenZ" );
     }
 
@@ -101,16 +101,16 @@ public class SubclassMappingTest {
         InverseOrderSubclassMapper.class
     } )
     void subclassMappingOverridesInverseInheritsMapping() {
-        VehicleCollection vehicles = new VehicleCollection();
-        Car car = new Car();
-        car.setVehicleManufacturingCompany( "BenZ" );
-        vehicles.getVehicles().add( car );
+        VehicleCollectionDto vehicleDtos = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehicleDtos.getVehicles().add( carDto );
 
-        VehicleCollectionDto result = InverseOrderSubclassMapper.INSTANCE.map( vehicles );
+        VehicleCollection result = InverseOrderSubclassMapper.INSTANCE.mapInverse( vehicleDtos );
 
-        assertThat( result.getVehicles() )
-            .extracting( VehicleDto::getMaker )
-            .containsExactly( "BenZ" );
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class );
     }
 
     @ProcessorTest
