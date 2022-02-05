@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -32,11 +32,13 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
     private final TypeMirror source;
     private final TypeMirror target;
+    private final TypeUtils typeUtils;
 
-    public SubclassMappingOptions(TypeMirror source, TypeMirror target, DelegatingOptions next) {
+    public SubclassMappingOptions(TypeMirror source, TypeMirror target, TypeUtils typeUtils, DelegatingOptions next) {
         super( next );
         this.source = source;
         this.target = target;
+        this.typeUtils = typeUtils;
     }
 
     @Override
@@ -158,20 +160,36 @@ public class SubclassMappingOptions extends DelegatingOptions {
                     new SubclassMappingOptions(
                         sourceSubclass,
                         targetSubclass,
+                        typeUtils,
                         beanMappingOptions ) );
     }
 
-    public static Set<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
+    public static List<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
                                                                         BeanMappingOptions beanMappingOptions) {
-        // we want to keep the order of the mappings, so we are using a LinkedHashSet.
-        Set<SubclassMappingOptions> mappings = new LinkedHashSet<>();
+        // we are not interested in keeping it unique at this point.
+        List<SubclassMappingOptions> mappings = new ArrayList<>();
         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
             mappings.add(
-                    new SubclassMappingOptions(
+                        new SubclassMappingOptions(
                                    subclassMapping.target,
                                    subclassMapping.source,
+                                   subclassMapping.typeUtils,
                                    beanMappingOptions ) );
         }
         return mappings;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( obj == null || !( obj instanceof SubclassMappingOptions ) ) {
+            return false;
+        }
+        SubclassMappingOptions other = (SubclassMappingOptions) obj;
+        return typeUtils.isSameType( source, other.source );
+    }
+
+    @Override
+    public int hashCode() {
+        return 1; // use a stable value because TypeMirror is not safe to use for hashCode.
     }
 }

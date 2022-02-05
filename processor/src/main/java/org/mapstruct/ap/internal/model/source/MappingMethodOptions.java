@@ -7,13 +7,11 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -50,7 +48,7 @@ public class MappingMethodOptions {
     private EnumMappingOptions enumMappingOptions;
     private List<ValueMappingOptions> valueMappings;
     private boolean fullyInitialized;
-    private Map<TypeMirror, SubclassMappingOptions> subclassMapping;
+    private Set<SubclassMappingOptions> subclassMappings;
 
     private SubclassValidator subclassValidator;
 
@@ -59,7 +57,7 @@ public class MappingMethodOptions {
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
-                                Set<SubclassMappingOptions> subclassMapping, SubclassValidator subclassValidator) {
+                                Set<SubclassMappingOptions> subclassMappings, SubclassValidator subclassValidator) {
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -67,7 +65,7 @@ public class MappingMethodOptions {
         this.beanMapping = beanMapping;
         this.enumMappingOptions = enumMappingOptions;
         this.valueMappings = valueMappings;
-        setSubclassMapping( subclassMapping ); // use setter because of special behavior.
+        this.subclassMappings = subclassMappings;
         this.subclassValidator = subclassValidator;
     }
 
@@ -109,7 +107,7 @@ public class MappingMethodOptions {
     }
 
     public Set<SubclassMappingOptions> getSubclassMappings() {
-        return new LinkedHashSet<>( subclassMapping.values() );
+        return subclassMappings;
     }
 
     public void setIterableMapping(IterableMappingOptions iterableMapping) {
@@ -132,11 +130,8 @@ public class MappingMethodOptions {
         this.valueMappings = valueMappings;
     }
 
-    public void setSubclassMapping(Set<SubclassMappingOptions> subclassMapping) {
-        this.subclassMapping = new LinkedHashMap<>();
-        for ( SubclassMappingOptions subclassMappingOptions : subclassMapping ) {
-            this.subclassMapping.put( subclassMappingOptions.getSource(), subclassMappingOptions );
-        }
+    public void setSubclassMapping(Set<SubclassMappingOptions> subclassMappings) {
+        this.subclassMappings = subclassMappings;
     }
 
     public MapperOptions getMapper() {
@@ -215,7 +210,7 @@ public class MappingMethodOptions {
 
             if ( isInverse ) {
                 // normal inheritence of subclass mappings will result runtime in infinite loops.
-                Set<SubclassMappingOptions> inheritedMappings = SubclassMappingOptions.copyForInverseInheritance(
+                List<SubclassMappingOptions> inheritedMappings = SubclassMappingOptions.copyForInverseInheritance(
                                               templateOptions.getSubclassMappings(),
                                               getBeanMapping() );
                 addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
@@ -242,15 +237,15 @@ public class MappingMethodOptions {
     }
 
     private void addAllNonRedefined(SourceMethod sourceMethod, AnnotationMirror annotationMirror,
-                                    Set<SubclassMappingOptions> inheritedMappings) {
-        Set<TypeMirror> redefinedTargets = new HashSet<>( subclassMapping.keySet() ); // unlink the keyset
-        for ( SubclassMappingOptions subclassMappingOptions : inheritedMappings ) {
-            if ( !redefinedTargets.contains( subclassMappingOptions.getSource() ) ) {
+                                    List<SubclassMappingOptions> inheritedMappings) {
+        Set<SubclassMappingOptions> redefinedSubclassMappings = new HashSet<>( subclassMappings );
+        for ( SubclassMappingOptions subclassMappingOption : inheritedMappings ) {
+            if ( !redefinedSubclassMappings.contains( subclassMappingOption ) ) {
                 if ( subclassValidator.isValidUsage(
                                           sourceMethod.getExecutable(),
                                           annotationMirror,
-                                          subclassMappingOptions.getSource() ) ) {
-                    subclassMapping.put( subclassMappingOptions.getSource(), subclassMappingOptions );
+                    subclassMappingOption.getSource() ) ) {
+                    subclassMappings.add( subclassMappingOption );
                 }
             }
         }
