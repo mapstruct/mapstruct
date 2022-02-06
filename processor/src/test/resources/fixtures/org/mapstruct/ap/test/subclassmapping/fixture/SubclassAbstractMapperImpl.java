@@ -9,7 +9,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-09-12T14:37:10+0200",
+    date = "2022-01-31T19:35:15+0100",
     comments = "version: , compiler: Eclipse JDT (Batch) 3.20.0.v20191203-2131, environment: Java 11.0.12 (Azul Systems, Inc.)"
 )
 public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
@@ -25,6 +25,26 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
         }
         else if (item instanceof SubSourceOther) {
             return subSourceOtherToSubTargetOther( (SubSourceOther) item );
+        }
+        else {
+            throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + item.getClass());
+        }
+    }
+
+    @Override
+    public AbstractParentSource map(AbstractParentTarget item) {
+        if ( item == null ) {
+            return null;
+        }
+
+        if (item instanceof SubTargetSeparate) {
+            return subTargetSeparateToSubSourceSeparate( (SubTargetSeparate) item );
+        }
+        else if (item instanceof SubTargetOther) {
+            return subTargetOtherToSubSourceOverride( (SubTargetOther) item );
+        }
+        else if (item instanceof SubTarget) {
+            return subTargetToSubSource( (SubTarget) item );
         }
         else {
             throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + item.getClass());
@@ -55,5 +75,45 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
 
         return subTargetOther;
+    }
+
+    protected SubSourceSeparate subTargetSeparateToSubSourceSeparate(SubTargetSeparate subTargetSeparate) {
+        if ( subTargetSeparate == null ) {
+            return null;
+        }
+
+        String separateValue = null;
+
+        separateValue = subTargetSeparate.getSeparateValue();
+
+        SubSourceSeparate subSourceSeparate = new SubSourceSeparate( separateValue );
+
+        return subSourceSeparate;
+    }
+
+    protected SubSourceOverride subTargetOtherToSubSourceOverride(SubTargetOther subTargetOther) {
+        if ( subTargetOther == null ) {
+            return null;
+        }
+
+        String finalValue = null;
+
+        finalValue = subTargetOther.getFinalValue();
+
+        SubSourceOverride subSourceOverride = new SubSourceOverride( finalValue );
+
+        return subSourceOverride;
+    }
+
+    protected SubSource subTargetToSubSource(SubTarget subTarget) {
+        if ( subTarget == null ) {
+            return null;
+        }
+
+        SubSource subSource = new SubSource();
+
+        subSource.setValue( subTarget.getValue() );
+
+        return subSource;
     }
 }

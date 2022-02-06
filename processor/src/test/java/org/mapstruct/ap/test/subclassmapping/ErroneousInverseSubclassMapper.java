@@ -10,27 +10,19 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
-import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
-import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
-import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollection;
-import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SimpleSubclassMapper {
-    SimpleSubclassMapper INSTANCE = Mappers.getMapper( SimpleSubclassMapper.class );
+public interface ErroneousInverseSubclassMapper {
+    ErroneousInverseSubclassMapper INSTANCE = Mappers.getMapper( ErroneousInverseSubclassMapper.class );
 
-    VehicleCollectionDto map(VehicleCollection vehicles);
-
-    @SubclassMapping( source = Car.class, target = CarDto.class )
-    @SubclassMapping( source = Bike.class, target = BikeDto.class )
-    @Mapping( source = "vehicleManufacturingCompany", target = "maker")
+    @SubclassMapping( source = Bike.class, target = VehicleDto.class )
+    @SubclassMapping( source = Car.class, target = VehicleDto.class )
+    @Mapping( target = "maker", source = "vehicleManufacturingCompany" )
     VehicleDto map(Vehicle vehicle);
-
-    VehicleCollection mapInverse(VehicleCollectionDto vehicles);
 
     @InheritInverseConfiguration
     Vehicle mapInverse(VehicleDto dto);

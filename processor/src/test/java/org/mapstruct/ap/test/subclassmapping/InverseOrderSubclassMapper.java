@@ -13,6 +13,7 @@ import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
 import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.HatchBack;
 import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollection;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
@@ -20,11 +21,12 @@ import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SimpleSubclassMapper {
-    SimpleSubclassMapper INSTANCE = Mappers.getMapper( SimpleSubclassMapper.class );
+public interface InverseOrderSubclassMapper {
+    InverseOrderSubclassMapper INSTANCE = Mappers.getMapper( InverseOrderSubclassMapper.class );
 
     VehicleCollectionDto map(VehicleCollection vehicles);
 
+    @SubclassMapping( source = HatchBack.class, target = CarDto.class )
     @SubclassMapping( source = Car.class, target = CarDto.class )
     @SubclassMapping( source = Bike.class, target = BikeDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker")
@@ -32,6 +34,7 @@ public interface SimpleSubclassMapper {
 
     VehicleCollection mapInverse(VehicleCollectionDto vehicles);
 
+    @SubclassMapping( source = CarDto.class, target = Car.class )
     @InheritInverseConfiguration
     Vehicle mapInverse(VehicleDto dto);
 }
