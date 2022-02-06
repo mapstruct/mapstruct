@@ -130,10 +130,6 @@ public class MappingMethodOptions {
         this.valueMappings = valueMappings;
     }
 
-    public void setSubclassMapping(Set<SubclassMappingOptions> subclassMappings) {
-        this.subclassMappings = subclassMappings;
-    }
-
     public MapperOptions getMapper() {
         return mapper;
     }
