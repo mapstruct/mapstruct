@@ -712,7 +712,7 @@ public class MappingResolverImpl implements MappingResolver {
         }
     }
 
-    private static enum BestMatchType {
+    private enum BestMatchType {
         IGNORE_QUALIFIERS_BEFORE_Y_CANDIDATES,
         IGNORE_QUALIFIERS_AFTER_Y_CANDIDATES,
     }
