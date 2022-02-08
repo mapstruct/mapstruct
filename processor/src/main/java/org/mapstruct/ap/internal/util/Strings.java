@@ -183,7 +183,15 @@ public class Strings {
 
             if ( firstAlphabeticIndex < identifier.length()) {
                 // If it is not consisted of only underscores
-                return identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
+                String firstAlphaString = identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
+
+                return firstAlphaString.codePoints()
+                    .map(codePoint -> Character.isJavaIdentifierPart(codePoint) || codePoint == (int) '.' ? codePoint : (int) '_')
+                    .collect(
+                        StringBuilder::new,
+                        StringBuilder::appendCodePoint,
+                        StringBuilder::append
+                    ).toString();
             }
 
             return identifier.replace( "[]", "Array" );

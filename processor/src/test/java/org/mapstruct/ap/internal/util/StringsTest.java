@@ -113,6 +113,11 @@ public class StringsTest {
     }
 
     @Test
+    public void sanitizeIdentifierNameHandlesInvalidJavaIdentifierStrings() {
+        assertThat( Strings.sanitizeIdentifierName( "bad/test" ) ).isEqualTo("bad_test");
+    }
+    
+    @Test
     public void findMostSimilarWord() {
         String mostSimilarWord = Strings.getMostSimilarWord(
             "fulName",
