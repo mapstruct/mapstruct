@@ -196,6 +196,10 @@ public enum Message {
 
     MAPTOBEANMAPPING_WRONG_KEY_TYPE( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
     MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),
+
+    ANNOTATE_WITH_MISSING_REQUIRED_PARAMETER( "Parameter \"%s\" is required for annotation \"%s\"." ),
+    ANNOTATE_WITH_UNKNOWN_PARAMETER( "Parameter \"%s\" is not present in annotation \"%s\"." ),
+    ANNOTATE_WITH_WRONG_PARAMETER( "Parameter \"%s\" is not of type \"%s\" but of type \"%s\" for annotation \"%s\"." ),
     ;
     // CHECKSTYLE:ON
 

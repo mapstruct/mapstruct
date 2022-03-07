@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -93,6 +94,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private AccessorNamingUtils accessorNaming;
     private MappingBuilderContext mappingContext;
 
+    private AdditionalAnnotationsBuilder additionalAnnotationsBuilder;
+
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
@@ -103,6 +106,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
+        additionalAnnotationsBuilder = new AdditionalAnnotationsBuilder( typeUtils, typeFactory, messager );
 
         MapperOptions mapperOptions = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperOptions );
@@ -206,6 +210,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
+            .additionalAnnotations( additionalAnnotationsBuilder.getAdditionalAnnotations( element ) )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {

@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.AfterMapping;
+import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWiths;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Builder;
@@ -42,6 +44,9 @@ import org.mapstruct.tools.gem.GemDefinition;
  *
  * @author Gunnar Morling
  */
+@GemDefinition(AnnotateWith.class)
+@GemDefinition(AnnotateWith.Parameter.class)
+@GemDefinition(AnnotateWiths.class)
 @GemDefinition(Mapper.class)
 @GemDefinition(Mapping.class)
 @GemDefinition(Mappings.class)

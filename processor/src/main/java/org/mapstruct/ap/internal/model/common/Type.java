@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1605,4 +1606,25 @@ public class Type extends ModelElement implements Comparable<Type> {
         return "java.util.EnumSet".equals( getFullyQualifiedName() );
     }
 
+    public Stream<ExecutableElement> findAllAnnotationParameters() {
+        if ( typeUtils.isAssignable( typeMirror, typeFactory.getType( Annotation.class ).getTypeMirror() ) ) {
+            return getAllMethods()
+                            .stream()
+                            .filter( ee -> !isDefinedInJavasAnnotationClass( ee ) )
+                            .filter( ee -> !isDefinedInJavasObjectClass( ee ) );
+        }
+        return Stream.empty();
+    }
+
+    private boolean isDefinedInJavasAnnotationClass(ExecutableElement ee) {
+        return typeUtils.isSameType(
+                            ee.getEnclosingElement().asType(),
+                            typeFactory.getType( Annotation.class ).getTypeMirror() );
+    }
+
+    private boolean isDefinedInJavasObjectClass(ExecutableElement ee) {
+        return typeUtils.isSameType(
+                            ee.getEnclosingElement().asType(),
+                            typeFactory.getType( Object.class ).getTypeMirror() );
+    }
 }
