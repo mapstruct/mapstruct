@@ -5,13 +5,14 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -70,15 +71,67 @@ public class AdditionalAnnotationsBuilder {
         return parameters.stream().map( this::convertToJava ).collect( Collectors.toList() );
     }
 
+    private enum ConvertToJava {
+        BOOLEAN( "%s = %s",
+            parameter -> String.valueOf( parameter.booleans().get().get( 0 ) ),
+            parameter -> parameter.booleans().hasValue() ),
+        BYTE( "%s = %s",
+            parameter -> "0x" + Integer.toHexString( parameter.bytes().get().get( 0 ) ),
+            parameter -> parameter.bytes().hasValue() ),
+        CHARACTER( "%s = '%s'",
+            parameter -> String.valueOf( parameter.chars().get().get( 0 ) ),
+            parameter -> parameter.chars().hasValue() ),
+        CLASSES( "%s = %s.class",
+            parameter -> String.valueOf( parameter.classes().get().get( 0 ) ),
+            parameter -> parameter.classes().hasValue() ),
+        DOUBLE( "%s = %s",
+            parameter -> String.valueOf( parameter.doubles().get().get( 0 ) ),
+            parameter -> parameter.doubles().hasValue() ),
+        FLOAT( "%s = %sf",
+            parameter -> String.valueOf( parameter.floats().get().get( 0 ) ),
+            parameter -> parameter.floats().hasValue() ),
+        INT( "%s = %s",
+            parameter -> String.valueOf( parameter.ints().get().get( 0 ) ),
+            parameter -> parameter.ints().hasValue() ),
+        LONG( "%s = %sL",
+            parameter -> String.valueOf( parameter.longs().get().get( 0 ) ),
+            parameter -> parameter.longs().hasValue() ),
+        SHORT( "%s = %s",
+            parameter -> String.valueOf( parameter.shorts().get().get( 0 ) ),
+            parameter -> parameter.shorts().hasValue() ),
+        STRING( "%s = \"%s\"",
+            parameter -> parameter.strings().get().get( 0 ),
+            parameter -> parameter.strings().hasValue() );
+
+        private String format;
+        private Function<ParameterGem, String> valueExtractor;
+        private Predicate<ParameterGem> usabilityChecker;
+
+        ConvertToJava(String format, Function<ParameterGem, String> valueExtractor,
+                              Predicate<ParameterGem> usabilityChecker) {
+            this.format = format;
+            this.valueExtractor = valueExtractor;
+            this.usabilityChecker = usabilityChecker;
+        }
+
+        String toParameter(ParameterGem parameter) {
+            return String.format( format, parameter.key().get(), valueExtractor.apply( parameter ) );
+        }
+
+        boolean isUsable(ParameterGem parameter) {
+            return usabilityChecker.test( parameter );
+        }
+    }
+
     private String convertToJava(ParameterGem parameter) {
+        for ( ConvertToJava convertToJava : ConvertToJava.values() ) {
+            if ( convertToJava.isUsable( parameter ) ) {
+                return convertToJava.toParameter( parameter );
+            }
+        }
         if ( parameter.strings().hasValue() ) {
             if ( parameter.strings().get().size() == 1 ) {
                 return String.format( "%s = \"%s\"", parameter.key().get(), parameter.strings().get().get( 0 ) );
-            }
-        }
-        if ( parameter.classes().hasValue() ) {
-            if ( parameter.classes().get().size() == 1 ) {
-                return String.format( "%s = %s.class", parameter.key().get(), parameter.classes().get().get( 0 ) );
             }
         }
         return "";
@@ -151,13 +204,10 @@ public class AdditionalAnnotationsBuilder {
         boolean isValid = true;
         for ( ParameterGem parameter : parameters ) {
             TypeMirror annotationParameterType = getAnnotationParameterType( annotationParameters, parameter );
-            List<TypeMirror> parameterTypes = getParameterType( parameter );
+            List<TypeMirror> parameterTypes = getParameterTypes( parameter );
             for ( TypeMirror parameterType : parameterTypes ) {
-                if ( parameterType != null && annotationParameterType != null
-                    && (
-                        !typeUtils.isSameType( annotationParameterType, parameterType )
-                     && !typeUtils.isAssignable( parameterType, getTypeBound( annotationParameterType ) )
-                       ) ) {
+                if ( typesArePresent( annotationParameterType, parameterType )
+                    && !sameTypeOrAssignableClass( annotationParameterType, parameterType ) ) {
                     isValid = false;
                     messager
                             .printMessage(
@@ -174,6 +224,15 @@ public class AdditionalAnnotationsBuilder {
         return isValid;
     }
 
+    private boolean sameTypeOrAssignableClass(TypeMirror annotationParameterType, TypeMirror parameterType) {
+        return typeUtils.isSameType( annotationParameterType, parameterType )
+            || typeUtils.isAssignable( parameterType, getTypeBound( annotationParameterType ) );
+    }
+
+    private boolean typesArePresent(TypeMirror annotationParameterType, TypeMirror parameterType) {
+        return parameterType != null && annotationParameterType != null;
+    }
+
     private TypeMirror getTypeBound(TypeMirror annotationParameterType) {
         List<Type> typeParameters = typeFactory.getType( annotationParameterType ).getTypeParameters();
         if ( typeParameters.size() != 1 ) {
@@ -182,38 +241,39 @@ public class AdditionalAnnotationsBuilder {
         return typeFactory.getTypeBound( typeParameters.get( 0 ).getTypeMirror() );
     }
 
-    private List<TypeMirror> getParameterType(ParameterGem parameter) {
+    private List<TypeMirror> getParameterTypes(ParameterGem parameter) {
+        List<TypeMirror> suppliedParameterTypes = new ArrayList<>();
         if ( parameter.booleans().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( boolean.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( boolean.class ).getTypeMirror() );
         }
         if ( parameter.bytes().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( byte.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( byte.class ).getTypeMirror() );
         }
         if ( parameter.chars().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( char.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( char.class ).getTypeMirror() );
         }
         if ( parameter.classes().hasValue() ) {
-            return parameter.classes().get();
+            suppliedParameterTypes.addAll( parameter.classes().get() );
         }
         if ( parameter.doubles().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( double.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( double.class ).getTypeMirror() );
         }
         if ( parameter.floats().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( float.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( float.class ).getTypeMirror() );
         }
         if ( parameter.ints().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( int.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( int.class ).getTypeMirror() );
         }
         if ( parameter.longs().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( long.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( long.class ).getTypeMirror() );
         }
         if ( parameter.shorts().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( short.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( short.class ).getTypeMirror() );
         }
         if ( parameter.strings().hasValue() ) {
-            return Collections.singletonList( typeFactory.getType( String.class ).getTypeMirror() );
+            suppliedParameterTypes.add( typeFactory.getType( String.class ).getTypeMirror() );
         }
-        return null;
+        return suppliedParameterTypes;
     }
 
     private TypeMirror getAnnotationParameterType(Map<String, ExecutableElement> annotationParameters,

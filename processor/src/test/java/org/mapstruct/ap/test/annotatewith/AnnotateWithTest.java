@@ -40,24 +40,32 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedMapper.class, CustomNamed.class } )
+    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParams.class } )
     public void annotationWithValue() {
         CustomNamedMapper mapper = Mappers.getMapper( CustomNamedMapper.class );
 
-        CustomNamed annotation = mapper.getClass().getAnnotation( CustomNamed.class );
+        CustomAnnotationWithParams annotation = mapper.getClass().getAnnotation( CustomAnnotationWithParams.class );
         assertThat( annotation ).isNotNull();
-        assertThat( annotation.value() ).isEqualTo( "test" );
-        assertThat( annotation.genericTypedClass() ).isEqualTo( CustomNamed.class );
+        assertThat( annotation.booleanParam() ).isEqualTo( true );
+        assertThat( annotation.byteParam() ).isEqualTo( (byte) 0x13 );
+        assertThat( annotation.charParam() ).isEqualTo( 'a' );
+        assertThat( annotation.doubleParam() ).isEqualTo( 1.2 );
+        assertThat( annotation.floatParam() ).isEqualTo( 1.2f );
+        assertThat( annotation.intParam() ).isEqualTo( 1 );
+        assertThat( annotation.longParam() ).isEqualTo( 1L );
+        assertThat( annotation.shortParam() ).isEqualTo( (short) 1 );
+        assertThat( annotation.stringParam() ).isEqualTo( "test" );
+        assertThat( annotation.genericTypedClass() ).isEqualTo( CustomAnnotationWithParams.class );
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedGenericClassMapper.class, CustomNamed.class } )
+    @WithClasses( { CustomNamedGenericClassMapper.class, CustomAnnotationWithParams.class } )
     public void annotationWithcorrectGenericClassValue() {
         CustomNamedGenericClassMapper mapper = Mappers.getMapper( CustomNamedGenericClassMapper.class );
 
-        CustomNamed annotation = mapper.getClass().getAnnotation( CustomNamed.class );
+        CustomAnnotationWithParams annotation = mapper.getClass().getAnnotation( CustomAnnotationWithParams.class );
         assertThat( annotation ).isNotNull();
-        assertThat( annotation.value() ).isEqualTo( "test" );
+        assertThat( annotation.stringParam() ).isEqualTo( "test" );
         assertThat( annotation.genericTypedClass() ).isEqualTo( Mapper.class );
     }
 
@@ -102,98 +110,99 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 16,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"boolean\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"boolean\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 19,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"byte\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"byte\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 22,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"char\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"char\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 25,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"org.mapstruct.ap.test.annotatewith.CustomNamed\""
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type "
+                    + "\"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\""
                     + " but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"double\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"float\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"int\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"long\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 17,
+                alternativeLine = 32,
+                message = "Parameter \"stringParam\" is not of type \"short\" but of type \"java.lang.String\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 28,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"double\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 31,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"float\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 34,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"int\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 37,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"long\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 40,
-                alternativeLine = 55,
-                message = "Parameter \"value\" is not of type \"short\" but of type \"java.lang.String\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 45,
-                alternativeLine = 55,
-                message = "Parameter \"genericTypedClass\" is not of type \"java.lang.String\" "
-                    + "but of type \"java.lang.Class<? extends java.lang.annotation.Annotation>\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 51,
-                alternativeLine = 55,
+                alternativeLine = 32,
                 message = "Parameter \"genericTypedClass\" is not of type "
                     + "\"org.mapstruct.ap.test.annotatewith.ErroneousMapperWithWrongParameter\" "
                     + "but of type \"java.lang.Class<? extends java.lang.annotation.Annotation>\" "
-                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomNamed\"."
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 28,
+                alternativeLine = 32,
+                message = "Parameter \"genericTypedClass\" is not of type \"java.lang.String\" "
+                    + "but of type \"java.lang.Class<? extends java.lang.annotation.Annotation>\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithWrongParameter.class, CustomNamed.class } )
+    @WithClasses( { ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class } )
     public void erroneousMapperWithWrongParameter() {
     }
 }

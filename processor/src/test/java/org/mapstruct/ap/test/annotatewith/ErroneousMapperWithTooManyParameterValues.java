@@ -12,10 +12,9 @@ import org.mapstruct.Mapper;
  * @author Ben Zegveld
  */
 @Mapper
-@AnnotateWith( value = CustomAnnotationWithParams.class, parameters = {
-    @AnnotateWith.Parameter( key = "stringParam", strings = "test" ),
-    @AnnotateWith.Parameter( key = "genericTypedClass", classes = Mapper.class )
-} )
-public class CustomNamedGenericClassMapper {
+@AnnotateWith( value = CustomAnnotationWithParams.class,
+                parameters = @AnnotateWith.Parameter( key = "value", booleans = true, strings = "test" )
+)
+public class ErroneousMapperWithTooManyParameterValues {
 
 }
