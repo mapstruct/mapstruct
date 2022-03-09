@@ -5,7 +5,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -219,20 +220,33 @@ public class AdditionalAnnotationsBuilder {
         for ( ParameterGem parameter : parameters ) {
             TypeMirror annotationParameterType = getAnnotationParameterType( annotationParameters, parameter );
             TypeMirror annotationParameterTypeSingular = getNonArrayTypeMirror( annotationParameterType );
-            List<TypeMirror> parameterTypes = getParameterTypes( parameter );
-            for ( TypeMirror parameterType : parameterTypes ) {
-                if ( typesArePresent( annotationParameterTypeSingular, parameterType )
-                    && !sameTypeOrAssignableClass( annotationParameterTypeSingular, parameterType ) ) {
-                    isValid = false;
-                    messager
-                            .printMessage(
-                                element,
-                                parameter.mirror(),
-                                Message.ANNOTATE_WITH_WRONG_PARAMETER,
-                                parameter.key().get(),
-                                parameterType,
-                                annotationParameterType,
-                                annotationType );
+            Map<TypeMirror, Integer> parameterTypes = getParameterTypes( parameter );
+            Set<ParameterGem> reportedSizeError = new HashSet<>();
+            for ( TypeMirror parameterType : parameterTypes.keySet() ) {
+                if ( typesArePresent( annotationParameterTypeSingular, parameterType ) ) {
+                    if ( !sameTypeOrAssignableClass( annotationParameterTypeSingular, parameterType ) ) {
+                        isValid = false;
+                        messager.printMessage(
+                                              element,
+                                              parameter.mirror(),
+                                              Message.ANNOTATE_WITH_WRONG_PARAMETER,
+                                              parameter.key().get(),
+                                              parameterType,
+                                              annotationParameterType,
+                                              annotationType );
+                    }
+                    else if ( annotationParameterType.getKind() != TypeKind.ARRAY
+                        && parameterTypes.get( parameterType ) > 1
+                        && !reportedSizeError.contains( parameter ) ) {
+                        isValid = false;
+                        messager.printMessage(
+                                              element,
+                                              parameter.mirror(),
+                                              Message.ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED,
+                                              parameter.key().get(),
+                                              annotationType );
+                        reportedSizeError.add( parameter );
+                    }
                 }
             }
         }
@@ -262,38 +276,58 @@ public class AdditionalAnnotationsBuilder {
         return typeFactory.getTypeBound( typeParameters.get( 0 ).getTypeMirror() );
     }
 
-    private List<TypeMirror> getParameterTypes(ParameterGem parameter) {
-        List<TypeMirror> suppliedParameterTypes = new ArrayList<>();
+    private Map<TypeMirror, Integer> getParameterTypes(ParameterGem parameter) {
+        Map<TypeMirror, Integer> suppliedParameterTypes = new HashMap<>();
         if ( parameter.booleans().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( boolean.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( boolean.class ).getTypeMirror(),
+                                      parameter.booleans().get().size() );
         }
         if ( parameter.bytes().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( byte.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( byte.class ).getTypeMirror(),
+                                      parameter.bytes().get().size() );
         }
         if ( parameter.chars().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( char.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( char.class ).getTypeMirror(),
+                                      parameter.chars().get().size() );
         }
         if ( parameter.classes().hasValue() ) {
-            suppliedParameterTypes.addAll( parameter.classes().get() );
+            for ( TypeMirror mirror : parameter.classes().get() ) {
+                suppliedParameterTypes.put( mirror, parameter.classes().get().size() );
+            }
         }
         if ( parameter.doubles().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( double.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( double.class ).getTypeMirror(),
+                                      parameter.doubles().get().size() );
         }
         if ( parameter.floats().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( float.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( float.class ).getTypeMirror(),
+                                      parameter.floats().get().size() );
         }
         if ( parameter.ints().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( int.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( int.class ).getTypeMirror(),
+                                      parameter.ints().get().size() );
         }
         if ( parameter.longs().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( long.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( long.class ).getTypeMirror(),
+                                      parameter.longs().get().size() );
         }
         if ( parameter.shorts().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( short.class ).getTypeMirror() );
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( short.class ).getTypeMirror(),
+                                      parameter.shorts().get().size() );
         }
         if ( parameter.strings().hasValue() ) {
-            suppliedParameterTypes.add( typeFactory.getType( String.class ).getTypeMirror() );
-        }
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( String.class ).getTypeMirror(),
+                                      parameter.strings().get().size() );
+            }
         return suppliedParameterTypes;
     }
 
