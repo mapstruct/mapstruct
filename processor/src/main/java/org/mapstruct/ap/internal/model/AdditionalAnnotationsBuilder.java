@@ -14,8 +14,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
@@ -72,42 +75,44 @@ public class AdditionalAnnotationsBuilder {
     }
 
     private enum ConvertToJava {
-        BOOLEAN( "%s = %s",
-            parameter -> String.valueOf( parameter.booleans().get().get( 0 ) ),
+        BOOLEAN( "%s",
+            parameter -> parameter.booleans().get().stream().map( b -> String.valueOf( b ) ),
             parameter -> parameter.booleans().hasValue() ),
-        BYTE( "%s = %s",
-            parameter -> "0x" + Integer.toHexString( parameter.bytes().get().get( 0 ) ),
+        BYTE( "%s",
+            parameter -> parameter.bytes().get().stream().map( b -> "0x" + Integer.toHexString( b ) ),
             parameter -> parameter.bytes().hasValue() ),
-        CHARACTER( "%s = '%s'",
-            parameter -> String.valueOf( parameter.chars().get().get( 0 ) ),
+        CHARACTER( "'%s'",
+            parameter -> parameter.chars().get().stream().map( String::valueOf ),
             parameter -> parameter.chars().hasValue() ),
-        CLASSES( "%s = %s.class",
-            parameter -> String.valueOf( parameter.classes().get().get( 0 ) ),
+        CLASSES( "%s.class",
+            parameter -> parameter.classes().get().stream().map( String::valueOf ),
             parameter -> parameter.classes().hasValue() ),
-        DOUBLE( "%s = %s",
-            parameter -> String.valueOf( parameter.doubles().get().get( 0 ) ),
+        DOUBLE( "%s",
+            parameter -> parameter.doubles().get().stream().map( String::valueOf ),
             parameter -> parameter.doubles().hasValue() ),
-        FLOAT( "%s = %sf",
-            parameter -> String.valueOf( parameter.floats().get().get( 0 ) ),
+        FLOAT( "%sf",
+            parameter -> parameter.floats().get().stream().map( String::valueOf ),
             parameter -> parameter.floats().hasValue() ),
-        INT( "%s = %s",
-            parameter -> String.valueOf( parameter.ints().get().get( 0 ) ),
+        INT( "%s",
+            parameter -> parameter.ints().get().stream().map( String::valueOf ),
             parameter -> parameter.ints().hasValue() ),
-        LONG( "%s = %sL",
-            parameter -> String.valueOf( parameter.longs().get().get( 0 ) ),
+        LONG( "%sL",
+            parameter -> parameter.longs().get().stream().map( String::valueOf ),
             parameter -> parameter.longs().hasValue() ),
-        SHORT( "%s = %s",
-            parameter -> String.valueOf( parameter.shorts().get().get( 0 ) ),
+        SHORT( "%s",
+            parameter -> parameter.shorts().get().stream().map( String::valueOf ),
             parameter -> parameter.shorts().hasValue() ),
-        STRING( "%s = \"%s\"",
-            parameter -> parameter.strings().get().get( 0 ),
+        STRING( "\"%s\"",
+            parameter -> parameter.strings().get().stream(),
             parameter -> parameter.strings().hasValue() );
 
+        private static final String PARAMETER_FORMAT = "%s = %s";
+
         private String format;
-        private Function<ParameterGem, String> valueExtractor;
+        private Function<ParameterGem, Stream<String>> valueExtractor;
         private Predicate<ParameterGem> usabilityChecker;
 
-        ConvertToJava(String format, Function<ParameterGem, String> valueExtractor,
+        ConvertToJava(String format, Function<ParameterGem, Stream<String>> valueExtractor,
                               Predicate<ParameterGem> usabilityChecker) {
             this.format = format;
             this.valueExtractor = valueExtractor;
@@ -115,7 +120,21 @@ public class AdditionalAnnotationsBuilder {
         }
 
         String toParameter(ParameterGem parameter) {
-            return String.format( format, parameter.key().get(), valueExtractor.apply( parameter ) );
+            return String.format(
+                PARAMETER_FORMAT,
+                             parameter.key().get(),
+                toParameterValue( parameter ) );
+        }
+
+        private String toParameterValue(ParameterGem parameter) {
+            String values = valueExtractor
+                                          .apply( parameter )
+                                          .map( val -> String.format( format, val ) )
+                                          .collect( Collectors.joining( ", " ) );
+            if ( valueExtractor.apply( parameter ).count() > 1 ) {
+                values = "{ " + values + " }";
+            }
+            return values;
         }
 
         boolean isUsable(ParameterGem parameter) {
@@ -127,11 +146,6 @@ public class AdditionalAnnotationsBuilder {
         for ( ConvertToJava convertToJava : ConvertToJava.values() ) {
             if ( convertToJava.isUsable( parameter ) ) {
                 return convertToJava.toParameter( parameter );
-            }
-        }
-        if ( parameter.strings().hasValue() ) {
-            if ( parameter.strings().get().size() == 1 ) {
-                return String.format( "%s = \"%s\"", parameter.key().get(), parameter.strings().get().get( 0 ) );
             }
         }
         return "";
@@ -204,10 +218,11 @@ public class AdditionalAnnotationsBuilder {
         boolean isValid = true;
         for ( ParameterGem parameter : parameters ) {
             TypeMirror annotationParameterType = getAnnotationParameterType( annotationParameters, parameter );
+            TypeMirror annotationParameterTypeSingular = getNonArrayTypeMirror( annotationParameterType );
             List<TypeMirror> parameterTypes = getParameterTypes( parameter );
             for ( TypeMirror parameterType : parameterTypes ) {
-                if ( typesArePresent( annotationParameterType, parameterType )
-                    && !sameTypeOrAssignableClass( annotationParameterType, parameterType ) ) {
+                if ( typesArePresent( annotationParameterTypeSingular, parameterType )
+                    && !sameTypeOrAssignableClass( annotationParameterTypeSingular, parameterType ) ) {
                     isValid = false;
                     messager
                             .printMessage(
@@ -222,6 +237,12 @@ public class AdditionalAnnotationsBuilder {
             }
         }
         return isValid;
+    }
+
+    private TypeMirror getNonArrayTypeMirror(TypeMirror annotationParameterType) {
+        return annotationParameterType != null && annotationParameterType.getKind() == TypeKind.ARRAY
+                    ? ( (ArrayType) annotationParameterType ).getComponentType()
+                    : annotationParameterType;
     }
 
     private boolean sameTypeOrAssignableClass(TypeMirror annotationParameterType, TypeMirror parameterType) {
