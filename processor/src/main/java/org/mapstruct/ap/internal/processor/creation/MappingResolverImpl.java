@@ -850,9 +850,9 @@ public class MappingResolverImpl implements MappingResolver {
                 }
             }
 
+            attempt.selectionCriteria.setIgnoreQualifiers( false );
             // no results left
             if ( xCandidates.isEmpty() ) {
-                attempt.selectionCriteria.setIgnoreQualifiers( false );
                 return this;
             }
             hasResult = true;
@@ -868,7 +868,6 @@ public class MappingResolverImpl implements MappingResolver {
             else  {
                 reportAmbiguousError( xCandidates, targetType );
             }
-            attempt.selectionCriteria.setIgnoreQualifiers( false );
             return this;
 
         }
