@@ -41,7 +41,7 @@
             <#-- a class is passed on for casting, see @TargetType -->
             <@includeModel object=inferTypeWhenEnum( ext.targetType ) raw=true/>.class<#t>
         <#elseif param.mappingTarget>
-            ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
+            <#if ext.targetBeanName??>${ext.targetBeanName}<#else>${param.variableName}</#if><#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
         <#elseif param.mappingContext>
             ${param.variableName}<#t>
         <#elseif param.sourceRHS??>
