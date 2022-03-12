@@ -185,13 +185,17 @@ public class Strings {
                 // If it is not consisted of only underscores
                 String firstAlphaString = identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
 
-                return firstAlphaString.codePoints()
-                    .map(codePoint -> Character.isJavaIdentifierPart(codePoint) || codePoint == (int) '.' ? codePoint : (int) '_')
-                    .collect(
-                        StringBuilder::new,
-                        StringBuilder::appendCodePoint,
-                        StringBuilder::append
-                    ).toString();
+                StringBuilder sb = new StringBuilder( firstAlphaString.length() );
+                for ( int i = 0; i < firstAlphaString.length(); i++ ) {
+                    int codePoint = firstAlphaString.codePointAt( i );
+                    if ( Character.isJavaIdentifierPart( codePoint ) || codePoint == '.') {
+                        sb.appendCodePoint( codePoint );
+                    }
+                    else {
+                        sb.append( '_' );
+                    }
+                }
+                return sb.toString();
             }
 
             return identifier.replace( "[]", "Array" );
