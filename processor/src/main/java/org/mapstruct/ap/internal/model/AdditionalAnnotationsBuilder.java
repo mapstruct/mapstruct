@@ -77,6 +77,7 @@ public class AdditionalAnnotationsBuilder {
         return parameters.stream().map( this::convertToJava ).collect( Collectors.toList() );
     }
 
+    // TODO rewrite this to Annotation.Parameter objects and adjust the `Annotation.ftl` to handle these choices.
     private enum ConvertToJava {
         BOOLEAN( "%s",
             parameter -> parameter.booleans().get().stream().map( b -> String.valueOf( b ) ),
