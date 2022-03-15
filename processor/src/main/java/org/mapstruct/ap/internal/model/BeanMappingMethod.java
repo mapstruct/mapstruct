@@ -217,7 +217,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
             AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
-                new AdditionalAnnotationsBuilder( ctx.getTypeUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+                new AdditionalAnnotationsBuilder(
+                    ctx.getElementUtils(),
+                    ctx.getTypeUtils(),
+                    ctx.getTypeFactory(),
+                    ctx.getMessager() );
             annotations.addAll( additionalAnnotationsBuilder.getAdditionalAnnotations( method.getExecutable() ) );
 
             /* the type that needs to be used in the mapping process as target */

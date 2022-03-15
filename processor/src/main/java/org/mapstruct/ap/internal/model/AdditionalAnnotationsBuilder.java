@@ -29,34 +29,56 @@ import org.mapstruct.ap.internal.gem.ParameterGem;
 import org.mapstruct.ap.internal.gem.TargetGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.MetaAnnotationsUtil;
+import org.mapstruct.ap.internal.util.RepeatableAnnotations;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * @author Ben Zegveld
  * @since 1.5
  */
-public class AdditionalAnnotationsBuilder {
+public class AdditionalAnnotationsBuilder
+    extends RepeatableAnnotations<AnnotateWithGem, AnnotateWithsGem, AnnotateWithGem> {
+    private static final String ANNOTATE_WITH_FQN = "org.mapstruct.AnnotateWith";
+    private static final String ANNOTATE_WITHS_FQN = "org.mapstruct.AnnotateWiths";
 
     private TypeFactory typeFactory;
     private FormattingMessager messager;
     private TypeUtils typeUtils;
 
-    public AdditionalAnnotationsBuilder(TypeUtils typeUtils, TypeFactory typeFactory, FormattingMessager messager) {
+    public AdditionalAnnotationsBuilder(ElementUtils elementUtils, TypeUtils typeUtils, TypeFactory typeFactory,
+                                        FormattingMessager messager) {
+        super( elementUtils, ANNOTATE_WITH_FQN, ANNOTATE_WITHS_FQN );
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
         this.messager = messager;
     }
 
+    @Override
+    protected AnnotateWithGem singularInstanceOn(Element element) {
+        return AnnotateWithGem.instanceOn( element );
+    }
+
+    @Override
+    protected AnnotateWithsGem multipleInstanceOn(Element element) {
+        return AnnotateWithsGem.instanceOn( element );
+    }
+
+    @Override
+    protected void addInstance(AnnotateWithGem gem, Element method, Set<AnnotateWithGem> mappings) {
+        mappings.add( gem );
+    }
+
+    @Override
+    protected void addInstances(AnnotateWithsGem gem, Element method, Set<AnnotateWithGem> mappings) {
+        mappings.addAll( gem.value().get() );
+    }
+
     public Set<Annotation> getAdditionalAnnotations(Element element) {
         Set<Annotation> additionalAnnotations = new LinkedHashSet<>();
-        Set<AnnotateWithGem> allAnnotateWithGems = MetaAnnotationsUtil.getGemsFromElement(
-                                                                     element,
-                                                                     AnnotateWithGem::instanceOn,
-                                                                     AnnotateWithsGem::instanceOn,
-                                                                     gems -> gems.value().get() );
+        Set<AnnotateWithGem> allAnnotateWithGems = getMappings( element );
         for ( AnnotateWithGem annotationGem : allAnnotateWithGems ) {
             buildAnnotation( annotationGem, element ).ifPresent( additionalAnnotations::add );
         }
