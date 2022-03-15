@@ -16,8 +16,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -25,6 +26,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
 import org.mapstruct.ap.internal.gem.ParameterGem;
+import org.mapstruct.ap.internal.gem.TargetGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -47,7 +49,7 @@ public class AdditionalAnnotationsBuilder {
         this.messager = messager;
     }
 
-    public Set<Annotation> getAdditionalAnnotations(TypeElement element) {
+    public Set<Annotation> getAdditionalAnnotations(Element element) {
         LinkedHashSet<Annotation> additionalAnnotations = new LinkedHashSet<>();
         AnnotateWithGem annotationGem = AnnotateWithGem.instanceOn( element );
         if ( annotationGem != null ) {
@@ -62,7 +64,7 @@ public class AdditionalAnnotationsBuilder {
         return additionalAnnotations;
     }
 
-    private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, TypeElement element) {
+    private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, Element element) {
         List<ParameterGem> parameters = annotationGem.parameters().get();
         Type annotationType = typeFactory.getType( annotationGem.value().getValue() );
         if ( isValid( annotationType, parameters, element ) ) {
@@ -152,8 +154,11 @@ public class AdditionalAnnotationsBuilder {
         return "";
     }
 
-    private boolean isValid(Type annotationType, List<ParameterGem> parameters, TypeElement element) {
+    private boolean isValid(Type annotationType, List<ParameterGem> parameters, Element element) {
         boolean isValid = true;
+        if ( !annotationIsAllowed( annotationType, element ) ) {
+            isValid = false;
+        }
         if ( !allRequiredParametersArePresent( annotationType, parameters, element ) ) {
             isValid = false;
         }
@@ -166,8 +171,37 @@ public class AdditionalAnnotationsBuilder {
         return isValid;
     }
 
+    private boolean annotationIsAllowed(Type annotationType, Element element) {
+        TargetGem target = TargetGem.instanceOn( annotationType.getTypeElement() );
+        List<String> annotationTargets = target.value().get();
+        boolean isValid = true;
+        if ( isTypeTarget( element ) && !annotationTargets.contains( "TYPE" ) ) {
+            isValid = false;
+            messager.printMessage(
+                        element,
+                        Message.ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS,
+                        annotationType );
+        }
+        if ( isMethodTarget( element ) && !annotationTargets.contains( "METHOD" ) ) {
+            isValid = false;
+            messager.printMessage(
+                        element,
+                        Message.ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS,
+                        annotationType );
+        }
+        return isValid;
+    }
+
+    private boolean isTypeTarget(Element element) {
+        return element.getKind().isInterface() || element.getKind().isClass();
+    }
+
+    private boolean isMethodTarget(Element element) {
+        return element.getKind() == ElementKind.METHOD;
+    }
+
     private boolean allParametersAreKnownInAnnotation(Type annotationType, List<ParameterGem> parameters,
-                                                      TypeElement element) {
+                                                      Element element) {
         List<String> allowedAnnotationParameters = annotationType
                                                                  .findAllAnnotationParameters()
                                                                  .map( ee -> ee.getSimpleName().toString() )
@@ -188,7 +222,7 @@ public class AdditionalAnnotationsBuilder {
     }
 
     private boolean allRequiredParametersArePresent(Type annotationType, List<ParameterGem> parameters,
-                                                    TypeElement element) {
+                                                    Element element) {
         List<ExecutableElement> undefinedParameters =
             annotationType.findAllAnnotationParameters()
                         .filter( ee -> ee.getDefaultValue() == null )
@@ -211,7 +245,7 @@ public class AdditionalAnnotationsBuilder {
     }
 
     private boolean allParametersAreOfCorrectType(Type annotationType, List<ParameterGem> parameters,
-                                                  TypeElement element) {
+                                                  Element element) {
         Map<String, ExecutableElement> annotationParameters =
             annotationType
                           .findAllAnnotationParameters()

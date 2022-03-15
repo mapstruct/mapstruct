@@ -28,6 +28,6 @@ import org.mapstruct.Mapper;
                @AnnotateWith.Parameter( key = "genericTypedClass", classes = ErroneousMapperWithWrongParameter.class )
            }
 )
-public class ErroneousMapperWithWrongParameter {
+public interface ErroneousMapperWithWrongParameter {
 
 }

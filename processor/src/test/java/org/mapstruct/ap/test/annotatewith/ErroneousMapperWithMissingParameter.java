@@ -13,6 +13,6 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( AnnotationWithRequiredParameter.class )
-public class ErroneousMapperWithMissingParameter {
+public interface ErroneousMapperWithMissingParameter {
 
 }

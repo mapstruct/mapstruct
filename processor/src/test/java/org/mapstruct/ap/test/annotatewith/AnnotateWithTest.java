@@ -120,6 +120,57 @@ public class AnnotateWithTest {
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithMethodOnInterface.class,
+                line = 16,
+                message = "Annotation \"org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation\" "
+                    + "is not allowed on classes."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithMethodOnInterface.class, CustomMethodOnlyAnnotation.class } )
+    public void erroneousMapperWithMethodOnInterface() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithMethodOnClass.class,
+                line = 16,
+                message = "Annotation \"org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation\" "
+                    + "is not allowed on classes."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithMethodOnClass.class, CustomMethodOnlyAnnotation.class } )
+    public void erroneousMapperWithMethodOnClass() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithClassOnMethod.class,
+                line = 18,
+                message = "Annotation \"org.mapstruct.ap.test.annotatewith.CustomClassOnlyAnnotation\" "
+                    + "is not allowed on methods."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class } )
+    public void erroneousMapperWithClassOnMethod() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithUnknownParameter.class,
                 line = 18,
                 message = "Parameter \"unknownParameter\" is not present in annotation "

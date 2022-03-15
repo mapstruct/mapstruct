@@ -16,6 +16,6 @@ import org.mapstruct.Mapper;
     @AnnotateWith.Parameter( key = "stringParam", strings = "test" ),
     @AnnotateWith.Parameter( key = "genericTypedClass", classes = Mapper.class )
 } )
-public class CustomNamedGenericClassMapper {
+public interface CustomNamedGenericClassMapper {
 
 }

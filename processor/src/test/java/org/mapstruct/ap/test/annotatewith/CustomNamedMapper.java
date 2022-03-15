@@ -32,6 +32,6 @@ import org.mapstruct.Mapper;
     @AnnotateWith.Parameter( key = "shortArray", shorts = 3 ),
     @AnnotateWith.Parameter( key = "shortParam", shorts = 1 )
 } )
-public class CustomNamedMapper {
+public interface CustomNamedMapper {
 
 }

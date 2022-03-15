@@ -15,6 +15,6 @@ import org.mapstruct.Mapper;
 @AnnotateWith( value = CustomAnnotationWithParams.class,
                 parameters = @AnnotateWith.Parameter( key = "value", booleans = true, strings = "test" )
 )
-public class ErroneousMapperWithTooManyParameterValues {
+public interface ErroneousMapperWithTooManyParameterValues {
 
 }

@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.gem;
 
+import java.lang.annotation.Target;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlElementRef;
 
@@ -79,5 +80,6 @@ import org.mapstruct.tools.gem.GemDefinition;
 // external types
 @GemDefinition(XmlElementDecl.class)
 @GemDefinition(XmlElementRef.class)
+@GemDefinition(Target.class)
 public class GemGenerator {
 }

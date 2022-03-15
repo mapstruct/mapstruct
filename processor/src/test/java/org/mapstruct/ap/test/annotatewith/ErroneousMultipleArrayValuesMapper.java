@@ -24,6 +24,6 @@ import org.mapstruct.Mapper;
     @AnnotateWith.Parameter( key = "shortParam", shorts = { 12, 34 } ),
     @AnnotateWith.Parameter( key = "genericTypedClass", classes = { Mapper.class, CustomAnnotationWithParams.class } )
 } )
-public class ErroneousMultipleArrayValuesMapper {
+public interface ErroneousMultipleArrayValuesMapper {
 
 }

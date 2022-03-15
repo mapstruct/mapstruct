@@ -14,6 +14,6 @@ import org.mapstruct.Mapper;
 @Mapper
 @AnnotateWith( Deprecated.class )
 @AnnotateWith( CustomAnnotation.class )
-public class DeprecateAndCustomMapper {
+public interface DeprecateAndCustomMapper {
 
 }

@@ -15,6 +15,6 @@ import org.mapstruct.Mapper;
 @AnnotateWith( value = CustomAnnotation.class,
           parameters = @AnnotateWith.Parameter( key = "unknownParameter", strings = "unknown")
 )
-public class ErroneousMapperWithUnknownParameter {
+public interface ErroneousMapperWithUnknownParameter {
 
 }

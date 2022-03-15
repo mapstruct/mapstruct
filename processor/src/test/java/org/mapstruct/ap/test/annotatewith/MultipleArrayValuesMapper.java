@@ -25,6 +25,6 @@ import org.mapstruct.Mapper;
     @AnnotateWith.Parameter( key = "classArray", classes = { Mapper.class, CustomAnnotationWithParams.class } ),
     @AnnotateWith.Parameter( key = "stringParam", strings = "required parameter" )
 } )
-public class MultipleArrayValuesMapper {
+public interface MultipleArrayValuesMapper {
 
 }

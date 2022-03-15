@@ -13,6 +13,6 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( Deprecated.class )
-public class DeprecateMapper {
+public interface DeprecateMapper {
 
 }
