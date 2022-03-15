@@ -98,6 +98,15 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
+    @WithClasses( { MetaAnnotatedMapper.class, ClassMetaAnnotation.class, CustomClassOnlyAnnotation.class } )
+    public void metaAnnotationWorks() {
+        MetaAnnotatedMapper mapper = Mappers.getMapper( MetaAnnotatedMapper.class );
+
+        CustomClassOnlyAnnotation annotation = mapper.getClass().getAnnotation( CustomClassOnlyAnnotation.class );
+        assertThat( annotation ).isNotNull();
+    }
+
+    @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
