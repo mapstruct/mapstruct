@@ -211,7 +211,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
-            .additionalAnnotations( additionalAnnotationsBuilder.getAdditionalAnnotations( element ) )
+            .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {

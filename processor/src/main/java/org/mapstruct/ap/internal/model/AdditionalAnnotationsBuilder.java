@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +39,7 @@ import org.mapstruct.ap.internal.util.TypeUtils;
  * @since 1.5
  */
 public class AdditionalAnnotationsBuilder
-    extends RepeatableAnnotations<AnnotateWithGem, AnnotateWithsGem, AnnotateWithGem> {
+    extends RepeatableAnnotations<AnnotateWithGem, AnnotateWithsGem, Annotation> {
     private static final String ANNOTATE_WITH_FQN = "org.mapstruct.AnnotateWith";
     private static final String ANNOTATE_WITHS_FQN = "org.mapstruct.AnnotateWiths";
 
@@ -67,22 +66,15 @@ public class AdditionalAnnotationsBuilder
     }
 
     @Override
-    protected void addInstance(AnnotateWithGem gem, Element method, Set<AnnotateWithGem> mappings) {
-        mappings.add( gem );
+    protected void addInstance(AnnotateWithGem gem, Element source, Set<Annotation> mappings) {
+        buildAnnotation( gem, source ).ifPresent( mappings::add );
     }
 
     @Override
-    protected void addInstances(AnnotateWithsGem gem, Element method, Set<AnnotateWithGem> mappings) {
-        mappings.addAll( gem.value().get() );
-    }
-
-    public Set<Annotation> getAdditionalAnnotations(Element element) {
-        Set<Annotation> additionalAnnotations = new LinkedHashSet<>();
-        Set<AnnotateWithGem> allAnnotateWithGems = getMappings( element );
-        for ( AnnotateWithGem annotationGem : allAnnotateWithGems ) {
-            buildAnnotation( annotationGem, element ).ifPresent( additionalAnnotations::add );
+    protected void addInstances(AnnotateWithsGem gem, Element source, Set<Annotation> mappings) {
+        for ( AnnotateWithGem annotateWithGem : gem.value().get() ) {
+            buildAnnotation( annotateWithGem, source ).ifPresent( mappings::add );
         }
-        return additionalAnnotations;
     }
 
     private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, Element element) {

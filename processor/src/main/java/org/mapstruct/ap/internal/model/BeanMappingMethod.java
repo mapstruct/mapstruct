@@ -222,7 +222,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ctx.getTypeUtils(),
                     ctx.getTypeFactory(),
                     ctx.getMessager() );
-            annotations.addAll( additionalAnnotationsBuilder.getAdditionalAnnotations( method.getExecutable() ) );
+            annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
 
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;

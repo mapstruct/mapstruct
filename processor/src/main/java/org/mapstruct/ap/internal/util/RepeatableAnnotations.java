@@ -32,35 +32,52 @@ public abstract class RepeatableAnnotations<SINGULAR extends Gem, MULTIPLE exten
         this.multipleFqn = multipleFqn;
     }
 
+    /**
+     * @param element the element on which the Gem needs to be found
+     * @return the Gem found on the element.
+     */
     protected abstract SINGULAR singularInstanceOn(Element element);
 
+    /**
+     * @param element the element on which the Gems needs to be found
+     * @return the Gems found on the element.
+     */
     protected abstract MULTIPLE multipleInstanceOn(Element element);
 
-    protected abstract void addInstance(SINGULAR gem, Element method, Set<OPTIONS> mappings);
-
-    protected abstract void addInstances(MULTIPLE gem, Element method, Set<OPTIONS> mappings);
+    /**
+     * @param gem the annotation gem to be processed
+     * @param source the source element where the request originated from
+     * @param mappings the collection of completed processing
+     */
+    protected abstract void addInstance(SINGULAR gem, Element source, Set<OPTIONS> mappings);
 
     /**
-     * Retrieves the mappings configured via {@code @Mapping} from the given method.
-     *
-     * @param method The method of interest
-     * @param beanMapping options coming from bean mapping method
-     * @return The mappings for the given method, keyed by target property name
+     * @param gems the annotation gems to be processed
+     * @param source the source element where the request originated from
+     * @param mappings the collection of completed processing
      */
-    public Set<OPTIONS> getMappings(Element method) {
-        return getMappings( method, method, new LinkedHashSet<>(), new HashSet<>() );
+    protected abstract void addInstances(MULTIPLE gems, Element source, Set<OPTIONS> mappings);
+
+    /**
+     * Retrieves the processed annotations.
+     *
+     * @param source The source element of interest
+     * @return The processed annotations for the given element
+     */
+    public Set<OPTIONS> getProcessedAnnotations(Element source) {
+        return getMappings( source, source, new LinkedHashSet<>(), new HashSet<>() );
     }
 
     /**
-     * Retrieves the mappings configured via {@code @Mapping} from the given method.
+     * Retrieves the processed annotations.
      *
-     * @param method The method of interest
+     * @param source The source element of interest
      * @param element Element of interest: method, or (meta) annotation
-     * @param beanMapping options coming from bean mapping method
      * @param mappingOptions LinkedSet of mappings found so far
-     * @return The mappings for the given method, keyed by target property name
+     * @param handledElements The collection of already handled elements to handle recursion correctly.
+     * @return The processed annotations for the given element
      */
-    private Set<OPTIONS> getMappings(Element method, Element element,
+    private Set<OPTIONS> getMappings(Element source, Element element,
                                      LinkedHashSet<OPTIONS> mappingOptions,
                                               Set<Element> handledElements) {
 
@@ -69,19 +86,19 @@ public abstract class RepeatableAnnotations<SINGULAR extends Gem, MULTIPLE exten
             if ( isAnnotation( lElement, singularFqn ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
                 SINGULAR mapping = singularInstanceOn( element );
-                addInstance( mapping, method, mappingOptions );
+                addInstance( mapping, source, mappingOptions );
             }
             else if ( isAnnotation( lElement, multipleFqn ) ) {
                 // although getInstanceOn does a search on annotation mirrors, the order is preserved
                 MULTIPLE mappings = multipleInstanceOn( element );
-                addInstances( mappings, method, mappingOptions );
+                addInstances( mappings, source, mappingOptions );
             }
             else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
                 && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
                 && !handledElements.contains( lElement ) ) {
                 // recur over annotation mirrors
                 handledElements.add( lElement );
-                getMappings( method, lElement, mappingOptions, handledElements );
+                getMappings( source, lElement, mappingOptions, handledElements );
             }
         }
         return mappingOptions;

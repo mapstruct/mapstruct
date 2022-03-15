@@ -587,7 +587,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings( beanMapping ).getMappings( method );
+        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
     }
 
     /**
@@ -602,7 +602,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                             ExecutableElement method, BeanMappingOptions beanMapping,
                                                             SubclassValidator validator) {
         return new RepeatableSubclassMappings( beanMapping, sourceParameters, resultType, validator )
-                        .getMappings( method );
+                        .getProcessedAnnotations( method );
     }
 
     private class RepeatableMappings extends RepeatableAnnotations<MappingGem, MappingsGem, MappingOptions> {
