@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -32,6 +31,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.MetaAnnotationsUtil;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
@@ -51,35 +51,14 @@ public class AdditionalAnnotationsBuilder {
     }
 
     public Set<Annotation> getAdditionalAnnotations(Element element) {
-        return getAdditionalAnnotations( element, new ArrayList<>() );
-    }
-
-    private Set<Annotation> getAdditionalAnnotations(Element element, List<String> handledStack) {
-        handledStack.add( element.toString() );
         Set<Annotation> additionalAnnotations = new LinkedHashSet<>();
-        AnnotateWithGem annotationGem = AnnotateWithGem.instanceOn( element );
-        if ( annotationGem != null ) {
+        Set<AnnotateWithGem> allAnnotateWithGems = MetaAnnotationsUtil.getGemsFromElement(
+                                                                     element,
+                                                                     AnnotateWithGem::instanceOn,
+                                                                     AnnotateWithsGem::instanceOn,
+                                                                     gems -> gems.value().get() );
+        for ( AnnotateWithGem annotationGem : allAnnotateWithGems ) {
             buildAnnotation( annotationGem, element ).ifPresent( additionalAnnotations::add );
-        }
-        AnnotateWithsGem annotationsGem = AnnotateWithsGem.instanceOn( element );
-        if ( annotationsGem != null ) {
-            for ( AnnotateWithGem annotateWithGem : annotationsGem.value().get() ) {
-                buildAnnotation( annotateWithGem, element ).ifPresent( additionalAnnotations::add );
-            }
-        }
-        additionalAnnotations.addAll( handleMetaAnnotations( element, handledStack ) );
-        return additionalAnnotations;
-    }
-
-    private Set<Annotation> handleMetaAnnotations(Element element, List<String> handledStackInput) {
-        List<String> handledStack = new ArrayList<>( handledStackInput );
-        Set<Annotation> additionalAnnotations = new LinkedHashSet<>();
-        for ( javax.lang.model.element.AnnotationMirror mirror : element.getAnnotationMirrors() ) {
-            Element asElement = mirror.getAnnotationType().asElement();
-            if ( handledStack.contains( asElement.toString() ) ) {
-                continue;
-            }
-            additionalAnnotations.addAll( getAdditionalAnnotations( asElement, handledStack ) );
         }
         return additionalAnnotations;
     }
