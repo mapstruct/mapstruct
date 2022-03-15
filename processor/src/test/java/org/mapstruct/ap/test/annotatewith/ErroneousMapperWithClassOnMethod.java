@@ -17,12 +17,11 @@ public interface ErroneousMapperWithClassOnMethod {
     @AnnotateWith( value = CustomClassOnlyAnnotation.class )
     Target toString(Source value);
 
-}
+    class Source {
 
-class Source {
+    }
 
-}
+    class Target {
 
-class Target {
-
+    }
 }
