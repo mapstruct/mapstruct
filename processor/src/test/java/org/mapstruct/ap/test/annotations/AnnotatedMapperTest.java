@@ -23,6 +23,6 @@ class AnnotatedMapperTest {
     @ProcessorTest
     @WithClasses(AnnotatedMapper.class)
     void shouldGenerateMapperImplementationWithAnnotation() {
-        generatedSource.addComparisonToFixtureFor(AnnotatedMapper.class);
+        generatedSource.addComparisonToFixtureFor( AnnotatedMapper.class );
     }
 }

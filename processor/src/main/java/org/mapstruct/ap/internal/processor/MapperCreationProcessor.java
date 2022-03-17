@@ -225,9 +225,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 );
         }
 
-        Arrays.stream(element.getAnnotation(org.mapstruct.Mapper.class).implementationAnnotations()).forEach(
+        Arrays.stream( element.getAnnotation( org.mapstruct.Mapper.class ).implementationAnnotations() ).forEach(
                 implementationAnnotation -> mapper.addAnnotation(
-                        new Annotation(typeFactory.getType(implementationAnnotation))));
+                        new Annotation( typeFactory.getType( implementationAnnotation ) ) ) );
 
         return mapper;
     }

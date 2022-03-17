@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(implementationAnnotations = MyGeneratedAnnotation.class)
 public interface AnnotatedMapper {
-    AnnotatedMapper INSTANCE = Mappers.getMapper(AnnotatedMapper.class);
+    AnnotatedMapper INSTANCE = Mappers.getMapper( AnnotatedMapper.class );
 
     Target map(Source source);
 }
