@@ -52,6 +52,10 @@ public abstract class DelegatingOptions {
         return next.imports();
     }
 
+    public Set<DeclaredType> implementationAnnotations() {
+        return next.implementationAnnotations();
+    }
+
     public ReportingPolicyGem unmappedTargetPolicy() {
         return next.unmappedTargetPolicy();
     }

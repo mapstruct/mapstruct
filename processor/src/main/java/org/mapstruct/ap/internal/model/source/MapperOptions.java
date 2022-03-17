@@ -83,6 +83,11 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
+    public Set<DeclaredType> implementationAnnotations() {
+        return toDeclaredTypes( mapper.implementationAnnotations().get(), next().implementationAnnotations() );
+    }
+
+    @Override
     public ReportingPolicyGem unmappedTargetPolicy() {
         return mapper.unmappedTargetPolicy().hasValue() ?
             ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().get() ) : next().unmappedTargetPolicy();
