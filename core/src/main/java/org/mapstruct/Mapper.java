@@ -376,5 +376,12 @@ public @interface Mapper {
      */
     boolean suppressTimestampInGenerated() default false;
 
+    /**
+     * Additional annotations to be added to the generated Mapper implementation
+     *
+     * @return A list of annotation types to be added to the generated Mapper implementation
+     *
+     * @since 1.5
+     */
     Class<? extends Annotation>[] implementationAnnotations() default {};
 }

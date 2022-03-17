@@ -345,6 +345,14 @@ public @interface MapperConfig {
      * @since 1.5
      */
     boolean suppressTimestampInGenerated() default false;
+
+    /**
+     * Additional annotations to be added to the generated Mapper implementations
+     *
+     * @return A list of annotation types to be added to the generated Mapper implementations
+     *
+     * @since 1.5
+     */
     Class<? extends Annotation>[] implementationAnnotations() default {};
 }
 
