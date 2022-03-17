@@ -15,8 +15,6 @@ import javax.annotation.processing.Generated;
 @MyGeneratedAnnotation
 public class AnnotatedMapperImpl implements AnnotatedMapper {
 
-    private final AnnotatedMapper instanceMapper = AnnotatedMapper.INSTANCE;
-
     @Override
     public Target map(Source source) {
         if ( source == null ) {
@@ -25,7 +23,6 @@ public class AnnotatedMapperImpl implements AnnotatedMapper {
 
         String id = null;
         id = source.getId();
-
         Target target = new Target( id );
 
         return target;
