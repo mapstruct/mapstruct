@@ -55,6 +55,11 @@ public class DefaultOptions extends DelegatingOptions {
     }
 
     @Override
+    public Set<DeclaredType> implementationAnnotations() {
+        return Collections.emptySet();
+    }
+
+    @Override
     public ReportingPolicyGem unmappedTargetPolicy() {
         if ( options.getUnmappedTargetPolicy() != null ) {
             return options.getUnmappedTargetPolicy();
