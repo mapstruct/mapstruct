@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.annotations;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.processing.Generated;
 
 @Generated(
@@ -25,7 +23,10 @@ public class AnnotatedMapperImpl implements AnnotatedMapper {
             return null;
         }
 
-        Target target = new Target(source.getId());
+        String id = null;
+        id = source.getId();
+
+        Target target = new Target( id );
 
         return target;
     }
