@@ -22,7 +22,9 @@ public class AnnotatedMapperImpl implements AnnotatedMapper {
         }
 
         String id = null;
+
         id = source.getId();
+
         Target target = new Target( id );
 
         return target;
