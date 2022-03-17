@@ -21,7 +21,7 @@ class AnnotatedMapperTest {
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
-    @WithClasses(AnnotatedMapper.class)
+    @WithClasses({AnnotatedMapper.class, MyGeneratedAnnotation.class})
     void shouldGenerateMapperImplementationWithAnnotation() {
         generatedSource.addComparisonToFixtureFor( AnnotatedMapper.class );
     }
