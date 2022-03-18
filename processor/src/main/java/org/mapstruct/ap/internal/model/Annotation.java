@@ -6,9 +6,11 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.annotation.Property;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -21,16 +23,13 @@ public class Annotation extends ModelElement {
 
     private final Type type;
 
-    /**
-     * List of annotation attributes. Quite simplistic, but it's sufficient for now.
-     */
-    private List<String> properties;
+    private List<Property> properties;
 
     public Annotation(Type type) {
         this( type, Collections.emptyList() );
     }
 
-    public Annotation(Type type, List<String> properties) {
+    public Annotation(Type type, List<Property> properties) {
         this.type = type;
         this.properties = properties;
     }
@@ -41,10 +40,15 @@ public class Annotation extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.singleton( type );
+        Set<Type> types = new HashSet<>();
+        for ( Property prop : properties ) {
+            types.addAll( prop.getImportTypes() );
+        }
+        types.add( type );
+        return types;
     }
 
-    public List<String> getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 }

@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -26,6 +26,17 @@ import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
 import org.mapstruct.ap.internal.gem.ParameterGem;
 import org.mapstruct.ap.internal.gem.TargetGem;
+import org.mapstruct.ap.internal.model.annotation.BooleanProperty;
+import org.mapstruct.ap.internal.model.annotation.ByteProperty;
+import org.mapstruct.ap.internal.model.annotation.CharacterProperty;
+import org.mapstruct.ap.internal.model.annotation.ClassProperty;
+import org.mapstruct.ap.internal.model.annotation.DoubleProperty;
+import org.mapstruct.ap.internal.model.annotation.FloatProperty;
+import org.mapstruct.ap.internal.model.annotation.IntegerProperty;
+import org.mapstruct.ap.internal.model.annotation.LongProperty;
+import org.mapstruct.ap.internal.model.annotation.Property;
+import org.mapstruct.ap.internal.model.annotation.ShortProperty;
+import org.mapstruct.ap.internal.model.annotation.StringProperty;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.ElementUtils;
@@ -81,77 +92,62 @@ public class AdditionalAnnotationsBuilder
         List<ParameterGem> parameters = annotationGem.parameters().get();
         Type annotationType = typeFactory.getType( annotationGem.value().getValue() );
         if ( isValid( annotationType, parameters, element ) ) {
-            return Optional.of( new Annotation( annotationType, convertToJava( parameters ) ) );
+            return Optional.of( new Annotation( annotationType, convertToProperties( parameters ) ) );
         }
         return Optional.empty();
     }
 
-    private List<String> convertToJava(List<ParameterGem> parameters) {
-        return parameters.stream().map( this::convertToJava ).collect( Collectors.toList() );
+    private List<Property> convertToProperties(List<ParameterGem> parameters) {
+        return parameters.stream().map( gem -> convertToProperty( gem, typeFactory ) ).collect( Collectors.toList() );
     }
 
-    // TODO rewrite this to Annotation.Parameter objects and adjust the `Annotation.ftl` to handle these choices.
-    private enum ConvertToJava {
-        BOOLEAN( "%s",
-            parameter -> parameter.booleans().get().stream().map( b -> String.valueOf( b ) ),
+    private enum ConvertToProperty {
+        BOOLEAN(
+            (parameter, typeFactory) -> new BooleanProperty( parameter.key().get(), parameter.booleans().get() ),
             parameter -> parameter.booleans().hasValue() ),
-        BYTE( "%s",
-            parameter -> parameter.bytes().get().stream().map( b -> "0x" + Integer.toHexString( b ) ),
+        BYTE(
+            (parameter, typeFactory) -> new ByteProperty( parameter.key().get(), parameter.bytes().get() ),
             parameter -> parameter.bytes().hasValue() ),
-        CHARACTER( "'%s'",
-            parameter -> parameter.chars().get().stream().map( String::valueOf ),
+        CHARACTER(
+            (parameter, typeFactory) -> new CharacterProperty( parameter.key().get(), parameter.chars().get() ),
             parameter -> parameter.chars().hasValue() ),
-        CLASSES( "%s.class",
-            parameter -> parameter.classes().get().stream().map( String::valueOf ),
+        CLASSES(
+            (parameter, typeFactory) -> {
+                List<Type> typeList =
+                    parameter.classes().get().stream().map( typeFactory::getType ).collect( Collectors.toList() );
+                return new ClassProperty( parameter.key().get(), typeList );
+            },
             parameter -> parameter.classes().hasValue() ),
-        DOUBLE( "%s",
-            parameter -> parameter.doubles().get().stream().map( String::valueOf ),
+        DOUBLE(
+            (parameter, typeFactory) -> new DoubleProperty( parameter.key().get(), parameter.doubles().get() ),
             parameter -> parameter.doubles().hasValue() ),
-        FLOAT( "%sf",
-            parameter -> parameter.floats().get().stream().map( String::valueOf ),
+        FLOAT(
+            (parameter, typeFactory) -> new FloatProperty( parameter.key().get(), parameter.floats().get() ),
             parameter -> parameter.floats().hasValue() ),
-        INT( "%s",
-            parameter -> parameter.ints().get().stream().map( String::valueOf ),
+        INT(
+            (parameter, typeFactory) -> new IntegerProperty( parameter.key().get(), parameter.ints().get() ),
             parameter -> parameter.ints().hasValue() ),
-        LONG( "%sL",
-            parameter -> parameter.longs().get().stream().map( String::valueOf ),
+        LONG(
+            (parameter, typeFactory) -> new LongProperty( parameter.key().get(), parameter.longs().get() ),
             parameter -> parameter.longs().hasValue() ),
-        SHORT( "%s",
-            parameter -> parameter.shorts().get().stream().map( String::valueOf ),
+        SHORT(
+            (parameter, typeFactory) -> new ShortProperty( parameter.key().get(), parameter.shorts().get() ),
             parameter -> parameter.shorts().hasValue() ),
-        STRING( "\"%s\"",
-            parameter -> parameter.strings().get().stream(),
+        STRING(
+            (parameter, typeFactory) -> new StringProperty( parameter.key().get(), parameter.strings().get() ),
             parameter -> parameter.strings().hasValue() );
 
-        private static final String PARAMETER_FORMAT = "%s = %s";
-
-        private String format;
-        private Function<ParameterGem, Stream<String>> valueExtractor;
+        private BiFunction<ParameterGem, TypeFactory, Property> factory;
         private Predicate<ParameterGem> usabilityChecker;
 
-        ConvertToJava(String format, Function<ParameterGem, Stream<String>> valueExtractor,
+        ConvertToProperty(BiFunction<ParameterGem, TypeFactory, Property> factory,
                               Predicate<ParameterGem> usabilityChecker) {
-            this.format = format;
-            this.valueExtractor = valueExtractor;
+            this.factory = factory;
             this.usabilityChecker = usabilityChecker;
         }
 
-        String toParameter(ParameterGem parameter) {
-            return String.format(
-                PARAMETER_FORMAT,
-                             parameter.key().get(),
-                toParameterValue( parameter ) );
-        }
-
-        private String toParameterValue(ParameterGem parameter) {
-            String values = valueExtractor
-                                          .apply( parameter )
-                                          .map( val -> String.format( format, val ) )
-                                          .collect( Collectors.joining( ", " ) );
-            if ( valueExtractor.apply( parameter ).count() > 1 ) {
-                values = "{ " + values + " }";
-            }
-            return values;
+        Property toProperty(ParameterGem parameter, TypeFactory typeFactory) {
+            return factory.apply( parameter, typeFactory );
         }
 
         boolean isUsable(ParameterGem parameter) {
@@ -159,13 +155,13 @@ public class AdditionalAnnotationsBuilder
         }
     }
 
-    private String convertToJava(ParameterGem parameter) {
-        for ( ConvertToJava convertToJava : ConvertToJava.values() ) {
+    private Property convertToProperty(ParameterGem parameter, TypeFactory typeFactory) {
+        for ( ConvertToProperty convertToJava : ConvertToProperty.values() ) {
             if ( convertToJava.isUsable( parameter ) ) {
-                return convertToJava.toParameter( parameter );
+                return convertToJava.toProperty( parameter, typeFactory );
             }
         }
-        return "";
+        return null;
     }
 
     private boolean isValid(Type annotationType, List<ParameterGem> parameters, Element element) {
