@@ -8,6 +8,7 @@ Andrei Arlou - https://github.com/Captain1653
 Andres Jose Sebastian Rincon Gonzalez - https://github.com/stianrincon
 Arne Seime - https://github.com/seime
 Christian Bandowski - https://github.com/chris922
+Chris DeLashmutt - https://github.com/cdelashmutt-pivotal
 Christian Kosmowski - https://github.com/ckosmowski
 Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
@@ -35,6 +36,7 @@ João Paulo Bassinello - https://github.com/jpbassinello
 Jonathan Kraska - https://github.com/jakraska
 Joshua Spoerri - https://github.com/spoerri
 Jude Niroshan - https://github.com/JudeNiroshan
+Justyna Kubica-Ledzion - https://github.com/JKLedzion
 Kemal Özcan - https://github.com/yekeoe
 Kevin Grüneberg - https://github.com/kevcodez
 Lukas Lazar - https://github.com/LukeLaz
@@ -63,4 +65,5 @@ Tobias Meggendorfer - https://github.com/incaseoftrouble
 Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
+Valentin Kulesh - https://github.com/unshare
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
