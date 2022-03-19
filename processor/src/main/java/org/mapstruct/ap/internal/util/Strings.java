@@ -183,7 +183,19 @@ public class Strings {
 
             if ( firstAlphabeticIndex < identifier.length()) {
                 // If it is not consisted of only underscores
-                return identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
+                String firstAlphaString = identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
+
+                StringBuilder sb = new StringBuilder( firstAlphaString.length() );
+                for ( int i = 0; i < firstAlphaString.length(); i++ ) {
+                    int codePoint = firstAlphaString.codePointAt( i );
+                    if ( Character.isJavaIdentifierPart( codePoint ) || codePoint == '.') {
+                        sb.appendCodePoint( codePoint );
+                    }
+                    else {
+                        sb.append( '_' );
+                    }
+                }
+                return sb.toString();
             }
 
             return identifier.replace( "[]", "Array" );
