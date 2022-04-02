@@ -18,4 +18,10 @@ public interface ErroneousConditionExpressionMapper {
 
     @Mapping(target = "name", conditionExpression = "!employee.getName().isEmpty()")
     BasicEmployee map(EmployeeDto employee);
+
+    @Mapping(target = "name", conditionExpression = "java(true)", constant = "test")
+    BasicEmployee mapConstant(EmployeeDto employee);
+
+    @Mapping(target = "name", conditionExpression = "java(true)", expression = "java(\"test\")")
+    BasicEmployee mapExpression(EmployeeDto employee);
 }

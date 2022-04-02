@@ -111,6 +111,7 @@ public class ConditionalExpressionTest {
 
     }
 
+    @IssueKey("2794")
     @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
@@ -119,6 +120,18 @@ public class ConditionalExpressionTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
                 message = "Value for condition expression must be given in the form \"java(<EXPRESSION>)\"."
+            ),
+            @Diagnostic(type = ErroneousConditionExpressionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 22,
+                message = "Constant and condition expression are both defined in @Mapping,"
+                    + " either define a constant or a condition expression."
+            ),
+            @Diagnostic(type = ErroneousConditionExpressionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 25,
+                message = "Expression and condition expression are both defined in @Mapping,"
+                    + " either define an expression or a condition expression."
             )
         }
     )
