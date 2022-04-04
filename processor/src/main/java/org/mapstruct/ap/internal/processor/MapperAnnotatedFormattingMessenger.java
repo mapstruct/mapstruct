@@ -97,7 +97,8 @@ public class MapperAnnotatedFormattingMessenger implements FormattingMessager {
         if ( e instanceof ExecutableElement ) {
             ExecutableElement ee = (ExecutableElement) e;
             StringBuilder method = new StringBuilder();
-            method.append( typeUtils.asElement( ee.getReturnType() ).getSimpleName() );
+            final Element typeAsElement = typeUtils.asElement( ee.getReturnType() );
+            method.append(typeAsElement != null ? typeAsElement.getSimpleName() : ee.getReturnType());
             method.append( " " );
             method.append( ee.getSimpleName() );
             method.append( "(" );
