@@ -5,11 +5,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Strings.getSafeVariableName;
-import static org.mapstruct.ap.internal.util.Strings.join;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +18,9 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+
+import static org.mapstruct.ap.internal.util.Strings.getSafeVariableName;
+import static org.mapstruct.ap.internal.util.Strings.join;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -70,7 +71,7 @@ public abstract class MappingMethod extends ModelElement {
         this.resultName = initResultName( existingVariableNames );
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
-        this.afterMappingReferences = afterMappingReferences;
+        this.afterMappingReferences = afterMappingReferences == null ? Collections.emptyList() : afterMappingReferences;
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
@@ -153,6 +154,16 @@ public abstract class MappingMethod extends ModelElement {
             types.addAll( type.getImportTypes() );
         }
 
+        for ( LifecycleCallbackMethodReference reference : beforeMappingReferencesWithMappingTarget ) {
+            types.addAll( reference.getImportTypes() );
+        }
+        for ( LifecycleCallbackMethodReference reference : beforeMappingReferencesWithoutMappingTarget ) {
+            types.addAll( reference.getImportTypes() );
+        }
+        for ( LifecycleCallbackMethodReference reference : afterMappingReferences ) {
+            types.addAll( reference.getImportTypes() );
+        }
+
         return types;
     }
 
@@ -178,7 +189,7 @@ public abstract class MappingMethod extends ModelElement {
     private List<LifecycleCallbackMethodReference> filterMappingTarget(List<LifecycleCallbackMethodReference> methods,
                                                                        boolean mustHaveMappingTargetParameter) {
         if ( methods == null ) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<LifecycleCallbackMethodReference> result =
