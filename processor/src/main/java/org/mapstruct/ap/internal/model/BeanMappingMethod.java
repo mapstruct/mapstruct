@@ -1276,8 +1276,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .options( mapping )
                             .build();
                         handledTargets.add( targetPropertyName );
-                        unprocessedSourceParameters.remove( sourceRef.getParameter() );
-                        unprocessedSourceProperties.remove( sourceRef.getShallowestPropertyName() );
+                        Parameter sourceParameter = sourceRef.getParameter();
+                        unprocessedSourceParameters.remove( sourceParameter );
+                        // If the source parameter was directly mapped
+                        if ( sourceRef.getPropertyEntries().isEmpty() ) {
+                            // Ignore all of its source properties completely
+                            ignoreSourceProperties( sourceParameter );
+                        }
+                        else {
+                            unprocessedSourceProperties.remove( sourceRef.getShallowestPropertyName() );
+                        }
                     }
                     else {
                         errorOccured = true;
@@ -1452,19 +1460,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
-
-                        // The source parameter was directly mapped so ignore all of its source properties completely
-                        if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
-                            // We explicitly ignore source properties from primitives or array types
-                            Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
-                                .getPropertyReadAccessors();
-                            for ( String sourceProperty : readAccessors.keySet() ) {
-                                unprocessedSourceProperties.remove( sourceProperty );
-                            }
-                        }
-
                         unprocessedConstructorProperties.remove( targetProperty.getKey() );
+                        ignoreSourceProperties( sourceParameter );
                     }
+                }
+            }
+        }
+
+        private void ignoreSourceProperties(Parameter sourceParameter) {
+            // The source parameter was directly mapped so ignore all of its source properties completely
+            if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
+                // We explicitly ignore source properties from primitives or array types
+                Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
+                    .getPropertyReadAccessors();
+                for ( String sourceProperty : readAccessors.keySet() ) {
+                    unprocessedSourceProperties.remove( sourceProperty );
                 }
             }
         }
