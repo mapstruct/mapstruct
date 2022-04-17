@@ -15,7 +15,7 @@
         <#if static><@includeModel object=providingParameter.type/><#else>${providingParameter.name}</#if>.<@methodCall/>
     <#-- method is referenced java8 static method in the mapper to implement (interface)  -->
     <#elseif static>
-        <@includeModel object=definingType/>.<@methodCall/>
+        <@includeModel object=definingType raw=true/>.<@methodCall/>
     <#elseif constructor>
         new <@includeModel object=definingType/><#if (parameterBindings?size > 0)>( <@arguments/> )<#else>()</#if>
     <#elseif methodChaining>
@@ -41,7 +41,7 @@
             <#-- a class is passed on for casting, see @TargetType -->
             <@includeModel object=inferTypeWhenEnum( ext.targetType ) raw=true/>.class<#t>
         <#elseif param.mappingTarget>
-            ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
+            <#if ext.targetBeanName??>${ext.targetBeanName}<#else>${param.variableName}</#if><#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
         <#elseif param.mappingContext>
             ${param.variableName}<#t>
         <#elseif param.sourceRHS??>

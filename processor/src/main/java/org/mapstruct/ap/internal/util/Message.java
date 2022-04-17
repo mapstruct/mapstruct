@@ -59,7 +59,9 @@ public enum Message {
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED( "Expression and default value are both defined in @Mapping, either define a defaultValue or an expression." ),
     PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED( "Constant and default value are both defined in @Mapping, either define a defaultValue or a constant." ),
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Expression and default expression are both defined in @Mapping, either define an expression or a default expression." ),
+    PROPERTYMAPPING_EXPRESSION_AND_CONDITION_EXPRESSION_BOTH_DEFINED( "Expression and condition expression are both defined in @Mapping, either define an expression or a condition expression." ),
     PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Constant and default expression are both defined in @Mapping, either define a constant or a default expression." ),
+    PROPERTYMAPPING_CONSTANT_AND_CONDITION_EXPRESSION_BOTH_DEFINED( "Constant and condition expression are both defined in @Mapping, either define a constant or a condition expression." ),
     PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Default value and default expression are both defined in @Mapping, either define a default value or a default expression." ),
     PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS( "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a defaultValue or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS( "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, either define an expression or an nullValuePropertyMappingStrategy." ),
@@ -117,6 +119,7 @@ public enum Message {
     ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
     ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
+    SUBCLASSMAPPING_DOUBLE_SOURCE_SUBCLASS( "Subclass '%s' is already defined as a source." ),
     SUBCLASSMAPPING_ILLEGAL_SUBCLASS( "Class '%s' is not a subclass of '%s'." ),
     SUBCLASSMAPPING_NO_VALID_SUPERCLASS( "Could not find a parameter that is a superclass for '%s'." ),
     SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED( "SubclassMapping annotation can not be used for update methods." ),

@@ -34,12 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
     VehicleCollectionDto.class,
     Vehicle.class,
     VehicleDto.class,
-    SimpleSubclassMapper.class,
-    SubclassMapperUsingExistingMappings.class,
 })
 public class SubclassMappingTest {
 
     @ProcessorTest
+    @WithClasses( SimpleSubclassMapper.class )
     void mappingIsDoneUsingSubclassMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -54,6 +53,22 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
+    @WithClasses( SimpleSubclassMapper.class )
+    void inverseMappingIsDoneUsingSubclassMapping() {
+        VehicleCollectionDto vehicles = new VehicleCollectionDto();
+        vehicles.getVehicles().add( new CarDto() );
+        vehicles.getVehicles().add( new BikeDto() );
+
+        VehicleCollection result = SimpleSubclassMapper.INSTANCE.mapInverse( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class, Bike.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( SubclassMapperUsingExistingMappings.class )
     void existingMappingsAreUsedWhenFound() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
@@ -66,17 +81,36 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
-    void subclassMappingInheritsMapping() {
-        VehicleCollection vehicles = new VehicleCollection();
-        Car car = new Car();
-        car.setVehicleManufacturingCompany( "BenZ" );
-        vehicles.getVehicles().add( car );
+    @WithClasses( SimpleSubclassMapper.class )
+    void subclassMappingInheritsInverseMapping() {
+        VehicleCollectionDto vehiclesDto = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehiclesDto.getVehicles().add( carDto );
 
-        VehicleCollectionDto result = SimpleSubclassMapper.INSTANCE.map( vehicles );
+        VehicleCollection result = SimpleSubclassMapper.INSTANCE.mapInverse( vehiclesDto );
 
         assertThat( result.getVehicles() )
-            .extracting( VehicleDto::getMaker )
+            .extracting( Vehicle::getVehicleManufacturingCompany )
             .containsExactly( "BenZ" );
+    }
+
+    @ProcessorTest
+    @WithClasses( {
+        HatchBack.class,
+        InverseOrderSubclassMapper.class
+    } )
+    void subclassMappingOverridesInverseInheritsMapping() {
+        VehicleCollectionDto vehicleDtos = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehicleDtos.getVehicles().add( carDto );
+
+        VehicleCollection result = InverseOrderSubclassMapper.INSTANCE.mapInverse( vehicleDtos );
+
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class );
     }
 
     @ProcessorTest
@@ -91,11 +125,11 @@ public class SubclassMappingTest {
             line = 28,
             alternativeLine = 30,
             message = "SubclassMapping annotation for "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' found after "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto', but all "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBackDto' "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBack' found after "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.Car', but all "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.HatchBack' "
                 + "objects are also instances of "
-                + "'org.mapstruct.ap.test.subclassmapping.mappables.CarDto'.")
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.Car'.")
     })
     void subclassOrderWarning() {
     }
@@ -135,5 +169,19 @@ public class SubclassMappingTest {
         )
     })
     void erroneousMethodWithSourceTargetType() {
+    }
+
+    @ProcessorTest
+    @WithClasses({ ErroneousInverseSubclassMapper.class })
+    @ExpectedCompilationOutcome( value = CompilationResult.FAILED, diagnostics = {
+        @Diagnostic(type = ErroneousInverseSubclassMapper.class,
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            line = 28,
+            message = "Subclass "
+                + "'org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto'"
+                + " is already defined as a source."
+        )
+    })
+    void inverseSubclassMappingNotPossible() {
     }
 }

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
@@ -26,6 +27,7 @@ public class SelectionCriteria {
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private final SourceRHS sourceRHS;
+    private boolean ignoreQualifiers = false;
     private Type type;
     private final boolean allowDirect;
     private final boolean allowConversion;
@@ -87,12 +89,16 @@ public class SelectionCriteria {
         return type == Type.PRESENCE_CHECK;
     }
 
+    public void setIgnoreQualifiers(boolean ignoreQualifiers) {
+        this.ignoreQualifiers = ignoreQualifiers;
+    }
+
     public List<TypeMirror> getQualifiers() {
-        return qualifiers;
+        return ignoreQualifiers ? Collections.emptyList() : qualifiers;
     }
 
     public List<String> getQualifiedByNames() {
-        return qualifiedByNames;
+        return ignoreQualifiers ? Collections.emptyList() : qualifiedByNames;
     }
 
     public String getTargetPropertyName() {

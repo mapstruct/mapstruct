@@ -103,7 +103,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
         for ( SafePropertyEntry propertyEntry : safePropertyEntries) {
-            types.add( propertyEntry.getType() );
+            types.addAll( propertyEntry.getType().getImportTypes() );
             if ( propertyEntry.getPresenceChecker() != null ) {
                 types.addAll( propertyEntry.getPresenceChecker().getImportTypes() );
             }
