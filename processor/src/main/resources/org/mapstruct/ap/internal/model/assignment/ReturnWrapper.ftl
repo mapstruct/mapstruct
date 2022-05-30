@@ -13,5 +13,6 @@ return <@_assignment/>;
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
+               targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType/>
 </#macro>

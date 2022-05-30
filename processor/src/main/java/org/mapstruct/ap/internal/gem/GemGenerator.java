@@ -30,6 +30,7 @@ import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;
+import org.mapstruct.TargetPropertyName;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
@@ -52,6 +53,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(SubclassMapping.class)
 @GemDefinition(SubclassMappings.class)
 @GemDefinition(TargetType.class)
+@GemDefinition(TargetPropertyName.class)
 @GemDefinition(MappingTarget.class)
 @GemDefinition(DecoratedWith.class)
 @GemDefinition(MapperConfig.class)
