@@ -69,6 +69,33 @@ public class StringConversionTest {
         assertThat( target.getSb() ).isEqualTo( "SB" );
     }
 
+    @IssueKey("2846")
+    @ProcessorTest
+    public void shouldNotApplyStringConversionsWhenNull() {
+        Source source = new Source();
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getB() ).isEqualTo( "0" );
+        assertThat( target.getBb() ).isNull();
+        assertThat( target.getS() ).isEqualTo( "0" );
+        assertThat( target.getSs() ).isNull();
+        assertThat( target.getI() ).isEqualTo( "0" );
+        assertThat( target.getIi() ).isNull();
+        assertThat( target.getL() ).isEqualTo( "0" );
+        assertThat( target.getLl() ).isNull();
+        assertThat( target.getF() ).isEqualTo( "0.0" );
+        assertThat( target.getFf() ).isNull();
+        assertThat( target.getD() ).isEqualTo( "0.0" );
+        assertThat( target.getDd() ).isNull();
+        assertThat( target.getBool() ).isEqualTo( "false" );
+        assertThat( target.getBoolBool() ).isNull();
+        assertThat( target.getC() ).isEqualTo( String.valueOf( '\u0000' ) );
+        assertThat( target.getCc() ).isNull();
+        assertThat( target.getSb() ).isNull();
+    }
+
     @ProcessorTest
     public void shouldApplyReverseStringConversions() {
         Target target = new Target();
