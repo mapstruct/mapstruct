@@ -34,7 +34,7 @@ Compared to mapping frameworks working at runtime, MapStruct offers the followin
   * mappings are incorrect (cannot find a proper mapping method or type conversion)
 * **Easily debuggable mapping code** (or editable by hand—e.g. in case of a bug in the generator)
 
-To create a mapping between two types, declare a mapper class like this:
+To create a mapping between two types, declare a mapper interface like this:
 
 ```java
 @Mapper
