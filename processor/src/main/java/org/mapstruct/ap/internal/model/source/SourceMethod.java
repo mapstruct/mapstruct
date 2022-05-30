@@ -47,6 +47,7 @@ public class SourceMethod implements Method {
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
     private final Parameter targetTypeParameter;
+    private final Parameter targetPropertyNameParameter;
     private final boolean isObjectFactory;
     private final boolean isPresenceCheck;
     private final Type returnType;
@@ -248,6 +249,7 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
+        this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
         this.isPresenceCheck = determineIfIsPresenceCheck();
@@ -263,7 +265,7 @@ public class SourceMethod implements Method {
     private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
-        return !isLifecycleCallbackMethod() && !returnType.isVoid()
+        return !isLifecycleCallbackMethod() && !returnType.isVoid() && !returnType.isPrimitive()
             && hasNoMappingTargetParam
             && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
     }
@@ -377,6 +379,10 @@ public class SourceMethod implements Method {
     @Override
     public Parameter getTargetTypeParameter() {
         return targetTypeParameter;
+    }
+
+    public Parameter getTargetPropertyNameParameter() {
+        return targetPropertyNameParameter;
     }
 
     public boolean isIterableMapping() {

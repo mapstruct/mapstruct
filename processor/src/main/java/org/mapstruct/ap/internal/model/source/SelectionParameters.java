@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.util.TypeUtils;
+
+import javax.lang.model.type.TypeMirror;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
-
-import org.mapstruct.ap.internal.model.common.SourceRHS;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -28,6 +28,7 @@ public class SelectionParameters {
     private final TypeMirror resultType;
     private final TypeUtils typeUtils;
     private final SourceRHS sourceRHS;
+    private final String targetPropertyName;
 
     /**
      * Returns new selection parameters
@@ -58,6 +59,7 @@ public class SelectionParameters {
             Collections.emptyList(),
             resultType,
             typeUtils,
+            null,
             null
         );
     }
@@ -66,13 +68,22 @@ public class SelectionParameters {
                                List<TypeMirror> conditionQualifiers, List<String> conditionQualifyingNames,
                                TypeMirror resultType,
                                TypeUtils typeUtils) {
-        this( qualifiers, qualifyingNames, conditionQualifiers, conditionQualifyingNames, resultType, typeUtils, null );
+        this(
+          qualifiers,
+          qualifyingNames,
+          conditionQualifiers,
+          conditionQualifyingNames,
+          resultType,
+          typeUtils,
+          null,
+          null
+        );
     }
 
     private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames,
                                 List<TypeMirror> conditionQualifiers, List<String> conditionQualifyingNames,
                                 TypeMirror resultType,
-                                TypeUtils typeUtils, SourceRHS sourceRHS) {
+                                TypeUtils typeUtils, SourceRHS sourceRHS, String targetPropertyName) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.conditionQualifiers = conditionQualifiers;
@@ -80,6 +91,7 @@ public class SelectionParameters {
         this.resultType = resultType;
         this.typeUtils = typeUtils;
         this.sourceRHS = sourceRHS;
+        this.targetPropertyName = targetPropertyName;
     }
 
     /**
@@ -129,6 +141,13 @@ public class SelectionParameters {
         return sourceRHS;
     }
 
+    /**
+     * @return Target property name used for further selection of an appropriate presence check / conditional method
+     */
+    public String getTargetPropertyName() {
+      return targetPropertyName;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -170,6 +189,10 @@ public class SelectionParameters {
             return false;
         }
 
+        if ( !Objects.equals( this.targetPropertyName, other.targetPropertyName ) ) {
+            return false;
+        }
+
         return equals( this.resultType, other.resultType );
     }
 
@@ -206,11 +229,16 @@ public class SelectionParameters {
             this.conditionQualifyingNames,
             null,
             this.typeUtils,
-            sourceRHS
+            sourceRHS,
+            null
         );
     }
 
     public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
+      return forSourceRHS( sourceRHS, null );
+    }
+
+    public static SelectionParameters forSourceRHS(SourceRHS sourceRHS, String targetPropertyName) {
         return new SelectionParameters(
             Collections.emptyList(),
             Collections.emptyList(),
@@ -218,7 +246,8 @@ public class SelectionParameters {
             Collections.emptyList(),
             null,
             null,
-            sourceRHS
+            sourceRHS,
+            targetPropertyName
         );
     }
 }

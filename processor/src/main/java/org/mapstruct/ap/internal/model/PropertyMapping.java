@@ -668,9 +668,14 @@ public class PropertyMapping extends ModelElement {
                 return new JavaExpressionPresenceCheck( conditionJavaExpression );
             }
 
+            String targetPropertyName = null;
+            if ( !sourceReference.getPropertyEntries().isEmpty() ) {
+              targetPropertyName = sourceReference.getShallowestProperty().getName();
+            }
+
             SelectionParameters selectionParameters = this.selectionParameters != null ?
                 this.selectionParameters.withSourceRHS( sourceRHS ) :
-                SelectionParameters.forSourceRHS( sourceRHS );
+                SelectionParameters.forSourceRHS( sourceRHS, targetPropertyName );
             PresenceCheck presenceCheck = PresenceCheckMethodResolver.getPresenceCheck(
                 method,
                 selectionParameters,

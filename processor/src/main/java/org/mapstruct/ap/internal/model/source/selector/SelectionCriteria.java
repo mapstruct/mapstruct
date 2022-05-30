@@ -162,7 +162,12 @@ public class SelectionCriteria {
     }
 
     public static SelectionCriteria forPresenceCheckMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, null, Type.PRESENCE_CHECK );
+        return new SelectionCriteria(
+          selectionParameters,
+          null,
+          selectionParameters.getTargetPropertyName(),
+          Type.PRESENCE_CHECK
+        );
     }
 
     public enum Type {

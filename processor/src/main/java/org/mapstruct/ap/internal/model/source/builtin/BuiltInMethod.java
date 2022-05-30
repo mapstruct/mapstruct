@@ -132,6 +132,17 @@ public abstract class BuiltInMethod implements Method {
         return null;
     }
 
+
+    /**
+     * target property name parameter mechanism not supported for built-in methods
+     *
+     * @return {@code null}
+     */
+    @Override
+    public Parameter getTargetPropertyNameParameter() {
+      return null;
+    }
+
     /**
      * object factory mechanism not supported for built-in methods
      *

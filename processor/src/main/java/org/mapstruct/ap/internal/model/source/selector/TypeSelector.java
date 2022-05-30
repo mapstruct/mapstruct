@@ -57,7 +57,9 @@ public class TypeSelector implements MethodSelector {
             availableBindings = getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 mappingTargetType,
-                criteria.getSourceRHS()
+                criteria.getSourceRHS(),
+                criteria.getTargetPropertyName(),
+                methods
             );
         }
         else {
@@ -84,9 +86,22 @@ public class TypeSelector implements MethodSelector {
         return result;
     }
 
-    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
-        SourceRHS sourceRHS) {
+    private <T extends Method> List<ParameterBinding> getAvailableParameterBindingsFromMethod(
+        Method method,
+        Type targetType,
+        SourceRHS sourceRHS,
+        String targetPropertyName,
+        List<SelectedMethod<T>> methods
+    ) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
+
+        for (SelectedMethod<T> selectedMethod : methods) {
+          Parameter propertyNameParameter = selectedMethod.getMethod().getTargetPropertyNameParameter();
+          if (propertyNameParameter != null) {
+            availableParams.add( ParameterBinding
+              .fromTargetPropertyNameParameter( propertyNameParameter, targetPropertyName ) );
+          }
+        }
 
         if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
@@ -301,7 +316,8 @@ public class TypeSelector implements MethodSelector {
         for ( ParameterBinding candidate : candidateParameters ) {
             if ( parameter.isTargetType() == candidate.isTargetType()
                 && parameter.isMappingTarget() == candidate.isMappingTarget()
-                && parameter.isMappingContext() == candidate.isMappingContext() ) {
+                && parameter.isMappingContext() == candidate.isMappingContext()
+                && parameter.isTargetPropertyName() == candidate.isTargetPropertyName()) {
                 result.add( candidate );
             }
         }
