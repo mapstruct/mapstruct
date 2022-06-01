@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.annotation.Property;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -23,13 +23,13 @@ public class Annotation extends ModelElement {
 
     private final Type type;
 
-    private List<Property> properties;
+    private List<AnnotationElement> properties;
 
     public Annotation(Type type) {
         this( type, Collections.emptyList() );
     }
 
-    public Annotation(Type type, List<Property> properties) {
+    public Annotation(Type type, List<AnnotationElement> properties) {
         this.type = type;
         this.properties = properties;
     }
@@ -41,14 +41,14 @@ public class Annotation extends ModelElement {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<>();
-        for ( Property prop : properties ) {
+        for ( AnnotationElement prop : properties ) {
             types.addAll( prop.getImportTypes() );
         }
         types.add( type );
         return types;
     }
 
-    public List<Property> getProperties() {
+    public List<AnnotationElement> getProperties() {
         return properties;
     }
 }

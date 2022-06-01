@@ -12,7 +12,7 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.model.annotation.StringProperty;
+import org.mapstruct.ap.internal.model.annotation.StringAnnotationElement;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -69,7 +69,7 @@ public class JakartaComponentProcessor extends AnnotationBasedComponentModelProc
         return new Annotation(
             getTypeFactory().getType( "jakarta.inject.Named" ),
             Collections.singletonList(
-                           new StringProperty(
+                           new StringAnnotationElement(
                                null,
                                Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() ) ) )
         );

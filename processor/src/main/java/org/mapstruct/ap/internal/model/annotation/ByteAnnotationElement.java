@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class CharacterProperty extends Property {
+public class ByteAnnotationElement extends AnnotationElement {
 
-    private List<Character> values;
+    private List<Byte> values;
 
-    public CharacterProperty(String key, List<Character> values) {
-        super( key );
+    public ByteAnnotationElement(String elementName, List<Byte> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Character> getValues() {
+    public List<Byte> getValues() {
         return values;
     }
 

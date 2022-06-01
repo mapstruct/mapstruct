@@ -12,9 +12,9 @@ import org.mapstruct.Mapper;
  * @author Ben Zegveld
  */
 @Mapper
-@AnnotateWith( value = CustomAnnotationWithParams.class, parameters = {
-    @AnnotateWith.Parameter( key = "stringParam", strings = "test" ),
-    @AnnotateWith.Parameter( key = "genericTypedClass", classes = Mapper.class )
+@AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
+    @AnnotateWith.Element( name = "stringParam", strings = "test" ),
+    @AnnotateWith.Element( name = "genericTypedClass", classes = Mapper.class )
 } )
 public interface CustomNamedGenericClassMapper {
 

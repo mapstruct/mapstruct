@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class ShortProperty extends Property {
+public class StringAnnotationElement extends AnnotationElement {
 
-    private List<Short> values;
+    private List<String> values;
 
-    public ShortProperty(String key, List<Short> values) {
-        super( key );
+    public StringAnnotationElement(String elementName, List<String> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Short> getValues() {
+    public List<String> getValues() {
         return values;
     }
 

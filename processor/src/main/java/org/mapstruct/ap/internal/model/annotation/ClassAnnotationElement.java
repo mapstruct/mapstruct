@@ -14,12 +14,12 @@ import org.mapstruct.ap.internal.model.common.Type;
 /**
  * @author Ben Zegveld
  */
-public class ClassProperty extends Property {
+public class ClassAnnotationElement extends AnnotationElement {
 
     private List<Type> values;
 
-    public ClassProperty(String key, List<Type> values) {
-        super( key );
+    public ClassAnnotationElement(String elementName, List<Type> values) {
+        super( elementName );
         this.values = values;
     }
 

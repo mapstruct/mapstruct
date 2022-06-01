@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class LongProperty extends Property {
+public class FloatAnnotationElement extends AnnotationElement {
 
-    private List<Long> values;
+    private List<Float> values;
 
-    public LongProperty(String key, List<Long> values) {
-        super( key );
+    public FloatAnnotationElement(String elementName, List<Float> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Long> getValues() {
+    public List<Float> getValues() {
         return values;
     }
 

@@ -14,16 +14,16 @@ import org.mapstruct.ap.internal.model.common.Type;
 /**
  * @author Ben Zegveld
  */
-public abstract class Property extends ModelElement {
+public abstract class AnnotationElement extends ModelElement {
 
-    private final String key;
+    private final String elementName;
 
-    Property(String key) {
-        this.key = key;
+    AnnotationElement(String elementName) {
+        this.elementName = elementName;
     }
 
-    public String getKey() {
-        return key;
+    public String getElementName() {
+        return elementName;
     }
 
     @Override

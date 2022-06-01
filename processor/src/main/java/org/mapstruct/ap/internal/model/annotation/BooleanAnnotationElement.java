@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class FloatProperty extends Property {
+public class BooleanAnnotationElement extends AnnotationElement {
 
-    private List<Float> values;
+    private List<Boolean> values;
 
-    public FloatProperty(String key, List<Float> values) {
-        super( key );
+    public BooleanAnnotationElement(String elementName, List<Boolean> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Float> getValues() {
+    public List<Boolean> getValues() {
         return values;
     }
 

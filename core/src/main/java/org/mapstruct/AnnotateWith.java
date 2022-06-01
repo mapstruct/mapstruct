@@ -25,12 +25,18 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 @Retention( SOURCE )
 @Target( { TYPE, METHOD, ANNOTATION_TYPE } )
 public @interface AnnotateWith {
+    /**
+     * The annotation class that needs to be added.
+     */
     Class<? extends Annotation> value();
 
-    Parameter[] parameters() default {};
+    /**
+     * The annotation elements that are to be applied to this annotation.
+     */
+    Element[] elements() default {};
 
-    @interface Parameter {
-        String key();
+    @interface Element {
+        String name();
 
         short[] shorts() default {};
 

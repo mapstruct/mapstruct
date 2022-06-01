@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class DoubleProperty extends Property {
+public class LongAnnotationElement extends AnnotationElement {
 
-    private List<Double> values;
+    private List<Long> values;
 
-    public DoubleProperty(String key, List<Double> values) {
-        super( key );
+    public LongAnnotationElement(String elementName, List<Long> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Double> getValues() {
+    public List<Long> getValues() {
         return values;
     }
 

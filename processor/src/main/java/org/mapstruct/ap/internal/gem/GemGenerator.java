@@ -46,7 +46,7 @@ import org.mapstruct.tools.gem.GemDefinition;
  * @author Gunnar Morling
  */
 @GemDefinition(AnnotateWith.class)
-@GemDefinition(AnnotateWith.Parameter.class)
+@GemDefinition(AnnotateWith.Element.class)
 @GemDefinition(AnnotateWiths.class)
 @GemDefinition(Mapper.class)
 @GemDefinition(Mapping.class)

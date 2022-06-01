@@ -12,25 +12,25 @@ import org.mapstruct.Mapper;
  * @author Ben Zegveld
  */
 @Mapper
-@AnnotateWith( value = CustomAnnotationWithParams.class, parameters = {
-    @AnnotateWith.Parameter( key = "stringArray", strings = "test" ),
-    @AnnotateWith.Parameter( key = "stringParam", strings = "test" ),
-    @AnnotateWith.Parameter( key = "booleanArray", booleans = true ),
-    @AnnotateWith.Parameter( key = "booleanParam", booleans = true ),
-    @AnnotateWith.Parameter( key = "byteArray", bytes = 0x10 ),
-    @AnnotateWith.Parameter( key = "byteParam", bytes = 0x13 ),
-    @AnnotateWith.Parameter( key = "charArray", chars = 'd' ),
-    @AnnotateWith.Parameter( key = "charParam", chars = 'a' ),
-    @AnnotateWith.Parameter( key = "doubleArray", doubles = 0.3 ),
-    @AnnotateWith.Parameter( key = "doubleParam", doubles = 1.2 ),
-    @AnnotateWith.Parameter( key = "floatArray", floats = 0.3f ),
-    @AnnotateWith.Parameter( key = "floatParam", floats = 1.2f ),
-    @AnnotateWith.Parameter( key = "intArray", ints = 3 ),
-    @AnnotateWith.Parameter( key = "intParam", ints = 1 ),
-    @AnnotateWith.Parameter( key = "longArray", longs = 3L ),
-    @AnnotateWith.Parameter( key = "longParam", longs = 1L ),
-    @AnnotateWith.Parameter( key = "shortArray", shorts = 3 ),
-    @AnnotateWith.Parameter( key = "shortParam", shorts = 1 )
+@AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
+    @AnnotateWith.Element( name = "stringArray", strings = "test" ),
+    @AnnotateWith.Element( name = "stringParam", strings = "test" ),
+    @AnnotateWith.Element( name = "booleanArray", booleans = true ),
+    @AnnotateWith.Element( name = "booleanParam", booleans = true ),
+    @AnnotateWith.Element( name = "byteArray", bytes = 0x10 ),
+    @AnnotateWith.Element( name = "byteParam", bytes = 0x13 ),
+    @AnnotateWith.Element( name = "charArray", chars = 'd' ),
+    @AnnotateWith.Element( name = "charParam", chars = 'a' ),
+    @AnnotateWith.Element( name = "doubleArray", doubles = 0.3 ),
+    @AnnotateWith.Element( name = "doubleParam", doubles = 1.2 ),
+    @AnnotateWith.Element( name = "floatArray", floats = 0.3f ),
+    @AnnotateWith.Element( name = "floatParam", floats = 1.2f ),
+    @AnnotateWith.Element( name = "intArray", ints = 3 ),
+    @AnnotateWith.Element( name = "intParam", ints = 1 ),
+    @AnnotateWith.Element( name = "longArray", longs = 3L ),
+    @AnnotateWith.Element( name = "longParam", longs = 1L ),
+    @AnnotateWith.Element( name = "shortArray", shorts = 3 ),
+    @AnnotateWith.Element( name = "shortParam", shorts = 1 )
 } )
 public interface CustomNamedMapper {
 

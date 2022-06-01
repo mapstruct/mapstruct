@@ -12,7 +12,7 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.model.annotation.StringProperty;
+import org.mapstruct.ap.internal.model.annotation.StringAnnotationElement;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 
@@ -72,7 +72,7 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
         return new Annotation(
             getType( "Named" ),
             Collections.singletonList(
-                new StringProperty(
+                new StringAnnotationElement(
                     null,
                     Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() ) ) )
         );

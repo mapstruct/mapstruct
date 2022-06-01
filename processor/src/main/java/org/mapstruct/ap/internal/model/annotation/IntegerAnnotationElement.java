@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class IntegerProperty extends Property {
+public class IntegerAnnotationElement extends AnnotationElement {
 
     private List<Integer> values;
 
-    public IntegerProperty(String key, List<Integer> values) {
-        super( key );
+    public IntegerAnnotationElement(String elementName, List<Integer> values) {
+        super( elementName );
         this.values = values;
     }
 

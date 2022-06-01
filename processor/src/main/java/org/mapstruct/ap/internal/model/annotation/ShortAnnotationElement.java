@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * @author Ben Zegveld
  */
-public class ByteProperty extends Property {
+public class ShortAnnotationElement extends AnnotationElement {
 
-    private List<Byte> values;
+    private List<Short> values;
 
-    public ByteProperty(String key, List<Byte> values) {
-        super( key );
+    public ShortAnnotationElement(String elementName, List<Short> values) {
+        super( elementName );
         this.values = values;
     }
 
-    public List<Byte> getValues() {
+    public List<Short> getValues() {
         return values;
     }
 

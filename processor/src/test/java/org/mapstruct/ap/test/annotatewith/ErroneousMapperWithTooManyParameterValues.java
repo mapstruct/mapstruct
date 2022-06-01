@@ -13,7 +13,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class,
-                parameters = @AnnotateWith.Parameter( key = "value", booleans = true, strings = "test" )
+                elements = @AnnotateWith.Element( name = "value", booleans = true, strings = "test" )
 )
 public interface ErroneousMapperWithTooManyParameterValues {
 

@@ -13,7 +13,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotation.class,
-          parameters = @AnnotateWith.Parameter( key = "unknownParameter", strings = "unknown")
+                elements = @AnnotateWith.Element( name = "unknownParameter", strings = "unknown" )
 )
 public interface ErroneousMapperWithUnknownParameter {
 
