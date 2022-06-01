@@ -126,7 +126,7 @@ public class ConditionalMappingTest {
     @WithClasses({
             ConditionalMethodInMapperWithTargetPropertyName.class
     })
-    public void conditionalMethodInMapperWithTargetProperty() {
+    public void conditionalMethodInMapperWithTargetPropertyName() {
         ConditionalMethodInMapperWithTargetPropertyName mapper
                 = ConditionalMethodInMapperWithTargetPropertyName.INSTANCE;
 
@@ -139,13 +139,16 @@ public class ConditionalMappingTest {
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() ).isNotEmpty();
+        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
     }
 
     @ProcessorTest
     @WithClasses({
             ConditionalMethodForCollectionMapperWithTargetPropertyName.class
     })
-    public void conditionalMethodForCollectionMapperWithTargetProperty() {
+    public void conditionalMethodForCollectionMapperWithTargetPropertyName() {
         ConditionalMethodForCollectionMapperWithTargetPropertyName mapper
                 = ConditionalMethodForCollectionMapperWithTargetPropertyName.INSTANCE;
 
@@ -158,6 +161,7 @@ public class ConditionalMappingTest {
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
         assertThat( employee.getAddresses() ).isNull();
     }
 
@@ -165,7 +169,7 @@ public class ConditionalMappingTest {
     @WithClasses({
             ConditionalMethodInUsesMapperWithTargetPropertyName.class
     })
-    public void conditionalMethodInUsesMapperWithTargetProperty() {
+    public void conditionalMethodInUsesMapperWithTargetPropertyName() {
         ConditionalMethodInUsesMapperWithTargetPropertyName mapper
                 = ConditionalMethodInUsesMapperWithTargetPropertyName.INSTANCE;
 
@@ -178,6 +182,9 @@ public class ConditionalMappingTest {
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() ).isNotEmpty();
+        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
     }
 
     @ProcessorTest
@@ -201,6 +208,9 @@ public class ConditionalMappingTest {
         mapper.map( employeeDto, employee, utils );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() ).isNotEmpty();
+        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
         assertThat( Set.of(
                 "firstName",
                 "lastName",
@@ -231,6 +241,9 @@ public class ConditionalMappingTest {
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto, utils );
         assertThat( employee.getLastName() ).isEqualTo( "Testirovich" );
         assertThat( employee.getFirstName() ).isEqualTo( "  " );
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() ).isNotEmpty();
+        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
         assertThat( Set.of(
                 "firstName",
                 "lastName",
@@ -260,6 +273,9 @@ public class ConditionalMappingTest {
 
       TargetPropertyNameModel.Employee employee = mapper.map( employeeDto, utils );
       assertThat( employee.getLastName() ).isNull();
+      assertThat( employee.getCountry() ).isEqualTo( "US" );
+      assertThat( employee.getAddresses() ).isNotEmpty();
+      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
       assertThat( Set.of(
               "firstName",
               "lastName",
@@ -279,6 +295,9 @@ public class ConditionalMappingTest {
 
       employee = mapper.map( employeeDto, allPropsUtils );
       assertThat( employee.getLastName() ).isEqualTo( "Tester" );
+      assertThat( employee.getCountry() ).isEqualTo( "US" );
+      assertThat( employee.getAddresses() ).isNotEmpty();
+      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
       assertThat( Set.of(
               "firstName",
               "lastName",
@@ -300,7 +319,7 @@ public class ConditionalMappingTest {
       TargetPropertyNameModel.EmployeeDto bossEmployeeDto = new TargetPropertyNameModel.EmployeeDto();
       bossEmployeeDto.setLastName( "Boss Tester" );
       bossEmployeeDto.setCountry( "US" );
-      bossEmployeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+      bossEmployeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 10" ) ) );
 
       employeeDto = new TargetPropertyNameModel.EmployeeDto();
       employeeDto.setLastName( "Tester" );
@@ -310,6 +329,14 @@ public class ConditionalMappingTest {
 
       employee = mapper.map( employeeDto, allPropsUtilsWithSource );
       assertThat( employee.getLastName() ).isEqualTo( "Tester" );
+      assertThat( employee.getCountry() ).isEqualTo( "US" );
+      assertThat( employee.getAddresses() ).isNotEmpty();
+      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
+      assertThat( employee.getBoss() ).isNotNull();
+      assertThat( employee.getBoss().getCountry() ).isEqualTo( "US" );
+      assertThat( employee.getBoss().getLastName() ).isEqualTo( "Boss Tester" );
+      assertThat( employee.getBoss().getAddresses() ).isNotEmpty();
+      assertThat( employee.getBoss().getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 10" );
       assertThat( List.of(
               "firstName",
               "lastName",

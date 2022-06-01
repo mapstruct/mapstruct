@@ -265,8 +265,9 @@ public class SourceMethod implements Method {
     private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
-        return !isLifecycleCallbackMethod() && !returnType.isVoid() && !returnType.isPrimitive()
-            && hasNoMappingTargetParam
+        boolean hasNoTargetPropertyNameParam = getTargetPropertyNameParameter() == null;
+        return !isLifecycleCallbackMethod() && !returnType.isVoid()
+            && hasNoMappingTargetParam && hasNoTargetPropertyNameParam
             && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
     }
 
