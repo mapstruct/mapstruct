@@ -20,6 +20,8 @@ public @interface CustomAnnotationWithParams {
 
     Class<? extends Annotation> genericTypedClass() default CustomAnnotationWithParams.class;
 
+    AnnotateWithEnum enumParam() default AnnotateWithEnum.EXISTING;
+
     byte byteParam() default 0x00;
 
     char charParam() default 'a';
@@ -55,4 +57,6 @@ public @interface CustomAnnotationWithParams {
     String[] stringArray() default {};
 
     Class<?>[] classArray() default {};
+
+    AnnotateWithEnum[] enumArray() default {};
 }

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWith.Element;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,17 +14,20 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
-    @AnnotateWith.Element( name = "stringParam", strings = { "test1", "test2" } ),
-    @AnnotateWith.Element( name = "booleanParam", booleans = { false, true } ),
-    @AnnotateWith.Element( name = "byteParam", bytes = { 0x08, 0x1f } ),
-    @AnnotateWith.Element( name = "charParam", chars = { 'b', 'c' } ),
-    @AnnotateWith.Element( name = "doubleParam", doubles = { 1.2, 3.4 } ),
-    @AnnotateWith.Element( name = "floatParam", floats = { 1.2f, 3.4f } ),
-    @AnnotateWith.Element( name = "intParam", ints = { 12, 34 } ),
-    @AnnotateWith.Element( name = "longParam", longs = { 12L, 34L } ),
-    @AnnotateWith.Element( name = "shortParam", shorts = { 12, 34 } ),
-    @AnnotateWith.Element( name = "genericTypedClass", classes = { Mapper.class,
-        CustomAnnotationWithParams.class } )
+    @Element( name = "stringParam", strings = { "test1", "test2" } ),
+    @Element( name = "booleanParam", booleans = { false, true } ),
+    @Element( name = "byteParam", bytes = { 0x08, 0x1f } ),
+    @Element( name = "charParam", chars = { 'b', 'c' } ),
+    @Element( name = "doubleParam", doubles = { 1.2, 3.4 } ),
+    @Element( name = "floatParam", floats = { 1.2f, 3.4f } ),
+    @Element( name = "intParam", ints = { 12, 34 } ),
+    @Element( name = "longParam", longs = { 12L, 34L } ),
+    @Element( name = "shortParam", shorts = { 12, 34 } ),
+    @Element( name = "genericTypedClass", classes = { Mapper.class, CustomAnnotationWithParams.class } ),
+    @Element( name = "enumParam", enums = {
+        @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" ),
+        @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" )
+    } )
 } )
 public interface ErroneousMultipleArrayValuesMapper {
 

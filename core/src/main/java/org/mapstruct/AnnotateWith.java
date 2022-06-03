@@ -57,5 +57,14 @@ public @interface AnnotateWith {
         String[] strings() default {};
 
         Class<?>[] classes() default {};
+
+        EnumElement[] enums() default {};
+
+    }
+
+    @interface EnumElement {
+        Class<? extends Enum<?>> enumClass();
+
+        String name();
     }
 }

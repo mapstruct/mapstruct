@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWith.Element;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,24 +14,28 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
-    @AnnotateWith.Element( name = "stringArray", strings = "test" ),
-    @AnnotateWith.Element( name = "stringParam", strings = "test" ),
-    @AnnotateWith.Element( name = "booleanArray", booleans = true ),
-    @AnnotateWith.Element( name = "booleanParam", booleans = true ),
-    @AnnotateWith.Element( name = "byteArray", bytes = 0x10 ),
-    @AnnotateWith.Element( name = "byteParam", bytes = 0x13 ),
-    @AnnotateWith.Element( name = "charArray", chars = 'd' ),
-    @AnnotateWith.Element( name = "charParam", chars = 'a' ),
-    @AnnotateWith.Element( name = "doubleArray", doubles = 0.3 ),
-    @AnnotateWith.Element( name = "doubleParam", doubles = 1.2 ),
-    @AnnotateWith.Element( name = "floatArray", floats = 0.3f ),
-    @AnnotateWith.Element( name = "floatParam", floats = 1.2f ),
-    @AnnotateWith.Element( name = "intArray", ints = 3 ),
-    @AnnotateWith.Element( name = "intParam", ints = 1 ),
-    @AnnotateWith.Element( name = "longArray", longs = 3L ),
-    @AnnotateWith.Element( name = "longParam", longs = 1L ),
-    @AnnotateWith.Element( name = "shortArray", shorts = 3 ),
-    @AnnotateWith.Element( name = "shortParam", shorts = 1 )
+    @Element( name = "stringArray", strings = "test" ),
+    @Element( name = "stringParam", strings = "test" ),
+    @Element( name = "booleanArray", booleans = true ),
+    @Element( name = "booleanParam", booleans = true ),
+    @Element( name = "byteArray", bytes = 0x10 ),
+    @Element( name = "byteParam", bytes = 0x13 ),
+    @Element( name = "charArray", chars = 'd' ),
+    @Element( name = "charParam", chars = 'a' ),
+    @Element( name = "enumArray", 
+              enums = @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" ) ),
+    @Element( name = "enumParam", 
+              enums = @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" ) ),
+    @Element( name = "doubleArray", doubles = 0.3 ),
+    @Element( name = "doubleParam", doubles = 1.2 ),
+    @Element( name = "floatArray", floats = 0.3f ),
+    @Element( name = "floatParam", floats = 1.2f ),
+    @Element( name = "intArray", ints = 3 ),
+    @Element( name = "intParam", ints = 1 ),
+    @Element( name = "longArray", longs = 3L ),
+    @Element( name = "longParam", longs = 1L ),
+    @Element( name = "shortArray", shorts = 3 ),
+    @Element( name = "shortParam", shorts = 1 )
 } )
 public interface CustomNamedMapper {
 

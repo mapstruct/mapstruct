@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
 import org.mapstruct.ap.internal.gem.ElementGem;
+import org.mapstruct.ap.internal.gem.EnumElementGem;
 import org.mapstruct.ap.internal.gem.TargetGem;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.BooleanAnnotationElement;
@@ -32,6 +33,8 @@ import org.mapstruct.ap.internal.model.annotation.ByteAnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.CharacterAnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.ClassAnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.DoubleAnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.EnumAnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.EnumAnnotationElementHolder;
 import org.mapstruct.ap.internal.model.annotation.FloatAnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.IntegerAnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.LongAnnotationElement;
@@ -89,57 +92,68 @@ public class AdditionalAnnotationsBuilder
     }
 
     private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, Element element) {
-        List<ElementGem> parameters = annotationGem.elements().get();
+        List<ElementGem> eleGems = annotationGem.elements().get();
         Type annotationType = typeFactory.getType( annotationGem.value().getValue() );
-        if ( isValid( annotationType, parameters, element ) ) {
-            return Optional.of( new Annotation( annotationType, convertToProperties( parameters ) ) );
+        if ( isValid( annotationType, eleGems, element ) ) {
+            return Optional.of( new Annotation( annotationType, convertToProperties( eleGems ) ) );
         }
         return Optional.empty();
     }
 
-    private List<AnnotationElement> convertToProperties(List<ElementGem> parameters) {
-        return parameters.stream().map( gem -> convertToProperty( gem, typeFactory ) ).collect( Collectors.toList() );
+    private List<AnnotationElement> convertToProperties(List<ElementGem> eleGems) {
+        return eleGems.stream().map( gem -> convertToProperty( gem, typeFactory ) ).collect( Collectors.toList() );
     }
 
     private enum ConvertToProperty {
         BOOLEAN(
-            (parameter,
-             typeFactory) -> new BooleanAnnotationElement( parameter.name().get(), parameter.booleans().get() ),
-            parameter -> parameter.booleans().hasValue() ),
+            (eleGem,
+             typeFactory) -> new BooleanAnnotationElement( eleGem.name().get(), eleGem.booleans().get() ),
+            eleGem -> eleGem.booleans().hasValue() ),
         BYTE(
-            (parameter, typeFactory) -> new ByteAnnotationElement( parameter.name().get(), parameter.bytes().get() ),
-            parameter -> parameter.bytes().hasValue() ),
+            (eleGem, typeFactory) -> new ByteAnnotationElement( eleGem.name().get(), eleGem.bytes().get() ),
+            eleGem -> eleGem.bytes().hasValue() ),
         CHARACTER(
-            (parameter,
-             typeFactory) -> new CharacterAnnotationElement( parameter.name().get(), parameter.chars().get() ),
-            parameter -> parameter.chars().hasValue() ),
+            (eleGem,
+             typeFactory) -> new CharacterAnnotationElement( eleGem.name().get(), eleGem.chars().get() ),
+            eleGem -> eleGem.chars().hasValue() ),
         CLASSES(
-            (parameter, typeFactory) -> {
+            (eleGem, typeFactory) -> {
                 List<Type> typeList =
-                    parameter.classes().get().stream().map( typeFactory::getType ).collect( Collectors.toList() );
-                return new ClassAnnotationElement( parameter.name().get(), typeList );
+                    eleGem.classes().get().stream().map( typeFactory::getType ).collect( Collectors.toList() );
+                return new ClassAnnotationElement( eleGem.name().get(), typeList );
             },
-            parameter -> parameter.classes().hasValue() ),
+            eleGem -> eleGem.classes().hasValue() ),
         DOUBLE(
-            (parameter,
-             typeFactory) -> new DoubleAnnotationElement( parameter.name().get(), parameter.doubles().get() ),
-            parameter -> parameter.doubles().hasValue() ),
+            (eleGem,
+             typeFactory) -> new DoubleAnnotationElement( eleGem.name().get(), eleGem.doubles().get() ),
+            eleGem -> eleGem.doubles().hasValue() ),
+        ENUM(
+            (eleGem, typeFactory) -> {
+                List<EnumAnnotationElementHolder> values = eleGem.enums().get().stream()
+                    .map( enumGem -> {
+                        Type type = typeFactory.getType( enumGem.enumClass().get() );
+                        return new EnumAnnotationElementHolder( type, enumGem.name().get() );
+                    } )
+                    .collect( Collectors.toList() );
+                return new EnumAnnotationElement( eleGem.name().get(), values );
+            },
+            eleGem -> eleGem.enums().hasValue() ),
         FLOAT(
-            (parameter, typeFactory) -> new FloatAnnotationElement( parameter.name().get(), parameter.floats().get() ),
-            parameter -> parameter.floats().hasValue() ),
+            (eleGem, typeFactory) -> new FloatAnnotationElement( eleGem.name().get(), eleGem.floats().get() ),
+            eleGem -> eleGem.floats().hasValue() ),
         INT(
-            (parameter, typeFactory) -> new IntegerAnnotationElement( parameter.name().get(), parameter.ints().get() ),
-            parameter -> parameter.ints().hasValue() ),
+            (eleGem, typeFactory) -> new IntegerAnnotationElement( eleGem.name().get(), eleGem.ints().get() ),
+            eleGem -> eleGem.ints().hasValue() ),
         LONG(
-            (parameter, typeFactory) -> new LongAnnotationElement( parameter.name().get(), parameter.longs().get() ),
-            parameter -> parameter.longs().hasValue() ),
+            (eleGem, typeFactory) -> new LongAnnotationElement( eleGem.name().get(), eleGem.longs().get() ),
+            eleGem -> eleGem.longs().hasValue() ),
         SHORT(
-            (parameter, typeFactory) -> new ShortAnnotationElement( parameter.name().get(), parameter.shorts().get() ),
-            parameter -> parameter.shorts().hasValue() ),
+            (eleGem, typeFactory) -> new ShortAnnotationElement( eleGem.name().get(), eleGem.shorts().get() ),
+            eleGem -> eleGem.shorts().hasValue() ),
         STRING(
-            (parameter,
-             typeFactory) -> new StringAnnotationElement( parameter.name().get(), parameter.strings().get() ),
-            parameter -> parameter.strings().hasValue() );
+            (eleGem,
+             typeFactory) -> new StringAnnotationElement( eleGem.name().get(), eleGem.strings().get() ),
+            eleGem -> eleGem.strings().hasValue() );
 
         private BiFunction<ElementGem, TypeFactory, AnnotationElement> factory;
         private Predicate<ElementGem> usabilityChecker;
@@ -150,37 +164,69 @@ public class AdditionalAnnotationsBuilder
             this.usabilityChecker = usabilityChecker;
         }
 
-        AnnotationElement toProperty(ElementGem parameter, TypeFactory typeFactory) {
-            return factory.apply( parameter, typeFactory );
+        AnnotationElement toProperty(ElementGem eleGem, TypeFactory typeFactory) {
+            return factory.apply( eleGem, typeFactory );
         }
 
-        boolean isUsable(ElementGem parameter) {
-            return usabilityChecker.test( parameter );
+        boolean isUsable(ElementGem eleGem) {
+            return usabilityChecker.test( eleGem );
         }
     }
 
-    private AnnotationElement convertToProperty(ElementGem parameter, TypeFactory typeFactory) {
+    private AnnotationElement convertToProperty(ElementGem eleGem, TypeFactory typeFactory) {
         for ( ConvertToProperty convertToJava : ConvertToProperty.values() ) {
-            if ( convertToJava.isUsable( parameter ) ) {
-                return convertToJava.toProperty( parameter, typeFactory );
+            if ( convertToJava.isUsable( eleGem ) ) {
+                return convertToJava.toProperty( eleGem, typeFactory );
             }
         }
         return null;
     }
 
-    private boolean isValid(Type annotationType, List<ElementGem> parameters, Element element) {
+    private boolean isValid(Type annotationType, List<ElementGem> eleGems, Element element) {
         boolean isValid = true;
         if ( !annotationIsAllowed( annotationType, element ) ) {
             isValid = false;
         }
-        if ( !allRequiredParametersArePresent( annotationType, parameters, element ) ) {
+        if ( !allRequiredParametersArePresent( annotationType, eleGems, element ) ) {
             isValid = false;
         }
-        if ( !allParametersAreKnownInAnnotation( annotationType, parameters, element ) ) {
+        if ( !allParametersAreKnownInAnnotation( annotationType, eleGems, element ) ) {
             isValid = false;
         }
-        if ( !allParametersAreOfCorrectType( annotationType, parameters, element ) ) {
+        if ( !allParametersAreOfCorrectType( annotationType, eleGems, element ) ) {
             isValid = false;
+        }
+        if ( !allEnumParametersExist( annotationType, eleGems, element ) ) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private boolean allEnumParametersExist(Type annotationType, List<ElementGem> eleGems, Element element) {
+        boolean isValid = true;
+        for ( ElementGem elementGem : eleGems ) {
+            if ( elementGem.enums().hasValue() ) {
+                for ( EnumElementGem enumElementGem : elementGem.enums().get() ) {
+                    TypeMirror typeMirror = enumElementGem.enumClass().get();
+                    if ( typeUtils.asElement( typeMirror ).getKind() == ElementKind.ENUM ) {
+                        if ( typeUtils
+                                 .asElement( typeMirror )
+                                 .getEnclosedElements()
+                                 .stream()
+                                 .filter( ele -> ele.getKind() == ElementKind.ENUM_CONSTANT )
+                                 .map( Element::getSimpleName )
+                                      .noneMatch( val -> val.contentEquals( enumElementGem.name().get() ) ) ) {
+                            isValid = false;
+                            messager
+                                    .printMessage(
+                                        element,
+                                        Message.ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST,
+                                        typeMirror,
+                                        enumElementGem.name().get() );
+                        }
+                    }
+                }
+            }
         }
         return isValid;
     }
@@ -214,37 +260,37 @@ public class AdditionalAnnotationsBuilder
         return element.getKind() == ElementKind.METHOD;
     }
 
-    private boolean allParametersAreKnownInAnnotation(Type annotationType, List<ElementGem> parameters,
+    private boolean allParametersAreKnownInAnnotation(Type annotationType, List<ElementGem> eleGems,
                                                       Element element) {
         List<String> allowedAnnotationParameters = annotationType
                                                                  .findAllAnnotationParameters()
                                                                  .map( ee -> ee.getSimpleName().toString() )
                                                                  .collect( Collectors.toList() );
         boolean isValid = true;
-        for ( ElementGem elementGem : parameters ) {
-            if ( elementGem.name().isValid()
-                && !allowedAnnotationParameters.contains( elementGem.name().get() ) ) {
+        for ( ElementGem eleGem : eleGems ) {
+            if ( eleGem.name().isValid()
+                && !allowedAnnotationParameters.contains( eleGem.name().get() ) ) {
                 isValid = false;
                 messager
                         .printMessage(
                             element,
                             Message.ANNOTATE_WITH_UNKNOWN_PARAMETER,
-                            elementGem.name().get(),
+                            eleGem.name().get(),
                             annotationType );
             }
         }
         return isValid;
     }
 
-    private boolean allRequiredParametersArePresent(Type annotationType, List<ElementGem> parameters,
+    private boolean allRequiredParametersArePresent(Type annotationType, List<ElementGem> eleGems,
                                                     Element element) {
         List<ExecutableElement> undefinedParameters =
             annotationType.findAllAnnotationParameters()
                         .filter( ee -> ee.getDefaultValue() == null )
-                        .filter( ee -> parameters.stream()
+                        .filter( ee -> eleGems.stream()
                                                    .noneMatch(
-                                                       eGem -> eGem.name().isValid()
-                                                           && eGem
+                                                       eleGem -> eleGem.name().isValid()
+                                                           && eleGem
                                                                .name()
                                                                .get()
                                                                .equals( ee.getSimpleName().toString() ) ) )
@@ -270,35 +316,35 @@ public class AdditionalAnnotationsBuilder
                           .findAllAnnotationParameters()
                           .collect( Collectors.toMap( ee -> ee.getSimpleName().toString(), Function.identity() ) );
         boolean isValid = true;
-        for ( ElementGem elementGem : elements ) {
-            TypeMirror annotationParameterType = getAnnotationParameterType( annotationParameters, elementGem );
+        for ( ElementGem eleGem : elements ) {
+            TypeMirror annotationParameterType = getAnnotationParameterType( annotationParameters, eleGem );
             TypeMirror annotationParameterTypeSingular = getNonArrayTypeMirror( annotationParameterType );
-            Map<TypeMirror, Integer> elementTypes = getParameterTypes( elementGem );
+            Map<TypeMirror, Integer> elementTypes = getParameterTypes( eleGem );
             Set<ElementGem> reportedSizeError = new HashSet<>();
-            for ( TypeMirror parameterType : elementTypes.keySet() ) {
-                if ( typesArePresent( annotationParameterTypeSingular, parameterType ) ) {
-                    if ( !sameTypeOrAssignableClass( annotationParameterTypeSingular, parameterType ) ) {
+            for ( TypeMirror eleGemType : elementTypes.keySet() ) {
+                if ( typesArePresent( annotationParameterTypeSingular, eleGemType ) ) {
+                    if ( !sameTypeOrAssignableClass( annotationParameterTypeSingular, eleGemType ) ) {
                         isValid = false;
                         messager.printMessage(
                             element,
-                            elementGem.mirror(),
+                            eleGem.mirror(),
                                               Message.ANNOTATE_WITH_WRONG_PARAMETER,
-                            elementGem.name().get(),
-                                              parameterType,
+                            eleGem.name().get(),
+                                              eleGemType,
                                               annotationParameterType,
                                               annotationType );
                     }
                     else if ( annotationParameterType.getKind() != TypeKind.ARRAY
-                        && elementTypes.get( parameterType ) > 1
-                        && !reportedSizeError.contains( elementGem ) ) {
+                        && elementTypes.get( eleGemType ) > 1
+                        && !reportedSizeError.contains( eleGem ) ) {
                         isValid = false;
                         messager.printMessage(
                             element,
-                            elementGem.mirror(),
+                            eleGem.mirror(),
                                               Message.ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED,
-                            elementGem.name().get(),
+                            eleGem.name().get(),
                                               annotationType );
-                        reportedSizeError.add( elementGem );
+                        reportedSizeError.add( eleGem );
                     }
                 }
             }
@@ -312,13 +358,13 @@ public class AdditionalAnnotationsBuilder
                     : annotationParameterType;
     }
 
-    private boolean sameTypeOrAssignableClass(TypeMirror annotationParameterType, TypeMirror parameterType) {
-        return typeUtils.isSameType( annotationParameterType, parameterType )
-            || typeUtils.isAssignable( parameterType, getTypeBound( annotationParameterType ) );
+    private boolean sameTypeOrAssignableClass(TypeMirror annotationParameterType, TypeMirror eleGemType) {
+        return typeUtils.isSameType( annotationParameterType, eleGemType )
+            || typeUtils.isAssignable( eleGemType, getTypeBound( annotationParameterType ) );
     }
 
-    private boolean typesArePresent(TypeMirror annotationParameterType, TypeMirror parameterType) {
-        return parameterType != null && annotationParameterType != null;
+    private boolean typesArePresent(TypeMirror annotationParameterType, TypeMirror eleGemType) {
+        return eleGemType != null && annotationParameterType != null;
     }
 
     private TypeMirror getTypeBound(TypeMirror annotationParameterType) {
@@ -329,58 +375,63 @@ public class AdditionalAnnotationsBuilder
         return typeFactory.getTypeBound( typeParameters.get( 0 ).getTypeMirror() );
     }
 
-    private Map<TypeMirror, Integer> getParameterTypes(ElementGem parameter) {
+    private Map<TypeMirror, Integer> getParameterTypes(ElementGem eleGem) {
         Map<TypeMirror, Integer> suppliedParameterTypes = new HashMap<>();
-        if ( parameter.booleans().hasValue() ) {
+        if ( eleGem.booleans().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( boolean.class ).getTypeMirror(),
-                                      parameter.booleans().get().size() );
+                                      eleGem.booleans().get().size() );
         }
-        if ( parameter.bytes().hasValue() ) {
+        if ( eleGem.bytes().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( byte.class ).getTypeMirror(),
-                                      parameter.bytes().get().size() );
+                                      eleGem.bytes().get().size() );
         }
-        if ( parameter.chars().hasValue() ) {
+        if ( eleGem.chars().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( char.class ).getTypeMirror(),
-                                      parameter.chars().get().size() );
+                                      eleGem.chars().get().size() );
         }
-        if ( parameter.classes().hasValue() ) {
-            for ( TypeMirror mirror : parameter.classes().get() ) {
-                suppliedParameterTypes.put( mirror, parameter.classes().get().size() );
+        if ( eleGem.classes().hasValue() ) {
+            for ( TypeMirror mirror : eleGem.classes().get() ) {
+                suppliedParameterTypes.put( mirror, eleGem.classes().get().size() );
             }
         }
-        if ( parameter.doubles().hasValue() ) {
+        if ( eleGem.doubles().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( double.class ).getTypeMirror(),
-                                      parameter.doubles().get().size() );
+                                      eleGem.doubles().get().size() );
         }
-        if ( parameter.floats().hasValue() ) {
+        if ( eleGem.floats().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( float.class ).getTypeMirror(),
-                                      parameter.floats().get().size() );
+                                      eleGem.floats().get().size() );
         }
-        if ( parameter.ints().hasValue() ) {
+        if ( eleGem.ints().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( int.class ).getTypeMirror(),
-                                      parameter.ints().get().size() );
+                                      eleGem.ints().get().size() );
         }
-        if ( parameter.longs().hasValue() ) {
+        if ( eleGem.longs().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( long.class ).getTypeMirror(),
-                                      parameter.longs().get().size() );
+                                      eleGem.longs().get().size() );
         }
-        if ( parameter.shorts().hasValue() ) {
+        if ( eleGem.shorts().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( short.class ).getTypeMirror(),
-                                      parameter.shorts().get().size() );
+                                      eleGem.shorts().get().size() );
         }
-        if ( parameter.strings().hasValue() ) {
+        if ( eleGem.strings().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( String.class ).getTypeMirror(),
-                                      parameter.strings().get().size() );
+                                      eleGem.strings().get().size() );
+        }
+        if ( eleGem.enums().hasValue() ) {
+            for ( EnumElementGem enumElementGem : eleGem.enums().get() ) {
+                suppliedParameterTypes.put( enumElementGem.enumClass().get(), eleGem.enums().get().size() );
             }
+        }
         return suppliedParameterTypes;
     }
 

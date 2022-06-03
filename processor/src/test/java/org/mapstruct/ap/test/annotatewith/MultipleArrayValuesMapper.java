@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWith.Element;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,17 +14,17 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
-    @AnnotateWith.Element( name = "stringArray", strings = { "test1", "test2" } ),
-    @AnnotateWith.Element( name = "booleanArray", booleans = { false, true } ),
-    @AnnotateWith.Element( name = "byteArray", bytes = { 0x08, 0x1f } ),
-    @AnnotateWith.Element( name = "charArray", chars = { 'b', 'c' } ),
-    @AnnotateWith.Element( name = "doubleArray", doubles = { 1.2, 3.4 } ),
-    @AnnotateWith.Element( name = "floatArray", floats = { 1.2f, 3.4f } ),
-    @AnnotateWith.Element( name = "intArray", ints = { 12, 34 } ),
-    @AnnotateWith.Element( name = "longArray", longs = { 12L, 34L } ),
-    @AnnotateWith.Element( name = "shortArray", shorts = { 12, 34 } ),
-    @AnnotateWith.Element( name = "classArray", classes = { Mapper.class, CustomAnnotationWithParams.class } ),
-    @AnnotateWith.Element( name = "stringParam", strings = "required parameter" )
+    @Element( name = "stringArray", strings = { "test1", "test2" } ),
+    @Element( name = "booleanArray", booleans = { false, true } ),
+    @Element( name = "byteArray", bytes = { 0x08, 0x1f } ),
+    @Element( name = "charArray", chars = { 'b', 'c' } ),
+    @Element( name = "doubleArray", doubles = { 1.2, 3.4 } ),
+    @Element( name = "floatArray", floats = { 1.2f, 3.4f } ),
+    @Element( name = "intArray", ints = { 12, 34 } ),
+    @Element( name = "longArray", longs = { 12L, 34L } ),
+    @Element( name = "shortArray", shorts = { 12, 34 } ),
+    @Element( name = "classArray", classes = { Mapper.class, CustomAnnotationWithParams.class } ),
+    @Element( name = "stringParam", strings = "required parameter" )
 } )
 public interface MultipleArrayValuesMapper {
 

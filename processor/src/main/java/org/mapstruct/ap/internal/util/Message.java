@@ -203,6 +203,7 @@ public enum Message {
     ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED( "Parameter \"%s\" does not accept multiple values for annotation \"%s\"." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS( "Annotation \"%s\" is not allowed on methods." ),
+    ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST( "Enum \"%s\" does not have value \"%s\"." ),
     ;
     // CHECKSTYLE:ON
 

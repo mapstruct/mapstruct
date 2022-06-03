@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWith.Element;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,8 +14,8 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
-    @AnnotateWith.Element( name = "stringParam", strings = "test" ),
-    @AnnotateWith.Element( name = "genericTypedClass", classes = Mapper.class )
+    @Element( name = "stringParam", strings = "test" ),
+    @Element( name = "genericTypedClass", classes = Mapper.class )
 } )
 public interface CustomNamedGenericClassMapper {
 

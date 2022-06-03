@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWith.Element;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,7 +14,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotation.class,
-                elements = @AnnotateWith.Element( name = "unknownParameter", strings = "unknown" )
+                elements = @Element( name = "unknownParameter", strings = "unknown" )
 )
 public interface ErroneousMapperWithUnknownParameter {
 

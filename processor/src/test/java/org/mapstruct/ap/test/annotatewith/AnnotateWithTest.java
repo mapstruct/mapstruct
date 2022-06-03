@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Ben Zegveld
  */
 @IssueKey( "1574" )
+@WithClasses( AnnotateWithEnum.class )
 public class AnnotateWithTest {
 
     @ProcessorTest
@@ -181,7 +182,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithUnknownParameter.class,
-                line = 18,
+                line = 19,
                 message = "Parameter \"unknownParameter\" is not present in annotation "
                     + "\"org.mapstruct.ap.test.annotatewith.CustomAnnotation\"."
             )
@@ -197,9 +198,26 @@ public class AnnotateWithTest {
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithNonExistantEnum.class,
+                line = 23,
+                message = "Enum \"org.mapstruct.ap.test.annotatewith.AnnotateWithEnum\" does not have value "
+                    + "\"NON_EXISTANT\"."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithNonExistantEnum.class, CustomAnnotationWithParams.class } )
+    public void erroneousMapperWithNonExistantEnum() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 17,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"boolean\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -207,7 +225,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 18,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"byte\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -215,7 +233,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 19,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"char\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -223,7 +241,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 20,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type "
                     + "\"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\""
                     + " but of type \"java.lang.String\" "
@@ -233,7 +251,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 21,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"double\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -241,7 +259,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 22,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"float\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -249,7 +267,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 23,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"int\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -257,7 +275,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 24,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"long\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -265,7 +283,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 25,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"stringParam\" is not of type \"short\" but of type \"java.lang.String\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
@@ -273,7 +291,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 27,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"genericTypedClass\" is not of type \"java.lang.String\" "
                     + "but of type \"java.lang.Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
@@ -282,15 +300,26 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 28,
-                alternativeLine = 31,
+                alternativeLine = 33,
                 message = "Parameter \"genericTypedClass\" is not of type "
                     + "\"org.mapstruct.ap.test.annotatewith.ErroneousMapperWithWrongParameter\" "
                     + "but of type \"java.lang.Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 29,
+                alternativeLine = 33,
+                message = "Parameter \"enumParam\" is not of type "
+                    + "\"org.mapstruct.ap.test.annotatewith.WrongAnnotateWithEnum\" "
+                    + "but of type \"org.mapstruct.ap.test.annotatewith.AnnotateWithEnum\" "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class } )
+    @WithClasses( { ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class,
+        WrongAnnotateWithEnum.class } )
     public void erroneousMapperWithWrongParameter() {
     }
 
@@ -301,81 +330,89 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 16,
-                alternativeLine = 27,
+                line = 17,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 17,
-                alternativeLine = 27,
+                line = 18,
+                alternativeLine = 32,
                 message = "Parameter \"booleanParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 18,
-                alternativeLine = 27,
+                line = 19,
+                alternativeLine = 32,
                 message = "Parameter \"byteParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 19,
-                alternativeLine = 27,
+                line = 20,
+                alternativeLine = 32,
                 message = "Parameter \"charParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 20,
-                alternativeLine = 27,
+                line = 21,
+                alternativeLine = 32,
                 message = "Parameter \"doubleParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 21,
-                alternativeLine = 27,
+                line = 22,
+                alternativeLine = 32,
                 message = "Parameter \"floatParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 22,
-                alternativeLine = 27,
+                line = 23,
+                alternativeLine = 32,
                 message = "Parameter \"intParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 23,
-                alternativeLine = 27,
+                line = 24,
+                alternativeLine = 32,
                 message = "Parameter \"longParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 24,
-                alternativeLine = 27,
+                line = 25,
+                alternativeLine = 32,
                 message = "Parameter \"shortParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
-                line = 25,
-                alternativeLine = 27,
+                line = 26,
+                alternativeLine = 32,
                 message = "Parameter \"genericTypedClass\" does not accept multiple values "
+                    + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMultipleArrayValuesMapper.class,
+                line = 27,
+                alternativeLine = 32,
+                message = "Parameter \"enumParam\" does not accept multiple values "
                     + "for annotation \"org.mapstruct.ap.test.annotatewith.CustomAnnotationWithParams\"."
             )
         }
