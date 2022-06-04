@@ -107,7 +107,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
         additionalAnnotationsBuilder =
-            new AdditionalAnnotationsBuilder( elementUtils, typeUtils, typeFactory, messager );
+            new AdditionalAnnotationsBuilder( elementUtils, typeFactory, messager );
 
         MapperOptions mapperOptions = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperOptions );
