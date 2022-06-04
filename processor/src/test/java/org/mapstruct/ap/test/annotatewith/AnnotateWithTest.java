@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Ben Zegveld
  */
-@IssueKey( "1574" )
-@WithClasses( AnnotateWithEnum.class )
+@IssueKey("1574")
+@WithClasses(AnnotateWithEnum.class)
 public class AnnotateWithTest {
 
     @ProcessorTest
-    @WithClasses( { DeprecateMapper.class } )
+    @WithClasses({ DeprecateMapper.class })
     public void mapperBecomesDeprecated() {
         DeprecateMapper mapper = Mappers.getMapper( DeprecateMapper.class );
 
@@ -32,15 +32,15 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { DeprecateAndCustomMapper.class, CustomAnnotation.class } )
+    @WithClasses({ DeprecateAndCustomMapper.class, CustomAnnotation.class })
     public void mapperBecomesDeprecatedAndGetsCustomAnnotation() {
         DeprecateAndCustomMapper mapper = Mappers.getMapper( DeprecateAndCustomMapper.class );
 
-        assertThat( mapper.getClass() ).hasAnnotations( Deprecated.class, CustomAnnotation.class );;
+        assertThat( mapper.getClass() ).hasAnnotations( Deprecated.class, CustomAnnotation.class );
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParams.class } )
+    @WithClasses({ CustomNamedMapper.class, CustomAnnotationWithParams.class })
     public void annotationWithValue() {
         CustomNamedMapper mapper = Mappers.getMapper( CustomNamedMapper.class );
 
@@ -68,7 +68,7 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { MultipleArrayValuesMapper.class, CustomAnnotationWithParams.class } )
+    @WithClasses({ MultipleArrayValuesMapper.class, CustomAnnotationWithParams.class })
     public void annotationWithMultipleValues() {
         MultipleArrayValuesMapper mapper = Mappers.getMapper( MultipleArrayValuesMapper.class );
 
@@ -87,7 +87,7 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedGenericClassMapper.class, CustomAnnotationWithParams.class } )
+    @WithClasses({ CustomNamedGenericClassMapper.class, CustomAnnotationWithParams.class })
     public void annotationWithCorrectGenericClassValue() {
         CustomNamedGenericClassMapper mapper = Mappers.getMapper( CustomNamedGenericClassMapper.class );
 
@@ -98,11 +98,11 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { MetaAnnotatedMapper.class, ClassMetaAnnotation.class, CustomClassOnlyAnnotation.class } )
+    @WithClasses({ MetaAnnotatedMapper.class, ClassMetaAnnotation.class, CustomClassOnlyAnnotation.class })
     public void metaAnnotationWorks() {
         MetaAnnotatedMapper mapper = Mappers.getMapper( MetaAnnotatedMapper.class );
 
-        assertThat( mapper.getClass() ).hasAnnotation( CustomClassOnlyAnnotation.class);
+        assertThat( mapper.getClass() ).hasAnnotation( CustomClassOnlyAnnotation.class );
     }
 
     @ProcessorTest
@@ -117,7 +117,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithMissingParameter.class, AnnotationWithRequiredParameter.class } )
+    @WithClasses({ ErroneousMapperWithMissingParameter.class, AnnotationWithRequiredParameter.class })
     public void erroneousMapperWithMissingParameter() {
     }
 
@@ -133,7 +133,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithMethodOnInterface.class, CustomMethodOnlyAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithMethodOnInterface.class, CustomMethodOnlyAnnotation.class })
     public void erroneousMapperWithMethodOnInterface() {
     }
 
@@ -149,7 +149,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithMethodOnClass.class, CustomMethodOnlyAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithMethodOnClass.class, CustomMethodOnlyAnnotation.class })
     public void erroneousMapperWithMethodOnClass() {
     }
 
@@ -165,7 +165,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithAnnotationOnlyOnInterface.class, CustomAnnotationOnlyAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithAnnotationOnlyOnInterface.class, CustomAnnotationOnlyAnnotation.class })
     public void erroneousMapperWithAnnotationOnlyOnInterface() {
     }
 
@@ -181,7 +181,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithAnnotationOnlyOnClass.class, CustomAnnotationOnlyAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithAnnotationOnlyOnClass.class, CustomAnnotationOnlyAnnotation.class })
     public void erroneousMapperWithAnnotationOnlyOnClass() {
     }
 
@@ -197,7 +197,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class })
     public void erroneousMapperWithClassOnMethod() {
     }
 
@@ -213,7 +213,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithUnknownParameter.class, CustomAnnotation.class } )
+    @WithClasses({ ErroneousMapperWithUnknownParameter.class, CustomAnnotation.class })
     public void erroneousMapperWithUnknownParameter() {
     }
 
@@ -229,7 +229,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithNonExistantEnum.class, CustomAnnotationWithParams.class } )
+    @WithClasses({ ErroneousMapperWithNonExistantEnum.class, CustomAnnotationWithParams.class })
     public void erroneousMapperWithNonExistantEnum() {
     }
 
@@ -337,8 +337,10 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class,
-        WrongAnnotateWithEnum.class } )
+    @WithClasses({
+        ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class,
+        WrongAnnotateWithEnum.class
+    })
     public void erroneousMapperWithWrongParameter() {
     }
 
@@ -436,7 +438,7 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMultipleArrayValuesMapper.class, CustomAnnotationWithParams.class } )
+    @WithClasses({ ErroneousMultipleArrayValuesMapper.class, CustomAnnotationWithParams.class })
     public void erroneousMapperUsingMultipleValuesInsteadOfSingle() {
     }
 }
