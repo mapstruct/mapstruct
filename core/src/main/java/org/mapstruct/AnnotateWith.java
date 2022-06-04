@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * This can be used to have mapstruct generate additional annotations on classes/methods.
@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @since 1.6
  */
 @Repeatable( AnnotateWiths.class )
-@Retention( SOURCE )
+@Retention( CLASS )
 @Target( { TYPE, METHOD, ANNOTATION_TYPE } )
 public @interface AnnotateWith {
     /**

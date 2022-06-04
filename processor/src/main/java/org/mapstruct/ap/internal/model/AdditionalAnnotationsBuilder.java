@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,18 +31,8 @@ import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
 import org.mapstruct.ap.internal.gem.ElementGem;
 import org.mapstruct.ap.internal.gem.EnumElementGem;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.BooleanAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.ByteAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.CharacterAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.ClassAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.DoubleAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.EnumAnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
 import org.mapstruct.ap.internal.model.annotation.EnumAnnotationElementHolder;
-import org.mapstruct.ap.internal.model.annotation.FloatAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.IntegerAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.LongAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.ShortAnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.StringAnnotationElement;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.ElementUtils;
@@ -51,6 +42,7 @@ import org.mapstruct.ap.internal.util.RepeatableAnnotations;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 import org.mapstruct.tools.gem.GemValue;
 
+import static java.util.Collections.emptySet;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
@@ -108,54 +100,80 @@ public class AdditionalAnnotationsBuilder
     }
 
     private enum ConvertToProperty {
-        BOOLEAN(
-            (eleGem,
-             typeFactory) -> new BooleanAnnotationElement( eleGem.name().get(), eleGem.booleans().get() ),
+        BOOLEAN( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.BOOLEAN,
+                eleGem.name().get(),
+                eleGem.booleans().get(),
+                emptySet() ),
             eleGem -> eleGem.booleans().hasValue() ),
-        BYTE(
-            (eleGem, typeFactory) -> new ByteAnnotationElement( eleGem.name().get(), eleGem.bytes().get() ),
+        BYTE( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.BYTE,
+                eleGem.name().get(),
+                eleGem.bytes().get(),
+                emptySet() ),
             eleGem -> eleGem.bytes().hasValue() ),
-        CHARACTER(
-            (eleGem,
-             typeFactory) -> new CharacterAnnotationElement( eleGem.name().get(), eleGem.chars().get() ),
+        CHARACTER( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.CHARACTER,
+                eleGem.name().get(),
+                eleGem.chars().get(),
+                emptySet() ),
             eleGem -> eleGem.chars().hasValue() ),
-        CLASSES(
-            (eleGem, typeFactory) -> {
+        CLASSES( (eleGem, typeFactory) -> {
                 List<Type> typeList =
                     eleGem.classes().get().stream().map( typeFactory::getType ).collect( Collectors.toList() );
-                return new ClassAnnotationElement( eleGem.name().get(), typeList );
+                return new AnnotationElement(
+                    AnnotationElementType.CLASS,
+                    eleGem.name().get(),
+                    typeList,
+                    new HashSet<>( typeList ) );
             },
             eleGem -> eleGem.classes().hasValue() ),
-        DOUBLE(
-            (eleGem,
-             typeFactory) -> new DoubleAnnotationElement( eleGem.name().get(), eleGem.doubles().get() ),
+        DOUBLE( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.DOUBLE,
+                eleGem.name().get(),
+                eleGem.doubles().get(),
+                emptySet() ),
             eleGem -> eleGem.doubles().hasValue() ),
-        ENUM(
-            (eleGem, typeFactory) -> {
-                List<EnumAnnotationElementHolder> values = eleGem.enums().get().stream()
-                    .map( enumGem -> {
-                        Type type = typeFactory.getType( enumGem.enumClass().get() );
-                        return new EnumAnnotationElementHolder( type, enumGem.name().get() );
-                    } )
-                    .collect( Collectors.toList() );
-                return new EnumAnnotationElement( eleGem.name().get(), values );
+        ENUM( (eleGem, typeFactory) -> {
+                List<EnumAnnotationElementHolder> values = new ArrayList<>();
+                Set<Type> importTypes = new HashSet<>();
+                for ( EnumElementGem enumGem : eleGem.enums().get() ) {
+                    Type type = typeFactory.getType( enumGem.enumClass().get() );
+                    importTypes.add( type );
+                    values.add( new EnumAnnotationElementHolder( type, enumGem.name().get() ) );
+                }
+                return new AnnotationElement( AnnotationElementType.ENUM, eleGem.name().get(), values, importTypes );
             },
             eleGem -> eleGem.enums().hasValue() ),
-        FLOAT(
-            (eleGem, typeFactory) -> new FloatAnnotationElement( eleGem.name().get(), eleGem.floats().get() ),
+        FLOAT( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.FLOAT,
+                eleGem.name().get(),
+                eleGem.floats().get(),
+                emptySet() ),
             eleGem -> eleGem.floats().hasValue() ),
-        INT(
-            (eleGem, typeFactory) -> new IntegerAnnotationElement( eleGem.name().get(), eleGem.ints().get() ),
+        INT( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.INTEGER,
+                eleGem.name().get(),
+                eleGem.ints().get(),
+                emptySet() ),
             eleGem -> eleGem.ints().hasValue() ),
-        LONG(
-            (eleGem, typeFactory) -> new LongAnnotationElement( eleGem.name().get(), eleGem.longs().get() ),
+        LONG( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.LONG,
+                eleGem.name().get(),
+                eleGem.longs().get(),
+                emptySet() ),
             eleGem -> eleGem.longs().hasValue() ),
-        SHORT(
-            (eleGem, typeFactory) -> new ShortAnnotationElement( eleGem.name().get(), eleGem.shorts().get() ),
+        SHORT( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.SHORT,
+                eleGem.name().get(),
+                eleGem.shorts().get(),
+                emptySet() ),
             eleGem -> eleGem.shorts().hasValue() ),
-        STRING(
-            (eleGem,
-             typeFactory) -> new StringAnnotationElement( eleGem.name().get(), eleGem.strings().get() ),
+        STRING( (eleGem, typeFactory) -> new AnnotationElement(
+                AnnotationElementType.STRING,
+                eleGem.name().get(),
+                eleGem.strings().get(),
+                emptySet() ),
             eleGem -> eleGem.strings().hasValue() );
 
         private BiFunction<ElementGem, TypeFactory, AnnotationElement> factory;
