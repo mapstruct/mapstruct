@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -88,7 +89,7 @@ public class AdditionalAnnotationsBuilder
     private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, Element element) {
         Type annotationType = typeFactory.getType( getTypeMirror( annotationGem.value() ) );
         List<ElementGem> eleGems = annotationGem.elements().get();
-        if ( isValid( annotationType, eleGems, element ) ) {
+        if ( isValid( annotationType, eleGems, element, annotationGem.mirror() ) ) {
             return Optional.of( new Annotation( annotationType, convertToProperties( eleGems ) ) );
         }
         return Optional.empty();
@@ -202,9 +203,10 @@ public class AdditionalAnnotationsBuilder
         return null;
     }
 
-    private boolean isValid(Type annotationType, List<ElementGem> eleGems, Element element) {
+    private boolean isValid(Type annotationType, List<ElementGem> eleGems, Element element,
+                            AnnotationMirror annotationMirror) {
         boolean isValid = true;
-        if ( !annotationIsAllowed( annotationType, element ) ) {
+        if ( !annotationIsAllowed( annotationType, element, annotationMirror ) ) {
             isValid = false;
         }
 
@@ -262,7 +264,7 @@ public class AdditionalAnnotationsBuilder
         return isValid;
     }
 
-    private boolean annotationIsAllowed(Type annotationType, Element element) {
+    private boolean annotationIsAllowed(Type annotationType, Element element, AnnotationMirror annotationMirror) {
         Target target = annotationType.getTypeElement().getAnnotation( Target.class );
         if ( target == null ) {
             return true;
@@ -279,6 +281,7 @@ public class AdditionalAnnotationsBuilder
             isValid = false;
             messager.printMessage(
                         element,
+                        annotationMirror,
                         Message.ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS,
                         annotationType.describe()
             );
@@ -287,6 +290,7 @@ public class AdditionalAnnotationsBuilder
             isValid = false;
             messager.printMessage(
                         element,
+                        annotationMirror,
                         Message.ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS,
                         annotationType.describe()
             );

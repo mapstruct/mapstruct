@@ -120,7 +120,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithMethodOnInterface.class,
-                line = 16,
+                line = 15,
                 message = "Annotation \"CustomMethodOnlyAnnotation\" is not allowed on classes."
             )
         }
@@ -136,7 +136,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithMethodOnClass.class,
-                line = 16,
+                line = 15,
                 message = "Annotation \"CustomMethodOnlyAnnotation\" is not allowed on classes."
             )
         }
@@ -152,7 +152,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithAnnotationOnlyOnInterface.class,
-                line = 16,
+                line = 15,
                 message = "Annotation \"CustomAnnotationOnlyAnnotation\" is not allowed on classes."
             )
         }
@@ -168,7 +168,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithAnnotationOnlyOnClass.class,
-                line = 16,
+                line = 15,
                 message = "Annotation \"CustomAnnotationOnlyAnnotation\" is not allowed on classes."
             )
         }
@@ -184,7 +184,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithClassOnMethod.class,
-                line = 18,
+                line = 17,
                 message = "Annotation \"CustomClassOnlyAnnotation\" is not allowed on methods."
             )
         }
