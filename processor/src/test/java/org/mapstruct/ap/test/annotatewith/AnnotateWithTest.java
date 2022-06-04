@@ -24,14 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnnotateWithTest {
 
     @ProcessorTest
-    @WithClasses({ DeprecateMapper.class })
-    public void mapperBecomesDeprecated() {
-        DeprecateMapper mapper = Mappers.getMapper( DeprecateMapper.class );
-
-        assertThat( mapper.getClass() ).hasAnnotation( Deprecated.class );
-    }
-
-    @ProcessorTest
     @WithClasses({ DeprecateAndCustomMapper.class, CustomAnnotation.class })
     public void mapperBecomesDeprecatedAndGetsCustomAnnotation() {
         DeprecateAndCustomMapper mapper = Mappers.getMapper( DeprecateAndCustomMapper.class );
