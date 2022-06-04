@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -12,6 +13,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -97,7 +99,7 @@ public class MapperAnnotatedFormattingMessenger implements FormattingMessager {
         if ( e instanceof ExecutableElement ) {
             ExecutableElement ee = (ExecutableElement) e;
             StringBuilder method = new StringBuilder();
-            method.append( typeUtils.asElement( ee.getReturnType() ).getSimpleName() );
+            method.append( typeMirrorToString( ee.getReturnType() ) );
             method.append( " " );
             method.append( ee.getSimpleName() );
             method.append( "(" );
@@ -112,7 +114,12 @@ public class MapperAnnotatedFormattingMessenger implements FormattingMessager {
     }
 
     private String parameterToString(VariableElement element) {
-        return typeUtils.asElement( element.asType() ).getSimpleName() + " " + element.getSimpleName();
+        return typeMirrorToString( element.asType() ) + " " + element.getSimpleName();
+    }
+
+    private String typeMirrorToString(TypeMirror type) {
+        Element element = typeUtils.asElement( type );
+        return element != null ? element.getSimpleName().toString() : Objects.toString( type );
     }
 
     private Message determineDelegationMessage(Element e, Message msg) {
