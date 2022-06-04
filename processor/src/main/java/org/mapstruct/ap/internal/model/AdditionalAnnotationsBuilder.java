@@ -29,7 +29,6 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
 import org.mapstruct.ap.internal.gem.ElementGem;
-import org.mapstruct.ap.internal.gem.EnumElementGem;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
 import org.mapstruct.ap.internal.model.annotation.EnumAnnotationElementHolder;
@@ -137,10 +136,10 @@ public class AdditionalAnnotationsBuilder
         ENUM( (eleGem, typeFactory) -> {
                 List<EnumAnnotationElementHolder> values = new ArrayList<>();
                 Set<Type> importTypes = new HashSet<>();
-                for ( EnumElementGem enumGem : eleGem.enums().get() ) {
-                    Type type = typeFactory.getType( enumGem.enumClass().get() );
+                for ( String enumName : eleGem.enums().get() ) {
+                    Type type = typeFactory.getType( eleGem.enumClass().get() );
                     importTypes.add( type );
-                    values.add( new EnumAnnotationElementHolder( type, enumGem.name().get() ) );
+                    values.add( new EnumAnnotationElementHolder( type, enumName ) );
                 }
                 return new AnnotationElement( AnnotationElementType.ENUM, eleGem.name().get(), values, importTypes );
             },
@@ -220,28 +219,41 @@ public class AdditionalAnnotationsBuilder
         if ( !allParametersAreOfCorrectType( annotationType, annotationParameters, eleGems, element ) ) {
             isValid = false;
         }
-        if ( !allEnumParametersExist( eleGems, element ) ) {
+        if ( !enumConstructionIsCorrectlyUsed( eleGems, element ) ) {
             isValid = false;
         }
         return isValid;
     }
 
-    private boolean allEnumParametersExist(List<ElementGem> eleGems, Element element) {
+    private boolean enumConstructionIsCorrectlyUsed(List<ElementGem> eleGems, Element element) {
         boolean isValid = true;
         for ( ElementGem elementGem : eleGems ) {
             if ( elementGem.enums().hasValue() ) {
-                for ( EnumElementGem enumElementGem : elementGem.enums().get() ) {
-                    Type type = typeFactory.getType( getTypeMirror( enumElementGem.enumClass() ) );
+                if ( elementGem.enumClass().getValue() == null ) {
+                    isValid = false;
+                    messager
+                            .printMessage(
+                                element,
+                                elementGem.mirror(),
+                                elementGem.enums().getAnnotationValue(),
+                                Message.ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED );
+                }
+                else {
+                    Type type = typeFactory.getType( getTypeMirror( elementGem.enumClass() ) );
                     if ( type.isEnumType() ) {
                         List<String> enumConstants = type.getEnumConstants();
-                        if ( !enumConstants.contains( enumElementGem.name().get() ) ) {
-                            isValid = false;
-                            messager
-                                    .printMessage(
-                                        element,
-                                        Message.ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST,
-                                        type.describe(),
-                                        enumElementGem.name().get() );
+                        for ( String enumName : elementGem.enums().get() ) {
+                            if ( !enumConstants.contains( enumName ) ) {
+                                isValid = false;
+                                messager
+                                        .printMessage(
+                                            element,
+                                            elementGem.mirror(),
+                                            elementGem.enums().getAnnotationValue(),
+                                            Message.ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST,
+                                            type.describe(),
+                                            enumName );
+                            }
                         }
                     }
                 }
@@ -303,6 +315,8 @@ public class AdditionalAnnotationsBuilder
                 messager
                         .printMessage(
                             element,
+                            eleGem.mirror(),
+                            eleGem.name().getAnnotationValue(),
                             Message.ANNOTATE_WITH_UNKNOWN_PARAMETER,
                             eleGem.name().get(),
                             annotationType.describe()
@@ -321,8 +335,8 @@ public class AdditionalAnnotationsBuilder
                 // Mandatory parameter, must be present in the elements
                 String parameterName = annotationParameter.getSimpleName().toString();
                 boolean elementGemDefined = false;
-                for ( ElementGem elementGe : elements ) {
-                    if ( elementGe.isValid() && elementGe.name().get().equals( parameterName ) ) {
+                for ( ElementGem elementGem : elements ) {
+                    if ( elementGem.isValid() && elementGem.name().get().equals( parameterName ) ) {
                         elementGemDefined = true;
                         break;
                     }
@@ -366,6 +380,7 @@ public class AdditionalAnnotationsBuilder
                     messager.printMessage(
                         element,
                         eleGem.mirror(),
+                        eleGem.name().getAnnotationValue(),
                         Message.ANNOTATE_WITH_WRONG_PARAMETER,
                         eleGem.name().get(),
                         eleGemType.describe(),
@@ -471,12 +486,9 @@ public class AdditionalAnnotationsBuilder
                                       eleGem.strings().get().size() );
         }
         if ( eleGem.enums().hasValue() ) {
-            for ( EnumElementGem enumElementGem : eleGem.enums().get() ) {
-                suppliedParameterTypes.put(
-                    typeFactory.getType( getTypeMirror( enumElementGem.enumClass() ) ),
-                    eleGem.enums().get().size()
-                );
-            }
+            suppliedParameterTypes.put(
+                                      typeFactory.getType( getTypeMirror( eleGem.enumClass() ) ),
+                                      eleGem.enums().get().size() );
         }
         return suppliedParameterTypes;
     }

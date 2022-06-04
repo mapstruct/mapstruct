@@ -10,6 +10,8 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.mapstruct.HiddenEnumForAnnotationDefault.Dummy;
+
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
@@ -49,99 +51,94 @@ public @interface AnnotateWith {
         String name();
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return short value(s) for the annotation element.
          */
         short[] shorts() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return byte value(s) for the annotation element.
          */
         byte[] bytes() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return int value(s) for the annotation element.
          */
         int[] ints() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return long value(s) for the annotation element.
          */
         long[] longs() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return float value(s) for the annotation element.
          */
         float[] floats() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return double value(s) for the annotation element.
          */
         double[] doubles() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return char value(s) for the annotation element.
          */
         char[] chars() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return boolean value(s) for the annotation element.
          */
         boolean[] booleans() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return string value(s) for the annotation element.
          */
         String[] strings() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * cannot be used in conjunction with other value fields.
          *
          * @return class value(s) for the annotation element.
          */
         Class<?>[] classes() default {};
 
         /**
-         * cannot be used in conjunction with other value fields within the same annotation element.
+         * only used in conjunction with the {@link #enums()} annotation element.
+         *
+         * @return the class of the enum.
+         */
+        Class<? extends Enum<?>> enumClass() default Dummy.class;
+
+        /**
+         * cannot be used in conjunction with other value fields. {@link #enumClass()} is also required when using
+         * {@link #enums()}
          *
          * @return enum value(s) for the annotation element.
          */
-        EnumElement[] enums() default {};
+        String[] enums() default {};
 
     }
+}
 
-    /**
-     * Used in combination with {@link AnnotateWith.Element} to configure the annotation element enum values.
-     *
-     * @author Ben Zegveld
-     * @since 1.6
-     */
-    @interface EnumElement {
-        /**
-         * @return the class of the enum.
-         */
-        Class<? extends Enum<?>> enumClass();
-
-        /**
-         * @return the name of the enum value.
-         */
-        String name();
+class HiddenEnumForAnnotationDefault {
+    enum Dummy {
     }
 }

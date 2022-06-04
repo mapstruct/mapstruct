@@ -24,10 +24,7 @@ import org.mapstruct.Mapper;
     @Element( name = "longParam", longs = { 12L, 34L } ),
     @Element( name = "shortParam", shorts = { 12, 34 } ),
     @Element( name = "genericTypedClass", classes = { Mapper.class, CustomAnnotationWithParams.class } ),
-    @Element( name = "enumParam", enums = {
-        @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" ),
-        @AnnotateWith.EnumElement( enumClass = AnnotateWithEnum.class, name = "EXISTING" )
-    } )
+    @Element( name = "enumParam", enumClass = AnnotateWithEnum.class, enums = { "EXISTING", "OTHER_EXISTING" } )
 } )
 public interface ErroneousMultipleArrayValuesMapper {
 

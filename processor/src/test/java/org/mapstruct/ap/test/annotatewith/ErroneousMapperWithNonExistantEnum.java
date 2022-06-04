@@ -14,10 +14,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class,
-                elements = { @Element( name = "enumParam", enums = @AnnotateWith.EnumElement(
-                        enumClass = AnnotateWithEnum.class,
-                        name = "NON_EXISTANT"
-                    ) ),
+                elements = { @Element( name = "enumParam", enumClass = AnnotateWithEnum.class, enums = "NON_EXISTANT" ),
                     @Element( name = "stringParam", strings = "required" ) }
 )
 public interface ErroneousMapperWithNonExistantEnum {

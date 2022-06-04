@@ -200,7 +200,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithUnknownParameter.class,
-                line = 19,
+                line = 17,
                 message = "Parameter \"unknownParameter\" is not present in annotation \"CustomAnnotation\"."
             )
         }
@@ -216,7 +216,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithNonExistantEnum.class,
-                line = 23,
+                line = 17,
                 message = "Enum \"AnnotateWithEnum\" does not have value \"NON_EXISTANT\"."
             )
         }
