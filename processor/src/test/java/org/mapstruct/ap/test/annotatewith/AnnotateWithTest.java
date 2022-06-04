@@ -28,7 +28,7 @@ public class AnnotateWithTest {
     public void mapperBecomesDeprecated() {
         DeprecateMapper mapper = Mappers.getMapper( DeprecateMapper.class );
 
-        assertThat( mapper.getClass().getAnnotation( Deprecated.class ) ).isNotNull();
+        assertThat( mapper.getClass() ).hasAnnotation( Deprecated.class );
     }
 
     @ProcessorTest
@@ -36,8 +36,7 @@ public class AnnotateWithTest {
     public void mapperBecomesDeprecatedAndGetsCustomAnnotation() {
         DeprecateAndCustomMapper mapper = Mappers.getMapper( DeprecateAndCustomMapper.class );
 
-        assertThat( mapper.getClass().getAnnotation( Deprecated.class ) ).isNotNull();
-        assertThat( mapper.getClass().getAnnotation( CustomAnnotation.class ) ).isNotNull();
+        assertThat( mapper.getClass() ).hasAnnotations( Deprecated.class, CustomAnnotation.class );;
     }
 
     @ProcessorTest
@@ -103,8 +102,7 @@ public class AnnotateWithTest {
     public void metaAnnotationWorks() {
         MetaAnnotatedMapper mapper = Mappers.getMapper( MetaAnnotatedMapper.class );
 
-        CustomClassOnlyAnnotation annotation = mapper.getClass().getAnnotation( CustomClassOnlyAnnotation.class );
-        assertThat( annotation ).isNotNull();
+        assertThat( mapper.getClass() ).hasAnnotation( CustomClassOnlyAnnotation.class);
     }
 
     @ProcessorTest
