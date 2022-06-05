@@ -16,6 +16,6 @@ import org.mapstruct.Mapper;
     @AnnotateWith.Element( strings = "unnamed annotation element" ),
     @AnnotateWith.Element( name = "namedAnnotationElement", booleans = false )
 } )
-public abstract class ErroneousMapperWithMissingAnnotationElementName {
+public abstract class MapperWithMissingAnnotationElementName {
 
 }

@@ -100,7 +100,7 @@ public class AdditionalAnnotationsBuilder
     }
 
     private static String getUserDefinedName(ElementGem eleGem) {
-        return eleGem.name().getValue();
+        return eleGem.name().get();
     }
 
     private enum ConvertToProperty {
@@ -217,9 +217,6 @@ public class AdditionalAnnotationsBuilder
         if ( !annotationIsAllowed( annotationType, element, annotationMirror ) ) {
             isValid = false;
         }
-        if ( !annotationIsComplete( annotationType, eleGems, element ) ) {
-            isValid = false;
-        }
 
         List<ExecutableElement> annotationElements = methodsIn( annotationType.getTypeElement()
             .getEnclosedElements() );
@@ -273,23 +270,6 @@ public class AdditionalAnnotationsBuilder
             else if ( elementGem.enumClass().getValue() != null ) {
                 isValid = false;
                 messager.printMessage( element, elementGem.mirror(), Message.ANNOTATE_WITH_ENUMS_NOT_DEFINED );
-            }
-        }
-        return isValid;
-    }
-
-    private boolean annotationIsComplete(Type annotationType, List<ElementGem> eleGems, Element element) {
-        boolean isValid = true;
-        if ( eleGems.size() > 1 ) {
-            for ( ElementGem elementGem : eleGems ) {
-                if ( elementGem.name().getValue() == null ) {
-                    isValid = false;
-                    messager.printMessage(
-                                element,
-                                elementGem.mirror(),
-                                Message.ANNOTATE_WITH_NAME_NOT_DEFINED,
-                                annotationType.describe() );
-                }
             }
         }
         return isValid;

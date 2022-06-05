@@ -101,7 +101,7 @@ public class AnnotateWithTest {
         generatedSource
                        .forMapper( AnnotationWithoutElementNameMapper.class )
                        .content()
-                       .contains( "@CustomAnnotation(\"value\")" );
+                       .contains( "@CustomAnnotation(value = \"value\")" );
     }
 
     @ProcessorTest
@@ -458,22 +458,9 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(
-               kind = javax.tools.Diagnostic.Kind.ERROR,
-               type = ErroneousMapperWithMissingAnnotationElementName.class,
-               line = 16,
-               alternativeLine = 19,
-               message = "\"name=...\" is required in each @AnnotateWith.Element annotation with multiple annotations "
-                    + "for annotation \"CustomAnnotationWithTwoAnnotationElements\"."
-            )
-        }
-    )
-    @WithClasses( { ErroneousMapperWithMissingAnnotationElementName.class,
+    @WithClasses( { MapperWithMissingAnnotationElementName.class,
         CustomAnnotationWithTwoAnnotationElements.class } )
-    public void erroneousMapperWithMissingAnnotationElementName() {
+    public void mapperWithMissingAnnotationElementName_shouldCompile() {
     }
 
     @ProcessorTest
