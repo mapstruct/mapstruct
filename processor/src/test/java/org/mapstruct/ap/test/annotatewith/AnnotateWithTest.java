@@ -471,7 +471,8 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses({ErroneousMapperWithMissingAnnotationElementName.class, CustomAnnotationWithTwoAnnotationElements.class})
+    @WithClasses( { ErroneousMapperWithMissingAnnotationElementName.class,
+        CustomAnnotationWithTwoAnnotationElements.class } )
     public void erroneousMapperWithMissingAnnotationElementName() {
     }
 }
