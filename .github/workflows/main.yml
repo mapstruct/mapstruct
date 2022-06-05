@@ -39,7 +39,7 @@ jobs:
       - name: 'Generate coverage report'
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
       - name: 'Publish Snapshots'
         if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
