@@ -33,25 +33,13 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         List<Annotation> typeAnnotations = new ArrayList<>();
-        if ( !componentAnnotationIsPresent( mapper ) ) {
-            typeAnnotations.add( component() );
-        }
+        typeAnnotations.add( component() );
 
         if ( mapper.getDecorator() != null ) {
             typeAnnotations.add( qualifierDelegate() );
         }
 
         return typeAnnotations;
-    }
-
-    private boolean componentAnnotationIsPresent(Mapper mapper) {
-        return mapper.getAnnotations()
-                   .stream()
-                     .anyMatch(
-                         annotation -> annotation
-                                                 .getType()
-                                                 .getFullyQualifiedName()
-                                                 .equals( "org.springframework.stereotype.Component" ) );
     }
 
     @Override
