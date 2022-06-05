@@ -37,7 +37,7 @@ import org.mapstruct.tools.gem.GemValue;
  */
 public class MappingOptions extends DelegatingOptions {
 
-    private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
+    private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^\\s*java\\((.*)\\)\\s*$", Pattern.DOTALL );
 
     private final String sourceName;
     private final String constant;

@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -44,6 +47,23 @@ public class JavaDefaultExpressionTest {
         assertThat( target ).isNotNull();
         assertThat( target.getSourceId() ).isEqualTo( "test" );
         assertThat( target.getSourceDate() ).isEqualTo( new Date( 30L ) );
+    }
+
+    @ProcessorTest
+    @WithClasses({ Source.class, Target.class, MultiLineDefaultExpressionMapper.class })
+    public void testMultiLineJavaDefaultExpression() {
+        Source source = new Source();
+
+        Target target = MultiLineDefaultExpressionMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getSourceId() ).isEqualTo( "test" );
+        assertThat( target.getSourceDate() )
+            .isEqualTo( Date.from(
+                LocalDate.of( 2022, Month.JUNE, 5 )
+                    .atTime( 17, 10 )
+                    .toInstant( ZoneOffset.UTC )
+            ) );
     }
 
     @ProcessorTest

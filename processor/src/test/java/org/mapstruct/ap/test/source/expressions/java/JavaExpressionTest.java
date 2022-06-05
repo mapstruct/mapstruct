@@ -132,6 +132,31 @@ public class JavaExpressionTest {
         assertThat( target.getList() ).isEqualTo( Arrays.asList( "test2" ) );
     }
 
+    @ProcessorTest
+    @WithClasses({ Source.class, Target.class, TimeAndFormat.class, MultiLineExpressionMapper.class })
+    public void testMultiLineJavaExpressionInsertion() throws ParseException {
+        Source source = new Source();
+        String format = "dd-MM-yyyy,hh:mm:ss";
+        Date time = getTime( format, "09-01-2014,01:35:03" );
+
+        source.setFormat( format );
+        source.setTime( time );
+
+        Target target = MultiLineExpressionMapper.INSTANCE.mapUsingMultiLineExpression( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
+        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
+        assertThat( target.getAnotherProp() ).isNull();
+
+        target = MultiLineExpressionMapper.INSTANCE.mapUsingMultiLineExpressionWithLeadingSpaces( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
+        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
+        assertThat( target.getAnotherProp() ).isNull();
+    }
+
     @IssueKey( "1851" )
     @ProcessorTest
     @WithClasses({
