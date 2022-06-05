@@ -500,6 +500,14 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
+            if ( rhs.getSourceType().isOptionalType() && !targetType.isOptionalType() ) {
+                return true;
+            }
+
+            if ( !rhs.getSourceType().isOptionalType() && targetType.isOptionalType() ) {
+                return false;
+            }
+
             if ( rhs.getType().isConverted() ) {
                 // A type conversion is applied, so a null check is required
                 return true;

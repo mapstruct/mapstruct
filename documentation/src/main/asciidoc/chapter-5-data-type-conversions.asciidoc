@@ -125,6 +125,8 @@ public interface CarMapper {
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
 
+* Between `java.util.Optional<T>` and `T`.
+
 [[mapping-object-references]]
 === Mapping object references
 

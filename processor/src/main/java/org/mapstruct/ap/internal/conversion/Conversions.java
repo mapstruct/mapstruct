@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.mapstruct.ap.internal.model.common.Type;
@@ -41,6 +42,8 @@ public class Conversions {
     private final Map<Key, ConversionProvider> conversions = new HashMap<>();
     private final Type enumType;
     private final Type stringType;
+    private final Type objectType;
+    private final Type optionalType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -48,6 +51,8 @@ public class Conversions {
 
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
+        this.objectType = typeFactory.getType( Object.class );
+        this.optionalType = typeFactory.getType( Optional.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -195,6 +200,8 @@ public class Conversions {
 
         register( UUID.class, String.class, new UUIDToStringConversion() );
 
+        register( Optional.class, Object.class, new OptionalToObjectConversion() );
+
         registerURLConversion();
     }
 
@@ -330,8 +337,22 @@ public class Conversions {
         else if ( targetType.isEnumType() && sourceType.equals( stringType ) ) {
             targetType = enumType;
         }
+        else if ( isOptionalConvertable( sourceType, targetType ) ) {
+            sourceType = optionalType;
+            targetType = objectType;
+        }
+        else if ( isOptionalConvertable( targetType, sourceType ) ) {
+            sourceType = objectType;
+            targetType = optionalType;
+        }
 
         return conversions.get( new Key( sourceType, targetType ) );
+    }
+
+    private boolean isOptionalConvertable(Type type1, Type type2) {
+        return type1.isOptionalType()
+            && !type2.isOptionalType()
+            && type1.getTypeParameters().get( 0 ).isAssignableTo( type2 );
     }
 
     private static class Key {

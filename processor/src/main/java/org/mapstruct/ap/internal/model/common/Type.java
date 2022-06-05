@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -93,6 +94,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isVoid;
     private final boolean isStream;
     private final boolean isLiteral;
+    private final boolean isOptional;
 
     private final boolean loggingVerbose;
 
@@ -132,7 +134,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
-                boolean isLiteral, boolean loggingVerbose) {
+                boolean isLiteral, boolean isOptional, boolean loggingVerbose) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -157,6 +159,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isStream = isStreamType;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
         this.isLiteral = isLiteral;
+        this.isOptional = isOptional;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<>();
@@ -372,6 +375,15 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * Whether this type is an {@link Optional}.
+     *
+     * @return true if this type is an {@link Optional}, false otherwise
+     */
+    public boolean isOptionalType() {
+        return isOptional;
+    }
+
+    /**
      * A wild card type can have two types of bounds (mutual exclusive): extends and super.
      *
      * @return true if the bound has a wild card super bound (e.g. ? super Number)
@@ -537,6 +549,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             notToBeImportedTypes,
             isToBeImported,
             isLiteral,
+            isOptional,
             loggingVerbose
         );
     }
@@ -580,6 +593,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             notToBeImportedTypes,
             isToBeImported,
             isLiteral,
+            isOptional,
             loggingVerbose
         );
     }

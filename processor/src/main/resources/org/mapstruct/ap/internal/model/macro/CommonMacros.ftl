@@ -22,7 +22,7 @@
         }
         <@elseDefaultAssignment/>
     <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
-        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
+        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if><#if getSourceType().isOptionalType()>.isPresent()<#else> != null</#if> ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
