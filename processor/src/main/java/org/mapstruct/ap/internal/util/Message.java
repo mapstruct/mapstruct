@@ -207,6 +207,7 @@ public enum Message {
     ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "enumClass needs to be defined when using enums." ),
     ANNOTATE_WITH_ENUMS_NOT_DEFINED( "enums needs to be defined when using enumClass." ),
     ANNOTATE_WITH_NAME_NOT_DEFINED( "\"name=...\" is required in each @AnnotateWith.Element annotation with multiple annotations for annotation \"%s\"." ),
+    ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE( "Annotation \"%s\" is not repeatable." ),
     ;
     // CHECKSTYLE:ON
 

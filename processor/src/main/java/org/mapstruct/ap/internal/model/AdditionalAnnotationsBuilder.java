@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -76,14 +77,30 @@ public class AdditionalAnnotationsBuilder
 
     @Override
     protected void addInstance(AnnotateWithGem gem, Element source, Set<Annotation> mappings) {
-        buildAnnotation( gem, source ).ifPresent( mappings::add );
+        buildAnnotation( gem, source ).ifPresent( t -> addAndValidateMapping( mappings, source, gem, t ) );
     }
 
     @Override
     protected void addInstances(AnnotateWithsGem gem, Element source, Set<Annotation> mappings) {
         for ( AnnotateWithGem annotateWithGem : gem.value().get() ) {
-            buildAnnotation( annotateWithGem, source ).ifPresent( mappings::add );
+            buildAnnotation(
+                annotateWithGem,
+                source ).ifPresent( t -> addAndValidateMapping( mappings, source, annotateWithGem, t ) );
         }
+    }
+
+    private void addAndValidateMapping(Set<Annotation> mappings, Element source, AnnotateWithGem gem, Annotation anno) {
+        if ( anno.getType().getTypeElement().getAnnotation( Repeatable.class ) == null ) {
+            if ( mappings.stream().anyMatch( existing -> existing.getType().equals( anno.getType() ) ) ) {
+                messager.printMessage(
+                            source,
+                            gem.mirror(),
+                            Message.ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE,
+                            anno.getType().describe() );
+                return;
+            }
+        }
+        mappings.add( anno );
     }
 
     private Optional<Annotation> buildAnnotation(AnnotateWithGem annotationGem, Element element) {

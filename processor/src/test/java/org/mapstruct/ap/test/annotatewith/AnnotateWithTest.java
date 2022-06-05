@@ -494,4 +494,27 @@ public class AnnotateWithTest {
     @WithClasses({ ErroneousMapperWithMissingEnums.class, CustomAnnotationWithParams.class })
     public void erroneousMapperWithMissingEnums() {
     }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithRepeatOfNotRepeatableAnnotation.class,
+                line = 16,
+                alternativeLine = 17,
+                message = "Annotation \"CustomAnnotation\" is not repeatable."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithRepeatOfNotRepeatableAnnotation.class, CustomAnnotation.class } )
+    public void erroneousMapperWithRepeatOfNotRepeatableAnnotation() {
+    }
+
+    @ProcessorTest
+    @WithClasses( { MapperWithRepeatableAnnotation.class, CustomRepeatableAnnotation.class,
+        CustomRepeatableAnnotationContainer.class } )
+    public void mapperWithRepeatableAnnotationShouldCompile() {
+    }
 }
