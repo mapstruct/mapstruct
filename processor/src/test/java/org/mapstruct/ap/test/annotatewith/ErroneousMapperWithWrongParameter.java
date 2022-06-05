@@ -28,6 +28,7 @@ import org.mapstruct.Mapper;
             @AnnotateWith.Element( name = "genericTypedClass", classes = ErroneousMapperWithWrongParameter.class ),
             @AnnotateWith.Element( name = "enumParam", enumClass = WrongAnnotateWithEnum.class, enums = "EXISTING" )
        } )
+@AnnotateWith( value = CustomAnnotation.class, elements = @AnnotateWith.Element( booleans = true ) )
 public interface ErroneousMapperWithWrongParameter {
 
 }

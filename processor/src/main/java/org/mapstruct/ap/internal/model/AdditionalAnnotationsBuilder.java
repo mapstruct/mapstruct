@@ -507,7 +507,7 @@ public class AdditionalAnnotationsBuilder
 
     private Type getAnnotationParameterType(Map<String, ExecutableElement> annotationParameters,
                                                   ElementGem element) {
-        if ( element.name().hasValue() && annotationParameters.containsKey( element.name().get() ) ) {
+        if ( annotationParameters.containsKey( element.name().get() ) ) {
             return typeFactory.getType( annotationParameters.get( element.name().get() ).getReturnType() );
         }
         else {

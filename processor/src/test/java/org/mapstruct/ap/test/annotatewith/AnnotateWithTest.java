@@ -38,7 +38,7 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses({ CustomNamedMapper.class, CustomAnnotationWithParams.class })
+    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParams.class } )
     public void annotationWithValue() {
         CustomNamedMapper mapper = Mappers.getMapper( CustomNamedMapper.class );
 
@@ -248,7 +248,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 17,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"boolean\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -256,7 +256,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 18,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"byte\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -264,7 +264,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 19,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"char\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -272,7 +272,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 20,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"CustomAnnotationWithParams\""
                     + " but of type \"String\" for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -280,7 +280,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 21,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"double\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -288,7 +288,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 22,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"float\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -296,7 +296,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 23,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"int\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -304,7 +304,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 24,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"long\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -312,7 +312,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 25,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"stringParam\" is not of type \"short\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -320,7 +320,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 27,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"genericTypedClass\" is not of type \"String\" "
                     + "but of type \"Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
@@ -329,7 +329,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 28,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"genericTypedClass\" is not of type \"ErroneousMapperWithWrongParameter\" "
                     + "but of type \"Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
@@ -338,15 +338,23 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 29,
-                alternativeLine = 33,
+                alternativeLine = 32,
                 message = "Parameter \"enumParam\" is not of type \"WrongAnnotateWithEnum\" "
                     + "but of type \"AnnotateWithEnum\" for annotation \"CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 31,
+                alternativeLine = 32,
+                message = "Parameter \"value\" is not of type \"boolean\" "
+                    + "but of type \"String\" for annotation \"CustomAnnotation\"."
             )
         }
     )
     @WithClasses({
         ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class,
-        WrongAnnotateWithEnum.class
+        WrongAnnotateWithEnum.class, CustomAnnotation.class
     })
     public void erroneousMapperWithWrongParameter() {
     }
