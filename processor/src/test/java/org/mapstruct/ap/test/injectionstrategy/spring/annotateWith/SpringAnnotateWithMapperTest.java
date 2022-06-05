@@ -28,9 +28,9 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test field injection for component model spring.
+ * Test custom component annotation placement.
  *
- * @author Filip Hrisafov
+ * @author Ben Zegveld
  */
 @WithClasses({
     CustomerDto.class,

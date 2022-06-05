@@ -106,19 +106,19 @@ public class AdditionalAnnotationsBuilder
     private enum ConvertToProperty {
         BOOLEAN( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.BOOLEAN,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.booleans().get(),
                 emptySet() ),
             eleGem -> eleGem.booleans().hasValue() ),
         BYTE( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.BYTE,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.bytes().get(),
                 emptySet() ),
             eleGem -> eleGem.bytes().hasValue() ),
         CHARACTER( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.CHARACTER,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.chars().get(),
                 emptySet() ),
             eleGem -> eleGem.chars().hasValue() ),
@@ -127,14 +127,14 @@ public class AdditionalAnnotationsBuilder
                     eleGem.classes().get().stream().map( typeFactory::getType ).collect( Collectors.toList() );
                 return new AnnotationElement(
                     AnnotationElementType.CLASS,
-                    getUserDefinedName(eleGem),
+                    getUserDefinedName( eleGem ),
                     typeList,
                     new HashSet<>( typeList ) );
             },
             eleGem -> eleGem.classes().hasValue() ),
         DOUBLE( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.DOUBLE,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.doubles().get(),
                 emptySet() ),
             eleGem -> eleGem.doubles().hasValue() ),
@@ -146,36 +146,40 @@ public class AdditionalAnnotationsBuilder
                     importTypes.add( type );
                     values.add( new EnumAnnotationElementHolder( type, enumName ) );
                 }
-                return new AnnotationElement( AnnotationElementType.ENUM, getUserDefinedName(eleGem), values, importTypes );
+                return new AnnotationElement(
+                    AnnotationElementType.ENUM,
+                    getUserDefinedName( eleGem ),
+                    values,
+                    importTypes );
             },
             eleGem -> eleGem.enums().hasValue() ),
         FLOAT( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.FLOAT,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.floats().get(),
                 emptySet() ),
             eleGem -> eleGem.floats().hasValue() ),
         INT( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.INTEGER,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.ints().get(),
                 emptySet() ),
             eleGem -> eleGem.ints().hasValue() ),
         LONG( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.LONG,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.longs().get(),
                 emptySet() ),
             eleGem -> eleGem.longs().hasValue() ),
         SHORT( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.SHORT,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.shorts().get(),
                 emptySet() ),
             eleGem -> eleGem.shorts().hasValue() ),
         STRING( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.STRING,
-                getUserDefinedName(eleGem),
+                getUserDefinedName( eleGem ),
                 eleGem.strings().get(),
                 emptySet() ),
             eleGem -> eleGem.strings().hasValue() );
