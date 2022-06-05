@@ -249,6 +249,30 @@ public class AdditionalAnnotationsBuilder
         if ( !enumConstructionIsCorrectlyUsed( eleGems, element ) ) {
             isValid = false;
         }
+        if ( !allElementsAreUnique( eleGems, element ) ) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private boolean allElementsAreUnique(List<ElementGem> eleGems, Element element) {
+        boolean isValid = true;
+        List<String> checkedElements = new ArrayList<>();
+        for ( ElementGem elementGem : eleGems ) {
+            String elementName = elementGem.name().get();
+            if ( checkedElements.contains( elementName ) ) {
+                isValid = false;
+                messager
+                        .printMessage(
+                            element,
+                            elementGem.mirror(),
+                            Message.ANNOTATE_WITH_REPEAT_PARAMETER,
+                            elementName );
+            }
+            else {
+                checkedElements.add( elementName );
+            }
+        }
         return isValid;
     }
 

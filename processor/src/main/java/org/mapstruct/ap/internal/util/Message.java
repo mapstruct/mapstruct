@@ -199,6 +199,7 @@ public enum Message {
 
     ANNOTATE_WITH_MISSING_REQUIRED_PARAMETER( "Parameter \"%s\" is required for annotation \"%s\"." ),
     ANNOTATE_WITH_UNKNOWN_PARAMETER( "Parameter \"%s\" is not present in annotation \"%s\"." ),
+    ANNOTATE_WITH_REPEAT_PARAMETER( "More than one element for parameter \"%s\" is defined, only one element allowed." ),
     ANNOTATE_WITH_WRONG_PARAMETER( "Parameter \"%s\" is not of type \"%s\" but of type \"%s\" for annotation \"%s\"." ),
     ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED( "Parameter \"%s\" does not accept multiple values for annotation \"%s\"." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),

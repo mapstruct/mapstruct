@@ -38,7 +38,8 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParams.class } )
+    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void annotationWithValue() {
         CustomNamedMapper mapper = Mappers.getMapper( CustomNamedMapper.class );
 
@@ -66,7 +67,8 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses({ MultipleArrayValuesMapper.class, CustomAnnotationWithParams.class })
+    @WithClasses( { MultipleArrayValuesMapper.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void annotationWithMultipleValues() {
         MultipleArrayValuesMapper mapper = Mappers.getMapper( MultipleArrayValuesMapper.class );
 
@@ -85,7 +87,8 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses({ CustomNamedGenericClassMapper.class, CustomAnnotationWithParams.class })
+    @WithClasses( { CustomNamedGenericClassMapper.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void annotationWithCorrectGenericClassValue() {
         CustomNamedGenericClassMapper mapper = Mappers.getMapper( CustomNamedGenericClassMapper.class );
 
@@ -236,7 +239,8 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses({ ErroneousMapperWithNonExistantEnum.class, CustomAnnotationWithParams.class })
+    @WithClasses( { ErroneousMapperWithNonExistantEnum.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void erroneousMapperWithNonExistantEnum() {
     }
 
@@ -247,8 +251,8 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 17,
-                alternativeLine = 32,
+                line = 16,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"boolean\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -256,71 +260,71 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 18,
-                alternativeLine = 32,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"byte\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 19,
-                alternativeLine = 32,
+                line = 20,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"char\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 20,
-                alternativeLine = 32,
+                line = 22,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"CustomAnnotationWithParams\""
                     + " but of type \"String\" for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 21,
-                alternativeLine = 32,
+                line = 24,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"double\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 22,
-                alternativeLine = 32,
+                line = 26,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"float\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 23,
-                alternativeLine = 32,
+                line = 28,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"int\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 24,
-                alternativeLine = 32,
+                line = 30,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"long\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 25,
-                alternativeLine = 32,
+                line = 32,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" is not of type \"short\" but of type \"String\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 27,
-                alternativeLine = 32,
+                line = 35,
+                alternativeLine = 43,
                 message = "Parameter \"genericTypedClass\" is not of type \"String\" "
                     + "but of type \"Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
@@ -328,8 +332,16 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 28,
-                alternativeLine = 32,
+                line = 36,
+                alternativeLine = 43,
+                message = "Parameter \"enumParam\" is not of type \"WrongAnnotateWithEnum\" "
+                    + "but of type \"AnnotateWithEnum\" for annotation \"CustomAnnotationWithParams\"."
+            ),
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithWrongParameter.class,
+                line = 40,
+                alternativeLine = 43,
                 message = "Parameter \"genericTypedClass\" is not of type \"ErroneousMapperWithWrongParameter\" "
                     + "but of type \"Class<? extends java.lang.annotation.Annotation>\" "
                     + "for annotation \"CustomAnnotationWithParams\"."
@@ -337,16 +349,8 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
-                line = 29,
-                alternativeLine = 32,
-                message = "Parameter \"enumParam\" is not of type \"WrongAnnotateWithEnum\" "
-                    + "but of type \"AnnotateWithEnum\" for annotation \"CustomAnnotationWithParams\"."
-            ),
-            @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithWrongParameter.class,
-                line = 31,
-                alternativeLine = 32,
+                line = 42,
+                alternativeLine = 43,
                 message = "Parameter \"value\" is not of type \"boolean\" "
                     + "but of type \"String\" for annotation \"CustomAnnotation\"."
             )
@@ -354,7 +358,7 @@ public class AnnotateWithTest {
     )
     @WithClasses({
         ErroneousMapperWithWrongParameter.class, CustomAnnotationWithParams.class,
-        WrongAnnotateWithEnum.class, CustomAnnotation.class
+        CustomAnnotationWithParamsContainer.class, WrongAnnotateWithEnum.class, CustomAnnotation.class
     })
     public void erroneousMapperWithWrongParameter() {
     }
@@ -367,7 +371,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
                 line = 17,
-                alternativeLine = 32,
+                alternativeLine = 43,
                 message = "Parameter \"stringParam\" does not accept multiple values "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -375,7 +379,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMultipleArrayValuesMapper.class,
                 line = 18,
-                alternativeLine = 32,
+                alternativeLine = 43,
                 message = "Parameter \"booleanParam\" does not accept multiple values "
                     + "for annotation \"CustomAnnotationWithParams\"."
             ),
@@ -453,7 +457,8 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses({ ErroneousMultipleArrayValuesMapper.class, CustomAnnotationWithParams.class })
+    @WithClasses( { ErroneousMultipleArrayValuesMapper.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void erroneousMapperUsingMultipleValuesInsteadOfSingle() {
     }
 
@@ -475,7 +480,8 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses({ ErroneousMapperWithMissingEnumClass.class, CustomAnnotationWithParams.class })
+    @WithClasses( { ErroneousMapperWithMissingEnumClass.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void erroneousMapperWithMissingEnumClass() {
     }
 
@@ -491,7 +497,8 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses({ ErroneousMapperWithMissingEnums.class, CustomAnnotationWithParams.class })
+    @WithClasses( { ErroneousMapperWithMissingEnums.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
     public void erroneousMapperWithMissingEnums() {
     }
 
@@ -516,5 +523,22 @@ public class AnnotateWithTest {
     @WithClasses( { MapperWithRepeatableAnnotation.class, CustomRepeatableAnnotation.class,
         CustomRepeatableAnnotationContainer.class } )
     public void mapperWithRepeatableAnnotationShouldCompile() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithParameterRepeat.class,
+                line = 18,
+                message = "More than one element for parameter \"stringParam\" is defined, only one element allowed."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithParameterRepeat.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
+    public void erroneousMapperWithParameterRepeat() {
     }
 }

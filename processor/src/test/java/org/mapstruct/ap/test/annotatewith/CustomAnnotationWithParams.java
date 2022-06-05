@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -15,6 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention( RUNTIME )
 @Target( { METHOD, TYPE } )
+@Repeatable( CustomAnnotationWithParamsContainer.class )
 public @interface CustomAnnotationWithParams {
     String stringParam();
 
