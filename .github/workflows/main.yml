@@ -12,15 +12,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [13, 16, 17]
+        java: [13, 17, 18]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 'Set up JDK'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: ${{ matrix.java }}
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true
@@ -29,10 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} install
@@ -48,16 +50,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 'Set up JDK 11 for building everything'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
       - name: 'Install Processor'
         run: ./mvnw ${MAVEN_ARGS} -DskipTests install -pl processor -am
       - name: 'Set up JDK 8 for running integration tests'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 8
       - name: 'Run integration tests'
         run: ./mvnw ${MAVEN_ARGS} verify -pl integrationtest
@@ -65,10 +69,11 @@ jobs:
     name: 'Windows'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
       - name: 'Test'
         run: ./mvnw %MAVEN_ARGS% install
@@ -76,10 +81,11 @@ jobs:
     name: 'Mac OS'
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} install
