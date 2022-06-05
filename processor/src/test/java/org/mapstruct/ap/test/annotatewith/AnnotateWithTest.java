@@ -456,4 +456,22 @@ public class AnnotateWithTest {
     @WithClasses({ ErroneousMultipleArrayValuesMapper.class, CustomAnnotationWithParams.class })
     public void erroneousMapperUsingMultipleValuesInsteadOfSingle() {
     }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+               kind = javax.tools.Diagnostic.Kind.ERROR,
+               type = ErroneousMapperWithMissingAnnotationElementName.class,
+               line = 16,
+               alternativeLine = 19,
+               message = "\"name=...\" is required in each @AnnotateWith.Element annotation with multiple annotations "
+                    + "for annotation \"CustomAnnotationWithTwoAnnotationElements\"."
+            )
+        }
+    )
+    @WithClasses({ErroneousMapperWithMissingAnnotationElementName.class, CustomAnnotationWithTwoAnnotationElements.class})
+    public void erroneousMapperWithMissingAnnotationElementName() {
+    }
 }

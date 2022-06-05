@@ -217,16 +217,19 @@ public class AdditionalAnnotationsBuilder
         if ( !annotationIsAllowed( annotationType, element, annotationMirror ) ) {
             isValid = false;
         }
+        if ( !annotationIsComplete( annotationType, eleGems, element ) ) {
+            isValid = false;
+        }
 
-        List<ExecutableElement> annotationParameters = methodsIn( annotationType.getTypeElement()
+        List<ExecutableElement> annotationElements = methodsIn( annotationType.getTypeElement()
             .getEnclosedElements() );
-        if ( !allRequiredParametersArePresent( annotationType, annotationParameters, eleGems, element ) ) {
+        if ( !allRequiredElementsArePresent( annotationType, annotationElements, eleGems, element ) ) {
             isValid = false;
         }
-        if ( !allParametersAreKnownInAnnotation( annotationType, annotationParameters, eleGems, element ) ) {
+        if ( !allElementsAreKnownInAnnotation( annotationType, annotationElements, eleGems, element ) ) {
             isValid = false;
         }
-        if ( !allParametersAreOfCorrectType( annotationType, annotationParameters, eleGems, element ) ) {
+        if ( !allElementsAreOfCorrectType( annotationType, annotationElements, eleGems, element ) ) {
             isValid = false;
         }
         if ( !enumConstructionIsCorrectlyUsed( eleGems, element ) ) {
@@ -266,6 +269,23 @@ public class AdditionalAnnotationsBuilder
                             }
                         }
                     }
+                }
+            }
+        }
+        return isValid;
+    }
+
+    private boolean annotationIsComplete(Type annotationType, List<ElementGem> eleGems, Element element) {
+        boolean isValid = true;
+        if ( eleGems.size() > 1 ) {
+            for ( ElementGem elementGem : eleGems ) {
+                if ( elementGem.name().getValue() == null ) {
+                    isValid = false;
+                    messager.printMessage(
+                                element,
+                                elementGem.mirror(),
+                                Message.ANNOTATE_WITH_NAME_NOT_DEFINED,
+                                annotationType.describe() );
                 }
             }
         }
@@ -314,7 +334,7 @@ public class AdditionalAnnotationsBuilder
         return element.getKind() == ElementKind.METHOD;
     }
 
-    private boolean allParametersAreKnownInAnnotation(Type annotationType, List<ExecutableElement> annotationParameters,
+    private boolean allElementsAreKnownInAnnotation(Type annotationType, List<ExecutableElement> annotationParameters,
                                                       List<ElementGem> eleGems, Element element) {
         List<String> allowedAnnotationParameters = annotationParameters.stream()
                                                                  .map( ee -> ee.getSimpleName().toString() )
@@ -338,7 +358,7 @@ public class AdditionalAnnotationsBuilder
         return isValid;
     }
 
-    private boolean allRequiredParametersArePresent(Type annotationType, List<ExecutableElement> annotationParameters,
+    private boolean allRequiredElementsArePresent(Type annotationType, List<ExecutableElement> annotationParameters,
                                                     List<ElementGem> elements, Element element) {
 
         boolean valid = true;
@@ -371,7 +391,7 @@ public class AdditionalAnnotationsBuilder
         return valid;
     }
 
-    private boolean allParametersAreOfCorrectType(Type annotationType, List<ExecutableElement> annotationParameters,
+    private boolean allElementsAreOfCorrectType(Type annotationType, List<ExecutableElement> annotationParameters,
                                                   List<ElementGem> elements,
                                                   Element element) {
         Map<String, ExecutableElement> annotationParametersByName =

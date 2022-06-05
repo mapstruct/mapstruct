@@ -204,7 +204,8 @@ public enum Message {
     ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS( "Annotation \"%s\" is not allowed on methods." ),
     ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST( "Enum \"%s\" does not have value \"%s\"." ),
-    ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "\"enumClass=...\" is required when using \"enums=...\"." ),
+    ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "\"enumClass=...\" is required when using \"enums=...\" for \"%s\"." ),
+    ANNOTATE_WITH_NAME_NOT_DEFINED( "\"name=...\" is required in each @AnnotateWith.Element annotation with multiple annotations for annotation \"%s\"." ),
     ;
     // CHECKSTYLE:ON
 
