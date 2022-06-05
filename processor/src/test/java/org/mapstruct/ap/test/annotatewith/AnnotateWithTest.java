@@ -541,4 +541,24 @@ public class AnnotateWithTest {
         CustomAnnotationWithParams.class } )
     public void erroneousMapperWithParameterRepeat() {
     }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithIdenticalAnnotationRepeated.class,
+                line = 16,
+                alternativeLine = 17,
+                message = "Annotation \"CustomRepeatableAnnotation\" is already present "
+                    + "with the same elements configuration."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithIdenticalAnnotationRepeated.class, CustomRepeatableAnnotation.class,
+        CustomRepeatableAnnotationContainer.class } )
+    public void erroneousMapperWithIdenticalAnnotationRepeated() {
+    }
+
 }

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.annotation;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -20,8 +21,8 @@ public class AnnotationElement extends ModelElement {
     }
 
     private final String elementName;
-    private List<? extends Object> values;
-    private AnnotationElementType type;
+    private final List<? extends Object> values;
+    private final AnnotationElementType type;
     private Set<Type> importTypes;
 
     public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values,
@@ -88,4 +89,27 @@ public class AnnotationElement extends ModelElement {
     public boolean isString() {
         return type == AnnotationElementType.STRING;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( elementName, type, values );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        AnnotationElement other = (AnnotationElement) obj;
+        return Objects.equals( elementName, other.elementName )
+            && type == other.type
+            && Objects.equals( values, other.values );
+    }
+
 }

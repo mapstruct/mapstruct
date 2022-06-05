@@ -100,6 +100,17 @@ public class AdditionalAnnotationsBuilder
                 return;
             }
         }
+        if ( mappings.stream().anyMatch( existing -> {
+            return existing.getType().equals( anno.getType() )
+                && existing.getProperties().equals( anno.getProperties() );
+        } ) ) {
+            messager.printMessage(
+                        source,
+                        gem.mirror(),
+                        Message.ANNOTATE_WITH_DUPLICATE,
+                        anno.getType().describe() );
+            return;
+        }
         mappings.add( anno );
     }
 
