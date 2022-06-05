@@ -17,6 +17,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 import org.junitpioneer.jupiter.DefaultLocale;
+import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey("134")
 @DefaultLocale("de")
+@ReadsDefaultTimeZone
 public class NestedMappingMethodInvocationTest {
 
     public static final QName QNAME = new QName( "dont-care" );

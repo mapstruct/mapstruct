@@ -17,6 +17,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junitpioneer.jupiter.DefaultLocale;
+import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @IssueKey("43")
 @DefaultLocale("de")
+@ReadsDefaultTimeZone
 public class DateConversionTest {
 
     @ProcessorTest
