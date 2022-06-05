@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.annotatewith;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -12,6 +14,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("1574")
 @WithClasses(AnnotateWithEnum.class)
 public class AnnotateWithTest {
+
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
     @WithClasses({ DeprecateAndCustomMapper.class, CustomAnnotation.class })
@@ -87,6 +93,15 @@ public class AnnotateWithTest {
         assertThat( annotation ).isNotNull();
         assertThat( annotation.stringParam() ).isEqualTo( "test" );
         assertThat( annotation.genericTypedClass() ).isEqualTo( Mapper.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { AnnotationWithoutElementNameMapper.class, CustomAnnotation.class } )
+    public void annotateWithoutElementName() {
+        generatedSource
+                       .forMapper( AnnotationWithoutElementNameMapper.class )
+                       .content()
+                       .contains( "@CustomAnnotation(\"value\")" );
     }
 
     @ProcessorTest

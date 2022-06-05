@@ -48,7 +48,7 @@ public @interface AnnotateWith {
         /**
          * @return name of the annotation element.
          */
-        String name();
+        String name() default "value";
 
         /**
          * cannot be used in conjunction with other value fields.
