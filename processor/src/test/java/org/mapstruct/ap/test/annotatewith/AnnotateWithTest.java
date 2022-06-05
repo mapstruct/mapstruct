@@ -475,4 +475,36 @@ public class AnnotateWithTest {
         CustomAnnotationWithTwoAnnotationElements.class } )
     public void erroneousMapperWithMissingAnnotationElementName() {
     }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithMissingEnumClass.class,
+                line = 17,
+                message = "\"enumClass=...\" is required when using \"enums=...\"."
+            )
+        }
+    )
+    @WithClasses({ ErroneousMapperWithMissingEnumClass.class, CustomAnnotationWithParams.class })
+    public void erroneousMapperWithMissingEnumClass() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithMissingEnums.class,
+                line = 17,
+                message = "\"enums=...\" is required when using \"enumClass=...\"."
+            )
+        }
+    )
+    @WithClasses({ ErroneousMapperWithMissingEnums.class, CustomAnnotationWithParams.class })
+    public void erroneousMapperWithMissingEnums() {
+    }
 }

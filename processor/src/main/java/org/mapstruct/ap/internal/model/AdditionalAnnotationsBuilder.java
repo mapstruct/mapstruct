@@ -152,7 +152,7 @@ public class AdditionalAnnotationsBuilder
                     values,
                     importTypes );
             },
-            eleGem -> eleGem.enums().hasValue() ),
+            eleGem -> eleGem.enums().hasValue() && eleGem.enumClass().hasValue() ),
         FLOAT( (eleGem, typeFactory) -> new AnnotationElement(
                 AnnotationElementType.FLOAT,
                 getUserDefinedName( eleGem ),
@@ -248,7 +248,6 @@ public class AdditionalAnnotationsBuilder
                             .printMessage(
                                 element,
                                 elementGem.mirror(),
-                                elementGem.enums().getAnnotationValue(),
                                 Message.ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED );
                 }
                 else {
@@ -270,6 +269,10 @@ public class AdditionalAnnotationsBuilder
                         }
                     }
                 }
+            }
+            else if ( elementGem.enumClass().getValue() != null ) {
+                isValid = false;
+                messager.printMessage( element, elementGem.mirror(), Message.ANNOTATE_WITH_ENUMS_NOT_DEFINED );
             }
         }
         return isValid;
@@ -517,7 +520,7 @@ public class AdditionalAnnotationsBuilder
                                       typeFactory.getType( String.class ),
                                       eleGem.strings().get().size() );
         }
-        if ( eleGem.enums().hasValue() ) {
+        if ( eleGem.enums().hasValue() && eleGem.enumClass().hasValue() ) {
             suppliedParameterTypes.put(
                                       typeFactory.getType( getTypeMirror( eleGem.enumClass() ) ),
                                       eleGem.enums().get().size() );
