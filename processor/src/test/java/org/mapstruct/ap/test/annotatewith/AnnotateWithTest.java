@@ -460,7 +460,7 @@ public class AnnotateWithTest {
     @ProcessorTest
     @WithClasses( { MapperWithMissingAnnotationElementName.class,
         CustomAnnotationWithTwoAnnotationElements.class } )
-    public void mapperWithMissingAnnotationElementName_shouldCompile() {
+    public void mapperWithMissingAnnotationElementNameShouldCompile() {
     }
 
     @ProcessorTest
@@ -471,7 +471,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithMissingEnumClass.class,
                 line = 17,
-                message = "\"enumClass=...\" is required when using \"enums=...\"."
+                message = "enumClass needs to be defined when using enums."
             )
         }
     )
@@ -487,7 +487,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithMissingEnums.class,
                 line = 17,
-                message = "\"enums=...\" is required when using \"enumClass=...\"."
+                message = "enums needs to be defined when using enumClass."
             )
         }
     )
