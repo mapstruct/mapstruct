@@ -22,7 +22,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * <p>
  * Examples based on the spring framework annotations.
  * </p>
- * <p>
  * Marking a class as `Lazy`:
  *
  * <pre>
@@ -45,8 +44,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * }
  * </code>
  * </pre>
- * </p>
- * <p>
  * Setting the profile on the generated implementation:
  *
  * <pre>
@@ -69,7 +66,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * }
  * </code>
  * </pre>
- * </p>
  *
  * @author Ben Zegveld
  * @since 1.6
