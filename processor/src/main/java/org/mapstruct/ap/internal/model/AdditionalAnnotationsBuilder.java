@@ -40,6 +40,7 @@ import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RepeatableAnnotations;
+import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 import org.mapstruct.tools.gem.GemValue;
 
@@ -277,7 +278,7 @@ public class AdditionalAnnotationsBuilder
                         .printMessage(
                             element,
                             elementGem.mirror(),
-                            Message.ANNOTATE_WITH_REPEAT_PARAMETER,
+                            Message.ANNOTATE_WITH_DUPLICATE_PARAMETER,
                             elementName );
             }
             else {
@@ -371,9 +372,9 @@ public class AdditionalAnnotationsBuilder
 
     private boolean allElementsAreKnownInAnnotation(Type annotationType, List<ExecutableElement> annotationParameters,
                                                       List<ElementGem> eleGems, Element element) {
-        List<String> allowedAnnotationParameters = annotationParameters.stream()
+        Set<String> allowedAnnotationParameters = annotationParameters.stream()
                                                                  .map( ee -> ee.getSimpleName().toString() )
-                                                                 .collect( Collectors.toList() );
+                                                                 .collect( Collectors.toSet() );
         boolean isValid = true;
         for ( ElementGem eleGem : eleGems ) {
             if ( eleGem.name().isValid()
@@ -386,7 +387,8 @@ public class AdditionalAnnotationsBuilder
                             eleGem.name().getAnnotationValue(),
                             Message.ANNOTATE_WITH_UNKNOWN_PARAMETER,
                             eleGem.name().get(),
-                            annotationType.describe()
+                            annotationType.describe(),
+                            Strings.getMostSimilarWord( eleGem.name().get(), allowedAnnotationParameters )
                         );
             }
         }

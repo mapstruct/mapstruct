@@ -219,7 +219,8 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithUnknownParameter.class,
                 line = 17,
-                message = "Parameter \"unknownParameter\" is not present in annotation \"CustomAnnotation\"."
+                message = "Unknown parameter \"unknownParameter\" for annotation \"CustomAnnotation\"." +
+                    " Did you mean \"value\"?"
             )
         }
     )
@@ -533,7 +534,7 @@ public class AnnotateWithTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithParameterRepeat.class,
                 line = 18,
-                message = "More than one element for parameter \"stringParam\" is defined, only one element allowed."
+                message = "Parameter \"stringParam\" must not be defined more than once."
             )
         }
     )
