@@ -545,11 +545,11 @@ public class AnnotateWithTest {
 
     @ProcessorTest
     @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
+        value = CompilationResult.SUCCEEDED,
         diagnostics = {
             @Diagnostic(
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousMapperWithIdenticalAnnotationRepeated.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                type = MapperWithIdenticalAnnotationRepeated.class,
                 line = 16,
                 alternativeLine = 17,
                 message = "Annotation \"CustomRepeatableAnnotation\" is already present "
@@ -557,9 +557,9 @@ public class AnnotateWithTest {
             )
         }
     )
-    @WithClasses( { ErroneousMapperWithIdenticalAnnotationRepeated.class, CustomRepeatableAnnotation.class,
+    @WithClasses( { MapperWithIdenticalAnnotationRepeated.class, CustomRepeatableAnnotation.class,
         CustomRepeatableAnnotationContainer.class } )
-    public void erroneousMapperWithIdenticalAnnotationRepeated() {
+    public void mapperWithIdenticalAnnotationRepeated() {
     }
 
 }

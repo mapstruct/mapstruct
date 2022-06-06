@@ -14,6 +14,6 @@ import org.mapstruct.Mapper;
 @Mapper
 @AnnotateWith( value = CustomRepeatableAnnotation.class, elements = @AnnotateWith.Element( strings = "identical" ) )
 @AnnotateWith( value = CustomRepeatableAnnotation.class, elements = @AnnotateWith.Element( strings = "identical" ) )
-public interface ErroneousMapperWithIdenticalAnnotationRepeated {
+public interface MapperWithIdenticalAnnotationRepeated {
 
 }
