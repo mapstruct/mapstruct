@@ -249,7 +249,8 @@ public class AdditionalAnnotationsBuilder
 
         List<ExecutableElement> annotationElements = methodsIn( annotationType.getTypeElement()
             .getEnclosedElements() );
-        if ( !allRequiredElementsArePresent( annotationType, annotationElements, eleGems, element, annotationMirror ) ) {
+        if ( !allRequiredElementsArePresent( annotationType, annotationElements, eleGems, element,
+                                             annotationMirror ) ) {
             isValid = false;
         }
         if ( !allElementsAreKnownInAnnotation( annotationType, annotationElements, eleGems, element ) ) {

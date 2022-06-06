@@ -19,6 +19,57 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * This can be used to have mapstruct generate additional annotations on classes/methods.
+ * <p>
+ * Examples based on the spring framework annotations.
+ * </p>
+ * <p>
+ * Marking a class as `Lazy`:
+ *
+ * <pre>
+ * <code>
+ * &#64;AnnotateWith( value = Lazy.class )
+ * &#64;Mapper
+ * public interface FooMapper {
+ *     // mapper code
+ * }
+ * </code>
+ * </pre>
+ *
+ * The following code would be generated:
+ *
+ * <pre>
+ * <code>
+ * &#64;Lazy
+ * public class FooMapperImpl implements FooMapper {
+ *     // mapper code
+ * }
+ * </code>
+ * </pre>
+ * </p>
+ * <p>
+ * Setting the profile on the generated implementation:
+ *
+ * <pre>
+ * <code>
+ * &#64;AnnotateWith( value = Profile.class, elements = @AnnotateWith.Element( strings = "prod" ) )
+ * &#64;Mapper
+ * public interface FooMapper {
+ *     // mapper code
+ * }
+ * </code>
+ * </pre>
+ *
+ * The following code would be generated:
+ *
+ * <pre>
+ * <code>
+ * &#64;Profile( value = "prod" )
+ * public class FooMapperImpl implements FooMapper {
+ *     // mapper code
+ * }
+ * </code>
+ * </pre>
+ * </p>
  *
  * @author Ben Zegveld
  * @since 1.6
