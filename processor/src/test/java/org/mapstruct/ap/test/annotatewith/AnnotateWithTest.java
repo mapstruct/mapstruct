@@ -122,7 +122,7 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithMissingParameter.class,
-                line = 16,
+                line = 15,
                 message = "Parameter \"required\" is required for annotation \"AnnotationWithRequiredParameter\"."
             )
         }

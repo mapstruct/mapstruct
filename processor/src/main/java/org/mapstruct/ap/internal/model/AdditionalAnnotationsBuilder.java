@@ -248,7 +248,7 @@ public class AdditionalAnnotationsBuilder
 
         List<ExecutableElement> annotationElements = methodsIn( annotationType.getTypeElement()
             .getEnclosedElements() );
-        if ( !allRequiredElementsArePresent( annotationType, annotationElements, eleGems, element ) ) {
+        if ( !allRequiredElementsArePresent( annotationType, annotationElements, eleGems, element, annotationMirror ) ) {
             isValid = false;
         }
         if ( !allElementsAreKnownInAnnotation( annotationType, annotationElements, eleGems, element ) ) {
@@ -394,7 +394,8 @@ public class AdditionalAnnotationsBuilder
     }
 
     private boolean allRequiredElementsArePresent(Type annotationType, List<ExecutableElement> annotationParameters,
-                                                    List<ElementGem> elements, Element element) {
+                                                  List<ElementGem> elements, Element element,
+                                                  AnnotationMirror annotationMirror) {
 
         boolean valid = true;
         for ( ExecutableElement annotationParameter : annotationParameters ) {
@@ -414,6 +415,7 @@ public class AdditionalAnnotationsBuilder
                     messager
                         .printMessage(
                             element,
+                            annotationMirror,
                             Message.ANNOTATE_WITH_MISSING_REQUIRED_PARAMETER,
                             parameterName,
                             annotationType.describe()
