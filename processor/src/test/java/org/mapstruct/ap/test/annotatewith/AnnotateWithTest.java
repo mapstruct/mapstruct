@@ -41,49 +41,14 @@ public class AnnotateWithTest {
     @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParamsContainer.class,
         CustomAnnotationWithParams.class } )
     public void annotationWithValue() {
-        CustomNamedMapper mapper = Mappers.getMapper( CustomNamedMapper.class );
-
-        CustomAnnotationWithParams annotation = mapper.getClass().getAnnotation( CustomAnnotationWithParams.class );
-        assertThat( annotation ).isNotNull();
-        assertThat( annotation.booleanParam() ).isEqualTo( true );
-        assertThat( annotation.byteParam() ).isEqualTo( (byte) 0x13 );
-        assertThat( annotation.charParam() ).isEqualTo( 'a' );
-        assertThat( annotation.doubleParam() ).isEqualTo( 1.2 );
-        assertThat( annotation.floatParam() ).isEqualTo( 1.2f );
-        assertThat( annotation.intParam() ).isEqualTo( 1 );
-        assertThat( annotation.longParam() ).isEqualTo( 1L );
-        assertThat( annotation.shortParam() ).isEqualTo( (short) 1 );
-        assertThat( annotation.stringParam() ).isEqualTo( "test" );
-        assertThat( annotation.booleanArray() ).containsExactly( true );
-        assertThat( annotation.byteArray() ).containsExactly( (byte) 0x10 );
-        assertThat( annotation.charArray() ).containsExactly( 'd' );
-        assertThat( annotation.doubleArray() ).containsExactly( 0.3 );
-        assertThat( annotation.floatArray() ).containsExactly( 0.3f );
-        assertThat( annotation.intArray() ).containsExactly( 3 );
-        assertThat( annotation.longArray() ).containsExactly( 3L );
-        assertThat( annotation.shortArray() ).containsExactly( (short) 3 );
-        assertThat( annotation.stringArray() ).containsExactly( "test" );
-        assertThat( annotation.genericTypedClass() ).isEqualTo( CustomAnnotationWithParams.class );
+        generatedSource.addComparisonToFixtureFor( CustomNamedMapper.class );
     }
 
     @ProcessorTest
     @WithClasses( { MultipleArrayValuesMapper.class, CustomAnnotationWithParamsContainer.class,
         CustomAnnotationWithParams.class } )
     public void annotationWithMultipleValues() {
-        MultipleArrayValuesMapper mapper = Mappers.getMapper( MultipleArrayValuesMapper.class );
-
-        CustomAnnotationWithParams annotation = mapper.getClass().getAnnotation( CustomAnnotationWithParams.class );
-        assertThat( annotation ).isNotNull();
-        assertThat( annotation.booleanArray() ).containsExactly( false, true );
-        assertThat( annotation.byteArray() ).containsExactly( (byte) 0x08, (byte) 0x1f );
-        assertThat( annotation.charArray() ).containsExactly( 'b', 'c' );
-        assertThat( annotation.doubleArray() ).containsExactly( 1.2, 3.4 );
-        assertThat( annotation.floatArray() ).containsExactly( 1.2f, 3.4f );
-        assertThat( annotation.intArray() ).containsExactly( 12, 34 );
-        assertThat( annotation.longArray() ).containsExactly( 12L, 34L );
-        assertThat( annotation.shortArray() ).containsExactly( (short) 12, (short) 34 );
-        assertThat( annotation.stringArray() ).containsExactly( "test1", "test2" );
-        assertThat( annotation.classArray() ).containsExactly( Mapper.class, CustomAnnotationWithParams.class );
+        generatedSource.addComparisonToFixtureFor( MultipleArrayValuesMapper.class );
     }
 
     @ProcessorTest
