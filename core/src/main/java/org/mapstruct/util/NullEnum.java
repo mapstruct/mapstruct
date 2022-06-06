@@ -5,14 +5,11 @@
  */
 package org.mapstruct.util;
 
-import org.mapstruct.AnnotateWith;
-
 /**
  * To be used as a default value for enum class annotation elements.
  *
  * @author Ben Zegveld
  * @since 1.6
- * @see {@link AnnotateWith}
  */
 public enum NullEnum {
 }
