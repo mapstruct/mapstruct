@@ -10,7 +10,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.mapstruct.HiddenEnumForAnnotationDefault.Dummy;
+import org.mapstruct.util.NullEnum;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
@@ -172,7 +172,7 @@ public @interface AnnotateWith {
          *
          * @return the class of the enum.
          */
-        Class<? extends Enum<?>> enumClass() default Dummy.class;
+        Class<? extends Enum<?>> enumClass() default NullEnum.class;
 
         /**
          * cannot be used in conjunction with other value fields. {@link #enumClass()} is also required when using
@@ -182,10 +182,5 @@ public @interface AnnotateWith {
          */
         String[] enums() default {};
 
-    }
-}
-
-class HiddenEnumForAnnotationDefault {
-    enum Dummy {
     }
 }
