@@ -285,7 +285,7 @@ public class MappingProcessor extends AbstractProcessor {
                     .asElement( erroneousType ) : null;
                 if ( options.isVerbose() ) {
                     processingEnv.getMessager().printMessage(
-                        Kind.NOTE, "MapStruct: referred types not available (yet), deferring mapper: "
+                        Kind.NOTE, "MapStruct: referred type " + erroneousElement + " not available (yet), deferring mapper: "
                             + mapperElement );
                 }
                 deferredMappers.add( new DeferredMapper( mapperElement, erroneousElement ) );
