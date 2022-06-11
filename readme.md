@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.4.2.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.1.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
@@ -34,7 +34,7 @@ Compared to mapping frameworks working at runtime, MapStruct offers the followin
   * mappings are incorrect (cannot find a proper mapping method or type conversion)
 * **Easily debuggable mapping code** (or editable by hand—e.g. in case of a bug in the generator)
 
-To create a mapping between two types, declare a mapper class like this:
+To create a mapping between two types, declare a mapper interface like this:
 
 ```java
 @Mapper
@@ -68,7 +68,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -114,10 +114,10 @@ plugins {
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.4.2.Final'
+    compile 'org.mapstruct:mapstruct:1.5.1.Final'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final' // if you are using mapstruct in test code
 }
 ...
 ```
@@ -130,7 +130,7 @@ To learn more about MapStruct, refer to the [project homepage](http://mapstruct.
 
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 8 is required for building MapStruct from source. To build the complete project, run
+MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
 
     mvn clean install
 

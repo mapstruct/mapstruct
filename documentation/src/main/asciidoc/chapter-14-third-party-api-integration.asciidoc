@@ -58,7 +58,7 @@ This resolves the compilation issues of Lombok and MapStruct modules.
 <path>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok-mapstruct-binding</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </path>
 ----
 ====
@@ -121,7 +121,7 @@ The set up using Maven or Gradle does not differ from what is described in <<set
                     <path>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok-mapstruct-binding</artifactId>
-                        <version>0.1.0</version>
+                        <version>0.2.0</version>
                     </path>
                 </annotationProcessorPaths>
             </configuration>
@@ -141,7 +141,7 @@ dependencies {
 
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation "org.projectlombok:lombok:1.18.16"
-    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.projectlombok:lombok:1.18.16"
 }
