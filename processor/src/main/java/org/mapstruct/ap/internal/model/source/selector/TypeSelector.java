@@ -58,7 +58,6 @@ public class TypeSelector implements MethodSelector {
                 mappingMethod,
                 mappingTargetType,
                 criteria.getSourceRHS(),
-                criteria.getTargetPropertyName(),
                 methods
             );
         }
@@ -90,7 +89,6 @@ public class TypeSelector implements MethodSelector {
         Method method,
         Type targetType,
         SourceRHS sourceRHS,
-        String targetPropertyName,
         List<SelectedMethod<T>> methods
     ) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
@@ -99,7 +97,7 @@ public class TypeSelector implements MethodSelector {
           Parameter propertyNameParameter = selectedMethod.getMethod().getTargetPropertyNameParameter();
           if (propertyNameParameter != null) {
             availableParams.add( ParameterBinding
-              .fromTargetPropertyNameParameter( propertyNameParameter, targetPropertyName ) );
+              .fromParameter( propertyNameParameter ) );
           }
         }
 

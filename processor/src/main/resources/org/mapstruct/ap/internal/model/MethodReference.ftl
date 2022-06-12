@@ -45,7 +45,7 @@
         <#elseif param.mappingContext>
             ${param.variableName}<#t>
         <#elseif param.targetPropertyName>
-            "${param.targetPropertyNameValue}"<#t>
+            "${ext.targetPropertyName}"<#t>
         <#elseif param.sourceRHS??>
             <@_assignment assignmentToUse=param.sourceRHS/><#t>
         <#elseif assignment??>
