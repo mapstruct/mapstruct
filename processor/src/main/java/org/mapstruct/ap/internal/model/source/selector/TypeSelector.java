@@ -86,20 +86,8 @@ public class TypeSelector implements MethodSelector {
     }
 
     private <T extends Method> List<ParameterBinding> getAvailableParameterBindingsFromMethod(
-        Method method,
-        Type targetType,
-        SourceRHS sourceRHS,
-        List<SelectedMethod<T>> methods
-    ) {
+            Method method, Type targetType, SourceRHS sourceRHS, List<SelectedMethod<T>> methods) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
-
-        for (SelectedMethod<T> selectedMethod : methods) {
-          Parameter propertyNameParameter = selectedMethod.getMethod().getTargetPropertyNameParameter();
-          if (propertyNameParameter != null) {
-            availableParams.add( ParameterBinding
-              .fromParameter( propertyNameParameter ) );
-          }
-        }
 
         if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
@@ -109,6 +97,7 @@ public class TypeSelector implements MethodSelector {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
+        addTargetPropertyNameBindings( availableParams, methods );
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
 
         return availableParams;
@@ -159,6 +148,33 @@ public class TypeSelector implements MethodSelector {
         }
         if ( !targetTypeAvailable ) {
             availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );
+        }
+    }
+
+    /**
+     * Adds default parameter bindings for the target-property-name based on available selected method's
+     * parameters which will be called.
+     *
+     * @param availableParams Already available params, new entries will be added to this list
+     * @param methods Target type
+     */
+    private <T extends Method> void addTargetPropertyNameBindings(List<ParameterBinding> availableParams,
+            List<SelectedMethod<T>> methods) {
+        boolean targetPropertyNameAvailable = false;
+        // search available parameter bindings if mapping-target and/or target-type is available
+        for ( ParameterBinding pb : availableParams ) {
+            if ( pb.isTargetPropertyName() ) {
+                targetPropertyNameAvailable = true;
+                break;
+            }
+        }
+        if ( !targetPropertyNameAvailable ) {
+            for ( SelectedMethod<T> selectedMethod : methods ) {
+                Parameter propertyNameParameter = selectedMethod.getMethod().getTargetPropertyNameParameter();
+                if ( propertyNameParameter != null ) {
+                    availableParams.add( ParameterBinding.fromParameter( propertyNameParameter ) );
+                }
+            }
         }
     }
 
