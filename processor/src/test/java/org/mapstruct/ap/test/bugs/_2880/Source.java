@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Source {
 
+    // CHECKSTYLE:OFF
     public Outer.SourceData[] data1;
 
     public Outer.SourceData[] data2;
@@ -16,4 +17,5 @@ public class Source {
     public List<Outer.SourceData> data3;
 
     public List<Outer.SourceData> data4;
+    // CHECKSTYLE:ON
 }

@@ -9,6 +9,8 @@ public class Outer {
 
     public static class SourceData {
 
+        // CHECKSTYLE:OFF
         public String value;
+        // CHECKSTYLE:ON
     }
 }

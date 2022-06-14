@@ -181,8 +181,15 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         this.loggingVerbose = loggingVerbose;
 
-        this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
-        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement );
+        if ( this.componentType != null ) {
+            // The top level type for an array type is the top level type of the component type
+            this.topLevelType = topLevelType( this.componentType.getTypeElement(), this.typeFactory );
+            this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.componentType.getTypeElement(), this.name );
+        }
+        else {
+            this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
+            this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement, this.name );
+        }
     }
     //CHECKSTYLE:ON
 
@@ -218,11 +225,21 @@ public class Type extends ModelElement implements Comparable<Type> {
      * (if the top level type is important, otherwise the fully-qualified name.
      */
     public String createReferenceName() {
-        if ( isToBeImported() || shouldUseSimpleName() ) {
+        if ( isToBeImported() ) {
+            // isToBeImported() returns true for arrays.
+            // Therefore, we need to check the top level type when creating the reference
+            if ( isTopLevelTypeToBeImported() ) {
+                return nameWithTopLevelTypeName != null ? nameWithTopLevelTypeName : name;
+            }
+
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
+        if ( shouldUseSimpleName() ) {
+            return name;
+        }
+
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null) {
             return nameWithTopLevelTypeName;
         }
 
@@ -1566,16 +1583,16 @@ public class Type extends ModelElement implements Comparable<Type> {
         return trimmedClassName;
     }
 
-    private static String nameWithTopLevelTypeName(TypeElement element) {
+    private static String nameWithTopLevelTypeName(TypeElement element, String name) {
         if ( element == null ) {
             return null;
         }
         if ( !element.getNestingKind().isNested() ) {
-            return element.getSimpleName().toString();
+            return name;
         }
 
         Deque<CharSequence> elements = new ArrayDeque<>();
-        elements.addFirst( element.getSimpleName() );
+        elements.addFirst( name );
         Element parent = element.getEnclosingElement();
         while ( parent != null && parent.getKind() != ElementKind.PACKAGE ) {
             elements.addFirst( parent.getSimpleName() );

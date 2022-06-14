@@ -7,5 +7,7 @@ package org.mapstruct.ap.test.bugs._2880;
 
 public class TargetData {
 
+    // CHECKSTYLE:OFF
     public String value;
+    // CHECKSTYLE:ON
 }

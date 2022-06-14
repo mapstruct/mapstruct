@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Target {
 
+    // CHECKSTYLE:OFF
     public TargetData[] data1;
 
     public List<TargetData> data2;
@@ -16,4 +17,5 @@ public class Target {
     public TargetData[] data3;
 
     public List<TargetData> data4;
+    // CHECKSTYLE:ON
 }

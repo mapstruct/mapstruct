@@ -7,10 +7,8 @@ package org.mapstruct.ap.test.bugs._2880;
 
 import org.mapstruct.Mapper;
 
-import static org.mapstruct.ReportingPolicy.ERROR;
-
-@Mapper(unmappedTargetPolicy = ERROR)
+@Mapper
 public interface Issue2880Mapper {
 
-  Target map(Source source);
+    Target map(Source source);
 }
