@@ -97,7 +97,7 @@ public class TypeSelector implements MethodSelector {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
-        addTargetPropertyNameBindings( availableParams, methods );
+        addTargetPropertyNameBindings( availableParams );
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
 
         return availableParams;
@@ -152,16 +152,13 @@ public class TypeSelector implements MethodSelector {
     }
 
     /**
-     * Adds default parameter bindings for the target-property-name based on available selected method's
-     * parameters which will be called.
+     * Adds default parameter bindings for the target-property-name if not already available
      *
      * @param availableParams Already available params, new entries will be added to this list
-     * @param methods Target type
      */
-    private <T extends Method> void addTargetPropertyNameBindings(List<ParameterBinding> availableParams,
-            List<SelectedMethod<T>> methods) {
+    private <T extends Method> void addTargetPropertyNameBindings(List<ParameterBinding> availableParams) {
         boolean targetPropertyNameAvailable = false;
-        // search available parameter bindings if mapping-target and/or target-type is available
+        // search available parameter bindings if target-property-name is available
         for ( ParameterBinding pb : availableParams ) {
             if ( pb.isTargetPropertyName() ) {
                 targetPropertyNameAvailable = true;
@@ -169,12 +166,7 @@ public class TypeSelector implements MethodSelector {
             }
         }
         if ( !targetPropertyNameAvailable ) {
-            for ( SelectedMethod<T> selectedMethod : methods ) {
-                Parameter propertyNameParameter = selectedMethod.getMethod().getTargetPropertyNameParameter();
-                if ( propertyNameParameter != null ) {
-                    availableParams.add( ParameterBinding.fromParameter( propertyNameParameter ) );
-                }
-            }
+            availableParams.add( ParameterBinding.forTargetPropertyNameBinding( typeFactory.getType( String.class ) ) );
         }
     }
 

@@ -142,6 +142,13 @@ public class ParameterBinding {
     }
 
     /**
+     * @return a parameter binding representing a target property name parameter
+     */
+    public static ParameterBinding forTargetPropertyNameBinding(Type classTypeOf) {
+        return new ParameterBinding( classTypeOf, null, false, false, false, true, null );
+    }
+
+    /**
      * @param resultType type of the mapping target
      * @return a parameter binding representing a mapping target parameter
      */
