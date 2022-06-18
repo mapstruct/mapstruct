@@ -1783,7 +1783,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public boolean isAbstractReturnType() {
-        return getFactoryMethod() == null && !hasConstructorMappings() && returnTypeToConstruct != null
+        return getFactoryMethod() == null ^ hasConstructorMappings() && returnTypeToConstruct != null
             && returnTypeToConstruct.isAbstract();
     }
 
