@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.conditional.basic;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -13,11 +16,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -124,39 +122,44 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
-            ConditionalMethodInMapperWithTargetPropertyName.class
+        ConditionalMethodInMapperWithTargetPropertyName.class
     })
     public void conditionalMethodInMapperWithTargetPropertyName() {
         ConditionalMethodInMapperWithTargetPropertyName mapper
-                = ConditionalMethodInMapperWithTargetPropertyName.INSTANCE;
+            = ConditionalMethodInMapperWithTargetPropertyName.INSTANCE;
 
         TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setCountry( "US" );
-        employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
         assertThat( employee.getCountry() ).isEqualTo( "US" );
-        assertThat( employee.getAddresses() ).isNotEmpty();
-        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
     }
 
     @ProcessorTest
     @WithClasses({
-            ConditionalMethodForCollectionMapperWithTargetPropertyName.class
+        ConditionalMethodForCollectionMapperWithTargetPropertyName.class
     })
     public void conditionalMethodForCollectionMapperWithTargetPropertyName() {
         ConditionalMethodForCollectionMapperWithTargetPropertyName mapper
-                = ConditionalMethodForCollectionMapperWithTargetPropertyName.INSTANCE;
+            = ConditionalMethodForCollectionMapperWithTargetPropertyName.INSTANCE;
 
         TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setCountry( "US" );
-        employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
@@ -167,92 +170,91 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
-            ConditionalMethodInUsesMapperWithTargetPropertyName.class
+        ConditionalMethodInUsesMapperWithTargetPropertyName.class
     })
     public void conditionalMethodInUsesMapperWithTargetPropertyName() {
         ConditionalMethodInUsesMapperWithTargetPropertyName mapper
-                = ConditionalMethodInUsesMapperWithTargetPropertyName.INSTANCE;
+            = ConditionalMethodInUsesMapperWithTargetPropertyName.INSTANCE;
 
         TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setCountry( "US" );
-        employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
         assertThat( employee.getCountry() ).isEqualTo( "US" );
-        assertThat( employee.getAddresses() ).isNotEmpty();
-        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
     }
 
     @ProcessorTest
     @WithClasses({
-            ConditionalMethodInMapperWithAllOptions.class
+        ConditionalMethodInMapperWithAllOptions.class
     })
     public void conditionalMethodInMapperWithAllOptions() {
         ConditionalMethodInMapperWithAllOptions mapper
-                = ConditionalMethodInMapperWithAllOptions.INSTANCE;
+            = ConditionalMethodInMapperWithAllOptions.INSTANCE;
 
         ConditionalMethodInMapperWithAllOptions.PresenceUtils utils =
-                new ConditionalMethodInMapperWithAllOptions.PresenceUtils();
+            new ConditionalMethodInMapperWithAllOptions.PresenceUtils();
 
         TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setCountry( "US" );
-        employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
         TargetPropertyNameModel.Employee employee = new TargetPropertyNameModel.Employee();
         mapper.map( employeeDto, employee, utils );
         assertThat( employee.getLastName() ).isNull();
         assertThat( employee.getFirstName() ).isNull();
         assertThat( employee.getCountry() ).isEqualTo( "US" );
-        assertThat( employee.getAddresses() ).isNotEmpty();
-        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
-        assertThat( Set.of(
-                "firstName",
-                "lastName",
-                "title",
-                "country" )
-        ).isEqualTo( utils.visited );
-        assertThat( Set.of( "EmployeeDto" ) ).isEqualTo( utils.visitedSources );
-        assertThat( Set.of( "Employee" ) ).isEqualTo( utils.visitedTargets );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
+        assertThat( utils.visited )
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country" );
+        assertThat( utils.visitedSources ).containsExactly( "EmployeeDto" );
+        assertThat( utils.visitedTargets ).containsExactly( "Employee" );
     }
 
     @ProcessorTest
     @WithClasses({
-            ConditionalMethodInMapperWithAllExceptTarget.class
+        ConditionalMethodInMapperWithAllExceptTarget.class
     })
     public void conditionalMethodInMapperWithAllExceptTarget() {
         ConditionalMethodInMapperWithAllExceptTarget mapper
-                = ConditionalMethodInMapperWithAllExceptTarget.INSTANCE;
+            = ConditionalMethodInMapperWithAllExceptTarget.INSTANCE;
 
         ConditionalMethodInMapperWithAllExceptTarget.PresenceUtils utils =
-                new ConditionalMethodInMapperWithAllExceptTarget.PresenceUtils();
+            new ConditionalMethodInMapperWithAllExceptTarget.PresenceUtils();
 
         TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setCountry( "US" );
-        employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
         TargetPropertyNameModel.Employee employee = mapper.map( employeeDto, utils );
         assertThat( employee.getLastName() ).isEqualTo( "Testirovich" );
         assertThat( employee.getFirstName() ).isEqualTo( "  " );
         assertThat( employee.getCountry() ).isEqualTo( "US" );
-        assertThat( employee.getAddresses() ).isNotEmpty();
-        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
-        assertThat( Set.of(
-                "firstName",
-                "lastName",
-                "title",
-                "country",
-                "street" )
-        ).isEqualTo( utils.visited );
-        assertThat( Set.of( "EmployeeDto", "AddressDto" ) )
-                .isEqualTo( utils.visitedSources );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
+        assertThat( utils.visited )
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country", "street" );
+        assertThat( utils.visitedSources ).containsExactlyInAnyOrder( "EmployeeDto", "AddressDto" );
     }
 
     @ProcessorTest
@@ -260,105 +262,109 @@ public class ConditionalMappingTest {
         ConditionalMethodWithTargetPropertyNameInContextMapper.class
     })
     public void conditionalMethodWithTargetPropertyNameInUsesContextMapper() {
-      ConditionalMethodWithTargetPropertyNameInContextMapper mapper
-        = ConditionalMethodWithTargetPropertyNameInContextMapper.INSTANCE;
+        ConditionalMethodWithTargetPropertyNameInContextMapper mapper
+            = ConditionalMethodWithTargetPropertyNameInContextMapper.INSTANCE;
 
-      ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils utils =
-        new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils();
+        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils utils =
+            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils();
 
-      TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
-      employeeDto.setLastName( "  " );
-      employeeDto.setCountry( "US" );
-      employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        TargetPropertyNameModel.EmployeeDto employeeDto = new TargetPropertyNameModel.EmployeeDto();
+        employeeDto.setLastName( "  " );
+        employeeDto.setCountry( "US" );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
-      TargetPropertyNameModel.Employee employee = mapper.map( employeeDto, utils );
-      assertThat( employee.getLastName() ).isNull();
-      assertThat( employee.getCountry() ).isEqualTo( "US" );
-      assertThat( employee.getAddresses() ).isNotEmpty();
-      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
-      assertThat( Set.of(
-              "firstName",
-              "lastName",
-              "title",
-              "country",
-              "street" )
-      ).isEqualTo( utils.visited );
+        TargetPropertyNameModel.Employee employee = mapper.map( employeeDto, utils );
+        assertThat( employee.getLastName() ).isNull();
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
+        assertThat( utils.visited )
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country", "street" );
 
+        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps allPropsUtils =
+            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps();
 
-      ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps allPropsUtils =
-        new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps();
+        employeeDto = new TargetPropertyNameModel.EmployeeDto();
+        employeeDto.setLastName( "Tester" );
+        employeeDto.setCountry( "US" );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
-      employeeDto = new TargetPropertyNameModel.EmployeeDto();
-      employeeDto.setLastName( "Tester" );
-      employeeDto.setCountry( "US" );
-      employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
+        employee = mapper.map( employeeDto, allPropsUtils );
+        assertThat( employee.getLastName() ).isEqualTo( "Tester" );
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 6" );
+        assertThat( allPropsUtils.visited )
+            .containsExactlyInAnyOrder(
+                "firstName",
+                "lastName",
+                "title",
+                "country",
+                "active",
+                "age",
+                "boss",
+                "primaryAddress",
+                "addresses",
+                "street"
+            );
 
-      employee = mapper.map( employeeDto, allPropsUtils );
-      assertThat( employee.getLastName() ).isEqualTo( "Tester" );
-      assertThat( employee.getCountry() ).isEqualTo( "US" );
-      assertThat( employee.getAddresses() ).isNotEmpty();
-      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
-      assertThat( Set.of(
-              "firstName",
-              "lastName",
-              "title",
-              "country",
-              "active",
-              "age",
-              "boss",
-              "primaryAddress",
-              "addresses",
-              "street" )
-      ).isEqualTo( allPropsUtils.visited );
+        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource allPropsUtilsWithSource =
+            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource();
 
+        TargetPropertyNameModel.EmployeeDto bossEmployeeDto = new TargetPropertyNameModel.EmployeeDto();
+        bossEmployeeDto.setLastName( "Boss Tester" );
+        bossEmployeeDto.setCountry( "US" );
+        bossEmployeeDto.setAddresses( Collections.singletonList( new TargetPropertyNameModel.AddressDto(
+            "Testing St. 10" ) ) );
 
-      ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource allPropsUtilsWithSource =
-        new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource();
+        employeeDto = new TargetPropertyNameModel.EmployeeDto();
+        employeeDto.setLastName( "Tester" );
+        employeeDto.setCountry( "US" );
+        employeeDto.setBoss( bossEmployeeDto );
+        employeeDto.setAddresses(
+            Collections.singletonList( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) )
+        );
 
-
-      TargetPropertyNameModel.EmployeeDto bossEmployeeDto = new TargetPropertyNameModel.EmployeeDto();
-      bossEmployeeDto.setLastName( "Boss Tester" );
-      bossEmployeeDto.setCountry( "US" );
-      bossEmployeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 10" ) ) );
-
-      employeeDto = new TargetPropertyNameModel.EmployeeDto();
-      employeeDto.setLastName( "Tester" );
-      employeeDto.setCountry( "US" );
-      employeeDto.setBoss( bossEmployeeDto );
-      employeeDto.setAddresses( List.of( new TargetPropertyNameModel.AddressDto( "Testing St. 6" ) ) );
-
-      employee = mapper.map( employeeDto, allPropsUtilsWithSource );
-      assertThat( employee.getLastName() ).isEqualTo( "Tester" );
-      assertThat( employee.getCountry() ).isEqualTo( "US" );
-      assertThat( employee.getAddresses() ).isNotEmpty();
-      assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
-      assertThat( employee.getBoss() ).isNotNull();
-      assertThat( employee.getBoss().getCountry() ).isEqualTo( "US" );
-      assertThat( employee.getBoss().getLastName() ).isEqualTo( "Boss Tester" );
-      assertThat( employee.getBoss().getAddresses() ).isNotEmpty();
-      assertThat( employee.getBoss().getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 10" );
-      assertThat( List.of(
-              "firstName",
-              "lastName",
-              "title",
-              "country",
-              "active",
-              "age",
-              "boss",
-              "boss.firstName",
-              "boss.lastName",
-              "boss.title",
-              "boss.country",
-              "boss.active",
-              "boss.age",
-              "boss.boss",
-              "boss.primaryAddress",
-              "boss.addresses",
-              "boss.addresses.street",
-              "primaryAddress",
-              "addresses",
-              "addresses.street" )
-      ).isEqualTo( allPropsUtilsWithSource.visited );
+        employee = mapper.map( employeeDto, allPropsUtilsWithSource );
+        assertThat( employee.getLastName() ).isEqualTo( "Tester" );
+        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getAddresses() ).isNotEmpty();
+        assertThat( employee.getAddresses().get( 0 ).getStreet() ).isEqualTo( "Testing St. 6" );
+        assertThat( employee.getBoss() ).isNotNull();
+        assertThat( employee.getBoss().getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getBoss().getLastName() ).isEqualTo( "Boss Tester" );
+        assertThat( employee.getBoss().getAddresses() )
+            .extracting( TargetPropertyNameModel.Address::getStreet )
+            .containsExactly( "Testing St. 10" );
+        assertThat( allPropsUtilsWithSource.visited )
+            .containsExactly(
+                "firstName",
+                "lastName",
+                "title",
+                "country",
+                "active",
+                "age",
+                "boss",
+                "boss.firstName",
+                "boss.lastName",
+                "boss.title",
+                "boss.country",
+                "boss.active",
+                "boss.age",
+                "boss.boss",
+                "boss.primaryAddress",
+                "boss.addresses",
+                "boss.addresses.street",
+                "primaryAddress",
+                "addresses",
+                "addresses.street"
+            );
     }
 
     @ProcessorTest
