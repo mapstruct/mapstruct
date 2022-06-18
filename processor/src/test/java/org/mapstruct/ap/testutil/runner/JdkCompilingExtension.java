@@ -7,6 +7,7 @@ package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,7 +53,7 @@ class JdkCompilingExtension extends CompilingExtension {
                                                                        String additionalCompilerClasspath) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, StandardCharsets.UTF_8 );
 
         Iterable<? extends JavaFileObject> compilationUnits =
             fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
