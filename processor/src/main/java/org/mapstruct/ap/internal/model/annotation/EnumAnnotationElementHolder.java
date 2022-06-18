@@ -5,12 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.annotation;
 
+import java.util.Set;
+
+import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
-public class EnumAnnotationElementHolder {
+public class EnumAnnotationElementHolder extends ModelElement {
 
-    private Type enumClass;
-    private String name;
+    private final Type enumClass;
+    private final String name;
 
     public EnumAnnotationElementHolder(Type enumClass, String name) {
         this.enumClass = enumClass;
@@ -23,5 +26,10 @@ public class EnumAnnotationElementHolder {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return enumClass.getImportTypes();
     }
 }

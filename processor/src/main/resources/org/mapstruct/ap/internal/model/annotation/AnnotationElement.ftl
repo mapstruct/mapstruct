@@ -26,7 +26,7 @@
     <#elseif double>
       ${value?c}<#rt>
     <#elseif enum>
-      <@includeModel object=value.enumClass raw=true/>.${value.name}<#rt>
+      <@includeModel object=value/><#rt>
     <#elseif float>
       ${value?c}f<#rt>
     <#elseif integer>

@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.annotation;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -23,14 +25,16 @@ public class AnnotationElement extends ModelElement {
     private final String elementName;
     private final List<? extends Object> values;
     private final AnnotationElementType type;
-    private Set<Type> importTypes;
+
+    public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values) {
+        this( type, elementName, values, Collections.emptySet() );
+    }
 
     public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values,
                       Set<Type> importTypes) {
         this.type = type;
         this.elementName = elementName;
         this.values = values;
-        this.importTypes = importTypes;
     }
 
     public String getElementName() {
@@ -43,7 +47,17 @@ public class AnnotationElement extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> importTypes = null;
+        for ( Object value : values ) {
+            if ( value instanceof ModelElement ) {
+                if ( importTypes == null ) {
+                    importTypes = new HashSet<>();
+                }
+                importTypes.addAll( ( (ModelElement) value ).getImportTypes() );
+            }
+        }
+
+        return importTypes == null ? Collections.emptySet() : importTypes;
     }
 
     public boolean isBoolean() {
