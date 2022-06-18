@@ -80,9 +80,8 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
             Collections.singletonList(
                            new AnnotationElement(
                                AnnotationElementType.STRING,
-                               null,
-                               Collections.singletonList( "delegate" ),
-                               Collections.emptySet() ) ) );
+                               Collections.singletonList( "delegate" )
+                           ) ) );
     }
 
     private Annotation primary() {

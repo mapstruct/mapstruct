@@ -71,9 +71,8 @@ public class JakartaComponentProcessor extends AnnotationBasedComponentModelProc
             getTypeFactory().getType( "jakarta.inject.Named" ),
             Collections.singletonList(
                            new AnnotationElement( AnnotationElementType.STRING,
-                               null,
-                               Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() ),
-                               Collections.emptySet() ) )
+                               Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() )
+                           ) )
         );
     }
 

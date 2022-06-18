@@ -26,12 +26,11 @@ public class AnnotationElement extends ModelElement {
     private final List<? extends Object> values;
     private final AnnotationElementType type;
 
-    public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values) {
-        this( type, elementName, values, Collections.emptySet() );
+    public AnnotationElement(AnnotationElementType type, List<? extends Object> values) {
+        this( type, null, values );
     }
 
-    public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values,
-                      Set<Type> importTypes) {
+    public AnnotationElement(AnnotationElementType type, String elementName, List<? extends Object> values) {
         this.type = type;
         this.elementName = elementName;
         this.values = values;
