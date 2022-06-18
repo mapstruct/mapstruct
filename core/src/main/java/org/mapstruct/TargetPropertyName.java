@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  *   This parameter enables conditional filtering based on target property name at run-time.
  *   Parameter must be of type {@link String} and can be present only in {@link Condition} method.
  * </p>
- * @author Nikola Ivačič.
- * @since 1.5
+ * @author Nikola Ivačič
+ * @since 1.6
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.CLASS)
