@@ -181,15 +181,11 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         this.loggingVerbose = loggingVerbose;
 
-        if ( this.componentType != null ) {
-            // The top level type for an array type is the top level type of the component type
-            this.topLevelType = topLevelType( this.componentType.getTypeElement(), this.typeFactory );
-            this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.componentType.getTypeElement(), this.name );
-        }
-        else {
-            this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
-            this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement, this.name );
-        }
+        // The top level type for an array type is the top level type of the component type
+        TypeElement typeElementForTopLevel =
+            this.componentType == null ? this.typeElement : this.componentType.getTypeElement();
+        this.topLevelType = topLevelType( typeElementForTopLevel, this.typeFactory );
+        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( typeElementForTopLevel, this.name );
     }
     //CHECKSTYLE:ON
 
