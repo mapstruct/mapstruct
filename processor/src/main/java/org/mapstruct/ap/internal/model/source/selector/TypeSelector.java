@@ -57,8 +57,7 @@ public class TypeSelector implements MethodSelector {
             availableBindings = getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 mappingTargetType,
-                criteria.getSourceRHS(),
-                methods
+                criteria.getSourceRHS()
             );
         }
         else {
@@ -85,8 +84,8 @@ public class TypeSelector implements MethodSelector {
         return result;
     }
 
-    private <T extends Method> List<ParameterBinding> getAvailableParameterBindingsFromMethod(
-            Method method, Type targetType, SourceRHS sourceRHS, List<SelectedMethod<T>> methods) {
+    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
+        SourceRHS sourceRHS) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
 
         if ( sourceRHS != null ) {

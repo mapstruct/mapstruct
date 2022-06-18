@@ -83,14 +83,6 @@ public interface Method {
     Parameter getMappingTargetParameter();
 
     /**
-     * Returns the parameter designated as mapping target property name (if present)
-     * {@link org.mapstruct.TargetPropertyName}
-     *
-     * @return mapping target parameter (when present) null otherwise.
-     */
-    Parameter getTargetPropertyNameParameter();
-
-    /**
      * Returns whether the meethod is designated as bean factory for
      * mapping target {@link  org.mapstruct.ObjectFactory }
      *

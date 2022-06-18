@@ -39,7 +39,6 @@ public class ForgedMethod implements Method {
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
     private final Parameter mappingTargetParameter;
-    private final Parameter targetPropertyNameParameter;
     private final MappingReferences mappingReferences;
 
     private final Method basedOn;
@@ -175,7 +174,6 @@ public class ForgedMethod implements Method {
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.returnType = returnType;
         this.thrownTypes = new ArrayList<>();
 
@@ -204,7 +202,6 @@ public class ForgedMethod implements Method {
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.mappingReferences = forgedMethod.mappingReferences;
 
         this.basedOn = forgedMethod.basedOn;
@@ -274,11 +271,6 @@ public class ForgedMethod implements Method {
     public Parameter getMappingTargetParameter() {
         return mappingTargetParameter;
     }
-
-    @Override
-    public Parameter getTargetPropertyNameParameter() {
-    return targetPropertyNameParameter;
-  }
 
     @Override
     public Parameter getTargetTypeParameter() {
