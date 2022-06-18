@@ -724,16 +724,16 @@ The warning is not generated if the map itself is mapped into some other target 
 [[adding-annotations]]
 === Adding annotations
 
-Other frameworks sometimes requires you to add annotations to certain classes so that they can easily detect the mappers. Using the `@AnnotateWith` annotation you can generate an annotation at the specified location.
+Other frameworks sometimes requires you to add annotations to certain classes so that they can easily detect the mappers.
+Using the `@AnnotateWith` annotation you can generate an annotation at the specified location.
 
-For example Apache Camel has an `@Converter` annotation which you can apply to generated mappers using the `@AnnotateWith` annotation.
+For example Apache Camel has a `@Converter` annotation which you can apply to generated mappers using the `@AnnotateWith` annotation.
 
 .AnnotateWith source example
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-```
 @Mapper
 @AnnotateWith(
   value = Converter.class,
@@ -743,7 +743,6 @@ public interface MyConverter {
     @AnnotateWith( Converter.class )
     DomainObject map( DtoObject dto );
 }
-```
 ----
 ====
 
@@ -752,7 +751,6 @@ public interface MyConverter {
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-```
 @Converter( generateBulkLoader = true )
 public class MyConverterImpl implements MyConverter {
     @Converter
@@ -760,6 +758,5 @@ public class MyConverterImpl implements MyConverter {
         // default mapping behaviour
     }
 }
-```
 ----
 ====

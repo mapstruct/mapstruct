@@ -22,48 +22,40 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * </p>
  * Marking a class as `Lazy`:
  *
- * <pre>
- * <code>
+ * <pre><code>
  * &#64;AnnotateWith( value = Lazy.class )
  * &#64;Mapper
  * public interface FooMapper {
  *     // mapper code
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * The following code would be generated:
  *
- * <pre>
- * <code>
+ * <pre><code>
  * &#64;Lazy
  * public class FooMapperImpl implements FooMapper {
  *     // mapper code
  * }
- * </code>
- * </pre>
+ * </code></pre>
  * Setting the profile on the generated implementation:
  *
- * <pre>
- * <code>
+ * <pre><code>
  * &#64;AnnotateWith( value = Profile.class, elements = @AnnotateWith.Element( strings = "prod" ) )
  * &#64;Mapper
  * public interface FooMapper {
  *     // mapper code
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * The following code would be generated:
  *
- * <pre>
- * <code>
+ * <pre><code>
  * &#64;Profile( value = "prod" )
  * public class FooMapperImpl implements FooMapper {
  *     // mapper code
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @author Ben Zegveld
  * @since 1.6

@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * This can be used to have mapstruct generate additional annotations on classes/methods.
  *
  * @author Ben Zegveld
- * @since 1.5
+ * @since 1.6
  */
 @Retention( CLASS )
 @Target( { TYPE, METHOD } )
