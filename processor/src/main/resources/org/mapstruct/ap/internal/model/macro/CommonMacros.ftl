@@ -58,7 +58,7 @@
 -->
 <#macro handleLocalVarNullCheck needs_explicit_local_var>
   <#if sourcePresenceCheckerReference??>
-    if ( <@includeModel object=sourcePresenceCheckerReference /> ) {
+    if ( <@includeModel object=sourcePresenceCheckerReference targetType=ext.targetType /> ) {
       <#if needs_explicit_local_var>
         <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
         <#nested>
