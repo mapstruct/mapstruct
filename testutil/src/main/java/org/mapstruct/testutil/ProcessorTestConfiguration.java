@@ -15,6 +15,8 @@ public interface ProcessorTestConfiguration {
 
     String[] getAnnotationProcessorAndTestRootPackagesOrClasses();
 
+    String getGenerateFileName(Class<?> sourceClass);
+
     static ProcessorTestConfiguration getConfiguration() {
         ServiceLoader<ProcessorTestConfiguration> serviceLoader =
             ServiceLoader.load( ProcessorTestConfiguration.class );
@@ -26,5 +28,4 @@ public interface ProcessorTestConfiguration {
                 "ProcessorTestConfiguration is missing. "
                     + "Add a service implementation for org.mapstruct.testutil.ProcessorTestConfiguration." );
     }
-
 }

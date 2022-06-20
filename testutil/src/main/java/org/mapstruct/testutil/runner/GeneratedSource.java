@@ -19,6 +19,7 @@ import java.util.List;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mapstruct.testutil.ProcessorTestConfiguration;
 import org.mapstruct.testutil.assertions.JavaFileAssert;
 
 /**
@@ -88,22 +89,9 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      *
      * @return an assert for the *Impl.java for the given mapper
      */
-    public JavaFileAssert forMapper(Class<?> mapperClass) {
-        String generatedJavaFileName = getMapperName( mapperClass );
-        return forJavaFile( generatedJavaFileName );
-    }
-
-    private String getMapperName(Class<?> mapperClass) {
-        return mapperClass.getName().replace( '.', '/' ).concat( "Impl.java" );
-    }
-
-    /**
-     * @param mapperClass the class annotated with {@code &#064;Mapper} and {@code &#064;DecoratedWith(..)}
-     *
-     * @return an assert for the *Impl_.java for the given mapper
-     */
-    public JavaFileAssert forDecoratedMapper(Class<?> mapperClass) {
-        String generatedJavaFileName = mapperClass.getName().replace( '.', '/' ).concat( "Impl_.java" );
+    public JavaFileAssert forGeneratedFile(Class<?> mapperClass) {
+        String generatedJavaFileName =
+                        ProcessorTestConfiguration.getConfiguration().getGenerateFileName( mapperClass );
         return forJavaFile( generatedJavaFileName );
     }
 
@@ -118,7 +106,8 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
 
     private void handleFixtureComparison() throws UnsupportedEncodingException {
         for ( Class<?> fixture : fixturesFor ) {
-            String expectedFixture = FIXTURES_ROOT + getMapperName( fixture );
+            String expectedFixture = FIXTURES_ROOT +
+                            ProcessorTestConfiguration.getConfiguration().getGenerateFileName( fixture );
             URL expectedFile = getClass().getClassLoader().getResource( expectedFixture );
             if ( expectedFile == null ) {
                 fail( String.format(
@@ -129,7 +118,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
             }
             else {
                 File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), "UTF-8" ) );
-                forMapper( fixture ).hasSameMapperContent( expectedResource );
+                forGeneratedFile( fixture ).hasSameMapperContent( expectedResource );
             }
             fixture.getPackage().getName();
         }

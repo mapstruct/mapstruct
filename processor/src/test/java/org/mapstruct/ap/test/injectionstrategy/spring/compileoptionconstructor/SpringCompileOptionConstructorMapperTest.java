@@ -23,7 +23,7 @@ import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithSpring;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.testutil.runner.GeneratedSource;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

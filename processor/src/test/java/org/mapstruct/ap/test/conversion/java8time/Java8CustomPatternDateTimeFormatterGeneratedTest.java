@@ -15,7 +15,7 @@ import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformatter
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.runner.GeneratedSource;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

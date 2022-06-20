@@ -11,7 +11,7 @@ import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOptions;
-import org.mapstruct.testutil.runner.GeneratedSource;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Andreas Gudian

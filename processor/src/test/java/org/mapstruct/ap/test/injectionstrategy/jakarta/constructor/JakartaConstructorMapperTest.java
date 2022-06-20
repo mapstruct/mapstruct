@@ -14,7 +14,7 @@ import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithJakartaInject;
-import org.mapstruct.testutil.runner.GeneratedSource;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

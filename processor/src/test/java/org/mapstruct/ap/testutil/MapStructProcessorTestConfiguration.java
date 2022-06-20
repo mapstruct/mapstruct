@@ -30,4 +30,9 @@ public class MapStructProcessorTestConfiguration implements ProcessorTestConfigu
     public String[] getAnnotationProcessorAndTestRootPackagesOrClasses() {
         return new String[] { "org.mapstruct." };
     }
+
+    @Override
+    public String getGenerateFileName(Class<?> sourceClass) {
+        return sourceClass.getName().replace( '.', '/' ).concat( "Impl.java" );
+    }
 }
