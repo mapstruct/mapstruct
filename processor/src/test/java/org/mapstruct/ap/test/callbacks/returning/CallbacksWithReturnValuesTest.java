@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

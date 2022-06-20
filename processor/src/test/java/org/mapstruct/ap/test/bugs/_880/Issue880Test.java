@@ -8,16 +8,16 @@ package org.mapstruct.ap.test.bugs._880;
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithSpring;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithSpring;
+import org.mapstruct.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
+import org.mapstruct.testutil.compilation.annotation.ProcessorOptions;
+import org.mapstruct.testutil.runner.GeneratedSource;
 import org.springframework.stereotype.Component;
 
 /**

@@ -14,9 +14,9 @@ import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

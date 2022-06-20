@@ -7,9 +7,9 @@ package org.mapstruct.ap.test.bugs._895;
 
 import org.mapstruct.ap.test.bugs._895.MultiArrayMapper.WithArrayOfByteArray;
 import org.mapstruct.ap.test.bugs._895.MultiArrayMapper.WithListOfByteArray;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

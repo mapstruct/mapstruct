@@ -10,11 +10,11 @@ import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithJakartaInject;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithJakartaInject;
+import org.mapstruct.testutil.runner.GeneratedSource;
 
 import static java.lang.System.lineSeparator;
 

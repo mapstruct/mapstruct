@@ -11,9 +11,9 @@ import java.util.List;
 
 import org.mapstruct.ap.test.nestedbeans.recursive.RecursionMapper;
 import org.mapstruct.ap.test.nestedbeans.recursive.TreeRecursionMapper;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

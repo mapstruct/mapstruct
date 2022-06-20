@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.selection.methodgenerics.plain;
 
 import java.util.Collections;
 
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

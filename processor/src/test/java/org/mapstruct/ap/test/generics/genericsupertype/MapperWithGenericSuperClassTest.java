@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.generics.genericsupertype;
 
 import java.util.Arrays;
 
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

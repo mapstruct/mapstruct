@@ -12,11 +12,11 @@ import org.mapstruct.ap.test.bugs._1596.domain.ImmutableItem;
 import org.mapstruct.ap.test.bugs._1596.domain.Item;
 import org.mapstruct.ap.test.bugs._1596.dto.ImmutableItemDTO;
 import org.mapstruct.ap.test.bugs._1596.dto.ItemDTO;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithServiceImplementation;
-import org.mapstruct.ap.testutil.WithServiceImplementations;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithServiceImplementation;
+import org.mapstruct.testutil.WithServiceImplementations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

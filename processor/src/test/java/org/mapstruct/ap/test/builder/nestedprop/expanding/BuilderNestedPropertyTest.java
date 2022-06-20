@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 /**
  * Verifies that nested property mapping works with an immutable intermediate type.

@@ -17,10 +17,10 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junitpioneer.jupiter.DefaultLocale;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithJoda;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithJoda;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -16,8 +16,8 @@ import org.mapstruct.ap.test.nestedbeans.maps.WordDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.Garage;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.GarageDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.MultipleListMapper;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

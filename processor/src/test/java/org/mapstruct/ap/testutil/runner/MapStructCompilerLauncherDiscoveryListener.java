@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import org.mapstruct.testutil.runner.CompilerLauncherDiscoveryListener;
+
 /**
  * @author Ben Zegveld
  */

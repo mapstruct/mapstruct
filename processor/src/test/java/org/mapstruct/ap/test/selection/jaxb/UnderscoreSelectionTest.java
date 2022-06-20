@@ -10,10 +10,10 @@ import org.mapstruct.ap.test.selection.jaxb.underscores.SubType;
 import org.mapstruct.ap.test.selection.jaxb.underscores.SuperType;
 import org.mapstruct.ap.test.selection.jaxb.underscores.UnderscoreMapper;
 import org.mapstruct.ap.test.selection.jaxb.underscores.UnderscoreType;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithJavaxJaxb;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

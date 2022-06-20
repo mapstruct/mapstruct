@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class, FruitsMenu.class,
         FruitSalad.class, Fruit.class, FruitsMapper.class })

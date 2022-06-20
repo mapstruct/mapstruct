@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.bounds;
 
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 /**
  * @author Sjaak Derksen

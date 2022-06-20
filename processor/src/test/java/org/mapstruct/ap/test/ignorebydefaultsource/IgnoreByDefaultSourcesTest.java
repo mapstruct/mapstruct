@@ -7,12 +7,12 @@ package org.mapstruct.ap.test.ignorebydefaultsource;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 @IssueKey("2560")
 public class IgnoreByDefaultSourcesTest {

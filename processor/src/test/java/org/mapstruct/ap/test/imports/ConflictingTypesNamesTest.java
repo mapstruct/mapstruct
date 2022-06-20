@@ -12,11 +12,11 @@ import org.mapstruct.ap.test.imports.referenced.GenericMapper;
 import org.mapstruct.ap.test.imports.referenced.NotImportedDatatype;
 import org.mapstruct.ap.test.imports.referenced.Source;
 import org.mapstruct.ap.test.imports.referenced.Target;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithJavaxInject;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithJavaxInject;
+import org.mapstruct.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

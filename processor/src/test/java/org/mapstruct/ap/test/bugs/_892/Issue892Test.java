@@ -7,9 +7,9 @@ package org.mapstruct.ap.test.bugs._892;
 
 import org.mapstruct.ap.test.bugs._892.Issue892Mapper.Source;
 import org.mapstruct.ap.test.bugs._892.Issue892Mapper.Target;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

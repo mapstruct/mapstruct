@@ -6,12 +6,12 @@
 package org.mapstruct.ap.test.versioninfo;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
+import org.mapstruct.testutil.compilation.annotation.ProcessorOptions;
+import org.mapstruct.testutil.runner.GeneratedSource;
 
 /**
  * @author Andreas Gudian

@@ -16,9 +16,9 @@ import org.mapstruct.ap.test.factories.targettype.Bar9Child;
 import org.mapstruct.ap.test.factories.targettype.Bar9Factory;
 import org.mapstruct.ap.test.factories.targettype.Foo9Base;
 import org.mapstruct.ap.test.factories.targettype.Foo9Child;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

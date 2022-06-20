@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._2145;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithJavaxJaxb;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithJavaxJaxb;
 
 @IssueKey("2145")
 @WithClasses(Issue2145Mapper.class)

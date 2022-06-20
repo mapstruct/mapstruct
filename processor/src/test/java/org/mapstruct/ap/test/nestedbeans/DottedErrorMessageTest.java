@@ -57,11 +57,11 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapKe
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepMapValueMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableWarnValuePropertyMapper;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 @WithClasses({
     Car.class, CarDto.class, Color.class, ColorDto.class,

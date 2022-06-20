@@ -6,10 +6,10 @@
 package org.mapstruct.ap.test.builder.noop;
 
 import org.mapstruct.ap.spi.NoOpBuilderProvider;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithServiceImplementation;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithServiceImplementation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -42,12 +42,17 @@
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapstruct-testutil</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-compiler-jdt</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

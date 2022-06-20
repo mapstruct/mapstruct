@@ -7,10 +7,9 @@ package org.mapstruct.ap.test.selection.qualifier.defaults;
 
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
-
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 /**
  * @author Ben Zegveld

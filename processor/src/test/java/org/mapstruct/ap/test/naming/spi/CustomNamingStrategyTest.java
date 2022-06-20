@@ -6,9 +6,9 @@
 package org.mapstruct.ap.test.naming.spi;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithServiceImplementation;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.WithServiceImplementation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -9,8 +9,8 @@ import java.util.Arrays;
 
 import org.mapstruct.ap.test.constructor.Default;
 import org.mapstruct.ap.test.constructor.PersonDto;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

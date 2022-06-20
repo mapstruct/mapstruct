@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;

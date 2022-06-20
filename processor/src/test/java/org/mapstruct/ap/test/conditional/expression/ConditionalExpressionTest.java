@@ -8,12 +8,12 @@ package org.mapstruct.ap.test.conditional.expression;
 import org.mapstruct.ap.test.conditional.Employee;
 import org.mapstruct.ap.test.conditional.EmployeeDto;
 import org.mapstruct.ap.test.conditional.basic.BasicEmployee;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

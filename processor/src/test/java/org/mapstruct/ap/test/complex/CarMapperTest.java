@@ -17,8 +17,8 @@ import org.mapstruct.ap.test.complex.other.DateMapper;
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Category;
 import org.mapstruct.ap.test.complex.source.Person;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
