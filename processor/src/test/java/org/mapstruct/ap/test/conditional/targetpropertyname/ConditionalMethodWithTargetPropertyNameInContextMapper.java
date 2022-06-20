@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.basic;
+package org.mapstruct.ap.test.conditional.targetpropertyname;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
@@ -11,10 +11,6 @@ import org.mapstruct.Condition;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.TargetPropertyName;
-import org.mapstruct.ap.test.conditional.basic.TargetPropertyNameModel.Address;
-import org.mapstruct.ap.test.conditional.basic.TargetPropertyNameModel.AddressDto;
-import org.mapstruct.ap.test.conditional.basic.TargetPropertyNameModel.Employee;
-import org.mapstruct.ap.test.conditional.basic.TargetPropertyNameModel.EmployeeDto;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Deque;
@@ -64,7 +60,7 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
     Address map(AddressDto addressDto, @Context PresenceUtilsAllPropsWithSource utils);
 
     @BeforeMapping
-    default void before(TargetPropertyNameModel source, @Context PresenceUtilsAllPropsWithSource utils) {
+    default void before(DomainModel source, @Context PresenceUtilsAllPropsWithSource utils) {
         String lastProp = utils.visitedSegments.peekLast();
         if ( lastProp != null && source != null ) {
             utils.path.offerLast( lastProp );
