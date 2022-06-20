@@ -17,4 +17,17 @@ public class MapStructProcessorTestConfiguration implements ProcessorTestConfigu
         };
     }
 
+    @Override
+    public String[] getAnnotationProcessorPackagesOrClasses() {
+        return new String[] {
+            "org.mapstruct.ap.internal.",
+            "org.mapstruct.ap.spi.",
+            "org.mapstruct.ap.MappingProcessor",
+        };
+    }
+
+    @Override
+    public String[] getAnnotationProcessorAndTestRootPackagesOrClasses() {
+        return new String[] { "org.mapstruct." };
+    }
 }

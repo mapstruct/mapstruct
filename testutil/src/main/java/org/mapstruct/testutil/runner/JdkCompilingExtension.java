@@ -39,8 +39,9 @@ class JdkCompilingExtension extends CompilingExtension {
 
     private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( TEST_COMPILATION_CLASSPATH );
 
-    private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER =
-                    new ModifiableURLClassLoader( new FilteringParentClassLoader( "org.mapstruct." ) )
+    private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER = new ModifiableURLClassLoader(
+        new FilteringParentClassLoader(
+            ProcessorTestConfiguration.getConfiguration().getAnnotationProcessorAndTestRootPackagesOrClasses() ) )
                     .withPaths( PROCESSOR_CLASSPATH );
 
     JdkCompilingExtension(ProcessorTestConfiguration configuration) {
@@ -74,7 +75,10 @@ class JdkCompilingExtension extends CompilingExtension {
         }
         else {
             processorClassloader = new ModifiableURLClassLoader(
-                new FilteringParentClassLoader( "org.mapstruct." ) )
+                new FilteringParentClassLoader(
+                    ProcessorTestConfiguration
+                                              .getConfiguration()
+                                              .getAnnotationProcessorAndTestRootPackagesOrClasses() ) )
                             .withPaths( PROCESSOR_CLASSPATH )
                             .withPath( additionalCompilerClasspath )
                             .withOriginsOf( compilationRequest.getServices().values() );
@@ -91,10 +95,10 @@ class JdkCompilingExtension extends CompilingExtension {
 
 
         task.setProcessors(
-                getProcessorClasses()
-                                     .map( procClass -> loadAndInstantiate( processorClassloader, procClass ) )
-                                     .map( Processor.class::cast )
-                                     .collect( Collectors.toList() ) );
+            getProcessorClasses()
+            .map( procClass -> loadAndInstantiate( processorClassloader, procClass ) )
+            .map( Processor.class::cast )
+            .collect( Collectors.toList() ) );
 
         boolean compilationSuccessful = task.call();
 

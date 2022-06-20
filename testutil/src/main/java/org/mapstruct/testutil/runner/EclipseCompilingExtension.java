@@ -5,15 +5,11 @@
  */
 package org.mapstruct.testutil.runner;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.lang.model.SourceVersion;
@@ -94,13 +90,15 @@ class EclipseCompilingExtension extends CompilingExtension {
     }
 
     private static FilteringParentClassLoader newFilteringClassLoaderForEclipse() {
-        return new FilteringParentClassLoader(
-            // reload eclipse compiler classes
-            "org.eclipse.",
-            // reload mapstruct processor classes
-            "org.mapstruct.ap.internal.",
-            "org.mapstruct.ap.spi.",
-                        "org.mapstruct.ap.MappingProcessor")
+        List<String> reloadClasses = new ArrayList<>();
+        // reload eclipse compiler classes
+        reloadClasses.add( "org.eclipse." );
+        // reload processor classes
+        ProcessorTestConfiguration configuration = ProcessorTestConfiguration.getConfiguration();
+        for ( String packageOrClass : configuration.getAnnotationProcessorPackagesOrClasses() ) {
+            reloadClasses.add( packageOrClass );
+        }
+        return new FilteringParentClassLoader(reloadClasses.toArray( new String[0] ))
                         .hidingClass( ClassLoaderExecutor.class );
     }
 
@@ -155,22 +153,11 @@ class EclipseCompilingExtension extends CompilingExtension {
         }
 
         public static String[] getProcessorClasses() {
-
-            ServiceLoader<ProcessorTestConfiguration> serviceLoader =
-                            ServiceLoader.load( ProcessorTestConfiguration.class );
-            Iterator<ProcessorTestConfiguration> configurations = serviceLoader.iterator();
-            if ( configurations.hasNext() ) {
-                return Arrays
-                             .stream( configurations.next().getAnnotationProcessorClasses() )
-                             .map( Class::getName )
-                             .toArray( String[]::new );
-            }
-            else {
-                fail(
-                    "ProcessorTestConfiguration is missing. "
-                  + "Add a service implementation for org.mapstruct.testutil.ProcessorTestConfiguration." );
-            }
-            return new String[0];
+            ProcessorTestConfiguration configuration = ProcessorTestConfiguration.getConfiguration();
+            return Arrays
+                         .stream( configuration.getAnnotationProcessorClasses() )
+                         .map( Class::getName )
+                         .toArray( String[]::new );
         }
 
         private static String getSourceVersion() {
