@@ -5,10 +5,11 @@
  */
 package org.mapstruct.testutil.runner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
-import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
-
+import com.puppycrawl.tools.checkstyle.Checker;
+import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
+import com.puppycrawl.tools.checkstyle.DefaultLogger;
+import com.puppycrawl.tools.checkstyle.PropertiesExpander;
+import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,10 +30,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.xml.sax.InputSource;
+
 import org.mapstruct.testutil.ProcessorTestConfiguration;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithServiceImplementation;
@@ -44,13 +46,10 @@ import org.mapstruct.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.testutil.compilation.model.DiagnosticDescriptor;
-import org.xml.sax.InputSource;
 
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.DefaultLogger;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
 /**
  * A JUnit Jupiter Extension that performs source generation using the annotation processor and compiles those sources.
@@ -465,8 +464,10 @@ abstract class CompilingExtension implements BeforeEachCallback {
 
         // We need to put the compilation request in the store, so the GeneratedSource can use it
         context.getStore( NAMESPACE ).put( context.getUniqueId() + "-compilationRequest", compilationRequest );
-        CompilationCache compilationCache = rootStore
-                        .getOrComputeIfAbsent( compilationRequest, request -> new CompilationCache(), CompilationCache.class );
+        CompilationCache compilationCache = rootStore.getOrComputeIfAbsent(
+                                                         compilationRequest,
+                                                         request -> new CompilationCache(),
+                                                         CompilationCache.class );
 
         if ( !needsRecompilation( compilationRequest, compilationCache ) ) {
             return compilationCache.getLastResult();
