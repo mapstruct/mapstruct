@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,15 +115,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
      * needed for compiling the generated sources once the processor has run.
      */
     private static List<String> buildTestCompilationClasspath() {
-        Collection<String> whitelist = Arrays.asList(
-            // MapStruct annotations in multi-module reactor build or IDE
-            "core" + File.separator + "target",
-            // MapStruct annotations in single module build
-            "org" + File.separator + "mapstruct" + File.separator + "mapstruct" + File.separator,
-            "guava"
-                        );
 
-        return filterBootClassPath( whitelist );
+        return filterBootClassPath( ProcessorTestConfiguration.getConfiguration().getTestCompilationClasspath() );
     }
 
     /**
@@ -131,13 +125,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
      * The optional dependencies are not needed in this classpath.
      */
     private static List<String> buildProcessorClasspath() {
-        Collection<String> whitelist = Arrays.asList(
-            "processor" + File.separator + "target",  // the processor itself,
-            "freemarker",
-            "gem-api"
-                        );
-
-        return filterBootClassPath( whitelist );
+        return filterBootClassPath( ProcessorTestConfiguration.getConfiguration().getProcessorClasspath() );
     }
 
     protected static List<String> filterBootClassPath(Collection<String> whitelist) {
@@ -198,15 +186,15 @@ abstract class CompilingExtension implements BeforeEachCallback {
     }
 
     private void assertCheckstyleRules() throws Exception {
-        if ( sourceOutputDir != null ) {
+        InputStream checkStyle = ProcessorTestConfiguration.getConfiguration().getCheckStyleConfiguration();
+        if ( sourceOutputDir != null && checkStyle != null ) {
             Properties properties = new Properties();
             properties.put( "checkstyle.cache.file", classOutputDir + "/checkstyle.cache" );
 
             final Checker checker = new Checker();
             checker.setModuleClassLoader( Checker.class.getClassLoader() );
             checker.configure( ConfigurationLoader.loadConfiguration(
-                new InputSource( getClass().getClassLoader().getResourceAsStream(
-                                "checkstyle-for-generated-sources.xml" ) ),
+                new InputSource( checkStyle ),
                 new PropertiesExpander( properties ),
                 ConfigurationLoader.IgnoredModulesOptions.OMIT
                             ) );
@@ -478,7 +466,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
         // We need to put the compilation request in the store, so the GeneratedSource can use it
         context.getStore( NAMESPACE ).put( context.getUniqueId() + "-compilationRequest", compilationRequest );
         CompilationCache compilationCache = rootStore
-            .getOrComputeIfAbsent( compilationRequest, request -> new CompilationCache(), CompilationCache.class );
+                        .getOrComputeIfAbsent( compilationRequest, request -> new CompilationCache(), CompilationCache.class );
 
         if ( !needsRecompilation( compilationRequest, compilationCache ) ) {
             return compilationCache.getLastResult();

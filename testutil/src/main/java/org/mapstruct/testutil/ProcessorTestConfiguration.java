@@ -5,6 +5,8 @@
  */
 package org.mapstruct.testutil;
 
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -19,13 +21,19 @@ public interface ProcessorTestConfiguration {
 
     static ProcessorTestConfiguration getConfiguration() {
         ServiceLoader<ProcessorTestConfiguration> serviceLoader =
-            ServiceLoader.load( ProcessorTestConfiguration.class );
+                        ServiceLoader.load( ProcessorTestConfiguration.class );
         Iterator<ProcessorTestConfiguration> configurations = serviceLoader.iterator();
         if ( configurations.hasNext() ) {
             return configurations.next();
         }
         throw new IllegalStateException(
-                "ProcessorTestConfiguration is missing. "
-                    + "Add a service implementation for org.mapstruct.testutil.ProcessorTestConfiguration." );
+            "ProcessorTestConfiguration is missing. "
+                            + "Add a service implementation for org.mapstruct.testutil.ProcessorTestConfiguration." );
     }
+
+    Collection<String> getTestCompilationClasspath();
+
+    Collection<String> getProcessorClasspath();
+
+    InputStream getCheckStyleConfiguration();
 }
