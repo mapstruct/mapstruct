@@ -49,6 +49,12 @@ public class ConditionalMappingTest {
         assertThat( employee.getName() ).isNull();
     }
 
+    @IssueKey( "2882" )
+    @ProcessorTest
+    @WithClasses( { ConditionalMethodWithTargetType.class } )
+    public void conditionalMethodWithTargetTypeShouldCompile() {
+    }
+
     @ProcessorTest
     @WithClasses({
         ConditionalMethodAndBeanPresenceCheckMapper.class

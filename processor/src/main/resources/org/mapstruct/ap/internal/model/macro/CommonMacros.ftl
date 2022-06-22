@@ -15,7 +15,8 @@
 -->
 <#macro handleSourceReferenceNullCheck>
     <#if sourcePresenceCheckerReference??>
-        if ( <@includeModel object=sourcePresenceCheckerReference /> ) {
+        if ( <@includeModel object=sourcePresenceCheckerReference
+               targetType=ext.targetType/> ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
