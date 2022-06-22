@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.imports.sourcewithextendsbound;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -13,12 +15,10 @@ import org.mapstruct.ap.test.imports.sourcewithextendsbound.dto.AstronautDto;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.dto.SpaceshipDto;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Astronaut;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Spaceship;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).

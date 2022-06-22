@@ -6,9 +6,9 @@
 package org.mapstruct.ap.test.subclassmapping.fixture;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 @WithClasses({
     AbstractParentSource.class,

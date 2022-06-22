@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.java8stream.defaultimplementation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisfaov

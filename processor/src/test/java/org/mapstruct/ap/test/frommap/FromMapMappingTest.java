@@ -5,6 +5,10 @@
  */
 package org.mapstruct.ap.test.frommap;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
+
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -20,10 +24,6 @@ import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * @author Christian Kosmowski

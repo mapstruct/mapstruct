@@ -5,15 +5,15 @@
  */
 package org.mapstruct.ap.test.bugs._1359;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.ITERABLE;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.ITERABLE;
 
 /**
  * @author Filip Hrisafov

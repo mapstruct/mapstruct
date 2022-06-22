@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._1273;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "1273" )
 @WithClasses( { EntityMapperReturnDefault.class, EntityMapperReturnNull.class, Dto.class, Entity.class } )

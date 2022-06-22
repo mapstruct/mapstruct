@@ -8,9 +8,9 @@ package org.mapstruct.ap.test.naming.spi;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
-import org.mapstruct.ap.spi.util.IntrospectorUtils;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
+import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
 /**
  * A custom {@link AccessorNamingStrategy} recognizing getters in the form of {@code property()} and setters in the

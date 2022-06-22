@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -12,12 +14,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.Source;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.Target;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests generation of DateTimeFormatters as mapper instance fields for conversions to/from Java 8 date and time types.

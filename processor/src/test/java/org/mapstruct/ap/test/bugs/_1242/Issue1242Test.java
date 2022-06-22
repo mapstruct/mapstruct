@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._1242;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
@@ -12,8 +14,6 @@ import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests that if multiple factory methods are applicable but only one of them has a source parameter, the one with the

@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._2111;
 
+import static java.util.Collections.singletonList;
+
 import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
-import static java.util.Collections.singletonList;
 
 @Mapper
 public interface Issue2111Mapper {

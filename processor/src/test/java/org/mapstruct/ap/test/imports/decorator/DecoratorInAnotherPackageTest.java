@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.imports.decorator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.ap.test.imports.decorator.other.ActorMapperDecorator;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for having a decorator in another package than the mapper interface.

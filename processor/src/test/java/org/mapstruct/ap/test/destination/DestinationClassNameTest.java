@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.destination;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithJavaxInject;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.

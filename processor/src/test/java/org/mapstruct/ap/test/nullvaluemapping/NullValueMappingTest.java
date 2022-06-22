@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,6 @@ import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the strategies for mapping {@code null} values, given via {@code NullValueMapping} etc.

@@ -5,19 +5,19 @@
  */
 package org.mapstruct.ap.test.nestedproperties.simple;
 
-import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
-import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
-import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
-import org.mapstruct.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
+import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
+import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
+import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.testutil.ProcessorTest;
+import org.mapstruct.testutil.WithClasses;
 
 /**
  * @author Sebastian Hasait

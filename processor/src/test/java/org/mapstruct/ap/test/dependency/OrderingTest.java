@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.dependency;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.Mapping;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
@@ -12,8 +14,6 @@ import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ordering mapped attributes by means of {@link Mapping#dependsOn()}.

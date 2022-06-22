@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.naming;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,9 +19,6 @@ import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Test for naming of variables/members which conflict with keywords or parameter names.

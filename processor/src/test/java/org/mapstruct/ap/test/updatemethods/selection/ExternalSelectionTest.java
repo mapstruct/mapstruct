@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.updatemethods.selection;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +24,10 @@ import org.mapstruct.ap.test.updatemethods.EmployeeDto;
 import org.mapstruct.ap.test.updatemethods.EmployeeEntity;
 import org.mapstruct.ap.test.updatemethods.SecretaryDto;
 import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *

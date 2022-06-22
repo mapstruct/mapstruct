@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._1460.java8;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Christian Bandowski

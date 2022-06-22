@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.unmappedtarget;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.testutil.IssueKey;
@@ -14,8 +16,6 @@ import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests expected diagnostics for unmapped target properties.

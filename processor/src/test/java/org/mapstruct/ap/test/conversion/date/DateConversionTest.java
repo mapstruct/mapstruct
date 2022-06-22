@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.conversion.date;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -21,8 +23,6 @@ import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests application of format strings for conversions between strings and dates.

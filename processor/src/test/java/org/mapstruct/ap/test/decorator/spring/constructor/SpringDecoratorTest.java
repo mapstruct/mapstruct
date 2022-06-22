@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.decorator.spring.constructor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Calendar;
 
 import org.junit.jupiter.api.AfterEach;
@@ -22,8 +24,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the application of decorators using component model spring.

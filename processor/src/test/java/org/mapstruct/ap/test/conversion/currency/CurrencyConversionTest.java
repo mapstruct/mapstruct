@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.conversion.currency;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,8 +15,6 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Darren Rambaud

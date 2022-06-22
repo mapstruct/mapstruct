@@ -5,16 +5,16 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests conversions between {@link BigInteger} and numbers as well as String.

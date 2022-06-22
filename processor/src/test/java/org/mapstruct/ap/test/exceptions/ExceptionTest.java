@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +18,6 @@ import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  *

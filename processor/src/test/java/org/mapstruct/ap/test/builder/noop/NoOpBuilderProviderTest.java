@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.builder.noop;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.ap.spi.NoOpBuilderProvider;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithServiceImplementation;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

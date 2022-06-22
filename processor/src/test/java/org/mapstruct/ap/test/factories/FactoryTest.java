@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +21,6 @@ import org.mapstruct.ap.test.factories.targettype.Foo9Child;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen

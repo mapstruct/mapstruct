@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.context;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.ObjectFactory;
@@ -13,8 +15,6 @@ import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests the usage of the {@link Context} annotation in the following situations:

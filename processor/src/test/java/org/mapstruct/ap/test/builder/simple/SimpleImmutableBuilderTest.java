@@ -5,18 +5,18 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     SimpleMutablePerson.class,

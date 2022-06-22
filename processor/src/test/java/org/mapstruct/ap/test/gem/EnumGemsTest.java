@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.gem;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,8 +24,6 @@ import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for manually created gems on enumeration types

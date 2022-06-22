@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.named;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +28,6 @@ import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  *

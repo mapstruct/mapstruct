@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.imports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.imports.from.Foo;
 import org.mapstruct.ap.test.imports.from.FooWrapper;
@@ -12,13 +14,11 @@ import org.mapstruct.ap.test.imports.referenced.GenericMapper;
 import org.mapstruct.ap.test.imports.referenced.NotImportedDatatype;
 import org.mapstruct.ap.test.imports.referenced.Source;
 import org.mapstruct.ap.test.imports.referenced.Target;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithJavaxInject;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.

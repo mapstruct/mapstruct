@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.collection.immutabletarget;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -14,8 +16,6 @@ import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *

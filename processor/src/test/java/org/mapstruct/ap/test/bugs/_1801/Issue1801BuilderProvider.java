@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.bugs._1801;
 
 import java.util.List;
 import java.util.Objects;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;

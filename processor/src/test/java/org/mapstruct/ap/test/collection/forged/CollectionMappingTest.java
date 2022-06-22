@@ -5,10 +5,12 @@
  */
 package org.mapstruct.ap.test.collection.forged;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Map;
+
 import javax.tools.Diagnostic.Kind;
 
-import com.google.common.collect.ImmutableMap;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
@@ -17,7 +19,7 @@ import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Test for mappings between collection types,

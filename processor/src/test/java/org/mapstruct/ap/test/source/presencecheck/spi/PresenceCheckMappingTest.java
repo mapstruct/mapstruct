@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.source.presencecheck.spi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

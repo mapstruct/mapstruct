@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._1170;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 
 import org.assertj.core.api.ListAssert;
@@ -13,8 +15,6 @@ import org.mapstruct.ap.test.bugs._1170.source.Source;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Cornelius Dirmeier

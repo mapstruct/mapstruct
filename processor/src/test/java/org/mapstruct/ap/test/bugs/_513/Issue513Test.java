@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._513;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/513.

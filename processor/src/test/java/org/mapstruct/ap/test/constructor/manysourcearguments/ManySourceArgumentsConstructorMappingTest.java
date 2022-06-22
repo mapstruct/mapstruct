@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.constructor.manysourcearguments;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.ap.test.constructor.Person;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

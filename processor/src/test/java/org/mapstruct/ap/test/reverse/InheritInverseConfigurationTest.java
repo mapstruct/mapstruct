@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.reverse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous1;
@@ -17,8 +19,6 @@ import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen

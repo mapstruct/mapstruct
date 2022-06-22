@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.builder.parentchild;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 
 import org.assertj.core.api.Condition;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     MutableParent.class,

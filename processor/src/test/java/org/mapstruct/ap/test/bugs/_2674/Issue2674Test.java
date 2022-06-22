@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._2674;
 
-import static javax.tools.Diagnostic.Kind;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;

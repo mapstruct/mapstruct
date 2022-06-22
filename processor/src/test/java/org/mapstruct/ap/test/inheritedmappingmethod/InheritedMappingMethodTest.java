@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod._target.FastCarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.Car;
@@ -12,8 +14,6 @@ import org.mapstruct.ap.test.inheritedmappingmethod.source.FastCar;
 import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "274" )
 @WithClasses({

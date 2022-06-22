@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.xml.bind.annotation.XmlElementDecl;
 
 import org.mapstruct.ap.test.selection.jaxb.test1.OrderType;
@@ -14,8 +16,6 @@ import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithJavaxJaxb;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the selection of JAXB mapping and factory methods based on the "name" and "scope" attributes

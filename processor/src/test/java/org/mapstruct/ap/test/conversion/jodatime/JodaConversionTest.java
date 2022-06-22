@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.conversion.jodatime;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -21,8 +23,6 @@ import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithJoda;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests the conversion between Joda-Time types and String/Date/Calendar.

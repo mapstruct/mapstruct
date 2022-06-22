@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.plain;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import java.util.Collections;
 
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 /**
  * @author Sjaak Derksen
