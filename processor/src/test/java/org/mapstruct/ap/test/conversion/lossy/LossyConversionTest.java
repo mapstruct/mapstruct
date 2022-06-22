@@ -131,7 +131,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 21,
+                line = 22,
                 message = "collection element has a possibly lossy conversion from BigDecimal to BigInteger.")
         })
     public void testListElementConversion() {
@@ -143,11 +143,11 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 19,
+                line = 20,
                 message = "map key has a possibly lossy conversion from Long to Integer."),
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 19,
+                line = 20,
                 message = "map value has a possibly lossy conversion from Double to Float.")
     })
     public void testMapElementConversion() {
