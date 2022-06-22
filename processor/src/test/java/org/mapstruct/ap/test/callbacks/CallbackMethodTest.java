@@ -17,7 +17,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

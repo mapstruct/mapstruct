@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.mapstruct.ap.test.exceptions.imports.TestException1;
 import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

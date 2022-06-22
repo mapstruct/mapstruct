@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

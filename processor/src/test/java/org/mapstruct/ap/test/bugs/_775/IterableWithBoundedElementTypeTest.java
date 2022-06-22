@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 
 import org.assertj.core.api.IterableAssert;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

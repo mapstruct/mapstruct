@@ -7,7 +7,7 @@ package org.mapstruct.ap.test.bugs._2797;
 
 import org.mapstruct.ap.test.bugs._2797.model.BasePerson;
 import org.mapstruct.ap.test.bugs._2797.model.Example;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

@@ -12,12 +12,12 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithJakartaInject;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.WithJakartaInject;
-import org.mapstruct.testutil.WithJavaxInject;
 
 /**
  * Test field injection for component model jakarta.

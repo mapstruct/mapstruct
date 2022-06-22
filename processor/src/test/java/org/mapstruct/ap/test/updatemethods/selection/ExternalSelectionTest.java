@@ -24,8 +24,8 @@ import org.mapstruct.ap.test.updatemethods.EmployeeDto;
 import org.mapstruct.ap.test.updatemethods.EmployeeEntity;
 import org.mapstruct.ap.test.updatemethods.SecretaryDto;
 import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

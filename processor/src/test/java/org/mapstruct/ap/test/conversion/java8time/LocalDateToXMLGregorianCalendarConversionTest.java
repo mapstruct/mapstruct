@@ -16,7 +16,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Source;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Target;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

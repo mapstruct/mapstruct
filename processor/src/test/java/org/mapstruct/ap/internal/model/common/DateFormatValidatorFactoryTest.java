@@ -22,7 +22,7 @@ import javax.lang.model.type.TypeVisitor;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * Tests for {@link org.mapstruct.ap.internal.model.common.DateFormatValidatorFactory}.

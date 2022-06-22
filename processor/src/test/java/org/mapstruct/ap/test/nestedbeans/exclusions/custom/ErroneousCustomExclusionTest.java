@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithServiceImplementation;

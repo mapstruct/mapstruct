@@ -8,9 +8,9 @@ package org.mapstruct.ap.test.builder.off;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;

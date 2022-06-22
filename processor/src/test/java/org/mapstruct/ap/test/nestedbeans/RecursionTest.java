@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.mapstruct.ap.test.nestedbeans.recursive.RecursionMapper;
 import org.mapstruct.ap.test.nestedbeans.recursive.TreeRecursionMapper;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

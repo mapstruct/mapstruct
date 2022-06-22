@@ -14,7 +14,7 @@ import org.mapstruct.ap.test.bugs._2352.dto.TheModel;
 import org.mapstruct.ap.test.bugs._2352.dto.TheModels;
 import org.mapstruct.ap.test.bugs._2352.mapper.TheModelMapper;
 import org.mapstruct.ap.test.bugs._2352.mapper.TheModelsMapper;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

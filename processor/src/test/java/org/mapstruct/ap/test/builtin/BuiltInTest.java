@@ -58,10 +58,10 @@ import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToStringMapper;
 import org.mapstruct.ap.test.builtin.source.IterableSource;
 import org.mapstruct.ap.test.builtin.source.MapSource;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.WithJavaxJaxb;
 
 /**
  * Test for the generation of built-in mapping methods.

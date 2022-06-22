@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;

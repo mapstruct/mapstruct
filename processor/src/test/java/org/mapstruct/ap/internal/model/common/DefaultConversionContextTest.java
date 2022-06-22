@@ -23,7 +23,7 @@ import javax.tools.Diagnostic;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * Testing DefaultConversionContext for dateFormat

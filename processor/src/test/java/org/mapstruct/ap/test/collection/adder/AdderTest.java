@@ -32,8 +32,8 @@ import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.Source2;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.test.collection.adder.source.SourceWithPets;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

@@ -17,8 +17,8 @@ import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass.SourceInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

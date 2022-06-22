@@ -12,7 +12,7 @@ import java.util.Arrays;
 import org.assertj.core.api.ListAssert;
 import org.mapstruct.ap.test.bugs._1170._target.Target;
 import org.mapstruct.ap.test.bugs._1170.source.Source;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

@@ -12,7 +12,7 @@ import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotate
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

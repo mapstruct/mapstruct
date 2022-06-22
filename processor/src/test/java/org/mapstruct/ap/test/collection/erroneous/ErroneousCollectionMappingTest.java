@@ -9,7 +9,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.test.NoProperties;
 import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;

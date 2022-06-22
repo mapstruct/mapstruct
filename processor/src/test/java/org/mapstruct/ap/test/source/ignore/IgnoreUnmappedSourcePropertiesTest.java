@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.source.ignore;
 
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

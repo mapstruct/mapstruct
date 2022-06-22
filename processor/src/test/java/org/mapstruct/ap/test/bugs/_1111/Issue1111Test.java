@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mapstruct.ap.test.bugs._1111.Issue1111Mapper.Source;
 import org.mapstruct.ap.test.bugs._1111.Issue1111Mapper.Target;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

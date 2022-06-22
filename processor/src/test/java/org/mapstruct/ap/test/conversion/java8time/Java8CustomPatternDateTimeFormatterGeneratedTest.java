@@ -14,8 +14,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.Source;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.Target;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

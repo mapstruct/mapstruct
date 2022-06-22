@@ -10,7 +10,7 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithServiceImplementation;

@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

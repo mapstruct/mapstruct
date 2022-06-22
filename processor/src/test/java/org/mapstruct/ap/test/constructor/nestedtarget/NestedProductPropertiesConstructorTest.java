@@ -14,8 +14,8 @@ import org.mapstruct.ap.test.constructor.nestedsource.source.Chart;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Label;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Song;
 import org.mapstruct.ap.test.constructor.nestedsource.source.Studio;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

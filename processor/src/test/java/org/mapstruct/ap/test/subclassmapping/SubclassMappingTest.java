@@ -17,7 +17,7 @@ import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollection;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleCollectionDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;

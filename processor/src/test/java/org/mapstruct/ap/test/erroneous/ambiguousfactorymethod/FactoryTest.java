@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
 import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.a.BarFactory;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;

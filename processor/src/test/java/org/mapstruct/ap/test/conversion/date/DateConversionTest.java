@@ -20,7 +20,7 @@ import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junitpioneer.jupiter.DefaultLocale;
 import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

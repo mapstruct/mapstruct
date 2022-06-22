@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.junitpioneer.jupiter.DefaultTimeZone;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

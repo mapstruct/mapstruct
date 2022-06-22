@@ -11,8 +11,8 @@ import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.ADto;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.AEntity;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.BEntity;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.factory.Mappers;
-import org.mapstruct.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 

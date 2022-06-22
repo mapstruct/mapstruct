@@ -13,7 +13,7 @@ import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous1;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous2;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous3;
 import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperNonMatchingName;
-import org.mapstruct.testutil.IssueKey;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.testutil.ProcessorTest;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
