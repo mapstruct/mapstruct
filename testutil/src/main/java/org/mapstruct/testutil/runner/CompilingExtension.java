@@ -5,16 +5,13 @@
  */
 package org.mapstruct.testutil.runner;
 
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.DefaultLogger;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
-import java.io.ByteArrayOutputStream;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,32 +21,23 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.apache.commons.io.output.NullOutputStream;
+
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.xml.sax.InputSource;
-
 import org.mapstruct.testutil.ProcessorTestConfiguration;
 import org.mapstruct.testutil.WithClasses;
 import org.mapstruct.testutil.WithServiceImplementation;
 import org.mapstruct.testutil.WithTestDependency;
 import org.mapstruct.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.testutil.compilation.model.DiagnosticDescriptor;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
-import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
 /**
  * A JUnit Jupiter Extension that performs source generation using the annotation processor and compiles those sources.
@@ -179,58 +167,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
         assertNotes( actualResult.getNotes(), expectedResult.getNotes() );
 
-        if ( !findAnnotation( testClass, DisableCheckstyle.class ).isPresent() ) {
-            assertCheckstyleRules();
-        }
-    }
-
-    private void assertCheckstyleRules() throws Exception {
-        InputStream checkStyle = ProcessorTestConfiguration.getConfiguration().getCheckStyleConfiguration();
-        if ( sourceOutputDir != null && checkStyle != null ) {
-            Properties properties = new Properties();
-            properties.put( "checkstyle.cache.file", classOutputDir + "/checkstyle.cache" );
-
-            final Checker checker = new Checker();
-            checker.setModuleClassLoader( Checker.class.getClassLoader() );
-            checker.configure( ConfigurationLoader.loadConfiguration(
-                new InputSource( checkStyle ),
-                new PropertiesExpander( properties ),
-                ConfigurationLoader.IgnoredModulesOptions.OMIT
-                            ) );
-
-            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-            checker.addListener(
-                new DefaultLogger(
-                    NullOutputStream.NULL_OUTPUT_STREAM,
-                    AutomaticBean.OutputStreamOptions.CLOSE,
-                    errorStream,
-                    AutomaticBean.OutputStreamOptions.CLOSE
-                                )
-                            );
-
-            int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
-            if ( errors > 0 ) {
-                String errorLog = errorStream.toString( "UTF-8" );
-                assertThat( true ).describedAs( "Expected checkstyle compliant output, but got errors:\n" + errorLog )
-                .isEqualTo( false );
-            }
-        }
-    }
-
-    private static List<File> findGeneratedFiles(File file) {
-        final List<File> files = new LinkedList<>();
-
-        if ( file.canRead() ) {
-            if ( file.isDirectory() ) {
-                for ( File element : file.listFiles() ) {
-                    files.addAll( findGeneratedFiles( element ) );
-                }
-            }
-            else if ( file.isFile() ) {
-                files.add( file );
-            }
-        }
-        return files;
+        ProcessorTestConfiguration.getConfiguration().runAdditionalChecks( testClass, classOutputDir, sourceOutputDir );
     }
 
     private void assertNotes(List<String> actualNotes, List<String> expectedNotes) {
@@ -465,9 +402,9 @@ abstract class CompilingExtension implements BeforeEachCallback {
         // We need to put the compilation request in the store, so the GeneratedSource can use it
         context.getStore( NAMESPACE ).put( context.getUniqueId() + "-compilationRequest", compilationRequest );
         CompilationCache compilationCache = rootStore.getOrComputeIfAbsent(
-                                                         compilationRequest,
-                                                         request -> new CompilationCache(),
-                                                         CompilationCache.class );
+            compilationRequest,
+            request -> new CompilationCache(),
+            CompilationCache.class );
 
         if ( !needsRecompilation( compilationRequest, compilationCache ) ) {
             return compilationCache.getLastResult();

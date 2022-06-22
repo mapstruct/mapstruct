@@ -5,7 +5,6 @@
  */
 package org.mapstruct.testutil;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -35,5 +34,5 @@ public interface ProcessorTestConfiguration {
 
     Collection<String> getProcessorClasspath();
 
-    InputStream getCheckStyleConfiguration();
+    void runAdditionalChecks(Class<?> testClass, String classOutputDir, String sourceOutputDir) throws Exception;
 }
