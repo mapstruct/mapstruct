@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.constructor.nestedsource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 
 import org.mapstruct.ap.test.constructor.nestedsource._target.BaseChartEntry;
@@ -23,6 +21,8 @@ import org.mapstruct.ap.test.constructor.nestedsource.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

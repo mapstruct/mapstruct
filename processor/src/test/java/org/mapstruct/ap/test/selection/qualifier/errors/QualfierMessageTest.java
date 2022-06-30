@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.errors;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static javax.tools.Diagnostic.Kind.ERROR;
 
 @IssueKey("2135")
 public class QualfierMessageTest {

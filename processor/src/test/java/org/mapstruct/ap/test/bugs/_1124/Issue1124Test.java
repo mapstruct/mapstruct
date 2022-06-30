@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1124;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.DTO;
 import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.Entity;
 import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.MappingContext;
@@ -14,6 +12,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian

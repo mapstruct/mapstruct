@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.dependency;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +12,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for {@link GraphAnalyzer}.

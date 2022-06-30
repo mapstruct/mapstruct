@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.gem;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test constants values

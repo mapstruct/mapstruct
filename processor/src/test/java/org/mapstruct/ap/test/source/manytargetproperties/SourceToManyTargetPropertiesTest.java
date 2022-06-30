@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.source.manytargetproperties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +12,8 @@ import java.util.Date;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the generation of implementation of abstract base classes.

@@ -5,10 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -19,6 +16,8 @@ import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalenda
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian

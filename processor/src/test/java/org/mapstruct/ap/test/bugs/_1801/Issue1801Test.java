@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1801;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
@@ -19,6 +17,8 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithServiceImplementations;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Zhizhi Deng

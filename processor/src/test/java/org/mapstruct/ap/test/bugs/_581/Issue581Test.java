@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._581;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.bugs._581.source.Car;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey( "581" )
 @WithClasses({ Car.class, org.mapstruct.ap.test.bugs._581._target.Car.class, SourceTargetMapper.class })

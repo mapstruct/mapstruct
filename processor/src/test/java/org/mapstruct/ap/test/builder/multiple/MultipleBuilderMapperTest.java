@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.builder.multiple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.builder.multiple.build.Process;
 import org.mapstruct.ap.test.builder.multiple.builder.Case;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -15,6 +13,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

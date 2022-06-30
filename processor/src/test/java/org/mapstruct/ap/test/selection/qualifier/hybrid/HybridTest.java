@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.hybrid;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
@@ -15,6 +13,8 @@ import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *

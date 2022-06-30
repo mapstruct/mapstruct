@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jakarta._default;
 
-import static java.lang.System.lineSeparator;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -18,6 +16,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJakartaInject;
 import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static java.lang.System.lineSeparator;
 
 /**
  * Test field injection for component model jakarta.

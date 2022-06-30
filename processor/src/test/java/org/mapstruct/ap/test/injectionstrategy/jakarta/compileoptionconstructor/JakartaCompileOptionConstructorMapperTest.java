@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jakarta.compileoptionconstructor;
 
-import static java.lang.System.lineSeparator;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -18,6 +16,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJakartaInject;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static java.lang.System.lineSeparator;
 
 /**
  * Test constructor injection for component model jakarta with compile option

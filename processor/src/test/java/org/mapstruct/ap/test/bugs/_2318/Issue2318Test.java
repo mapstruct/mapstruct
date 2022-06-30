@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._2318;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.bugs._2318.Issue2318Mapper.SourceChild;
 import org.mapstruct.ap.test.bugs._2318.Issue2318Mapper.TargetChild;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("2318")
 public class Issue2318Test {

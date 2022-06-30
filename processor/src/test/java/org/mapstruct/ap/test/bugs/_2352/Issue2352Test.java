@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._2352;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 
 import org.mapstruct.ap.test.bugs._2352.dto.TheDto;
@@ -17,6 +15,8 @@ import org.mapstruct.ap.test.bugs._2352.mapper.TheModelsMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

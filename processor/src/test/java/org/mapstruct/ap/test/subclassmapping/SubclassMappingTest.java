@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.subclassmapping;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.BikeDto;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
@@ -23,6 +21,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("131")
 @WithClasses({

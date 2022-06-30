@@ -5,15 +5,15 @@
  */
 package org.mapstruct.ap.test.conversion.lossy;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.withinPercentage;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.withinPercentage;
 
 /**
  * Tests the conversion between Joda-Time types and String/Date/Calendar.
@@ -131,7 +131,7 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = ListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 22,
+                line = 21,
                 message = "collection element has a possibly lossy conversion from BigDecimal to BigInteger.")
         })
     public void testListElementConversion() {
@@ -143,11 +143,11 @@ public class LossyConversionTest {
         diagnostics = {
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 20,
+                line = 19,
                 message = "map key has a possibly lossy conversion from Long to Integer."),
             @Diagnostic(type = MapMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 20,
+                line = 19,
                 message = "map value has a possibly lossy conversion from Double to Float.")
     })
     public void testMapElementConversion() {

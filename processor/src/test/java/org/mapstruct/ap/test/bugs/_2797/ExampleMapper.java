@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._2797;
 
-import static org.mapstruct.ReportingPolicy.ERROR;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ap.test.bugs._2797.model.Example.Person;
+
+import static org.mapstruct.ReportingPolicy.ERROR;
 
 /**
  * @author Ben Zegveld

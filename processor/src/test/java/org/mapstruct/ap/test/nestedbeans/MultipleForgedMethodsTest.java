@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -20,6 +18,8 @@ import org.mapstruct.ap.test.nestedbeans.multiplecollections.GarageDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.MultipleListMapper;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This test is for a case when several identical methods could be generated, what is an easy edge case to miss.

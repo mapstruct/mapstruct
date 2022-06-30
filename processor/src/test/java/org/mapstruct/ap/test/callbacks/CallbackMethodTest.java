@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.callbacks;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +18,8 @@ import org.mapstruct.BeforeMapping;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for callback methods that are defined using {@link BeforeMapping} / {@link AfterMapping}

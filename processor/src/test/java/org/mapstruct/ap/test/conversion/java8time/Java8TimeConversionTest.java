@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,12 +17,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junitpioneer.jupiter.DefaultTimeZone;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for conversions to/from Java 8 date and time types.

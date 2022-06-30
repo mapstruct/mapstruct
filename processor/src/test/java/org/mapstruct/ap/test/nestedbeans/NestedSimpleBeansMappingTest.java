@@ -5,18 +5,17 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.extension.RegisterExtension;
-
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @WithClasses({
     User.class, UserDto.class, Car.class, CarDto.class, House.class, HouseDto.class,

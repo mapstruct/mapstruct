@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._775;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
 import org.assertj.core.api.IterableAssert;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verifies:

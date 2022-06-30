@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * All these test cases test the possible combinations in the GetterMapperForCollections.

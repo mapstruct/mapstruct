@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 // tag::documentation[]
 
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 

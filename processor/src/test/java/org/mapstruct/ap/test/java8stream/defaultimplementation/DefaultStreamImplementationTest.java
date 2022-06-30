@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.java8stream.defaultimplementation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,6 +18,8 @@ import java.util.stream.Stream;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Source.class,

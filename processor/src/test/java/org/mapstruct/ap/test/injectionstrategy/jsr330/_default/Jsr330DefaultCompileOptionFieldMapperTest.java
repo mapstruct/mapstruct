@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jsr330._default;
 
-import static java.lang.System.lineSeparator;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -22,11 +19,13 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import static java.lang.System.lineSeparator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test field injection for component model jsr330.

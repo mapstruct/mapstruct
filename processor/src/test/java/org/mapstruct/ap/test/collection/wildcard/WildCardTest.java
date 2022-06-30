@@ -5,10 +5,7 @@
  */
 package org.mapstruct.ap.test.collection.wildcard;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -21,6 +18,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/527.

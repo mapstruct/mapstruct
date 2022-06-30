@@ -6,8 +6,8 @@
 package org.mapstruct.ap.test.constructor.erroneous;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.constructor.ConstructorProperties;
 import org.mapstruct.ap.test.constructor.PersonDto;
+import org.mapstruct.ap.test.constructor.ConstructorProperties;
 
 /**
  * @author Filip Hrisafov

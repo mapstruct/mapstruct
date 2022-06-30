@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1569.java8;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneOffset;
@@ -15,6 +13,8 @@ import java.util.Date;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

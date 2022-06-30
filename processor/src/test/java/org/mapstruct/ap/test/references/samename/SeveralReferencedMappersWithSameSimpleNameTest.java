@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.references.samename;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.references.samename.a.AnotherSourceTargetMapper;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
 import org.mapstruct.ap.test.references.samename.model.Source;
@@ -15,6 +13,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxInject;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for referring several mappers with the same simple name.

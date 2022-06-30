@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.imports;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.imports.innerclasses.BeanFacade;
 import org.mapstruct.ap.test.imports.innerclasses.BeanWithInnerEnum;
@@ -21,6 +19,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).

@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring.constructor;
 
-import static java.lang.System.lineSeparator;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,12 +25,14 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithSpring;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import static java.lang.System.lineSeparator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test constructor injection for component model spring.

@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.unmappedsource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.test.unmappedtarget.Source;
@@ -17,6 +15,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests expected diagnostics for unmapped source properties.

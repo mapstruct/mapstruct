@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.selection.jaxb.underscores.ObjectFactory;
 import org.mapstruct.ap.test.selection.jaxb.underscores.SubType;
 import org.mapstruct.ap.test.selection.jaxb.underscores.SuperType;
@@ -16,6 +14,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxJaxb;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Ensure factory method selection works for classes generated from schemas using element names with underscores

@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._895;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.bugs._895.MultiArrayMapper.WithArrayOfByteArray;
 import org.mapstruct.ap.test.bugs._895.MultiArrayMapper.WithListOfByteArray;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verifies that forged iterable mapping methods for multi-dimensional arrays are generated properly.

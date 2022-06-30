@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +13,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * All these test cases test the possible combinations in the SetterMapperForCollections.

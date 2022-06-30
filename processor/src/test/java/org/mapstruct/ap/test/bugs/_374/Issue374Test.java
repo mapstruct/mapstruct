@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._374;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +13,8 @@ import java.util.Map;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/306.

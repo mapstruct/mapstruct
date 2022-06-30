@@ -5,14 +5,11 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -29,6 +26,8 @@ import javax.lang.model.type.WildcardType;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.TypeUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

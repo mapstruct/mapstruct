@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.nestedsourceproperties._target.BaseChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryComposed;
@@ -22,6 +20,8 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen

@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.bugs._1111;
 
 import java.util.List;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

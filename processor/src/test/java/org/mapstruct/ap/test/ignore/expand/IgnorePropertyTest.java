@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.ignore.expand;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ignoring properties during the mapping.

@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1130;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.ADto;
 import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.AEntity;
@@ -15,6 +13,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests that when calling an update method for a previously null property, the factory method is called even if that

@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +14,9 @@ import org.mapstruct.ap.test.nestedbeans.recursive.TreeRecursionMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class RecursionTest {
 

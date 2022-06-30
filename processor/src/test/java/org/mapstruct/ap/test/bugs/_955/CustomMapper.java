@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.bugs._955;
 
 import java.util.Map;
-
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ap.test.bugs._955.dto.Person;
 

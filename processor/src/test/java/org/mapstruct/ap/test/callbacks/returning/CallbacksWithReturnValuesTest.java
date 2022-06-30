@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.callbacks.returning;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -15,6 +12,9 @@ import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListen
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Test case for https://github.com/mapstruct/mapstruct/issues/469

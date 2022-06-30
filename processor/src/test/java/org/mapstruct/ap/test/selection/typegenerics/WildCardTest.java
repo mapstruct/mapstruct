@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.selection.typegenerics;
 
+import java.math.BigInteger;
+
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.math.BigInteger;
 
 /**
  * @author Sjaak Derksen

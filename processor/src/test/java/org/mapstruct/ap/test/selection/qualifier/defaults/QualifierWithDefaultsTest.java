@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.selection.qualifier.defaults;
 
 import java.util.UUID;
-
 import org.assertj.core.api.Assertions;
 
 import org.mapstruct.ap.testutil.ProcessorTest;

@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._2674;
 
-import javax.tools.Diagnostic.Kind;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static javax.tools.Diagnostic.Kind;
 
 /**
  * @author Justyna Kubica-Ledzion

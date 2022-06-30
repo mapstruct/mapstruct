@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.conversion.url;
 
-import java.net.MalformedURLException;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+
+import java.net.MalformedURLException;
 
 @Mapper
 public interface URLMapper {

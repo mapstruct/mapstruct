@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.callbacks.typematching;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarDto;
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarEntity;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian

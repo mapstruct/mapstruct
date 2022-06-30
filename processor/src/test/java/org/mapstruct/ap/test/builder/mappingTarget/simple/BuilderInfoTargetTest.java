@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     MutableTarget.class,

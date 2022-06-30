@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.selection.jaxb.test1;
 
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

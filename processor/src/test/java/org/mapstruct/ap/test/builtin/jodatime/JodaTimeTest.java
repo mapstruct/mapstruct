@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.builtin.jodatime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -34,6 +32,8 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxJaxb;
 import org.mapstruct.ap.testutil.WithJoda;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *

@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.constructor.constructorproperties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 
 import org.mapstruct.ap.test.constructor.ConstructorProperties;
 import org.mapstruct.ap.test.constructor.PersonDto;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov

@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.decorator.jakarta.jsr330;
 
-import org.mapstruct.ap.test.decorator.Person;
-import org.mapstruct.ap.test.decorator.PersonDto;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
 
 public abstract class PersonMapperDecorator implements PersonMapper {
 

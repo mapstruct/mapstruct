@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +19,8 @@ import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarFactorizedProperty
 import org.mapstruct.ap.test.builtin.mapper.ToXmlGregCalMapper;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses( {
     DatatypeFactory.class,

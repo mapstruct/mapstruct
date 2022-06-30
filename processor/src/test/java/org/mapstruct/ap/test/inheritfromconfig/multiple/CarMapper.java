@@ -5,10 +5,11 @@
  */
 package org.mapstruct.ap.test.inheritfromconfig.multiple;
 
-import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 

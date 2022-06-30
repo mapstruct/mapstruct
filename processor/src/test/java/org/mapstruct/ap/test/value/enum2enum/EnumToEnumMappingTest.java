@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.value.enum2enum;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -19,6 +17,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for the generation and invocation of enum mapping methods.

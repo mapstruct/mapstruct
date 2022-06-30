@@ -5,9 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -16,9 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junitpioneer.jupiter.DefaultLocale;
-
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 @WithClasses({
         Source.class,

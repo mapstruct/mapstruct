@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -15,6 +13,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests conversions between {@link BigInteger} and numbers as well as String.

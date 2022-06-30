@@ -10,11 +10,11 @@ import java.util.Map;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Named;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.factory.Mappers;
 
 import com.google.common.collect.ImmutableMap;
+import org.mapstruct.Named;
 
 /**
  *

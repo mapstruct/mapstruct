@@ -7,10 +7,10 @@ package org.mapstruct.ap.test.selection.qualifier.handwritten;
 
 import java.util.Map;
 
-import org.mapstruct.Named;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 
 import com.google.common.collect.ImmutableMap;
+import org.mapstruct.Named;
 
 /**
  *
