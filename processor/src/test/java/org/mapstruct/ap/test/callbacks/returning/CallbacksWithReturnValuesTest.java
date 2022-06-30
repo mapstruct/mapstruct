@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Test case for https://github.com/mapstruct/mapstruct/issues/469

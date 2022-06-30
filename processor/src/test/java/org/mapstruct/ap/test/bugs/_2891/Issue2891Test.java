@@ -7,9 +7,9 @@ package org.mapstruct.ap.test.bugs._2891;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * @author Sergei Portnov

@@ -28,9 +28,9 @@ import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterPlant;
 import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQuality;
 import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQualityReport;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  *

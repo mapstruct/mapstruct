@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.bugs._2624;
 
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * @author Filip Hrisafov

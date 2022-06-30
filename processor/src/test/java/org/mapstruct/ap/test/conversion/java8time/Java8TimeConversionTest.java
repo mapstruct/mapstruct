@@ -22,9 +22,9 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Tests for conversions to/from Java 8 date and time types.

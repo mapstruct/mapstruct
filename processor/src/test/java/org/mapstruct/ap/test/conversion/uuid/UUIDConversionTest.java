@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.UUID;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Tests conversions between {@link java.util.UUID} and String.

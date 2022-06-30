@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class,
     StringHolderArrayList.class,

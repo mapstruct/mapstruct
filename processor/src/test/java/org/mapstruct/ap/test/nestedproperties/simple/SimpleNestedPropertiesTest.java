@@ -16,8 +16,8 @@ import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Sebastian Hasait

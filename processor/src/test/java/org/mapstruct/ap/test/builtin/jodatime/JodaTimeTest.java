@@ -30,10 +30,10 @@ import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocal
 import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalDateTime;
 import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalTime;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxJaxb;
 import org.mapstruct.ap.testutil.WithJoda;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  *

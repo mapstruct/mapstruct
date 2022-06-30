@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarDto;
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarEntity;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Andreas Gudian

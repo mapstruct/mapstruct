@@ -13,9 +13,9 @@ import org.mapstruct.ap.test.selection.jaxb.test1.OrderType;
 import org.mapstruct.ap.test.selection.jaxb.test2.ObjectFactory;
 import org.mapstruct.ap.test.selection.jaxb.test2.OrderShippingDetailsType;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxJaxb;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Test for the selection of JAXB mapping and factory methods based on the "name" and "scope" attributes

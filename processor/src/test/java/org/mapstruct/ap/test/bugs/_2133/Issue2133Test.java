@@ -6,8 +6,8 @@
 package org.mapstruct.ap.test.bugs._2133;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @IssueKey("2133")
 @WithClasses( Issue2133Mapper.class )

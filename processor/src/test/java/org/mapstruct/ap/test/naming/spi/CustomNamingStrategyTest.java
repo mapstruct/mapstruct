@@ -8,9 +8,9 @@ package org.mapstruct.ap.test.naming.spi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.WithServiceImplementation;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithServiceImplementation;
 
 /**
  * Test do demonstrate the usage of custom implementations of {@link AccessorNamingStrategy}.

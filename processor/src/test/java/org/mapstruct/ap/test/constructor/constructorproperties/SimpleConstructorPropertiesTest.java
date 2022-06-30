@@ -11,8 +11,8 @@ import java.util.Arrays;
 
 import org.mapstruct.ap.test.constructor.ConstructorProperties;
 import org.mapstruct.ap.test.constructor.PersonDto;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Filip Hrisafov

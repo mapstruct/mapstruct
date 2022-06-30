@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.targettype;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen

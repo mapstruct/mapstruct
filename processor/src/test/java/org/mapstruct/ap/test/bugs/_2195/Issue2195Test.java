@@ -11,8 +11,8 @@ import org.mapstruct.ap.test.bugs._2195.dto.Source;
 import org.mapstruct.ap.test.bugs._2195.dto.Target;
 import org.mapstruct.ap.test.bugs._2195.dto.TargetBase;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @IssueKey("2195")
 @WithClasses( { Source.class, Target.class, TargetBase.class } )

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/306.

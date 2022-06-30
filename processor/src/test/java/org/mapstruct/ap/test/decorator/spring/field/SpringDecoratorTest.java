@@ -16,9 +16,10 @@ import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithSpring;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

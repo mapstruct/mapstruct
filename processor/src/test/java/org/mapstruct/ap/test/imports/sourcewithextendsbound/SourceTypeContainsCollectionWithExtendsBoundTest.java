@@ -16,9 +16,9 @@ import org.mapstruct.ap.test.imports.sourcewithextendsbound.dto.SpaceshipDto;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Astronaut;
 import org.mapstruct.ap.test.imports.sourcewithextendsbound.entity.Spaceship;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).

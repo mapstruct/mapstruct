@@ -10,8 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 
 import org.assertj.core.api.Condition;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @WithClasses({
     MutableParent.class,

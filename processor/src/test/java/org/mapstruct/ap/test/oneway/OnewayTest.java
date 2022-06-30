@@ -8,8 +8,8 @@ package org.mapstruct.ap.test.oneway;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Test for propagation of attribute without setter in source and getter in

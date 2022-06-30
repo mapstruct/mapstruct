@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import org.mapstruct.testutil.assertions.JavaFileAssert;
+import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
 
 /**
  * A {@link org.junit.jupiter.api.extension.RegisterExtension RegisterExtension} to perform assertions on generated
@@ -20,7 +20,7 @@ import org.mapstruct.testutil.assertions.JavaFileAssert;
  *
  * @author Andreas Gudian
  */
-public class GeneratedSource extends org.mapstruct.testutil.runner.GeneratedSource {
+public class GeneratedSource extends org.mapstruct.ap.testutil.runner.BaristaGeneratedSource {
 
     /**
      * @param mapperClass the class annotated with {@code &#064;Mapper}

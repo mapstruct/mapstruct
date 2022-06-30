@@ -11,8 +11,8 @@ import org.mapstruct.ap.test.bugs._1215.entity.Entity;
 import org.mapstruct.ap.test.bugs._1215.entity.Tag;
 import org.mapstruct.ap.test.bugs._1215.mapper.Issue1215Mapper;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Filip Hrisafov

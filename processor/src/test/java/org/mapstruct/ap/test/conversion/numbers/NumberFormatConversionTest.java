@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junitpioneer.jupiter.DefaultLocale;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @WithClasses({
         Source.class,

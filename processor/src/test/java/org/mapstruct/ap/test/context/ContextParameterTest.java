@@ -13,8 +13,8 @@ import org.mapstruct.ObjectFactory;
 import org.mapstruct.ap.test.context.Node.Attribute;
 import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Tests the usage of the {@link Context} annotation in the following situations:

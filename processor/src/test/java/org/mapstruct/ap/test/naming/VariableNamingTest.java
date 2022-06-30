@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Test for naming of variables/members which conflict with keywords or parameter names.

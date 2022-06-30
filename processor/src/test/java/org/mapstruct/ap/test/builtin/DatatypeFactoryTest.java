@@ -19,8 +19,8 @@ import org.mapstruct.ap.test.builtin.bean.DatatypeFactory;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarFactorizedProperty;
 import org.mapstruct.ap.test.builtin.mapper.ToXmlGregCalMapper;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @WithClasses( {
     DatatypeFactory.class,

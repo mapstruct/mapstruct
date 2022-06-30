@@ -11,11 +11,11 @@ import java.util.Arrays;
 import java.util.function.BiConsumer;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
  * @author Sjaak Derksen

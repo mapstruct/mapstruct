@@ -5,8 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._891;
 
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Sjaak Derksen

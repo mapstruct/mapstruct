@@ -20,8 +20,8 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.SourceDtoFactory;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Sjaak Derksen

@@ -12,9 +12,9 @@ import org.mapstruct.ap.test.references.samename.a.CustomMapper;
 import org.mapstruct.ap.test.references.samename.model.Source;
 import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxInject;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Test for referring several mappers with the same simple name.

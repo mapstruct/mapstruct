@@ -16,8 +16,8 @@ import java.util.Map;
 
 import org.mapstruct.ap.test.collection.map.other.ImportedType;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Test for implementation of {@code Map} mapping methods.

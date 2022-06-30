@@ -18,9 +18,9 @@ import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass.SourceInn
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Test for generating a mapper which references nested types (static inner classes).

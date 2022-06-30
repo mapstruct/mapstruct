@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.AccessMode;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Filip Hrisafov

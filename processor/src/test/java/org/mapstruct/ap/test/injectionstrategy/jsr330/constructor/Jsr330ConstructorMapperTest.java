@@ -16,10 +16,11 @@ import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
 import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

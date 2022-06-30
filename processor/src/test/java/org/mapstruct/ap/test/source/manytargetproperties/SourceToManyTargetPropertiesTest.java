@@ -12,8 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Test for the generation of implementation of abstract base classes.

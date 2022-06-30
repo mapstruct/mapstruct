@@ -6,8 +6,8 @@
 package org.mapstruct.ap.test.bugs._846;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @IssueKey("846")
 @WithClasses({

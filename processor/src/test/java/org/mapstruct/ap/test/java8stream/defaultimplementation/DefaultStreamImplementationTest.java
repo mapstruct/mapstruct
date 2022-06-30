@@ -18,8 +18,8 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @WithClasses({
     Source.class,

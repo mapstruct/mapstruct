@@ -18,8 +18,8 @@ import org.mapstruct.ap.test.bugs._1269.model.Vehicle;
 import org.mapstruct.ap.test.bugs._1269.model.VehicleImage;
 import org.mapstruct.ap.test.bugs._1269.model.VehicleTypeInfo;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Filip Hrisafov

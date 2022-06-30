@@ -14,9 +14,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
 @IssueKey("108")

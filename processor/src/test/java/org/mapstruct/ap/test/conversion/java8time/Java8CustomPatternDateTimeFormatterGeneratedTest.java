@@ -15,9 +15,9 @@ import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformatter
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.SourceTargetMapper;
 import org.mapstruct.ap.test.conversion.java8time.custompatterndatetimeformattergenerated.Target;
 import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
 
 /**
  * Tests generation of DateTimeFormatters as mapper instance fields for conversions to/from Java 8 date and time types.

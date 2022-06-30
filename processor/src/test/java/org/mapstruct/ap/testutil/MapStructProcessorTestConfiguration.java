@@ -20,8 +20,8 @@ import java.util.Properties;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.mapstruct.ap.MappingProcessor;
-import org.mapstruct.testutil.ProcessorTestConfiguration;
-import org.mapstruct.testutil.compilation.annotation.DisableCheckstyle;
+import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
+
 import org.xml.sax.InputSource;
 
 import com.puppycrawl.tools.checkstyle.Checker;

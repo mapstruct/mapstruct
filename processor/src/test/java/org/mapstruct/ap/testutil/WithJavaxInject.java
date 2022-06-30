@@ -11,8 +11,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.mapstruct.testutil.WithTestDependency;
-
 /**
  * Meta annotation that adds the needed Spring Dependencies
  *

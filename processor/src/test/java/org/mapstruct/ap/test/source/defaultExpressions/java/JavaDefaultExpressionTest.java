@@ -12,11 +12,11 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
  * @author Jeffrey Smyth

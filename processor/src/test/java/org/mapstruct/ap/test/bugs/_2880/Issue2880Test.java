@@ -6,8 +6,8 @@
 package org.mapstruct.ap.test.bugs._2880;
 
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 @IssueKey("2880")
 @WithClasses({

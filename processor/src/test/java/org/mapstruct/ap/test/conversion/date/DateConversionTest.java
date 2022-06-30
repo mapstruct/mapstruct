@@ -21,8 +21,8 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junitpioneer.jupiter.DefaultLocale;
 import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * Tests application of format strings for conversions between strings and dates.

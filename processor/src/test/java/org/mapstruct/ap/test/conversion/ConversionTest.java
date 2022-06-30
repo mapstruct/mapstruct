@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.conversion;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class ConversionTest {

@@ -9,11 +9,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.testutil.ProcessorTest;
-import org.mapstruct.testutil.WithClasses;
-import org.mapstruct.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
  * Test for setting an attribute where the target attribute of a super-type.
