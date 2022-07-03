@@ -39,6 +39,13 @@
             <groupId>org.mapstruct.tools.gem</groupId>
             <artifactId>gem-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
