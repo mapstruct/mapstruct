@@ -24,4 +24,9 @@ public interface CustomerMapper {
     @InheritInverseConfiguration
     CustomerDto toRecord(CustomerEntity entity);
 
+    @Mapping(target = "email", source = "mail")
+    CustomerWithOptionalParametersDto mapWithOptionalParameters(CustomerEntity entity);
+
+    @Mapping(target = "email", source = "mail")
+    CustomerWithMixedParametersDto mapWithMixedParameters(CustomerEntity entity);
 }

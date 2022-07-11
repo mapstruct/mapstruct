@@ -44,6 +44,7 @@ import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.KotlinType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -740,8 +741,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return new ConstructorAccessor( parameterBindings, constructorAccessors );
             }
 
-            List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
-                .getEnclosedElements() );
+            List<ExecutableElement> constructors;
+
+            final KotlinType kotlinType = KotlinType.of( type );
+            if ( kotlinType != null && kotlinType.isDataClass() ) {
+                constructors = kotlinType.getDataClassConstructors();
+            }
+            else {
+                constructors = ElementFilter.constructorsIn( type.getTypeElement().getEnclosedElements() );
+            }
 
             // The rules for picking a constructor are the following:
             // 1. Constructor annotated with @Default (from any package) has highest precedence

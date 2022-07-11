@@ -35,4 +35,34 @@ public class KotlinDataTest {
         assertThat( customer.getName() ).isEqualTo( "Kermit" );
         assertThat( customer.getEmail() ).isEqualTo( "kermit@test.com" );
     }
+
+    @Test
+    public void shouldMapIntoDataWithOptionalParameters() {
+        CustomerEntity entity = new CustomerEntity();
+        entity.setName( "Kermit" );
+        entity.setMail( "kermit@test.com" );
+
+        CustomerWithOptionalParametersDto customer = CustomerMapper.INSTANCE.mapWithOptionalParameters( entity );
+
+        assertThat( customer ).isNotNull();
+        assertThat( customer.getName() ).isEqualTo( "Kermit" );
+        assertThat( customer.getEmail() ).isEqualTo( "kermit@test.com" );
+    }
+
+    @Test
+    public void shouldMapIntoDataWithMixedParameters() {
+        CustomerEntity entity = new CustomerEntity();
+        entity.setName( "Kermit" );
+        entity.setAge( 42 );
+        entity.setMail( "kermit@test.com" );
+        entity.setJob( "Actor" );
+
+        CustomerWithMixedParametersDto customer = CustomerMapper.INSTANCE.mapWithMixedParameters( entity );
+
+        assertThat( customer ).isNotNull();
+        assertThat( customer.getName() ).isEqualTo( "Kermit" );
+        assertThat( customer.getAge() ).isEqualTo( 42 );
+        assertThat( customer.getEmail() ).isEqualTo( "kermit@test.com" );
+        assertThat( customer.getJob() ).isEqualTo( "Actor" );
+    }
 }
