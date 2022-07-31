@@ -9,6 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -431,38 +432,58 @@ public class AdditionalAnnotationsBuilder
             if ( annotationParameterTypeSingular == null ) {
                 continue;
             }
-            Map<Type, Integer> elementTypes = getParameterTypes( eleGem );
-            Set<ElementGem> reportedSizeError = new HashSet<>();
-            for ( Type eleGemType : elementTypes.keySet() ) {
-                if ( !sameTypeOrAssignableClass( annotationParameterTypeSingular, eleGemType ) ) {
-                    isValid = false;
-                    messager.printMessage(
-                        element,
-                        eleGem.mirror(),
-                        eleGem.name().getAnnotationValue(),
-                        Message.ANNOTATE_WITH_WRONG_PARAMETER,
-                        eleGem.name().get(),
-                        eleGemType.describe(),
-                        annotationParameterType.describe(),
-                        annotationType.describe()
-                    );
-                }
-                else if ( !annotationParameterType.isArrayType()
-                    && elementTypes.get( eleGemType ) > 1
-                    && !reportedSizeError.contains( eleGem ) ) {
-                    isValid = false;
-                    messager.printMessage(
-                        element,
-                        eleGem.mirror(),
-                        Message.ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED,
-                        eleGem.name().get(),
-                        annotationType.describe()
-                    );
-                    reportedSizeError.add( eleGem );
+            if ( hasTooManyDifferentTypes( eleGem ) ) {
+                isValid = false;
+                messager.printMessage(
+                    element,
+                    eleGem.mirror(),
+                    eleGem.name().getAnnotationValue(),
+                    Message.ANNOTATE_WITH_TOO_MANY_VALUE_TYPES,
+                    eleGem.name().get(),
+                    annotationParameterType.describe(),
+                    annotationType.describe()
+                );
+            }
+            else {
+                Map<Type, Integer> elementTypes = getParameterTypes( eleGem );
+                Set<ElementGem> reportedSizeError = new HashSet<>();
+                for ( Type eleGemType : elementTypes.keySet() ) {
+                    if ( !sameTypeOrAssignableClass( annotationParameterTypeSingular, eleGemType ) ) {
+                        isValid = false;
+                        messager.printMessage(
+                            element,
+                            eleGem.mirror(),
+                            eleGem.name().getAnnotationValue(),
+                            Message.ANNOTATE_WITH_WRONG_PARAMETER,
+                            eleGem.name().get(),
+                            eleGemType.describe(),
+                            annotationParameterType.describe(),
+                            annotationType.describe()
+                        );
+                    }
+                    else if ( !annotationParameterType.isArrayType()
+                        && elementTypes.get( eleGemType ) > 1
+                        && !reportedSizeError.contains( eleGem ) ) {
+                        isValid = false;
+                        messager.printMessage(
+                            element,
+                            eleGem.mirror(),
+                            Message.ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED,
+                            eleGem.name().get(),
+                            annotationType.describe()
+                        );
+                        reportedSizeError.add( eleGem );
+                    }
                 }
             }
         }
         return isValid;
+    }
+
+    private boolean hasTooManyDifferentTypes( ElementGem eleGem ) {
+        return Arrays.stream( ConvertToProperty.values() )
+                     .filter( anotationElement -> anotationElement.isUsable( eleGem ) )
+                     .count() > 1;
     }
 
     private Type getNonArrayType(Type annotationParameterType) {

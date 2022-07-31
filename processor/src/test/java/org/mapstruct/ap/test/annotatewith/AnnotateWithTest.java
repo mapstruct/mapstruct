@@ -216,6 +216,24 @@ public class AnnotateWithTest {
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousMapperWithTooManyParameterValues.class,
+                line = 17,
+                message = "Parameter \"stringParam\" has too many value types supplied, type \"String\" is expected"
+                    + " for annotation \"CustomAnnotationWithParams\"."
+            )
+        }
+    )
+    @WithClasses( { ErroneousMapperWithTooManyParameterValues.class, CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class } )
+    public void erroneousMapperWithTooManyParameterValues() {
+    }
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithWrongParameter.class,
                 line = 16,
                 alternativeLine = 43,

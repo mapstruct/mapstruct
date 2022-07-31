@@ -14,7 +14,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 @AnnotateWith( value = CustomAnnotationWithParams.class,
-                elements = @Element( name = "value", booleans = true, strings = "test" )
+                elements = @Element( name = "stringParam", booleans = true, strings = "test" )
 )
 public interface ErroneousMapperWithTooManyParameterValues {
 

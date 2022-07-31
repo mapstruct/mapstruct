@@ -201,6 +201,7 @@ public enum Message {
     ANNOTATE_WITH_UNKNOWN_PARAMETER( "Unknown parameter \"%s\" for annotation \"%s\". Did you mean \"%s\"?" ),
     ANNOTATE_WITH_DUPLICATE_PARAMETER( "Parameter \"%s\" must not be defined more than once." ),
     ANNOTATE_WITH_WRONG_PARAMETER( "Parameter \"%s\" is not of type \"%s\" but of type \"%s\" for annotation \"%s\"." ),
+    ANNOTATE_WITH_TOO_MANY_VALUE_TYPES( "Parameter \"%s\" has too many value types supplied, type \"%s\" is expected for annotation \"%s\"." ),
     ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED( "Parameter \"%s\" does not accept multiple values for annotation \"%s\"." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),
     ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS( "Annotation \"%s\" is not allowed on methods." ),
