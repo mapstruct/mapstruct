@@ -94,7 +94,7 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        Assignment getTargetAssignment(Method mappingMethod, ForgedMethodHistory description, Type targetType,
+        Assignment getTargetAssignment(Method mappingMethod, MappingDescription description, Type targetType,
                                        FormattingParameters formattingParameters,
                                        SelectionCriteria criteria, SourceRHS sourceRHS,
                                        AnnotationMirror positionHint,

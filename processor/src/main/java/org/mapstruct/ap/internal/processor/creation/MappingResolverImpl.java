@@ -37,7 +37,7 @@ import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Field;
-import org.mapstruct.ap.internal.model.ForgedMethodHistory;
+import org.mapstruct.ap.internal.model.MappingDescription;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
@@ -122,7 +122,7 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public Assignment getTargetAssignment(Method mappingMethod, ForgedMethodHistory description, Type targetType,
+    public Assignment getTargetAssignment(Method mappingMethod, MappingDescription description, Type targetType,
                                           FormattingParameters formattingParameters,
                                           SelectionCriteria criteria, SourceRHS sourceRHS,
                                           AnnotationMirror positionHint,
@@ -169,7 +169,7 @@ public class MappingResolverImpl implements MappingResolver {
     private class ResolvingAttempt {
 
         private final Method mappingMethod;
-        private final ForgedMethodHistory description;
+        private final MappingDescription description;
         private final List<Method> methods;
         private final SelectionCriteria selectionCriteria;
         private final SourceRHS sourceRHS;
@@ -186,7 +186,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<SupportingMappingMethod> supportingMethodCandidates;
 
         // CHECKSTYLE:OFF
-        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, ForgedMethodHistory description,
+        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, MappingDescription description,
                                  FormattingParameters formattingParameters, SourceRHS sourceRHS,
                                  SelectionCriteria criteria,
                                  AnnotationMirror positionHint,

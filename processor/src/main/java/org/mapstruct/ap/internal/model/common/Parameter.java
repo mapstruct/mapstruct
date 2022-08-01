@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
@@ -67,10 +68,6 @@ public class Parameter extends ModelElement {
 
     public String getName() {
         return name;
-    }
-
-    public String getOriginalName() {
-        return originalName;
     }
 
     public Type getType() {
@@ -187,12 +184,12 @@ public class Parameter extends ModelElement {
         return parameters.stream().filter( Parameter::isMappingContext ).collect( Collectors.toList() );
     }
 
-    public static Parameter getMappingTargetParameter(List<Parameter> parameters) {
-        return parameters.stream().filter( Parameter::isMappingTarget ).findAny().orElse( null );
+    public static Optional<Parameter> getMappingTargetParameter(List<Parameter> parameters) {
+        return parameters.stream().filter( Parameter::isMappingTarget ).findAny();
     }
 
-    public static Parameter getTargetTypeParameter(List<Parameter> parameters) {
-        return parameters.stream().filter( Parameter::isTargetType ).findAny().orElse( null );
+    public static Optional<Parameter> getTargetTypeParameter(List<Parameter> parameters) {
+        return parameters.stream().filter( Parameter::isTargetType ).findAny();
     }
 
     private static boolean isSourceParameter( Parameter parameter ) {

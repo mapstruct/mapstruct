@@ -226,20 +226,20 @@ public class ValueMappingMethod extends MappingMethod {
                 }
 
                 if ( valueMappings.defaultTarget == null && !unmappedSourceConstants.isEmpty() ) {
-                    String sourceErrorMessage = "source";
-                    String targetErrorMessage = "target";
-                    if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
-                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
-                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
-                        targetErrorMessage =
-                            "\"" + history.getTargetType().describe() + " " + history.createTargetPropertyName() + "\"";
+                    String sourceMessage = "source";
+                    String targetMessage = "target";
+                    if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getDescription() != null ) {
+                        MappingDescription description = ( (ForgedMethod) method ).getDescription();
+                        sourceMessage = description.createSourcePropertyErrorMessage();
+                        targetMessage = "\"" + description.getTargetType().describe() + " "
+                            + description.createTargetPropertyName() + "\"";
                     }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
                     ctx.getMessager().printMessage( method.getExecutable(),
                         Message.VALUEMAPPING_UNMAPPED_SOURCES,
-                        sourceErrorMessage,
-                        targetErrorMessage,
+                        sourceMessage,
+                        targetMessage,
                         Strings.join( unmappedSourceConstants, ", " )
                     );
 

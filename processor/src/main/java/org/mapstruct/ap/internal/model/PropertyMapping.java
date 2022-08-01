@@ -255,7 +255,7 @@ public class PropertyMapping extends ModelElement {
             if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
-                    getForgedMethodHistory( rightHandSide ),
+                    getMappingDescription( rightHandSide ),
                     targetType,
                     formattingParameters,
                     criteria,
@@ -333,17 +333,17 @@ public class PropertyMapping extends ModelElement {
                 // so skip the cannot create mapping
                 return;
             }
-            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
+            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getDescription() != null ) {
                 // The history that is part of the ForgedMethod misses the information from the current right hand
                 // side. Therefore we need to extract the most relevant history and use that in the error reporting.
-                ForgedMethodHistory history = getForgedMethodHistory( rightHandSide );
+                MappingDescription description = getMappingDescription( rightHandSide );
                 reportCannotCreateMapping(
                     method,
                     positionHint,
-                    history.createSourcePropertyErrorMessage(),
-                    history.getSourceType(),
-                    history.getTargetType(),
-                    history.createTargetPropertyName()
+                    description.createSourcePropertyErrorMessage(),
+                    description.getSourceType(),
+                    description.getTargetType(),
+                    description.createTargetPropertyName()
                 );
             }
             else {
@@ -755,8 +755,8 @@ public class PropertyMapping extends ModelElement {
             name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
 
             // copy mapper configuration from the source method, its the same mapper
-            ForgedMethodHistory forgedMethodHistory = getForgedMethodHistory( source, suffix );
-            return forElementMapping( name, sourceType, targetType, method, forgedMethodHistory, forgedNamedBased );
+            MappingDescription description = getMappingDescription( source, suffix );
+            return forElementMapping( name, sourceType, targetType, method, description, forgedNamedBased );
         }
 
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source) {
@@ -817,24 +817,24 @@ public class PropertyMapping extends ModelElement {
                 returnType,
                 parameters,
                 method,
-                getForgedMethodHistory( sourceRHS ),
+                getMappingDescription( sourceRHS ),
                 forgeMethodWithMappingReferences,
                 forgedNamedBased
             );
             return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
         }
 
-        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
-            return getForgedMethodHistory( sourceRHS, "" );
+        private MappingDescription getMappingDescription(SourceRHS sourceRHS) {
+            return getMappingDescription( sourceRHS, "" );
         }
 
-        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS, String suffix) {
-            ForgedMethodHistory history = null;
+        private MappingDescription getMappingDescription(SourceRHS sourceRHS, String suffix) {
+            MappingDescription description = null;
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod method = (ForgedMethod) this.method;
-                history = method.getHistory();
+                description = method.getDescription();
             }
-            return new ForgedMethodHistory( history, getSourceElementName() + suffix,
+            return new MappingDescription( description, getSourceElementName() + suffix,
                 targetPropertyName + suffix, sourceRHS.getSourceType(), targetType, true, "property"
             );
         }

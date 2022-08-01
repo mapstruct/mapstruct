@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -129,7 +130,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
-            boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
             // prototype methods don't have prototypes themselves
             List<SourceMethod> prototypeMethods = Collections.emptyList();
@@ -139,7 +139,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     methodType,
                     executable,
                     parameters,
-                    containsTargetTypeParameter,
                     mapperAnnotation,
                     prototypeMethods,
                     mapperTypeElement
@@ -219,14 +218,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         Type returnType = typeFactory.getReturnType( methodType );
 
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
-        boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
         //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
             return getMethodRequiringImplementation( methodType,
                 method,
                 parameters,
-                containsTargetTypeParameter,
                 mapperOptions,
                 prototypeMethods,
                 mapperToImplement );
@@ -244,7 +241,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
             List<Parameter> parameters,
-            boolean containsTargetTypeParameter,
             MapperOptions mapperOptions,
             List<SourceMethod> prototypeMethods,
             TypeElement mapperToImplement) {
@@ -262,7 +258,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             contextParameters,
             resultType,
             returnType,
-            containsTargetTypeParameter
+            Parameter.getTargetTypeParameter( parameters ).isPresent()
         );
 
         if ( !isValid ) {

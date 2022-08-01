@@ -13,9 +13,9 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Dmytro Polovinkin
  */
-public class ForgedMethodHistory {
+public class MappingDescription {
 
-    private final ForgedMethodHistory prevHistory;
+    private final MappingDescription parent;
     private final String sourceElement;
     private final String targetPropertyName;
     private final Type targetType;
@@ -23,9 +23,9 @@ public class ForgedMethodHistory {
     private final boolean usePropertyNames;
     private String elementType;
 
-    public ForgedMethodHistory(ForgedMethodHistory history, String sourceElement, String targetPropertyName,
-                               Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
-        prevHistory = history;
+    public MappingDescription(MappingDescription parent, String sourceElement, String targetPropertyName,
+                              Type sourceType, Type targetType, boolean usePropertyNames, String elementType) {
+        this.parent = parent;
         this.sourceElement = sourceElement;
         this.targetPropertyName = targetPropertyName;
         this.sourceType = sourceType;
@@ -48,7 +48,7 @@ public class ForgedMethodHistory {
     }
 
     /**
-     * Capitalization mostly matters to avoid the funny "Can't map map key" message. However it's irrelevant for the
+     * Capitalization mostly matters to avoid the funny "Can't map map key" message. However, it's irrelevant for the
      * "Can't map property" message.
      *
      * @return capitalized or non-capitalized element type
@@ -67,29 +67,29 @@ public class ForgedMethodHistory {
     }
 
     private String getDottedSourceElement() {
-        if ( prevHistory == null ) {
+        if ( parent == null ) {
             return sourceElement;
         }
         else {
             if ( usePropertyNames ) {
-                return getCorrectDottedPath( prevHistory.getDottedSourceElement(), sourceElement );
+                return getCorrectDottedPath( parent.getDottedSourceElement(), sourceElement );
             }
             else {
-                return prevHistory.getDottedSourceElement();
+                return parent.getDottedSourceElement();
             }
         }
     }
 
     private String getDottedTargetPropertyName() {
-        if ( prevHistory == null ) {
+        if ( parent == null ) {
             return targetPropertyName;
         }
         else {
             if ( usePropertyNames ) {
-                return getCorrectDottedPath( prevHistory.getDottedTargetPropertyName(), targetPropertyName );
+                return getCorrectDottedPath( parent.getDottedTargetPropertyName(), targetPropertyName );
             }
             else {
-                return prevHistory.getDottedTargetPropertyName();
+                return parent.getDottedTargetPropertyName();
             }
 
         }
