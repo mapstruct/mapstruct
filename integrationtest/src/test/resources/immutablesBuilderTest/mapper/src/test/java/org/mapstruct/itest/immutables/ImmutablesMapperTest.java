@@ -10,14 +10,20 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for generation of Lombok Builder Mapper implementations
+ * Test for generation of org.immutables Mapper implementations
+ *
+ * Handles the Top Level and No Style case which is the out-of-the-box default
+ * most basic setup with org.immutables.
+ *
+ * The generated classes are named using the default style of Immutable*
+ * Coverage for other variants elsewhere
  *
  * @author Eric Martineau
  */
 public class ImmutablesMapperTest {
 
     @Test
-    public void testSimpleImmutableBuilderHappyPath() {
+    public void fromImmutableToPojo() {
         PersonDto personDto = PersonMapper.INSTANCE.toDto( ImmutablePerson.builder()
             .age( 33 )
             .name( "Bob" )
@@ -32,7 +38,7 @@ public class ImmutablesMapperTest {
     }
 
     @Test
-    public void testLombokToImmutable() {
+    public void fromPojoToImmutable() {
         Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );
