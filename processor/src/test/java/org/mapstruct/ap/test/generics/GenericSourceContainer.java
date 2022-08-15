@@ -10,12 +10,11 @@ package org.mapstruct.ap.test.generics;
  */
 public class GenericSourceContainer<T> {
 
-    public GenericSourceContainer() {
-        // default constructor
-    }
+    private String otherValue;
 
-    public GenericSourceContainer(T contained) {
+    public GenericSourceContainer(T contained, String otherValue) {
         this.contained = contained;
+        this.otherValue = otherValue;
     }
 
     private T contained;
@@ -24,7 +23,7 @@ public class GenericSourceContainer<T> {
         return contained;
     }
 
-    public void setContained(T contained) {
-        this.contained = contained;
+    public String getOtherValue() {
+        return otherValue;
     }
 }

@@ -12,9 +12,10 @@ import org.mapstruct.factory.Mappers;
  * @author Ben Zegveld
  */
 @Mapper
-public abstract class GenericMapper {
+public abstract class ErroneousGenericContainerMapperMismatch {
 
-    public static final GenericMapper INSTANCE = Mappers.getMapper( GenericMapper.class );
+    public static final ErroneousGenericContainerMapperMismatch INSTANCE =
+        Mappers.getMapper( ErroneousGenericContainerMapperMismatch.class );
 
-    abstract <T> GenericTargetContainer<T> map(GenericSourceContainer<T> source);
+    abstract <T, S> GenericTargetContainer<T> map(GenericSourceContainer<S> source);
 }

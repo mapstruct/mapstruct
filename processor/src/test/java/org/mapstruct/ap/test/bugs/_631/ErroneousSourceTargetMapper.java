@@ -21,5 +21,5 @@ public interface ErroneousSourceTargetMapper<X extends Base1, Y extends Base2> {
 
     X mapIntegerToBase1(Integer obj);
 
-    Integer mapBase2ToInteger(Y obj);
+    String mapBase2ToInteger(Y obj);
 }

@@ -10,6 +10,7 @@ package org.mapstruct.ap.test.generics;
  */
 public class GenericTargetContainer<T> {
 
+    private String otherValue;
     private T contained;
 
     public T getContained() {
@@ -18,5 +19,13 @@ public class GenericTargetContainer<T> {
 
     public void setContained(T contained) {
         this.contained = contained;
+    }
+
+    public String getOtherValue() {
+        return otherValue;
+    }
+
+    public void setOtherValue(String otherValue) {
+        this.otherValue = otherValue;
     }
 }

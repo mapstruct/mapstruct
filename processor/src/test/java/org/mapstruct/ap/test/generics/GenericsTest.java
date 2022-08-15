@@ -8,6 +8,9 @@ package org.mapstruct.ap.test.generics;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,12 +40,65 @@ public class GenericsTest {
     @WithClasses({
         GenericTargetContainer.class,
         GenericSourceContainer.class,
-        GenericMapper.class,
+        GenericContainerMapper.class,
     })
     public void mapsSameTypeCorrectly() {
         String containedObject = "Test";
-        GenericSourceContainer<String> container = new GenericSourceContainer<>(containedObject);
+        GenericSourceContainer<String> container = new GenericSourceContainer<>( containedObject, "otherValue" );
 
-        assertThat( GenericMapper.INSTANCE.map( container ).getContained() ).isSameAs( containedObject );
+        GenericTargetContainer<String> resultString = GenericContainerMapper.INSTANCE.map( container );
+        assertThat( resultString.getContained() ).isSameAs( containedObject );
+        assertThat( resultString.getOtherValue() ).isEqualTo( container.getOtherValue() );
+
+        Integer replacement = 1234;
+        GenericTargetContainer<Integer> resultContext =
+            GenericContainerMapper.INSTANCE.mapWithContext( container, replacement );
+        assertThat( resultContext.getContained() ).isSameAs( replacement );
+        assertThat( resultContext.getOtherValue() ).isEqualTo( container.getOtherValue() );
+
+        GenericTargetContainer<Integer> resultSecondParameter =
+            GenericContainerMapper.INSTANCE.mapWithSecondParameter( container, replacement );
+        assertThat( resultSecondParameter.getContained() ).isSameAs( replacement );
+        assertThat( resultSecondParameter.getOtherValue() ).isEqualTo( container.getOtherValue() );
+    }
+
+    @ProcessorTest
+    @IssueKey("2954")
+    @WithClasses({
+        GenericTargetContainer.class,
+        GenericSourceContainer.class,
+        ErroneousGenericContainerMapperMismatch.class,
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+        @Diagnostic(type = ErroneousGenericContainerMapperMismatch.class,
+                    kind = javax.tools.Diagnostic.Kind.ERROR,
+                    line = 20,
+                    message = "Can't map property \"S contained\" to \"T contained\". "
+                        + "Both generic types should be the same." )
+        }
+    )
+    public void invalidGenericMappingsMismatch() {
+    }
+
+    @ProcessorTest
+    @IssueKey("2954")
+    @WithClasses({
+        GenericTargetContainer.class,
+        GenericSourceContainer.class,
+        ErroneousGenericContainerMapperParameterMismatch.class,
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+        @Diagnostic(type = ErroneousGenericContainerMapperParameterMismatch.class,
+                    kind = javax.tools.Diagnostic.Kind.ERROR,
+                    line = 21,
+                    message = "Can't map parameter \"T replacement\" to \"S contained\". "
+                        + "Both generic types should be the same." )
+        }
+    )
+    public void invalidGenericMappings() {
     }
 }

@@ -346,6 +346,22 @@ public class PropertyMapping extends ModelElement {
                     history.createTargetPropertyName()
                 );
             }
+            else if (targetType.isTypeVar() && rightHandSide.getSourceType().isTypeVar()) {
+                reportCannotCreateMappingBetweenDifferentTypeVars(
+                    method,
+                    positionHint,
+                    rightHandSide.getSourceErrorMessagePart(),
+                    rightHandSide.getSourceType(),
+                    targetType,
+                    targetPropertyName
+                );
+            }
+            else if (targetType.isTypeVar()) {
+                ctx.getMessager().printMessage( method.getExecutable(), Message.RETRIEVAL_TYPE_VAR_RESULT );
+            }
+            else if (rightHandSide.getSourceType().isTypeVar()) {
+                ctx.getMessager().printMessage( method.getExecutable(), Message.RETRIEVAL_TYPE_VAR_SOURCE );
+            }
             else {
                 reportCannotCreateMapping(
                     method,

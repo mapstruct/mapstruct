@@ -48,7 +48,6 @@ import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 import org.mapstruct.ap.internal.model.source.SubclassValidator;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
@@ -77,7 +76,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
-    private AccessorNamingUtils accessorNaming;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private TypeUtils typeUtils;
     private ElementUtils elementUtils;
@@ -87,7 +85,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-        this.accessorNaming = context.getAccessorNaming();
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
         this.enumTransformationStrategies = context.getEnumTransformationStrategies();
@@ -344,7 +341,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
         for ( Parameter contextParam : contextParameters ) {
-            if ( contextParam.getType().isPrimitive() || contextParam.getType().isArrayType() ) {
+            if ( contextParam.getType().isPrimitive() || contextParam.getType().isArrayType()
+                || contextParam.getType().isTypeVar() ) {
                 continue;
             }
             List<SourceMethod> contextParamMethods = retrieveMethods(
@@ -496,13 +494,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        for ( Parameter sourceParameter : sourceParameters ) {
-            if ( sourceParameter.getType().isTypeVar() ) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
-                return false;
-            }
-        }
-
         Set<Type> contextParameterTypes = new HashSet<>();
         for ( Parameter contextParameter : contextParameters ) {
             if ( !contextParameterTypes.add( contextParameter.getType() ) ) {
@@ -534,9 +525,20 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
+            if ( parameterType.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+
             for ( Type typeParameter : parameterType.getTypeParameters() ) {
                 if ( typeParameter.hasSuperBound() ) {
                     messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
+                    return false;
+                }
+
+                if ( parameterType.isIterableOrStreamType() && resultType.isIterableOrStreamType()
+                    && typeParameter.isTypeVar() ) {
+                    messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                     return false;
                 }
             }
@@ -553,26 +555,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         for ( Type typeParameter : resultType.getTypeParameters() ) {
-            if ( typeParameter.hasExtendsBound() ) {
-                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
-                return false;
-            }
-        }
-
-        if ( sourceParameters.size() == 1 ) {
-            Type sourceParameterType = sourceParameters.get( 0 ).getType();
-            List<String> sourceTypeVars = getTypeVars( sourceParameterType );
-            List<String> targetTypeVars = getTypeVars( resultType );
-            if (targetTypeVars.size() > sourceTypeVars.size()) {
+            if ( resultType.isIterableOrStreamType() && typeParameter.isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
                 return false;
             }
-            if (sourceTypeVars.size() > targetTypeVars.size()) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
-                return false;
-            }
-            if (!sourceTypeVars.containsAll( targetTypeVars )) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+            if ( typeParameter.hasExtendsBound() ) {
+                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
                 return false;
             }
         }
@@ -588,16 +576,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         return true;
-    }
-
-    private List<String> getTypeVars(Type parameterType) {
-        List<String> typeVars = new ArrayList<>();
-        for ( Type typeParameter : parameterType.getTypeParameters() ) {
-            if (typeParameter.isTypeVar()) {
-                typeVars.add( typeParameter.getName() );
-            }
-        }
-        return typeVars;
     }
 
     private boolean isStreamTypeOrIterableFromJavaStdLib(Type type) {

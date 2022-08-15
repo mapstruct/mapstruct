@@ -48,6 +48,7 @@ public enum Message {
     PROPERTYMAPPING_CREATE_NOTE( "creating property mapping: %s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_SELECT_NOTE( "selecting property mapping: %s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
+    PROPERTYMAPPING_MAPPING_TYPE_VAR_MISMATCH( "Can't map %s to \"%s %s\". Both generic types should be the same." ),
     PROPERTYMAPPING_FORGED_MAPPING_WITH_HISTORY_NOT_FOUND( "No target bean properties found: can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
     PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND( "No target bean properties found: can't map %s to %s. Consider to implement a mapping method: \"%s map(%s value)\"." ),
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),
