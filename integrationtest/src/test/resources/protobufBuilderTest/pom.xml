@@ -23,7 +23,7 @@
 
     <properties>
         <os.mavenplugin.version>1.6.0</os.mavenplugin.version>
-        <protobuf.mavenplugin.version>0.5.1</protobuf.mavenplugin.version>
+        <protobuf.mavenplugin.version>0.6.1</protobuf.mavenplugin.version>
     </properties>
 
     <dependencies>
@@ -55,10 +55,10 @@
                             <goal>compile-custom</goal>
                         </goals>
                         <configuration>
-                            <protocArtifact>com.google.protobuf:protoc:3.2.0:exe:${os.detected.classifier}
+                            <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
                             </protocArtifact>
                             <pluginId>grpc-java</pluginId>
-                            <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.2.0:exe:${os.detected.classifier}
+                            <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.47.0:exe:${os.detected.classifier}
                             </pluginArtifact>
                         </configuration>
                     </execution>

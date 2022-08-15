@@ -404,6 +404,61 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
+Additionally `@TargetPropertyName` of type `java.lang.String` can be used in custom condition check method:
+
+.Mapper using custom condition check method with `@TargetPropertyName`
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car, @MappingTarget CarDto carDto);
+
+    @Condition
+    default boolean isNotEmpty(String value, @TargetPropertyName String name) {
+        if ( name.equals( "owner" ) {
+           return value != null
+                    && !value.isEmpty()
+                    && !value.equals( value.toLowerCase() );
+        }
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+The generated mapper with `@TargetPropertyName` will look like:
+
+.Custom condition check in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car, CarDto carDto) {
+        if ( car == null ) {
+            return carDto;
+        }
+
+        if ( isNotEmpty( car.getOwner(), "owner" ) ) {
+            carDto.setOwner( car.getOwner() );
+        } else {
+            carDto.setOwner( null );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
 [IMPORTANT]
 ====
 If there is a custom `@Condition` method applicable for the property it will have a precedence over a presence check method in the bean itself.
@@ -412,6 +467,8 @@ If there is a custom `@Condition` method applicable for the property it will hav
 [NOTE]
 ====
 Methods annotated with `@Condition` in addition to the value of the source property can also have the source parameter as an input.
+
+`@TargetPropertyName` parameter can only be used in `@Condition` methods.
 ====
 
 <<selection-based-on-qualifiers>> is also valid for `@Condition` methods.

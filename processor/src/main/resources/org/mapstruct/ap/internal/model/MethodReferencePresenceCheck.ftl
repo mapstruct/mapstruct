@@ -7,4 +7,5 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.MethodReferencePresenceCheck" -->
 <@includeModel object=methodReference
+               targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType/>
