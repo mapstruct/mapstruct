@@ -539,11 +539,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
                     return false;
                 }
-
-                if ( typeParameter.isTypeVar() ) {
-                    messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
-                    return false;
-                }
             }
         }
 
@@ -558,12 +553,26 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         for ( Type typeParameter : resultType.getTypeParameters() ) {
-            if ( typeParameter.isTypeVar() ) {
+            if ( typeParameter.hasExtendsBound() ) {
+                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
+                return false;
+            }
+        }
+
+        if ( sourceParameters.size() == 1 ) {
+            Type sourceParameterType = sourceParameters.get( 0 ).getType();
+            List<String> sourceTypeVars = getTypeVars( sourceParameterType );
+            List<String> targetTypeVars = getTypeVars( resultType );
+            if (targetTypeVars.size() > sourceTypeVars.size()) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
                 return false;
             }
-            if ( typeParameter.hasExtendsBound() ) {
-                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
+            if (sourceTypeVars.size() > targetTypeVars.size()) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+            if (!sourceTypeVars.containsAll( targetTypeVars )) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                 return false;
             }
         }
@@ -579,6 +588,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         return true;
+    }
+
+    private List<String> getTypeVars(Type parameterType) {
+        List<String> typeVars = new ArrayList<>();
+        for ( Type typeParameter : parameterType.getTypeParameters() ) {
+            if (typeParameter.isTypeVar()) {
+                typeVars.add( typeParameter.getName() );
+            }
+        }
+        return typeVars;
     }
 
     private boolean isStreamTypeOrIterableFromJavaStdLib(Type type) {

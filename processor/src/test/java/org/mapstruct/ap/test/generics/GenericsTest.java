@@ -15,20 +15,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andreas Gudian
  *
  */
-@WithClasses({
-    AbstractTo.class,
-    AbstractIdHoldingTo.class,
-    Source.class,
-    SourceTargetMapper.class,
-    TargetTo.class
-})
 public class GenericsTest {
 
     @ProcessorTest
     @IssueKey("574")
+    @WithClasses({
+        AbstractTo.class,
+        AbstractIdHoldingTo.class,
+        Source.class,
+        SourceTargetMapper.class,
+        TargetTo.class
+    })
     public void mapsIdCorrectly() {
         TargetTo target = new TargetTo();
         target.setId( 41L );
         assertThat( SourceTargetMapper.INSTANCE.toSource( target ).getId() ).isEqualTo( 41L );
+    }
+
+    @ProcessorTest
+    @IssueKey("2954")
+    @WithClasses({
+        GenericTargetContainer.class,
+        GenericSourceContainer.class,
+        GenericMapper.class,
+    })
+    public void mapsSameTypeCorrectly() {
+        String containedObject = "Test";
+        GenericSourceContainer<String> container = new GenericSourceContainer<>(containedObject);
+
+        assertThat( GenericMapper.INSTANCE.map( container ).getContained() ).isSameAs( containedObject );
     }
 }
