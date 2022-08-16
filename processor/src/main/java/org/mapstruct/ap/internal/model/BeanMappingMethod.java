@@ -95,6 +95,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     private final MappingReferences mappingReferences;
 
+    private final List<Annotation> methodAnnotations;
+
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
         private Type userDefinedReturnType;
@@ -357,6 +359,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 finalizeMethod = getFinalizerMethod();
             }
 
+            List<Annotation> methodAnnotations = getSourceMethodAnnotations();
+
             return new BeanMappingMethod(
                 method,
                 existingVariableNames,
@@ -369,7 +373,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 afterMappingMethods,
                 finalizeMethod,
                 mappingReferences,
-                subclasses
+                subclasses,
+                methodAnnotations
             );
         }
 
@@ -1684,6 +1689,44 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
+
+        /**
+         * Get annotations for non-mapstruct frameworks in methods
+         *
+         * @return annotations
+         */
+        private List<Annotation> getSourceMethodAnnotations(){
+            List<Annotation> annotationTypes = new ArrayList<>();
+            if (method instanceof SourceMethod) {
+                SourceMethod sourceMethod = (SourceMethod) method;
+                List<? extends AnnotationMirror> annotationMirrors = sourceMethod.getExecutable().getAnnotationMirrors();
+                TypeFactory typeFactory = this.ctx.getTypeFactory();
+                for (AnnotationMirror annotationMirror : annotationMirrors) {
+                    Type type = typeFactory.getType(annotationMirror.getAnnotationType());
+                    if (isInternalAnnotation(type)){
+                        continue;
+                    }
+                    Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = annotationMirror.getElementValues();
+                    if (elementValues.isEmpty()){
+                        annotationTypes.add(new Annotation(type));
+                        continue;
+                    }
+                    List<String> properties = new ArrayList<>();
+                    for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elementValues.entrySet()) {
+                        ExecutableElement key = entry.getKey();
+                        AnnotationValue value = entry.getValue();
+                        properties.add(key.getSimpleName().toString()+" = "+value.toString());
+                    }
+                    annotationTypes.add(new Annotation(type,properties));
+                }
+            }
+            return annotationTypes;
+        }
+
+        private boolean isInternalAnnotation(Type type){
+            return type.getPackageName().equalsIgnoreCase("org.mapstruct");
+        }
+
     }
 
     private static class ConstructorAccessor {
@@ -1710,7 +1753,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
-                              List<SubclassMapping> subclassMappings) {
+                              List<SubclassMapping> subclassMappings,
+                              List<Annotation> methodAnnotations
+    ) {
         super(
             method,
             existingVariableNames,
@@ -1725,7 +1770,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
         this.mappingReferences = mappingReferences;
-
+        this.methodAnnotations = methodAnnotations;
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
@@ -1817,14 +1862,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( subclassMapping.getImportTypes() );
         }
 
+        for (Annotation methodAnnotation : methodAnnotations) {
+            types.addAll(methodAnnotation.getImportTypes());
+        }
         if ( returnTypeToConstruct != null  ) {
             types.addAll( returnTypeToConstruct.getImportTypes() );
         }
         if ( returnTypeBuilder != null ) {
             types.add( returnTypeBuilder.getOwningType() );
         }
-
         return types;
+    }
+
+    public List<Annotation> getMethodAnnotations() {
+        return methodAnnotations;
     }
 
     public List<Parameter> getSourceParametersExcludingPrimitives() {

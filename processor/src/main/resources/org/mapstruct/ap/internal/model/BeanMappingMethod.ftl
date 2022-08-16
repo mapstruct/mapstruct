@@ -7,6 +7,9 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.BeanMappingMethod" -->
 <#if overridden>@Override</#if>
+<#list methodAnnotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
