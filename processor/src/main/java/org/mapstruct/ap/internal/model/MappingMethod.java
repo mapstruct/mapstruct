@@ -8,18 +8,15 @@ package org.mapstruct.ap.internal.model;
 import static org.mapstruct.ap.internal.util.Strings.getSafeVariableName;
 import static org.mapstruct.ap.internal.util.Strings.join;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-import org.mapstruct.ap.internal.model.common.Accessibility;
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.*;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -40,6 +37,8 @@ public abstract class MappingMethod extends ModelElement {
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
     private final List<LifecycleCallbackMethodReference> afterMappingReferences;
+
+    private final List<Annotation> methodAnnotations;
 
     /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
@@ -71,6 +70,7 @@ public abstract class MappingMethod extends ModelElement {
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
         this.afterMappingReferences = afterMappingReferences;
+        this.methodAnnotations = getSourceMethodAnnotations(method);
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
@@ -153,6 +153,10 @@ public abstract class MappingMethod extends ModelElement {
             types.addAll( type.getImportTypes() );
         }
 
+        for (Annotation methodAnnotation : methodAnnotations) {
+            types.addAll(methodAnnotation.getImportTypes());
+        }
+
         return types;
     }
 
@@ -204,6 +208,48 @@ public abstract class MappingMethod extends ModelElement {
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithoutMappingTarget() {
         return beforeMappingReferencesWithoutMappingTarget;
     }
+
+    public List<Annotation> getMethodAnnotations() {
+        return methodAnnotations;
+    }
+
+    /**
+     * Get annotations for non-mapstruct frameworks in methods
+     *
+     * @return annotations
+     */
+    private List<Annotation> getSourceMethodAnnotations(Method method){
+        List<Annotation> annotationTypes = new ArrayList<>();
+        if (method instanceof SourceMethod) {
+            SourceMethod sourceMethod = (SourceMethod) method;
+            List<? extends AnnotationMirror> annotationMirrors = sourceMethod.getExecutable().getAnnotationMirrors();
+            TypeFactory typeFactory = sourceMethod.getTypeFactory();
+            for (AnnotationMirror annotationMirror : annotationMirrors) {
+                Type type = typeFactory.getType(annotationMirror.getAnnotationType());
+                if (isInternalAnnotation(type)){
+                    continue;
+                }
+                Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = annotationMirror.getElementValues();
+                if (elementValues.isEmpty()){
+                    annotationTypes.add(new Annotation(type));
+                    continue;
+                }
+                List<String> properties = new ArrayList<>();
+                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elementValues.entrySet()) {
+                    ExecutableElement key = entry.getKey();
+                    AnnotationValue value = entry.getValue();
+                    properties.add(key.getSimpleName().toString()+" = "+value.toString());
+                }
+                annotationTypes.add(new Annotation(type,properties));
+            }
+        }
+        return annotationTypes;
+    }
+
+    private boolean isInternalAnnotation(Type type){
+        return type.getPackageName().equalsIgnoreCase("org.mapstruct");
+    }
+
 
     @Override
     public int hashCode() {

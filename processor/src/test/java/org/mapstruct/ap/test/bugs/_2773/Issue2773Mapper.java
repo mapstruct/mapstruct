@@ -1,9 +1,13 @@
 package org.mapstruct.ap.test.bugs._2773;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Mapper
 public interface Issue2773Mapper {
@@ -23,4 +27,16 @@ public interface Issue2773Mapper {
             @Mapping(target = "name",source = "recordedAt")}
     )
     Studio map(ChartEntry chartEntry);
+
+    @Deprecated
+    @IterableMapping(numberFormat = "$#.00")
+    List<String> prices(List<Integer> prices);
+
+    @Deprecated
+    Set<String> integerStreamToStringSet(Stream<Integer> integers);
+
+    @Deprecated
+    @MapMapping(valueDateFormat = "dd.MM.yyyy")
+    Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
+
 }

@@ -7,6 +7,9 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.StreamMappingMethod" -->
 <#if overridden>@Override</#if>
+<#list methodAnnotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#--TODO does it even make sense to do a callback if the result is a Stream, as they are immutable-->
     <#list beforeMappingReferencesWithoutMappingTarget as callback>

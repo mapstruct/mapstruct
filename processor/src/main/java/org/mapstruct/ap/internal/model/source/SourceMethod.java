@@ -340,6 +340,10 @@ public class SourceMethod implements Method {
         return accessibility;
     }
 
+    public TypeFactory getTypeFactory() {
+        return typeFactory;
+    }
+
     public boolean inverses(SourceMethod method) {
         return method.getDeclaringMapper() == null
             && method.isAbstract()
