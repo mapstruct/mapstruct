@@ -12,15 +12,13 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import java.lang.reflect.Method;
 
 @IssueKey("2825")
-@WithClasses({Animal.class, Dog.class, Cat.class, TargetAnimal.class, AnimalMapper.class,CustomerAnimalMapper.class})
 public class Issue2825Test {
 
     @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED, diagnostics = {
             @Diagnostic(type = AnimalMapper.class,kind = javax.tools.Diagnostic.Kind.WARNING),
-            @Diagnostic(type = CustomerAnimalMapper.class,kind = javax.tools.Diagnostic.Kind.WARNING)
-
     })
+    @WithClasses({Animal.class, Dog.class, Cat.class, TargetAnimal.class, AnimalMapper.class})
     public void generalMethodShouldSuccessWork() {
         Animal animal = new Dog();
         animal.setName("dog");
@@ -32,16 +30,26 @@ public class Issue2825Test {
 
     @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED, diagnostics = {
-            @Diagnostic(type = AnimalMapper.class,kind = javax.tools.Diagnostic.Kind.WARNING),
             @Diagnostic(type = CustomerAnimalMapper.class,kind = javax.tools.Diagnostic.Kind.WARNING)
 
     })
+    @WithClasses({Animal.class, Dog.class, Cat.class, TargetAnimal.class,CustomerAnimalMapper.class})
     public void customerMethodShouldSuccessWork() {
         Animal animal = new Dog();
         animal.setName("dog");
         CustomerAnimalMapper instance = CustomerAnimalMapper.INSTANCE;
         TargetAnimal targetAnimal = instance.map(animal);
         assertThat(targetAnimal.getName()).isNotBlank();
+    }
+
+    @ProcessorTest
+    @WithClasses({Apple.class,AppleDto.class,Fruit.class,FruitDto.class,FruitMapper.class,Orange.class,OrangeDto.class})
+    public void generalTargetImpl(){
+        Orange orange = new Orange();
+        orange.setName("Orange");
+        FruitMapper instance = FruitMapper.INSTANCE;
+        FruitDto fruitDto = instance.map(orange);
+        assertThat(fruitDto.getName()).isNotBlank();
     }
 
 }
