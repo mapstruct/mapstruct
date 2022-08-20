@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.Annotation" -->
-@<@includeModel object=type/><#if (properties?size > 0) >(<#list properties as property>${property}<#if property_has_next>, </#if></#list>)</#if>
+@<@includeModel object=type/><#if (properties?size > 0) >(<#list properties as property><@includeModel object=property/><#if property_has_next>, </#if></#list>)</#if>

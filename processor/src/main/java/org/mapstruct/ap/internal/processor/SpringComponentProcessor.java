@@ -13,6 +13,8 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -75,7 +77,11 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     private Annotation qualifierDelegate() {
         return new Annotation(
             getTypeFactory().getType( "org.springframework.beans.factory.annotation.Qualifier" ),
-            Collections.singletonList( "\"delegate\"" ) );
+            Collections.singletonList(
+                           new AnnotationElement(
+                               AnnotationElementType.STRING,
+                               Collections.singletonList( "delegate" )
+                           ) ) );
     }
 
     private Annotation primary() {

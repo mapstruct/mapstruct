@@ -721,3 +721,43 @@ i.e. You can map from `Map<String, Integer>` where for each property a conversio
 When a raw map or a map that does not have a String as a key is used, then a warning will be generated.
 The warning is not generated if the map itself is mapped into some other target property directly as is.
 ====
+
+[[adding-annotations]]
+=== Adding annotations
+
+Other frameworks sometimes requires you to add annotations to certain classes so that they can easily detect the mappers.
+Using the `@AnnotateWith` annotation you can generate an annotation at the specified location.
+
+For example Apache Camel has a `@Converter` annotation which you can apply to generated mappers using the `@AnnotateWith` annotation.
+
+.AnnotateWith source example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@AnnotateWith(
+  value = Converter.class,
+  elements = @AnnotateWith.Element( name = "generateBulkLoader", booleans = true )
+)
+public interface MyConverter {
+    @AnnotateWith( Converter.class )
+    DomainObject map( DtoObject dto );
+}
+----
+====
+
+.AnnotateWith generated mapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Converter( generateBulkLoader = true )
+public class MyConverterImpl implements MyConverter {
+    @Converter
+    public DomainObject map( DtoObject dto ) {
+        // default mapping behaviour
+    }
+}
+----
+====
