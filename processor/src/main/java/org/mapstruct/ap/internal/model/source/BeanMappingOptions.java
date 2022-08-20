@@ -59,7 +59,7 @@ public class BeanMappingOptions extends DelegatingOptions {
                                                    TypeUtils typeUtils, TypeFactory typeFactory
     ) {
         if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
-            BeanMappingOptions options = new BeanMappingOptions( null, null, null, mapperOptions );
+            BeanMappingOptions options = new BeanMappingOptions( null, Collections.emptyList(), null, mapperOptions );
             return options;
         }
 
