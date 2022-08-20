@@ -220,6 +220,11 @@ public abstract class HelperMethod implements Method {
     }
 
     @Override
+    public boolean deprecatedMethod() {
+        return false;
+    }
+
+    @Override
     public ExecutableElement getExecutable() {
         return null;
     }

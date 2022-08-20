@@ -22,6 +22,9 @@ import org.mapstruct.ap.internal.model.source.Method;
 public abstract class NormalTypeMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean overridden;
+
+    private final boolean deprecated;
+
     private final boolean mapNullToDefault;
 
     NormalTypeMappingMethod(Method method, Collection<String> existingVariableNames, MethodReference factoryMethod,
@@ -31,6 +34,7 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
         super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
+        this.deprecated = method.deprecatedMethod();
         this.mapNullToDefault = mapNullToDefault;
     }
 
@@ -54,6 +58,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
 
     public boolean isOverridden() {
         return overridden;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
     public MethodReference getFactoryMethod() {

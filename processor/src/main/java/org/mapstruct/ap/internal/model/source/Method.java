@@ -148,6 +148,13 @@ public interface Method {
      */
     boolean overridesMethod();
 
+
+    /**
+     *
+     * @return Returns true when the method is modified by @Deprecated
+     */
+    boolean deprecatedMethod();
+
     ExecutableElement getExecutable();
 
     /**

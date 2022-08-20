@@ -329,6 +329,11 @@ public class ForgedMethod implements Method {
     }
 
     @Override
+    public boolean deprecatedMethod() {
+        return false;
+    }
+
+    @Override
     public ExecutableElement getExecutable() {
         return basedOn.getExecutable();
     }
