@@ -20,8 +20,8 @@ import org.mapstruct.util.Experimental;
  *     <li>{@code mergeFrom(Target.Builder)}</li>
  * </ul>
  * <p>
- * When the JavaBean convention is not used with FreeBuilder then the getters are non standard and MapStruct
- * won't recognize them. Therefore one needs to use the JavaBean convention in which the fluent setters
+ * When the JavaBean convention is not used with FreeBuilder then the getters are non-standard and MapStruct
+ * won't recognize them. Therefore, one needs to use the JavaBean convention in which the fluent setters
  * start with {@code set}.
  *
  * @author Filip Hrisafov
