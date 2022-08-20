@@ -7,7 +7,6 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.ValueMappingMethod" -->
 <#if overridden>@Override</#if>
-<#if deprecated>@Deprecated</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
