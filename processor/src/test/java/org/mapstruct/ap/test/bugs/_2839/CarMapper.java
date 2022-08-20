@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._2839;
 
-import java.util.UUID;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -20,13 +18,8 @@ public abstract class CarMapper {
 
     public abstract Car toEntity(CarDto dto);
 
-    public abstract CarDto toDto(Car entity);
-
-    protected Id mapId(UUID id) throws IllegalAccessException {
-        throw new IllegalAccessException();
+    protected Id mapId(String id) throws Issue2839Exception {
+        throw new Issue2839Exception("For id " + id);
     }
 
-    protected UUID mapId(Id id) throws IllegalAccessException {
-        throw new IllegalAccessException();
-    }
 }

@@ -6,32 +6,31 @@
 package org.mapstruct.ap.test.bugs._2839;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Hakan Özkan
  */
 public final class CarDto {
 
-    private final UUID id;
-    private final List<UUID> seatIds;
-    private final List<UUID> tireIds;
+    private final String id;
+    private final List<String> seatIds;
+    private final List<String> tireIds;
 
-    public CarDto(UUID id, List<UUID> seatIds, List<UUID> tireIds) {
+    public CarDto(String id, List<String> seatIds, List<String> tireIds) {
         this.id = id;
         this.seatIds = seatIds;
         this.tireIds = tireIds;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public List<UUID> getSeatIds() {
+    public List<String> getSeatIds() {
         return seatIds;
     }
 
-    public List<UUID> getTireIds() {
+    public List<String> getTireIds() {
         return tireIds;
     }
 }
