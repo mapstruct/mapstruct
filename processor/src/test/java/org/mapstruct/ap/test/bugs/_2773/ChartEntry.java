@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.bugs._2773;
 
 /**
- * @author Sjaak Derksen
+ * @author orange add
  */
 public class ChartEntry {
 

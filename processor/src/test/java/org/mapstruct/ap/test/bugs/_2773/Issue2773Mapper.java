@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
+/**
+ * @author orange add
+ */
 @Mapper
 public interface Issue2773Mapper {
 

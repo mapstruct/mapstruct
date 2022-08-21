@@ -15,6 +15,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @author orange add
+ */
 @IssueKey("2773")
 public class Issue2773Test {
 
