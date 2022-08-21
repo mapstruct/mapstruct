@@ -193,7 +193,15 @@ public class TypeFactory {
         return getType( mirror, false );
     }
 
+    public Type getAlwaysImportedType(TypeMirror mirror) {
+        return getType( mirror, false, true );
+    }
+
     private Type getType(TypeMirror mirror, boolean isLiteral) {
+        return getType( mirror, isLiteral, null );
+    }
+
+    private Type getType(TypeMirror mirror, boolean isLiteral, Boolean alwaysImport) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -212,7 +220,7 @@ public class TypeFactory {
         String qualifiedName;
         TypeElement typeElement;
         Type componentType;
-        Boolean toBeImported = null;
+        Boolean toBeImported = alwaysImport;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
