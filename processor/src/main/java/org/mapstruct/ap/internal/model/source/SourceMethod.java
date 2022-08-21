@@ -11,9 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
@@ -524,7 +526,9 @@ public class SourceMethod implements Method {
         Type deprecatedType = typeFactory.getType( Deprecated.class );
         return executable != null && executable.getAnnotationMirrors()
                 .stream()
-                .map( annotationMirror  -> getTypeFactory().getType( annotationMirror.getAnnotationType() ) )
+                .map( AnnotationMirror::getAnnotationType )
+                .filter( annotationType -> TypeKind.DECLARED == annotationType.getKind() )
+                .map( typeFactory::getType )
                 .anyMatch( annotationType -> deprecatedType.equals( annotationType ) );
 
     }

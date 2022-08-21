@@ -30,11 +30,7 @@ public class AnnotationNotFoundTest {
                 @Diagnostic( type = ErroneousMapper.class,
                         kind = Kind.ERROR,
                         line = 17,
-                        messageRegExp = "NotFoundAnnotation"),
-                @Diagnostic(type = ErroneousMapper.class,
-                        kind = Kind.ERROR,
-                        line = 15
-                )
+                        messageRegExp = "NotFoundAnnotation")
             }
     )
     public void shouldFailToGenerateMappings() {
