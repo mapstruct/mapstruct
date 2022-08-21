@@ -8,13 +8,10 @@ package org.mapstruct.ap.internal.processor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -54,9 +51,9 @@ import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.RepeatableAnnotations;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
-import org.mapstruct.tools.gem.Gem;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -68,8 +65,6 @@ import org.mapstruct.tools.gem.Gem;
  */
 public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
 
-    private static final String JAVA_LANG_ANNOTATION_PGK = "java.lang.annotation";
-    private static final String ORG_MAPSTRUCT_PKG = "org.mapstruct";
     private static final String MAPPING_FQN = "org.mapstruct.Mapping";
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
     private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubclassMapping";
@@ -280,8 +275,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             typeUtils,
             typeFactory );
 
-        RepeatableMappings repeatableMappings = new RepeatableMappings();
-        Set<MappingOptions> mappingOptions = repeatableMappings.getMappings( method, beanMappingOptions );
+        Set<MappingOptions> mappingOptions = getMappings( method, beanMappingOptions );
 
         IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromGem(
             IterableMappingGem.instanceOn( method ),
@@ -593,7 +587,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings().getMappings( method, beanMapping );
+        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
     }
 
     /**
@@ -607,173 +601,107 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private Set<SubclassMappingOptions> getSubclassMappings(List<Parameter> sourceParameters, Type resultType,
                                                             ExecutableElement method, BeanMappingOptions beanMapping,
                                                             SubclassValidator validator) {
-        return new RepeatableSubclassMappings( sourceParameters, resultType, validator )
-                        .getMappings( method, beanMapping );
+        return new RepeatableSubclassMappings( beanMapping, sourceParameters, resultType, validator )
+                        .getProcessedAnnotations( method );
     }
 
-    private class RepeatableMappings extends RepeatableMappingAnnotations<MappingGem, MappingsGem, MappingOptions> {
-        RepeatableMappings() {
-            super( MAPPING_FQN, MAPPINGS_FQN );
+    private class RepeatableMappings extends RepeatableAnnotations<MappingGem, MappingsGem, MappingOptions> {
+        private BeanMappingOptions beanMappingOptions;
+
+        RepeatableMappings(BeanMappingOptions beanMappingOptions) {
+            super( elementUtils, MAPPING_FQN, MAPPINGS_FQN );
+            this.beanMappingOptions = beanMappingOptions;
         }
 
         @Override
-        MappingGem singularInstanceOn(Element element) {
+        protected MappingGem singularInstanceOn(Element element) {
             return MappingGem.instanceOn( element );
         }
 
         @Override
-        MappingsGem multipleInstanceOn(Element element) {
+        protected MappingsGem multipleInstanceOn(Element element) {
             return MappingsGem.instanceOn( element );
         }
 
         @Override
-        void addInstance(MappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                         Set<MappingOptions> mappings) {
-            MappingOptions.addInstance( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        protected void addInstance(MappingGem gem, Element method, Set<MappingOptions> mappings) {
+            MappingOptions.addInstance(
+                                       gem,
+                                       (ExecutableElement) method,
+                                       beanMappingOptions,
+                                       messager,
+                                       typeUtils,
+                                       mappings );
         }
 
         @Override
-        void addInstances(MappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                          Set<MappingOptions> mappings) {
-            MappingOptions.addInstances( gem, method, beanMappingOptions, messager, typeUtils, mappings );
+        protected void addInstances(MappingsGem gem, Element method, Set<MappingOptions> mappings) {
+            MappingOptions.addInstances(
+                                        gem,
+                                        (ExecutableElement) method,
+                                        beanMappingOptions,
+                                        messager,
+                                        typeUtils,
+                                        mappings );
         }
     }
 
     private class RepeatableSubclassMappings
-        extends RepeatableMappingAnnotations<SubclassMappingGem, SubclassMappingsGem, SubclassMappingOptions> {
+        extends RepeatableAnnotations<SubclassMappingGem, SubclassMappingsGem, SubclassMappingOptions> {
         private final List<Parameter> sourceParameters;
         private final Type resultType;
         private SubclassValidator validator;
+        private BeanMappingOptions beanMappingOptions;
 
-        RepeatableSubclassMappings(List<Parameter> sourceParameters, Type resultType, SubclassValidator validator) {
-            super( SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
+        RepeatableSubclassMappings(BeanMappingOptions beanMappingOptions, List<Parameter> sourceParameters,
+                                   Type resultType, SubclassValidator validator) {
+            super( elementUtils, SUB_CLASS_MAPPING_FQN, SUB_CLASS_MAPPINGS_FQN );
+            this.beanMappingOptions = beanMappingOptions;
             this.sourceParameters = sourceParameters;
             this.resultType = resultType;
             this.validator = validator;
         }
 
         @Override
-        SubclassMappingGem singularInstanceOn(Element element) {
+        protected SubclassMappingGem singularInstanceOn(Element element) {
             return SubclassMappingGem.instanceOn( element );
         }
 
         @Override
-        SubclassMappingsGem multipleInstanceOn(Element element) {
+        protected SubclassMappingsGem multipleInstanceOn(Element element) {
             return SubclassMappingsGem.instanceOn( element );
         }
 
         @Override
-        void addInstance(SubclassMappingGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                         Set<SubclassMappingOptions> mappings) {
-            SubclassMappingOptions
-                                  .addInstance(
-                                      gem,
-                                      method,
-                                      beanMappingOptions,
-                                      messager,
-                                      typeUtils,
-                                      mappings,
-                                      sourceParameters,
-                                      resultType,
-                                      validator );
+        protected void addInstance(SubclassMappingGem gem,
+                                   Element method,
+                                   Set<SubclassMappingOptions> mappings) {
+            SubclassMappingOptions.addInstance(
+                                               gem,
+                                               (ExecutableElement) method,
+                                               beanMappingOptions,
+                                               messager,
+                                               typeUtils,
+                                               mappings,
+                                               sourceParameters,
+                                               resultType,
+                                               validator );
         }
 
         @Override
-        void addInstances(SubclassMappingsGem gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                          Set<SubclassMappingOptions> mappings) {
-            SubclassMappingOptions
-                                  .addInstances(
-                                      gem,
-                                      method,
-                                      beanMappingOptions,
-                                      messager,
-                                      typeUtils,
-                                      mappings,
-                                      sourceParameters,
-                                      resultType,
-                                      validator );
-        }
-    }
-
-    private abstract class RepeatableMappingAnnotations<SINGULAR extends Gem, MULTIPLE extends Gem, OPTIONS> {
-
-        private final String singularFqn;
-        private final String multipleFqn;
-
-        RepeatableMappingAnnotations(String singularFqn, String multipleFqn) {
-            this.singularFqn = singularFqn;
-            this.multipleFqn = multipleFqn;
-        }
-
-        abstract SINGULAR singularInstanceOn(Element element);
-
-        abstract MULTIPLE multipleInstanceOn(Element element);
-
-        abstract void addInstance(SINGULAR gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                                  Set<OPTIONS> mappings);
-
-        abstract void addInstances(MULTIPLE gem, ExecutableElement method, BeanMappingOptions beanMappingOptions,
-                                   Set<OPTIONS> mappings);
-
-        /**
-         * Retrieves the mappings configured via {@code @Mapping} from the given method.
-         *
-         * @param method The method of interest
-         * @param beanMapping options coming from bean mapping method
-         * @return The mappings for the given method, keyed by target property name
-         */
-        public Set<OPTIONS> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-            return getMappings( method, method, beanMapping, new LinkedHashSet<>(), new HashSet<>() );
-        }
-
-        /**
-         * Retrieves the mappings configured via {@code @Mapping} from the given method.
-         *
-         * @param method The method of interest
-         * @param element Element of interest: method, or (meta) annotation
-         * @param beanMapping options coming from bean mapping method
-         * @param mappingOptions LinkedSet of mappings found so far
-         * @return The mappings for the given method, keyed by target property name
-         */
-        private Set<OPTIONS> getMappings(ExecutableElement method, Element element,
-                                                  BeanMappingOptions beanMapping, LinkedHashSet<OPTIONS> mappingOptions,
-                                                  Set<Element> handledElements) {
-
-            for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-                Element lElement = annotationMirror.getAnnotationType().asElement();
-                if ( isAnnotation( lElement, singularFqn ) ) {
-                    // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                    SINGULAR mapping = singularInstanceOn( element );
-                    addInstance( mapping, method, beanMapping, mappingOptions );
-                }
-                else if ( isAnnotation( lElement, multipleFqn ) ) {
-                    // although getInstanceOn does a search on annotation mirrors, the order is preserved
-                    MULTIPLE mappings = multipleInstanceOn( element );
-                    addInstances( mappings, method, beanMapping, mappingOptions );
-                }
-                else if ( !isAnnotationInPackage( lElement, JAVA_LANG_ANNOTATION_PGK )
-                    && !isAnnotationInPackage( lElement, ORG_MAPSTRUCT_PKG )
-                    && !handledElements.contains( lElement ) ) {
-                    // recur over annotation mirrors
-                    handledElements.add( lElement );
-                    getMappings( method, lElement, beanMapping, mappingOptions, handledElements );
-                }
-            }
-            return mappingOptions;
-        }
-
-        private boolean isAnnotationInPackage(Element element, String packageFQN) {
-            if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
-                return packageFQN.equals( elementUtils.getPackageOf( element ).getQualifiedName().toString() );
-            }
-            return false;
-        }
-
-        private boolean isAnnotation(Element element, String annotationFQN) {
-            if ( ElementKind.ANNOTATION_TYPE == element.getKind() ) {
-                return annotationFQN.equals( ( (TypeElement) element ).getQualifiedName().toString() );
-            }
-            return false;
+        protected void addInstances(SubclassMappingsGem gem,
+                                    Element method,
+                                    Set<SubclassMappingOptions> mappings) {
+            SubclassMappingOptions.addInstances(
+                                                gem,
+                                                (ExecutableElement) method,
+                                                beanMappingOptions,
+                                                messager,
+                                                typeUtils,
+                                                mappings,
+                                                sourceParameters,
+                                                resultType,
+                                                validator );
         }
     }
 

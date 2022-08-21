@@ -12,6 +12,8 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 
@@ -70,7 +72,11 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     private Annotation namedDelegate(Mapper mapper) {
         return new Annotation(
             getType( "Named" ),
-            Collections.singletonList( '"' + mapper.getPackageName() + "." + mapper.getName() + '"' )
+            Collections.singletonList(
+                new AnnotationElement(
+                    AnnotationElementType.STRING,
+                    Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() )
+                ) )
         );
     }
 
