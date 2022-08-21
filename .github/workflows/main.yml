@@ -43,7 +43,7 @@ jobs:
       - name: 'Upload coverage to Codecov'
         uses: codecov/codecov-action@v2
       - name: 'Publish Snapshots'
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'mapstruct/mapstruct'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
   linux-jdk-8:
     name: 'Linux JDK 8'
