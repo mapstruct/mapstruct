@@ -95,15 +95,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
-
     private final MappingReferences mappingReferences;
 
-
-
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
-
         private Type userDefinedReturnType;
-
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
         private Map<String, Accessor> unprocessedConstructorProperties;
@@ -116,7 +111,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Set<String> existingVariableNames = new HashSet<>();
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
         private final List<Annotation> annotations = new ArrayList<>();
-
         private MappingReferences mappingReferences;
         private MethodReference factoryMethod;
         private boolean hasFactoryMethod;
@@ -1698,9 +1692,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
-
-
-
     }
 
     private static class ConstructorAccessor {
@@ -1847,7 +1838,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         return types;
     }
-
 
     public List<Parameter> getSourceParametersExcludingPrimitives() {
         return getSourceParameters().stream()
