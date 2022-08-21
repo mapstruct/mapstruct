@@ -374,7 +374,7 @@ public class MethodMatcher {
                             // something went wrong
                             return null;
                         }
-                        typeArgs[i] = matchingType.getTypeMirror();
+                        typeArgs[i] = matchingType.getBoxedEquivalent().getTypeMirror();
                     }
                     else {
                         // it is not a type var (e.g. Map<String, T> ), String is not a type var
