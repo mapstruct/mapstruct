@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 @IssueKey("2937")
-@WithClasses( {
+@WithClasses({
     Issue2937Mapper.class,
-} )
+})
 class Issue2937Test {
 
     @ProcessorTest
@@ -37,6 +37,6 @@ class Issue2937Test {
         target = Issue2937Mapper.INSTANCE.map( source );
 
         assertThat( target.getNames() )
-            .containsExactly("Tester 1", "Tester 2");
+            .containsExactly( "Tester 1", "Tester 2" );
     }
 }
