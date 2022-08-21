@@ -10,7 +10,9 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 <#if overridden>@Override</#if>
-<#if deprecated>@Deprecated</#if>
+<#if deprecated>
+    @Deprecated
+</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
