@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.SourceRHS" -->
-<#if sourceLoopVarName??>${sourceLoopVarName}<#elseif sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>
+<#if sourceLoopVarName?? && !ext.presenceCheck??>${sourceLoopVarName}<#elseif sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>
