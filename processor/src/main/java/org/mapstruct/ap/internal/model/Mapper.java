@@ -155,7 +155,11 @@ public class Mapper extends GeneratedType {
         this.customPackage = customPackage;
         this.customImplName = customImplName;
         customAnnotations.forEach( this::addAnnotation );
-
+        TypeElement typeElement = this.getMapperDefinitionType().getTypeElement();
+        if ( typeElement.getAnnotation( Deprecated.class ) != null
+                && typeFactory.isTypeAvailable( Deprecated.class.getCanonicalName() )) {
+            addAnnotation( new Annotation(typeFactory.getType( Deprecated.class )) );
+        }
         this.decorator = decorator;
     }
 

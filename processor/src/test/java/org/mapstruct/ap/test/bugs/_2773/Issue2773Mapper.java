@@ -23,6 +23,7 @@ import java.util.stream.Stream;
  */
 
 @Mapper
+@Deprecated
 public interface Issue2773Mapper {
 
     Issue2773Mapper INSTANCE = Mappers.getMapper( Issue2773Mapper.class );

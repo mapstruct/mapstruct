@@ -31,6 +31,7 @@ public class Issue2773Test {
         Method prices = mapperClass.getMethod( "prices", List.class );
         Method integerStreamToStringSet = mapperClass.getMethod( "integerStreamToStringSet", Stream.class );
         Method longDateMapToStringStringMap = mapperClass.getMethod( "longDateMapToStringStringMap", Map.class );
+        assertThat( mapperClass.getAnnotation( Deprecated.class ) ).isNotNull();
         assertThat( toStudio.getAnnotation( Deprecated.class ) ).isNotNull();
         assertThat( prices.getAnnotation( Deprecated.class ) ).isNotNull();
         assertThat( integerStreamToStringSet.getAnnotation( Deprecated.class ) ).isNotNull();
