@@ -229,7 +229,7 @@ public class MappingResolverImpl implements MappingResolver {
             if ( allowMappingMethod() ) {
                 List<SelectedMethod<Method>> matches = getBestMatch( methods, sourceType, targetType );
                 reportErrorWhenAmbiguous( matches, targetType );
-                if ( !matches.isEmpty() && !mappingMethod.equals(first(matches).getMethod())) {
+                if ( !matches.isEmpty() && !mappingMethod.equals( first( matches ).getMethod() )) {
                     assignment = toMethodRef( first( matches ) );
                     assignment.setAssignment( sourceRHS );
                     return assignment;
