@@ -6,6 +6,9 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.BeanMappingMethod" -->
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
@@ -20,7 +23,7 @@
     </#list>
     <#if !mapNullToDefault>
     if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
-        return<#if returnType.name != "void"> null</#if>;
+        return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if><#else>null</#if></#if>;
     }
     </#if>
 

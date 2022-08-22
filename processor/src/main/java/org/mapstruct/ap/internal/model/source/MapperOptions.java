@@ -106,6 +106,13 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
+    public boolean suppressTimestampInGenerated() {
+        return mapper.suppressTimestampInGenerated().hasValue() ?
+            mapper.suppressTimestampInGenerated().get() :
+            next().suppressTimestampInGenerated();
+    }
+
+    @Override
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return mapper.mappingInheritanceStrategy().hasValue() ?
             MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().get() ) :
@@ -161,6 +168,28 @@ public class MapperOptions extends DelegatingOptions {
         return mapper.subclassExhaustiveStrategy().hasValue() ?
             SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().get() ) :
             next().getSubclassExhaustiveStrategy();
+    }
+
+    @Override
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        if ( mapper.nullValueIterableMappingStrategy().hasValue() ) {
+            return NullValueMappingStrategyGem.valueOf( mapper.nullValueIterableMappingStrategy().get() );
+        }
+        if ( mapper.nullValueMappingStrategy().hasValue() ) {
+            return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() );
+        }
+        return next().getNullValueIterableMappingStrategy();
+    }
+
+    @Override
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        if ( mapper.nullValueMapMappingStrategy().hasValue() ) {
+            return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().get() );
+        }
+        if ( mapper.nullValueMappingStrategy().hasValue() ) {
+            return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() );
+        }
+        return next().getNullValueMapMappingStrategy();
     }
 
     @Override

@@ -143,7 +143,7 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
     @Override
     public Domain updateWithReturn(Dto source, Domain target) {
         if ( source == null ) {
-            return null;
+            return target;
         }
 
         if ( target.getStrings() != null ) {

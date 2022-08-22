@@ -17,9 +17,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 import org.junitpioneer.jupiter.DefaultLocale;
+import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey("134")
 @DefaultLocale("de")
+@ReadsDefaultTimeZone
 public class NestedMappingMethodInvocationTest {
 
     public static final QName QNAME = new QName( "dont-care" );
@@ -42,6 +45,7 @@ public class NestedMappingMethodInvocationTest {
         OrderDetailsType.class,
         OrderType.class
     } )
+    @WithJavaxJaxb
     public void shouldMapViaMethodAndMethod() throws DatatypeConfigurationException {
         OrderTypeToOrderDtoMapper instance = OrderTypeToOrderDtoMapper.INSTANCE;
         OrderDto target = instance.sourceToTarget( createOrderType() );
@@ -62,6 +66,7 @@ public class NestedMappingMethodInvocationTest {
         ObjectFactory.class,
         TargetDto.class
     } )
+    @WithJavaxJaxb
     public void shouldMapViaMethodAndConversion() {
         SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
 
@@ -78,6 +83,7 @@ public class NestedMappingMethodInvocationTest {
         ObjectFactory.class,
         TargetDto.class
     } )
+    @WithJavaxJaxb
     public void shouldMapViaConversionAndMethod() {
         SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
 

@@ -92,7 +92,7 @@ public class ScienceMapperImpl implements ScienceMapper {
     @Override
     public ScientistDto[] scientistsToDtos(Scientist[] scientists, ScientistDto[] target) {
         if ( scientists == null ) {
-            return null;
+            return target;
         }
 
         int i = 0;

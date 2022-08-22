@@ -46,6 +46,8 @@ In case of bi-directional mappings, e.g. from entity to DTO and from DTO to enti
 
 Use the annotation `@InheritInverseConfiguration` to indicate that a method shall inherit the inverse configuration of the corresponding reverse method.
 
+In the example below, there is no need to write the inverse mapping manually. Think of a case where there are several mappings, so writing the inverse ones can be cumbersome and error prone.
+
 .Inverse mapping method inheriting its configuration and ignoring some of them
 ====
 [source, java, linenums]

@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.subclassmapping.fixture;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
@@ -37,6 +38,9 @@ public class SubclassFixtureTest {
 
     @ProcessorTest
     @WithClasses( {
+        SubSourceOverride.class,
+        SubSourceSeparate.class,
+        SubTargetSeparate.class,
         SubclassAbstractMapper.class,
     } )
     void subclassAbstractParentFixture() {

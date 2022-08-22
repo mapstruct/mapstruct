@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -35,19 +37,44 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 public abstract class AbstractElementUtilsDecorator implements ElementUtils {
 
     private final Elements delegate;
+    /**
+     * The module element when running with the module system,
+     * {@code null} otherwise.
+     */
+    private final Element moduleElement;
 
-    AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv) {
+    @IgnoreJRERequirement
+    AbstractElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
         this.delegate = processingEnv.getElementUtils();
+        if ( SourceVersion.RELEASE_8.compareTo( processingEnv.getSourceVersion() ) >= 0 ) {
+            // We are running with Java 8 or lower
+            this.moduleElement = null;
+        }
+        else {
+            this.moduleElement = this.delegate.getModuleOf( mapperElement );
+        }
     }
 
     @Override
+    @IgnoreJRERequirement
     public PackageElement getPackageElement(CharSequence name) {
-        return delegate.getPackageElement( name );
+        if ( this.moduleElement == null ) {
+            return this.delegate.getPackageElement( name );
+        }
+
+        // If the module element is not null then we must be running on Java 8+
+        return this.delegate.getPackageElement( (ModuleElement) moduleElement, name );
     }
 
     @Override
+    @IgnoreJRERequirement
     public TypeElement getTypeElement(CharSequence name) {
-        return delegate.getTypeElement( name );
+        if ( this.moduleElement == null ) {
+            return this.delegate.getTypeElement( name );
+        }
+
+        // If the module element is not null then we must be running on Java 8+
+        return this.delegate.getTypeElement( (ModuleElement) moduleElement, name );
     }
 
     @Override

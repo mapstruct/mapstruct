@@ -82,6 +82,20 @@ public class MapMappingTest {
         assertResult( target );
     }
 
+    @ProcessorTest
+    @IssueKey("1752")
+    public void shouldCreateMapMethodImplementationWithReturnedTargetParameterAndNullSource() {
+        Map<Long, Date> target = new HashMap<>();
+        target.put( 42L, new GregorianCalendar( 1980, Calendar.JANUARY, 1 ).getTime() );
+        target.put( 121L, new GregorianCalendar( 2013, Calendar.JULY, 20 ).getTime() );
+
+        Map<Long, Date> returnedTarget = SourceTargetMapper.INSTANCE
+            .stringStringMapToLongDateMapUsingTargetParameterAndReturn( null, target );
+
+        assertThat( target ).isSameAs( returnedTarget );
+        assertResult( target );
+    }
+
     private void assertResult(Map<Long, Date> target) {
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );

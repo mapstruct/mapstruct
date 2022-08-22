@@ -88,7 +88,7 @@ Default expressions are a combination of default values and expressions. They wi
 
 The same warnings and restrictions apply to default expressions that apply to expressions. Only Java is supported, and MapStruct will not validate the expression at generation-time.
 
-The example below demonstrates how two source properties can be mapped to one target:
+The example below demonstrates how a default expression can be used to set a value when the source attribute is not present (e.g. is `null`):
 
 .Mapping method using a default expression
 ====
@@ -212,6 +212,29 @@ However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETU
 
 The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MapperConfig#nullValueMappingStrategy`.
 
+[[mapping-result-for-null-collection-or-map-arguments]]
+=== Controlling mapping result for 'null' collection or map arguments
+
+With <<mapping-result-for-null-arguments>> it is possible to control how the return type should be constructed when the source argument of the mapping method is `null`.
+That is applied for all mapping methods (bean, iterable or map mapping methods).
+
+However, MapStruct also offers a more dedicated way to control how collections / maps should be mapped.
+e.g. return default (empty) collections / maps, but return `null` for beans.
+
+For collections (iterables) this can be controlled through:
+
+* `MapperConfig#nullValueIterableMappingStrategy`
+* `Mapper#nullValueIterableMappingStrategy`
+* `IterableMapping#nullValueMappingStrategy`
+
+For maps this can be controlled through:
+
+* `MapperConfig#nullValueMapMappingStrategy`
+* `Mapper#nullValueMapMappingStrategy`
+* `MapMapping#nullValueMappingStrategy`
+
+How the value of the `NullValueMappingStrategy` is applied is the same as in <<mapping-result-for-null-arguments>>
+
 
 [[mapping-result-for-null-properties]]
 === Controlling mapping result for 'null' properties in bean mappings (update mapping methods only).
@@ -269,7 +292,7 @@ The source presence checker name can be changed in the MapStruct service provide
 
 [NOTE]
 ====
-Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor (see `CollectionMappingStrategy`), MapStruct will always generate a source property
 null check, regardless the value of the `NullValueCheckStrategy` to avoid addition of `null` to the target collection or map.
 ====
 
@@ -303,7 +326,7 @@ public interface CarMapper {
 
 The generated mapper will look like:
 
-.try-catch block in generated implementation
+.Custom condition check in generated implementation
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -331,6 +354,111 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
+When using this in combination with an update mapping method it will replace the `null-check` there, for example:
+
+.Update mapper using custom condition check method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car, @MappingTarget CarDto carDto);
+
+    @Condition
+    default boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+The generated update mapper will look like:
+
+.Custom condition check in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car, CarDto carDto) {
+        if ( car == null ) {
+            return carDto;
+        }
+
+        if ( isNotEmpty( car.getOwner() ) ) {
+            carDto.setOwner( car.getOwner() );
+        } else {
+            carDto.setOwner( null );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
+Additionally `@TargetPropertyName` of type `java.lang.String` can be used in custom condition check method:
+
+.Mapper using custom condition check method with `@TargetPropertyName`
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car, @MappingTarget CarDto carDto);
+
+    @Condition
+    default boolean isNotEmpty(String value, @TargetPropertyName String name) {
+        if ( name.equals( "owner" ) {
+           return value != null
+                    && !value.isEmpty()
+                    && !value.equals( value.toLowerCase() );
+        }
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+The generated mapper with `@TargetPropertyName` will look like:
+
+.Custom condition check in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car, CarDto carDto) {
+        if ( car == null ) {
+            return carDto;
+        }
+
+        if ( isNotEmpty( car.getOwner(), "owner" ) ) {
+            carDto.setOwner( car.getOwner() );
+        } else {
+            carDto.setOwner( null );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
 [IMPORTANT]
 ====
 If there is a custom `@Condition` method applicable for the property it will have a precedence over a presence check method in the bean itself.
@@ -339,6 +467,8 @@ If there is a custom `@Condition` method applicable for the property it will hav
 [NOTE]
 ====
 Methods annotated with `@Condition` in addition to the value of the source property can also have the source parameter as an input.
+
+`@TargetPropertyName` parameter can only be used in `@Condition` methods.
 ====
 
 <<selection-based-on-qualifiers>> is also valid for `@Condition` methods.

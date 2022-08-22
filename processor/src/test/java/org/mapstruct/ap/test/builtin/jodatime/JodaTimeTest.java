@@ -30,6 +30,8 @@ import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocal
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
+import org.mapstruct.ap.testutil.WithJoda;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     XmlGregorianCalendarBean.class
 })
 @IssueKey( "689" )
+@WithJoda
+@WithJavaxJaxb
 public class JodaTimeTest {
 
     @ProcessorTest

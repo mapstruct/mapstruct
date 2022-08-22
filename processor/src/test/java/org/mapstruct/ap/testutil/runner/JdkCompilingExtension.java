@@ -7,8 +7,10 @@ package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.processing.Processor;
@@ -51,13 +53,13 @@ class JdkCompilingExtension extends CompilingExtension {
                                                                        String additionalCompilerClasspath) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, StandardCharsets.UTF_8 );
 
         Iterable<? extends JavaFileObject> compilationUnits =
             fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
 
         try {
-            fileManager.setLocation( StandardLocation.CLASS_PATH, COMPILER_CLASSPATH_FILES );
+            fileManager.setLocation( StandardLocation.CLASS_PATH, getCompilerClasspathFiles( compilationRequest ) );
             fileManager.setLocation( StandardLocation.CLASS_OUTPUT, Arrays.asList( new File( classOutputDir ) ) );
             fileManager.setLocation( StandardLocation.SOURCE_OUTPUT, Arrays.asList( new File( sourceOutputDir ) ) );
         }
@@ -95,6 +97,23 @@ class JdkCompilingExtension extends CompilingExtension {
             SOURCE_DIR,
             compilationSuccessful,
             diagnostics.getDiagnostics() );
+    }
+
+    private static List<File> getCompilerClasspathFiles(CompilationRequest request) {
+        Collection<String> testDependencies = request.getTestDependencies();
+        if ( testDependencies.isEmpty() ) {
+            return COMPILER_CLASSPATH_FILES;
+        }
+
+        List<File> compilerClasspathFiles = new ArrayList<>(
+            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() );
+
+        compilerClasspathFiles.addAll( COMPILER_CLASSPATH_FILES );
+        for ( String testDependencyPath : filterBootClassPath( testDependencies ) ) {
+            compilerClasspathFiles.add( new File( testDependencyPath ) );
+        }
+
+        return compilerClasspathFiles;
     }
 
     private static List<File> asFiles(List<String> paths) {

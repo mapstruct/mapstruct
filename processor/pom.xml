@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-parent</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -24,6 +24,7 @@
         <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
             Therefore we set this empty property here-->
         <jacocoArgLine />
+        <minimum.java.version>11</minimum.java.version>
     </properties>
 
     <dependencies>
@@ -81,6 +82,11 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
             <scope>test</scope>
         </dependency>
 

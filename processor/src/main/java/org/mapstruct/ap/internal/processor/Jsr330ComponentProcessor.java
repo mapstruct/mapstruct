@@ -12,6 +12,10 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -58,21 +62,39 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     private Annotation singleton() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Singleton" ) );
+        return new Annotation( getType( "Singleton" ) );
     }
 
     private Annotation named() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Named" ) );
+        return new Annotation( getType( "Named" ) );
     }
 
     private Annotation namedDelegate(Mapper mapper) {
         return new Annotation(
-            getTypeFactory().getType( "javax.inject.Named" ),
-            Collections.singletonList( '"' + mapper.getPackageName() + "." + mapper.getName() + '"' )
+            getType( "Named" ),
+            Collections.singletonList(
+                new AnnotationElement(
+                    AnnotationElementType.STRING,
+                    Collections.singletonList( mapper.getPackageName() + "." + mapper.getName() )
+                ) )
         );
     }
 
     private Annotation inject() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
+        return new Annotation( getType( "Inject" ) );
+    }
+
+    private Type getType(String simpleName) {
+        if ( getTypeFactory().isTypeAvailable( "javax.inject." + simpleName ) ) {
+            return getTypeFactory().getType( "javax.inject." + simpleName );
+        }
+
+        if ( getTypeFactory().isTypeAvailable( "jakarta.inject." + simpleName ) ) {
+            return getTypeFactory().getType( "jakarta.inject." + simpleName );
+        }
+
+        throw new AnnotationProcessingException(
+            "Couldn't find any of the JSR330 or Jakarta Dependency Inject types." +
+                " Are you missing a dependency on your classpath?" );
     }
 }

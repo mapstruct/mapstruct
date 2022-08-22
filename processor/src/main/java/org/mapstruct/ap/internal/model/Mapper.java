@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
@@ -42,6 +41,8 @@ public class Mapper extends GeneratedType {
         private boolean customName;
         private String implPackage;
         private boolean customPackage;
+        private boolean suppressGeneratorTimestamp;
+        private Set<Annotation> customAnnotations;
 
         public Builder() {
             super( Builder.class );
@@ -62,6 +63,11 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder additionalAnnotations(Set<Annotation> customAnnotations) {
+            this.customAnnotations = customAnnotations;
+            return this;
+        }
+
         public Builder decorator(Decorator decorator) {
             this.decorator = decorator;
             return this;
@@ -76,6 +82,11 @@ public class Mapper extends GeneratedType {
         public Builder implPackage(String implPackage) {
             this.implPackage = implPackage;
             this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackage );
+            return this;
+        }
+
+        public Builder suppressGeneratorTimestamp(boolean suppressGeneratorTimestamp) {
+            this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
             return this;
         }
 
@@ -99,9 +110,11 @@ public class Mapper extends GeneratedType {
                 definitionType,
                 customPackage,
                 customName,
+                customAnnotations,
                 methods,
                 options,
                 versionInformation,
+                suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 fields,
                 constructor,
@@ -119,8 +132,9 @@ public class Mapper extends GeneratedType {
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name,
                    Type mapperDefinitionType,
-                   boolean customPackage, boolean customImplName,
+                   boolean customPackage, boolean customImplName, Set<Annotation> customAnnotations,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
+                   boolean suppressGeneratorTimestamp,
                    Accessibility accessibility, List<Field> fields, Constructor constructor,
                    Decorator decorator, SortedSet<Type> extraImportedTypes ) {
 
@@ -133,12 +147,14 @@ public class Mapper extends GeneratedType {
             fields,
             options,
             versionInformation,
+            suppressGeneratorTimestamp,
             accessibility,
             extraImportedTypes,
             constructor
         );
         this.customPackage = customPackage;
         this.customImplName = customImplName;
+        customAnnotations.forEach( this::addAnnotation );
 
         this.decorator = decorator;
     }

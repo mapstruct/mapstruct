@@ -5,7 +5,6 @@
  */
 package org.mapstruct.itest.tests;
 
-import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.parallel.Execution;
@@ -26,7 +25,6 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "cdiTest")
-    @DisabledForJreRange(min = JRE.JAVA_16)
     void cdiTest() {
     }
 
@@ -87,6 +85,14 @@ public class MavenIntegrationTest {
     void lombokBuilderTest() {
     }
 
+    @ProcessorTest(baseDir = "lombokModuleTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC,
+        ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
+    })
+    @EnabledForJreRange(min = JRE.JAVA_11)
+    void lombokModuleTest() {
+    }
+
     @ProcessorTest(baseDir = "namingStrategyTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
@@ -114,6 +120,13 @@ public class MavenIntegrationTest {
     })
     @EnabledForJreRange(min = JRE.JAVA_17)
     void recordsCrossModuleTest() {
+    }
+
+    @ProcessorTest(baseDir = "expressionTextBlocksTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void expressionTextBlocksTest() {
     }
 
     @ProcessorTest(baseDir = "kotlinDataTest", processorTypes = {

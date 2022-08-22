@@ -15,6 +15,7 @@ import org.mapstruct.ap.test.imports.referenced.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     org.mapstruct.ap.test.imports.to.FooWrapper.class,
     SecondSourceTargetMapper.class
 })
+@WithJavaxInject
 public class ConflictingTypesNamesTest {
 
     @RegisterExtension

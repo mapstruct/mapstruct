@@ -20,6 +20,8 @@ public enum Message {
     // CHECKSTYLE:OFF
     PROCESSING_NOTE( "processing: %s.", Diagnostic.Kind.NOTE ),
     CONFIG_NOTE( "applying mapper configuration: %s.", Diagnostic.Kind.NOTE ),
+    MESSAGE_MOVED_TO_MAPPER_ERROR( "%s Occured at '%s' in '%s'." ),
+    MESSAGE_MOVED_TO_MAPPER_WARNING( "%s Occured at '%s' in '%s'.", Diagnostic.Kind.WARNING ),
 
     BEANMAPPING_CREATE_NOTE( "creating bean mapping method implementation for %s.", Diagnostic.Kind.NOTE ),
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'nullValuePropertyMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
@@ -57,7 +59,9 @@ public enum Message {
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED( "Expression and default value are both defined in @Mapping, either define a defaultValue or an expression." ),
     PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED( "Constant and default value are both defined in @Mapping, either define a defaultValue or a constant." ),
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Expression and default expression are both defined in @Mapping, either define an expression or a default expression." ),
+    PROPERTYMAPPING_EXPRESSION_AND_CONDITION_EXPRESSION_BOTH_DEFINED( "Expression and condition expression are both defined in @Mapping, either define an expression or a condition expression." ),
     PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Constant and default expression are both defined in @Mapping, either define a constant or a default expression." ),
+    PROPERTYMAPPING_CONSTANT_AND_CONDITION_EXPRESSION_BOTH_DEFINED( "Constant and condition expression are both defined in @Mapping, either define a constant or a condition expression." ),
     PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Default value and default expression are both defined in @Mapping, either define a default value or a default expression." ),
     PROPERTYMAPPING_DEFAULT_VALUE_AND_NVPMS( "Default value and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a defaultValue or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_EXPRESSION_VALUE_AND_NVPMS( "Expression and nullValuePropertyMappingStrategy are both defined in @Mapping, either define an expression or an nullValuePropertyMappingStrategy." ),
@@ -78,6 +82,7 @@ public enum Message {
     PROPERTYMAPPING_WHITESPACE_TRIMMED( "The property named \"%s\" has whitespaces, using trimmed property \"%s\" instead.", Diagnostic.Kind.WARNING ),
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET("The type of parameter \"%s\" has no property named \"%s\". Please define the source property explicitly."),
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
+    PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
@@ -114,6 +119,7 @@ public enum Message {
     ENUMMAPPING_NO_ELEMENTS( "'nameTransformationStrategy', 'configuration' and 'unexpectedValueMappingException' are undefined in @EnumMapping, define at least one of them." ),
     ENUMMAPPING_ILLEGAL_TRANSFORMATION( "Illegal transformation for '%s' EnumTransformationStrategy. Error: '%s'." ),
 
+    SUBCLASSMAPPING_DOUBLE_SOURCE_SUBCLASS( "Subclass '%s' is already defined as a source." ),
     SUBCLASSMAPPING_ILLEGAL_SUBCLASS( "Class '%s' is not a subclass of '%s'." ),
     SUBCLASSMAPPING_NO_VALID_SUPERCLASS( "Could not find a parameter that is a superclass for '%s'." ),
     SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED( "SubclassMapping annotation can not be used for update methods." ),
@@ -165,6 +171,8 @@ public enum Message {
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
     RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE( "The types of @Context parameters must be unique." ),
     RETRIEVAL_MAPPER_USES_CYCLE( "The mapper %s is referenced itself in Mapper#uses.", Diagnostic.Kind.WARNING ),
+    RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED( "@AfterMapping can only be applied to an implemented method." ),
+    RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED( "@BeforeMapping can only be applied to an implemented method." ),
 
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
@@ -190,6 +198,20 @@ public enum Message {
 
     MAPTOBEANMAPPING_WRONG_KEY_TYPE( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
     MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),
+
+    ANNOTATE_WITH_MISSING_REQUIRED_PARAMETER( "Parameter \"%s\" is required for annotation \"%s\"." ),
+    ANNOTATE_WITH_UNKNOWN_PARAMETER( "Unknown parameter \"%s\" for annotation \"%s\". Did you mean \"%s\"?" ),
+    ANNOTATE_WITH_DUPLICATE_PARAMETER( "Parameter \"%s\" must not be defined more than once." ),
+    ANNOTATE_WITH_WRONG_PARAMETER( "Parameter \"%s\" is not of type \"%s\" but of type \"%s\" for annotation \"%s\"." ),
+    ANNOTATE_WITH_TOO_MANY_VALUE_TYPES( "Parameter \"%s\" has too many value types supplied, type \"%s\" is expected for annotation \"%s\"." ),
+    ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED( "Parameter \"%s\" does not accept multiple values for annotation \"%s\"." ),
+    ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),
+    ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS( "Annotation \"%s\" is not allowed on methods." ),
+    ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST( "Enum \"%s\" does not have value \"%s\"." ),
+    ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "enumClass needs to be defined when using enums." ),
+    ANNOTATE_WITH_ENUMS_NOT_DEFINED( "enums needs to be defined when using enumClass." ),
+    ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE( "Annotation \"%s\" is not repeatable." ),
+    ANNOTATE_WITH_DUPLICATE( "Annotation \"%s\" is already present with the same elements configuration.", Diagnostic.Kind.WARNING ),
     ;
     // CHECKSTYLE:ON
 

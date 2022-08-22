@@ -72,6 +72,7 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "__Test" ) ).isEqualTo( "test" );
         assertThat( Strings.getSafeVariableName( "_0Test" ) ).isEqualTo( "test" );
         assertThat( Strings.getSafeVariableName( "_0123Test" ) ).isEqualTo( "test" );
+        assertThat( Strings.getSafeVariableName( "bad/test" ) ).isEqualTo( "bad_test" );
     }
 
     @Test
@@ -94,6 +95,7 @@ public class StringsTest {
         assertThat( Strings.getSafeVariableName( "__0Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
         assertThat( Strings.getSafeVariableName( "___0", new ArrayList<>() ) ).isEqualTo( "___0" );
         assertThat( Strings.getSafeVariableName( "__0123456789Test", Arrays.asList( "test" ) ) ).isEqualTo( "test1" );
+        assertThat( Strings.getSafeVariableName( "bad/test", Arrays.asList( "bad_test" ) ) ).isEqualTo( "bad_test1" );
     }
 
     @Test
@@ -110,6 +112,7 @@ public class StringsTest {
         assertThat( Strings.sanitizeIdentifierName( "_0int[]" ) ).isEqualTo( "intArray" );
         assertThat( Strings.sanitizeIdentifierName( "__0int[]" ) ).isEqualTo( "intArray" );
         assertThat( Strings.sanitizeIdentifierName( "___0" ) ).isEqualTo( "___0" );
+        assertThat( Strings.sanitizeIdentifierName( "bad/test" ) ).isEqualTo( "bad_test" );
     }
 
     @Test

@@ -19,6 +19,7 @@ import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("592")
 @ComponentScan(basePackageClasses = Jsr330DecoratorTest.class)
 @Configuration
+@WithJavaxInject
 public class Jsr330DecoratorTest {
 
     @RegisterExtension

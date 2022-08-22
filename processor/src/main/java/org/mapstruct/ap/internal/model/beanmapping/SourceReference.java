@@ -7,16 +7,13 @@ package org.mapstruct.ap.internal.model.beanmapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -26,9 +23,8 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
-import org.mapstruct.ap.internal.util.accessor.MapValuePresenceChecker;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.last;
@@ -51,31 +47,12 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  * <li>{@code propertyEntries[1]} will describe {@code propB}</li>
  * </ul>
  *
- * After building, {@link #isValid()} will return true when when no problems are detected during building.
+ * After building, {@link #isValid()} will return true when no problems are detected during building.
  *
  * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
 public class SourceReference extends AbstractReference {
-
-    public static SourceReference fromMapSource(String[] segments, Parameter parameter) {
-        Type parameterType = parameter.getType();
-        Type valueType = parameterType.getTypeParameters().get( 1 );
-
-        TypeElement typeElement = parameterType.getTypeElement();
-        TypeMirror typeMirror = valueType.getTypeMirror();
-        String simpleName = String.join( ".", segments );
-
-        MapValueAccessor mapValueAccessor = new MapValueAccessor( typeElement, typeMirror, simpleName );
-        MapValuePresenceChecker mapValuePresenceChecker = new MapValuePresenceChecker(
-            typeElement,
-            typeMirror,
-            simpleName
-        );
-        List<PropertyEntry> entries = Collections.singletonList(
-            PropertyEntry.forSourceReference( segments, mapValueAccessor, mapValuePresenceChecker, valueType )
-        );
-        return new SourceReference( parameter, entries, true );
-    }
 
     /**
      * Builds a {@link SourceReference} from an {@code @Mappping}.
@@ -173,11 +150,6 @@ public class SourceReference extends AbstractReference {
          * @return the source reference
          */
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
-
-            if ( canBeTreatedAsMapSourceType( parameter.getType() ) ) {
-                return fromMapSource( segments, parameter );
-            }
-
             boolean foundEntryMatch;
 
             String[] propertyNames = segments;
@@ -214,14 +186,6 @@ public class SourceReference extends AbstractReference {
          */
         private SourceReference buildFromMultipleSourceParameters(String[] segments, Parameter parameter) {
 
-            if (parameter != null && canBeTreatedAsMapSourceType( parameter.getType() )) {
-                String[] propertyNames = new String[0];
-                if ( segments.length > 1 ) {
-                    propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                }
-                return fromMapSource( propertyNames, parameter );
-            }
-
             boolean foundEntryMatch;
 
             String[] propertyNames = new String[0];
@@ -244,17 +208,8 @@ public class SourceReference extends AbstractReference {
             return new SourceReference( parameter, entries, foundEntryMatch );
         }
 
-        private boolean canBeTreatedAsMapSourceType(Type type) {
-            if ( !type.isMapType() ) {
-                return false;
-            }
-
-            List<Type> typeParameters = type.getTypeParameters();
-            return typeParameters.size() == 2 && typeParameters.get( 0 ).isString();
-        }
-
         /**
-         * When there are more than one source parameters, the first segment name of the propery
+         * When there are more than one source parameters, the first segment name of the property
          * needs to match the parameter name to avoid ambiguity
          *
          * consider: {@code Target map( Source1 source1, Source2 source2 )}
@@ -356,24 +311,21 @@ public class SourceReference extends AbstractReference {
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
-                Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
-                Map<String, Accessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
-
-                for ( Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
-                    if ( getter.getKey().equals( entryNames[i] ) ) {
-                        newType = typeFactory.getReturnType(
-                            (DeclaredType) newType.getTypeMirror(),
-                            getter.getValue()
-                        );
-                        sourceEntries.add( forSourceReference(
-                            Arrays.copyOf( entryNames, i + 1 ),
-                            getter.getValue(),
-                            sourcePresenceCheckers.get( entryNames[i] ),
-                            newType
-                        ) );
-                        matchFound = true;
-                        break;
-                    }
+                Type noBoundsType = newType.withoutBounds();
+                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i] );
+                if ( readAccessor != null ) {
+                    PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
+                    newType = typeFactory.getReturnType(
+                        (DeclaredType) noBoundsType.getTypeMirror(),
+                        readAccessor
+                    );
+                    sourceEntries.add( forSourceReference(
+                        Arrays.copyOf( entryNames, i + 1 ),
+                        readAccessor,
+                        presenceChecker,
+                        newType
+                    ) );
+                    matchFound = true;
                 }
                 if ( !matchFound ) {
                     break;
@@ -393,8 +345,8 @@ public class SourceReference extends AbstractReference {
     public static class BuilderFromProperty {
 
         private String name;
-        private Accessor readAccessor;
-        private Accessor presenceChecker;
+        private ReadAccessor readAccessor;
+        private PresenceCheckAccessor presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -403,12 +355,12 @@ public class SourceReference extends AbstractReference {
             return this;
         }
 
-        public BuilderFromProperty readAccessor(Accessor readAccessor) {
+        public BuilderFromProperty readAccessor(ReadAccessor readAccessor) {
             this.readAccessor = readAccessor;
             return this;
         }
 
-        public BuilderFromProperty presenceChecker(Accessor presenceChecker) {
+        public BuilderFromProperty presenceChecker(PresenceCheckAccessor presenceChecker) {
             this.presenceChecker = presenceChecker;
             return this;
         }
@@ -480,10 +432,10 @@ public class SourceReference extends AbstractReference {
         PropertyEntry deepestProperty = getDeepestProperty();
         if ( deepestProperty != null ) {
             Type type = deepestProperty.getType();
-            Map<String, Accessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
+            Map<String, ReadAccessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
             String parameterName = getParameter().getName();
             String deepestPropertyFullName = deepestProperty.getFullName();
-            for ( Map.Entry<String, Accessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
+            for ( Map.Entry<String, ReadAccessor> newDeepestReadAccessorEntry : newDeepestReadAccessors.entrySet() ) {
                 // Always include the parameter name in the new full name.
                 // Otherwise multi source parameters might be reported incorrectly
                 String newFullName =

@@ -9,6 +9,7 @@ import org.joda.time.LocalDate;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJoda;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class
 })
 @IssueKey("1425")
+@WithJoda
 public class Issue1425Test {
 
     @ProcessorTest

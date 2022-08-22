@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -31,11 +32,13 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
     private final TypeMirror source;
     private final TypeMirror target;
+    private final TypeUtils typeUtils;
 
-    public SubclassMappingOptions(TypeMirror source, TypeMirror target, DelegatingOptions next) {
+    public SubclassMappingOptions(TypeMirror source, TypeMirror target, TypeUtils typeUtils, DelegatingOptions next) {
         super( next );
         this.source = source;
         this.target = target;
+        this.typeUtils = typeUtils;
     }
 
     @Override
@@ -84,7 +87,9 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass.toString() );
             isConsistent = false;
         }
-        subclassValidator.isInCorrectOrder( method, gem.mirror(), targetSubclass );
+        if ( !subclassValidator.isValidUsage( method, gem.mirror(), sourceSubclass ) ) {
+            isConsistent = false;
+        }
         return isConsistent;
     }
 
@@ -115,10 +120,10 @@ public class SubclassMappingOptions extends DelegatingOptions {
     public static void addInstances(SubclassMappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                     TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                    List<Parameter> sourceParameters, Type resultType) {
-        SubclassValidator subclassValidator = new SubclassValidator( messager, typeUtils );
+                                    List<Parameter> sourceParameters, Type resultType,
+                                    SubclassValidator subclassValidator) {
         for ( SubclassMappingGem subclassMappingGem : gem.value().get() ) {
-            addAndValidateInstance(
+            addInstance(
                 subclassMappingGem,
                 method,
                 beanMappingOptions,
@@ -134,24 +139,8 @@ public class SubclassMappingOptions extends DelegatingOptions {
     public static void addInstance(SubclassMappingGem subclassMapping, ExecutableElement method,
                                    BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                    TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                   List<Parameter> sourceParameters, Type resultType) {
-        addAndValidateInstance(
-            subclassMapping,
-            method,
-            beanMappingOptions,
-            messager,
-            typeUtils,
-            mappings,
-            sourceParameters,
-            resultType,
-            new SubclassValidator( messager, typeUtils ) );
-    }
-
-    private static void addAndValidateInstance(SubclassMappingGem subclassMapping, ExecutableElement method,
-                                               BeanMappingOptions beanMappingOptions, FormattingMessager messager,
-                                               TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
-                                               List<Parameter> sourceParameters, Type resultType,
-                                               SubclassValidator subclassValidator) {
+                                   List<Parameter> sourceParameters, Type resultType,
+                                   SubclassValidator subclassValidator) {
         if ( !isConsistent(
             subclassMapping,
             method,
@@ -166,6 +155,41 @@ public class SubclassMappingOptions extends DelegatingOptions {
         TypeMirror sourceSubclass = subclassMapping.source().getValue();
         TypeMirror targetSubclass = subclassMapping.target().getValue();
 
-        mappings.add( new SubclassMappingOptions( sourceSubclass, targetSubclass, beanMappingOptions ) );
+        mappings
+                .add(
+                    new SubclassMappingOptions(
+                        sourceSubclass,
+                        targetSubclass,
+                        typeUtils,
+                        beanMappingOptions ) );
+    }
+
+    public static List<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
+                                                                        BeanMappingOptions beanMappingOptions) {
+        // we are not interested in keeping it unique at this point.
+        List<SubclassMappingOptions> mappings = new ArrayList<>();
+        for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
+            mappings.add(
+                        new SubclassMappingOptions(
+                                   subclassMapping.target,
+                                   subclassMapping.source,
+                                   subclassMapping.typeUtils,
+                                   beanMappingOptions ) );
+        }
+        return mappings;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( obj == null || !( obj instanceof SubclassMappingOptions ) ) {
+            return false;
+        }
+        SubclassMappingOptions other = (SubclassMappingOptions) obj;
+        return typeUtils.isSameType( source, other.source );
+    }
+
+    @Override
+    public int hashCode() {
+        return 1; // use a stable value because TypeMirror is not safe to use for hashCode.
     }
 }

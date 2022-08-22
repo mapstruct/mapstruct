@@ -139,6 +139,10 @@ public class ObjectFactoryMethodResolver {
     }
 
     public static MethodReference getBuilderFactoryMethod(Method method, BuilderType builder ) {
+        return getBuilderFactoryMethod( method.getReturnType(), builder );
+    }
+
+    public static MethodReference getBuilderFactoryMethod(Type typeToBuild, BuilderType builder ) {
         if ( builder == null ) {
             return null;
         }
@@ -149,7 +153,7 @@ public class ObjectFactoryMethodResolver {
             return null;
         }
 
-        if ( !builder.getBuildingType().isAssignableTo( method.getReturnType() ) ) {
+        if ( !builder.getBuildingType().isAssignableTo( typeToBuild ) ) {
             //TODO print error message
             return null;
         }

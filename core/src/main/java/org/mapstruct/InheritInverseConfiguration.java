@@ -81,8 +81,8 @@ import java.lang.annotation.Target;
 public @interface InheritInverseConfiguration {
 
     /**
-     * The name of the inverse mapping method to inherit the mappings from. Needs only to be specified in case more than
-     * one inverse method with matching source and target type exists.
+     * The name of the inverse mapping method to inherit the mappings from. Needs to be specified only in case more than
+     * one inverse method exists with a matching source and target type exists.
      *
      * @return The name of the inverse mapping method to inherit the mappings from.
      */

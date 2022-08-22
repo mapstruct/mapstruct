@@ -68,6 +68,10 @@ public abstract class DelegatingOptions {
         return next.componentModel();
     }
 
+    public boolean suppressTimestampInGenerated() {
+        return next.suppressTimestampInGenerated();
+    }
+
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return next.getMappingInheritanceStrategy();
     }
@@ -100,6 +104,14 @@ public abstract class DelegatingOptions {
 
     public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
         return next.getSubclassExhaustiveStrategy();
+    }
+
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        return next.getNullValueIterableMappingStrategy();
+    }
+
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        return next.getNullValueMapMappingStrategy();
     }
 
     public BuilderGem getBuilder() {

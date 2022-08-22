@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -30,6 +31,7 @@ import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -92,15 +94,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private AccessorNamingUtils accessorNaming;
     private MappingBuilderContext mappingContext;
 
+    private AdditionalAnnotationsBuilder additionalAnnotationsBuilder;
+
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
         this.typeUtils = context.getTypeUtils();
-        this.messager = context.getMessager();
+        this.messager =
+            new MapperAnnotatedFormattingMessenger( context.getMessager(), mapperTypeElement, context.getTypeUtils() );
         this.options = context.getOptions();
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
+        additionalAnnotationsBuilder =
+            new AdditionalAnnotationsBuilder( elementUtils, typeFactory, messager );
 
         MapperOptions mapperOptions = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperOptions );
@@ -197,13 +204,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .constructorFragments(  constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods, mapperOptions.implementationName(),
-                mapperOptions.implementationPackage(), getExtraImports( element, mapperOptions ) ) )
+            .decorator( getDecorator( element, methods, mapperOptions ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .extraImports( getExtraImports( element, mapperOptions ) )
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
+            .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -225,8 +233,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mapper;
     }
 
-    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
-                                   String implPackage, SortedSet<Type> extraImports) {
+    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, MapperOptions mapperOptions) {
         DecoratedWithGem decoratedWith = DecoratedWithGem.instanceOn( element );
 
         if ( decoratedWith == null ) {
@@ -286,9 +293,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .hasDelegateConstructor( hasDelegateConstructor )
             .options( options )
             .versionInformation( versionInformation )
-            .implName( implName )
-            .implPackage( implPackage )
-            .extraImports( extraImports )
+            .implName( mapperOptions.implementationName() )
+            .implPackage( mapperOptions.implementationPackage() )
+            .extraImports( getExtraImports( element, mapperOptions ) )
+            .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .build();
 
         return decorator;
@@ -319,7 +327,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-            mergeInheritedOptions( method, mapperAnnotation, methods, new ArrayList<>() );
+            mergeInheritedOptions( method, mapperAnnotation, methods, new ArrayList<>(), null );
 
             MappingMethodOptions mappingOptions = method.getOptions();
 
@@ -461,7 +469,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void mergeInheritedOptions(SourceMethod method, MapperOptions mapperConfig,
-                                       List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods) {
+                                       List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods,
+                                       AnnotationMirror annotationMirror) {
         if ( initializingMethods.contains( method ) ) {
             // cycle detected
 
@@ -496,10 +505,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
         if ( forwardTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( forwardTemplateMethod, false );
+            mappingOptions.applyInheritedOptions( method, forwardTemplateMethod, false, annotationMirror );
         }
         if ( inverseTemplateMethod != null ) {
-            mappingOptions.applyInheritedOptions( inverseTemplateMethod, true );
+            mappingOptions.applyInheritedOptions( method, inverseTemplateMethod, true, annotationMirror );
         }
 
         // apply auto inherited options
@@ -509,7 +518,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // but.. there should not be an @InheritedConfiguration
             if ( forwardTemplateMethod == null && inheritanceStrategy.isApplyForward() ) {
                 if ( applicablePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( first( applicablePrototypeMethods ), false );
+                    mappingOptions.applyInheritedOptions( method, first( applicablePrototypeMethods ), false,
+                        annotationMirror );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -522,7 +532,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // or no @InheritInverseConfiguration
             if ( inverseTemplateMethod == null && inheritanceStrategy.isApplyReverse() ) {
                 if ( applicableReversePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( first( applicableReversePrototypeMethods ), true );
+                    mappingOptions.applyInheritedOptions( method, first( applicableReversePrototypeMethods ), true,
+                        annotationMirror );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -606,16 +617,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
 
-        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods,
+            getAnnotationMirror( inverseConfiguration ) );
+    }
+
+    private AnnotationMirror getAnnotationMirror(InheritInverseConfigurationGem inverseConfiguration) {
+        return inverseConfiguration == null ? null : inverseConfiguration.mirror();
     }
 
     private SourceMethod extractInitializedOptions(SourceMethod resultMethod,
                                                      List<SourceMethod> rawMethods,
                                                      MapperOptions mapperConfig,
-                                                     List<SourceMethod> initializingMethods) {
+                                                     List<SourceMethod> initializingMethods,
+                                                     AnnotationMirror annotationMirror) {
         if ( resultMethod != null ) {
             if ( !resultMethod.getOptions().isFullyInitialized() ) {
-                mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods );
+                mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods,
+                    annotationMirror );
             }
 
             return resultMethod;
@@ -683,7 +701,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
 
-        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods,
+                                          getAnnotationMirror( inheritConfiguration ) );
+    }
+
+    private AnnotationMirror getAnnotationMirror(InheritConfigurationGem inheritConfiguration) {
+        return inheritConfiguration == null ? null : inheritConfiguration.mirror();
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,

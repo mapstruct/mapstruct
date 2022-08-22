@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.bugs._1395;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithSpring;
 
 /**
  * @author Filip Hrisafov
@@ -18,6 +19,7 @@ import org.mapstruct.ap.testutil.WithClasses;
     Source.class,
     Target.class
 } )
+@WithSpring
 @IssueKey( "1395" )
 public class Issue1395Test {
 

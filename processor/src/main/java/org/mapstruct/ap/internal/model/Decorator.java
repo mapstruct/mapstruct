@@ -32,6 +32,7 @@ public class Decorator extends GeneratedType {
         private boolean hasDelegateConstructor;
         private String implName;
         private String implPackage;
+        private boolean suppressGeneratorTimestamp;
 
         public Builder() {
             super( Builder.class );
@@ -62,6 +63,11 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
+        public Builder suppressGeneratorTimestamp(boolean suppressGeneratorTimestamp) {
+            this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
+            return this;
+        }
+
         public Decorator build() {
             String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
                 Mapper.getFlatName( mapperElement ) );
@@ -86,6 +92,7 @@ public class Decorator extends GeneratedType {
                 methods,
                 options,
                 versionInformation,
+                suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),
                 extraImportedTypes,
                 decoratorConstructor
@@ -101,6 +108,7 @@ public class Decorator extends GeneratedType {
                       Type mapperType,
                       List<MappingMethod> methods,
                       Options options, VersionInformation versionInformation,
+                      boolean suppressGeneratorTimestamp,
                       Accessibility accessibility, SortedSet<Type> extraImports,
                       DecoratorConstructor decoratorConstructor) {
         super(
@@ -112,6 +120,7 @@ public class Decorator extends GeneratedType {
             Arrays.asList( new Field( mapperType, "delegate", true ) ),
             options,
             versionInformation,
+            suppressGeneratorTimestamp,
             accessibility,
             extraImports,
             decoratorConstructor

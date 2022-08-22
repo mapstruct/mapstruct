@@ -16,7 +16,7 @@ import javax.lang.model.type.TypeMirror;
  *
  * @author Christian Kosmowski
  */
-public class MapValueAccessor implements Accessor {
+public class MapValueAccessor implements ReadAccessor {
 
     private final TypeMirror valueTypeMirror;
     private final String simpleName;
@@ -50,6 +50,11 @@ public class MapValueAccessor implements Accessor {
 
     @Override
     public AccessorType getAccessorType() {
-        return AccessorType.MAP_GET;
+        return AccessorType.GETTER;
+    }
+
+    @Override
+    public String getReadValueSource() {
+        return "get( \"" + getSimpleName() + "\" )";
     }
 }

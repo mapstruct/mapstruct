@@ -23,6 +23,7 @@ import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithSpring;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey( "571" )
 @ComponentScan(basePackageClasses = CustomerSpringConstructorMapper.class)
 @Configuration
+@WithSpring
 @DefaultTimeZone("Europe/Berlin")
 public class SpringConstructorMapperTest {
 

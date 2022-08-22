@@ -83,6 +83,13 @@ public class DefaultOptions extends DelegatingOptions {
         return mapper.componentModel().getDefaultValue();
     }
 
+    public boolean suppressTimestampInGenerated() {
+        if ( mapper.suppressTimestampInGenerated().hasValue() ) {
+            return mapper.suppressTimestampInGenerated().getValue();
+        }
+        return options.isSuppressGeneratorTimestamp();
+    }
+
     @Override
     public MappingInheritanceStrategyGem getMappingInheritanceStrategy() {
         return MappingInheritanceStrategyGem.valueOf( mapper.mappingInheritanceStrategy().getDefaultValue() );
@@ -122,6 +129,14 @@ public class DefaultOptions extends DelegatingOptions {
 
     public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
         return SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().getDefaultValue() );
+    }
+
+    public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        return NullValueMappingStrategyGem.valueOf( mapper.nullValueIterableMappingStrategy().getDefaultValue() );
+    }
+
+    public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().getDefaultValue() );
     }
 
     public BuilderGem getBuilder() {

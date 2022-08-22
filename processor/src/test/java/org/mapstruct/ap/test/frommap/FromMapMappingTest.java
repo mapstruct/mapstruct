@@ -261,6 +261,20 @@ class FromMapMappingTest {
         assertThat( target.getNestedTarget().getStringFromNestedMap() ).isEqualTo( "valueFromNestedMap" );
     }
 
+    @IssueKey("2553")
+    @ProcessorTest
+    @WithClasses(MapToBeanFromMapAndNestedMapWithDefinedMapping.class)
+    void shouldMapFromNestedMapWithDefinedMapping() {
+
+        MapToBeanFromMapAndNestedMapWithDefinedMapping.Source source =
+            new MapToBeanFromMapAndNestedMapWithDefinedMapping.Source();
+        MapToBeanFromMapAndNestedMapWithDefinedMapping.Target target =
+            MapToBeanFromMapAndNestedMapWithDefinedMapping.INSTANCE.toTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNested() ).isEqualTo( "valueFromNestedMap" );
+    }
+
     @ProcessorTest
     @WithClasses(ObjectMapToBeanWithQualifierMapper.class)
     void shouldUseObjectQualifiedMethod() {

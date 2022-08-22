@@ -16,15 +16,14 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import org.mapstruct.ap.internal.gem.ConditionGem;
-import org.mapstruct.ap.internal.util.TypeUtils;
-
+import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -48,6 +47,7 @@ public class SourceMethod implements Method {
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
     private final Parameter targetTypeParameter;
+    private final Parameter targetPropertyNameParameter;
     private final boolean isObjectFactory;
     private final boolean isPresenceCheck;
     private final Type returnType;
@@ -98,6 +98,7 @@ public class SourceMethod implements Method {
         private Set<SubclassMappingOptions> subclassMappings;
 
         private boolean verboseLogging;
+        private SubclassValidator subclassValidator;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -159,6 +160,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setSubclassValidator(SubclassValidator subclassValidator) {
+            this.subclassValidator = subclassValidator;
+            return this;
+        }
+
         public Builder setTypeUtils(TypeUtils typeUtils) {
             this.typeUtils = typeUtils;
             return this;
@@ -212,7 +218,8 @@ public class SourceMethod implements Method {
                 beanMapping,
                 enumMappingOptions,
                 valueMappings,
-                subclassMappings
+                subclassMappings,
+                subclassValidator
             );
 
             this.typeParameters = this.executable.getTypeParameters()
@@ -242,6 +249,7 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
+        this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
         this.isPresenceCheck = determineIfIsPresenceCheck();
@@ -257,8 +265,9 @@ public class SourceMethod implements Method {
     private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
+        boolean hasNoTargetPropertyNameParam = getTargetPropertyNameParameter() == null;
         return !isLifecycleCallbackMethod() && !returnType.isVoid()
-            && hasNoMappingTargetParam
+            && hasNoMappingTargetParam && hasNoTargetPropertyNameParam
             && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
     }
 
@@ -371,6 +380,10 @@ public class SourceMethod implements Method {
     @Override
     public Parameter getTargetTypeParameter() {
         return targetTypeParameter;
+    }
+
+    public Parameter getTargetPropertyNameParameter() {
+        return targetPropertyNameParameter;
     }
 
     public boolean isIterableMapping() {

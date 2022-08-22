@@ -37,7 +37,7 @@ import org.mapstruct.tools.gem.GemValue;
  */
 public class MappingOptions extends DelegatingOptions {
 
-    private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
+    private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^\\s*java\\((.*)\\)\\s*$", Pattern.DOTALL );
 
     private final String sourceName;
     private final String constant;
@@ -222,8 +222,14 @@ public class MappingOptions extends DelegatingOptions {
         else if ( gem.expression().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
+        else if ( gem.expression().hasValue() && gem.conditionExpression().hasValue() ) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_EXPRESSION_BOTH_DEFINED;
+        }
         else if ( gem.constant().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
+        }
+        else if ( gem.constant().hasValue() && gem.conditionExpression().hasValue() ) {
+            message = Message.PROPERTYMAPPING_CONSTANT_AND_CONDITION_EXPRESSION_BOTH_DEFINED;
         }
         else if ( gem.defaultValue().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;

@@ -16,7 +16,7 @@
     </#list>
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
-            return<#if returnType.name != "void"> null</#if>;
+            return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
         <#else>
             <#if existingInstanceMapping>
                  ${resultName}.clear();

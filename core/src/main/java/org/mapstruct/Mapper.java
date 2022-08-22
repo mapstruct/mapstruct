@@ -142,7 +142,12 @@ public @interface Mapper {
      * can be retrieved via {@code @Autowired}</li>
      * <li>
      * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
-     * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}.
+     * The annotations will either be from javax.inject or jakarta.inject,
+     * depending on which one is available, with javax.inject having precedence.</li>
+     * <li>
+     * {@code jakarta}: the generated mapper is annotated with {@code @jakarta.inject.Named} and
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}.</li>
      * </ul>
      * The method overrides a componentModel set in a central configuration set
      * by {@link #config() }
@@ -202,6 +207,32 @@ public @interface Mapper {
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * The strategy to be applied when {@code null} is passed as source argument value to an {@link IterableMapping} of
+     * this mapper. If unset, the strategy set with {@link #nullValueMappingStrategy()} will be applied. If neither
+     * strategy is configured, the strategy given via {@link MapperConfig#nullValueIterableMappingStrategy()} will be
+     * applied, using {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     *
+     * @since 1.5
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to an {@link IterableMapping} of
+     * this mapper.
+     */
+    NullValueMappingStrategy nullValueIterableMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * The strategy to be applied when {@code null} is passed as source argument value to a {@link MapMapping} of this
+     * mapper. If unset, the strategy set with {@link #nullValueMappingStrategy()} will be applied. If neither strategy
+     * is configured, the strategy given via {@link MapperConfig#nullValueMapMappingStrategy()} will be applied, using
+     * {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     *
+     * @since 1.5
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to a {@link MapMapping} of this
+     * mapper.
+     */
+    NullValueMappingStrategy nullValueMapMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
      * The strategy to be applied when a source bean property is {@code null} or not present. If no strategy is
@@ -331,4 +362,17 @@ public @interface Mapper {
      * @since 1.4
      */
     Class<? extends Exception> unexpectedValueMappingException() default IllegalArgumentException.class;
+
+    /**
+     * Flag indicating whether the addition of a time stamp in the {@code @Generated} annotation should be suppressed.
+     * i.e. not be added.
+     *
+     * The method overrides the flag set in a central configuration set by {@link #config()}
+     * or through an annotation processor option.
+     *
+     * @return whether the addition of a timestamp should be suppressed
+     *
+     * @since 1.5
+     */
+    boolean suppressTimestampInGenerated() default false;
 }

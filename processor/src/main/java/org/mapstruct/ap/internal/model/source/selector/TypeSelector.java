@@ -96,7 +96,7 @@ public class TypeSelector implements MethodSelector {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
-        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+        addTargetRelevantBindings( availableParams, targetType );
 
         return availableParams;
     }
@@ -116,7 +116,7 @@ public class TypeSelector implements MethodSelector {
             }
         }
 
-        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+        addTargetRelevantBindings( availableParams, targetType );
 
         return availableParams;
     }
@@ -127,9 +127,10 @@ public class TypeSelector implements MethodSelector {
      * @param availableParams Already available params, new entries will be added to this list
      * @param targetType Target type
      */
-    private void addMappingTargetAndTargetTypeBindings(List<ParameterBinding> availableParams, Type targetType) {
+    private void addTargetRelevantBindings(List<ParameterBinding> availableParams, Type targetType) {
         boolean mappingTargetAvailable = false;
         boolean targetTypeAvailable = false;
+        boolean targetPropertyNameAvailable = false;
 
         // search available parameter bindings if mapping-target and/or target-type is available
         for ( ParameterBinding pb : availableParams ) {
@@ -139,6 +140,9 @@ public class TypeSelector implements MethodSelector {
             else if ( pb.isTargetType() ) {
                 targetTypeAvailable = true;
             }
+            else if ( pb.isTargetPropertyName() ) {
+                targetPropertyNameAvailable = true;
+            }
         }
 
         if ( !mappingTargetAvailable ) {
@@ -146,6 +150,9 @@ public class TypeSelector implements MethodSelector {
         }
         if ( !targetTypeAvailable ) {
             availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );
+        }
+        if ( !targetPropertyNameAvailable ) {
+            availableParams.add( ParameterBinding.forTargetPropertyNameBinding( typeFactory.getType( String.class ) ) );
         }
     }
 
@@ -301,7 +308,8 @@ public class TypeSelector implements MethodSelector {
         for ( ParameterBinding candidate : candidateParameters ) {
             if ( parameter.isTargetType() == candidate.isTargetType()
                 && parameter.isMappingTarget() == candidate.isMappingTarget()
-                && parameter.isMappingContext() == candidate.isMappingContext() ) {
+                && parameter.isMappingContext() == candidate.isMappingContext()
+                && parameter.isTargetPropertyName() == candidate.isTargetPropertyName()) {
                 result.add( candidate );
             }
         }
