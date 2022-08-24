@@ -374,6 +374,8 @@ public class MethodMatcher {
                             // something went wrong
                             return null;
                         }
+                        // Use the boxed equivalent for the type arguments,
+                        // because a primitive type cannot be a type argument
                         typeArgs[i] = matchingType.getBoxedEquivalent().getTypeMirror();
                     }
                     else {
