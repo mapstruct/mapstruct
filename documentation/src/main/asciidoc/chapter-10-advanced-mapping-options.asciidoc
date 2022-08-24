@@ -304,7 +304,7 @@ The difference is that it allows users to write custom condition methods that wi
 
 A custom condition method is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
 
-e.g. if you only want to map a String property when it is not `null, and it is not empty then you can do something like:
+e.g. if you only want to map a String property when it is not `null`, and it is not empty then you can do something like:
 
 .Mapper using custom condition check method
 ====
