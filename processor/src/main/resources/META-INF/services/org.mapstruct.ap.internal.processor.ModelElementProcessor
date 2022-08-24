@@ -3,6 +3,7 @@
 # Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
 
 org.mapstruct.ap.internal.processor.CdiComponentProcessor
+org.mapstruct.ap.internal.processor.JakartaCdiComponentProcessor
 org.mapstruct.ap.internal.processor.Jsr330ComponentProcessor
 org.mapstruct.ap.internal.processor.JakartaComponentProcessor
 org.mapstruct.ap.internal.processor.MapperCreationProcessor

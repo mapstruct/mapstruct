@@ -109,7 +109,12 @@ public final class MappingConstants {
         public static final String DEFAULT = "default";
 
         /**
-         * The generated mapper is an application-scoped CDI bean and can be retrieved via @Inject
+         * The generated mapper is an application-scoped CDI bean and can be retrieved via @Inject.
+         * The annotations are either from {@code javax} or {@code jakarta}.
+         * Priority have the {@code javax} annotations.
+         * In case you want to only use Jakarta then use {@link #JAKARTA_CDI}.
+         *
+         * @see #JAKARTA_CDI
          */
         public static final String CDI = "cdi";
 
@@ -137,6 +142,12 @@ public final class MappingConstants {
          * @see #JSR330
          */
         public static final String JAKARTA = "jakarta";
+
+        /**
+         * The generated mapper is an application-scoped Jakarta CDI bean and can be retrieved via @Inject.
+         * @see #CDI
+         */
+        public static final String JAKARTA_CDI = "jakarta-cdi";
 
     }
 
