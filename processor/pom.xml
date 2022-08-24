@@ -89,6 +89,11 @@
             <artifactId>jakarta.inject-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- plexus-container-default is a runtime-dependency of the tycho-compiler -->
         <dependency>
