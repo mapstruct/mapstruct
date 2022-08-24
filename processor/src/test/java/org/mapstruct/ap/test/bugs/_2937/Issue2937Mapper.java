@@ -39,9 +39,6 @@ public interface Issue2937Mapper {
             return names;
         }
 
-//        public boolean hasNames() {
-//            return names.size() > 1;
-//        }
     }
 
     class Target {
