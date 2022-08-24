@@ -130,7 +130,7 @@ You can find a complete example in the https://github.com/mapstruct/mapstruct-ex
 
 The MapStruct code generator can be configured using _annotation processor options_.
 
-When invoking javac directly, these options are passed to the compiler in the form _-Akey=value_. When using MapStruct via Maven, any processor options can be passed using an `options` element within the configuration of the Maven processor plug-in like this:
+When invoking javac directly, these options are passed to the compiler in the form _-Akey=value_. When using MapStruct via Maven, any processor options can be passed using `compilerArgs` within the configuration of the Maven processor plug-in like this:
 
 .Maven configuration
 ====
