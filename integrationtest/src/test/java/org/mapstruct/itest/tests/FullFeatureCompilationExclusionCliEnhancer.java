@@ -33,6 +33,8 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
                     additionalExcludes.add(
                         "org/mapstruct/ap/test/selection/methodgenerics/wildcards/LifecycleIntersectionMapper.java" );
                 }
+                additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/cdi/**/*.java" );
+                additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/jakarta_cdi/**/*.java" );
                 break;
             case JAVA_9:
                 // TODO find out why this fails:
