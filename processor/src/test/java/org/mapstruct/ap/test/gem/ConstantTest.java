@@ -34,7 +34,7 @@ public class ConstantTest {
     }
 
     @Test
-    public void componentModelContantsShouldBeEqual() {
+    public void componentModelConstantsShouldBeEqual() {
         assertThat( MappingConstants.ComponentModel.DEFAULT )
             .isEqualTo( MappingConstantsGem.ComponentModelGem.DEFAULT );
         assertThat( MappingConstants.ComponentModel.CDI ).isEqualTo( MappingConstantsGem.ComponentModelGem.CDI );
@@ -42,5 +42,7 @@ public class ConstantTest {
         assertThat( MappingConstants.ComponentModel.JSR330 ).isEqualTo( MappingConstantsGem.ComponentModelGem.JSR330 );
         assertThat( MappingConstants.ComponentModel.JAKARTA )
             .isEqualTo( MappingConstantsGem.ComponentModelGem.JAKARTA );
+        assertThat( MappingConstants.ComponentModel.JAKARTA_CDI )
+            .isEqualTo( MappingConstantsGem.ComponentModelGem.JAKARTA_CDI );
     }
 }

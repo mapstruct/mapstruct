@@ -258,8 +258,10 @@ public abstract class GeneratedType extends ModelElement {
             return;
         }
 
-        if ( needsImportDeclaration( typeToAdd ) ) {
-            collection.add( typeToAdd );
+        for ( Type type : typeToAdd.getImportTypes() ) {
+            if ( needsImportDeclaration( type ) ) {
+                collection.add( type );
+            }
         }
     }
 

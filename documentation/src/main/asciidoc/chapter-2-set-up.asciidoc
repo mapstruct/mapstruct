@@ -273,3 +273,28 @@ disableBuilders`
 MapStruct can be used with Java 9 and higher versions.
 
 To allow usage of the `@Generated` annotation `java.annotation.processing.Generated` (part of the `java.compiler` module) can be enabled.
+
+=== IDE Integration
+
+There are optional MapStruct plugins for IntelliJ and Eclipse that allow you to have additional completion support (and more) in the annotations.
+
+==== IntelliJ
+
+The https://plugins.jetbrains.com/plugin/10036-mapstruct-support[MapStruct IntelliJ] plugin offers assistance in projects that use MapStruct.
+
+Some features include:
+
+* Code completion in `target`, `source`, `expression`
+* Go To Declaration for properties in `target` and `source`
+* Find Usages of properties in `target` and `source`
+* Refactoring support
+* Errors and Quick Fixes
+
+==== Eclipse
+
+The https://marketplace.eclipse.org/content/mapstruct-eclipse-plugin[MapStruct Eclipse] Plugin offers assistance in projects that use MapStruct.
+
+Some features include:
+
+* Code completion in `target` and `source`
+* Quick Fixes
