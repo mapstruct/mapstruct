@@ -374,7 +374,9 @@ public class MethodMatcher {
                             // something went wrong
                             return null;
                         }
-                        typeArgs[i] = matchingType.getTypeMirror();
+                        // Use the boxed equivalent for the type arguments,
+                        // because a primitive type cannot be a type argument
+                        typeArgs[i] = matchingType.getBoxedEquivalent().getTypeMirror();
                     }
                     else {
                         // it is not a type var (e.g. Map<String, T> ), String is not a type var

@@ -307,7 +307,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
 
         for ( TypeMirror extraImport : mapperOptions.imports() ) {
-            Type type = typeFactory.getType( extraImport );
+            Type type = typeFactory.getAlwaysImportedType( extraImport );
             extraImports.add( type );
         }
 
