@@ -6,8 +6,10 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,36 +65,39 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 sourceParameterType.isIterableType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( StreamSupport.class ) );
             }
-
+            Map<String, List<LifecycleCallbackMethodReference>> mappingReferencesMap = new HashMap<>(2);
+            mappingReferencesMap.put( "before", beforeMappingMethods );
+            mappingReferencesMap.put( "after", afterMappingMethods );
             return new StreamMappingMethod(
                 method,
+                getMethodAnnotation(),
                 existingVariables,
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
                 loopVariableName,
-                beforeMappingMethods,
-                afterMappingMethods,
+                mappingReferencesMap,
                 selectionParameters,
                 helperImports
             );
         }
     }
 
-    private StreamMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+    private StreamMappingMethod(Method method, List<Annotation> annotations,
+                                Collection<String> existingVariables, Assignment parameterAssignment,
                                 MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
-                                List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                                List<LifecycleCallbackMethodReference> afterMappingReferences,
+                                Map<String, List<LifecycleCallbackMethodReference>> mappingReferencesMap,
         SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
+            annotations,
             existingVariables,
             parameterAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,
-            beforeMappingReferences,
-            afterMappingReferences,
+            mappingReferencesMap.get( "before" ),
+            mappingReferencesMap.get( "after" ),
             selectionParameters
         );
         this.helperImports = helperImports;

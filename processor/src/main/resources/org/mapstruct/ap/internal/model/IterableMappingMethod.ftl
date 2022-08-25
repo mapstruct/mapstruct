@@ -6,6 +6,9 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.IterableMappingMethod" -->
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>

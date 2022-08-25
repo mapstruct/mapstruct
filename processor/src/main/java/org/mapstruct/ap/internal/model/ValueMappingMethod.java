@@ -41,6 +41,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class ValueMappingMethod extends MappingMethod {
 
+    private final List<Annotation> annotations;
     private final List<MappingEntry> valueMappings;
     private final MappingEntry defaultTarget;
     private final MappingEntry nullTarget;
@@ -116,9 +117,16 @@ public class ValueMappingMethod extends MappingMethod {
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
-
+            AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
+                    new AdditionalAnnotationsBuilder(
+                            ctx.getElementUtils(),
+                            ctx.getTypeFactory(),
+                            ctx.getMessager() );
+            List<Annotation> annotations = new ArrayList<>();
+            annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
             // finally return a mapping
             return new ValueMappingMethod( method,
+                annotations,
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
@@ -532,6 +540,7 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     private ValueMappingMethod(Method method,
+                               List<Annotation> annotations,
                                List<MappingEntry> enumMappings,
                                String nullTarget,
                                String defaultTarget,
@@ -544,6 +553,7 @@ public class ValueMappingMethod extends MappingMethod {
         this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION);
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
+        this.annotations = annotations;
     }
 
     @Override
@@ -588,6 +598,10 @@ public class ValueMappingMethod extends MappingMethod {
 
     public boolean isOverridden() {
         return overridden;
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
     }
 
     public static class MappingEntry {

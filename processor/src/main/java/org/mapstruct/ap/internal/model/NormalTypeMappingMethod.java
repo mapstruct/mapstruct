@@ -24,7 +24,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
     private final boolean overridden;
     private final boolean mapNullToDefault;
 
-    NormalTypeMappingMethod(Method method, Collection<String> existingVariableNames, MethodReference factoryMethod,
+    private final List<Annotation> annotations;
+
+    NormalTypeMappingMethod(Method method, List<Annotation> annotations,
+        Collection<String> existingVariableNames, MethodReference factoryMethod,
         boolean mapNullToDefault,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences) {
@@ -32,6 +35,7 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
+        this.annotations = annotations;
     }
 
     @Override
@@ -58,6 +62,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
 
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
     }
 
     @Override
