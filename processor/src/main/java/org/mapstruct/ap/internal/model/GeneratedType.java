@@ -225,7 +225,9 @@ public abstract class GeneratedType extends ModelElement {
         }
 
         for ( Type extraImport : extraImportedTypes ) {
-            addIfImportRequired( importedTypes, extraImport );
+            if ( needsImportDeclaration( extraImport ) ) {
+                importedTypes.add( extraImport );
+            }
         }
 
         if ( constructor != null ) {
