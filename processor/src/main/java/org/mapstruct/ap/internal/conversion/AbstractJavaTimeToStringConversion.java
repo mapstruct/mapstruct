@@ -21,15 +21,15 @@ import org.mapstruct.ap.internal.util.Strings;
  * </p>
  * <p>
  * In general each type comes with a "parse" method to convert a string to this particular type.
- * For formatting a dedicated instance of {@link java.time.format.DateTimeFormatter} is used.
+ * For formatting a dedicated instance of {@link DateTimeFormatter} is used.
  * </p>
  * <p>
  * If no date format for mapping is specified predefined ISO* formatters from
- * {@link java.time.format.DateTimeFormatter} are used.
+ * {@link DateTimeFormatter} are used.
  * </p>
  * <p>
  * An overview of date and time types shipped with Java 8 can be found at
- * http://docs.oracle.com/javase/tutorial/datetime/iso/index.html.
+ * <a href="http://docs.oracle.com/javase/tutorial/datetime/iso/index.html">...</a>.
  * </p>
  */
 public abstract class AbstractJavaTimeToStringConversion extends SimpleConversion {
