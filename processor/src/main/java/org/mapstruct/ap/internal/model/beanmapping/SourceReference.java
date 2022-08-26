@@ -143,7 +143,7 @@ public class SourceReference extends AbstractReference {
          * the parameter name to avoid ambiguity
          *
          * consider: {@code Target map( Source1 source1 )}
-         * entries in an @Mapping#source can be "source1.propx" or just "propx" to be valid
+         * entries in a @Mapping#source can be "source1.propx" or just "propx" to be valid
          *
          * @param segments the segments of @Mapping#source
          * @param parameter the one and only  parameter
@@ -213,7 +213,7 @@ public class SourceReference extends AbstractReference {
          * needs to match the parameter name to avoid ambiguity
          *
          * consider: {@code Target map( Source1 source1, Source2 source2 )}
-         * entries in an @Mapping#source need to be "source1.propx" or "source2.propy.propz" to be valid
+         * entries in a @Mapping#source need to be "source1.propx" or "source2.propy.propz" to be valid
          *
          * @param segments the segments of @Mapping#source
          * @return parameter that matches with first segment of @Mapping#source

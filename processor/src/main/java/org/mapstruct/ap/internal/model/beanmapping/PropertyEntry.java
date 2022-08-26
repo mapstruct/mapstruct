@@ -14,7 +14,7 @@ import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 /**
  * A PropertyEntry contains information on the name, readAccessor and presenceCheck (for source)
- * and return type of a property.
+ * and return type of property.
  */
 public class PropertyEntry {
 
