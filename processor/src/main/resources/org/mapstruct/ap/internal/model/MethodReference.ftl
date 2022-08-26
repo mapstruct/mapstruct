@@ -64,6 +64,7 @@
 -->
 <#macro _assignment assignmentToUse>
    <@includeModel object=assignmentToUse
+        presenceCheck=ext.presenceCheck
         targetBeanName=ext.targetBeanName
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
