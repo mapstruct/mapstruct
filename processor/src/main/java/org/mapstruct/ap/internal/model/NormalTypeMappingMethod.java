@@ -49,6 +49,9 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
         else if ( factoryMethod != null ) {
             types.addAll( factoryMethod.getImportTypes() );
         }
+        for ( Annotation annotation : annotations ) {
+            types.addAll( annotation.getImportTypes() );
+        }
         return types;
     }
 

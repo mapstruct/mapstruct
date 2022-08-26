@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._2983;
 
+import org.mapstruct.ap.test.annotatewith.CustomAnnotation;
+import org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -21,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author orange add
  */
 
-@WithClasses({Issue2983Mapper.class, Source.class, Target.class, OrderType.class, ExternalOrderType.class})
+@WithClasses({Issue2983Mapper.class, Source.class, Target.class, OrderType.class, ExternalOrderType.class,
+        CustomAnnotation.class, CustomMethodOnlyAnnotation.class})
 public class Issue2983Test {
 
     @ProcessorTest
@@ -35,6 +38,7 @@ public class Issue2983Test {
         assertThat( toStringList.getAnnotation( Deprecated.class ) ).isNotNull();
         assertThat( toStringStream.getAnnotation( Deprecated.class ) ).isNotNull();
         assertThat( longDateMapToStringStringMap.getAnnotation( Deprecated.class ) ).isNotNull();
+        assertThat( longDateMapToStringStringMap.getAnnotation( CustomAnnotation.class ) ).isNotNull();
     }
 
     @ProcessorTest
@@ -43,5 +47,7 @@ public class Issue2983Test {
         Method orderTypeToExternalOrderType = instanceClass
                 .getMethod( "orderTypeToExternalOrderType", OrderType.class );
         assertThat( orderTypeToExternalOrderType.getAnnotation( Deprecated.class ) ).isNotNull();
+        assertThat( orderTypeToExternalOrderType.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
+
     }
 }

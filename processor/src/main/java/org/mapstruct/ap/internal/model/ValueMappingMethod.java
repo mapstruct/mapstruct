@@ -566,7 +566,9 @@ public class ValueMappingMethod extends MappingMethod {
                 importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
             }
         }
-
+        for ( Annotation annotation : annotations ) {
+            importTypes.addAll( annotation.getImportTypes() );
+        }
         return importTypes;
     }
 

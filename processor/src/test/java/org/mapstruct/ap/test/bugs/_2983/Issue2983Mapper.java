@@ -11,6 +11,8 @@ import org.mapstruct.Mapper;
 
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
+import org.mapstruct.ap.test.annotatewith.CustomAnnotation;
+import org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.factory.Mappers;
@@ -39,6 +41,7 @@ public interface Issue2983Mapper {
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
     @AnnotateWith(Deprecated.class)
+    @AnnotateWith(CustomAnnotation.class)
     Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
 
     @ValueMappings({
@@ -47,6 +50,7 @@ public interface Issue2983Mapper {
             @ValueMapping(target = "DEFAULT", source = "NORMAL")
     })
     @AnnotateWith(Deprecated.class)
+    @AnnotateWith(CustomMethodOnlyAnnotation.class)
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
 }
