@@ -11,9 +11,6 @@ import java.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,19 +38,17 @@ public class ImmutableProductTest {
 
     @ProcessorTest
     @WithClasses({
-        ErroneousCupboardMapper.class,
+        CupboardNoSetterMapper.class,
         CupboardEntityOnlyGetter.class
     })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousCupboardMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 22,
-                message = "No write accessor found for property \"content\" in target type.")
-        }
-    )
-    public void testShouldFailOnPropertyMappingNoPropertySetterOnlyGetter() {
+    public void shouldIgnoreImmutableTarget() {
+        CupboardDto in = new CupboardDto();
+        in.setContent( Arrays.asList( "flour", "peas" ) );
+        CupboardEntityOnlyGetter out = new CupboardEntityOnlyGetter();
+        out.getContent().add( "bread" );
+        CupboardNoSetterMapper.INSTANCE.map( in, out );
+
+        assertThat( out.getContent() ).containsExactly( "bread" );
     }
 
 }

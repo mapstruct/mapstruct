@@ -15,9 +15,9 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper( collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE )
-public interface ErroneousCupboardMapper {
+public interface CupboardNoSetterMapper {
 
-    ErroneousCupboardMapper INSTANCE = Mappers.getMapper( ErroneousCupboardMapper.class );
+    CupboardNoSetterMapper INSTANCE = Mappers.getMapper( CupboardNoSetterMapper.class );
 
     void map( CupboardDto in, @MappingTarget CupboardEntityOnlyGetter out );
 }
