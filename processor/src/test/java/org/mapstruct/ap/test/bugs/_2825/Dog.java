@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.bugs._2825;
 /**
  * @author orange add
  */
-
 public class Dog extends Animal {
     private String race;
 

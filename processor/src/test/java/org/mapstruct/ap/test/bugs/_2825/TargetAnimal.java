@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.bugs._2825;
 /**
  * @author orange add
  */
-
 public class TargetAnimal {
     private String name;
 
@@ -20,5 +19,13 @@ public class TargetAnimal {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getRace() {
+        return race;
+    }
+
+    public void setRace(String race) {
+        this.race = race;
     }
 }

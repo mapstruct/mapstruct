@@ -6,22 +6,19 @@
 package org.mapstruct.ap.test.bugs._2825;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.factory.Mappers;
+
 /**
  * @author orange add
  */
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface Issue2825Mapper {
 
-@Mapper
-public interface CustomerAnimalMapper {
-
-    CustomerAnimalMapper INSTANCE = Mappers.getMapper( CustomerAnimalMapper.class );
+    Issue2825Mapper INSTANCE = Mappers.getMapper( Issue2825Mapper.class );
 
     @SubclassMapping(target = TargetAnimal.class, source = Dog.class)
     @SubclassMapping(target = TargetAnimal.class, source = Cat.class)
     TargetAnimal map(Animal source);
-
-    TargetAnimal map(Dog dog);
-
-    TargetAnimal map(Cat cat);
 }

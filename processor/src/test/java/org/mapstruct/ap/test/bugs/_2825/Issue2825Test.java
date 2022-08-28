@@ -14,39 +14,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author orange add
  */
-
 @IssueKey("2825")
+@WithClasses({
+    Animal.class,
+    Cat.class,
+    Dog.class,
+    Issue2825Mapper.class,
+    TargetAnimal.class,
+})
 public class Issue2825Test {
 
     @ProcessorTest
-    @WithClasses({Animal.class, Dog.class, Cat.class, TargetAnimal.class, AnimalMapper.class})
-    public void generalMethodShouldSuccessWork() {
-        Animal animal = new Dog();
-        animal.setName( "dog" );
-        AnimalMapper instance = AnimalMapper.INSTANCE;
-        TargetAnimal targetAnimal = instance.map( animal );
-        assertThat( targetAnimal.getName() ).isNotBlank();
-    }
-
-    @ProcessorTest
-    @WithClasses({Animal.class, Dog.class, Cat.class, TargetAnimal.class, CustomerAnimalMapper.class})
-    public void customerMethodShouldSuccessWork() {
-        Animal animal = new Dog();
-        animal.setName( "dog" );
-        CustomerAnimalMapper instance = CustomerAnimalMapper.INSTANCE;
-        TargetAnimal targetAnimal = instance.map( animal );
-        assertThat( targetAnimal.getName() ).isNotBlank();
-    }
-
-    @ProcessorTest
-    @WithClasses({Apple.class, AppleDto.class, Fruit.class, FruitDto.class, FruitMapper.class, Orange.class,
-            OrangeDto.class})
-    public void generalTargetImpl() {
-        Orange orange = new Orange();
-        orange.setName( "Orange" );
-        FruitMapper instance = FruitMapper.INSTANCE;
-        FruitDto fruitDto = instance.map( orange );
-        assertThat( fruitDto.getName() ).isNotBlank();
+    public void mappingMethodShouldNotBeReusedForSubclassMappings() {
+        Dog dog = new Dog();
+        dog.setName( "Lucky" );
+        dog.setRace( "Shepherd" );
+        TargetAnimal target = Issue2825Mapper.INSTANCE.map( dog );
+        assertThat( target.getName() ).isEqualTo( "Lucky" );
+        assertThat( target.getRace() ).isEqualTo( "Shepherd" );
     }
 
 }
