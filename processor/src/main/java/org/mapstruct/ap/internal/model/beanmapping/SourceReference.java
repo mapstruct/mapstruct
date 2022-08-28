@@ -311,7 +311,7 @@ public class SourceReference extends AbstractReference {
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
-                Type noBoundsType = newType.withoutBounds();
+                Type noBoundsType = newType.hasTypeBound() ? newType.getTypeBound() : newType;
                 ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i] );
                 if ( readAccessor != null ) {
                     PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
@@ -432,6 +432,7 @@ public class SourceReference extends AbstractReference {
         PropertyEntry deepestProperty = getDeepestProperty();
         if ( deepestProperty != null ) {
             Type type = deepestProperty.getType();
+            type = type.hasTypeBound() ? type.getTypeBound() : type;
             Map<String, ReadAccessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
             String parameterName = getParameter().getName();
             String deepestPropertyFullName = deepestProperty.getFullName();

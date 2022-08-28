@@ -1264,6 +1264,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
+    public boolean hasTypeBound() {
+        return getTypeBound() != null;
+    }
+
     public boolean hasAccessibleConstructor() {
         if ( hasAccessibleConstructor == null ) {
             hasAccessibleConstructor = false;
