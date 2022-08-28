@@ -57,7 +57,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
                 method,
-                getMethodAnnotation(),
+                getMethodAnnotations(),
                 existingVariables,
                 assignment,
                 factoryMethod,

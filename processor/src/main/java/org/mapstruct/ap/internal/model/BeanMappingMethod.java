@@ -362,7 +362,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             return new BeanMappingMethod(
                 method,
-                getMethodAnnotation(),
+                getMethodAnnotations(),
                 existingVariableNames,
                 propertyMappings,
                 factoryMethod,

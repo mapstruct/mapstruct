@@ -199,7 +199,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             return new MapMappingMethod(
                 method,
-                getMethodAnnotation(),
+                getMethodAnnotations(),
                 existingVariables,
                 keyAssignment,
                 valueAssignment,

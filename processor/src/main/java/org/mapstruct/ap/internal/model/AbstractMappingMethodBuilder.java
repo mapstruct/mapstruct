@@ -120,7 +120,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         return description;
     }
 
-    public List<Annotation> getMethodAnnotation() {
+    public List<Annotation> getMethodAnnotations() {
         AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                 new AdditionalAnnotationsBuilder(
                         ctx.getElementUtils(),
