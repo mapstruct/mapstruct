@@ -273,7 +273,7 @@ public class InheritanceSelectionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousAmbiguousMostSpecificResultTypeSelectingMapper.class,
                 kind = Kind.ERROR,
-                line = 18,
+                line = 17,
                 message = "Ambiguous mapping methods found for mapping property \"IsFruit fruit\" to Apple: " +
                     "Apple toApple1(IsFruit fruit), Apple toApple2(IsFruit fruit). " +
                     "See https://mapstruct.org/faq/#ambiguous for more info."
