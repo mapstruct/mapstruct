@@ -97,6 +97,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             afterMappingReferences,
             selectionParameters
         );
+        //CHECKSTYLE:ON
         this.helperImports = helperImports;
     }
 

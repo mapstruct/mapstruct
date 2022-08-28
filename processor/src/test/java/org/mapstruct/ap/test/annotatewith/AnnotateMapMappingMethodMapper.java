@@ -14,7 +14,6 @@ import java.util.Map;
 
 /**
  * @author orange add
- * @date 2022/8/27 22:55
  */
 @Mapper
 public interface AnnotateMapMappingMethodMapper {

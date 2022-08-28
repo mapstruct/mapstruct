@@ -7,8 +7,6 @@ package org.mapstruct.ap.test.annotatewith;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.value.ExternalOrderType;
-import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -584,11 +582,10 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( {AnnotateValueMappingMethodMapper.class, CustomMethodOnlyAnnotation.class,
-            OrderType.class, ExternalOrderType.class} )
+    @WithClasses( {AnnotateValueMappingMethodMapper.class, AnnotateWithEnum.class, CustomMethodOnlyAnnotation.class} )
     public void valueMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
         AnnotateValueMappingMethodMapper mapper = Mappers.getMapper( AnnotateValueMappingMethodMapper.class );
-        Method method = mapper.getClass().getMethod( "orderTypeToExternalOrderType", OrderType.class );
+        Method method = mapper.getClass().getMethod( "map", String.class );
         assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
 

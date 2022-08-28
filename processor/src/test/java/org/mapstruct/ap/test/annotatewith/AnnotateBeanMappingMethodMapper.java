@@ -10,7 +10,6 @@ import org.mapstruct.Mapper;
 
 /**
  * @author orange add
- * @date 2022/8/27 22:50
  */
 @Mapper
 public interface AnnotateBeanMappingMethodMapper {

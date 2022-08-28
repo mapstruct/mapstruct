@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 /**
  * @author orange add
- * @date 2022/8/27 22:56
  */
 @Mapper
 public interface AnnotateStreamMappingMethodMapper {
