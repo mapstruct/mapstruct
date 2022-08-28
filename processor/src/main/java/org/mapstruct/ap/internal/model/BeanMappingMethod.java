@@ -85,7 +85,6 @@ import static org.mapstruct.ap.internal.util.Message.PROPERTYMAPPING_CANNOT_DETE
  */
 public class BeanMappingMethod extends NormalTypeMappingMethod {
 
-    private final List<Annotation> annotations;
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
@@ -113,7 +112,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
         private final Set<String> existingVariableNames = new HashSet<>();
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
-        private final List<Annotation> annotations = new ArrayList<>();
 
         private MappingReferences mappingReferences;
         private MethodReference factoryMethod;
@@ -216,12 +214,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 // If the return type cannot be constructed then no need to try to create mappings
                 return null;
             }
-            AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
-                new AdditionalAnnotationsBuilder(
-                    ctx.getElementUtils(),
-                    ctx.getTypeFactory(),
-                    ctx.getMessager() );
-            annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
 
             /* the type that needs to be used in the mapping process as target */
             Type resultTypeToMap = returnTypeToConstruct == null ? method.getResultType() : returnTypeToConstruct;
@@ -370,7 +362,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             return new BeanMappingMethod(
                 method,
-                annotations,
+                getMethodAnnotations(),
                 existingVariableNames,
                 propertyMappings,
                 factoryMethod,
@@ -1724,6 +1716,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<SubclassMapping> subclassMappings) {
         super(
             method,
+            annotations,
             existingVariableNames,
             factoryMethod,
             mapNullToDefault,
@@ -1732,7 +1725,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
         //CHECKSTYLE:ON
 
-        this.annotations = annotations;
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
@@ -1769,10 +1761,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
         this.subclassMappings = subclassMappings;
-    }
-
-    public List<Annotation> getAnnotations() {
-        return annotations;
     }
 
     public List<PropertyMapping> getConstantMappings() {

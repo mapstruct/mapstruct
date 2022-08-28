@@ -13,6 +13,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Strings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
@@ -115,6 +118,17 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     public ForgedMethodHistory getDescription() {
         return description;
+    }
+
+    public List<Annotation> getMethodAnnotations() {
+        AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
+                new AdditionalAnnotationsBuilder(
+                        ctx.getElementUtils(),
+                        ctx.getTypeFactory(),
+                        ctx.getMessager() );
+        List<Annotation> annotations = new ArrayList<>();
+        annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+        return annotations;
     }
 
 }

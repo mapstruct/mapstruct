@@ -32,12 +32,13 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final String index2Name;
     private IterableCreation iterableCreation;
 
-    ContainerMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+    ContainerMappingMethod(Method method, List<Annotation> annotations,
+                           Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
-        super( method, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
+        super( method, annotations, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.loopVariableName = loopVariableName;
