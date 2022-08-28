@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.selection.resulttype;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 /**
  * @author Filip Hrisafov
