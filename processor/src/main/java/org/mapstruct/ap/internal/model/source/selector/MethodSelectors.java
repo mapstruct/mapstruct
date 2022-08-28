@@ -36,7 +36,9 @@ public class MethodSelectors {
             new InheritanceSelector(),
             new CreateOrUpdateSelector(),
             new SourceRhsSelector(),
-            new FactoryParameterSelector() );
+            new FactoryParameterSelector(),
+            new MostSpecificResultTypeSelector()
+        );
     }
 
     /**
