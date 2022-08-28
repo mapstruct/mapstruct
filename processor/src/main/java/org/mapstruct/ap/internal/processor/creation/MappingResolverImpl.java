@@ -196,7 +196,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
-            this.methods = filterPossibleCandidateMethods( sourceModel );
+            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
@@ -210,10 +210,10 @@ public class MappingResolverImpl implements MappingResolver {
         }
         // CHECKSTYLE:ON
 
-        private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
+        private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) ) {
+                if ( isCandidateForMapping( candidate ) && !candidate.equals( mappingMethod )) {
                     result.add( candidate );
                 }
             }
