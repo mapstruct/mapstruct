@@ -13,4 +13,6 @@ public interface WildcardedInterface {
     String getContents();
 
     void setContents(String contents);
+
+    boolean hasContents();
 }

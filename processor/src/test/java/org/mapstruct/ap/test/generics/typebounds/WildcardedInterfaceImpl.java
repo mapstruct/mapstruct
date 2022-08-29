@@ -11,6 +11,7 @@ package org.mapstruct.ap.test.generics.typebounds;
 class WildcardedInterfaceImpl implements WildcardedInterface {
 
     private String contents;
+    private boolean shouldMap;
 
     @Override
     public String getContents() {
@@ -22,4 +23,12 @@ class WildcardedInterfaceImpl implements WildcardedInterface {
         this.contents = contents;
     }
 
+    @Override
+    public boolean hasContents() {
+        return shouldMap;
+    }
+
+    public void setShouldMap(boolean shouldMap) {
+        this.shouldMap = shouldMap;
+    }
 }

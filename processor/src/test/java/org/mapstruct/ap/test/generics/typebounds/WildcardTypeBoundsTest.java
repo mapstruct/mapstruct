@@ -31,6 +31,34 @@ class WildcardTypeBoundsTest {
     }
 
     @ProcessorTest
+    @WithClasses( { WildcardConditionalExtendsMapper.class } )
+    void mapsWithWildcardConditionTrue() {
+        Source<WildcardedInterfaceImpl> source = new Source<>();
+        WildcardedInterfaceImpl sourceImpl = new WildcardedInterfaceImpl();
+        source.setObject( sourceImpl );
+        sourceImpl.setContents( "Test contents" );
+        sourceImpl.setShouldMap( false );
+
+        Target target = WildcardConditionalExtendsMapper.INSTANCE.map( source );
+
+        assertThat( target.getObject() ).isBlank();
+    }
+
+    @ProcessorTest
+    @WithClasses( { WildcardConditionalExtendsMapper.class } )
+    void mapsWithWildcardConditionFalse() {
+        Source<WildcardedInterfaceImpl> source = new Source<>();
+        WildcardedInterfaceImpl sourceImpl = new WildcardedInterfaceImpl();
+        source.setObject( sourceImpl );
+        sourceImpl.setContents( "Test contents" );
+        sourceImpl.setShouldMap( true );
+
+        Target target = WildcardConditionalExtendsMapper.INSTANCE.map( source );
+
+        assertThat( target.getObject() ).isEqualTo(  "Test contents" );
+    }
+
+    @ProcessorTest
     @WithClasses( { WildcardNestedExtendsMapper.class, SourceContainer.class } )
     void mapsWithNestedWildcardSuccesfully() {
         Source<WildcardedInterfaceImpl> source = new Source<>();

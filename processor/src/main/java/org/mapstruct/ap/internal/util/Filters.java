@@ -20,8 +20,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
@@ -113,8 +115,11 @@ public class Filters {
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
         TypeMirror returnType = getWithinContext( executableElement ).getReturnType();
-        if (returnType.toString().equals( "?" )) {
-            return ((TypeVariable) typeUtils.asElement( executableElement.getReturnType() ).asType()).getUpperBound();
+        if ( returnType.getKind() == TypeKind.WILDCARD || returnType.getKind() == TypeKind.TYPEVAR ) {
+            if (returnType instanceof WildcardType && ( (WildcardType) returnType ).getExtendsBound() != null) {
+                return ( (WildcardType) returnType ).getExtendsBound();
+            }
+            return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
         }
         return returnType;
     }
