@@ -63,4 +63,15 @@ public class EnumToIntegerConversionTest {
         assertThatThrownBy( () -> EnumToIntegerMapper.INSTANCE.targetToSource( target ) )
                 .isInstanceOf( ArrayIndexOutOfBoundsException.class );
     }
+
+    @ProcessorTest
+    public void shouldHandleNullIntegerValue() {
+        EnumToIntegerTarget target = new EnumToIntegerTarget();
+
+        EnumToIntegerSource source = EnumToIntegerMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getEnumValue() ).isNull();
+        assertThat( source.getInvalidEnumValue() ).isNull();
+    }
 }
