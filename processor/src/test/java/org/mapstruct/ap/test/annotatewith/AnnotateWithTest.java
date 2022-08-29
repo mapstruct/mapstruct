@@ -42,8 +42,13 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParamsContainer.class,
-        CustomAnnotationWithParams.class } )
+    @WithClasses( {
+        CustomNamedMapper.class,
+        CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class,
+        CustomClassOnlyAnnotation.class,
+        CustomMethodOnlyAnnotation.class,
+    } )
     public void annotationWithValue() {
         generatedSource.addComparisonToFixtureFor( CustomNamedMapper.class );
     }

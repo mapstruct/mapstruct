@@ -13,6 +13,7 @@ import org.mapstruct.Mapper;
  * @author Ben Zegveld
  */
 @Mapper
+@AnnotateWith( CustomClassOnlyAnnotation.class )
 @AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
     @Element( name = "stringArray", strings = "test" ),
     @Element( name = "stringParam", strings = "test" ),
@@ -35,6 +36,43 @@ import org.mapstruct.Mapper;
     @Element( name = "shortArray", shorts = 3 ),
     @Element( name = "shortParam", shorts = 1 )
 } )
+@AnnotateWith( value = CustomAnnotationWithParams.class, elements = {
+    @Element(name = "stringParam", strings = "single value")
+})
 public interface CustomNamedMapper {
+
+    @AnnotateWith(value = CustomAnnotationWithParams.class, elements = {
+        @Element(name = "stringParam", strings = "double method value"),
+        @Element(name = "stringArray", strings = { "first", "second" }),
+    })
+    @AnnotateWith(value = CustomAnnotationWithParams.class, elements = {
+        @Element(name = "stringParam", strings = "single method value")
+    })
+    @AnnotateWith( CustomMethodOnlyAnnotation.class )
+    Target map(Source source);
+
+    class Target {
+        private final String value;
+
+        public Target(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    class Source {
+        private final String value;
+
+        public Source(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
 }
