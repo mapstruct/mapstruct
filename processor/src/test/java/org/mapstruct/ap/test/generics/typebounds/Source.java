@@ -3,19 +3,19 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.generics.wildcardextends;
+package org.mapstruct.ap.test.generics.typebounds;
 
 /**
  * @author Ben Zegveld
  */
-public class Target {
-    String object;
+public class Source<T extends WildcardedInterface> {
+    private T object;
 
-    public String getObject() {
+    public T getObject() {
         return object;
     }
 
-    public void setObject(String object) {
+    public void setObject(T object) {
         this.object = object;
     }
 }
