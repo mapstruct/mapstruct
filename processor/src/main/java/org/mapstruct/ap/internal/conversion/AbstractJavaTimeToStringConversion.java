@@ -29,7 +29,7 @@ import org.mapstruct.ap.internal.util.Strings;
  * </p>
  * <p>
  * An overview of date and time types shipped with Java 8 can be found at
- * <a href="http://docs.oracle.com/javase/tutorial/datetime/iso/index.html">...</a>.
+ * <a href="http://docs.oracle.com/javase/tutorial/datetime/iso/index.html" /> .
  * </p>
  */
 public abstract class AbstractJavaTimeToStringConversion extends SimpleConversion {
