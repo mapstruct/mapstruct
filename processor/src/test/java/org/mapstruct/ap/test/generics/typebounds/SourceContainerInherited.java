@@ -8,14 +8,14 @@ package org.mapstruct.ap.test.generics.typebounds;
 /**
  * @author Ben Zegveld
  */
-public class SourceContainer {
-    private Source<?> contained;
+public class SourceContainerInherited<T extends WildcardedInterface> {
+    private Source<T> contained;
 
-    public Source<?> getContained() {
+    public Source<T> getContained() {
         return contained;
     }
 
-    public void setContained(Source<?> contained) {
+    public void setContained(Source<T> contained) {
         this.contained = contained;
     }
 }

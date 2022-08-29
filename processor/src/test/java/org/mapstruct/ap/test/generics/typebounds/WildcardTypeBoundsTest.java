@@ -16,7 +16,7 @@ import org.mapstruct.ap.testutil.WithClasses;
  */
 @IssueKey( "2947" )
 @WithClasses( { Source.class, Target.class, WildcardedInterface.class } )
-class WildcardGenericsTest {
+class WildcardTypeBoundsTest {
 
     @ProcessorTest
     @WithClasses( { WildcardExtendsMapper.class } )
@@ -36,10 +36,24 @@ class WildcardGenericsTest {
         Source<WildcardedInterfaceImpl> source = new Source<>();
         source.setObject( new WildcardedInterfaceImpl() );
         source.getObject().setContents( "Test contents" );
-        SourceContainer<WildcardedInterfaceImpl> sourceContainer = new SourceContainer<>();
+        SourceContainer sourceContainer = new SourceContainer();
         sourceContainer.setContained( source );
 
         Target target = WildcardNestedExtendsMapper.INSTANCE.map( sourceContainer );
+
+        assertThat( target.getObject() ).isEqualTo( "Test contents" );
+    }
+
+    @ProcessorTest
+    @WithClasses( { WildcardNestedInheritedExtendsMapper.class, SourceContainerInherited.class } )
+    void mapsWithNestedInheritedWildcardSuccesfully() {
+        Source<WildcardedInterfaceImpl> source = new Source<>();
+        source.setObject( new WildcardedInterfaceImpl() );
+        source.getObject().setContents( "Test contents" );
+        SourceContainerInherited<WildcardedInterfaceImpl> sourceContainer = new SourceContainerInherited<>();
+        sourceContainer.setContained( source );
+
+        Target target = WildcardNestedInheritedExtendsMapper.INSTANCE.map( sourceContainer );
 
         assertThat( target.getObject() ).isEqualTo( "Test contents" );
     }
