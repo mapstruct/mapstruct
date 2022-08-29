@@ -612,7 +612,6 @@ public class AnnotateWithTest {
                     @Diagnostic(
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             type = ErroneousRepeatDeprecatedMapper.class,
-                            line = 7,
                             message = "Annotation \"Deprecated\" is not repeatable."
                     )
             }
