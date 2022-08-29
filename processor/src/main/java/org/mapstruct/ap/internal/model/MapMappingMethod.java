@@ -199,6 +199,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             return new MapMappingMethod(
                 method,
+                getMethodAnnotations(),
                 existingVariables,
                 keyAssignment,
                 valueAssignment,
@@ -224,11 +225,12 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     }
 
-    private MapMappingMethod(Method method, Collection<String> existingVariableNames, Assignment keyAssignment,
+    private MapMappingMethod(Method method, List<Annotation> annotations,
+                             Collection<String> existingVariableNames, Assignment keyAssignment,
                              Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
+        super( method, annotations, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
 
         this.keyAssignment = keyAssignment;

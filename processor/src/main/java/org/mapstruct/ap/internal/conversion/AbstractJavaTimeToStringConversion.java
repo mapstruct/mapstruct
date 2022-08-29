@@ -28,8 +28,8 @@ import org.mapstruct.ap.internal.util.Strings;
  * {@link DateTimeFormatter} are used.
  * </p>
  * <p>
- * An overview of date and time types shipped with Java 8 can be found at
- * <a href="http://docs.oracle.com/javase/tutorial/datetime/iso/index.html" > </a>
+ * An overview of date and time types shipped with Java 8 can be found at the
+ * <a href="http://docs.oracle.com/javase/tutorial/datetime/iso/index.html">Standard Calendar Tutorial</a>
  * </p>
  */
 public abstract class AbstractJavaTimeToStringConversion extends SimpleConversion {
