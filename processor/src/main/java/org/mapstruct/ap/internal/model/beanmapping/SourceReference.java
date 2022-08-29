@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -311,14 +310,10 @@ public class SourceReference extends AbstractReference {
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
-                Type noBoundsType = newType.hasTypeBound() ? newType.getTypeBound() : newType;
-                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i] );
+                ReadAccessor readAccessor = newType.getReadAccessor( entryNames[i] );
                 if ( readAccessor != null ) {
-                    PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
-                    newType = typeFactory.getReturnType(
-                        (DeclaredType) noBoundsType.getTypeMirror(),
-                        readAccessor
-                    );
+                    PresenceCheckAccessor presenceChecker = newType.getPresenceChecker( entryNames[i] );
+                    newType = typeFactory.getReturnType( readAccessor );
                     sourceEntries.add( forSourceReference(
                         Arrays.copyOf( entryNames, i + 1 ),
                         readAccessor,
@@ -432,7 +427,6 @@ public class SourceReference extends AbstractReference {
         PropertyEntry deepestProperty = getDeepestProperty();
         if ( deepestProperty != null ) {
             Type type = deepestProperty.getType();
-            type = type.hasTypeBound() ? type.getTypeBound() : type;
             Map<String, ReadAccessor> newDeepestReadAccessors = type.getPropertyReadAccessors();
             String parameterName = getParameter().getName();
             String deepestPropertyFullName = deepestProperty.getFullName();

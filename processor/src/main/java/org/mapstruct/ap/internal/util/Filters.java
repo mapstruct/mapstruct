@@ -21,6 +21,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
@@ -111,7 +112,11 @@ public class Filters {
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
-        return getWithinContext( executableElement ).getReturnType();
+        TypeMirror returnType = getWithinContext( executableElement ).getReturnType();
+        if (returnType.toString().equals( "?" )) {
+            return ((TypeVariable) typeUtils.asElement( executableElement.getReturnType() ).asType()).getUpperBound();
+        }
+        return returnType;
     }
 
     public <T> List<T> fieldsIn(List<VariableElement> accessors, Function<VariableElement, T> creator) {

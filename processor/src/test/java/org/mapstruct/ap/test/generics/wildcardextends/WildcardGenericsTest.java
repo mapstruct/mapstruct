@@ -29,4 +29,18 @@ class WildcardGenericsTest {
 
         assertThat( target.getObject() ).isEqualTo( "Test contents" );
     }
+
+    @ProcessorTest
+    @WithClasses( { WildcardNestedExtendsMapper.class, SourceContainer.class } )
+    void mapsWithNestedWildcardSuccesfully() {
+        Source<WildcardedInterfaceImpl> source = new Source<>();
+        source.setObject( new WildcardedInterfaceImpl() );
+        source.getObject().setContents( "Test contents" );
+        SourceContainer<WildcardedInterfaceImpl> sourceContainer = new SourceContainer<>();
+        sourceContainer.setContained( source );
+
+        Target target = WildcardNestedExtendsMapper.INSTANCE.map( sourceContainer );
+
+        assertThat( target.getObject() ).isEqualTo( "Test contents" );
+    }
 }

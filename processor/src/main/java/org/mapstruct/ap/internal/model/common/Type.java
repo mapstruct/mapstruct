@@ -464,7 +464,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.addAll( parameter.getImportTypes() );
         }
 
-        if ( ( hasExtendsBound() || hasSuperBound() ) && getTypeBound() != null ) {
+        if ( hasTypeBound() ) {
             result.addAll( getTypeBound().getImportTypes() );
         }
 
@@ -632,6 +632,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public ReadAccessor getReadAccessor(String propertyName) {
+        if ( hasTypeBound() ) {
+            return getTypeBound().getReadAccessor( propertyName );
+        }
         if ( hasStringMapSignature() ) {
             ExecutableElement getMethod = getAllMethods()
                 .stream()
@@ -648,6 +651,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public PresenceCheckAccessor getPresenceChecker(String propertyName) {
+        if ( hasTypeBound() ) {
+            return getTypeBound().getPresenceChecker( propertyName );
+        }
         if ( hasStringMapSignature() ) {
             return PresenceCheckAccessor.mapContainsKey( propertyName );
         }
@@ -662,6 +668,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all read accessors (including 'is' for booleans), indexed by property name
      */
     public Map<String, ReadAccessor> getPropertyReadAccessors() {
+        if (hasTypeBound()) {
+            return getTypeBound().getPropertyReadAccessors();
+        }
         if ( readAccessors == null ) {
             Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>();
 
@@ -717,6 +726,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all presence checkers, indexed by property name
      */
     public Map<String, PresenceCheckAccessor> getPropertyPresenceCheckers() {
+        if (hasTypeBound()) {
+            return getTypeBound().getPropertyPresenceCheckers();
+        }
         if ( presenceCheckers == null ) {
             List<ExecutableElement> checkerList = filters.presenceCheckMethodsIn( getAllMethods() );
             Map<String, PresenceCheckAccessor> modifiableCheckers = new LinkedHashMap<>();
@@ -745,6 +757,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
+        if (hasTypeBound()) {
+            return getTypeBound().getPropertyWriteAccessors( cmStrategy );
+        }
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -800,6 +815,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public List<Element> getRecordComponents() {
+        if (hasTypeBound()) {
+            return getTypeBound().getRecordComponents();
+        }
         if ( recordComponents == null ) {
             recordComponents = nullSafeTypeElementListConversion( filters::recordComponentsIn );
         }
@@ -809,7 +827,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private Type determinePreferredType(Accessor readAccessor) {
         if ( readAccessor != null ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
+            return typeFactory.getReturnType( readAccessor );
         }
         return null;
     }
@@ -821,7 +839,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else if ( candidate.getAccessorType() == AccessorType.GETTER
                         || candidate.getAccessorType().isFieldAssignment() ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+            return typeFactory.getReturnType( candidate );
         }
         return null;
     }
@@ -1265,7 +1283,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean hasTypeBound() {
-        return getTypeBound() != null;
+        return (hasExtendsBound() || hasSuperBound()) &&  getTypeBound() != null;
     }
 
     public boolean hasAccessibleConstructor() {
@@ -1364,7 +1382,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isWildCardBoundByTypeVar() {
-        return ( hasExtendsBound() || hasSuperBound() ) && getTypeBound().isTypeVar();
+        return hasTypeBound() && getTypeBound().isTypeVar();
     }
 
     public boolean isArrayTypeVar() {
