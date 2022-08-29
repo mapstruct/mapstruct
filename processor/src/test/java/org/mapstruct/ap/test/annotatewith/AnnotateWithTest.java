@@ -589,4 +589,35 @@ public class AnnotateWithTest {
         assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
 
+    @ProcessorTest
+    @WithClasses({DeprecatedMapperWithMethod.class, CustomMethodOnlyAnnotation.class})
+    public void deprecatedWithMethodCorrectCopy() throws NoSuchMethodException {
+        DeprecatedMapperWithMethod mapper = Mappers.getMapper( DeprecatedMapperWithMethod.class );
+        Method method = mapper.getClass().getMethod( "map", DeprecatedMapperWithMethod.Source.class );
+        assertThat( method.getAnnotation( Deprecated.class ) ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses(DeprecatedMapperWithClass.class)
+    public void deprecatedWithClassCorrectCopy() {
+        DeprecatedMapperWithClass mapper = Mappers.getMapper( DeprecatedMapperWithClass.class );
+        assertThat( mapper.getClass() ).hasAnnotation( Deprecated.class );
+    }
+
+    @ProcessorTest
+    @WithClasses(ErroneousRepeatDeprecatedMapper.class)
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            type = ErroneousRepeatDeprecatedMapper.class,
+                            line = 7,
+                            message = "Annotation \"Deprecated\" is not repeatable."
+                    )
+            }
+    )
+    public void erroneousDeprecatedWithRepeat() {
+    }
+
 }
