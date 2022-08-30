@@ -57,6 +57,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
                 method,
+                getMethodAnnotations(),
                 existingVariables,
                 assignment,
                 factoryMethod,
@@ -69,13 +70,15 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
     }
 
-    private IterableMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+    private IterableMappingMethod(Method method, List<Annotation> annotations,
+                                  Collection<String> existingVariables, Assignment parameterAssignment,
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
         super(
             method,
+            annotations,
             existingVariables,
             parameterAssignment,
             factoryMethod,

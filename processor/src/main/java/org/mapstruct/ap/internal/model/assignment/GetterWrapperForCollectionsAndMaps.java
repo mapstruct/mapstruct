@@ -16,7 +16,7 @@ import org.mapstruct.ap.internal.model.common.Type;
  * This wrapper handles the situation were an assignment must be done via a target getter method because there
  * is no setter available.
  *
- * The wrapper checks if there is an collection or map initialized on the target bean (not null). If so it uses the
+ * The wrapper checks if there is a collection or map initialized on the target bean (not null). If so it uses the
  * addAll (for collections) or putAll (for maps). The collection / map is cleared in case of a pre-existing target
  * {@link org.mapstruct.MappingTarget }before adding the source entries. The goal is that the same collection / map
  * is used as target.

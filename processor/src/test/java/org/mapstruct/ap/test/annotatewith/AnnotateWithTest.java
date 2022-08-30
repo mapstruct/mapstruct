@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.annotatewith;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -16,6 +15,11 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -543,6 +547,46 @@ public class AnnotateWithTest {
     @WithClasses( { MapperWithIdenticalAnnotationRepeated.class, CustomRepeatableAnnotation.class,
         CustomRepeatableAnnotationContainer.class } )
     public void mapperWithIdenticalAnnotationRepeated() {
+    }
+
+    @ProcessorTest
+    @WithClasses( {AnnotateBeanMappingMethodMapper.class, CustomMethodOnlyAnnotation.class} )
+    public void beanMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
+        AnnotateBeanMappingMethodMapper mapper = Mappers.getMapper( AnnotateBeanMappingMethodMapper.class );
+        Method method = mapper.getClass().getMethod( "map", AnnotateBeanMappingMethodMapper.Source.class );
+        assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses( {AnnotateIterableMappingMethodMapper.class, CustomMethodOnlyAnnotation.class} )
+    public void iterableMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
+        AnnotateIterableMappingMethodMapper mapper = Mappers.getMapper( AnnotateIterableMappingMethodMapper.class );
+        Method method = mapper.getClass().getMethod( "toStringList", List.class );
+        assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses( {AnnotateMapMappingMethodMapper.class, CustomMethodOnlyAnnotation.class} )
+    public void mapMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
+        AnnotateMapMappingMethodMapper mapper = Mappers.getMapper( AnnotateMapMappingMethodMapper.class );
+        Method method = mapper.getClass().getMethod( "longDateMapToStringStringMap", Map.class );
+        assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses( {AnnotateStreamMappingMethodMapper.class, CustomMethodOnlyAnnotation.class} )
+    public void streamMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
+        AnnotateStreamMappingMethodMapper mapper = Mappers.getMapper( AnnotateStreamMappingMethodMapper.class );
+        Method method = mapper.getClass().getMethod( "toStringStream", Stream.class );
+        assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses( {AnnotateValueMappingMethodMapper.class, AnnotateWithEnum.class, CustomMethodOnlyAnnotation.class} )
+    public void valueMappingMethodWithCorrectCustomAnnotation() throws NoSuchMethodException {
+        AnnotateValueMappingMethodMapper mapper = Mappers.getMapper( AnnotateValueMappingMethodMapper.class );
+        Method method = mapper.getClass().getMethod( "map", String.class );
+        assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
 
 }
