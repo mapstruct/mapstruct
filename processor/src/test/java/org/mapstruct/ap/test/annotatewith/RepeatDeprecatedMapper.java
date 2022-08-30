@@ -11,5 +11,5 @@ import org.mapstruct.Mapper;
 @Mapper
 @Deprecated
 @AnnotateWith(Deprecated.class)
-public class ErroneousRepeatDeprecatedMapper {
+public class RepeatDeprecatedMapper {
 }

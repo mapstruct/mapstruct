@@ -5,8 +5,35 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
+
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
+import org.mapstruct.ap.internal.gem.DeprecatedGem;
 import org.mapstruct.ap.internal.gem.ElementGem;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
@@ -21,30 +48,6 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 import org.mapstruct.tools.gem.GemValue;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
@@ -55,9 +58,6 @@ public class AdditionalAnnotationsBuilder
     extends RepeatableAnnotations<AnnotateWithGem, AnnotateWithsGem, Annotation> {
     private static final String ANNOTATE_WITH_FQN = "org.mapstruct.AnnotateWith";
     private static final String ANNOTATE_WITHS_FQN = "org.mapstruct.AnnotateWiths";
-
-    private static final String DEPRECATED_ANNOTATION_FQN = "java.lang.Deprecated";
-
     private TypeFactory typeFactory;
     private FormattingMessager messager;
 
@@ -99,23 +99,34 @@ public class AdditionalAnnotationsBuilder
     }
 
     private Set<Annotation> addDeprecatedAnnotation(Element source, Set<Annotation> annotations) {
+        DeprecatedGem deprecatedGem = DeprecatedGem.instanceOn( source );
+        if ( deprecatedGem == null ) {
+            return annotations;
+        }
         Type deprecatedType = typeFactory.getType( Deprecated.class );
-        Optional<? extends AnnotationMirror> optionalAnnotationMirror = source.getAnnotationMirrors().stream()
-                .filter( annotationMirror -> DEPRECATED_ANNOTATION_FQN.equals(
-                        annotationMirror.getAnnotationType().asElement().toString() ) ).findFirst();
-        if (optionalAnnotationMirror.isPresent() &&
-                annotations.stream().anyMatch( annotation -> annotation.getType().equals( deprecatedType ) ) ) {
+        if ( annotations.stream().anyMatch( annotation -> annotation.getType().equals( deprecatedType ) ) ) {
             messager.printMessage(
                     source,
-                    optionalAnnotationMirror.get(),
-                    Message.ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE,
+                    deprecatedGem.mirror(),
+                    Message.ANNOTATE_WITH_DUPLICATE,
                     deprecatedType.describe() );
             return annotations;
         }
-        Deprecated deprecated = source.getAnnotation( Deprecated.class );
-        if (deprecated != null) {
-            annotations.add( new Annotation(deprecatedType) );
+        List<AnnotationElement> annotationElements = new ArrayList<>();
+        for ( Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : deprecatedGem.mirror()
+            .getElementValues()
+            .entrySet() ) {
+            String elementName = entry.getKey().getSimpleName().toString();
+            if ( "since".equals( elementName  )) {
+                annotationElements.add( new AnnotationElement( AnnotationElementType.STRING, elementName,
+                    Collections.singletonList( entry.getValue().getValue() ) ) );
+            }
+            else if ( "forRemoval".equals( elementName ) ) {
+                annotationElements.add( new AnnotationElement( AnnotationElementType.BOOLEAN, elementName,
+                    Collections.singletonList( entry.getValue().getValue() ) ) );
+            }
         }
+        annotations.add( new Annotation(deprecatedType, annotationElements ) );
         return annotations;
     }
 

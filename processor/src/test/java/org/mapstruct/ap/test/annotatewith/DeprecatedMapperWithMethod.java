@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 public interface DeprecatedMapperWithMethod {
 
     @AnnotateWith(CustomMethodOnlyAnnotation.class)
-    @Deprecated
+    @Deprecated(since = "18", forRemoval = false)
     Target map(Source source);
 
     class Source {

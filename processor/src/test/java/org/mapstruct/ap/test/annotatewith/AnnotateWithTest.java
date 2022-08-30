@@ -594,7 +594,10 @@ public class AnnotateWithTest {
     public void deprecatedWithMethodCorrectCopy() throws NoSuchMethodException {
         DeprecatedMapperWithMethod mapper = Mappers.getMapper( DeprecatedMapperWithMethod.class );
         Method method = mapper.getClass().getMethod( "map", DeprecatedMapperWithMethod.Source.class );
-        assertThat( method.getAnnotation( Deprecated.class ) ).isNotNull();
+        Deprecated annotation = method.getAnnotation( Deprecated.class );
+        assertThat( annotation ).isNotNull();
+        assertThat( annotation.since() ).isEqualTo( "18" );
+        assertThat( annotation.forRemoval() ).isEqualTo( false );
     }
 
     @ProcessorTest
@@ -605,18 +608,40 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses(ErroneousRepeatDeprecatedMapper.class)
+    @WithClasses(RepeatDeprecatedMapper.class)
     @ExpectedCompilationOutcome(
-            value = CompilationResult.FAILED,
+            value = CompilationResult.SUCCEEDED,
             diagnostics = {
                     @Diagnostic(
-                            kind = javax.tools.Diagnostic.Kind.ERROR,
-                            type = ErroneousRepeatDeprecatedMapper.class,
-                            message = "Annotation \"Deprecated\" is not repeatable."
+                            kind = javax.tools.Diagnostic.Kind.WARNING,
+                            type = RepeatDeprecatedMapper.class,
+                            message = "Annotation \"Deprecated\" is already present with the " +
+                                "same elements configuration."
                     )
             }
     )
-    public void erroneousDeprecatedWithRepeat() {
+    public void deprecatedWithRepeat() {
+    }
+
+    @ProcessorTest
+    @WithClasses( RepeatDeprecatedMapperWithParams.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                type = RepeatDeprecatedMapperWithParams.class,
+                message = "Annotation \"Deprecated\" is already present with the " +
+                    "same elements configuration."
+            )
+        }
+    )
+    public void bothExistPriorityAnnotateWith() {
+        RepeatDeprecatedMapperWithParams mapper = Mappers.getMapper( RepeatDeprecatedMapperWithParams.class );
+        Deprecated deprecated = mapper.getClass().getAnnotation( Deprecated.class );
+        assertThat( deprecated ).isNotNull();
+        assertThat( deprecated.since() ).isEqualTo( "1.5" );
+        assertThat( deprecated.forRemoval() ).isEqualTo( false );
     }
 
 }
