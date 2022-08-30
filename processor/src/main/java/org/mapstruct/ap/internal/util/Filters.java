@@ -115,10 +115,13 @@ public class Filters {
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
         TypeMirror returnType = getWithinContext( executableElement ).getReturnType();
-        if ( returnType.getKind() == TypeKind.WILDCARD || returnType.getKind() == TypeKind.TYPEVAR ) {
-            if (returnType instanceof WildcardType && ( (WildcardType) returnType ).getExtendsBound() != null) {
+        if ( returnType.getKind() == TypeKind.WILDCARD ) {
+            if ( ( (WildcardType) returnType ).getExtendsBound() != null ) {
                 return ( (WildcardType) returnType ).getExtendsBound();
             }
+            return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
+        }
+        if ( returnType.getKind() == TypeKind.TYPEVAR ) {
             return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
         }
         return returnType;
