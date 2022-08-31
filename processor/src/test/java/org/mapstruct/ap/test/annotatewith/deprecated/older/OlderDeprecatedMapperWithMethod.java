@@ -3,16 +3,17 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.annotatewith;
+package org.mapstruct.ap.test.annotatewith.deprecated.older;
 
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation;
 
 @Mapper
-public interface DeprecatedMapperWithMethod {
+public interface OlderDeprecatedMapperWithMethod {
 
     @AnnotateWith(CustomMethodOnlyAnnotation.class)
-    @Deprecated(since = "18", forRemoval = false)
+    @Deprecated
     Target map(Source source);
 
     class Source {
