@@ -351,7 +351,7 @@ public class MappingProcessor extends AbstractProcessor {
 
     /**
      * Retrieves all model element processors, ordered by their priority value
-     * (with the method retrieval processor having the lowest priority value (1) )
+     * (with the method retrieval processor having the lowest priority value (1))
      * and the code generation processor the highest priority value.
      *
      * @return A list with all model element processors.
@@ -371,7 +371,7 @@ public class MappingProcessor extends AbstractProcessor {
             processors.add( processorIterator.next() );
         }
 
-        processors.sort(new ProcessorComparator());
+        processors.sort( new ProcessorComparator() );
 
         return processors;
     }
