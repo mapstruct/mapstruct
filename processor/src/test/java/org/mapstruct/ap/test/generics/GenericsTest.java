@@ -36,6 +36,24 @@ public class GenericsTest {
     }
 
     @ProcessorTest
+    @IssueKey( "2690" )
+    @WithClasses({
+        TwinGenericTarget.class,
+        TwinGenericSource.class,
+        TwinGenericMapper.class
+    })
+    public void mapsIdenticalGenerics() {
+        TwinGenericSource<String, Integer> source = new TwinGenericSource<>();
+        source.setObject1( "StringObject" );
+        source.setObject2( 123 );
+
+        TwinGenericTarget<String, Integer> target = TwinGenericMapper.INSTANCE.map( source );
+
+        assertThat( target.getObject1() ).isEqualTo( "StringObject" );
+        assertThat( target.getObject2() ).isEqualTo( 123 );
+    }
+
+    @ProcessorTest
     @IssueKey("2954")
     @WithClasses({
         GenericTargetContainer.class,
@@ -100,5 +118,30 @@ public class GenericsTest {
         }
     )
     public void invalidGenericMappings() {
+    }
+    
+    @ProcessorTest
+    @IssueKey( "2690" )
+    @WithClasses({
+        TwinGenericTarget.class,
+        TwinGenericSource.class,
+        ErroneousTwinGenericMapper.class,
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousTwinGenericMapper.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 18,
+                            message = "Can't map property \"B object1\" to \"A object1\". "
+                                            + "Both generic types should be the same." ),
+            @Diagnostic(type = ErroneousTwinGenericMapper.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 18,
+                        message = "Can't map property \"A object2\" to \"B object2\". "
+                                        + "Both generic types should be the same." )
+        }
+    )
+    public void invalidTwinGenericMappings() {
     }
 }
