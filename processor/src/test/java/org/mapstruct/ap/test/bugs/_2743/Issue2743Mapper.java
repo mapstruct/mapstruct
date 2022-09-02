@@ -50,7 +50,7 @@ public interface Issue2743Mapper {
             return value;
         }
     }
-    
+
     class Target {
 
         private final NestedTarget nested;
