@@ -29,6 +29,8 @@ import org.mapstruct.ap.test.builtin._target.MapTarget;
 import org.mapstruct.ap.test.builtin.bean.BigDecimalProperty;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
+import org.mapstruct.ap.test.builtin.bean.JakartaJaxbElementListProperty;
+import org.mapstruct.ap.test.builtin.bean.JakartaJaxbElementProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
 import org.mapstruct.ap.test.builtin.bean.SomeType;
@@ -45,6 +47,8 @@ import org.mapstruct.ap.test.builtin.mapper.CalendarToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
+import org.mapstruct.ap.test.builtin.mapper.JakartaJaxbListMapper;
+import org.mapstruct.ap.test.builtin.mapper.JakartaJaxbMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbListMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbMapper;
 import org.mapstruct.ap.test.builtin.mapper.MapSourceTargetMapper;
@@ -58,6 +62,7 @@ import org.mapstruct.ap.test.builtin.source.MapSource;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJakartaJaxb;
 import org.mapstruct.ap.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,6 +108,23 @@ public class BuiltInTest {
 
     @ProcessorTest
     @WithClasses( {
+        JakartaJaxbMapper.class,
+        JakartaJaxbElementProperty.class,
+    } )
+    @WithJakartaJaxb
+    public void shouldApplyBuiltInOnJakartaJaxbElement()  {
+        JakartaJaxbElementProperty source = new JakartaJaxbElementProperty();
+        source.setProp( createJakartaJaxb( "TEST" ) );
+        source.publicProp = createJakartaJaxb( "PUBLIC TEST" );
+
+        StringProperty target = JakartaJaxbMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isEqualTo( "TEST" );
+        assertThat( target.publicProp ).isEqualTo( "PUBLIC TEST" );
+    }
+
+    @ProcessorTest
+    @WithClasses( {
         JaxbMapper.class,
         JaxbElementProperty.class,
     } )
@@ -130,6 +152,33 @@ public class BuiltInTest {
 
     @ProcessorTest
     @WithClasses( {
+        JakartaJaxbMapper.class,
+        JakartaJaxbElementProperty.class,
+    } )
+    @WithJakartaJaxb
+    @IssueKey( "1698" )
+    public void shouldApplyBuiltInOnJakartaJAXBElementExtra()  {
+        JakartaJaxbElementProperty source = new JakartaJaxbElementProperty();
+        source.setProp( createJakartaJaxb( "5" ) );
+        source.publicProp = createJakartaJaxb( "5" );
+
+        BigDecimalProperty target = JakartaJaxbMapper.INSTANCE.mapBD( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isEqualTo( new BigDecimal( "5" ) );
+        assertThat( target.publicProp ).isEqualTo( new BigDecimal( "5" ) );
+
+        JakartaJaxbElementProperty source2 = new JakartaJaxbElementProperty();
+        source2.setProp( createJakartaJaxb( "5" ) );
+        source2.publicProp = createJakartaJaxb( "5" );
+
+        SomeTypeProperty target2 = JakartaJaxbMapper.INSTANCE.mapSomeType( source2 );
+        assertThat( target2 ).isNotNull();
+        assertThat( target2.publicProp ).isNotNull();
+        assertThat( target2.getProp() ).isNotNull();
+    }
+
+    @ProcessorTest
+    @WithClasses( {
         JaxbListMapper.class,
         JaxbElementListProperty.class,
     } )
@@ -142,6 +191,24 @@ public class BuiltInTest {
         source.publicProp = createJaxbList( "PUBLIC TEST2" );
 
         StringListProperty target = JaxbListMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp().get( 0 ) ).isEqualTo( "TEST2" );
+        assertThat( target.publicProp.get( 0 ) ).isEqualTo( "PUBLIC TEST2" );
+    }
+
+    @ProcessorTest
+    @WithClasses( {
+        JakartaJaxbListMapper.class,
+        JakartaJaxbElementListProperty.class,
+    } )
+    @WithJakartaJaxb
+    @IssueKey( "141" )
+    public void shouldApplyBuiltInOnJakartaJAXBElementList() {
+        JakartaJaxbElementListProperty source = new JakartaJaxbElementListProperty();
+        source.setProp( createJakartaJaxbList( "TEST2" ) );
+        source.publicProp = createJakartaJaxbList( "PUBLIC TEST2" );
+
+        StringListProperty target = JakartaJaxbListMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp().get( 0 ) ).isEqualTo( "TEST2" );
         assertThat( target.publicProp.get( 0 ) ).isEqualTo( "PUBLIC TEST2" );
@@ -414,9 +481,19 @@ public class BuiltInTest {
         return new JAXBElement<>( new QName( "www.mapstruct.org", "test" ), String.class, test );
     }
 
+    private jakarta.xml.bind.JAXBElement<String> createJakartaJaxb(String test) {
+        return new jakarta.xml.bind.JAXBElement<>( new QName( "www.mapstruct.org", "test" ), String.class, test );
+    }
+
     private List<JAXBElement<String>> createJaxbList(String test) {
         List<JAXBElement<String>> result = new ArrayList<>();
         result.add( createJaxb( test ) );
+        return result;
+    }
+
+    private List<jakarta.xml.bind.JAXBElement<String>> createJakartaJaxbList(String test) {
+        List<jakarta.xml.bind.JAXBElement<String>> result = new ArrayList<>();
+        result.add( createJakartaJaxb( test ) );
         return result;
     }
 
