@@ -119,7 +119,7 @@ public class GenericsTest {
     )
     public void invalidGenericMappings() {
     }
-    
+
     @ProcessorTest
     @IssueKey( "2690" )
     @WithClasses({
