@@ -66,9 +66,10 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <version>2.3.2</version>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <scope>provided</scope>
+                    <optional>true</optional>
                 </dependency>
                 <dependency>
                     <groupId>org.glassfish.jaxb</groupId>
