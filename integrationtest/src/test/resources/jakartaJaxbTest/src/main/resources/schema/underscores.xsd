@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+		xmlns:underscores="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/underscores"
+		targetNamespace="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/underscores"
+		elementFormDefault="qualified" version="1.0.0">
+
+    <element name="Super" type="underscores:SuperType" />
+    <complexType name="SuperType">
+	<sequence>
+	    <element name="inheritedCamelCase" type="string"/>
+	    <element name="inherited_underscore" type="string"/>
+	</sequence>
+    </complexType>
+
+	<element name="Sub" type="underscores:SubType" />
+	<complexType name="SubType">
+		<complexContent>
+			<extension base="underscores:SuperType">
+				<sequence>
+					<element name="declaredCamelCase" type="string"/>
+					<element name="declared_underscore" type="string"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+</schema>
