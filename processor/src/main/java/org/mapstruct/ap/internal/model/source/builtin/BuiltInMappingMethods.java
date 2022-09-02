@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source.builtin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JaxbConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
@@ -24,7 +25,7 @@ public class BuiltInMappingMethods {
 
     public BuiltInMappingMethods(TypeFactory typeFactory) {
         boolean isXmlGregorianCalendarPresent = isXmlGregorianCalendarAvailable( typeFactory );
-        builtInMethods = new ArrayList<>( 20 );
+        builtInMethods = new ArrayList<>( 21 );
         if ( isXmlGregorianCalendarPresent ) {
             builtInMethods.add( new DateToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToDate( typeFactory ) );
@@ -39,8 +40,14 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new XmlGregorianCalendarToLocalDateTime( typeFactory ) );
         }
 
-        if ( isJaxbAvailable( typeFactory ) ) {
-            builtInMethods.add( new JaxbElemToValue( typeFactory ) );
+        if ( isJavaxJaxbAvailable( typeFactory ) ) {
+            Type type = typeFactory.getType( JaxbConstants.JAVAX_JAXB_ELEMENT_FQN );
+            builtInMethods.add( new JaxbElemToValue( type ) );
+        }
+
+        if ( isJakartaJaxbAvailable( typeFactory ) ) {
+            Type type = typeFactory.getType( JaxbConstants.JAKARTA_JAXB_ELEMENT_FQN );
+            builtInMethods.add( new JaxbElemToValue( type ) );
         }
 
         builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
@@ -58,8 +65,12 @@ public class BuiltInMappingMethods {
         }
     }
 
-    private static boolean isJaxbAvailable(TypeFactory typeFactory) {
-        return typeFactory.isTypeAvailable( JaxbConstants.JAXB_ELEMENT_FQN );
+    private static boolean isJavaxJaxbAvailable(TypeFactory typeFactory) {
+        return typeFactory.isTypeAvailable( JaxbConstants.JAVAX_JAXB_ELEMENT_FQN );
+    }
+
+    private static boolean isJakartaJaxbAvailable(TypeFactory typeFactory) {
+        return typeFactory.isTypeAvailable( JaxbConstants.JAKARTA_JAXB_ELEMENT_FQN );
     }
 
     private static boolean isXmlGregorianCalendarAvailable(TypeFactory typeFactory) {
