@@ -10,16 +10,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Pascal Grün
  */
 @Mapper( uses = NumberMapperContext.class )
-public abstract class NumberMapperWithContext {
-    public static final NumberMapperWithContext INSTANCE = Mappers.getMapper( NumberMapperWithContext.class );
+public abstract class NumberUpdateMapperWithContext {
+    public static final NumberUpdateMapperWithContext INSTANCE =
+        Mappers.getMapper( NumberUpdateMapperWithContext.class );
 
-    public abstract Number integerToNumber(Integer number);
+    public abstract void integerToNumber(Integer number, @MappingTarget Number target);
 
     public abstract Map<String, Integer> longMapToIntegerMap(Map<String, Long> target);
 

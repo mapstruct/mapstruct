@@ -8,10 +8,15 @@ package org.mapstruct.ap.test.callbacks.returning;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+//import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+//import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+//import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+//import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,23 +30,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @WithClasses( { Attribute.class, AttributeDto.class, Node.class, NodeDto.class, NodeMapperDefault.class,
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
-public class CallbacksWithReturnValuesTest {
+class CallbacksWithReturnValuesTest {
     @ProcessorTest
-    public void mappingWithDefaultHandlingRaisesStackOverflowError() {
+    void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void updatingWithDefaultHandlingRaisesStackOverflowError() {
+    void updatingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void mappingWithContextCorrectlyResolvesCycles() {
+    void mappingWithContextCorrectlyResolvesCycles() {
         final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
         ContextListener contextListener = new ContextListener() {
             @Override
@@ -75,7 +80,7 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithoutContextDoesNotUseCache() {
+    void numberMappingWithoutContextDoesNotUseCache() {
         Number n1 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         assertThat( n1 ).isEqualTo( n2 );
@@ -83,7 +88,7 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithContextUsesCache() {
+    void numberMappingWithContextUsesCache() {
         NumberMapperContext.putCache( new Number( 2342 ) );
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
@@ -93,7 +98,32 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithContextCallsVisitNumber() {
+    @WithClasses( NumberUpdateMapperWithContext.class )
+//    @ExpectedCompilationOutcome(
+//        value = CompilationResult.SUCCEEDED,
+//        diagnostics = { @Diagnostic(
+//            type = NumberUpdateMapperWithContext.class,
+//            kind = Kind.WARNING,
+//            line = 21,
+//            message = ""
+//        )}
+//    )
+    void numberUpdateMappingWithContextCallsCacheButWarnsThatTheResultIsNotUsed() {
+        Number target = new Number();
+        NumberUpdateMapperWithContext.INSTANCE.integerToNumber( 2342, target );
+
+        try {
+            assertThat( NumberMapperContext.getCacheCalled() ).containsExactly( target );
+            assertThat( NumberMapperContext.getVisited() ).containsExactly( target );
+        }
+        finally {
+            NumberMapperContext.clearCache();
+            NumberMapperContext.clearVisited();
+        }
+    }
+
+    @ProcessorTest
+    void numberMappingWithContextCallsVisitNumber() {
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
         assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );

@@ -6,7 +6,11 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -197,11 +201,13 @@ public class TypeSelector implements MethodSelector {
             // we had some matching assignments before, but when checking the parameter names we can't find an
             // appropriate one, in this case the user must chose identical parameter names for the mapping and lifecycle
             // method
-            messager.printMessage(
-                selectedMethod.getExecutable(),
-                Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
-                mappingMethod
-            );
+            if ( !warningAlreadyGiven( mappingMethod, selectedMethod ) ) {
+                messager.printMessage(
+                            selectedMethod.getExecutable(),
+                            Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
+                            mappingMethod );
+                storeWarningGiven( mappingMethod, selectedMethod );
+            }
 
             return null;
         }
@@ -211,6 +217,20 @@ public class TypeSelector implements MethodSelector {
         // -> we can use the first variant that is left (that should also be the only one)
         selectedMethodInfo.setParameterBindings( first( matchingParameterAssignmentVariants ) );
         return selectedMethodInfo;
+    }
+
+    private Map<Method, Collection<Method>> warningGiven = new HashMap<>();
+
+    private void storeWarningGiven(Method mappingMethod, Method selectedMethod) {
+        getMethodsWarned( mappingMethod ).add( selectedMethod );
+    }
+
+    private Collection<Method> getMethodsWarned(Method mappingMethod) {
+        return warningGiven.computeIfAbsent( mappingMethod, k -> new HashSet<>() );
+    }
+
+    private boolean warningAlreadyGiven(Method mappingMethod, Method selectedMethod) {
+        return getMethodsWarned( mappingMethod ).contains( selectedMethod );
     }
 
     /**
