@@ -112,14 +112,14 @@ public class AdditionalAnnotationsBuilder
             return annotations;
         }
         List<AnnotationElement> annotationElements = new ArrayList<>();
-        if ( deprecatedGem.since().hasValue() ) {
+        if ( deprecatedGem.since() != null && deprecatedGem.since().hasValue() ) {
             annotationElements.add( new AnnotationElement(
                 AnnotationElementType.STRING,
                 "since",
                 Collections.singletonList( deprecatedGem.since().getValue() )
             ) );
         }
-        if ( deprecatedGem.forRemoval().hasValue() ) {
+        if ( deprecatedGem.forRemoval() != null && deprecatedGem.forRemoval().hasValue() ) {
             annotationElements.add( new AnnotationElement(
                 AnnotationElementType.BOOLEAN,
                 "forRemoval",
