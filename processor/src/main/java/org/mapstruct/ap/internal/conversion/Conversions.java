@@ -42,7 +42,6 @@ public class Conversions {
     private final Type enumType;
     private final Type stringType;
     private final Type integerType;
-    private final Type intType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -51,7 +50,6 @@ public class Conversions {
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
         this.integerType = typeFactory.getType( Integer.class );
-        this.intType = typeFactory.getType( int.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -331,12 +329,16 @@ public class Conversions {
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() &&
-                ( targetType.equals( stringType ) || targetType.equals( integerType ) || targetType.equals( intType ) )
+                ( targetType.equals( stringType ) ||
+                  targetType.equals( integerType ) ||
+                  targetType.getBoxedEquivalent().equals( integerType ) )
         ) {
             sourceType = enumType;
         }
         else if ( targetType.isEnumType() &&
-                ( sourceType.equals( stringType ) || sourceType.equals( integerType ) || sourceType.equals( intType ) )
+                ( sourceType.equals( stringType ) ||
+                  sourceType.equals( integerType ) ||
+                  sourceType.getBoxedEquivalent().equals( integerType ) )
         ) {
             targetType = enumType;
         }
