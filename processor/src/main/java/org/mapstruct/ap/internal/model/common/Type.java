@@ -585,17 +585,18 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public Type replaceGeneric(Type oldGenericType, Type newType) {
-        if ( !typeParameters.contains(oldGenericType) ) {
+        if ( !typeParameters.contains( oldGenericType ) ) {
             return this;
         }
-        List<Type> replacedTypeParameters = new ArrayList<>(typeParameters);
+        List<Type> replacedTypeParameters = new ArrayList<>( typeParameters );
         int replacementIndex = replacedTypeParameters.indexOf( oldGenericType );
         replacedTypeParameters.add( replacementIndex, newType );
-        replacedTypeParameters.remove( replacementIndex+1 );
+        replacedTypeParameters.remove( replacementIndex + 1 );
         DeclaredType declaredType = typeUtils.getDeclaredType(
-            typeElement,
-            replacedTypeParameters.stream().map( type -> type.getTypeMirror() ).toArray(TypeMirror[]::new)
-        );
+                                                 typeElement,
+                                                 replacedTypeParameters.stream()
+                                                                       .map( type -> type.getTypeMirror() )
+                                                                       .toArray( TypeMirror[]::new ) );
         return new Type(
             typeUtils,
             elementUtils,

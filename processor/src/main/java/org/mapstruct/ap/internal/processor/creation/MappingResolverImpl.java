@@ -825,7 +825,7 @@ public class MappingResolverImpl implements MappingResolver {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
-                ySourceType = replaceMatchingGenerics(targetType, ySourceType, yTargetType);
+                ySourceType = replaceMatchingGenerics( targetType, ySourceType, yTargetType );
                 List<SelectedMethod<T1>> xMatches = attempt.getBestMatch( xMethods, sourceType, ySourceType );
                 if ( !xMatches.isEmpty() ) {
                     for ( SelectedMethod<T1> x : xMatches ) {
@@ -875,7 +875,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         private Type replaceMatchingGenerics(Type targetType, Type ySourceType, Type yTargetType) {
             List<Type> typeParametersList = yTargetType.getTypeParameters();
-            if (!typeParametersList.isEmpty() && !ySourceType.getTypeParameters().isEmpty()) {
+            if ( !typeParametersList.isEmpty() && !ySourceType.getTypeParameters().isEmpty() ) {
                 for ( int index = 0; index < typeParametersList.size(); index++ ) {
                     Type type = typeParametersList.get( index );
                     for ( Type sourceType : ySourceType.getTypeParameters() ) {
