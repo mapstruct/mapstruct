@@ -25,7 +25,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -113,18 +112,19 @@ public class AdditionalAnnotationsBuilder
             return annotations;
         }
         List<AnnotationElement> annotationElements = new ArrayList<>();
-        for ( Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : deprecatedGem.mirror()
-            .getElementValues()
-            .entrySet() ) {
-            String elementName = entry.getKey().getSimpleName().toString();
-            if ( "since".equals( elementName  )) {
-                annotationElements.add( new AnnotationElement( AnnotationElementType.STRING, elementName,
-                    Collections.singletonList( entry.getValue().getValue() ) ) );
-            }
-            else if ( "forRemoval".equals( elementName ) ) {
-                annotationElements.add( new AnnotationElement( AnnotationElementType.BOOLEAN, elementName,
-                    Collections.singletonList( entry.getValue().getValue() ) ) );
-            }
+        if ( deprecatedGem.since().hasValue() ) {
+            annotationElements.add( new AnnotationElement(
+                AnnotationElementType.STRING,
+                "since",
+                Collections.singletonList( deprecatedGem.since().getValue() )
+            ) );
+        }
+        if ( deprecatedGem.forRemoval().hasValue() ) {
+            annotationElements.add( new AnnotationElement(
+                AnnotationElementType.BOOLEAN,
+                "forRemoval",
+                Collections.singletonList( deprecatedGem.forRemoval().getValue() )
+            ) );
         }
         annotations.add( new Annotation(deprecatedType, annotationElements ) );
         return annotations;
