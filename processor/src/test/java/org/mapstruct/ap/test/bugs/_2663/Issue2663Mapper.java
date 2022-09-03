@@ -11,26 +11,20 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Filip Hrisafov
  */
-@Mapper
+@Mapper( uses = NullableHelper.class )
 public interface Issue2663Mapper {
 
     Issue2663Mapper INSTANCE = Mappers.getMapper( Issue2663Mapper.class );
 
     Request map(RequestDto dto);
 
-    default Nullable<Request.ChildRequest> mapJsonNullableChildren(JsonNullable<RequestDto.ChildRequestDto> dtos) {
-        if (dtos.isPresent()) {
-            return Nullable.of( mapChild( dtos.get() ) );
-        } else {
-            return Nullable.undefined();
+    default JsonNullable<Request.ChildRequest> mapJsonNullableChildren(JsonNullable<RequestDto.ChildRequestDto> dtos) {
+        if ( dtos.isPresent() ) {
+            return JsonNullable.of( mapChild( dtos.get() ) );
         }
-    }
-
-    default <T> Nullable<T> jsonNullableToNullable(JsonNullable<T> jsonNullable) {
-        if ( jsonNullable.isPresent() ) {
-            return Nullable.of( jsonNullable.get() );
+        else {
+            return JsonNullable.undefined();
         }
-        return Nullable.undefined();
     }
 
     Request.ChildRequest mapChild(RequestDto.ChildRequestDto dto);
