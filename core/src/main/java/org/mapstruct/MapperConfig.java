@@ -131,7 +131,12 @@ public @interface MapperConfig {
      * can be retrieved via {@code @Autowired}</li>
      * <li>
      * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
-     * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}.
+     * The annotations will either be from javax.inject or jakarta.inject,
+     * depending on which one is available, with javax.inject having precedence.</li>
+     * <li>
+     * {@code jakarta}: the generated mapper is annotated with {@code @jakarta.inject.Named} and
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}.</li>
      * </ul>
      *
      * @return The component model for the generated mapper.

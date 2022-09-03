@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.AfterMapping;
+import org.mapstruct.AnnotateWith;
+import org.mapstruct.AnnotateWiths;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Builder;
@@ -30,6 +32,7 @@ import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;
+import org.mapstruct.TargetPropertyName;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
@@ -42,6 +45,9 @@ import org.mapstruct.tools.gem.GemDefinition;
  *
  * @author Gunnar Morling
  */
+@GemDefinition(AnnotateWith.class)
+@GemDefinition(AnnotateWith.Element.class)
+@GemDefinition(AnnotateWiths.class)
 @GemDefinition(Mapper.class)
 @GemDefinition(Mapping.class)
 @GemDefinition(Mappings.class)
@@ -52,6 +58,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(SubclassMapping.class)
 @GemDefinition(SubclassMappings.class)
 @GemDefinition(TargetType.class)
+@GemDefinition(TargetPropertyName.class)
 @GemDefinition(MappingTarget.class)
 @GemDefinition(DecoratedWith.class)
 @GemDefinition(MapperConfig.class)

@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junitpioneer.jupiter.ReadsDefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 @WithClasses({ SourceTargetMapper.class, While.class, Break.class, Source.class })
 @IssueKey("53")
+@ReadsDefaultTimeZone
 public class VariableNamingTest {
 
     @ProcessorTest

@@ -196,7 +196,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
-            this.methods = filterPossibleCandidateMethods( sourceModel );
+            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
@@ -210,10 +210,10 @@ public class MappingResolverImpl implements MappingResolver {
         }
         // CHECKSTYLE:ON
 
-        private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
+        private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) ) {
+                if ( isCandidateForMapping( candidate ) && !candidate.equals( mappingMethod )) {
                     result.add( candidate );
                 }
             }
@@ -712,6 +712,11 @@ public class MappingResolverImpl implements MappingResolver {
         }
     }
 
+    private enum BestMatchType {
+        IGNORE_QUALIFIERS_BEFORE_Y_CANDIDATES,
+        IGNORE_QUALIFIERS_AFTER_Y_CANDIDATES,
+    }
+
     /**
      * Suppose mapping required from A to C and:
      * <ul>
@@ -743,6 +748,17 @@ public class MappingResolverImpl implements MappingResolver {
             if ( mmAttempt.hasResult ) {
                 return mmAttempt.result;
             }
+            if ( att.hasQualfiers() ) {
+                mmAttempt = mmAttempt.getBestMatchIgnoringQualifiersBeforeY( sourceType, targetType );
+                if ( mmAttempt.hasResult ) {
+                    return mmAttempt.result;
+                }
+
+                mmAttempt = mmAttempt.getBestMatchIgnoringQualifiersAfterY( sourceType, targetType );
+                if ( mmAttempt.hasResult ) {
+                    return mmAttempt.result;
+                }
+            }
             MethodMethod<Method, BuiltInMethod> mbAttempt =
                 new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
                     .getBestMatch( sourceType, targetType );
@@ -772,6 +788,18 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private MethodMethod<T1, T2> getBestMatch(Type sourceType, Type targetType) {
+            return getBestMatch( sourceType, targetType, null );
+        }
+
+        private MethodMethod<T1, T2> getBestMatchIgnoringQualifiersBeforeY(Type sourceType, Type targetType) {
+            return getBestMatch( sourceType, targetType, BestMatchType.IGNORE_QUALIFIERS_BEFORE_Y_CANDIDATES );
+        }
+
+        private MethodMethod<T1, T2> getBestMatchIgnoringQualifiersAfterY(Type sourceType, Type targetType) {
+            return getBestMatch( sourceType, targetType, BestMatchType.IGNORE_QUALIFIERS_AFTER_Y_CANDIDATES );
+        }
+
+        private MethodMethod<T1, T2> getBestMatch(Type sourceType, Type targetType, BestMatchType matchType) {
 
             Set<T2> yCandidates = new HashSet<>();
             Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates = new LinkedHashMap<>();
@@ -784,6 +812,9 @@ public class MappingResolverImpl implements MappingResolver {
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             attempt.selectionCriteria.setPreferUpdateMapping( false );
+            attempt.selectionCriteria.setIgnoreQualifiers(
+                matchType == BestMatchType.IGNORE_QUALIFIERS_BEFORE_Y_CANDIDATES );
+
             for ( T2 yCandidate : yMethods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
                 ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
@@ -796,13 +827,16 @@ public class MappingResolverImpl implements MappingResolver {
                 }
                 List<SelectedMethod<T1>> xMatches = attempt.getBestMatch( xMethods, sourceType, ySourceType );
                 if ( !xMatches.isEmpty() ) {
-                    xMatches.stream().forEach( x -> xCandidates.put( x, new ArrayList<>() ) );
-                    final Type typeInTheMiddle = ySourceType;
-                    xMatches.stream().forEach( x -> typesInTheMiddle.put( x, typeInTheMiddle ) );
+                    for ( SelectedMethod<T1> x : xMatches ) {
+                        xCandidates.put( x, new ArrayList<>() );
+                        typesInTheMiddle.put( x, ySourceType );
+                    }
                     yCandidates.add( yCandidate );
                 }
             }
             attempt.selectionCriteria.setPreferUpdateMapping( true );
+            attempt.selectionCriteria.setIgnoreQualifiers(
+                matchType == BestMatchType.IGNORE_QUALIFIERS_AFTER_Y_CANDIDATES );
 
             // collect all results
             List<T2> yCandidatesList = new ArrayList<>( yCandidates );
@@ -816,6 +850,7 @@ public class MappingResolverImpl implements MappingResolver {
                 }
             }
 
+            attempt.selectionCriteria.setIgnoreQualifiers( false );
             // no results left
             if ( xCandidates.isEmpty() ) {
                 return this;

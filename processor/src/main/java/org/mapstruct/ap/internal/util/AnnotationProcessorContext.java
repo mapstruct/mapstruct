@@ -31,6 +31,7 @@ import org.mapstruct.ap.spi.FreeBuilderAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 import org.mapstruct.ap.spi.MapStructProcessingEnvironment;
+import org.mapstruct.ap.spi.NoOpBuilderProvider;
 
 /**
  * Keeps contextual data in the scope of the entire annotation processor ("application scope").
@@ -51,14 +52,17 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
+    private boolean disableBuilder;
     private boolean verbose;
 
-    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean verbose) {
+    public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean disableBuilder,
+                                      boolean verbose) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
             findAstModifyingAnnotationProcessors( messager ) );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
+        this.disableBuilder = disableBuilder;
         this.verbose = verbose;
     }
 
@@ -103,7 +107,9 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
                     + this.accessorNamingStrategy.getClass().getCanonicalName()
             );
         }
-        this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
+        this.builderProvider = this.disableBuilder ?
+            new NoOpBuilderProvider() :
+            Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.builderProvider.init( this );
         if ( verbose ) {
             messager.printMessage(

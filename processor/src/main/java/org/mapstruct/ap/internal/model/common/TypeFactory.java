@@ -193,7 +193,24 @@ public class TypeFactory {
         return getType( mirror, false );
     }
 
+    /**
+     * Return a type that is always going to be imported.
+     * This is useful when using it in {@code Mapper#imports}
+     * for types that should be used in expressions.
+     *
+     * @param mirror the type mirror for which we need a type
+     *
+     * @return the type
+     */
+    public Type getAlwaysImportedType(TypeMirror mirror) {
+        return getType( mirror, false, true );
+    }
+
     private Type getType(TypeMirror mirror, boolean isLiteral) {
+        return getType( mirror, isLiteral, null );
+    }
+
+    private Type getType(TypeMirror mirror, boolean isLiteral, Boolean alwaysImport) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -212,7 +229,7 @@ public class TypeFactory {
         String qualifiedName;
         TypeElement typeElement;
         Type componentType;
-        Boolean toBeImported = null;
+        Boolean toBeImported = alwaysImport;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;

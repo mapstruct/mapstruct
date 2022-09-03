@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.subclassmapping;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.SubclassMapping;
@@ -28,4 +29,9 @@ public interface SimpleSubclassMapper {
     @SubclassMapping( source = Bike.class, target = BikeDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker")
     VehicleDto map(Vehicle vehicle);
+
+    VehicleCollection mapInverse(VehicleCollectionDto vehicles);
+
+    @InheritInverseConfiguration
+    Vehicle mapInverse(VehicleDto dto);
 }

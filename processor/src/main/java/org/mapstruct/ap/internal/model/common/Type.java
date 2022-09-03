@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -48,6 +47,10 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -60,6 +63,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * through {@link TypeFactory}.
  *
  * @author Gunnar Morling
+ * @author Filip Hrisafov
  */
 public class Type extends ModelElement implements Comparable<Type> {
 
@@ -98,8 +102,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Map<String, String> notToBeImportedTypes;
     private Boolean isToBeImported;
 
-    private Map<String, Accessor> readAccessors = null;
-    private Map<String, Accessor> presenceCheckers = null;
+    private Map<String, ReadAccessor> readAccessors = null;
+    private Map<String, PresenceCheckAccessor> presenceCheckers = null;
 
     private List<ExecutableElement> allMethods = null;
     private List<VariableElement> allFields = null;
@@ -108,7 +112,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
     private List<Accessor> alternativeTargetAccessors = null;
-    private Map<String, Accessor> constructorAccessors = null;
 
     private Type boundingBase = null;
 
@@ -178,8 +181,18 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         this.loggingVerbose = loggingVerbose;
 
-        this.topLevelType = topLevelType( this.typeElement, this.typeFactory );
-        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( this.typeElement );
+        TypeElement typeElementForTopLevel;
+        if ( Boolean.TRUE.equals( isToBeImported ) ) {
+            // If the is to be imported is explicitly set to true then we shouldn't look for the top level type
+            typeElementForTopLevel = null;
+        }
+        else {
+            // The top level type for an array type is the top level type of the component type
+            typeElementForTopLevel =
+                this.componentType == null ? this.typeElement : this.componentType.getTypeElement();
+        }
+        this.topLevelType = topLevelType( typeElementForTopLevel, this.typeFactory );
+        this.nameWithTopLevelTypeName = nameWithTopLevelTypeName( typeElementForTopLevel, this.name );
     }
     //CHECKSTYLE:ON
 
@@ -215,11 +228,21 @@ public class Type extends ModelElement implements Comparable<Type> {
      * (if the top level type is important, otherwise the fully-qualified name.
      */
     public String createReferenceName() {
-        if ( isToBeImported() || shouldUseSimpleName() ) {
+        if ( isToBeImported() ) {
+            // isToBeImported() returns true for arrays.
+            // Therefore, we need to check the top level type when creating the reference
+            if ( isTopLevelTypeToBeImported() ) {
+                return nameWithTopLevelTypeName != null ? nameWithTopLevelTypeName : name;
+            }
+
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
+        if ( shouldUseSimpleName() ) {
+            return name;
+        }
+
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null) {
             return nameWithTopLevelTypeName;
         }
 
@@ -306,6 +329,17 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isMapType() {
         return isMapType;
+    }
+
+    private boolean hasStringMapSignature() {
+        if ( isMapType() ) {
+            List<Type> typeParameters = getTypeParameters();
+            if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isCollectionOrMapType() {
@@ -597,20 +631,45 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
 
+    public ReadAccessor getReadAccessor(String propertyName) {
+        if ( hasStringMapSignature() ) {
+            ExecutableElement getMethod = getAllMethods()
+                .stream()
+                .filter( m -> m.getSimpleName().contentEquals( "get" ) )
+                .filter( m -> m.getParameters().size() == 1 )
+                .findAny()
+                .orElse( null );
+            return new MapValueAccessor( getMethod, typeParameters.get( 1 ).getTypeMirror(), propertyName );
+        }
+
+        Map<String, ReadAccessor> readAccessors = getPropertyReadAccessors();
+
+        return readAccessors.get( propertyName );
+    }
+
+    public PresenceCheckAccessor getPresenceChecker(String propertyName) {
+        if ( hasStringMapSignature() ) {
+            return PresenceCheckAccessor.mapContainsKey( propertyName );
+        }
+
+        Map<String, PresenceCheckAccessor> presenceCheckers = getPropertyPresenceCheckers();
+        return presenceCheckers.get( propertyName );
+    }
+
     /**
      * getPropertyReadAccessors
      *
      * @return an unmodifiable map of all read accessors (including 'is' for booleans), indexed by property name
      */
-    public Map<String, Accessor> getPropertyReadAccessors() {
+    public Map<String, ReadAccessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
-            Map<String, Accessor> modifiableGetters = new LinkedHashMap<>();
+            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>();
 
-            Map<String, Accessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
+            Map<String, ReadAccessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
             modifiableGetters.putAll( recordAccessors );
 
-            List<Accessor> getterList = filters.getterMethodsIn( getAllMethods() );
-            for ( Accessor getter : getterList ) {
+            List<ReadAccessor> getterList = filters.getterMethodsIn( getAllMethods() );
+            for ( ReadAccessor getter : getterList ) {
                 String simpleName = getter.getSimpleName();
                 if ( recordAccessors.containsKey( simpleName ) ) {
                     // If there is already a record accessor that contains the simple name
@@ -640,8 +699,8 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            List<Accessor> fieldsList = filters.fieldsIn( getAllFields() );
-            for ( Accessor field : fieldsList ) {
+            List<ReadAccessor> fieldsList = filters.fieldsIn( getAllFields(), ReadAccessor::fromField );
+            for ( ReadAccessor field : fieldsList ) {
                 String propertyName = getPropertyName( field );
                 // If there was no getter or is method for booleans, then resort to the field.
                 // If a field was already added do not add it again.
@@ -657,12 +716,15 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable map of all presence checkers, indexed by property name
      */
-    public Map<String, Accessor> getPropertyPresenceCheckers() {
+    public Map<String, PresenceCheckAccessor> getPropertyPresenceCheckers() {
         if ( presenceCheckers == null ) {
-            List<Accessor> checkerList = filters.presenceCheckMethodsIn( getAllMethods() );
-            Map<String, Accessor> modifiableCheckers = new LinkedHashMap<>();
-            for ( Accessor checker : checkerList ) {
-                modifiableCheckers.put( getPropertyName( checker ), checker );
+            List<ExecutableElement> checkerList = filters.presenceCheckMethodsIn( getAllMethods() );
+            Map<String, PresenceCheckAccessor> modifiableCheckers = new LinkedHashMap<>();
+            for ( ExecutableElement checker : checkerList ) {
+                modifiableCheckers.put(
+                    getPropertyName( checker ),
+                    PresenceCheckAccessor.methodInvocation( checker )
+                );
             }
             presenceCheckers = Collections.unmodifiableMap( modifiableCheckers );
         }
@@ -791,11 +853,15 @@ public class Type extends ModelElement implements Comparable<Type> {
     private String getPropertyName(Accessor accessor ) {
         Element accessorElement = accessor.getElement();
         if ( accessorElement instanceof ExecutableElement ) {
-            return accessorNaming.getPropertyName( (ExecutableElement) accessorElement );
+            return getPropertyName( (ExecutableElement) accessorElement );
         }
         else {
             return accessor.getSimpleName();
         }
+    }
+
+    private String getPropertyName(ExecutableElement element) {
+        return accessorNaming.getPropertyName( element );
     }
 
     /**
@@ -933,7 +999,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields() ) );
+            readAccessors.addAll( filters.fieldsIn( getAllFields(), FieldElementAccessor::new ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.
@@ -1520,16 +1586,16 @@ public class Type extends ModelElement implements Comparable<Type> {
         return trimmedClassName;
     }
 
-    private static String nameWithTopLevelTypeName(TypeElement element) {
+    private static String nameWithTopLevelTypeName(TypeElement element, String name) {
         if ( element == null ) {
             return null;
         }
         if ( !element.getNestingKind().isNested() ) {
-            return element.getSimpleName().toString();
+            return name;
         }
 
         Deque<CharSequence> elements = new ArrayDeque<>();
-        elements.addFirst( element.getSimpleName() );
+        elements.addFirst( name );
         Element parent = element.getEnclosingElement();
         while ( parent != null && parent.getKind() != ElementKind.PACKAGE ) {
             elements.addFirst( parent.getSimpleName() );
@@ -1553,6 +1619,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             parent = parent.getEnclosingElement();
         }
         return parent == null ? null : typeFactory.getType( parent.asType() );
+    }
+
+    public boolean isEnumSet() {
+        return "java.util.EnumSet".equals( getFullyQualifiedName() );
     }
 
 }

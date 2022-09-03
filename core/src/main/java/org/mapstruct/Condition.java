@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
  *         e.g. the value given by calling {@code getName()} for the name property of the source bean</li>
  *         <li>The mapping source parameter</li>
  *         <li>{@code @}{@link Context} parameter</li>
+ *         <li>{@code @}{@link TargetPropertyName} parameter</li>
  *     </ul>
  *
  * <strong>Note:</strong> The usage of this annotation is <em>mandatory</em>

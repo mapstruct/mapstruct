@@ -1,6 +1,17 @@
 [[using-spi]]
 == Using the MapStruct SPI
+
+To use a custom SPI implementation, it must be located in a separate JAR file together with a file named after the SPI (e.g. `org.mapstruct.ap.spi.AccessorNamingStrategy`) in `META-INF/services/` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This JAR file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
+
+
+[NOTE]
+====
+It might also be necessary to add the jar to your IDE's annotation processor factory path. Otherwise you might get an error stating that it cannot be found, while a run using your build tool does succeed.
+====
+
 === Custom Accessor Naming Strategy
+
+SPI name: `org.mapstruct.ap.spi.AccessorNamingStrategy`
 
 MapStruct offers the possibility to override the `AccessorNamingStrategy` via the Service Provider Interface (SPI). A nice example is the use of the fluent API on the source object `GolfPlayer` and `GolfPlayerDto` below.
 
@@ -121,13 +132,13 @@ public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy 
 ====
 The `CustomAccessorNamingStrategy` makes use of the `DefaultAccessorNamingStrategy` (also available in mapstruct-processor) and relies on that class to leave most of the default behaviour unchanged.
 
-To use a custom SPI implementation, it must be located in a separate JAR file together with the file `META-INF/services/org.mapstruct.ap.spi.AccessorNamingStrategy` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This JAR file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
-
 [TIP]
 Fore more details: The example above is present in our examples repository (https://github.com/mapstruct/mapstruct-examples).
 
-[mapping-exclusion-provider]
+[[mapping-exclusion-provider]]
 === Mapping Exclusion Provider
+
+SPI name: `org.mapstruct.ap.spi.MappingExclusionProvider`
 
 MapStruct offers the possibility to override the `MappingExclusionProvider` via the Service Provider Interface (SPI).
 A nice example is to not allow MapStruct to create an automatic sub-mapping for a certain type,
@@ -177,15 +188,11 @@ include::{processor-ap-test}/nestedbeans/exclusions/custom/CustomMappingExclusio
 ----
 ====
 
-To use a custom SPI implementation, it must be located in a separate JAR file
-together with the file `META-INF/services/org.mapstruct.ap.spi.MappingExclusionProvider` with the fully qualified name of your custom implementation as content
-(e.g. `org.mapstruct.example.CustomMappingExclusionProvider`).
-This JAR file needs to be added to the annotation processor classpath
-(i.e. add it next to the place where you added the mapstruct-processor jar).
-
 
 [[custom-builder-provider]]
 === Custom Builder Provider
+
+SPI name: org.mapstruct.ap.spi.BuilderProvider
 
 MapStruct offers the possibility to override the `DefaultProvider` via the Service Provider Interface (SPI).
 A nice example is to provide support for a custom builder strategy.
@@ -201,6 +208,8 @@ include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
 
 [[custom-enum-naming-strategy]]
 === Custom Enum Naming Strategy
+
+SPI name: `org.mapstruct.ap.spi.EnumMappingStrategy`
 
 MapStruct offers the possibility to override the `EnumMappingStrategy` via the Service Provider Interface (SPI).
 This can be used when you have certain enums that follow some conventions within your organization.
@@ -348,6 +357,8 @@ public class CheeseTypeMapperImpl implements CheeseTypeMapper {
 
 [[custom-enum-transformation-strategy]]
 === Custom Enum Transformation Strategy
+
+SPI name: `org.mapstruct.ap.spi.EnumTransformationStrategy`
 
 MapStruct offers the possibility to other transformations strategies by implementing `EnumTransformationStrategy` via the Service Provider Interface (SPI).
 A nice example is to provide support for a custom transformation strategy.

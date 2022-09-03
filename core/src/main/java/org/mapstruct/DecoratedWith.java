@@ -103,12 +103,12 @@ import java.lang.annotation.Target;
  * private PersonMapper personMapper; // injects the decorator, with the injected original mapper
  * </pre>
  *
- * <h3>3. Component model 'jsr330'</h3>
+ * <h3>3. Component model 'jsr330' or 'jakarta'</h3>
  * <h4>Referencing the original mapper</h4>
  * <p>
- * JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated
- * implementation of the original mapper is annotated with
- * {@code @javax.inject.Named("fully-qualified-name-of-generated-impl")} and {@code @Singleton} (please note that when
+ * JSR 330 / Jakarta Inject doesn't specify qualifiers and only allows to specifically name the beans. Hence,
+ * the generated implementation of the original mapper is annotated with
+ * {@code @Named("fully-qualified-name-of-generated-impl")} and {@code @Singleton} (please note that when
  * using a decorator, the class name of the mapper implementation ends with an underscore). To inject that bean in your
  * decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the generated class):
  *
@@ -145,7 +145,7 @@ import java.lang.annotation.Target;
  * @author Gunnar Morling
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface DecoratedWith {
 
     /**

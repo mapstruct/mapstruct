@@ -64,6 +64,8 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ParameterElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -155,6 +157,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
+        @Override
         public BeanMappingMethod build() {
 
             BeanMappingOptions beanMapping = method.getOptions().getBeanMapping();
@@ -257,9 +260,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     continue;
                 }
 
-                Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                Map<String, ReadAccessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
 
-                for ( Entry<String, Accessor> entry : readAccessors.entrySet() ) {
+                for ( Entry<String, ReadAccessor> entry : readAccessors.entrySet() ) {
                     unprocessedSourceProperties.put( entry.getKey(), entry.getValue() );
                 }
             }
@@ -359,6 +362,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             return new BeanMappingMethod(
                 method,
+                getMethodAnnotations(),
                 existingVariableNames,
                 propertyMappings,
                 factoryMethod,
@@ -503,8 +507,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .name( propertyName )
                         .build();
 
-                    Accessor targetPropertyReadAccessor =
-                        method.getResultType().getPropertyReadAccessors().get( propertyName );
+                    ReadAccessor targetPropertyReadAccessor =
+                        method.getResultType().getReadAccessor( propertyName );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
@@ -701,6 +705,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private ConstructorAccessor getConstructorAccessor(Type type) {
+            if ( type.isAbstract() ) {
+                // We cannot construct abstract classes.
+                // Usually we won't reach here,
+                // but if SubclassMapping is used with SubclassExhaustiveStrategy#RUNTIME_EXCEPTION
+                // then we will still generate the code.
+                // We shouldn't generate anything for those abstract types
+                return null;
+            }
 
             if ( type.isRecord() ) {
                 // If the type is a record then just get the record components and use then
@@ -1047,7 +1059,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             Accessor targetWriteAccessor = unprocessedTargetProperties.get( targetPropertyName );
-            Accessor targetReadAccessor = resultTypeToMap.getPropertyReadAccessors().get( targetPropertyName );
+            ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor( targetPropertyName );
 
             if ( targetWriteAccessor == null ) {
                 if ( targetReadAccessor == null ) {
@@ -1388,8 +1400,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     continue;
                 }
 
-                Accessor targetPropertyReadAccessor =
-                    method.getResultType().getPropertyReadAccessors().get( targetPropertyName );
+                ReadAccessor targetPropertyReadAccessor =
+                    method.getResultType().getReadAccessor( targetPropertyName );
                 MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
                 PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
                     .sourceMethod( method )
@@ -1431,8 +1443,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .name( targetProperty.getKey() )
                             .build();
 
-                        Accessor targetPropertyReadAccessor =
-                            method.getResultType().getPropertyReadAccessors().get( targetProperty.getKey() );
+                        ReadAccessor targetPropertyReadAccessor =
+                            method.getResultType().getReadAccessor( targetProperty.getKey() );
                         MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
@@ -1453,7 +1465,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         // The source parameter was directly mapped so ignore all of its source properties completely
                         if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
                             // We explicitly ignore source properties from primitives or array types
-                            Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                            Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
+                                .getPropertyReadAccessors();
                             for ( String sourceProperty : readAccessors.keySet() ) {
                                 unprocessedSourceProperties.remove( sourceProperty );
                             }
@@ -1473,22 +1486,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return sourceRef;
             }
 
-            if ( sourceParameter.getType().isMapType() ) {
-                List<Type> typeParameters = sourceParameter.getType().getTypeParameters();
-                if ( typeParameters.size() == 2 && typeParameters.get( 0 ).isString() ) {
-                    return SourceReference.fromMapSource(
-                        new String[] { targetPropertyName },
-                        sourceParameter
-                    );
-                }
-            }
-
-            Accessor sourceReadAccessor =
-                sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
+            ReadAccessor sourceReadAccessor = sourceParameter.getType().getReadAccessor( targetPropertyName );
             if ( sourceReadAccessor != null ) {
                 // property mapping
-                Accessor sourcePresenceChecker =
-                    sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
+                PresenceCheckAccessor sourcePresenceChecker =
+                    sourceParameter.getType().getPresenceChecker( targetPropertyName );
 
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
@@ -1700,6 +1702,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     //CHECKSTYLE:OFF
     private BeanMappingMethod(Method method,
+                              List<Annotation> annotations,
                               Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
@@ -1713,6 +1716,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<SubclassMapping> subclassMappings) {
         super(
             method,
+            annotations,
             existingVariableNames,
             factoryMethod,
             mapNullToDefault,
@@ -1790,7 +1794,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     public boolean isAbstractReturnType() {
-        return getFactoryMethod() == null && !hasConstructorMappings() && returnTypeToConstruct != null
+        return getFactoryMethod() == null && returnTypeToConstruct != null
             && returnTypeToConstruct.isAbstract();
     }
 

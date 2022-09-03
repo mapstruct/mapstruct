@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
-import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.ValueProvider;
+import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 
 /**
  * This method is used to convert the nested properties as listed in propertyEntries into a method
@@ -103,7 +103,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
         for ( SafePropertyEntry propertyEntry : safePropertyEntries) {
-            types.add( propertyEntry.getType() );
+            types.addAll( propertyEntry.getType().getImportTypes() );
             if ( propertyEntry.getPresenceChecker() != null ) {
                 types.addAll( propertyEntry.getPresenceChecker().getImportTypes() );
             }
@@ -164,11 +164,12 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         public SafePropertyEntry(PropertyEntry entry, String safeName, String previousPropertyName) {
             this.safeName = safeName;
-            this.readAccessorName = ValueProvider.of( entry.getReadAccessor() ).getValue();
-            if ( entry.getPresenceChecker() != null ) {
-                this.presenceChecker = new SourceReferenceMethodPresenceCheck(
+            this.readAccessorName = entry.getReadAccessor().getReadValueSource();
+            PresenceCheckAccessor presenceChecker = entry.getPresenceChecker();
+            if ( presenceChecker != null ) {
+                this.presenceChecker = new SuffixPresenceCheck(
                     previousPropertyName,
-                    entry.getPresenceChecker().getSimpleName()
+                    presenceChecker.getPresenceCheckSuffix()
                 );
             }
             else {

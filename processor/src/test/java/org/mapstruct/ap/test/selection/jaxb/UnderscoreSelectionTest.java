@@ -13,6 +13,7 @@ import org.mapstruct.ap.test.selection.jaxb.underscores.UnderscoreType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJavaxJaxb;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey( "726" )
 @WithClasses( { UnderscoreType.class, ObjectFactory.class, SuperType.class, SubType.class, UnderscoreMapper.class } )
+@WithJavaxJaxb
 public class UnderscoreSelectionTest {
 
     @ProcessorTest

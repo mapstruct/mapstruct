@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.subclassmapping.fixture;
 
 import org.mapstruct.BeanMapping;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.SubclassMapping;
 
@@ -18,4 +19,9 @@ public interface SubclassAbstractMapper {
     @SubclassMapping( source = SubSource.class, target = SubTarget.class )
     @SubclassMapping( source = SubSourceOther.class, target = SubTargetOther.class )
     AbstractParentTarget map(AbstractParentSource item);
+
+    @SubclassMapping( source = SubTargetSeparate.class, target = SubSourceSeparate.class )
+    @InheritInverseConfiguration
+    @SubclassMapping( source = SubTargetOther.class, target = SubSourceOverride.class )
+    AbstractParentSource map(AbstractParentTarget item);
 }

@@ -109,7 +109,12 @@ public final class MappingConstants {
         public static final String DEFAULT = "default";
 
         /**
-         * The generated mapper is an application-scoped CDI bean and can be retrieved via @Inject
+         * The generated mapper is an application-scoped CDI bean and can be retrieved via @Inject.
+         * The annotations are either from {@code javax} or {@code jakarta}.
+         * Priority have the {@code javax} annotations.
+         * In case you want to only use Jakarta then use {@link #JAKARTA_CDI}.
+         *
+         * @see #JAKARTA_CDI
          */
         public static final String CDI = "cdi";
 
@@ -120,10 +125,29 @@ public final class MappingConstants {
         public static final String SPRING = "spring";
 
         /**
-         * The generated mapper is annotated with @javax.inject.Named and @Singleton, and can be retrieved via @Inject
+         * The generated mapper is annotated with @Named and @Singleton, and can be retrieved via @Inject.
+         * The annotations are either from {@code javax.inject} or {@code jakarta.inject}.
+         * Priority have the {@code javax.inject} annotations.
+         * In case you want to only use Jakarta then use {@link #JAKARTA}.
          *
+         * @see #JAKARTA
          */
         public static final String JSR330 = "jsr330";
+
+        /**
+         * The generated mapper is annotated with @Named and @Singleton, and can be retrieved via @Inject.
+         * The annotations are from {@code jakarta.inject}.
+         * In case you want to use {@code javax.inject} then use {@link #JSR330}.
+         *
+         * @see #JSR330
+         */
+        public static final String JAKARTA = "jakarta";
+
+        /**
+         * The generated mapper is an application-scoped Jakarta CDI bean and can be retrieved via @Inject.
+         * @see #CDI
+         */
+        public static final String JAKARTA_CDI = "jakarta-cdi";
 
     }
 

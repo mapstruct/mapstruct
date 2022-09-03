@@ -37,8 +37,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
-import org.mapstruct.ap.internal.model.presence.SourceReferenceContainsKeyPresenceCheck;
-import org.mapstruct.ap.internal.model.presence.SourceReferenceMethodPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -48,9 +47,9 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
@@ -73,7 +72,7 @@ public class PropertyMapping extends ModelElement {
     private final String name;
     private final String sourceBeanName;
     private final String targetWriteAccessorName;
-    private final ValueProvider targetReadAccessorProvider;
+    private final ReadAccessor targetReadAccessorProvider;
     private final Type targetType;
     private final Assignment assignment;
     private final Set<String> dependsOn;
@@ -87,7 +86,7 @@ public class PropertyMapping extends ModelElement {
         protected AccessorType targetWriteAccessorType;
         protected Type targetType;
         protected BuilderType targetBuilderType;
-        protected Accessor targetReadAccessor;
+        protected ReadAccessor targetReadAccessor;
         protected String targetPropertyName;
         protected String sourcePropertyName;
 
@@ -103,7 +102,7 @@ public class PropertyMapping extends ModelElement {
             return super.method( sourceMethod );
         }
 
-        public T target(String targetPropertyName, Accessor targetReadAccessor, Accessor targetWriteAccessor) {
+        public T target(String targetPropertyName, ReadAccessor targetReadAccessor, Accessor targetWriteAccessor) {
             this.targetPropertyName = targetPropertyName;
             this.targetReadAccessor = targetReadAccessor;
             this.targetWriteAccessor = targetWriteAccessor;
@@ -290,7 +289,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 rightHandSide.getSourceParameterName(),
                 targetWriteAccessor.getSimpleName(),
-                ValueProvider.of( targetReadAccessor ),
+                targetReadAccessor,
                 targetType,
                 assignment,
                 dependsOn,
@@ -420,6 +419,28 @@ public class PropertyMapping extends ModelElement {
 
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
+
+                if ( factory == null && targetBuilderType != null) {
+                    // If there is no dedicated factory method and the target has a builder we will try to use that
+                    MethodReference builderFactoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod(
+                        targetType,
+                        targetBuilderType
+                    );
+
+                    if ( builderFactoryMethod != null ) {
+
+                        MethodReference finisherMethod = BuilderFinisherMethodResolver.getBuilderFinisherMethod(
+                            method,
+                            targetBuilderType,
+                            ctx
+                        );
+
+                        if ( finisherMethod != null ) {
+                            factory = MethodReference.forMethodChaining( builderFactoryMethod, finisherMethod );
+                        }
+                    }
+
+                }
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
@@ -559,15 +580,21 @@ public class PropertyMapping extends ModelElement {
 
             // parameter reference
             if ( propertyEntry == null ) {
-                return new SourceRHS( sourceParam.getName(),
-                                      sourceParam.getType(),
-                                      existingVariableNames,
-                                      sourceReference.toString()
+                SourceRHS sourceRHS = new SourceRHS(
+                    sourceParam.getName(),
+                    sourceParam.getType(),
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
+                sourceRHS.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
+                    sourceReference,
+                    sourceRHS
+                ) );
+                return sourceRHS;
             }
             // simple property
             else if ( !sourceReference.isNested() ) {
-                String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
+                String sourceRef = sourceParam.getName() + "." + propertyEntry.getReadAccessor().getReadValueSource();
                 SourceRHS sourceRHS = new SourceRHS(
                     sourceParam.getName(),
                     sourceRef,
@@ -660,28 +687,21 @@ public class PropertyMapping extends ModelElement {
                 // in the forged method?
                 PropertyEntry propertyEntry = sourceReference.getShallowestProperty();
                 if ( propertyEntry.getPresenceChecker() != null ) {
-                    if (propertyEntry.getPresenceChecker().getAccessorType() == AccessorType.MAP_CONTAINS ) {
-                        return new SourceReferenceContainsKeyPresenceCheck(
-                            sourceParam.getName(),
-                            propertyEntry.getPresenceChecker().getSimpleName()
-                        );
-                    }
-
                     List<PresenceCheck> presenceChecks = new ArrayList<>();
-                    presenceChecks.add( new SourceReferenceMethodPresenceCheck(
+                    presenceChecks.add( new SuffixPresenceCheck(
                         sourceParam.getName(),
-                        propertyEntry.getPresenceChecker().getSimpleName()
+                        propertyEntry.getPresenceChecker().getPresenceCheckSuffix()
                     ) );
 
                     String variableName = sourceParam.getName() + "."
-                        + propertyEntry.getReadAccessor().getSimpleName() + "()";
+                        + propertyEntry.getReadAccessor().getReadValueSource();
                     for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
                         if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
                             presenceChecks.add( new NullPresenceCheck( variableName ) );
-                            presenceChecks.add( new SourceReferenceMethodPresenceCheck(
+                            presenceChecks.add( new SuffixPresenceCheck(
                                 variableName,
-                                entry.getPresenceChecker().getSimpleName()
+                                entry.getPresenceChecker().getPresenceCheckSuffix()
                             ) );
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
                         }
@@ -992,7 +1012,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 targetPropertyName,
                 targetWriteAccessor.getSimpleName(),
-                ValueProvider.of( targetReadAccessor ),
+                targetReadAccessor,
                 targetType,
                 assignment,
                 dependsOn,
@@ -1058,7 +1078,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 targetPropertyName,
                 targetWriteAccessor.getSimpleName(),
-                ValueProvider.of( targetReadAccessor ),
+                targetReadAccessor,
                 targetType,
                 assignment,
                 dependsOn,
@@ -1071,7 +1091,7 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName,
-        ValueProvider targetReadAccessorProvider,
+        ReadAccessor targetReadAccessorProvider,
         Type targetType, Assignment propertyAssignment,
         Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
@@ -1081,7 +1101,7 @@ public class PropertyMapping extends ModelElement {
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-        ValueProvider targetReadAccessorProvider, Type targetType,
+        ReadAccessor targetReadAccessorProvider, Type targetType,
         Assignment assignment,
         Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
         this.name = name;
@@ -1112,7 +1132,7 @@ public class PropertyMapping extends ModelElement {
     }
 
     public String getTargetReadAccessorName() {
-        return targetReadAccessorProvider == null ? null : targetReadAccessorProvider.getValue();
+        return targetReadAccessorProvider == null ? null : targetReadAccessorProvider.getReadValueSource();
     }
 
     public Type getTargetType() {

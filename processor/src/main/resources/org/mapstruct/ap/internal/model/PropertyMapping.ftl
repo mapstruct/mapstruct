@@ -11,5 +11,6 @@
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=targetReadAccessorName
                targetWriteAccessorName=targetWriteAccessorName
+               targetPropertyName=name
                targetType=targetType
                defaultValueAssignment=defaultValueAssignment />

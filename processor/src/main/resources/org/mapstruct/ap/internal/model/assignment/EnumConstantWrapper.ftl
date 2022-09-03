@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper" -->
-${ext.targetType.name}.${assignment}
+${ext.targetType.createReferenceName()}.${assignment}

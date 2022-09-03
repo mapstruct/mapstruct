@@ -15,7 +15,9 @@
 -->
 <#macro handleSourceReferenceNullCheck>
     <#if sourcePresenceCheckerReference??>
-        if ( <@includeModel object=sourcePresenceCheckerReference /> ) {
+        if ( <@includeModel object=sourcePresenceCheckerReference
+               targetPropertyName=ext.targetPropertyName
+               targetType=ext.targetType/> ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
@@ -57,7 +59,9 @@
 -->
 <#macro handleLocalVarNullCheck needs_explicit_local_var>
   <#if sourcePresenceCheckerReference??>
-    if ( <@includeModel object=sourcePresenceCheckerReference /> ) {
+    if ( <@includeModel object=sourcePresenceCheckerReference
+           targetType=ext.targetType
+           targetPropertyName=ext.targetPropertyName /> ) {
       <#if needs_explicit_local_var>
         <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
         <#nested>
@@ -112,6 +116,7 @@ Performs a standard assignment.
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
+               targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType/>
 </#macro>
 <#--
@@ -123,6 +128,7 @@ Performs a default assignment with a default value.
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
+               targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType
                defaultValue=ext.defaultValue/>
 </#macro>

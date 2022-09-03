@@ -6,6 +6,9 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -65,11 +68,25 @@ class EclipseCompilingExtension extends CompilingExtension {
 
         return clHelper.compileInOtherClassloader(
             compilationRequest,
-            TEST_COMPILATION_CLASSPATH,
+            getTestCompilationClasspath( compilationRequest ),
             getSourceFiles( compilationRequest.getSourceClasses() ),
             SOURCE_DIR,
             sourceOutputDir,
             classOutputDir );
+    }
+
+    private static List<String> getTestCompilationClasspath(CompilationRequest request) {
+        Collection<String> testDependencies = request.getTestDependencies();
+        if ( testDependencies.isEmpty() ) {
+            return TEST_COMPILATION_CLASSPATH;
+        }
+
+        List<String> testCompilationPaths = new ArrayList<>(
+            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() );
+
+        testCompilationPaths.addAll( TEST_COMPILATION_CLASSPATH );
+        testCompilationPaths.addAll( filterBootClassPath( testDependencies ) );
+        return testCompilationPaths;
     }
 
     private static FilteringParentClassLoader newFilteringClassLoaderForEclipse() {
@@ -143,12 +160,12 @@ class EclipseCompilingExtension extends CompilingExtension {
     }
 
     private static List<String> buildEclipseCompilerClasspath() {
-        String[] whitelist =
-            new String[] {
+        Collection<String> whitelist = Arrays.asList(
                 "tycho-compiler",
                 "ecj",
                 "plexus-compiler-api",
-                "plexus-component-annotations" };
+                "plexus-component-annotations"
+        );
 
         return filterBootClassPath( whitelist );
     }

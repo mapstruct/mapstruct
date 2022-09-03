@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.conditional.basic;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -48,6 +48,12 @@ public class ConditionalMappingTest {
 
         employee = mapper.map( new BasicEmployeeDto( "    " ) );
         assertThat( employee.getName() ).isNull();
+    }
+
+    @IssueKey( "2882" )
+    @ProcessorTest
+    @WithClasses( { ConditionalMethodWithTargetType.class } )
+    public void conditionalMethodWithTargetTypeShouldCompile() {
     }
 
     @ProcessorTest
@@ -223,4 +229,19 @@ public class ConditionalMappingTest {
 
     }
 
+    @ProcessorTest
+    @WithClasses( {
+        ConditionalMethodWithMappingTargetInUpdateMapper.class
+    } )
+    @IssueKey( "2758" )
+    public void conditionalMethodWithMappingTarget() {
+        ConditionalMethodWithMappingTargetInUpdateMapper mapper =
+            ConditionalMethodWithMappingTargetInUpdateMapper.INSTANCE;
+
+        BasicEmployee targetEmployee = new BasicEmployee();
+        targetEmployee.setName( "CurrentName" );
+        mapper.map( new BasicEmployeeDto( "ReplacementName" ), targetEmployee );
+
+        assertThat( targetEmployee.getName() ).isEqualTo( "CurrentName" );
+    }
 }

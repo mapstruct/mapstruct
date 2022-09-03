@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -58,8 +59,10 @@ public class MethodReference extends ModelElement implements Assignment {
     private final Type definingType;
     private final List<ParameterBinding> parameterBindings;
     private final Parameter providingParameter;
+    private final List<MethodReference> methodsToChain;
     private final boolean isStatic;
     private final boolean isConstructor;
+    private final boolean isMethodChaining;
 
     /**
      * Creates a new reference to the given method.
@@ -95,6 +98,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isStatic = method.isStatic();
         this.name = method.getName();
         this.isConstructor = false;
+        this.methodsToChain = Collections.emptyList();
+        this.isMethodChaining = false;
    }
 
     private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -111,6 +116,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isStatic = method.isStatic();
         this.name = method.getName();
         this.isConstructor = false;
+        this.methodsToChain = Collections.emptyList();
+        this.isMethodChaining = false;
     }
 
     private MethodReference(String name, Type definingType, boolean isStatic) {
@@ -127,6 +134,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.providingParameter = null;
         this.isStatic = isStatic;
         this.isConstructor = false;
+        this.methodsToChain = Collections.emptyList();
+        this.isMethodChaining = false;
     }
 
     private MethodReference(Type definingType, List<ParameterBinding> parameterBindings) {
@@ -142,6 +151,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.providingParameter = null;
         this.isStatic = false;
         this.isConstructor = true;
+        this.methodsToChain = Collections.emptyList();
+        this.isMethodChaining = false;
 
         if ( parameterBindings.isEmpty() ) {
             this.importTypes = Collections.emptySet();
@@ -157,6 +168,24 @@ public class MethodReference extends ModelElement implements Assignment {
 
             this.importTypes = Collections.unmodifiableSet( imported );
         }
+    }
+
+    private MethodReference(MethodReference... references) {
+        this.name = null;
+        this.definingType = null;
+        this.sourceParameters = Collections.emptyList();
+        this.returnType = null;
+        this.declaringMapper = null;
+        this.importTypes = Collections.emptySet();
+        this.thrownTypes = Collections.emptyList();
+        this.isUpdateMethod = false;
+        this.contextParam = null;
+        this.parameterBindings = null;
+        this.providingParameter = null;
+        this.isStatic = false;
+        this.isConstructor = false;
+        this.methodsToChain = Arrays.asList( references );
+        this.isMethodChaining = true;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -267,6 +296,12 @@ public class MethodReference extends ModelElement implements Assignment {
         if ( isStatic() ) {
             imported.add( definingType );
         }
+        if ( isMethodChaining() ) {
+            for ( MethodReference methodToChain : methodsToChain ) {
+                imported.addAll( methodToChain.getImportTypes() );
+            }
+        }
+
         return imported;
     }
 
@@ -275,6 +310,12 @@ public class MethodReference extends ModelElement implements Assignment {
         List<Type> exceptions = new ArrayList<>( thrownTypes );
         if ( assignment != null ) {
             exceptions.addAll( assignment.getThrownTypes() );
+        }
+        if ( isMethodChaining() ) {
+            for ( MethodReference methodToChain : methodsToChain ) {
+                exceptions.addAll( methodToChain.getThrownTypes() );
+            }
+
         }
         return exceptions;
     }
@@ -309,6 +350,14 @@ public class MethodReference extends ModelElement implements Assignment {
 
     public boolean isConstructor() {
         return isConstructor;
+    }
+
+    public boolean isMethodChaining() {
+        return isMethodChaining;
+    }
+
+    public List<MethodReference> getMethodsToChain() {
+        return methodsToChain;
     }
 
     public List<ParameterBinding> getParameterBindings() {
@@ -383,6 +432,10 @@ public class MethodReference extends ModelElement implements Assignment {
 
     public static MethodReference forConstructorInvocation(Type type, List<ParameterBinding> parameterBindings) {
         return new MethodReference( type, parameterBindings );
+    }
+
+    public static MethodReference forMethodChaining(MethodReference... references) {
+        return new MethodReference( references );
     }
 
     @Override

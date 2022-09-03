@@ -20,6 +20,7 @@ import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJoda;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("75")
 @DefaultLocale("de")
+@WithJoda
 public class JodaConversionTest {
 
     @ProcessorTest

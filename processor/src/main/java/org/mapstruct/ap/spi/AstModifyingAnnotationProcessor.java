@@ -15,7 +15,7 @@ import org.mapstruct.util.Experimental;
  * <p>
  * This contract will be queried by MapStruct when examining types referenced by mappers to be generated, most notably
  * the source and target types of mapping methods. If at least one AST-modifying processor announces further changes to
- * such type, the generation of the affected mapper(s) will be deferred to a future round in the annnotation processing
+ * such type, the generation of the affected mapper(s) will be deferred to a future round in the annotation processing
  * cycle.
  * <p>
  * Implementations are discovered via the service loader, i.e. a JAR providing an AST-modifying processor needs to

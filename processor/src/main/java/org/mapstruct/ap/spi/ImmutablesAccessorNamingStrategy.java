@@ -10,9 +10,9 @@ import javax.lang.model.element.ExecutableElement;
 import org.mapstruct.util.Experimental;
 
 /**
- * Accesor naming strategy for Immutables.
+ * Accessor naming strategy for Immutables.
  * The generated Immutables also have a from that works as a copy. Our default strategy considers this method
- * as a setter with a name {@code from}. Therefore we are ignoring it.
+ * as a setter with a name {@code from}. Therefore, we are ignoring it.
  *
  * @author Filip Hrisafov
  */

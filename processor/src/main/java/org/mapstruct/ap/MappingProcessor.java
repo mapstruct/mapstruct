@@ -87,6 +87,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.UNMAPPED_SOURCE_POLICY,
     MappingProcessor.DEFAULT_COMPONENT_MODEL,
     MappingProcessor.DEFAULT_INJECTION_STRATEGY,
+    MappingProcessor.DISABLE_BUILDERS,
     MappingProcessor.VERBOSE
 })
 public class MappingProcessor extends AbstractProcessor {
@@ -104,6 +105,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
     protected static final String DEFAULT_INJECTION_STRATEGY = "mapstruct.defaultInjectionStrategy";
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
+    protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
 
     private Options options;
@@ -130,6 +132,7 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getElementUtils(),
             processingEnv.getTypeUtils(),
             processingEnv.getMessager(),
+            options.isDisableBuilders(),
             options.isVerbose()
         );
     }
@@ -146,6 +149,7 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
             processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
             Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
+            Boolean.valueOf( processingEnv.getOptions().get( DISABLE_BUILDERS ) ),
             Boolean.valueOf( processingEnv.getOptions().get( VERBOSE ) )
         );
     }
@@ -265,7 +269,11 @@ public class MappingProcessor extends AbstractProcessor {
                 // of one outer interface
                 List<? extends Element> tst = mapperElement.getEnclosedElements();
                 ProcessorContext context = new DefaultModelElementProcessorContext(
-                        processingEnv, options, roundContext, getDeclaredTypesNotToBeImported( mapperElement )
+                    processingEnv,
+                    options,
+                    roundContext,
+                    getDeclaredTypesNotToBeImported( mapperElement ),
+                    mapperElement
                 );
 
                 processMapperTypeElement( context, mapperElement );

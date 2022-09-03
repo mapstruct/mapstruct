@@ -5,19 +5,27 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.function.Predicate;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.NewInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMapsWithNullCheck;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.Assignment.AssignmentType;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -169,7 +177,8 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else if ( setterWrapperNeedsSourceNullCheck( result ) ) {
+            else if ( setterWrapperNeedsSourceNullCheck( result )
+                && canBeMappedOrDirectlyAssigned( result ) ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -179,7 +188,7 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
-            else {
+            else if ( canBeMappedOrDirectlyAssigned( result ) ) {
                 //TODO init default value
 
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
@@ -188,6 +197,21 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     targetAccessorType.isFieldAssignment()
+                );
+            }
+            else if ( hasNoArgsConstructor() ) {
+                result = new NewInstanceSetterWrapperForCollectionsAndMaps(
+                    result,
+                    method.getThrownTypes(),
+                    targetType,
+                    ctx.getTypeFactory(),
+                    targetAccessorType.isFieldAssignment() );
+            }
+            else {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR,
+                    targetType
                 );
             }
         }
@@ -210,6 +234,12 @@ public class CollectionAssignmentBuilder {
         }
 
         return result;
+    }
+
+    private boolean canBeMappedOrDirectlyAssigned(Assignment result) {
+        return result.getType() != AssignmentType.DIRECT
+                  || hasCopyConstructor()
+                  || targetType.isEnumSet();
     }
 
     /**
@@ -236,4 +266,48 @@ public class CollectionAssignmentBuilder {
         return false;
     }
 
+    private boolean hasCopyConstructor() {
+        return checkConstructorForPredicate( this::hasCopyConstructor );
+    }
+
+    private boolean hasNoArgsConstructor() {
+        return checkConstructorForPredicate( this::hasNoArgsConstructor );
+    }
+
+    private boolean checkConstructorForPredicate(Predicate<Element> predicate) {
+        if ( targetType.isCollectionOrMapType() ) {
+            if ( "java.util".equals( targetType.getPackageName() ) ) {
+                return true;
+            }
+            else {
+                Element sourceElement = targetType.getImplementationType() != null
+                                      ? targetType.getImplementationType().getTypeElement()
+                                      : targetType.getTypeElement();
+                if ( sourceElement != null ) {
+                    for ( Element element : sourceElement.getEnclosedElements() ) {
+                        if ( element.getKind() == ElementKind.CONSTRUCTOR
+                            && element.getModifiers().contains( Modifier.PUBLIC ) ) {
+                            if ( predicate.test( element ) ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasNoArgsConstructor(Element element) {
+        return ( (ExecutableElement) element ).getParameters().isEmpty();
+    }
+
+    private boolean hasCopyConstructor(Element element) {
+        if ( element instanceof ExecutableElement ) {
+            ExecutableElement ee = (ExecutableElement) element;
+            return ee.getParameters().size() == 1
+                && ctx.getTypeUtils().isAssignable( targetType.getTypeMirror(), ee.getParameters().get( 0 ).asType() );
+        }
+        return false;
+    }
 }

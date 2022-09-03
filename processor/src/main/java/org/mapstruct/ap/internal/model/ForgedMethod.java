@@ -196,7 +196,7 @@ public class ForgedMethod implements Method {
     public ForgedMethod(String name, ForgedMethod forgedMethod) {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
-        this.thrownTypes = new ArrayList<>();
+        this.thrownTypes = forgedMethod.thrownTypes;
         this.history = forgedMethod.history;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );

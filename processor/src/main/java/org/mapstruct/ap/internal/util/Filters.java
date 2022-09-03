@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -23,12 +24,10 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
-import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.accessor.AccessorType.ADDER;
-import static org.mapstruct.ap.internal.util.accessor.AccessorType.GETTER;
-import static org.mapstruct.ap.internal.util.accessor.AccessorType.PRESENCE_CHECKER;
 import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
 
 /**
@@ -68,10 +67,10 @@ public class Filters {
         this.typeMirror = typeMirror;
     }
 
-    public List<Accessor> getterMethodsIn(List<ExecutableElement> elements) {
+    public List<ReadAccessor> getterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isGetterMethod )
-            .map( method ->  new ExecutableElementAccessor( method, getReturnType( method ), GETTER ) )
+            .map( method ->  ReadAccessor.fromGetter( method, getReturnType( method ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -89,21 +88,18 @@ public class Filters {
         }
     }
 
-    public Map<String, Accessor> recordAccessorsIn(Collection<Element> recordComponents) {
+    public Map<String, ReadAccessor> recordAccessorsIn(Collection<Element> recordComponents) {
         if ( RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
             return java.util.Collections.emptyMap();
         }
         try {
-            Map<String, Accessor> recordAccessors = new LinkedHashMap<>();
+            Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
             for ( Element recordComponent : recordComponents ) {
                 ExecutableElement recordExecutableElement =
                     (ExecutableElement) RECORD_COMPONENT_ACCESSOR_METHOD.invoke( recordComponent );
                 recordAccessors.put(
                     recordComponent.getSimpleName().toString(),
-                    new ExecutableElementAccessor( recordExecutableElement,
-                        getReturnType( recordExecutableElement ),
-                        GETTER
-                    )
+                    ReadAccessor.fromGetter( recordExecutableElement, getReturnType( recordExecutableElement ) )
                 );
             }
 
@@ -118,17 +114,16 @@ public class Filters {
         return getWithinContext( executableElement ).getReturnType();
     }
 
-    public List<Accessor> fieldsIn(List<VariableElement> accessors) {
+    public <T> List<T> fieldsIn(List<VariableElement> accessors, Function<VariableElement, T> creator) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( FieldElementAccessor::new )
+            .map( creator )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
-    public List<Accessor> presenceCheckMethodsIn(List<ExecutableElement> elements) {
+    public List<ExecutableElement> presenceCheckMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isPresenceCheckMethod )
-            .map( method -> new ExecutableElementAccessor( method, getReturnType( method ), PRESENCE_CHECKER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 

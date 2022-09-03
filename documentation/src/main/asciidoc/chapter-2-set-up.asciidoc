@@ -130,7 +130,7 @@ You can find a complete example in the https://github.com/mapstruct/mapstruct-ex
 
 The MapStruct code generator can be configured using _annotation processor options_.
 
-When invoking javac directly, these options are passed to the compiler in the form _-Akey=value_. When using MapStruct via Maven, any processor options can be passed using an `options` element within the configuration of the Maven processor plug-in like this:
+When invoking javac directly, these options are passed to the compiler in the form _-Akey=value_. When using MapStruct via Maven, any processor options can be passed using `compilerArgs` within the configuration of the Maven processor plug-in like this:
 
 .Maven configuration
 ====
@@ -217,7 +217,8 @@ Supported values are:
 * `default`: the mapper uses no component model, instances are typically retrieved via `Mappers#getMapper(Class)`
 * `cdi`: the generated mapper is an application-scoped CDI bean and can be retrieved via `@Inject`
 * `spring`: the generated mapper is a singleton-scoped Spring bean and can be retrieved via `@Autowired`
-* `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject`, e.g. using Spring
+* `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from javax.inject or jakarta.inject, depending which one is available with javax.inject having priority), e.g. using Spring
+* `jakarta`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from jakarta.inject), e.g. using Spring
 
 If a component model is given for a specific mapper via `@Mapper#componentModel()`, the value from the annotation takes precedence.
 |`default`
@@ -260,6 +261,11 @@ Supported values are:
 If a policy is given for a specific mapper via `@Mapper#unmappedSourcePolicy()`, the value from the annotation takes precedence.
 If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappedSourceProperties()`, it takes precedence over both `@Mapper#unmappedSourcePolicy()` and the option.
 |`WARN`
+
+|`mapstruct.
+disableBuilders`
+|If set to `true`, then MapStruct will not use builder patterns when doing the mapping. This is equivalent to doing `@Mapper( builder = @Builder( disableBuilder = true ) )` for all of your mappers.
+|`false`
 |===
 
 === Using MapStruct with the Java Module System
@@ -267,3 +273,28 @@ If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappe
 MapStruct can be used with Java 9 and higher versions.
 
 To allow usage of the `@Generated` annotation `java.annotation.processing.Generated` (part of the `java.compiler` module) can be enabled.
+
+=== IDE Integration
+
+There are optional MapStruct plugins for IntelliJ and Eclipse that allow you to have additional completion support (and more) in the annotations.
+
+==== IntelliJ
+
+The https://plugins.jetbrains.com/plugin/10036-mapstruct-support[MapStruct IntelliJ] plugin offers assistance in projects that use MapStruct.
+
+Some features include:
+
+* Code completion in `target`, `source`, `expression`
+* Go To Declaration for properties in `target` and `source`
+* Find Usages of properties in `target` and `source`
+* Refactoring support
+* Errors and Quick Fixes
+
+==== Eclipse
+
+The https://marketplace.eclipse.org/content/mapstruct-eclipse-plugin[MapStruct Eclipse] Plugin offers assistance in projects that use MapStruct.
+
+Some features include:
+
+* Code completion in `target` and `source`
+* Quick Fixes

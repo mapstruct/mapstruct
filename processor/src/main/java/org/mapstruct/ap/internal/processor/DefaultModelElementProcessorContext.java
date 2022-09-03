@@ -13,6 +13,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -46,14 +47,14 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final RoundContext roundContext;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
-            RoundContext roundContext, Map<String, String> notToBeImported) {
+            RoundContext roundContext, Map<String, String> notToBeImported, TypeElement mapperElement) {
 
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = TypeUtils.create( processingEnvironment, versionInformation );
-        this.delegatingElements = ElementUtils.create( processingEnvironment, versionInformation );
+        this.delegatingElements = ElementUtils.create( processingEnvironment, versionInformation, mapperElement );
         this.roundContext = roundContext;
         this.typeFactory = new TypeFactory(
             delegatingElements,

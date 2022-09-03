@@ -13,8 +13,8 @@ public class EclipseElementUtilsDecorator extends AbstractElementUtilsDecorator 
 
     private final Elements delegate;
 
-    EclipseElementUtilsDecorator(ProcessingEnvironment processingEnv) {
-        super( processingEnv );
+    EclipseElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
+        super( processingEnv, mapperElement );
         this.delegate = processingEnv.getElementUtils();
     }
 
