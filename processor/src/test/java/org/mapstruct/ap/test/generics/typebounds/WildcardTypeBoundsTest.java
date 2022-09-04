@@ -98,7 +98,7 @@ class WildcardTypeBoundsTest {
         diagnostics = @Diagnostic(
             kind = Kind.ERROR,
             type = ErroneousTypeVarExtendsMapper.class,
-            line = 19,
+            line = 20,
             message = "Can't generate mapping method for a generic type variable source."
         )
     )
