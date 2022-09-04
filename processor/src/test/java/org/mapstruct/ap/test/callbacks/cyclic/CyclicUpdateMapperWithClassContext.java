@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.callbacks.cyclic;
 
-import org.mapstruct.BeforeMapping;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
