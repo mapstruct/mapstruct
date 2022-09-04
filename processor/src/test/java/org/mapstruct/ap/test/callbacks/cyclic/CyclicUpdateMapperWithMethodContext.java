@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.callbacks.cyclic;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
@@ -12,10 +13,10 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Ben Zegveld
  */
-@Mapper( uses = PreventCyclicContext.class )
-public interface CyclicUpdateMapper {
+@Mapper
+public interface CyclicUpdateMapperWithMethodContext {
 
-    CyclicUpdateMapper INSTANCE = Mappers.getMapper( CyclicUpdateMapper.class );
+    CyclicUpdateMapperWithMethodContext INSTANCE = Mappers.getMapper( CyclicUpdateMapperWithMethodContext.class );
 
-    void map(Teacher teacher, @MappingTarget TeacherDto teacherDto);
+    void map(Teacher teacher, @MappingTarget TeacherDto teacherDto, @Context PreventCyclicContext context);
 }

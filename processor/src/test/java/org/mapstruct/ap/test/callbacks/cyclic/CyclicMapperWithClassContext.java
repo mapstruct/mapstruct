@@ -12,9 +12,9 @@ import org.mapstruct.factory.Mappers;
  * @author Ben Zegveld
  */
 @Mapper( uses = PreventCyclicContext.class )
-public interface CyclicMapper {
+public interface CyclicMapperWithClassContext {
 
-    CyclicMapper INSTANCE = Mappers.getMapper( CyclicMapper.class );
+    CyclicMapperWithClassContext INSTANCE = Mappers.getMapper( CyclicMapperWithClassContext.class );
 
     TeacherDto map(Teacher teacher);
 }
