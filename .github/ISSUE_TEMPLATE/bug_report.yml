@@ -1,0 +1,45 @@
+name: Bug report
+description: Create a report and help us improve
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in all required fields with as many details as possible.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: |
+        Describe what you were expecting MapStruct to do
+      placeholder: |
+        Here you can also add the generated code that you would like MapStruct to generate
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: |
+        Describe what you observed MapStruct did instead
+      placeholder: |
+        Here you can also add the generated code that MapStruct generated
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce the problem
+      description: |
+        - Share your mapping configuration
+        - An [MCVE (Minimal Complete Verifiable Example)](https://stackoverflow.com/help/minimal-reproducible-example) can be helpful to provide a complete reproduction case
+      placeholder: |
+        Share your MapStruct configuration
+    validations:
+      required: true
+  - type: input
+    id: mapstruct-version
+    attributes:
+      label: MapStruct Version
+      description: |
+        Which MapStruct version did you use?
+        Note: While you can obviously continue using older versions of MapStruct, it may well be that your bug is already fixed. If you're using an older version, please also try to reproduce the bug in the latest version of MapStruct before reporting it.
+      placeholder: ex. MapStruct 1.5.2
+    validations:
+      required: true
