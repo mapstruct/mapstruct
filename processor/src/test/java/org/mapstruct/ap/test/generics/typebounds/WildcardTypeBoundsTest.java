@@ -7,9 +7,14 @@ package org.mapstruct.ap.test.generics.typebounds;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
  * @author Ben Zegveld
@@ -55,12 +60,12 @@ class WildcardTypeBoundsTest {
 
         Target target = WildcardConditionalExtendsMapper.INSTANCE.map( source );
 
-        assertThat( target.getObject() ).isEqualTo(  "Test contents" );
+        assertThat( target.getObject() ).isEqualTo( "Test contents" );
     }
 
     @ProcessorTest
     @WithClasses( { WildcardNestedExtendsMapper.class, SourceContainer.class } )
-    void mapsWithNestedWildcardSuccesfully() {
+    void mapsWithNestedWildcardSuccessfully() {
         Source<WildcardedInterfaceImpl> source = new Source<>();
         source.setObject( new WildcardedInterfaceImpl() );
         source.getObject().setContents( "Test contents" );
@@ -74,7 +79,7 @@ class WildcardTypeBoundsTest {
 
     @ProcessorTest
     @WithClasses( { WildcardNestedInheritedExtendsMapper.class, SourceContainerInherited.class } )
-    void mapsWithNestedInheritedWildcardSuccesfully() {
+    void mapsWithNestedInheritedWildcardSuccessfully() {
         Source<WildcardedInterfaceImpl> source = new Source<>();
         source.setObject( new WildcardedInterfaceImpl() );
         source.getObject().setContents( "Test contents" );
@@ -84,5 +89,19 @@ class WildcardTypeBoundsTest {
         Target target = WildcardNestedInheritedExtendsMapper.INSTANCE.map( sourceContainer );
 
         assertThat( target.getObject() ).isEqualTo( "Test contents" );
+    }
+
+    @ProcessorTest
+    @WithClasses( { ErroneousTypeVarExtendsMapper.class, WildcardedInterfaceImpl.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = @Diagnostic(
+            kind = Kind.ERROR,
+            type = ErroneousTypeVarExtendsMapper.class,
+            line = 19,
+            message = "Can't generate mapping method for a generic type variable source."
+        )
+    )
+    void mapsTypeVarExtendNotAllowed() {
     }
 }

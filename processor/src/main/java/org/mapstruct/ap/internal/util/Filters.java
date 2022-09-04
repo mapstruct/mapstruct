@@ -116,12 +116,19 @@ public class Filters {
     private TypeMirror getReturnType(ExecutableElement executableElement) {
         TypeMirror returnType = getWithinContext( executableElement ).getReturnType();
         if ( returnType.getKind() == TypeKind.WILDCARD ) {
+            // we got 2 versions of wildcards: '?' or '? extends ...'
             if ( ( (WildcardType) returnType ).getExtendsBound() != null ) {
+                // in case of '? extends ...' we want to return the '...' part.
                 return ( (WildcardType) returnType ).getExtendsBound();
             }
+            // in case of just '?', we want to look at the original methods return type and see if that one has an
+            // upperbound, for example: <T extends ...> in that case we want to return the '...' here. The
+            // getUpperBound() method handles this for us, in case of no extends it will return the TypeMirror for the
+            // Object class.
             return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
         }
         if ( returnType.getKind() == TypeKind.TYPEVAR ) {
+            // using <TYPEVAR extends ...> directly is not supported yet.
             return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
         }
         return returnType;
