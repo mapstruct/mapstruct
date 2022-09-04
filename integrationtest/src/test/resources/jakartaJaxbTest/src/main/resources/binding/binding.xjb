@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			   xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+			   xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+			   jaxb:extensionBindingPrefixes="xjc"
+			   version="3.0" >
+
+
+    <jaxb:globalBindings
+	fixedAttributeAsConstantProperty="true"
+	typesafeEnumBase="xs:string"
+	typesafeEnumMemberName="generateName"
+	generateIsSetMethod="true"
+	generateElementProperty="true" >
+	<xjc:noValidator/>
+	<xjc:noValidatingUnmarshaller/>
+    </jaxb:globalBindings>
+
+</jaxb:bindings>
+
+

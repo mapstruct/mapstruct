@@ -11,19 +11,17 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.gem.XmlElementRefGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.gem.XmlElementDeclGem;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
- * Finds the {@link javax.xml.bind.annotation.XmlElementRef} annotation on a field (of the mapping result type or its
+ * Finds the {@code XmlElementRef} annotation on a field (of the mapping result type or its
  * super types) matching the
  * target property name. Then selects those methods with matching {@code name} and {@code scope} attributes of the
- * {@link javax.xml.bind.annotation.XmlElementDecl} annotation, if that is present. Matching happens in the following
+ * {@code XmlElementDecl} annotation, if that is present. Matching happens in the following
  * order:
  * <ol>
  * <li>Name and Scope matches</li>
@@ -34,12 +32,15 @@ import org.mapstruct.ap.internal.gem.XmlElementDeclGem;
  * the given method is not annotated with {@code XmlElementDecl} it will be considered as matching.
  *
  * @author Sjaak Derksen
+ *
+ * @see JavaxXmlElementDeclSelector
+ * @see JakartaXmlElementDeclSelector
  */
-public class XmlElementDeclSelector implements MethodSelector {
+abstract class XmlElementDeclSelector implements MethodSelector {
 
     private final TypeUtils typeUtils;
 
-    public XmlElementDeclSelector(TypeUtils typeUtils) {
+    XmlElementDeclSelector(TypeUtils typeUtils) {
         this.typeUtils = typeUtils;
     }
 
@@ -63,15 +64,14 @@ public class XmlElementDeclSelector implements MethodSelector {
             }
 
             SourceMethod candidateMethod = (SourceMethod) candidate.getMethod();
-            XmlElementDeclGem xmlElementDecl =
-                XmlElementDeclGem.instanceOn( candidateMethod.getExecutable() );
+            XmlElementDeclInfo xmlElementDeclInfo = getXmlElementDeclInfo( candidateMethod.getExecutable() );
 
-            if ( xmlElementDecl == null ) {
+            if ( xmlElementDeclInfo == null ) {
                 continue;
             }
 
-            String name = xmlElementDecl.name().get();
-            TypeMirror scope = xmlElementDecl.scope().getValue();
+            String name = xmlElementDeclInfo.nameValue();
+            TypeMirror scope = xmlElementDeclInfo.scopeType();
 
             boolean nameIsSetAndMatches = name != null && name.equals( xmlElementRefInfo.nameValue() );
             boolean scopeIsSetAndMatches =
@@ -142,9 +142,9 @@ public class XmlElementDeclSelector implements MethodSelector {
             for ( Element enclosed : currentElement.getEnclosedElements() ) {
                 if ( enclosed.getKind().equals( ElementKind.FIELD )
                     && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
-                    XmlElementRefGem xmlElementRef = XmlElementRefGem.instanceOn( enclosed );
-                    if ( xmlElementRef != null ) {
-                        return new XmlElementRefInfo( xmlElementRef.name().get(), currentMirror );
+                    XmlElementRefInfo xmlElementRefInfo = getXmlElementRefInfo( enclosed );
+                    if ( xmlElementRefInfo != null ) {
+                        return new XmlElementRefInfo( xmlElementRefInfo.nameValue(), currentMirror );
                     }
                 }
             }
@@ -154,7 +154,11 @@ public class XmlElementDeclSelector implements MethodSelector {
         return defaultInfo;
     }
 
-    private static class XmlElementRefInfo {
+    abstract XmlElementDeclInfo getXmlElementDeclInfo(Element element);
+
+    abstract XmlElementRefInfo getXmlElementRefInfo(Element element);
+
+    static class XmlElementRefInfo {
         private final String nameValue;
         private final TypeMirror sourceType;
 
@@ -163,12 +167,37 @@ public class XmlElementDeclSelector implements MethodSelector {
             this.sourceType = sourceType;
         }
 
-        public String nameValue() {
+        String nameValue() {
             return nameValue;
         }
 
-        public TypeMirror sourceType() {
+        TypeMirror sourceType() {
             return sourceType;
+        }
+    }
+
+    /**
+     * A class, whose purpose is to combine the use of
+     * {@link org.mapstruct.ap.internal.gem.XmlElementDeclGem}
+     * and
+     * {@link org.mapstruct.ap.internal.gem.jakarta.XmlElementDeclGem}.
+     */
+    static class XmlElementDeclInfo {
+
+        private final String nameValue;
+        private final TypeMirror scopeType;
+
+        XmlElementDeclInfo(String nameValue, TypeMirror scopeType) {
+            this.nameValue = nameValue;
+            this.scopeType = scopeType;
+        }
+
+        String nameValue() {
+            return nameValue;
+        }
+
+        TypeMirror scopeType() {
+            return scopeType;
         }
     }
 }

@@ -199,6 +199,20 @@ public enum Message {
 
     MAPTOBEANMAPPING_WRONG_KEY_TYPE( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
     MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),
+
+    ANNOTATE_WITH_MISSING_REQUIRED_PARAMETER( "Parameter \"%s\" is required for annotation \"%s\"." ),
+    ANNOTATE_WITH_UNKNOWN_PARAMETER( "Unknown parameter \"%s\" for annotation \"%s\". Did you mean \"%s\"?" ),
+    ANNOTATE_WITH_DUPLICATE_PARAMETER( "Parameter \"%s\" must not be defined more than once." ),
+    ANNOTATE_WITH_WRONG_PARAMETER( "Parameter \"%s\" is not of type \"%s\" but of type \"%s\" for annotation \"%s\"." ),
+    ANNOTATE_WITH_TOO_MANY_VALUE_TYPES( "Parameter \"%s\" has too many value types supplied, type \"%s\" is expected for annotation \"%s\"." ),
+    ANNOTATE_WITH_PARAMETER_ARRAY_NOT_EXPECTED( "Parameter \"%s\" does not accept multiple values for annotation \"%s\"." ),
+    ANNOTATE_WITH_NOT_ALLOWED_ON_CLASS( "Annotation \"%s\" is not allowed on classes." ),
+    ANNOTATE_WITH_NOT_ALLOWED_ON_METHODS( "Annotation \"%s\" is not allowed on methods." ),
+    ANNOTATE_WITH_ENUM_VALUE_DOES_NOT_EXIST( "Enum \"%s\" does not have value \"%s\"." ),
+    ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "enumClass needs to be defined when using enums." ),
+    ANNOTATE_WITH_ENUMS_NOT_DEFINED( "enums needs to be defined when using enumClass." ),
+    ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE( "Annotation \"%s\" is not repeatable." ),
+    ANNOTATE_WITH_DUPLICATE( "Annotation \"%s\" is already present with the same elements configuration.", Diagnostic.Kind.WARNING ),
     ;
     // CHECKSTYLE:ON
 

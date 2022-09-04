@@ -12,6 +12,8 @@ import java.util.List;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -30,13 +32,13 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         return Collections.singletonList(
-                new Annotation( getTypeFactory().getType( "javax.enterprise.context.ApplicationScoped" ) )
+                new Annotation( getType( "ApplicationScoped" ) )
         );
     }
 
     @Override
     protected List<Annotation> getMapperReferenceAnnotations() {
-        return Arrays.asList( new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) ) );
+        return Arrays.asList( new Annotation( getType( "Inject" ) ) );
     }
 
     @Override
@@ -47,5 +49,25 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     @Override
     protected boolean additionalPublicEmptyConstructor() {
         return true;
+    }
+
+    private Type getType(String simpleName) {
+        String javaxPrefix = "javax.inject.";
+        String jakartaPrefix = "jakarta.inject.";
+        if ( "ApplicationScoped".equals( simpleName ) ) {
+            javaxPrefix = "javax.enterprise.context.";
+            jakartaPrefix = "jakarta.enterprise.context.";
+        }
+        if ( getTypeFactory().isTypeAvailable( javaxPrefix + simpleName ) ) {
+            return getTypeFactory().getType( javaxPrefix + simpleName );
+        }
+
+        if ( getTypeFactory().isTypeAvailable( jakartaPrefix + simpleName ) ) {
+            return getTypeFactory().getType( jakartaPrefix + simpleName );
+        }
+
+        throw new AnnotationProcessingException(
+            "Couldn't find any of the CDI or Jakarta CDI Dependency types." +
+                " Are you missing a dependency on your classpath?" );
     }
 }

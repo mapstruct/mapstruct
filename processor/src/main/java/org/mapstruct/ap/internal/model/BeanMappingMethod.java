@@ -363,6 +363,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             return new BeanMappingMethod(
                 method,
+                getMethodAnnotations(),
                 existingVariableNames,
                 propertyMappings,
                 factoryMethod,
@@ -1702,6 +1703,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     //CHECKSTYLE:OFF
     private BeanMappingMethod(Method method,
+                              List<Annotation> annotations,
                               Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
@@ -1715,6 +1717,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<SubclassMapping> subclassMappings) {
         super(
             method,
+            annotations,
             existingVariableNames,
             factoryMethod,
             mapNullToDefault,

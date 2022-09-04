@@ -5,6 +5,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
+import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,12 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
-import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -63,9 +63,9 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 sourceParameterType.isIterableType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( StreamSupport.class ) );
             }
-
             return new StreamMappingMethod(
                 method,
+                getMethodAnnotations(),
                 existingVariables,
                 assignment,
                 factoryMethod,
@@ -78,14 +78,16 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             );
         }
     }
-
-    private StreamMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+    //CHECKSTYLE:OFF
+    private StreamMappingMethod(Method method, List<Annotation> annotations,
+                                Collection<String> existingVariables, Assignment parameterAssignment,
                                 MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
+            annotations,
             existingVariables,
             parameterAssignment,
             factoryMethod,
@@ -95,6 +97,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             afterMappingReferences,
             selectionParameters
         );
+        //CHECKSTYLE:ON
         this.helperImports = helperImports;
     }
 

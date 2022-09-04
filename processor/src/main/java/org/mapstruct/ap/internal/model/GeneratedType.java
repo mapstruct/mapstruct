@@ -10,15 +10,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.lang.model.type.TypeKind;
-import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
@@ -220,7 +219,9 @@ public abstract class GeneratedType extends ModelElement {
         }
 
         for ( Annotation annotation : annotations ) {
-            addIfImportRequired( importedTypes, annotation.getType() );
+            for ( Type type : annotation.getImportTypes() ) {
+                addIfImportRequired( importedTypes, type );
+            }
         }
 
         for ( Type extraImport : extraImportedTypes ) {
@@ -257,8 +258,10 @@ public abstract class GeneratedType extends ModelElement {
             return;
         }
 
-        if ( needsImportDeclaration( typeToAdd ) ) {
-            collection.add( typeToAdd );
+        for ( Type type : typeToAdd.getImportTypes() ) {
+            if ( needsImportDeclaration( type ) ) {
+                collection.add( type );
+            }
         }
     }
 

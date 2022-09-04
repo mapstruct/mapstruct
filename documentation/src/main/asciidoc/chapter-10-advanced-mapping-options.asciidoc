@@ -292,7 +292,7 @@ The source presence checker name can be changed in the MapStruct service provide
 
 [NOTE]
 ====
-Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor see `CollectionMappingStrategy`, MapStruct will always generate a source property
+Some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder as target accessor (see `CollectionMappingStrategy`), MapStruct will always generate a source property
 null check, regardless the value of the `NullValueCheckStrategy` to avoid addition of `null` to the target collection or map.
 ====
 
@@ -304,7 +304,7 @@ The difference is that it allows users to write custom condition methods that wi
 
 A custom condition method is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
 
-e.g. if you only want to map a String property when it is not `null, and it is not empty then you can do something like:
+e.g. if you only want to map a String property when it is not `null`, and it is not empty then you can do something like:
 
 .Mapper using custom condition check method
 ====

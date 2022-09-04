@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:test2="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test2"
+	targetNamespace="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test2"
+	elementFormDefault="qualified" version="1.0.0">
+
+    <element name="OrderStatus" type="test2:OrderStatusType" />
+    <simpleType name="OrderStatusType">
+	<restriction base="string">
+	    <enumeration value="ordered" />
+	    <enumeration value="processed" />
+	    <enumeration value="delivered" />
+	</restriction>
+    </simpleType>
+
+    <element name="ShippingAddress" type="test2:ShippingAddressType" />
+    <complexType name="ShippingAddressType">
+	<sequence>
+	    <element name="street" type="string"/>
+	    <element name="houseNumber" type="string"/>
+	    <element name="city" type="string"/>
+	    <element name="country" type="string"/>
+	</sequence>
+    </complexType>
+
+</schema>
