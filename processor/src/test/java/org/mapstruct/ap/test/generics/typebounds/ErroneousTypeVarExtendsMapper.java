@@ -13,7 +13,8 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper
 public abstract class ErroneousTypeVarExtendsMapper {
-    public static final ErroneousTypeVarExtendsMapper INSTANCE = Mappers.getMapper( ErroneousTypeVarExtendsMapper.class );
+    public static final ErroneousTypeVarExtendsMapper INSTANCE =
+        Mappers.getMapper( ErroneousTypeVarExtendsMapper.class );
 
     // not supported yet, use `? extends WildcardedInterfaceImpl` in the map method instead.
     public abstract <L extends WildcardedInterfaceImpl> Target map(Source<L> action);
