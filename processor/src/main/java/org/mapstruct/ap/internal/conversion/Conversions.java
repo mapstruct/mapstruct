@@ -330,14 +330,12 @@ public class Conversions {
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() &&
                 ( targetType.equals( stringType ) ||
-                  targetType.equals( integerType ) ||
                   targetType.getBoxedEquivalent().equals( integerType ) )
         ) {
             sourceType = enumType;
         }
         else if ( targetType.isEnumType() &&
                 ( sourceType.equals( stringType ) ||
-                  sourceType.equals( integerType ) ||
                   sourceType.getBoxedEquivalent().equals( integerType ) )
         ) {
             targetType = enumType;
