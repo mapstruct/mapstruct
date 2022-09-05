@@ -198,9 +198,10 @@ public class TypeSelector implements MethodSelector {
             // appropriate one, in this case the user must chose identical parameter names for the mapping and lifecycle
             // method
             messager.printMessage(
-                        selectedMethod.getExecutable(),
-                        Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
-                        mappingMethod );
+                selectedMethod.getExecutable(),
+                Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
+                mappingMethod
+            );
 
             return null;
         }
