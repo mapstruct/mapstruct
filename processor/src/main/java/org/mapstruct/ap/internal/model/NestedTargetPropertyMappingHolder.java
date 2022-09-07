@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorCandidates;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -99,7 +100,7 @@ public class NestedTargetPropertyMappingHolder {
         private Set<String> existingVariableNames;
         private List<PropertyMapping> propertyMappings;
         private Set<String> handledTargets;
-        private Map<String, Accessor> targetPropertiesWriteAccessors;
+        private AccessorCandidates targetPropertiesWriteAccessors;
         private Type targetType;
         private boolean errorOccurred;
 
@@ -123,7 +124,7 @@ public class NestedTargetPropertyMappingHolder {
             return this;
         }
 
-        public Builder targetPropertiesWriteAccessors(Map<String, Accessor> targetPropertiesWriteAccessors) {
+        public Builder targetPropertiesWriteAccessors(AccessorCandidates targetPropertiesWriteAccessors) {
             this.targetPropertiesWriteAccessors = targetPropertiesWriteAccessors;
             return this;
         }
@@ -642,7 +643,7 @@ public class NestedTargetPropertyMappingHolder {
                                                                      SourceReference sourceReference,
                                                                      boolean forceUpdateMethod) {
 
-            Accessor targetWriteAccessor = targetPropertiesWriteAccessors.get( targetPropertyName );
+            Accessor targetWriteAccessor = targetPropertiesWriteAccessors.getBestFit( targetPropertyName );
             ReadAccessor targetReadAccessor = targetType.getReadAccessor( targetPropertyName );
             if ( targetWriteAccessor == null ) {
                 Set<String> readAccessors = targetType.getPropertyReadAccessors().keySet();

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 
@@ -18,7 +17,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorCandidates;
 
 import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
 
@@ -302,7 +301,7 @@ public class MappingMethodOptions {
                 method.getOptions().getBeanMapping().getBuilder()
             );
         }
-        Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
+        AccessorCandidates writeAccessors = writeType.getPropertyWriteAccessors( cms );
 
 
         for ( MappingOptions mapping : mappings ) {
