@@ -10,7 +10,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@MapperConfig( unmappedTargetPolicy = ReportingPolicy.ERROR, mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG )
+@MapperConfig( unmappedTargetPolicy = ReportingPolicy.ERROR,
+               mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG )
 public interface OverloadingMapperConfig {
 
     @Mapping( target = "updatedOn", source = "updatedOnTarget" )

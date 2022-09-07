@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.AccessorCandidates;
 import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
@@ -744,12 +745,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
+    public AccessorCandidates getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
 
-        Map<String, Accessor> result = new LinkedHashMap<>();
+        AccessorCandidates result = new AccessorCandidates(typeUtils);
 
         for ( Accessor candidate : candidates ) {
             String targetPropertyName = getPropertyName( candidate );
@@ -789,10 +790,9 @@ public class Type extends ModelElement implements Comparable<Type> {
                 continue;
             }
 
-            Accessor previousCandidate = result.get( targetPropertyName );
-            if ( previousCandidate == null || preferredType == null || ( targetType != null
-                && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
-                result.put( targetPropertyName, candidate );
+            result.put( targetPropertyName, candidate );
+            if ( preferredType != null ) {
+                result.setPreferedType( targetPropertyName, preferredType.typeMirror );
             }
         }
 
