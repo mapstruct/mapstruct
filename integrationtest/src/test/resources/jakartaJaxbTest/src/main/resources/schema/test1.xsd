@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:test1="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test1"
+	xmlns:test2="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test2"
+	targetNamespace="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test1"
+	elementFormDefault="qualified" version="1.0.0">
+
+    <import namespace="http://www.mapstruct.org/itest/jakarta/jaxb/xsd/test2" schemaLocation="test2.xsd"/>
+
+    <element name="Order" type="test1:OrderType" />
+    <complexType name="OrderType">
+	<sequence>
+	    <element name="orderNumber" type="long"/>
+        <element name="orderDate" type="dateTime"/>
+	    <element name="orderDetails" type="test1:OrderDetailsType"/>
+        <element name="shippingAddress" type="test2:ShippingAddressType"/>
+	</sequence>
+    </complexType>
+
+    <element name="OrderDetails" type="test1:OrderDetailsType" />
+    <complexType name="OrderDetailsType">
+	<sequence>
+	    <element name="name" type="string"/>
+	    <element name="description" minOccurs="1" maxOccurs="5" type="string"/>
+	    <element name="status" type="test2:OrderStatusType"/>
+	</sequence>
+    </complexType>
+
+</schema>

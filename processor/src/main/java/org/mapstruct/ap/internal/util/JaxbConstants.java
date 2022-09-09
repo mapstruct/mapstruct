@@ -10,7 +10,8 @@ package org.mapstruct.ap.internal.util;
  */
 public final class JaxbConstants {
 
-    public static final String JAXB_ELEMENT_FQN = "javax.xml.bind.JAXBElement";
+    public static final String JAVAX_JAXB_ELEMENT_FQN = "javax.xml.bind.JAXBElement";
+    public static final String JAKARTA_JAXB_ELEMENT_FQN = "jakarta.xml.bind.JAXBElement";
 
     private JaxbConstants() {
     }

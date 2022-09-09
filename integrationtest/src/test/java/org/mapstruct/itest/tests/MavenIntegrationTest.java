@@ -75,6 +75,10 @@ public class MavenIntegrationTest {
     void jaxbTest() {
     }
 
+    @ProcessorTest(baseDir = "jakartaJaxbTest")
+    void jakartaJaxbTest() {
+    }
+
     @ProcessorTest(baseDir = "jsr330Test")
     void jsr330Test() {
     }
