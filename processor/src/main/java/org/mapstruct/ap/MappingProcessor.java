@@ -62,7 +62,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
  * <ul>
  * <li>retrieve mapping methods</li>
  * <li>create the {@code Mapper} model</li>
- * <li>perform enrichment's and modifications (e.g. add annotations for dependency injection)</li>
+ * <li>perform enrichments and modifications (e.g. add annotations for dependency injection)</li>
  * <li>if no error occurred, write out the model into Java source files</li>
  * </ul>
  * <p>
