@@ -33,7 +33,9 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         List<Annotation> typeAnnotations = new ArrayList<>();
-        typeAnnotations.add( component() );
+        if ( !isAlreadyAnnotatedAsSpringStereotype( mapper ) ) {
+            typeAnnotations.add( component() );
+        }
 
         if ( mapper.getDecorator() != null ) {
             typeAnnotations.add( qualifierDelegate() );
@@ -90,5 +92,28 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     private Annotation component() {
         return new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) );
+    }
+
+    private boolean isAlreadyAnnotatedAsSpringStereotype(Mapper mapper) {
+        return isAlreadyAnnotatedAsSpringComponent( mapper )
+            || isAlreadyAnnotatedAsSpringService( mapper );
+    }
+
+    private boolean isAlreadyAnnotatedAsSpringComponent(Mapper mapper) {
+        return this.isAlreadyAnnotatedAs( mapper, "org.springframework.stereotype.Component" );
+    }
+
+    private boolean isAlreadyAnnotatedAsSpringService(Mapper mapper) {
+        return this.isAlreadyAnnotatedAs( mapper, "org.springframework.stereotype.Service" );
+    }
+
+    private boolean isAlreadyAnnotatedAs(Mapper mapper, String annotationFullyQualifiedName) {
+        return mapper.getAnnotations()
+                .stream()
+                .anyMatch(
+                        annotation -> annotation
+                                .getType()
+                                .getFullyQualifiedName()
+                                .equals( annotationFullyQualifiedName ) );
     }
 }
