@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.injectionstrategy.spring.annotateWith;
+package org.mapstruct.ap.test.injectionstrategy.spring.annotateWith.decorator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,6 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithSpring;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,9 +26,9 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test field injection for component model spring.
+ * Test the behavior of decorators when using AnnotateWith and Spring component model.
  *
- * @author Filip Hrisafov
+ * @author Jose Carlos Campanero Ortiz
  */
 @WithClasses({
         CustomerDto.class,
@@ -37,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         Gender.class,
         GenderDto.class,
         CustomerSpringComponentQualifiedMapper.class,
-        CustomerSpringServiceQualifiedMapper.class,
+        UpperCaseCustomerNameSpringDefaultMapperDecorator.class,
         CustomerSpringDefaultMapper.class,
         GenderSpringDefaultMapper.class
 })
@@ -45,15 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ComponentScan(basePackageClasses = CustomerSpringDefaultMapper.class)
 @Configuration
 @WithSpring
-public class SpringAnnotateWithMapperTest {
+public class SpringAnnotateWithDecoratorMapperTest {
 
     @Autowired
-    @Qualifier( "AnnotateWithComponent" )
-    private CustomerSpringDefaultMapper annotateWithComponentCustomerMapper;
-
-    @Autowired
-    @Qualifier( "AnnotateWithService" )
-    private CustomerSpringDefaultMapper annotateWithServiceCustomerMapper;
+    private CustomerSpringDefaultMapper customerMapper;
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
@@ -73,27 +67,22 @@ public class SpringAnnotateWithMapperTest {
     }
 
     @ProcessorTest
-    public void shouldHaveComponentAnnotatedQualifiedMapper() {
+    public void shouldBehaveCorrectly() {
+        // given
+        final String name = "Mary Smith";
+        final Gender gender = Gender.FEMALE;
+        final CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setName( name );
+        customerEntity.setGender( gender );
+
+        // when
+        final CustomerDto customerDto = customerMapper.asTarget( customerEntity );
 
         // then
-        assertThat( annotateWithComponentCustomerMapper ).isNotNull();
-        generatedSource.forMapper( CustomerSpringComponentQualifiedMapper.class )
-                .content()
-                .contains( "@Component(value = \"AnnotateWithComponent\")" )
-                .doesNotContain( "@Component" + System.lineSeparator() );
-
-    }
-
-    @ProcessorTest
-    public void shouldHaveServiceAnnotatedQualifiedMapper() {
-
-        // then
-        assertThat( annotateWithServiceCustomerMapper ).isNotNull();
-        generatedSource.forMapper( CustomerSpringServiceQualifiedMapper.class )
-                .content()
-                .contains( "@Service(value = \"AnnotateWithService\")" )
-                .doesNotContain( "@Component" + System.lineSeparator() );
-
+        assertThat( customerMapper ).isNotNull();
+        assertThat( customerDto ).isNotNull();
+        assertThat( customerDto.getName() ).isNotEmpty();
+        assertThat( customerDto.getName() ).isEqualTo( name.toUpperCase() );
     }
 
 }
