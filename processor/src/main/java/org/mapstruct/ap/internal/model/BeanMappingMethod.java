@@ -1401,7 +1401,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( SourceReference sourceRef : sourceReferences ) {
 
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
-                Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.getBestFit( targetPropertyName );
+                Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.getBestFit( targetPropertyName,
+                    sourceRef.getDeepestProperty().getType().getTypeMirror() );
                 unprocessedTargetProperties.remove( targetPropertyName );
                 unprocessedConstructorProperties.remove( targetPropertyName );
                 if ( targetPropertyWriteAccessor == null ) {
