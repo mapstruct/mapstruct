@@ -10,12 +10,10 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper( unmappedTargetPolicy = ReportingPolicy.ERROR )
-public interface SourceTargetMapper {
+public interface SourceIncompatibleTargetMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    SourceIncompatibleTargetMapper INSTANCE = Mappers.getMapper( SourceIncompatibleTargetMapper.class );
 
-    Target sourceToTarget(Source source);
-
-    Source targetToSourceReversed(Target source);
+    IncompatibleTarget sourceToTarget(Source source);
 
 }

@@ -9,21 +9,21 @@ import java.util.Date;
 
 public class Target {
 
-    private long updatedOnTarget;
+    private long updatedOn;
 
-    public long getUpdatedOnTarget() {
-        return updatedOnTarget;
+    public long getUpdatedOn() {
+        return updatedOn;
     }
 
-    public void setUpdatedOnTarget(long updatedOnTarget) {
-        this.updatedOnTarget = updatedOnTarget;
+    public void setUpdatedOn(long updatedOn) {
+        this.updatedOn = updatedOn;
     }
 
-    public void setUpdatedOnTarget(Date updatedOnTarget) {
-        if ( updatedOnTarget == null ) {
+    public void setUpdatedOn(Date updatedOn) {
+        if ( updatedOn == null ) {
             return;
         }
-        this.updatedOnTarget = updatedOnTarget.getTime();
+        this.updatedOn = updatedOn.getTime();
     }
 
 }
