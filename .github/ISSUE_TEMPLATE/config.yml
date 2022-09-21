@@ -1,0 +1,16 @@
+contact_links:
+  - name: MapStruct Discussions
+    url: https://github.com/mapstruct/mapstruct/discussions
+    about: Please use the MapStruct GitHub Discussions for open ended discussions and to reach out to the community.
+  - name: Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/mapstruct
+    about: For questions about how to use MapStruct, consider asking your question on Stack Overflow, tagged [mapstruct].
+  - name: Documentation
+    url: https://mapstruct.org/documentation/stable/reference/html/
+    about: The MapStruct reference documentation.
+  - name: Gitter Chat
+    url: https://gitter.im/mapstruct/mapstruct-users
+    about: For realtime communication with the MapStruct community, consider writing in our Gitter chat room.
+  - name: MapStruct Examples
+    url: https://github.com/mapstruct/mapstruct-examples
+    about: Some examples of what can be achieved with MapStruct. (contributions are always welcome)
