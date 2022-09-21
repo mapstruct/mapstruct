@@ -405,7 +405,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                          Collections.emptyList(),
                                          subclassMappingOptions.getTarget(),
                                          ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
-                                     null,
+                                     method.getOptions().getMapMapping().getKeyMappingControl( ctx.getElementUtils() ),
                                      null,
                                      false );
             Assignment assignment = ctx
