@@ -23,8 +23,8 @@ public class Issue1719Test {
 
     /**
      * For adder methods MapStuct cannot generate an update method. MapStruct would cannot know how to remove objects
-     * from the child-parent relation. It cannot even assume that the the collection can be cleared at forehand.
-     * Therefore the only sensible choice is for MapStruct to create a create method for the target elements.
+     * from the child-parent relation. It cannot even assume that the collection can be cleared at forehand.
+     * Therefore, the only sensible choice is for MapStruct to create a create method for the target elements.
      */
     @ProcessorTest
     @WithClasses(Issue1719Mapper.class)
