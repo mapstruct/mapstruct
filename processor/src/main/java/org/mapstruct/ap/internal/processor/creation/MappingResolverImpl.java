@@ -817,7 +817,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             for ( T2 yCandidate : yMethods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
-                ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
+                ySourceType = ySourceType.resolveGenericTypeParameters( targetType, yCandidate.getResultType() );
                 Type yTargetType = yCandidate.getResultType();
                 if ( ySourceType == null
                     || !yTargetType.isRawAssignableTo( targetType )
@@ -825,7 +825,6 @@ public class MappingResolverImpl implements MappingResolver {
                     //  java.lang.Object as intermediate result
                     continue;
                 }
-                ySourceType = replaceMatchingGenerics( targetType, ySourceType, yTargetType );
                 List<SelectedMethod<T1>> xMatches = attempt.getBestMatch( xMethods, sourceType, ySourceType );
                 if ( !xMatches.isEmpty() ) {
                     for ( SelectedMethod<T1> x : xMatches ) {
@@ -871,23 +870,6 @@ public class MappingResolverImpl implements MappingResolver {
             }
             return this;
 
-        }
-
-        private Type replaceMatchingGenerics(Type targetType, Type ySourceType, Type yTargetType) {
-            List<Type> typeParametersList = yTargetType.getTypeParameters();
-            if ( !typeParametersList.isEmpty() && !ySourceType.getTypeParameters().isEmpty() ) {
-                for ( int index = 0; index < typeParametersList.size(); index++ ) {
-                    Type type = typeParametersList.get( index );
-                    for ( Type sourceType : ySourceType.getTypeParameters() ) {
-                        if ( sourceType.isTypeVar() && type.isTypeVar()
-                            && type.getName().equals( sourceType.getName() ) ) {
-                            ySourceType =
-                                ySourceType.replaceGeneric( sourceType, targetType.getTypeParameters().get( index ) );
-                        }
-                    }
-                }
-            }
-            return ySourceType;
         }
 
         void reportAmbiguousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {

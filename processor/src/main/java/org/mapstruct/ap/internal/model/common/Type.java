@@ -37,6 +37,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.Type.ResolvedPair;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
@@ -584,7 +585,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
-    public Type replaceGeneric(Type oldGenericType, Type newType) {
+    private Type replaceGeneric(Type oldGenericType, Type newType) {
         if ( !typeParameters.contains( oldGenericType ) ) {
             return this;
         }
@@ -592,35 +593,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         int replacementIndex = replacedTypeParameters.indexOf( oldGenericType );
         replacedTypeParameters.add( replacementIndex, newType );
         replacedTypeParameters.remove( replacementIndex + 1 );
-        DeclaredType declaredType = typeUtils.getDeclaredType(
+        return typeFactory.getType( typeUtils.getDeclaredType(
                                                  typeElement,
                                                  replacedTypeParameters.stream()
                                                                        .map( type -> type.getTypeMirror() )
-                                                                       .toArray( TypeMirror[]::new ) );
-        return new Type(
-            typeUtils,
-            elementUtils,
-            typeFactory,
-            accessorNaming,
-            declaredType,
-            typeElement,
-            replacedTypeParameters,
-            implementationType,
-            componentType,
-            packageName,
-            name,
-            qualifiedName,
-            isInterface,
-            isEnumType,
-            isIterableType,
-            isCollectionType,
-            isMapType,
-            isStream,
-            toBeImportedTypes,
-            notToBeImportedTypes,
-            isToBeImported,
-            isLiteral,
-            loggingVerbose );
+                                                                       .toArray( TypeMirror[]::new ) ) );
     }
 
     /**
@@ -1396,6 +1373,44 @@ public class Type extends ModelElement implements Comparable<Type> {
             return typeVarMatcher.visit( parameterized.getTypeMirror(), declared );
         }
         return new ResolvedPair( this, this );
+    }
+
+    /**
+     * Resolves generic types using the declared and parameterized types as input.
+     *
+     * For example: {@code
+     * this: T
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: Integer
+     *
+     * this: List<T>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: List<Integer>
+     *
+     * this: List<? extends T>
+     * declaredType: JAXBElement<? extends T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<BigDecimal>
+     * }
+     */
+    public Type resolveGenericTypeParameters(Type declared, Type parameterized) {
+        if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
+            return resolveParameterToType( declared, parameterized ).getMatch();
+        }
+        Type resultType = this;
+        for ( Type generic : getTypeParameters() ) {
+            if ( generic.isTypeVar() || generic.isArrayTypeVar() || generic.isWildCardBoundByTypeVar() ) {
+                ResolvedPair resolveParameterToType = generic.resolveParameterToType( declared, parameterized );
+                resultType = resultType.replaceGeneric( generic, resolveParameterToType.getMatch() );
+            }
+            else {
+                Type replacementType = generic.resolveGenericTypeParameters( declared, parameterized );
+                resultType = resultType.replaceGeneric( generic, replacementType );
+            }
+        }
+        return resultType;
     }
 
     public boolean isWildCardBoundByTypeVar() {
