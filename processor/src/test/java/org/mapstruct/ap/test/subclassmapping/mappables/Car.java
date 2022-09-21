@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.subclassmapping.mappables;
 
-import java.util.Objects;
-
 public class Car extends Vehicle {
     private boolean manual;
 
@@ -16,25 +14,6 @@ public class Car extends Vehicle {
 
     public void setManual(boolean manual) {
         this.manual = manual;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash( manual );
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if ( this == obj )
-            return true;
-        if ( obj == null )
-            return false;
-        if ( getClass() != obj.getClass() )
-            return false;
-        Car other = (Car) obj;
-        return manual == other.manual
-            && Objects.equals( getName(), other.getName() )
-            && Objects.equals( getVehicleManufacturingCompany(), other.getVehicleManufacturingCompany() );
     }
 
 }

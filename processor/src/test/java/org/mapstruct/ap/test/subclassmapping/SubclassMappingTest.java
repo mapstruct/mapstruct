@@ -51,17 +51,35 @@ public class SubclassMappingTest {
             .extracting( vehicle -> (Class) vehicle.getClass() )
             .containsExactly( CarDto.class, BikeDto.class );
     }
-    
+
     @ProcessorTest
     @WithClasses( DeepCloneMapper.class )
     void deepCloneMappingClonesObjects() {
         Car car = new Car();
-        
+        car.setManual( true );
+        car.setName( "namedCar" );
+        car.setVehicleManufacturingCompany( "veMac" );
+
         Vehicle result = DeepCloneMapper.INSTANCE.map( car );
-        
+
         assertThat( result ).isInstanceOf( Car.class );
-        assertThat( result ).isEqualTo( car );
         assertThat( result ).isNotSameAs( car );
+        assertThat( result ).usingRecursiveComparison().isEqualTo( car );
+    }
+
+    @ProcessorTest
+    @WithClasses( DeepCloneMethodMapper.class )
+    void deepCloneMappingOnMethodClonesObjects() {
+        Car car = new Car();
+        car.setManual( true );
+        car.setName( "namedCar" );
+        car.setVehicleManufacturingCompany( "veMac" );
+
+        Vehicle result = DeepCloneMethodMapper.INSTANCE.map( car );
+
+        assertThat( result ).isInstanceOf( Car.class );
+        assertThat( result ).isNotSameAs( car );
+        assertThat( result ).usingRecursiveComparison().isEqualTo( car );
     }
 
     @ProcessorTest
