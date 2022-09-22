@@ -586,7 +586,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type replaceGeneric(Type oldGenericType, Type newType) {
-        if ( !typeParameters.contains( oldGenericType ) ) {
+        if ( !typeParameters.contains( oldGenericType ) || newType == null ) {
             return this;
         }
         List<Type> replacedTypeParameters = new ArrayList<>( typeParameters );
