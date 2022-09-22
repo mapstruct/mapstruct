@@ -589,6 +589,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( !typeParameters.contains( oldGenericType ) || newType == null ) {
             return this;
         }
+        newType = newType.getBoxedEquivalent();
         List<Type> replacedTypeParameters = new ArrayList<>( typeParameters );
         int replacementIndex = replacedTypeParameters.indexOf( oldGenericType );
         replacedTypeParameters.add( replacementIndex, newType );
