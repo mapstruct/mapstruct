@@ -36,7 +36,6 @@ public interface Issue2913Mapper {
         private long longPrimitiveValue;
         private Long longValue;
 
-
         public double getDoublePrimitiveValue() {
             return doublePrimitiveValue;
         }

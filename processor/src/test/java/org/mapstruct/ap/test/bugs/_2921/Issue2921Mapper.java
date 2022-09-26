@@ -46,5 +46,4 @@ public interface Issue2921Mapper {
         }
     }
 
-
 }

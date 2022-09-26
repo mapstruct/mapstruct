@@ -90,7 +90,8 @@ public class MethodMatcher {
                 // directly without any casting.
                 // e.g. a Long is assignable to a primitive double
                 // However, in order not to lose information we are not going to allow this
-                return targetType.getBoxedEquivalent().isAssignableTo( analyser.candidateReturnType.getBoxedEquivalent() );
+                return targetType.getBoxedEquivalent()
+                    .isAssignableTo( analyser.candidateReturnType.getBoxedEquivalent() );
             }
             if ( !( analyser.candidateReturnType.isAssignableTo( targetType ) ) ) {
                 return false;
