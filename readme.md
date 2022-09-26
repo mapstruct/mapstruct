@@ -114,7 +114,7 @@ plugins {
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.5.2.Final'
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final' // if you are using mapstruct in test code
@@ -122,7 +122,7 @@ dependencies {
 ...
 ```
 
-If you don't work with a dependency management tool, you can obtain a distribution bundle from [SourceForge](https://sourceforge.net/projects/mapstruct/files/).
+If you don't work with a dependency management tool, you can obtain a distribution bundle from [Releases page](https://github.com/mapstruct/mapstruct/releases).
 
 ## Documentation and getting help
 
@@ -132,16 +132,16 @@ To learn more about MapStruct, refer to the [project homepage](http://mapstruct.
 
 MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
 
-    mvn clean install
+    ./mvnw clean install
 
 from the root of the project directory. To skip the distribution module, run 
 
-    mvn clean install -DskipDistribution=true
+    ./mvnw clean install -DskipDistribution=true
     
 ## Importing into IDE
 
-MapStruct uses the gem annotation processor to generate mapping gems for it's own annotations.
-Therefore for seamless integration within an IDE annotation processing needs to be enabled.
+MapStruct uses the gem annotation processor to generate mapping gems for its own annotations.
+Therefore, for seamless integration within an IDE annotation processing needs to be enabled.
 
 ### IntelliJ 
 

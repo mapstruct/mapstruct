@@ -159,7 +159,7 @@ public enum Message {
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
     RETRIEVAL_VOID_MAPPING_METHOD( "Can't generate mapping method with return type void." ),
-    RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE( "The result type is not assignable to the the return type." ),
+    RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE( "The result type is not assignable to the return type." ),
     RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type from java stdlib to non-iterable type." ),
     RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER( "Can't generate mapping method that has a parameter annotated with @TargetType." ),
     RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type from java stdlib." ),
