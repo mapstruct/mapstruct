@@ -37,7 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
         Gender.class,
         GenderDto.class,
         CustomerSpringComponentQualifiedMapper.class,
+        CustomerSpringControllerQualifiedMapper.class,
         CustomerSpringServiceQualifiedMapper.class,
+        CustomerSpringRepositoryQualifiedMapper.class,
+        CustomStereotype.class,
+        CustomerSpringCustomStereotypeQualifiedMapper.class,
         CustomerSpringDefaultMapper.class,
         GenderSpringDefaultMapper.class
 })
@@ -52,8 +56,20 @@ public class SpringAnnotateWithMapperTest {
     private CustomerSpringDefaultMapper annotateWithComponentCustomerMapper;
 
     @Autowired
+    @Qualifier( "AnnotateWithController" )
+    private CustomerSpringDefaultMapper annotateWithControllerCustomerMapper;
+
+    @Autowired
     @Qualifier( "AnnotateWithService" )
     private CustomerSpringDefaultMapper annotateWithServiceCustomerMapper;
+
+    @Autowired
+    @Qualifier( "AnnotateWithRepository" )
+    private CustomerSpringDefaultMapper annotateWithRepositoryCustomerMapper;
+
+    @Autowired
+    @Qualifier( "AnnotateWithCustomStereotype" )
+    private CustomerSpringDefaultMapper annotateWithCustomStereotypeCustomerMapper;
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
@@ -85,6 +101,18 @@ public class SpringAnnotateWithMapperTest {
     }
 
     @ProcessorTest
+    public void shouldHaveControllerAnnotatedQualifiedMapper() {
+
+        // then
+        assertThat( annotateWithControllerCustomerMapper ).isNotNull();
+        generatedSource.forMapper( CustomerSpringControllerQualifiedMapper.class )
+                .content()
+                .contains( "@Controller(value = \"AnnotateWithController\")" )
+                .doesNotContain( "@Component" + System.lineSeparator() );
+
+    }
+
+    @ProcessorTest
     public void shouldHaveServiceAnnotatedQualifiedMapper() {
 
         // then
@@ -92,6 +120,30 @@ public class SpringAnnotateWithMapperTest {
         generatedSource.forMapper( CustomerSpringServiceQualifiedMapper.class )
                 .content()
                 .contains( "@Service(value = \"AnnotateWithService\")" )
+                .doesNotContain( "@Component" + System.lineSeparator() );
+
+    }
+
+    @ProcessorTest
+    public void shouldHaveRepositoryAnnotatedQualifiedMapper() {
+
+        // then
+        assertThat( annotateWithRepositoryCustomerMapper ).isNotNull();
+        generatedSource.forMapper( CustomerSpringRepositoryQualifiedMapper.class )
+                .content()
+                .contains( "@Repository(value = \"AnnotateWithRepository\")" )
+                .doesNotContain( "@Component" + System.lineSeparator() );
+
+    }
+
+    @ProcessorTest
+    public void shouldHaveCustomStereotypeAnnotatedQualifiedMapper() {
+
+        // then
+        assertThat( annotateWithCustomStereotypeCustomerMapper ).isNotNull();
+        generatedSource.forMapper( CustomerSpringCustomStereotypeQualifiedMapper.class )
+                .content()
+                .contains( "@CustomStereotype(value = \"AnnotateWithCustomStereotype\")" )
                 .doesNotContain( "@Component" + System.lineSeparator() );
 
     }
