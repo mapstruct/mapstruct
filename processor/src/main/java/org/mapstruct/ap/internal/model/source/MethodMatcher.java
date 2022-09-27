@@ -84,7 +84,7 @@ public class MethodMatcher {
         if ( !analyser.candidateReturnType.isVoid() ) {
             if ( targetType.isPrimitive() ) {
                 // If the target type is primitive
-                // then we are going to check is its boxed equivalent
+                // then we are going to check if its boxed equivalent
                 // is assignable to the candidate return type
                 // This is done because primitives can be assigned from their own narrower counterparts
                 // directly without any casting.
