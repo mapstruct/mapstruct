@@ -7,43 +7,17 @@ package org.mapstruct.ap.test.callbacks.cyclic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
 /**
  * @author Ben Zegveld
  */
+@IssueKey( "2955" )
 @WithClasses( { Student.class, StudentDto.class, Teacher.class, TeacherDto.class } )
 public class CyclicMapperTest {
-
-    @WithClasses( { StackOverflowMapper.class } )
-    @ProcessorTest
-    void throwsStackOverflowDuringMapping() {
-        Teacher teacher = new Teacher();
-        Student student = new Student();
-        teacher.addStudent( student );
-        student.setTeacher( teacher );
-
-        StackOverflowMapper mapper = StackOverflowMapper.INSTANCE;
-
-        assertThatThrownBy( () -> mapper.map( teacher ) ).isInstanceOf( StackOverflowError.class );
-    }
-
-    @WithClasses( { StackOverflowUpdateMapper.class } )
-    @ProcessorTest
-    void throwsStackOverflowDuringUpdateMapping() {
-        Teacher teacher = new Teacher();
-        Student student = new Student();
-        teacher.addStudent( student );
-        student.setTeacher( teacher );
-
-        StackOverflowUpdateMapper mapper = StackOverflowUpdateMapper.INSTANCE;
-        TeacherDto target = new TeacherDto();
-
-        assertThatThrownBy( () -> mapper.map( teacher, target ) ).isInstanceOf( StackOverflowError.class );
-    }
 
     @WithClasses( { CyclicMapperWithClassContext.class, PreventCyclicContext.class } )
     @ProcessorTest
