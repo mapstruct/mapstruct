@@ -593,5 +593,4 @@ public class AnnotateWithTest {
         Method method = mapper.getClass().getMethod( "map", String.class );
         assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
-
 }

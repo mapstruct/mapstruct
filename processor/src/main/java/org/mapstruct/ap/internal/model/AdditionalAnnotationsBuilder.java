@@ -10,6 +10,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.AnnotateWithGem;
 import org.mapstruct.ap.internal.gem.AnnotateWithsGem;
+import org.mapstruct.ap.internal.gem.DeprecatedGem;
 import org.mapstruct.ap.internal.gem.ElementGem;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
@@ -55,7 +57,6 @@ public class AdditionalAnnotationsBuilder
     extends RepeatableAnnotations<AnnotateWithGem, AnnotateWithsGem, Annotation> {
     private static final String ANNOTATE_WITH_FQN = "org.mapstruct.AnnotateWith";
     private static final String ANNOTATE_WITHS_FQN = "org.mapstruct.AnnotateWiths";
-
     private TypeFactory typeFactory;
     private FormattingMessager messager;
 
@@ -88,6 +89,45 @@ public class AdditionalAnnotationsBuilder
                 annotateWithGem,
                 source ).ifPresent( t -> addAndValidateMapping( mappings, source, annotateWithGem, t ) );
         }
+    }
+
+    @Override
+    public Set<Annotation> getProcessedAnnotations(Element source) {
+        Set<Annotation> processedAnnotations = super.getProcessedAnnotations( source );
+        return addDeprecatedAnnotation( source, processedAnnotations );
+    }
+
+    private Set<Annotation> addDeprecatedAnnotation(Element source, Set<Annotation> annotations) {
+        DeprecatedGem deprecatedGem = DeprecatedGem.instanceOn( source );
+        if ( deprecatedGem == null ) {
+            return annotations;
+        }
+        Type deprecatedType = typeFactory.getType( Deprecated.class );
+        if ( annotations.stream().anyMatch( annotation -> annotation.getType().equals( deprecatedType ) ) ) {
+            messager.printMessage(
+                    source,
+                    deprecatedGem.mirror(),
+                    Message.ANNOTATE_WITH_DUPLICATE,
+                    deprecatedType.describe() );
+            return annotations;
+        }
+        List<AnnotationElement> annotationElements = new ArrayList<>();
+        if ( deprecatedGem.since() != null && deprecatedGem.since().hasValue() ) {
+            annotationElements.add( new AnnotationElement(
+                AnnotationElementType.STRING,
+                "since",
+                Collections.singletonList( deprecatedGem.since().getValue() )
+            ) );
+        }
+        if ( deprecatedGem.forRemoval() != null && deprecatedGem.forRemoval().hasValue() ) {
+            annotationElements.add( new AnnotationElement(
+                AnnotationElementType.BOOLEAN,
+                "forRemoval",
+                Collections.singletonList( deprecatedGem.forRemoval().getValue() )
+            ) );
+        }
+        annotations.add( new Annotation(deprecatedType, annotationElements ) );
+        return annotations;
     }
 
     private void addAndValidateMapping(Set<Annotation> mappings, Element source, AnnotateWithGem gem, Annotation anno) {
