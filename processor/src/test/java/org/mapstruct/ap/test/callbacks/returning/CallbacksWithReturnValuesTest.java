@@ -25,23 +25,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @WithClasses( { Attribute.class, AttributeDto.class, Node.class, NodeDto.class, NodeMapperDefault.class,
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
-public class CallbacksWithReturnValuesTest {
+class CallbacksWithReturnValuesTest {
     @ProcessorTest
-    public void mappingWithDefaultHandlingRaisesStackOverflowError() {
+    void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void updatingWithDefaultHandlingRaisesStackOverflowError() {
+    void updatingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void mappingWithContextCorrectlyResolvesCycles() {
+    void mappingWithContextCorrectlyResolvesCycles() {
         final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
         ContextListener contextListener = new ContextListener() {
             @Override
@@ -75,7 +75,7 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithoutContextDoesNotUseCache() {
+    void numberMappingWithoutContextDoesNotUseCache() {
         Number n1 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         assertThat( n1 ).isEqualTo( n2 );
@@ -83,7 +83,7 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithContextUsesCache() {
+    void numberMappingWithContextUsesCache() {
         NumberMapperContext.putCache( new Number( 2342 ) );
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
@@ -93,7 +93,23 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithContextCallsVisitNumber() {
+    @IssueKey( "2955" )
+    void numberUpdateMappingWithContextCallsCache() {
+        Number target = new Number();
+        NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
+
+        try {
+            assertThat( NumberMapperContext.getCacheCalled() ).containsExactly( target );
+            assertThat( NumberMapperContext.getVisited() ).containsExactly( target );
+        }
+        finally {
+            NumberMapperContext.clearCache();
+            NumberMapperContext.clearVisited();
+        }
+    }
+
+    @ProcessorTest
+    void numberMappingWithContextCallsVisitNumber() {
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
         assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );

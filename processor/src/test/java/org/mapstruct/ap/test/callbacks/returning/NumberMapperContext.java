@@ -22,6 +22,7 @@ public class NumberMapperContext {
     private static final Map<Number, Number> CACHE = new HashMap<>();
 
     private static final List<Number> VISITED = new ArrayList<>();
+    private static final List<Number> CACHE_CALLED = new ArrayList<>();
 
     private NumberMapperContext() {
         // Only allow static access
@@ -33,10 +34,15 @@ public class NumberMapperContext {
 
     public static void clearCache() {
         CACHE.clear();
+        CACHE_CALLED.clear();
     }
 
     public static List<Number> getVisited() {
         return VISITED;
+    }
+
+    public static List<Number> getCacheCalled() {
+        return CACHE_CALLED;
     }
 
     public static void clearVisited() {
@@ -45,6 +51,7 @@ public class NumberMapperContext {
 
     @AfterMapping
     public static Number getInstance(Integer source, @MappingTarget Number target) {
+        CACHE_CALLED.add( target );
         return CACHE.get( target );
     }
 
