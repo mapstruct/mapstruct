@@ -365,7 +365,7 @@ public class MappingMethodOptions {
             options.mappings,
             options.iterableMapping,
             options.mapMapping,
-            options.beanMapping,
+            BeanMappingOptions.empty( options.beanMapping.next() ),
             options.enumMappingOptions,
             options.valueMappings,
             Collections.emptySet(),
