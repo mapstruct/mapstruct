@@ -12,9 +12,7 @@ import org.mapstruct.ReportingPolicy;
 /**
  * @author Filip Hrisafov
  */
-@Mapper(
-    unmappedSourcePolicy = ReportingPolicy.ERROR
-)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.ERROR)
 public interface Issue2743Mapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = { "number" })
