@@ -13,8 +13,7 @@ import org.mapstruct.ReportingPolicy;
  * @author Filip Hrisafov
  */
 @Mapper(
-    unmappedSourcePolicy = ReportingPolicy.ERROR,
-    unmappedTargetPolicy = ReportingPolicy.ERROR
+    unmappedSourcePolicy = ReportingPolicy.ERROR
 )
 public interface Issue2743Mapper {
 
