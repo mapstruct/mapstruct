@@ -93,14 +93,23 @@ class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
+    void numberMappingWithContextCallsVisitNumber() {
+        Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
+        Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
+        assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );
+        NumberMapperContext.clearVisited();
+    }
+
+    @ProcessorTest
     @IssueKey( "2955" )
-    void numberUpdateMappingWithContextCallsCache() {
+    void numberUpdateMappingWithContextUsesCacheAndThereforeDoesNotVisitNumber() {
         Number target = new Number();
+        Number expectedReturn = new Number( 2342 );
+        NumberMapperContext.putCache( expectedReturn );
         NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
 
         try {
-            assertThat( NumberMapperContext.getCacheCalled() ).containsExactly( target );
-            assertThat( NumberMapperContext.getVisited() ).containsExactly( target );
+            assertThat( NumberMapperContext.getVisited() ).isEmpty();
         }
         finally {
             NumberMapperContext.clearCache();
@@ -109,10 +118,17 @@ class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    void numberMappingWithContextCallsVisitNumber() {
-        Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
-        Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
-        assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );
-        NumberMapperContext.clearVisited();
+    @IssueKey( "2955" )
+    void numberUpdateMappingWithContextCallsVisitNumber() {
+        Number target = new Number();
+        NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
+
+        try {
+            assertThat( NumberMapperContext.getVisited() ).contains( target );
+        }
+        finally {
+            NumberMapperContext.clearCache();
+            NumberMapperContext.clearVisited();
+        }
     }
 }
