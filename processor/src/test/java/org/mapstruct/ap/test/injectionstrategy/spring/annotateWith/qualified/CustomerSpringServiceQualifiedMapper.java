@@ -14,6 +14,6 @@ import org.springframework.stereotype.Service;
  * @author Jose Carlos Campanero Ortiz
  */
 @AnnotateWith( value = Service.class, elements = @AnnotateWith.Element( strings = "AnnotateWithService" ) )
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
-public interface CustomerSpringServiceQualifiedMapper extends CustomerSpringDefaultMapper {
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING )
+public interface CustomerSpringServiceQualifiedMapper {
 }

@@ -6,10 +6,6 @@
 package org.mapstruct.ap.test.injectionstrategy.spring.annotateWith.qualified;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
-import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
-import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
-import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -20,20 +16,15 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * Test field injection for component model spring.
  *
  * @author Filip Hrisafov
+ * @author Jose Carlos Campanero Ortiz
  */
 @WithClasses({
-        CustomerDto.class,
-        CustomerEntity.class,
-        Gender.class,
-        GenderDto.class,
         CustomerSpringComponentQualifiedMapper.class,
         CustomerSpringControllerQualifiedMapper.class,
         CustomerSpringServiceQualifiedMapper.class,
         CustomerSpringRepositoryQualifiedMapper.class,
         CustomStereotype.class,
-        CustomerSpringCustomStereotypeQualifiedMapper.class,
-        CustomerSpringDefaultMapper.class,
-        GenderSpringDefaultMapper.class
+        CustomerSpringCustomStereotypeQualifiedMapper.class
 })
 @IssueKey( "1427" )
 @WithSpring

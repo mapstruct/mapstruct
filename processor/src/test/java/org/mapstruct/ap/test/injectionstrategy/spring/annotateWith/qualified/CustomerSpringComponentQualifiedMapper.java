@@ -15,6 +15,6 @@ import org.mapstruct.MappingConstants;
  * @author Ben Zegveld
  */
 @AnnotateWith( value = Component.class, elements = @AnnotateWith.Element( strings = "AnnotateWithComponent" ) )
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
-public interface CustomerSpringComponentQualifiedMapper extends CustomerSpringDefaultMapper {
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING )
+public interface CustomerSpringComponentQualifiedMapper {
 }

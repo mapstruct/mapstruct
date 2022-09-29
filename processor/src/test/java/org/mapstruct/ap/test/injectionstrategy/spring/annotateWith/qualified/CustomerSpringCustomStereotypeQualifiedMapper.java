@@ -16,6 +16,6 @@ import org.mapstruct.MappingConstants;
     value = CustomStereotype.class,
     elements = @AnnotateWith.Element( strings = "AnnotateWithCustomStereotype" )
 )
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
-public interface CustomerSpringCustomStereotypeQualifiedMapper extends CustomerSpringDefaultMapper {
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING )
+public interface CustomerSpringCustomStereotypeQualifiedMapper {
 }

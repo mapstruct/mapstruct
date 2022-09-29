@@ -14,6 +14,6 @@ import org.springframework.stereotype.Repository;
  * @author Jose Carlos Campanero Ortiz
  */
 @AnnotateWith( value = Repository.class, elements = @AnnotateWith.Element( strings = "AnnotateWithRepository" ) )
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
-public interface CustomerSpringRepositoryQualifiedMapper extends CustomerSpringDefaultMapper {
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING )
+public interface CustomerSpringRepositoryQualifiedMapper {
 }

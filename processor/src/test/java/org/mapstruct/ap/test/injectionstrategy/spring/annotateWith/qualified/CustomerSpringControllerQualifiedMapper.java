@@ -14,6 +14,6 @@ import org.springframework.stereotype.Controller;
  * @author Jose Carlos Campanero Ortiz
  */
 @AnnotateWith( value = Controller.class, elements = @AnnotateWith.Element( strings = "AnnotateWithController" ) )
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = GenderSpringDefaultMapper.class )
-public interface CustomerSpringControllerQualifiedMapper extends CustomerSpringDefaultMapper {
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING )
+public interface CustomerSpringControllerQualifiedMapper {
 }
