@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.callbacks.returning;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.jupiter.api.AfterEach;
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -26,6 +27,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
 class CallbacksWithReturnValuesTest {
+    @AfterEach
+    void cleanup() {
+        NumberMapperContext.clearCache();
+        NumberMapperContext.clearVisited();
+    }
+
     @ProcessorTest
     void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
@@ -78,6 +85,7 @@ class CallbacksWithReturnValuesTest {
     void numberMappingWithoutContextDoesNotUseCache() {
         Number n1 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
+
         assertThat( n1 ).isEqualTo( n2 );
         assertThat( n1 ).isNotSameAs( n2 );
     }
@@ -87,17 +95,17 @@ class CallbacksWithReturnValuesTest {
         NumberMapperContext.putCache( new Number( 2342 ) );
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
+
         assertThat( n1 ).isEqualTo( n2 );
         assertThat( n1 ).isSameAs( n2 );
-        NumberMapperContext.clearCache();
     }
 
     @ProcessorTest
     void numberMappingWithContextCallsVisitNumber() {
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
+
         assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );
-        NumberMapperContext.clearVisited();
     }
 
     @ProcessorTest
@@ -108,13 +116,7 @@ class CallbacksWithReturnValuesTest {
         NumberMapperContext.putCache( expectedReturn );
         NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
 
-        try {
-            assertThat( NumberMapperContext.getVisited() ).isEmpty();
-        }
-        finally {
-            NumberMapperContext.clearCache();
-            NumberMapperContext.clearVisited();
-        }
+        assertThat( NumberMapperContext.getVisited() ).isEmpty();
     }
 
     @ProcessorTest
@@ -123,12 +125,6 @@ class CallbacksWithReturnValuesTest {
         Number target = new Number();
         NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
 
-        try {
-            assertThat( NumberMapperContext.getVisited() ).contains( target );
-        }
-        finally {
-            NumberMapperContext.clearCache();
-            NumberMapperContext.clearVisited();
-        }
+        assertThat( NumberMapperContext.getVisited() ).contains( target );
     }
 }
