@@ -15,6 +15,6 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface MapCompositionMapper {
 
-    @ToMap
+    @CustomMapAnnotation
     Map<String, String> stringIntegerMapToStringStringMap(Map<String, Integer> source);
 }

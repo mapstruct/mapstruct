@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mapstruct.ap.test.mappingcomposition.iterable.IterableCompositionMapper;
-import org.mapstruct.ap.test.mappingcomposition.iterable.ToIterable;
+import org.mapstruct.ap.test.mappingcomposition.iterable.CustomIterableAnnotation;
 import org.mapstruct.ap.test.mappingcomposition.map.MapCompositionMapper;
-import org.mapstruct.ap.test.mappingcomposition.map.ToMap;
+import org.mapstruct.ap.test.mappingcomposition.map.CustomMapAnnotation;
+import org.mapstruct.ap.test.mappingcomposition.value.CustomEnumAnnotation;
 import org.mapstruct.ap.test.mappingcomposition.value.EnumCompositionMapper;
-import org.mapstruct.ap.test.mappingcomposition.value.ToEnum;
+import org.mapstruct.ap.test.mappingcomposition.value.CustomValueAnnotation;
 import org.mapstruct.ap.test.value.ExternalOrderType;
 import org.mapstruct.ap.test.value.OrderType;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -80,44 +81,45 @@ public class CompositionTest {
     }
 
     @ProcessorTest
-    @WithClasses( {IterableCompositionMapper.class, ToIterable.class } )
-    public void shouldIterableCompositionSuccess() {
+    @WithClasses( {IterableCompositionMapper.class, CustomIterableAnnotation.class } )
+    public void shouldIterableMappingCompositionSuccess() {
         IterableCompositionMapper compositionMapper = Mappers.getMapper( IterableCompositionMapper.class );
         List<Integer> integers = new ArrayList<>();
         integers.add( 520 );
         integers.add( 1314 );
         List<String> strings = compositionMapper.prices( integers );
-        assertThat( strings.get( 0 ) ).isEqualTo( "$520.00" );
-        assertThat( strings.get( 1 ) ).isEqualTo( "$1314.00" );
+        assertThat( strings.get( 0 ) ).isEqualTo( "$520" );
+        assertThat( strings.get( 1 ) ).isEqualTo( "$1314" );
     }
 
     @ProcessorTest
-    @WithClasses( {IterableCompositionMapper.class, ToIterable.class } )
+    @WithClasses( {IterableCompositionMapper.class, CustomIterableAnnotation.class } )
     public void shouldPrioritySourceAnnotation() {
         IterableCompositionMapper compositionMapper = Mappers.getMapper( IterableCompositionMapper.class );
         List<Integer> integers = new ArrayList<>();
         integers.add( 520 );
         integers.add( 1314 );
         List<String> strings = compositionMapper.duplicateAnnotation( integers );
-        assertThat( strings.get( 0 ) ).isEqualTo( "@520.00" );
-        assertThat( strings.get( 1 ) ).isEqualTo( "@1314.00" );
+        assertThat( strings.get( 0 ) ).isEqualTo( "@520" );
+        assertThat( strings.get( 1 ) ).isEqualTo( "@1314" );
     }
 
     @ProcessorTest
-    @WithClasses( { MapCompositionMapper.class, ToMap.class } )
-    public void shouldMapCompositionSuccess() {
+    @WithClasses( { MapCompositionMapper.class, CustomMapAnnotation.class } )
+    public void shouldMapMappingCompositionSuccess() {
         MapCompositionMapper compositionMapper = Mappers.getMapper( MapCompositionMapper.class );
         Map<String, Integer> stringIntegerMap = new HashMap<>();
         stringIntegerMap.put( "string1", 520 );
         stringIntegerMap.put( "string2", 1314 );
         Map<String, String> stringStringMap = compositionMapper.stringIntegerMapToStringStringMap( stringIntegerMap );
-        assertThat( stringStringMap.get( "string1" ) ).isEqualTo( "$520.00" );
-        assertThat( stringStringMap.get( "string2" ) ).isEqualTo( "$1314.00" );
+        assertThat( stringStringMap.get( "string1" ) ).isEqualTo( "$520" );
+        assertThat( stringStringMap.get( "string2" ) ).isEqualTo( "$1314" );
     }
 
     @ProcessorTest
-    @WithClasses( {EnumCompositionMapper.class, ExternalOrderType.class, OrderType.class, ToEnum.class} )
-    public void shouldEnumCompositionSuccess() {
+    @WithClasses( {EnumCompositionMapper.class, ExternalOrderType.class, OrderType.class,
+        CustomValueAnnotation.class, CustomEnumAnnotation.class} )
+    public void shouldValueMappingCompositionSuccess() {
         EnumCompositionMapper compositionMapper = Mappers.getMapper( EnumCompositionMapper.class );
         assertThat( compositionMapper.orderTypeToExternalOrderType( OrderType.EXTRA ) )
             .isEqualTo( ExternalOrderType.SPECIAL );
@@ -126,7 +128,8 @@ public class CompositionTest {
     }
 
     @ProcessorTest
-    @WithClasses( {EnumCompositionMapper.class, ExternalOrderType.class, OrderType.class, ToEnum.class} )
+    @WithClasses( {EnumCompositionMapper.class, ExternalOrderType.class, OrderType.class,
+        CustomValueAnnotation.class, CustomEnumAnnotation.class} )
     public void duplicateValueMappingAnnotation() {
         EnumCompositionMapper compositionMapper = Mappers.getMapper( EnumCompositionMapper.class );
         assertThat( compositionMapper.duplicateAnnotation( OrderType.EXTRA ) )
@@ -136,5 +139,16 @@ public class CompositionTest {
         assertThat( compositionMapper.duplicateAnnotation( OrderType.NORMAL ) )
             .isEqualTo( ExternalOrderType.DEFAULT );
 
+    }
+
+    @ProcessorTest
+    @WithClasses( {EnumCompositionMapper.class, ExternalOrderType.class, OrderType.class,
+        CustomValueAnnotation.class, CustomEnumAnnotation.class} )
+    public void shouldEnumMappingCompositionSuccess() {
+        EnumCompositionMapper compositionMapper = Mappers.getMapper( EnumCompositionMapper.class );
+        assertThat( compositionMapper.orderTypeToString( OrderType.B2B ) )
+            .isEqualTo( "PREFIX_B2B" );
+        assertThat( compositionMapper.orderTypeToString( OrderType.NORMAL ) )
+            .isEqualTo( "PREFIX_NORMAL" );
     }
 }

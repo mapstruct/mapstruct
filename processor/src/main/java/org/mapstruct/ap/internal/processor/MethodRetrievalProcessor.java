@@ -623,7 +623,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         SingularEnumMapping singularEnumMapping = new SingularEnumMapping( mapperOptions );
         EnumMappingOptions enumMappingOptions = singularEnumMapping.getProcessedAnnotation( method );
         if ( enumMappingOptions == null ) {
-            return EnumMappingOptions.getInstanceOn( method, mapperOptions, enumTransformationStrategies, messager );
+            return EnumMappingOptions.getInstanceOn( null, method, mapperOptions,
+                enumTransformationStrategies, messager );
         }
         return enumMappingOptions;
     }
@@ -814,6 +815,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         @Override
         protected EnumMappingOptions newInstance(EnumMappingGem gem, Element source) {
             return EnumMappingOptions.getInstanceOn(
+                gem,
                 (ExecutableElement) source,
                 mapperOptions,
                 enumTransformationStrategies,

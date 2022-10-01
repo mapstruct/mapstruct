@@ -20,5 +20,5 @@ import org.mapstruct.ValueMappings;
     @ValueMapping(source = "EXTRA", target = "SPECIAL"),
     @ValueMapping(source = MappingConstants.ANY_REMAINING, target = "DEFAULT")
 })
-public @interface ToEnum {
+public @interface CustomValueAnnotation {
 }

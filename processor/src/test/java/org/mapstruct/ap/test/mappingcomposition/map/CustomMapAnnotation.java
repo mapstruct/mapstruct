@@ -14,6 +14,6 @@ import org.mapstruct.MapMapping;
  * @author orange add
  */
 @Retention( RetentionPolicy.CLASS )
-@MapMapping(valueNumberFormat = "$#.00")
-public @interface ToMap {
+@MapMapping(valueNumberFormat = "$#")
+public @interface CustomMapAnnotation {
 }

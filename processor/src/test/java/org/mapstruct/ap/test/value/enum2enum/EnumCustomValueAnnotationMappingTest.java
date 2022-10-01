@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     OrderMapper.class, SpecialOrderMapper.class, DefaultOrderMapper.class, OrderEntity.class,
     OrderType.class, OrderDto.class, ExternalOrderType.class
 })
-public class EnumToEnumMappingTest {
+public class EnumCustomValueAnnotationMappingTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
