@@ -1394,6 +1394,11 @@ public class Type extends ModelElement implements Comparable<Type> {
      * declaredType: JAXBElement<? extends T>
      * parameterizedType: JAXBElement<BigDecimal>
      * result: List<BigDecimal>
+     *
+     * this: List<Optional<T>>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<Optional<BigDecimal>>
      * }
      */
     public Type resolveGenericTypeParameters(Type declared, Type parameterized) {
