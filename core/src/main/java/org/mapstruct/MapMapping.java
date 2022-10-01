@@ -49,7 +49,7 @@ import org.mapstruct.control.MappingControl;
  *
  * @author Gunnar Morling
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface MapMapping {
 
