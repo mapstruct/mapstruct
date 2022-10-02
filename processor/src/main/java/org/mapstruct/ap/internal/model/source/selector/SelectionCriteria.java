@@ -69,6 +69,14 @@ public class SelectionCriteria {
     }
 
     /**
+     *
+     * @return {@code true} if only mapping methods should be selected
+     */
+    public boolean isForMapping() {
+        return type == null || type == Type.PREFER_UPDATE_MAPPING;
+    }
+
+    /**
      * @return true if factory methods should be selected, false otherwise.
      */
     public boolean isObjectFactoryRequired() {
