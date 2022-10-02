@@ -263,6 +263,31 @@ public class InheritanceSelectionTest {
     @ProcessorTest
     @IssueKey("1216")
     @WithClasses({
+        Citrus.class,
+        FruitFamily.class,
+        GoldenDelicious.class,
+        MostSpecificResultTypeSelectingUpdateMapper.class,
+        Citrus.class
+    })
+    public void testShouldUseMethodWithMostSpecificReturnTypeForUpdateMappings() {
+        FruitFamily fruitFamily = new FruitFamily();
+        fruitFamily.setFruit( new Citrus( "citrus" ) );
+        MostSpecificResultTypeSelectingUpdateMapper.Target target =
+            new MostSpecificResultTypeSelectingUpdateMapper.Target(
+                new Apple( "from_test" ),
+                new GoldenDelicious( "from_test" )
+            );
+        MostSpecificResultTypeSelectingUpdateMapper.INSTANCE.update( target, fruitFamily );
+
+        assertThat( target.getApple() ).isExactlyInstanceOf( Apple.class );
+        assertThat( target.getApple().getType() ).isEqualTo( "apple updated citrus" );
+        assertThat( target.getGoldenApple() ).isExactlyInstanceOf( GoldenDelicious.class );
+        assertThat( target.getGoldenApple().getType() ).isEqualTo( "golden updated citrus" );
+    }
+
+    @ProcessorTest
+    @IssueKey("1216")
+    @WithClasses({
         GoldenDelicious.class,
         FruitFamily.class,
         AppleFamily.class,
