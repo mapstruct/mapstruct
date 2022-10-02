@@ -21,7 +21,6 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
-import org.mapstruct.ap.internal.gem.EnumMappingGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -53,7 +52,6 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RepeatableAnnotations;
-import org.mapstruct.ap.internal.util.SingularAnnotation;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
@@ -71,16 +69,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
     private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubclassMapping";
     private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubclassMappings";
-
-    private static final String ITERABLE_MAPPING_FQN = "org.mapstruct.IterableMapping";
-
-    private static final String MAP_MAPPING_FQN = "org.mapstruct.MapMapping";
-
-    private static final String ENUM_MAPPING_FQN = "org.mapstruct.EnumMapping";
-
-    private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
-
-    private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;
@@ -289,12 +277,28 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         Set<MappingOptions> mappingOptions = getMappings( method, beanMappingOptions );
 
+        IterableMappingOptions iterableMappingOptions = IterableMappingOptions.fromGem(
+            IterableMappingGem.instanceOn( method ),
+            mapperOptions,
+            method,
+            messager,
+            typeUtils
+        );
 
-        IterableMappingOptions iterableMappingOptions = getIterableMapping( method, mapperOptions );
+        MapMappingOptions mapMappingOptions = MapMappingOptions.fromGem(
+            MapMappingGem.instanceOn( method ),
+            mapperOptions,
+            method,
+            messager,
+            typeUtils
+        );
 
-        MapMappingOptions mapMappingOptions = getMapMapping( method, mapperOptions );
-
-        EnumMappingOptions enumMappingOptions = getEnumMapping( method, mapperOptions );
+        EnumMappingOptions enumMappingOptions = EnumMappingOptions.getInstanceOn(
+            method,
+            mapperOptions,
+            enumTransformationStrategies,
+            messager
+        );
 
         // We want to get as much error reporting as possible.
         // If targetParameter is not null it means we have an update method
@@ -601,33 +605,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         .getProcessedAnnotations( method );
     }
 
-    private IterableMappingOptions getIterableMapping(ExecutableElement method, MapperOptions mapperOptions) {
-        SingularIterableMapping singularIterableMapping = new SingularIterableMapping( mapperOptions );
-        IterableMappingOptions iterableMappingOptions = singularIterableMapping.getProcessedAnnotation( method );
-        if ( iterableMappingOptions == null ) {
-            iterableMappingOptions = IterableMappingOptions.fromGem( null, mapperOptions, method, messager, typeUtils );
-        }
-        return iterableMappingOptions;
-    }
-
-    private MapMappingOptions getMapMapping(ExecutableElement method, MapperOptions mapperOptions) {
-        SingularMapMapping singularMapMapping = new SingularMapMapping( mapperOptions );
-        MapMappingOptions mapMappingOptions = singularMapMapping.getProcessedAnnotation( method );
-        if ( mapMappingOptions == null ) {
-            mapMappingOptions = MapMappingOptions.fromGem( null, mapperOptions, method, messager, typeUtils );
-        }
-        return mapMappingOptions;
-    }
-
-    private EnumMappingOptions getEnumMapping(ExecutableElement method, MapperOptions mapperOptions) {
-        SingularEnumMapping singularEnumMapping = new SingularEnumMapping( mapperOptions );
-        EnumMappingOptions enumMappingOptions = singularEnumMapping.getProcessedAnnotation( method );
-        if ( enumMappingOptions == null ) {
-            return EnumMappingOptions.getInstanceOn( method, mapperOptions, enumTransformationStrategies, messager );
-        }
-        return enumMappingOptions;
-    }
-
     private class RepeatableMappings extends RepeatableAnnotations<MappingGem, MappingsGem, MappingOptions> {
         private BeanMappingOptions beanMappingOptions;
 
@@ -700,16 +677,15 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                    Element method,
                                    Set<SubclassMappingOptions> mappings) {
             SubclassMappingOptions.addInstance(
-                gem,
-                (ExecutableElement) method,
-                beanMappingOptions,
-                messager,
-                typeUtils,
-                mappings,
-                sourceParameters,
-                resultType,
-                validator
-            );
+                                               gem,
+                                               (ExecutableElement) method,
+                                               beanMappingOptions,
+                                               messager,
+                                               typeUtils,
+                                               mappings,
+                                               sourceParameters,
+                                               resultType,
+                                               validator );
         }
 
         @Override
@@ -717,16 +693,15 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                     Element method,
                                     Set<SubclassMappingOptions> mappings) {
             SubclassMappingOptions.addInstances(
-                gem,
-                (ExecutableElement) method,
-                beanMappingOptions,
-                messager,
-                typeUtils,
-                mappings,
-                sourceParameters,
-                resultType,
-                validator
-            );
+                                                gem,
+                                                (ExecutableElement) method,
+                                                beanMappingOptions,
+                                                messager,
+                                                typeUtils,
+                                                mappings,
+                                                sourceParameters,
+                                                resultType,
+                                                validator );
         }
     }
 
@@ -735,119 +710,26 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * method.
      *
      * @param method The method of interest
+     *
      * @return The mappings for the given method, keyed by target property name
      */
     private List<ValueMappingOptions> getValueMappings(ExecutableElement method) {
-        Set<ValueMappingOptions> processedAnnotations = new RepeatValueMappings().getProcessedAnnotations( method );
-        return new ArrayList<>(processedAnnotations);
-    }
+        List<ValueMappingOptions> valueMappings = new ArrayList<>();
 
-    private class SingularIterableMapping
-        extends SingularAnnotation<IterableMappingGem, IterableMappingOptions> {
+        ValueMappingGem mappingAnnotation = ValueMappingGem.instanceOn( method );
+        ValueMappingsGem mappingsAnnotation = ValueMappingsGem.instanceOn( method );
 
-        private MapperOptions mapperOptions;
-
-        protected SingularIterableMapping(MapperOptions mapperOptions) {
-            super( elementUtils, ITERABLE_MAPPING_FQN );
-            this.mapperOptions = mapperOptions;
+        if ( mappingAnnotation != null ) {
+            ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingGem( mappingAnnotation );
+            if ( valueMapping != null ) {
+                valueMappings.add( valueMapping );
+            }
         }
 
-        @Override
-        protected IterableMappingGem singularInstanceOn(Element element) {
-            return IterableMappingGem.instanceOn( element );
+        if ( mappingsAnnotation != null ) {
+            ValueMappingOptions.fromMappingsGem( mappingsAnnotation, method, messager, valueMappings );
         }
 
-        @Override
-        protected IterableMappingOptions newInstance(IterableMappingGem gem, Element source) {
-            return IterableMappingOptions.fromGem(
-                gem,
-                mapperOptions,
-                (ExecutableElement) source,
-                messager,
-                typeUtils
-            );
-        }
-    }
-
-    private class SingularMapMapping
-        extends SingularAnnotation<MapMappingGem, MapMappingOptions> {
-
-        private MapperOptions mapperOptions;
-
-        protected SingularMapMapping(MapperOptions mapperOptions) {
-            super( elementUtils, MAP_MAPPING_FQN );
-            this.mapperOptions = mapperOptions;
-        }
-
-        @Override
-        protected MapMappingGem singularInstanceOn(Element element) {
-            return MapMappingGem.instanceOn( element );
-        }
-
-        @Override
-        protected MapMappingOptions newInstance(MapMappingGem gem, Element source) {
-            return MapMappingOptions.fromGem(
-                gem,
-                mapperOptions,
-                (ExecutableElement) source,
-                messager,
-                typeUtils
-            );
-        }
-    }
-
-    private class SingularEnumMapping
-        extends SingularAnnotation<EnumMappingGem, EnumMappingOptions> {
-
-        private MapperOptions mapperOptions;
-
-        protected SingularEnumMapping(MapperOptions mapperOptions) {
-            super( elementUtils, ENUM_MAPPING_FQN );
-            this.mapperOptions = mapperOptions;
-        }
-
-        @Override
-        protected EnumMappingGem singularInstanceOn(Element element) {
-            return EnumMappingGem.instanceOn( element );
-        }
-
-        @Override
-        protected EnumMappingOptions newInstance(EnumMappingGem gem, Element source) {
-            return EnumMappingOptions.getInstanceOn(
-                (ExecutableElement) source,
-                mapperOptions,
-                enumTransformationStrategies,
-                messager
-            );
-        }
-    }
-
-    private class RepeatValueMappings
-        extends RepeatableAnnotations<ValueMappingGem, ValueMappingsGem, ValueMappingOptions> {
-
-        protected RepeatValueMappings() {
-            super( elementUtils, VALUE_MAPPING_FQN, VALUE_MAPPINGS_FQN );
-        }
-
-        @Override
-        protected ValueMappingGem singularInstanceOn(Element element) {
-            return ValueMappingGem.instanceOn( element );
-        }
-
-        @Override
-        protected ValueMappingsGem multipleInstanceOn(Element element) {
-            return ValueMappingsGem.instanceOn( element );
-        }
-
-        @Override
-        protected void addInstance(ValueMappingGem gem, Element source, Set<ValueMappingOptions> mappings) {
-            ValueMappingOptions valueMappingOptions = ValueMappingOptions.fromMappingGem( gem );
-            mappings.add( valueMappingOptions );
-        }
-
-        @Override
-        protected void addInstances(ValueMappingsGem gems, Element source, Set<ValueMappingOptions> mappings) {
-            ValueMappingOptions.fromMappingsGem( gems, (ExecutableElement) source, messager, mappings );
-        }
+        return valueMappings;
     }
 }

@@ -84,7 +84,7 @@ import java.lang.annotation.Target;
  */
 @Repeatable(ValueMappings.class)
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target(ElementType.METHOD)
 public @interface ValueMapping {
     /**
      * The source value constant to use for this mapping.
