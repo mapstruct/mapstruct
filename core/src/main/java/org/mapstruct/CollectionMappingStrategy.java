@@ -12,8 +12,8 @@ package org.mapstruct;
  * Next, the trailing {@code s} indicates the plural form.
  * The table explains the options and how they are applied to the presence / absence of a
  * {@code set-s}, {@code add-} and / or {@code get-s} method on the target object.
- *
- * <table>
+ * <p>
+ * <table summary="Collection mapping strategy options">
  *     <tr>
  *         <th>Option</th>
  *         <th>Only target set-s Available</th>
