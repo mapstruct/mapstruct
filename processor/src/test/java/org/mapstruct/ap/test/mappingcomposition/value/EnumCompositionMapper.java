@@ -16,13 +16,10 @@ import org.mapstruct.ap.test.value.OrderType;
 @Mapper
 public interface EnumCompositionMapper {
 
-    @CustomValueAnnotation
+    @ToEnum
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
-    @CustomValueAnnotation
+    @ToEnum
     @ValueMapping( source = "STANDARD", target = "SPECIAL" )
     ExternalOrderType duplicateAnnotation(OrderType orderType);
-
-    @CustomEnumAnnotation
-    String orderTypeToString(OrderType orderType);
 }

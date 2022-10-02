@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
     OrderEntity.class,
     OrderType.class, ExternalOrderType.class
 })
-public class EnumCustomValueAnnotationThrowExceptionMappingTest {
+public class EnumToEnumThrowExceptionMappingTest {
 
     @IssueKey("2339")
     @ProcessorTest

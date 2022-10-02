@@ -14,6 +14,6 @@ import org.mapstruct.IterableMapping;
  * @author orange add
  */
 @Retention( RetentionPolicy.CLASS )
-@IterableMapping(numberFormat = "$#")
-public @interface CustomIterableAnnotation {
+@IterableMapping(numberFormat = "$#.00")
+public @interface ToIterable {
 }

@@ -88,7 +88,7 @@ import java.lang.annotation.Target;
  * @author Filip Hrisafov
  * @since 1.4
  */
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface EnumMapping {
 

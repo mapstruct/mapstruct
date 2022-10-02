@@ -78,9 +78,10 @@ public class EnumMappingOptions extends DelegatingOptions {
         return new EnumMappingOptions( enumMapping, true, valid, next() );
     }
 
-    public static EnumMappingOptions getInstanceOn(EnumMappingGem enumMapping, ExecutableElement method,
-                                                   MapperOptions mapperOptions,
+    public static EnumMappingOptions getInstanceOn(ExecutableElement method, MapperOptions mapperOptions,
         Map<String, EnumTransformationStrategy> enumTransformationStrategies, FormattingMessager messager) {
+
+        EnumMappingGem enumMapping = EnumMappingGem.instanceOn( method );
         if ( enumMapping == null ) {
             return new EnumMappingOptions( null, false, true, mapperOptions );
         }

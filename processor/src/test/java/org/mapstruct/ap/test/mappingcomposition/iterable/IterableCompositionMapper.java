@@ -16,10 +16,10 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface IterableCompositionMapper {
 
-    @CustomIterableAnnotation
+    @ToIterable
     List<String> prices(List<Integer> prices);
 
-    @IterableMapping(numberFormat = "@#")
-    @CustomIterableAnnotation
+    @IterableMapping(numberFormat = "@#.00")
+    @ToIterable
     List<String> duplicateAnnotation(List<Integer> prices);
 }

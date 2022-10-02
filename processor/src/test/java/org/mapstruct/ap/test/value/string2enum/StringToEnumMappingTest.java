@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @IssueKey( "1557" )
 @WithClasses({ OrderType.class, OrderMapper.class })
-public class StringCustomValueAnnotationMappingTest {
+public class StringToEnumMappingTest {
 
     @ProcessorTest
     public void testTheNormalStuff() {
