@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.mappingcomposition;
 
 import java.util.Date;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -17,17 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sjaak Derksen
  */
 @IssueKey("807")
+@WithClasses({
+    BoxDto.class,
+    BoxEntity.class,
+    ShelveDto.class,
+    ShelveEntity.class,
+    StorageMapper.class,
+    ToEntity.class
+})
 public class CompositionTest {
 
     @ProcessorTest
-    @WithClasses({
-        BoxDto.class,
-        BoxEntity.class,
-        ShelveDto.class,
-        ShelveEntity.class,
-        StorageMapper.class,
-        ToEntity.class
-    })
     public void shouldCompose() {
 
         Date now = new Date();
@@ -64,5 +65,4 @@ public class CompositionTest {
         assertThat( shelveEntity.getWeightLimit() ).isEqualTo( 10.0d );
 
     }
-
 }

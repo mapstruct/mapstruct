@@ -17,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author orange add
  */
 @IssueKey("3037")
+@WithClasses({
+    ValueMappingCompositionMapper.class,
+    ExternalOrderType.class,
+    OrderType.class,
+    CustomValueAnnotation.class
+})
 public class ValueCompositionTest {
 
     @ProcessorTest
-    @WithClasses({
-        ValueMappingCompositionMapper.class,
-        ExternalOrderType.class,
-        OrderType.class,
-        CustomValueAnnotation.class
-    })
     public void shouldValueCompositionSuccess() {
         ValueMappingCompositionMapper compositionMapper = Mappers.getMapper( ValueMappingCompositionMapper.class );
         assertThat( compositionMapper.orderTypeToExternalOrderType( OrderType.EXTRA ) )
@@ -35,12 +35,6 @@ public class ValueCompositionTest {
     }
 
     @ProcessorTest
-    @WithClasses({
-        ValueMappingCompositionMapper.class,
-        ExternalOrderType.class,
-        OrderType.class,
-        CustomValueAnnotation.class
-    })
     public void duplicateValueMappingAnnotation() {
         ValueMappingCompositionMapper compositionMapper = Mappers.getMapper( ValueMappingCompositionMapper.class );
         assertThat( compositionMapper.duplicateAnnotation( OrderType.EXTRA ) )
