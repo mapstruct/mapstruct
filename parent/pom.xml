@@ -41,7 +41,7 @@
             The processor module needs at least Java 11.
          -->
         <minimum.java.version>1.8</minimum.java.version>
-        <protobuf.version>3.21.2</protobuf.version>
+        <protobuf.version>3.21.7</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
     </properties>
 
