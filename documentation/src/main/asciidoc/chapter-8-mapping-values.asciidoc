@@ -266,3 +266,39 @@ MapStruct provides the following out of the box enum name transformation strateg
 
 It is also possible to register custom strategies.
 For more information on how to do that have a look at <<custom-enum-transformation-strategy>>
+
+=== ValueMapping Composition
+
+The `@ValueMapping` annotation supports now @Target with `ElementType#ANNOTATION_TYPE` in addition to `ElementType#METHOD`. This allows `@ValueMapping` to be used on other (user defined) annotations for re-use purposes. For example:
+
+.Custom enumeration mapping annotations
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Retention( RetentionPolicy.CLASS )
+@ValueMapping(source = "EXTRA", target = "SPECIAL")
+@ValueMapping(source = MappingConstants.ANY_REMAINING, target = "DEFAULT")
+public @interface CustomValueAnnotation {
+}
+----
+====
+It can be used to describe some common enumeration mapping relationships to avoid duplicate declarations, as in the following example:
+
+.Using custom combination annotations
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface ValueMappingCompositionMapper {
+
+    @CustomValueAnnotation
+    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+
+    @CustomValueAnnotation
+    @ValueMapping(source = "STANDARD", target = "SPECIAL")
+    ExternalOrderType duplicateAnnotation(OrderType orderType);
+}
+----
+====
