@@ -118,8 +118,11 @@ public class ValueMappingMethod extends MappingMethod {
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
-            List<Annotation> annotations = Collections.emptyList();
-            if ( !(method instanceof ForgedMethod) ) {
+            List<Annotation> annotations;
+            if ( method instanceof ForgedMethod ) {
+                annotations = Collections.emptyList();
+            }
+            else {
                 annotations = new ArrayList<>();
                 AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                     new AdditionalAnnotationsBuilder(
