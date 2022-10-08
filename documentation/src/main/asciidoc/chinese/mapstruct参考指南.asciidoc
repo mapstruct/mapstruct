@@ -1,0 +1,104 @@
+= MapStruct {mapstructVersion} Reference Guide
+:revdate: {docdate}
+:toc: right
+:sectanchors:
+:source-highlighter: coderay
+:Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov, Song Gao and the MapStruct community
+:processor-dir: ../../../../processor
+:processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
+:processor-ap-main: {processor-dir}/src/main/java/org/mapstruct/ap
+:integration-tests-dir: ../../../../integrationtest
+
+[[前言]]
+== 前言
+
+本文是MapStruct的参考文档。
+
+MapStruct实质上是一个注解处理器，其目标是生成类型安全、性能良好并且完全无三方依赖的bean映射代码。
+
+该指南包含Mapstruct的全部功能。如果该指南没有解答您所有的疑问，请加入MapStruct的 https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users[谷歌小组]以寻求帮助。
+
+如果您发现了一个错误（拼写错误亦可），请提issue至 https://github.com/mapstruct/mapstruct[MapStruct仓库]，如果可能的话，当然直接提个pr帮社区修正掉更好。
+
+此文遵照 https://creativecommons.org/licenses/by-sa/4.0/deed.zh[Creative Commons Attribution-ShareAlike 4.0 International License许可]。 （译注：CC-BY-SA许可 即：允许任意复制，任意修改，任意用途，仅有两条限制 1.必须给出原作者名字 2.二创作品必须采用同样的协议。因此，中译版也是CC-BY-SA许可，各位如果要在本文基础上进行二创，必须给出英文版作者名字和本人名字）。
+
+
+[[中译前言]]
+== 中译前言
+为了更加通顺和符合技术人习惯，本文并不追求全汉字翻译，未翻译部分及其中部分对照如下：
+
+bean：java特有概念 不翻译
+
+public static等：java关键字 不翻译
+
+source： 源
+
+target： 目标
+
+mapper： 映射器
+
+builder： 构造器
+
+getter： 取值器
+
+setter： 赋值器
+
+XML Schema： 专有名词 不翻译
+
+strip：字符串的一种处理方法，不翻译
+
+另外，对于带连字符的名词：
+* 部分较为通用的进行了翻译，如：type-safe翻译为了“类型安全”；null-check翻译为“null校验”
+* 部分与MapStruct关联较强的未翻译，如：before-mapping未翻译，MapStruct中有@BeforeMapping注解，为了在上下文中显示一致性，故未翻译。
+
+下面是不确定的名词翻译，第一次翻译时会同时标注英文：
+
+Artifacts： 资源/包
+
+enable：使能、启用
+
+accessor：访问器
+
+retrieve： 检索
+
+locale：区域环境
+
+object graphs：对象图
+
+underlying collection：底部集合
+
+此外，为了更符合中文习惯与突出重点，标点与段落划分未与原文严格保持一致。
+
+原官方指南作者：Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
+翻译：高松（约周）
+
+
+:numbered:
+
+include::chapter-1-介绍.asciidoc[]
+
+include::chapter-2-设置.asciidoc[]
+
+include::chapter-3-定义mapper.asciidoc[]
+
+include::chapter-4-检索mapper.asciidoc[]
+
+include::chapter-5-数据类型转换.asciidoc[]
+
+include::chapter-6-集合的映射.asciidoc[]
+
+include::chapter-7-Stream的映射.asciidoc[]
+
+include::chapter-8-值的映射.asciidoc[]
+
+include::chapter-9-对象工厂.asciidoc[]
+
+include::chapter-10-高级映射选项.asciidoc[]
+
+include::chapter-11-映射配置复用.asciidoc[]
+
+include::chapter-12-自定义映射.asciidoc[]
+
+include::chapter-13-using-mapstruct-spi.asciidoc[]
+
+include::chapter-14-第三方API整合.asciidoc[]

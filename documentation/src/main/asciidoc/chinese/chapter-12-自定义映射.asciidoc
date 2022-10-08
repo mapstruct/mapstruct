@@ -1,0 +1,222 @@
+== 自定义映射
+
+有时候，需要在映射方法之前/之后添加自定义逻辑。这在MapStruct中有两种方式：
+
+. 装饰器。允许具体映射方法的类型安全自定义。
+. before-mapping/after-mapping 生命周期方法。允许给定source/target类型下的泛型自定义。
+
+=== 带有装饰器的映射自定义
+
+有些特定场景中，需要对生成的映射方法进行自定有操作。比如target对象中由一个不可能由生成的映射方法赋值的值，要额外给该值赋值。MapStruct通过运用装饰器来支持此种需求。
+
+* 当使用cdi组件模式时，应在MapStruct的mapper中使用 https://docs.jboss.org/cdi/spec/1.0/html/decorators.html[CDI 装饰器]，而不是此处说明的@DecoratedWith注解。
+
+为了给mapper类使用装饰器，请在该类上加上@DecoratedWith注解。
+
+----
+@Mapper
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
+
+    PersonDto personToPersonDto(Person person);
+
+    AddressDto addressToAddressDto(Address address);
+}
+----
+
+装饰器必须是被装饰的mapper类型的子类型。您可以将其定义为抽象类，这样您就可以只实现您想进行自定义的mapper接口。MapStruct会使用默认的生成路径把所有未实现方法的生成代理给原来的mapper。
+
+下面的PersonMapperDecorator对personToPersonDto()方法进行了定制化，向target塞进了一个source类型中没有的额外字段。而对addressToAddressDto()则没有进行定制化。
+
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    private final PersonMapper delegate;
+
+    public PersonMapperDecorator(PersonMapper delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setFullName( person.getFirstName() + " " + person.getLastName() );
+        return dto;
+    }
+}
+----
+
+上面的例子展示了：您可以将注入一个默认实现注入的代理，并且在自定义装饰器方法中使用该代理。
+
+对于componentModel = "default"的mapper，请定义一个入参为目标mapper的单参构造器作为装饰器的构造器。
+
+当mapper的组件模式为 spring 或者 jsr330，需要用不同的方法来处理。
+
+==== Spring组件模式下的装饰器
+
+对组件模式是spring的mapper使用@DecoratedWith时，原mapper生成的实现会带有Spring的注解@Qualifier("delegate")。为了注入该bean，请在您的装饰器中同样添加该@Qualifier注解。
+
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+     @Autowired
+     @Qualifier("delegate")
+     private PersonMapper delegate;
+
+     @Override
+     public PersonDto personToPersonDto(Person person) {
+         PersonDto dto = delegate.personToPersonDto( person );
+         dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+         return dto;
+     }
+ }
+----
+
+自动生成的类继承自该装饰器，并有spring的@Primary注解。您什么额外的事情都不需要做就可以在应用中注入这个被装饰的mapper。
+
+----
+@Autowired
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+
+==== JSR 330组件模式下的装饰器
+
+JSR 330不会指定qualifiers，只能通过名字指定bean。因此，原mapper的生成实现会带有@Named("fully-qualified-name-of-generated-implementation")注解（请注意，当使用装饰器的时候，mapper实现的类名结尾会带一个下划线）。为了把其注入到装饰器里，请把相同的注释添加到装饰器字段中：
+
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    @Inject
+    @Named("org.examples.PersonMapperImpl_")
+    private PersonMapper delegate;
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+        return dto;
+    }
+}
+----
+
+不像其他组件模式，该方式使用时必须知道mapper是不是被装饰的，如果是，则需要加一个@Named注解来选择注入的装饰器。
+
+----
+@Inject
+@Named
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+
+=== 带before-mapping和after-mapping方法的映射自定义
+
+当需要自定义mapper时，装饰器模式无法满足全部需求。比如，如果您不仅想对某几个方法进行自定义，而是要对所有具有某种特征的方法进行自定义。此时，您可以使用回调方法，回调方法会在映射开始前/结束后被调用。
+
+您可以在抽象mapper自身中实现回调方法，也可以Mapper#uses指定的类中实现回调方法，还可以在@Context参数指定的类中实现回调方法。
+
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @BeforeMapping
+    protected void flushEntity(AbstractVehicle vehicle) {
+        // I would call my entity manager's flush() method here to make sure my entity
+        // is populated with the right @Version before I let it map into the DTO
+    }
+
+    @AfterMapping
+    protected void fillTank(AbstractVehicle vehicle, @MappingTarget AbstractVehicleDto result) {
+        result.fuelUp( new Fuel( vehicle.getTankCapacity(), vehicle.getFuelType() ) );
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        flushEntity( car );
+
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        fillTank( car, carDto );
+
+        return carDto;
+    }
+}
+----
+
+如果@BeforeMapping / @AfterMapping方法有参数，只有如下情况才会进行回调方法的方法调用：方法的返回值类型（如果非void的话）是映射方法的子类，且所有参数都得是该映射方法source/target参数的子类，具体情况见下：
+
+* 带有@MappingTarget注解的参数，会被该映射方法的target实例填充
+* 带有@TargetType的参数，会被该映射方法的target类型填充
+* 带有@Context的参数，会被该映射方法的上下文参数填充
+* 所有其他参数，都会被该映射方法的source参数填充
+
+对于non-void方法，方法调用的返回值如果不为空，则作为映射方法的结果返回。
+
+与映射方法一样，可以为before-mapping/after-mapping方法指定类型参数。
+
+@AfterMapping回调方法返回非空值的例子：
+
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @AfterMapping
+    protected <T> T attachEntity(@MappingTarget T entity) {
+        return entityManager.merge(entity);
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        CarDto target = attachEntity( carDto );
+        if ( target != null ) {
+            return target;
+        }
+
+        return carDto;
+    }
+}
+----
+
+在生成映射方法实例时，MapStruct会使用所有能用到的before/after-mapping方法， 5.9节中展示了如何选择用哪个方法，不用哪个方法。为了能选择方法，需要在before/after-method上添加qualifier注解，并且在BeanMapping#qualifiedBy或IterableMapping#qualifiedBy中指明。
+
+方法调用的顺序主要由变量决定：
+
+. 没有@MappingTarget参数的@BeforeMapping方法会在所有source参数的null校验前调用，并且构造一个新的target bean。
+. 有@MappingTarget参数的@BeforeMapping方法会在构造一个新的target bean后调用。
+. @AfterMapping方法会在映射方法结尾处的return语句前调用。
+
+而在这些分组内部，方法调用的顺序则取决于定义的位置：
+
+. @Context参数上声明的方法按参数顺序
+. mapper内部定义的方法
+. Mapper#uses()所引用的方法按照注解中类型声明的顺序
+. 参数越特化的方法顺序越靠后
+
+重要：单参数方法的执行顺序不能保证，这取决于编译器和系统 重要：当使用builder时，@AfterMapping方法必须将该builder作为带@MappingTarget的参数使用，这样该方法才能修改要构建的方法。其build方法会在@AfterMapping方法结束时调用。当真正的target被用作带@MappingTarget的参数时，MapStruct不会调用@AfterMapping方法

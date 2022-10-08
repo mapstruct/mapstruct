@@ -1,0 +1,137 @@
+== 映射配置复用
+
+该本章讨论了几种如何将映射配置复用到多个映射方法的配置方式：从其他方法"`继承`"配置，或者在多个映射类型间共享中心化配置。
+
+=== 继承映射配置
+
+方法级别的配置注解（比如 @Mapping, @BeanMapping, @IterableMapping等）可以通过@InheritConfiguration注解将其从一个映射方法继承到另一个映射方法上：
+
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(target = "numberOfSeats", source = "seatCount")
+    Car carDtoToCar(CarDto car);
+
+    @InheritConfiguration
+    void carDtoIntoCar(CarDto carDto, @MappingTarget Car car);
+}
+----
+
+上例中，映射方法carDtoToCar()有一个配置，该配置描述了如何映射得到Car类型的numberOfSeats字段。更新方法则会使用同样的配置来更新已经存在的Car实例，并成功更新所有属性。在该方法上声明@InheritConfiguration使得MapStruct寻找继承候选来应用继承的方法的注解。
+
+如果方法A的所有类型（source类型和返回值类型）都是B对应类型的子类，那么方法A可以继承方法B的配置。
+
+方法B要么定义在同一个mapper中，要么在父类/接口中，要么在共享配置（见11.3）的接口中。
+
+如果有不止一个方法要使用继承，则该方法必须加类似如下注解：@InheritConfiguration( name = "carDtoToCar" )。
+
+一个方法在使用@InheritConfiguration注解后，可以通过@Mapping, @BeanMapping等注解覆盖或追加配置。
+
+* @InheritConfiguration不能指向@Mapper#uses中mapper的方法。
+
+=== 反转映射
+
+双向映射的情况时，比如把DO映射成DTO和从DTO映射DO，正向映射和反向映射的映射规则通常都是相似的，一般把source和target对调就是对方的规则。
+
+对一个方法使用@InheritInverseConfiguration注解会使该方法继承逆方法的相反配置。
+
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(target = "seatCount", source = "numberOfSeats")
+    CarDto carToDto(Car car);
+
+    @InheritInverseConfiguration
+    @Mapping(target = "numberOfSeats", ignore = true)
+    Car carDtoToCar(CarDto carDto);
+}
+----
+
+上例子中，carDtoToCar()方法是carToDto()的逆方法。请注意，carToDto()中的所有属性映射会在carDtoToCar()中反过来。在@InheritInverseConfiguration注解下，该过程是自动完成的。
+
+在逆方法上指明的映射可以被该映射上的ignore, expression或者constant覆盖，比如：@Mapping(target = "numberOfSeats", ignore=true)。
+
+当方法A的返回值类型是方法B的入参类型（B必须是单入参方法），并且A的入参类型（A也必须是单入参方法）是B的返回值类型时，称方法A是方法B的逆方法。
+
+一个方法要有逆方法，需要和逆方法定义在同一个mapper里，或者定义在逆方法的父类/接口。
+
+如果有多个方法，则继承的是哪个方法需要手动指明，如：@InheritInverseConfiguration(name = "carToDto")。
+
+在冲突时，@InheritConfiguration的优先级比@InheritInverseConfiguration高。
+
+配置是传递式继承的，如果method C定义了一个映射@Mapping( target = "x", ignore = true)，方法BC定义了一个映射@Mapping( target = "y", ignore = true)，那么如果A继承了B，那么A也继承了C，也就是A会继承x字段和y字段的映射。
+
+@Mapping#expression, @Mapping#defaultExpression, @Mapping#defaultValue and @Mapping#constant
+
+在@InheritInverseConfiguration中，@Mapping#expression, @Mapping#defaultExpression, @Mapping#defaultValue 和 @Mapping#constant 会被悄无声息地排除在外。
+
+只有当@InheritInverseConfiguration上出现@Mapping#source时，@Mapping#ignore才会生效。
+
+嵌套source字段的逆映射自1.1.0.Beta2release版本中作为实验性特性开放。当source字段名和target字段名完全一致时，将自动进行逆映射。否则，@Mapping应该同时target字段名称和source字段名称。
+
+在所有情况下，都需要为反向映射准备合适的映射方法。
+
+* @InheritInverseConfiguration不能指向@Mapper#uses中mapper的方法。
+
+=== 共享配置
+
+您可以通过加@MapperConfig注解的方式指定"`中心接口`"，并以此定义共享配置。要让mapper使用共享配置，需要在@Mapper#config属性中定义配置接口。
+
+@MapperConfig注解和@Mapper注解的属性一致。所有@Mapper中没有设定的属性值都从自共享配置中继承。在@Mapper中定义的属性值生效优先级高于其共享配置中的属性值，而uses这种列表属性（译注：即可以有多个值的属性）就是简单地把值组合起来：
+
+----
+@MapperConfig(
+    uses = CustomMapperViaMapperConfig.class,
+    unmappedTargetPolicy = ReportingPolicy.ERROR
+)
+public interface CentralConfig {
+}
+----
+
+----
+@Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
+// Effective configuration:
+// @Mapper(
+//     uses = { CustomMapperViaMapper.class, CustomMapperViaMapperConfig.class },
+//     unmappedTargetPolicy = ReportingPolicy.ERROR
+// )
+public interface SourceTargetMapper {
+  ...
+}
+----
+
+带有@MapperConfig注解的接口也可能会声明映射方法的原型，这些原型方法上方法级别的注解也会被继承。这些原型方法并不打算作为映射器API的一部分来实现或使用。
+
+----
+@MapperConfig(
+    uses = CustomMapperViaMapperConfig.class,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
+    mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG
+)
+public interface CentralConfig {
+
+    // Not intended to be generated, but to carry inheritable mapping annotations:
+    @Mapping(target = "primaryKey", source = "technicalKey")
+    BaseEntity anyDtoToEntity(BaseDto dto);
+}
+----
+
+----
+@Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
+public interface SourceTargetMapper {
+
+    @Mapping(target = "numberOfSeats", source = "seatCount")
+    // additionally inherited from CentralConfig, because Car extends BaseEntity and CarDto extends BaseDto:
+    // @Mapping(target = "primaryKey", source = "technicalKey")
+    Car toCar(CarDto car)
+}
+----
+
+当mapper中的方法从接口中的原型方法中继承了方法级别的映射注解，@Mapper#mappingInheritanceStrategy() / @MapperConfig#mappingInheritanceStrategy()会：
+
+* EXPLICIT（默认）：如果target映射方法有@InheritConfiguration注解，并且source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类（详见11.1），那么仅配置会被继承。
+* AUTO_INHERIT_FROM_CONFIG：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么配置会被自动继承。如果有多个匹配的原型方法，请通过@InheritConfiguration(name = ...​)来消除歧义，该项同时会导致AUTO_INHERIT_FROM_CONFIG失效
+* AUTO_INHERIT_REVERSE_FROM_CONFIG：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么逆配置会被自动继承。如果有多个匹配的原型方法，请通过@InheritInverseConfiguration(name = ...​)来消除歧义，该项同时会导致AUTO_INHERIT_REVERSE_FROM_CONFIG失效。
+* AUTO_INHERIT_ALL_FROM_CONFIG：配置和逆配置都会被自动继承。AUTO_INHERIT_FROM_CONFIG 或 AUTO_INHERIT_REVERSE_FROM_CONFIG的规则也适用于这里。

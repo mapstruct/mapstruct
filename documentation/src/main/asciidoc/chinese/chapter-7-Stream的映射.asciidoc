@@ -1,0 +1,45 @@
+== Stream的映射
+
+java.util.Stream的映射和集合类型的映射类似，也就是在mapper接口中按照需要定义接口，在接口上指定对应source与target的类型。
+
+生成代码中从提供的Iterable/array中生成流，或者从提供的Stream收集数据生成Iterable/array。如果source元素和target元素之间存在mapping方法或者隐式类型转换，那么该转换会以Stream#map()的方式实现。下面是一个具体的例子：
+
+----
+@Mapper
+public interface CarMapper {
+
+    Set<String> integerStreamToStringSet(Stream<Integer> integers);
+
+    List<CarDto> carsToCarDtos(Stream<Car> cars);
+
+    CarDto carToCarDto(Car car);
+}
+----
+
+integerStreamToStringSet()方法的对应生成实现中展示了每个元素从Integer到String的转换，同时，carsToCarDtos()的实现方法中会调用carToCarDto()来完成每个元素的转换：
+
+----
+@Override
+public Set<String> integerStreamToStringSet(Stream<Integer> integers) {
+    if ( integers == null ) {
+        return null;
+    }
+
+    return integers.map( integer -> String.valueOf( integer ) )
+        .collect( Collectors.toCollection( LinkedHashSet<String>::new ) );
+}
+
+@Override
+public List<CarDto> carsToCarDtos(Stream<Car> cars) {
+    if ( cars == null ) {
+        return null;
+    }
+
+    return cars.map( car -> carToCarDto( car ) )
+        .collect( Collectors.toCollection( ArrayList<CarDto>::new ) );
+}
+----
+
+* 如果一个Stream已经实行了到Iterable/array的映射，该流就已经被消费了，因此也就不能再被消费。
+
+当在从Stream到Iterable的映射中创建新集合时，关于接口类型与实现类型的部分与6.3相同。

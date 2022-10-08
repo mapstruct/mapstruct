@@ -1,0 +1,152 @@
+
+== 对象工厂
+
+默认情况下，MapStruct生成的代码会把一个bean类型映射为另一个bean类型，或者更新一个bean，这个过程会调用默认的构造器来初始化target类型的实例。
+
+然而，您可以插入自定义对象工厂方法，以此自定义如何获得target类型实例。一哥使用场景是JAXB，其创建了ObjectFactory类来获得schema类型的新实例。
+
+为了使用自定义的工厂，请按照5.5节中的描述，使用@Mapper#uses()将其注册，或者您可以直接在您的mapper中实现工厂。当在bean映射中创建target对象时，MapStruct会寻找一个无参方法，一个有@ObjectFactory注解的方法，或者一个仅有一个@TargetType参数的方法，该参数会指明需要的返回值类型，接下来MapStruct会调用该方法，而不是采用默认的构造器
+
+自定义工厂方法的例子：
+
+----
+public class DtoFactory {
+
+     public CarDto createCarDto() {
+         return // ... custom factory logic
+     }
+}
+----
+
+----
+public class EntityFactory {
+
+     public <T extends BaseEntity> T createEntity(@TargetType Class<T> entityClass) {
+         return // ... custom factory logic
+     }
+}
+----
+
+----
+@Mapper(uses= { DtoFactory.class, EntityFactory.class } )
+public interface CarMapper {
+
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+
+    CarDto carToCarDto(Car car);
+
+    Car carDtoToCar(CarDto carDto);
+}
+----
+
+----
+//GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    private final DtoFactory dtoFactory = new DtoFactory();
+
+    private final EntityFactory entityFactory = new EntityFactory();
+
+    @Override
+    public CarDto carToCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = dtoFactory.createCarDto();
+
+        //map properties...
+
+        return carDto;
+    }
+
+    @Override
+    public Car carDtoToCar(CarDto carDto) {
+        if ( carDto == null ) {
+            return null;
+        }
+
+        Car car = entityFactory.createEntity( Car.class );
+
+        //map properties...
+
+        return car;
+    }
+}
+----
+
+带有更新方法的自定义工厂：
+
+----
+@Mapper(uses = { DtoFactory.class, EntityFactory.class, CarMapper.class } )
+public interface OwnerMapper {
+
+    OwnerMapper INSTANCE = Mappers.getMapper( OwnerMapper.class );
+
+    void updateOwnerDto(Owner owner, @MappingTarget OwnerDto ownerDto);
+
+    void updateOwner(OwnerDto ownerDto, @MappingTarget Owner owner);
+}
+----
+
+----
+//GENERATED CODE
+public class OwnerMapperImpl implements OwnerMapper {
+
+    private final DtoFactory dtoFactory = new DtoFactory();
+
+    private final EntityFactory entityFactory = new EntityFactory();
+
+    private final OwnerMapper ownerMapper = Mappers.getMapper( OwnerMapper.class );
+
+    @Override
+    public void updateOwnerDto(Owner owner, @MappingTarget OwnerDto ownerDto) {
+        if ( owner == null ) {
+            return;
+        }
+
+        if ( owner.getCar() != null ) {
+            if ( ownerDto.getCar() == null ) {
+                ownerDto.setCar( dtoFactory.createCarDto() );
+            }
+            // update car within ownerDto
+        }
+        else {
+            ownerDto.setCar( null );
+        }
+
+       // updating other properties
+    }
+
+    @Override
+    public void updateOwner(OwnerDto ownerDto, @MappingTarget Owner owner) {
+        if ( ownerDto == null ) {
+            return;
+        }
+
+        if ( ownerDto.getCar() != null ) {
+            if ( owner.getCar() == null ) {
+                owner.setCar( entityFactory.createEntity( Car.class ) );
+            }
+            // update car within owner
+        }
+        else {
+            owner.setCar( null );
+        }
+
+       // updating other properties
+    }
+}
+----
+
+另外，将工厂方法加上@ObjectFactory注解会让您可以访问mapping source。source对象可以以参数的形式添加，就像映射方法一样。@ObjectFactory是必须的，这样MapStruct才能知道指定的方法是唯一的工厂方法。
+
+----
+public class DtoFactory {
+
+     @ObjectFactory
+     public CarDto createCarDto(Car car) {
+         return // ... custom factory logic
+     }
+}
+----

@@ -1,0 +1,198 @@
+[[设置]]
+== 设置
+
+MapStruct是一个基于 https://mapstruct.org/documentation/stable/reference/html/#invoking-other-mappers[JSR 269]的Java注解处理器。因此，您可以在命令行构建（javac、Ant、Maven等）以及IDE中使用它。
+
+它包含以下包（Artifacts）：
+
+* _org.mapstruct:mapstruct_：包含必需的注解，例如@Mapping
+* _org.mapstruct:mapstruct-processor_：包含生成mapper实现的注解处理器
+
+=== Apache Maven
+
+对于基于Maven的项目，为了使用MapStruct，请在您的POM文件中添加如下内容：
+
+----
+...
+<properties>
+    <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+</properties>
+...
+<dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+</dependencies>
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+...
+----
+
+----
+如果您正在使用Eclipse IDE，请确保有一个最新版本的[M2E插件](https://www.eclipse.org/m2e/)。当按照上面的配置导入的maven工程时，该插件会设置MapStruct注解处理器，这样IDE才能在您保存mapper的时候正确运行。很整洁，不是吗？
+
+为了保证一切都按照预期运行，请二次检查您的项目配置，请依次选择"Java Compiler" → "Annotation Processing" → "Factory Path"。您应该在此发现MapStruct处理器的JAR，并且该JAR已经生效。所有通过插件（见下）配置的处理器的选项都应该在"Java Compiler" → "Annotation Processing"下展示。
+
+如果处理器没起作用，请检查依赖M2E的注解处理器的配置是否生效。步骤如下： "Preferences" → "Maven" → "Annotation Processing" 典籍"Automatically configure JDT APT"。或者在POM文件中的properties部分添加 <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+
+并且请确保您的项目正在使用java1.8或者更高版本（project properties → "Java Compiler" → "Compile Compliance Level"）
+----
+
+=== Gradle
+
+为了使用MapStruct，请在您的Gradle构建文件中添加以下内容：
+
+----
+...
+plugins {
+    ...
+    id "com.diffplug.eclipse.apt" version "3.26.0" // Only for Eclipse
+}
+
+dependencies {
+    ...
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+...
+----
+
+您可以在github的 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-gradle[mapstruct-examples]工程中找到一个完整的例子。
+
+=== Apache Ant
+
+如果您的项目基于Ant，为了使用MapStruct，请在您的build.xml文件中加入如下配置的``javac``任务。请在您的项目结构中按需调整路径。
+
+----
+...
+<javac
+    srcdir="src/main/java"
+    destdir="target/classes"
+    classpath="path/to/mapstruct-1.4.2.Final.jar">
+    <compilerarg line="-processorpath path/to/mapstruct-processor-1.4.2.Final.jar"/>
+    <compilerarg line="-s target/generated-sources"/>
+</javac>
+...
+----
+
+您可以在github的 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-ant[mapstruct-examples]工程中找到一个完整的例子。
+
+=== 配置选项
+
+您可以使用注解处理器选项来配置MapStruct的代码生成器。
+
+当直接调用javac时，这些选项会以 -Akey=value 的形式透传给编译器。 当以maven方式使用MapStruct时，所有处理器选项都可以通过maven处理器插件里的``compilerArgs``元素透传给编译器，如：
+
+----
+...
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
+    <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </path>
+        </annotationProcessorPaths>
+        <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
+        <showWarnings>true</showWarnings>
+        <compilerArgs>
+            <arg>
+                -Amapstruct.suppressGeneratorTimestamp=true
+            </arg>
+            <arg>
+                -Amapstruct.suppressGeneratorVersionInfoComment=true
+            </arg>
+            <arg>
+                -Amapstruct.verbose=true
+            </arg>
+        </compilerArgs>
+    </configuration>
+</plugin>
+...
+----
+
+Gradle配置如下：
+
+----
+...
+compileJava {
+    options.compilerArgs += [
+        '-Amapstruct.suppressGeneratorTimestamp=true',
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+        '-Amapstruct.verbose=true'
+    ]
+}
+...
+----
+
+可选选项如下：
+
+|===
+| Option | Purpose | Default
+
+| mapstruct.
+suppressGeneratorTimestamp
+| 如果设置为"`true`"，mapper生成类中@Generated注解里的时间戳将会被去除
+| false
+
+| mapstruct.verbose
+| 如果设置为"`true`"，MapStruct将打印其主要决定。 注意，如果用的是Maven，您还需要添加showWarnings，这是maven-compiler-plugin配置导致的一个问题
+| false
+
+| mapstruct.
+suppressGeneratorVersionInfoComment
+| 如果设置为"`true`"，mapper生成类中@Generated注解里的版本信息将会被去除
+| false
+
+| mapstruct.defaultComponentModel
+| 该值会影响组件模式（详见第四章），即会以什么形式生成mapper类。支持的值如下： + default： mapper不用组件模式，实例通常通过Mappers#getMapper(Class)检索 + cdi： 生成的mapper是一个应用范围的 CDI bean，可以通过@Inject检索 + spring： 生成的mapper是一个单例Spring bean，可以通过@Autowired检索 + jsr330： 生成的mapper会有 {@code @Named} 注解，可以通过@Inject（该注解可来自javax.inject 或 jakarta.inject，取决于javax.inject设置下哪个优先级更高）检索。用Spring时也可用该方式 + jakarta：生成的mapper会有 {@code @Named} 注解，可以通过@Inject(该注解jakarta.inject)检索，用Spring时也可用该方式 + 在某个具体mapper中，如果以@Mapper#componentModel()注解的形式指定组件模式，则注解值的优先级要高于配置选项值的优先级
+| default
+
+| mapstruct.defaultInjectionStrategy
+| 通过参数"`users`"注入到mapper里的类型。这一项需要基于CDI, Spring 或 JSR 330组件模式才能生效 + 支持的值如： + field： 依赖会被注入到字段里 + constructor： 会生成构造器。会通过构造器注入依赖。 + 当是 CDI 组件模式时，一个默认的构造器也会被生成。在某个具体mapper中，如果注入策略是以@Mapper#injectionStrategy()注解的形式指定，则注解的优先级要高于配置选项的优先级
+| field
+
+| mapstruct.unmappedTargetPolicy
+| 该值用来指定source值不能对应target对象的一个属性时的报警级别 + 支持的值如： + ERROR： 任何不匹配的target属性都会导致代码生成失败 + WARN： 任何不匹配的target属性会在构建时导致WARN信息 + IGNORE： 不匹配的target属性会被忽略 + 在某个具体mapper中，如果该策略以@Mapper#unmappedTargetPolicy()的形式指定，则注解的优先级要高于配置选项的优先级
+| WARN
+
+| mapstruct.disableBuilders
+| 如果被设置为"`true`"，MapStruct在映射时不会用builder模式，即相当于在所有mapper中添加@Mapper( builder = @Builder( disableBuilder = true ) )
+| false
+|===
+
+=== 在java模块系统中使用MapStruct
+
+MapStruct可以在java9及更高版本中使用。
+
+为了让@Generated生效，可以启用java.annotation.processing.Generated（java.compiler模块的一部分）。
