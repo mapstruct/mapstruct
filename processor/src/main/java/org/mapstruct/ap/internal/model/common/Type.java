@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +55,7 @@ import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
+import static java.util.Collections.emptyList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -67,6 +70,18 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * @author Filip Hrisafov
  */
 public class Type extends ModelElement implements Comparable<Type> {
+    private static final Method SEALED_PERMITTED_SUBCLASSES_METHOD;
+
+    static {
+        Method permittedSubclassesMethod;
+        try {
+            permittedSubclassesMethod = TypeElement.class.getMethod( "getPermittedSubclasses" );
+        }
+        catch ( NoSuchMethodException e ) {
+            permittedSubclassesMethod = null;
+        }
+        SEALED_PERMITTED_SUBCLASSES_METHOD = permittedSubclassesMethod;
+    }
 
     private final TypeUtils typeUtils;
     private final ElementUtils elementUtils;
@@ -1652,6 +1667,29 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( getFullyQualifiedName() );
+    }
+
+    /**
+     * return true if this type is a java 17+ sealed class
+     */
+    public boolean isSealed() {
+        return typeElement.getModifiers().stream().map( Modifier::name ).anyMatch( "SEALED"::equals );
+    }
+
+    /**
+     * return the list of permitted TypeMirrors for the java 17+ sealed class
+     */
+    @SuppressWarnings( "unchecked" )
+    public List<? extends TypeMirror> getPermittedSubclasses() {
+        if (SEALED_PERMITTED_SUBCLASSES_METHOD == null) {
+            return emptyList();
+        }
+        try {
+            return (List<? extends TypeMirror>) SEALED_PERMITTED_SUBCLASSES_METHOD.invoke( typeElement );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            return emptyList();
+        }
     }
 
 }

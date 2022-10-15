@@ -436,8 +436,36 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean isAbstractReturnTypeAllowed() {
-            return method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
-                && !method.getOptions().getSubclassMappings().isEmpty();
+            return !method.getOptions().getSubclassMappings().isEmpty()
+                && ( method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
+                    || isCorrectlySealed() );
+        }
+
+        private boolean isCorrectlySealed() {
+            try {
+                if ( method.getMappingSourceType().isSealed() ) {
+                    List<? extends TypeMirror> unusedPermittedSubclasses =
+                        new ArrayList<>( method.getMappingSourceType().getPermittedSubclasses() );
+                    method.getOptions().getSubclassMappings().forEach( subClassOption -> {
+                        unusedPermittedSubclasses
+                                                 .stream()
+                                                 .filter(
+                                                     permitted -> ctx
+                                                                     .getTypeUtils()
+                                                                     .isSameType(
+                                                                         permitted,
+                                                                         subClassOption.getSource() ) )
+                                                 .findFirst()
+                                                 .ifPresent( unusedPermittedSubclasses::remove );
+                    } );
+                    return unusedPermittedSubclasses.isEmpty();
+                }
+                return false;
+            }
+            catch ( Exception e ) {
+                // SEALED not supported.
+                return false;
+            }
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {
