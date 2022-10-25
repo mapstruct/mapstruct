@@ -399,15 +399,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "SubclassMapping for " + sourceType.getFullyQualifiedName() );
             SelectionCriteria criteria =
                 SelectionCriteria
-                                 .forMappingMethods(
+                                 .forSubclassMappingMethods(
                                      new SelectionParameters(
                                          Collections.emptyList(),
                                          Collections.emptyList(),
                                          subclassMappingOptions.getTarget(),
                                          ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
-                                     subclassMappingOptions.getMappingControl( ctx.getElementUtils() ),
-                                     null,
-                                     false );
+                                     subclassMappingOptions.getMappingControl( ctx.getElementUtils() ));
             Assignment assignment = ctx
                                    .getMappingResolver()
                                    .getTargetAssignment(

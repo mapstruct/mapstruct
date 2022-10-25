@@ -213,12 +213,16 @@ public class MappingResolverImpl implements MappingResolver {
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) && !candidate.equals( mappingMethod )) {
+                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate )) {
                     result.add( candidate );
                 }
             }
 
             return result;
+        }
+
+        private <T extends Method> boolean isNotSelfOrSelfAllowed(T mappingMethod, T candidate) {
+            return selectionCriteria == null || selectionCriteria.isSelfAllowed() || !candidate.equals( mappingMethod );
         }
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
