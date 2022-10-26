@@ -24,8 +24,8 @@ public interface SelfMapper {
         public String value;
     }
 
-    @Mapping(target = "value", constant="constantValue")
+    @Mapping( target = "value", constant = "constantValue" )
     Target map(Source source);
 
-    SelfMapper INSTANCE = Mappers.getMapper(SelfMapper.class);
+    SelfMapper INSTANCE = Mappers.getMapper( SelfMapper.class );
 }
