@@ -196,7 +196,6 @@ public class MappingResolverImpl implements MappingResolver {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
-            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
@@ -207,6 +206,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.builtIns = builtIns;
             this.messager = messager;
             this.reportingLimitAmbiguous = verboseLogging ? Integer.MAX_VALUE : LIMIT_REPORTING_AMBIGUOUS;
+            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
         }
         // CHECKSTYLE:ON
 
