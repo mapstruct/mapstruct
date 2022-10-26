@@ -16,12 +16,36 @@ import org.mapstruct.factory.Mappers;
 public interface SelfMapper {
 
     class Source {
-        public Source self;
+        private Source self;
+
+        public Source getSelf() {
+            return self;
+        }
+
+        public void setSelf(Source self) {
+            this.self = self;
+        }
     }
 
     class Target {
-        public Target self;
-        public String value;
+        private Target self;
+        private String value;
+
+        public Target getSelf() {
+            return self;
+        }
+
+        public void setSelf(Target self) {
+            this.self = self;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 
     @Mapping( target = "value", constant = "constantValue" )

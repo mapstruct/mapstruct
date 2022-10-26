@@ -22,11 +22,11 @@ public class SelfMapperTest {
     void mapsSelf() {
         Source sourceOuter = new SelfMapper.Source();
         Source sourceInner = new SelfMapper.Source();
-        sourceOuter.self = sourceInner;
+        sourceOuter.setSelf( sourceInner );
 
         Target targetOuter = SelfMapper.INSTANCE.map( sourceOuter );
 
-        assertThat( targetOuter.value ).isEqualTo( "constantValue" );
-        assertThat( targetOuter.self.value ).isEqualTo( "constantValue" );
+        assertThat( targetOuter.getValue() ).isEqualTo( "constantValue" );
+        assertThat( targetOuter.getSelf().getValue() ).isEqualTo( "constantValue" );
     }
 }
