@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingsGem;
+import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -229,7 +230,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
             || isValidLifecycleCallbackMethod( method )
-            || isValidPresenceCheckMethod( method, returnType ) ) {
+            || isValidPresenceCheckMethod( method, parameters, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -406,7 +407,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return ObjectFactoryGem.instanceOn( method ) != null;
     }
 
-    private boolean isValidPresenceCheckMethod(ExecutableElement method, Type returnType) {
+    private boolean isValidPresenceCheckMethod(ExecutableElement method, List<Parameter> parameters, Type returnType) {
+        for ( Parameter param : parameters ) {
+            if ( param.isTargetPropertyName() && !param.getType().isString() ) {
+                messager.printMessage(
+                    param.getElement(),
+                    TargetPropertyNameGem.instanceOn( param.getElement() ).mirror(),
+                    Message.RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE
+                );
+                return false;
+            }
+        }
         return isBoolean( returnType ) && hasConditionAnnotation( method );
     }
 
