@@ -788,6 +788,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                     // an adder has been found (according strategy) so overrule current choice.
                     candidate = adderMethod;
                 }
+
+                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE
+                    && candidate.getAccessorType() == AccessorType.GETTER ) {
+                    // If the collection mapping strategy is target immutable
+                    // then the getter method cannot be used as a setter
+                    continue;
+                }
             }
             else if ( candidate.getAccessorType() == AccessorType.FIELD  && ( Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
