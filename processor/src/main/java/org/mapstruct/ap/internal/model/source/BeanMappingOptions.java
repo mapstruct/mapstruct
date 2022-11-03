@@ -92,6 +92,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     private static boolean isConsistent(BeanMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.resultType().hasValue()
+            && !gem.mappingControl().hasValue()
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.ignoreUnmappedSourceProperties().hasValue()

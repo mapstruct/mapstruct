@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.subclassmapping;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.ap.test.subclassmapping.mappables.Bike;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
@@ -21,6 +20,6 @@ public interface DeepCloneMethodMapper {
 
     @SubclassMapping( source = Car.class, target = Car.class )
     @SubclassMapping( source = Bike.class, target = Bike.class )
-    @BeanMapping( mappingControl = DeepClone.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL )
+    @BeanMapping( mappingControl = DeepClone.class )
     Vehicle map(Vehicle vehicle);
 }
