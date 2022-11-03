@@ -177,21 +177,16 @@ public class SelectionCriteria {
         return new SelectionCriteria( selectionParameters, null, null, Type.PRESENCE_CHECK );
     }
 
+    public static SelectionCriteria forSubclassMappingMethods(SelectionParameters selectionParameters,
+        MappingControl mappingControl) {
+        return new SelectionCriteria( selectionParameters, mappingControl, null, Type.SELF_NOT_ALLOWED );
+    }
+
     public enum Type {
         PREFER_UPDATE_MAPPING,
         OBJECT_FACTORY,
         LIFECYCLE_CALLBACK,
         PRESENCE_CHECK,
         SELF_NOT_ALLOWED,
-    }
-
-    public static SelectionCriteria forSubclassMappingMethods(SelectionParameters selectionParameters,
-                                                              MappingControl mappingControl) {
-        return new SelectionCriteria(
-            selectionParameters,
-            mappingControl,
-            null,
-            Type.SELF_NOT_ALLOWED
-        );
     }
 }
