@@ -5,26 +5,28 @@
  */
 package org.mapstruct.ap.test.bugs._3057;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.mapstruct.ap.test.bugs._3057.SelfMapper.Source;
-import org.mapstruct.ap.test.bugs._3057.SelfMapper.Target;
+import org.mapstruct.ap.test.bugs._3057.Issue3057Mapper.Source;
+import org.mapstruct.ap.test.bugs._3057.Issue3057Mapper.Target;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Ben Zegveld
  */
-@WithClasses( SelfMapper.class )
-public class SelfMapperTest {
+@WithClasses(Issue3057Mapper.class)
+@IssueKey("3057")
+class Issue3057MapperTest {
 
     @ProcessorTest
     void mapsSelf() {
-        Source sourceOuter = new SelfMapper.Source();
-        Source sourceInner = new SelfMapper.Source();
+        Source sourceOuter = new Issue3057Mapper.Source();
+        Source sourceInner = new Issue3057Mapper.Source();
         sourceOuter.setSelf( sourceInner );
 
-        Target targetOuter = SelfMapper.INSTANCE.map( sourceOuter );
+        Target targetOuter = Issue3057Mapper.INSTANCE.map( sourceOuter );
 
         assertThat( targetOuter.getValue() ).isEqualTo( "constantValue" );
         assertThat( targetOuter.getSelf().getValue() ).isEqualTo( "constantValue" );

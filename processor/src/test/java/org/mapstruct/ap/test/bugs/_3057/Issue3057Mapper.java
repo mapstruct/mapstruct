@@ -13,7 +13,9 @@ import org.mapstruct.factory.Mappers;
  * @author Ben Zegveld
  */
 @Mapper
-public interface SelfMapper {
+public interface Issue3057Mapper {
+
+    Issue3057Mapper INSTANCE = Mappers.getMapper( Issue3057Mapper.class );
 
     class Source {
         private Source self;
@@ -50,6 +52,4 @@ public interface SelfMapper {
 
     @Mapping( target = "value", constant = "constantValue" )
     Target map(Source source);
-
-    SelfMapper INSTANCE = Mappers.getMapper( SelfMapper.class );
 }
