@@ -17,20 +17,22 @@ import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 /**
  * @author orange add
  */
-@WithClasses( {Issue3015Mapper.class, CustomMethodOnlyAnnotation.class } )
-public class Issue3015Test {
+@WithClasses({
+    Issue3015Mapper.class,
+    CustomMethodOnlyAnnotation.class
+})
+class Issue3015Test {
 
     @ProcessorTest
-    public void noNeedPassAnnotationToForgeMethod() {
+    void noNeedPassAnnotationToForgeMethod() {
         Issue3015Mapper mapper = Mappers.getMapper( Issue3015Mapper.class );
         Method[] declaredMethods = mapper.getClass().getDeclaredMethods();
         List<Method> annotationMethods = Arrays.stream( declaredMethods )
             .filter( method -> method.getAnnotation( CustomMethodOnlyAnnotation.class ) != null )
             .collect( Collectors.toList() );
-        assertThat( annotationMethods.size() ).isEqualTo( 1 );
+        assertThat( annotationMethods ).hasSize( 1 );
     }
 }
