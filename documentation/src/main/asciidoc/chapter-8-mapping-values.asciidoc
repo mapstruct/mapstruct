@@ -267,11 +267,14 @@ MapStruct provides the following out of the box enum name transformation strateg
 It is also possible to register custom strategies.
 For more information on how to do that have a look at <<custom-enum-transformation-strategy>>
 
+[[value-mapping-composition]]
 === ValueMapping Composition
 
-The `@ValueMapping` annotation supports now @Target with `ElementType#ANNOTATION_TYPE` in addition to `ElementType#METHOD`. This allows `@ValueMapping` to be used on other (user defined) annotations for re-use purposes. For example:
+The `@ValueMapping` annotation supports now `@Target` with `ElementType#ANNOTATION_TYPE` in addition to `ElementType#METHOD`.
+This allows `@ValueMapping` to be used on other (user defined) annotations for re-use purposes.
+For example:
 
-.Custom enumeration mapping annotations
+.Custom value mapping annotations
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -283,7 +286,7 @@ public @interface CustomValueAnnotation {
 }
 ----
 ====
-It can be used to describe some common enumeration mapping relationships to avoid duplicate declarations, as in the following example:
+It can be used to describe some common value mapping relationships to avoid duplicate declarations, as in the following example:
 
 .Using custom combination annotations
 ====
