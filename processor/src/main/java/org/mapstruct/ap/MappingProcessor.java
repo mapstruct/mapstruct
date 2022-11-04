@@ -107,6 +107,8 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
 
+    public static final String SPI_OPTIONS_NAMESPACE = "mapstruct.ap.spi.";
+
     private Options options;
 
     private AnnotationProcessorContext annotationProcessorContext;
@@ -132,7 +134,8 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getTypeUtils(),
             processingEnv.getMessager(),
             options.isDisableBuilders(),
-            options.isVerbose()
+            options.isVerbose(),
+            filterSpiOptions( processingEnv.getOptions() )
         );
     }
 
@@ -410,5 +413,17 @@ public class MappingProcessor extends AbstractProcessor {
             this.deferredMapperElement = deferredMapperElement;
             this.erroneousElement = erroneousElement;
         }
+    }
+
+    /**
+     * Filters only options under the namespace {@link #SPI_OPTIONS_NAMESPACE}.
+     *
+     * @param options all processor environment options
+     * @return filtered options
+     */
+    private Map<String, String> filterSpiOptions(Map<String, String> options) {
+        return options.entrySet().stream()
+            .filter( entry -> entry.getKey().startsWith( SPI_OPTIONS_NAMESPACE ) )
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
     }
 }
