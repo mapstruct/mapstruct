@@ -196,7 +196,6 @@ public class MappingResolverImpl implements MappingResolver {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
-            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
@@ -207,18 +206,23 @@ public class MappingResolverImpl implements MappingResolver {
             this.builtIns = builtIns;
             this.messager = messager;
             this.reportingLimitAmbiguous = verboseLogging ? Integer.MAX_VALUE : LIMIT_REPORTING_AMBIGUOUS;
+            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
         }
         // CHECKSTYLE:ON
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) && !candidate.equals( mappingMethod )) {
+                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate )) {
                     result.add( candidate );
                 }
             }
 
             return result;
+        }
+
+        private <T extends Method> boolean isNotSelfOrSelfAllowed(T mappingMethod, T candidate) {
+            return selectionCriteria == null || selectionCriteria.isSelfAllowed() || !candidate.equals( mappingMethod );
         }
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
