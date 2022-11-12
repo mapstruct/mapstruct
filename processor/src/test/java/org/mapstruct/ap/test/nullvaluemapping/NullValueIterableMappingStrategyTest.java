@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.nullvaluemapping;
 
 import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     CarDto.class,
     Car.class
 })
+@IssueKey("2953")
 public class NullValueIterableMappingStrategyTest {
 
     @ProcessorTest
