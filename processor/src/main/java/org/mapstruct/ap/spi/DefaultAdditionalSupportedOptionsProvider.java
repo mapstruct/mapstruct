@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * Default impl of {@link AdditionalSupportedOptionsProvider} that returns an empty set
- * for custom supported options.
+ * for the additional supported options.
  */
 public class DefaultAdditionalSupportedOptionsProvider implements AdditionalSupportedOptionsProvider {
 

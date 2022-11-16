@@ -16,7 +16,7 @@ public interface AdditionalSupportedOptionsProvider {
     /**
      * Returns the supported options required for custom SPI implementations.
      *
-     * @return the custom supported options.
+     * @return the additional supported options.
      */
     Set<String> getAdditionalSupportedOptions();
 

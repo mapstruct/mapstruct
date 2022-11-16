@@ -412,9 +412,9 @@ public class MappingProcessor extends AbstractProcessor {
      * @return the additional supported options
      */
     private static Set<String> getAdditionalSupportedOptions() {
-        final AdditionalSupportedOptionsProvider additionalSupportedOptionsProvider =
+        AdditionalSupportedOptionsProvider additionalSupportedOptionsProvider =
             Services.get( AdditionalSupportedOptionsProvider.class, new DefaultAdditionalSupportedOptionsProvider() );
-        final Set<String> additionalSupportedOptions = additionalSupportedOptionsProvider.getAdditionalSupportedOptions();
+        Set<String> additionalSupportedOptions = additionalSupportedOptionsProvider.getAdditionalSupportedOptions();
 
         // Ensure additional options are not in the mapstruct namespace
         additionalSupportedOptions.forEach( option -> {
