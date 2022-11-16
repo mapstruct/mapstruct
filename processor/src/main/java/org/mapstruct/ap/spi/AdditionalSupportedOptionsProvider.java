@@ -8,16 +8,16 @@ package org.mapstruct.ap.spi;
 import java.util.Set;
 
 /**
- * Provider for any supported options required for custom SPI implementations.
- * The resolved values are retrieved from {@link MapStructProcessingEnvironment#getCustomOptions()}.
+ * Provider for any additional supported options required for custom SPI implementations.
+ * The resolved values are retrieved from {@link MapStructProcessingEnvironment#getOptions()}.
  */
-public interface CustomSupportedOptionsProvider {
+public interface AdditionalSupportedOptionsProvider {
 
     /**
      * Returns the supported options required for custom SPI implementations.
      *
      * @return the custom supported options.
      */
-    Set<String> getCustomSupportedOptions();
+    Set<String> getAdditionalSupportedOptions();
 
 }

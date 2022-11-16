@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Default impl of {@link CustomSupportedOptionsProvider} that returns an empty set
+ * Default impl of {@link AdditionalSupportedOptionsProvider} that returns an empty set
  * for custom supported options.
  */
-public class DefaultCustomSupportedOptionsProvider implements CustomSupportedOptionsProvider {
+public class DefaultAdditionalSupportedOptionsProvider implements AdditionalSupportedOptionsProvider {
 
     /**
      * Returns an empty set.
@@ -20,7 +20,7 @@ public class DefaultCustomSupportedOptionsProvider implements CustomSupportedOpt
      * @return an empty set
      */
     @Override
-    public Set<String> getCustomSupportedOptions() {
+    public Set<String> getAdditionalSupportedOptions() {
         return Collections.emptySet();
     }
 

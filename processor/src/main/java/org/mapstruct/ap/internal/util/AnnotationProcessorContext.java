@@ -274,7 +274,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         return enumTransformationStrategies;
     }
 
-    public Map<String, String> getCustomOptions() {
+    public Map<String, String> getOptions() {
         return this.customOptions;
     }
 }

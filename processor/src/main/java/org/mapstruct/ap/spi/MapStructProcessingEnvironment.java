@@ -39,10 +39,10 @@ public interface MapStructProcessingEnvironment {
 
     /**
      * Returns the resolved options specified by the impl of
-     * {@link CustomSupportedOptionsProvider}.
+     * {@link AdditionalSupportedOptionsProvider}.
      *
-     * @return resolved custom options
+     * @return resolved options
      */
-    Map<String, String> getCustomOptions();
+    Map<String, String> getOptions();
 
 }

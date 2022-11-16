@@ -44,8 +44,8 @@ import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Services;
-import org.mapstruct.ap.spi.CustomSupportedOptionsProvider;
-import org.mapstruct.ap.spi.DefaultCustomSupportedOptionsProvider;
+import org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider;
+import org.mapstruct.ap.spi.DefaultAdditionalSupportedOptionsProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.element.ElementKind.CLASS;
@@ -111,7 +111,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
 
-    private final Set<String> customSupportedOptions = getCustomSupportedOptions();
+    private final Set<String> additionalSupportedOptions = getAdditionalSupportedOptions();
 
     private Options options;
 
@@ -139,7 +139,7 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getMessager(),
             options.isDisableBuilders(),
             options.isVerbose(),
-            resolveCustomOptions( processingEnv.getOptions() )
+            resolveAdditionalOptions( processingEnv.getOptions() )
         );
     }
 
@@ -220,7 +220,7 @@ public class MappingProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return Stream.concat( super.getSupportedOptions().stream(), customSupportedOptions.stream() )
+        return Stream.concat( super.getSupportedOptions().stream(), additionalSupportedOptions.stream() )
             .collect( Collectors.toSet() );
     }
 
@@ -407,23 +407,23 @@ public class MappingProcessor extends AbstractProcessor {
     }
 
     /**
-     * Fetch the custom supported options provided by the SPI {@link CustomSupportedOptionsProvider}.
+     * Fetch the additional supported options provided by the SPI {@link AdditionalSupportedOptionsProvider}.
      *
-     * @return the custom supported options
+     * @return the additional supported options
      */
-    private static Set<String> getCustomSupportedOptions() {
-        final CustomSupportedOptionsProvider customSupportedOptionsProvider =
-            Services.get( CustomSupportedOptionsProvider.class, new DefaultCustomSupportedOptionsProvider() );
-        final Set<String> customSupportedOptions = customSupportedOptionsProvider.getCustomSupportedOptions();
+    private static Set<String> getAdditionalSupportedOptions() {
+        final AdditionalSupportedOptionsProvider additionalSupportedOptionsProvider =
+            Services.get( AdditionalSupportedOptionsProvider.class, new DefaultAdditionalSupportedOptionsProvider() );
+        final Set<String> additionalSupportedOptions = additionalSupportedOptionsProvider.getAdditionalSupportedOptions();
 
-        // Ensure custom options are not in the mapstruct namespace
-        customSupportedOptions.forEach( option -> {
+        // Ensure additional options are not in the mapstruct namespace
+        additionalSupportedOptions.forEach( option -> {
             if (option.startsWith( "mapstruct" )) {
-                throw new IllegalStateException("Custom SPI options cannot start with \"mapstruct\"");
+                throw new IllegalStateException("Additional SPI options cannot start with \"mapstruct\"");
             }
         } );
 
-        return customSupportedOptions;
+        return additionalSupportedOptions;
     }
 
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
@@ -446,14 +446,14 @@ public class MappingProcessor extends AbstractProcessor {
     }
 
     /**
-     *
+     * Filters only the options belonging to the declared additional supported options.
      *
      * @param options all processor environment options
      * @return filtered options
      */
-    private Map<String, String> resolveCustomOptions(Map<String, String> options) {
+    private Map<String, String> resolveAdditionalOptions(Map<String, String> options) {
         return options.entrySet().stream()
-            .filter( entry -> customSupportedOptions.contains( entry.getKey() ) )
+            .filter( entry -> additionalSupportedOptions.contains( entry.getKey() ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
     }
 }
