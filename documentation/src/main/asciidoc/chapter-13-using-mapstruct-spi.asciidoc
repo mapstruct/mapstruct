@@ -375,7 +375,7 @@ include::{processor-ap-test}/value/nametransformation/CustomEnumTransformationSt
 [[additional-supported-options-provider]]
 === Additional Supported Options Provider
 
-SPI name: 'org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider'
+SPI name: `org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider`
 
 MapStruct offers the ability to pass through declared compiler args (or "options") provided to the MappingProcessor
 to the individual SPIs, by implementing `AdditionalSupportedOptionsProvider` via the Service Provider Interface (SPI).
