@@ -55,10 +55,10 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private boolean disableBuilder;
     private boolean verbose;
 
-    private Map<String, String> options;
+    private Map<String, String> customOptions;
 
     public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean disableBuilder,
-                                      boolean verbose, Map<String, String> options) {
+                                      boolean verbose, Map<String, String> customOptions) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
             findAstModifyingAnnotationProcessors( messager ) );
         this.elementUtils = elementUtils;
@@ -66,7 +66,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         this.messager = messager;
         this.disableBuilder = disableBuilder;
         this.verbose = verbose;
-        this.options = java.util.Collections.unmodifiableMap( options );
+        this.customOptions = java.util.Collections.unmodifiableMap( customOptions );
     }
 
     /**
@@ -274,7 +274,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
         return enumTransformationStrategies;
     }
 
-    public Map<String, String> getOptions() {
-        return this.options;
+    public Map<String, String> getCustomOptions() {
+        return this.customOptions;
     }
 }

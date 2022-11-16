@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -42,6 +43,9 @@ import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContex
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.Services;
+import org.mapstruct.ap.spi.CustomSupportedOptionsProvider;
+import org.mapstruct.ap.spi.DefaultCustomSupportedOptionsProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.element.ElementKind.CLASS;
@@ -107,7 +111,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
 
-    public static final String SPI_OPTIONS_NAMESPACE = "mapstruct.ap.spi.";
+    private final Set<String> customSupportedOptions = getCustomSupportedOptions();
 
     private Options options;
 
@@ -135,7 +139,7 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getMessager(),
             options.isDisableBuilders(),
             options.isVerbose(),
-            filterSpiOptions( processingEnv.getOptions() )
+            resolveCustomOptions( processingEnv.getOptions() )
         );
     }
 
@@ -212,6 +216,12 @@ public class MappingProcessor extends AbstractProcessor {
         }
 
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
+    }
+
+    @Override
+    public Set<String> getSupportedOptions() {
+        return Stream.concat( super.getSupportedOptions().stream(), customSupportedOptions.stream() )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -396,6 +406,26 @@ public class MappingProcessor extends AbstractProcessor {
         );
     }
 
+    /**
+     * Fetch the custom supported options provided by the SPI {@link CustomSupportedOptionsProvider}.
+     *
+     * @return the custom supported options
+     */
+    private static Set<String> getCustomSupportedOptions() {
+        final CustomSupportedOptionsProvider customSupportedOptionsProvider =
+            Services.get( CustomSupportedOptionsProvider.class, new DefaultCustomSupportedOptionsProvider() );
+        final Set<String> customSupportedOptions = customSupportedOptionsProvider.getCustomSupportedOptions();
+
+        // Ensure custom options are not in the mapstruct namespace
+        customSupportedOptions.forEach( option -> {
+            if (option.startsWith( "mapstruct" )) {
+                throw new IllegalStateException("Custom SPI options cannot start with \"mapstruct\"");
+            }
+        } );
+
+        return customSupportedOptions;
+    }
+
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
 
         @Override
@@ -416,14 +446,14 @@ public class MappingProcessor extends AbstractProcessor {
     }
 
     /**
-     * Filters only options under the namespace {@link #SPI_OPTIONS_NAMESPACE}.
+     *
      *
      * @param options all processor environment options
      * @return filtered options
      */
-    private Map<String, String> filterSpiOptions(Map<String, String> options) {
+    private Map<String, String> resolveCustomOptions(Map<String, String> options) {
         return options.entrySet().stream()
-            .filter( entry -> entry.getKey().startsWith( SPI_OPTIONS_NAMESPACE ) )
+            .filter( entry -> customSupportedOptions.contains( entry.getKey() ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
     }
 }

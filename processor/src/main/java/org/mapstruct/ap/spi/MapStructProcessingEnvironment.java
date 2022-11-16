@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.spi;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.Map;
@@ -39,13 +38,11 @@ public interface MapStructProcessingEnvironment {
     Types getTypeUtils();
 
     /**
-     * Returns the processor-specific options passed to the tool
-     * under the namespace of {@link org.mapstruct.ap.MappingProcessor#SPI_OPTIONS_NAMESPACE}.
+     * Returns the resolved options specified by the impl of
+     * {@link CustomSupportedOptionsProvider}.
      *
-     * @return the processor-specific options under the namespace
-     * {@link org.mapstruct.ap.MappingProcessor#SPI_OPTIONS_NAMESPACE}
-     * @see ProcessingEnvironment#getOptions().
+     * @return resolved custom options
      */
-    Map<String, String> getOptions();
+    Map<String, String> getCustomOptions();
 
 }
