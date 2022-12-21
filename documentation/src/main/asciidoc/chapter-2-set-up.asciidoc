@@ -266,6 +266,30 @@ If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappe
 disableBuilders`
 |If set to `true`, then MapStruct will not use builder patterns when doing the mapping. This is equivalent to doing `@Mapper( builder = @Builder( disableBuilder = true ) )` for all of your mappers.
 |`false`
+
+|`mapstruct.nullValueIterableMappingStrategy`
+|The strategy to be applied when `null` is passed as a source value to an iterable mapping.
+
+Supported values are:
+
+* `RETURN_NULL`: if `null` is passed as a source value, then `null` will be returned
+* `RETURN_DEFAULT`: if `null` is passed then a default value (empty collection) will be returned
+
+If a strategy is given for a specific mapper via `@Mapper#nullValueIterableMappingStrategy()`, the value from the annotation takes precedence.
+If a strategy is given for a specific iterable mapping via `@IterableMapping#nullValueMappingStrategy()`, it takes precedence over both `@Mapper#nullValueIterableMappingStrategy()` and the option.
+|`RETURN_NULL`
+
+|`mapstruct.nullValueMapMappingStrategy`
+|The strategy to be applied when `null` is passed as a source value to a map mapping.
+
+Supported values are:
+
+* `RETURN_NULL`: if `null` is passed as a source value, then `null` will be returned
+* `RETURN_DEFAULT`: if `null` is passed then a default value (empty map) will be returned
+
+If a strategy is given for a specific mapper via `@Mapper#nullValueMapMappingStrategy()`, the value from the annotation takes precedence.
+If a strategy is given for a specific map mapping via `@MapMapping#nullValueMappingStrategy()`, it takes precedence over both `@Mapper#nullValueMapMappingStrategy()` and the option.
+|`RETURN_NULL`
 |===
 
 === Using MapStruct with the Java Module System
