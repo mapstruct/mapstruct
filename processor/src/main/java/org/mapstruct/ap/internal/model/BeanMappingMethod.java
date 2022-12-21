@@ -441,29 +441,42 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private boolean isCorrectlySealed() {
             try {
-                if ( method.getMappingSourceType().isSealed() ) {
-                    List<? extends TypeMirror> unusedPermittedSubclasses =
-                        new ArrayList<>( method.getMappingSourceType().getPermittedSubclasses() );
-                    method.getOptions().getSubclassMappings().forEach( subClassOption -> {
-                        unusedPermittedSubclasses
-                                                 .stream()
-                                                 .filter(
-                                                     permitted -> ctx
-                                                                     .getTypeUtils()
-                                                                     .isSameType(
-                                                                         permitted,
-                                                                         subClassOption.getSource() ) )
-                                                 .findFirst()
-                                                 .ifPresent( unusedPermittedSubclasses::remove );
-                    } );
-                    return unusedPermittedSubclasses.isEmpty();
-                }
-                return false;
+                Type mappingSourceType = method.getMappingSourceType();
+                return isCorrectlySealed( mappingSourceType );
             }
             catch ( Exception e ) {
                 // SEALED not supported.
                 return false;
             }
+        }
+
+        private boolean isCorrectlySealed(Type mappingSourceType) {
+            if ( mappingSourceType.isSealed() ) {
+                List<? extends TypeMirror> unusedPermittedSubclasses =
+                    new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
+                method.getOptions().getSubclassMappings().forEach( subClassOption -> {
+                    unusedPermittedSubclasses
+                                             .stream()
+                                             .filter(
+                                                 permitted -> ctx
+                                                                 .getTypeUtils()
+                                                                 .isSameType(
+                                                                     permitted,
+                                                                     subClassOption.getSource() ) )
+                                             .findFirst()
+                                             .ifPresent( unusedPermittedSubclasses::remove );
+                } );
+                for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                                iterator.hasNext(); ) {
+                    TypeMirror typeMirror = iterator.next();
+                    Type type = ctx.getTypeFactory().getType( typeMirror );
+                    if ( type.isAbstract() && isCorrectlySealed( type ) ) {
+                        iterator.remove();
+                    }
+                }
+                return unusedPermittedSubclasses.isEmpty();
+            }
+            return false;
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {

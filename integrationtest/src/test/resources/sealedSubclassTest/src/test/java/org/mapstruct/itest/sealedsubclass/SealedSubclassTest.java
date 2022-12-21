@@ -16,13 +16,15 @@ public class SealedSubclassTest {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
+        vehicles.getVehicles().add( new Harley() );
+        vehicles.getVehicles().add( new Davidson() );
 
         VehicleCollectionDto result = SealedSubclassMapper.INSTANCE.map( vehicles );
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
             .extracting( vehicle -> (Class) vehicle.getClass() )
-            .containsExactly( CarDto.class, BikeDto.class );
+            .containsExactly( CarDto.class, BikeDto.class, HarleyDto.class, DavidsonDto.class );
     }
 
     @Test
@@ -30,13 +32,15 @@ public class SealedSubclassTest {
         VehicleCollectionDto vehicles = new VehicleCollectionDto();
         vehicles.getVehicles().add( new CarDto() );
         vehicles.getVehicles().add( new BikeDto() );
+        vehicles.getVehicles().add( new HarleyDto() );
+        vehicles.getVehicles().add( new DavidsonDto() );
 
         VehicleCollection result = SealedSubclassMapper.INSTANCE.mapInverse( vehicles );
 
         assertThat( result.getVehicles() ).doesNotContainNull();
         assertThat( result.getVehicles() ) // remove generic so that test works.
             .extracting( vehicle -> (Class) vehicle.getClass() )
-            .containsExactly( Car.class, Bike.class );
+            .containsExactly( Car.class, Bike.class, Harley.class, Davidson.class );
     }
 
     @Test

@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.sealedsubclass;
 
-public abstract sealed class VehicleDto permits CarDto, BikeDto {
+public abstract sealed class VehicleDto permits CarDto, BikeDto, MotorDto {
     private String name;
     private String maker;
 

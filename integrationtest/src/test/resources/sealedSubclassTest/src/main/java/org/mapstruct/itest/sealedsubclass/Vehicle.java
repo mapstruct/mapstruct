@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.sealedsubclass;
 
-public abstract sealed class Vehicle permits Bike, Car {
+public abstract sealed class Vehicle permits Bike, Car, Motor {
     private String name;
     private String vehicleManufacturingCompany;
 

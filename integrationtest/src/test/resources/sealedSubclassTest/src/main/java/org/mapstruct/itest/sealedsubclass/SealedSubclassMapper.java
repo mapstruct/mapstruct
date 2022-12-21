@@ -19,6 +19,8 @@ public interface SealedSubclassMapper {
 
     @SubclassMapping( source = Car.class, target = CarDto.class )
     @SubclassMapping( source = Bike.class, target = BikeDto.class )
+    @SubclassMapping( source = Harley.class, target = HarleyDto.class )
+    @SubclassMapping( source = Davidson.class, target = DavidsonDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker")
     VehicleDto map(Vehicle vehicle);
 
