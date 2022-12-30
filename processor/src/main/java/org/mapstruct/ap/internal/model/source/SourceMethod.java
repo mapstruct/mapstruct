@@ -211,6 +211,7 @@ public class SourceMethod implements Method {
             }
 
             MappingMethodOptions mappingMethodOptions = new MappingMethodOptions(
+                typeUtils,
                 mapper,
                 mappings,
                 iterableMapping,

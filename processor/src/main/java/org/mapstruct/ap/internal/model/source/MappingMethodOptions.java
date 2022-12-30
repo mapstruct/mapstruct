@@ -5,12 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -18,9 +21,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-
-import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
 
 /**
  * Encapsulates all options specifiable on a mapping method
@@ -29,6 +31,7 @@ import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTa
  */
 public class MappingMethodOptions {
     private static final MappingMethodOptions EMPTY = new MappingMethodOptions(
+        null,
         null,
         Collections.emptySet(),
         null,
@@ -52,12 +55,15 @@ public class MappingMethodOptions {
 
     private SubclassValidator subclassValidator;
 
-    public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
+    private TypeUtils typeUtils;
+
+    public MappingMethodOptions(TypeUtils typeUtils, MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
                                 Set<SubclassMappingOptions> subclassMappings, SubclassValidator subclassValidator) {
+        this.typeUtils = typeUtils;
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -205,8 +211,15 @@ public class MappingMethodOptions {
             }
 
             if ( isInverse ) {
-                // normal inheritence of subclass mappings will result runtime in infinite loops.
                 List<SubclassMappingOptions> inheritedMappings = SubclassMappingOptions.copyForInverseInheritance(
+                                              templateOptions.getSubclassMappings(),
+                                              getBeanMapping() );
+                addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
+            }
+            else if ( methodsHaveIdenticalSignature( templateMethod, sourceMethod ) ) {
+                List<SubclassMappingOptions> inheritedMappings =
+                    SubclassMappingOptions
+                                          .copyForInheritance(
                                               templateOptions.getSubclassMappings(),
                                               getBeanMapping() );
                 addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
@@ -230,6 +243,29 @@ public class MappingMethodOptions {
             // filter new mappings
             filterNestedTargetIgnores( mappings );
         }
+    }
+
+    private boolean methodsHaveIdenticalSignature(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return parametersAreOfIdenticalTypeAndOrder( templateMethod, sourceMethod )
+            && resultTypeIsTheSame( templateMethod, sourceMethod );
+    }
+
+    private boolean parametersAreOfIdenticalTypeAndOrder(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        if (templateMethod.getParameters().size() != sourceMethod.getParameters().size()) {
+            return false;
+        }
+        for ( int i = 0; i < templateMethod.getParameters().size(); i++ ) {
+            if (!typeUtils.isSameType( templateMethod.getParameters().get( i ).getType().getTypeMirror(),
+                                       sourceMethod.getParameters().get( i ).getType().getTypeMirror() ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean resultTypeIsTheSame(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return typeUtils.isSameType( templateMethod.getResultType().getTypeMirror(),
+                                     sourceMethod.getResultType().getTypeMirror() );
     }
 
     private void addAllNonRedefined(SourceMethod sourceMethod, AnnotationMirror annotationMirror,
@@ -361,6 +397,7 @@ public class MappingMethodOptions {
      */
     public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
         return new MappingMethodOptions(
+            options.typeUtils,
             options.mapper,
             options.mappings,
             options.iterableMapping,

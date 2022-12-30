@@ -179,6 +179,21 @@ public class SubclassMappingOptions extends DelegatingOptions {
         return mappings;
     }
 
+    public static List<SubclassMappingOptions> copyForInheritance(Set<SubclassMappingOptions> subclassMappings,
+                                                                  BeanMappingOptions beanMappingOptions) {
+         // we are not interested in keeping it unique at this point.
+         List<SubclassMappingOptions> mappings = new ArrayList<>();
+         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
+             mappings.add(
+                         new SubclassMappingOptions(
+                                    subclassMapping.source,
+                                    subclassMapping.target,
+                                    subclassMapping.typeUtils,
+                                    beanMappingOptions ) );
+         }
+         return mappings;
+     }
+
     @Override
     public boolean equals(Object obj) {
         if ( obj == null || !( obj instanceof SubclassMappingOptions ) ) {
