@@ -51,68 +51,68 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
         }
     }
 
-    protected SubTarget subSourceToSubTarget(SubSource subSource) {
-        if ( subSource == null ) {
+    protected SubTarget subSourceToSubTarget(SubSource item) {
+        if ( item == null ) {
             return null;
         }
 
         SubTarget subTarget = new SubTarget();
 
-        subTarget.setValue( subSource.getValue() );
+        subTarget.setValue( item.getValue() );
 
         return subTarget;
     }
 
-    protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther subSourceOther) {
-        if ( subSourceOther == null ) {
+    protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther item) {
+        if ( item == null ) {
             return null;
         }
 
         String finalValue = null;
 
-        finalValue = subSourceOther.getFinalValue();
+        finalValue = item.getFinalValue();
 
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
 
         return subTargetOther;
     }
 
-    protected SubSourceSeparate subTargetSeparateToSubSourceSeparate(SubTargetSeparate subTargetSeparate) {
-        if ( subTargetSeparate == null ) {
+    protected SubSourceSeparate subTargetSeparateToSubSourceSeparate(SubTargetSeparate item) {
+        if ( item == null ) {
             return null;
         }
 
         String separateValue = null;
 
-        separateValue = subTargetSeparate.getSeparateValue();
+        separateValue = item.getSeparateValue();
 
         SubSourceSeparate subSourceSeparate = new SubSourceSeparate( separateValue );
 
         return subSourceSeparate;
     }
 
-    protected SubSourceOverride subTargetOtherToSubSourceOverride(SubTargetOther subTargetOther) {
-        if ( subTargetOther == null ) {
+    protected SubSourceOverride subTargetOtherToSubSourceOverride(SubTargetOther item) {
+        if ( item == null ) {
             return null;
         }
 
         String finalValue = null;
 
-        finalValue = subTargetOther.getFinalValue();
+        finalValue = item.getFinalValue();
 
         SubSourceOverride subSourceOverride = new SubSourceOverride( finalValue );
 
         return subSourceOverride;
     }
 
-    protected SubSource subTargetToSubSource(SubTarget subTarget) {
-        if ( subTarget == null ) {
+    protected SubSource subTargetToSubSource(SubTarget item) {
+        if ( item == null ) {
             return null;
         }
 
         SubSource subSource = new SubSource();
 
-        subSource.setValue( subTarget.getValue() );
+        subSource.setValue( item.getValue() );
 
         return subSource;
     }

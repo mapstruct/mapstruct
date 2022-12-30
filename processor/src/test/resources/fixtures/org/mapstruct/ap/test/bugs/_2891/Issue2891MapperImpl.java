@@ -31,28 +31,28 @@ public class Issue2891MapperImpl implements Issue2891Mapper {
         }
     }
 
-    protected Target1 source1ToTarget1(Source1 source1) {
-        if ( source1 == null ) {
+    protected Target1 source1ToTarget1(Source1 source) {
+        if ( source == null ) {
             return null;
         }
 
         String name = null;
 
-        name = source1.getName();
+        name = source.getName();
 
         Target1 target1 = new Target1( name );
 
         return target1;
     }
 
-    protected Target2 source2ToTarget2(Source2 source2) {
-        if ( source2 == null ) {
+    protected Target2 source2ToTarget2(Source2 source) {
+        if ( source == null ) {
             return null;
         }
 
         String name = null;
 
-        name = source2.getName();
+        name = source.getName();
 
         Target2 target2 = new Target2( name );
 

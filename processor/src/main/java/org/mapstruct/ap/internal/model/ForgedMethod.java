@@ -141,6 +141,7 @@ public class ForgedMethod implements Method {
         return new ForgedMethod(
             name,
             sourceType,
+            new Parameter(basedOn.getSourceParameters().get( 0 ).getName(), sourceType),
             returnType,
             basedOn.getContextParameters(),
             basedOn,
@@ -153,7 +154,12 @@ public class ForgedMethod implements Method {
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
                          Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
+        this( name, sourceType, determineSourceParameterName( sourceType, additionalParameters ), returnType,
+            additionalParameters, basedOn, history, mappingReferences, forgedNameBased );
 
+    }
+
+    private static Parameter determineSourceParameterName(Type sourceType, List<Parameter> additionalParameters) {
         // establish name
         String sourceParamSafeName;
         if ( additionalParameters.isEmpty() ) {
@@ -165,10 +171,15 @@ public class ForgedMethod implements Method {
                 additionalParameters.stream().map( Parameter::getName ).collect( Collectors.toList() )
             );
         }
+        return new Parameter( sourceParamSafeName, sourceType );
+    }
+
+    private ForgedMethod(String name, Type sourceType, Parameter sourceParameter, Type returnType,
+                         List<Parameter> additionalParameters, Method basedOn, ForgedMethodHistory history,
+                         MappingReferences mappingReferences, boolean forgedNameBased) {
 
         // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
-        Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
         this.parameters.add( sourceParameter );
         this.parameters.addAll( additionalParameters );
         this.sourceParameters = Parameter.getSourceParameters( parameters );

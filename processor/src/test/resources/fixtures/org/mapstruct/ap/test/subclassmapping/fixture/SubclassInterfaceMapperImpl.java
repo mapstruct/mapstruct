@@ -31,26 +31,26 @@ public class SubclassInterfaceMapperImpl implements SubclassInterfaceMapper {
         }
     }
 
-    protected SubTarget subSourceToSubTarget(SubSource subSource) {
-        if ( subSource == null ) {
+    protected SubTarget subSourceToSubTarget(SubSource item) {
+        if ( item == null ) {
             return null;
         }
 
         SubTarget subTarget = new SubTarget();
 
-        subTarget.setValue( subSource.getValue() );
+        subTarget.setValue( item.getValue() );
 
         return subTarget;
     }
 
-    protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther subSourceOther) {
-        if ( subSourceOther == null ) {
+    protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther item) {
+        if ( item == null ) {
             return null;
         }
 
         String finalValue = null;
 
-        finalValue = subSourceOther.getFinalValue();
+        finalValue = item.getFinalValue();
 
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
 
