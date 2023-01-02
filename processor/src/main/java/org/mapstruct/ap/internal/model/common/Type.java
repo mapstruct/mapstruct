@@ -898,7 +898,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         List<Accessor> candidates;
 
-        if ( collectionProperty.isCollectionType() ) {
+        if ( collectionProperty.isIterableType() ) {
             candidates = getAccessorCandidates( collectionProperty, Iterable.class );
         }
         else if ( collectionProperty.isStreamType() ) {
