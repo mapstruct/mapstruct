@@ -14,8 +14,9 @@ import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.gem.ContextGem;
 import org.mapstruct.ap.internal.gem.MappingTargetGem;
-import org.mapstruct.ap.internal.gem.TargetTypeGem;
+import org.mapstruct.ap.internal.gem.SourceAnnotationGem;
 import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
+import org.mapstruct.ap.internal.gem.TargetTypeGem;
 import org.mapstruct.ap.internal.util.Collections;
 
 /**
@@ -33,6 +34,7 @@ public class Parameter extends ModelElement {
     private final boolean targetType;
     private final boolean mappingContext;
     private final boolean targetPropertyName;
+    private final boolean sourceAnnotation;
 
     private final boolean varArgs;
 
@@ -45,11 +47,12 @@ public class Parameter extends ModelElement {
         this.targetType = TargetTypeGem.instanceOn( element ) != null;
         this.mappingContext = ContextGem.instanceOn( element ) != null;
         this.targetPropertyName = TargetPropertyNameGem.instanceOn( element ) != null;
+        this.sourceAnnotation = SourceAnnotationGem.instanceOn( element ) != null;
         this.varArgs = varArgs;
     }
 
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
-                      boolean targetPropertyName,
+                      boolean targetPropertyName, boolean sourceAnnotation,
                       boolean varArgs) {
         this.element = null;
         this.name = name;
@@ -59,11 +62,12 @@ public class Parameter extends ModelElement {
         this.targetType = targetType;
         this.mappingContext = mappingContext;
         this.targetPropertyName = targetPropertyName;
+        this.sourceAnnotation = sourceAnnotation;
         this.varArgs = varArgs;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false, false, false );
+        this( name, type, false, false, false, false, false, false );
     }
 
     public Element getElement() {
@@ -100,7 +104,8 @@ public class Parameter extends ModelElement {
             + ( targetType ? "@TargetType " : "" )
             + ( mappingContext ? "@Context " : "" )
             + ( targetPropertyName ? "@TargetPropertyName " : "" )
-            +  "%s " + name;
+            + ( sourceAnnotation ? "@SourceAnnotation " : "" )
+            + "%s " + name;
     }
 
     @Override
@@ -118,6 +123,10 @@ public class Parameter extends ModelElement {
 
     public boolean isTargetPropertyName() {
         return targetPropertyName;
+    }
+
+    public boolean isSourceAnnotation() {
+        return sourceAnnotation;
     }
 
     public boolean isVarArgs() {
@@ -165,6 +174,7 @@ public class Parameter extends ModelElement {
             false,
             false,
             false,
+            false,
             false
         );
     }
@@ -207,14 +217,19 @@ public class Parameter extends ModelElement {
     }
 
     public static Parameter getTargetPropertyNameParameter(List<Parameter> parameters) {
-      return parameters.stream().filter( Parameter::isTargetPropertyName ).findAny().orElse( null );
+        return parameters.stream().filter( Parameter::isTargetPropertyName ).findAny().orElse( null );
     }
 
-    private static boolean isSourceParameter( Parameter parameter ) {
+    public static List<Parameter> getSourceAnnotationParameters(List<Parameter> parameters) {
+        return parameters.stream().filter( Parameter::isSourceAnnotation ).collect( Collectors.toList() );
+    }
+
+    private static boolean isSourceParameter(Parameter parameter) {
         return !parameter.isMappingTarget() &&
-               !parameter.isTargetType() &&
-               !parameter.isMappingContext() &&
-               !parameter.isTargetPropertyName();
+            !parameter.isTargetType() &&
+            !parameter.isMappingContext() &&
+            !parameter.isTargetPropertyName() &&
+            !parameter.isSourceAnnotation();
     }
 
 }
