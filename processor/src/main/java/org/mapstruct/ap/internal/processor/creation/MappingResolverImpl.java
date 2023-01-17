@@ -5,11 +5,6 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static java.util.Collections.singletonList;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.firstKey;
-import static org.mapstruct.ap.internal.util.Collections.firstValue;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,7 +16,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -42,6 +36,7 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
+import org.mapstruct.ap.internal.model.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.model.SupportingField;
 import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -49,6 +44,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -66,6 +62,11 @@ import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+
+import static java.util.Collections.singletonList;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.firstKey;
+import static org.mapstruct.ap.internal.util.Collections.firstValue;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -103,6 +104,12 @@ public class MappingResolverImpl implements MappingResolver {
      * Private fields which are added to map certain property types.
      */
     private final Set<Field> usedSupportedFields = new HashSet<>();
+
+    /**
+     * Private fields which are added for {@code SourceAnnotation} types that are used in method
+     * parameters.
+     */
+    private final Set<PropertyAnnotationReflectionField> usedAnnotationFields = new HashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -153,6 +160,11 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Set<Field> getUsedSupportedFields() {
         return usedSupportedFields;
+    }
+
+    @Override
+    public Set<PropertyAnnotationReflectionField> getUsedAnnotationFields() {
+        return usedAnnotationFields;
     }
 
     private MapperReference findMapperReference(Method method) {
@@ -234,8 +246,9 @@ public class MappingResolverImpl implements MappingResolver {
                 List<SelectedMethod<Method>> matches = getBestMatch( methods, sourceType, targetType );
                 reportErrorWhenAmbiguous( matches, targetType );
                 if ( !matches.isEmpty() ) {
-                    assignment = toMethodRef( first( matches ) );
-                    assignment.setAssignment( sourceRHS );
+                    MethodReference methodReference = toMethodRef( first( matches ) );
+                    methodReference.setAssignment( sourceRHS );
+                    assignment = methodReference;
                     return assignment;
                 }
             }
@@ -536,17 +549,30 @@ public class MappingResolverImpl implements MappingResolver {
             }
         }
 
-        private Assignment toMethodRef(SelectedMethod<Method> selectedMethod) {
+        private MethodReference toMethodRef(SelectedMethod<Method> selectedMethod) {
             MapperReference mapperReference = findMapperReference( selectedMethod.getMethod() );
 
-            return MethodReference.forMapperReference(
+            MethodReference methodReference = MethodReference.forMapperReference(
                 selectedMethod.getMethod(),
                 mapperReference,
                 selectedMethod.getParameterBindings()
             );
+
+            for ( ParameterBinding binding : methodReference.getParameterBindings() ) {
+                if ( binding.isSourceAnnotation() ) {
+                    PropertyAnnotationReflectionField annotationField = PropertyAnnotationReflectionField.getSafeField(
+                        binding.getType(),
+                        sourceRHS.getPropertyAnnotationReflection(),
+                        usedAnnotationFields
+                    );
+                    usedAnnotationFields.add( annotationField );
+                    binding.setSourceAnnotationFieldName( annotationField.getVariableName() );
+                }
+            }
+            return methodReference;
         }
 
-        private Assignment toBuildInRef(SelectedMethod<BuiltInMethod> selectedMethod) {
+        private MethodReference toBuildInRef(SelectedMethod<BuiltInMethod> selectedMethod) {
             BuiltInMethod method = selectedMethod.getMethod();
             Set<Field> allUsedFields = new HashSet<>( mapperReferences );
             SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
@@ -559,7 +585,7 @@ public class MappingResolverImpl implements MappingResolver {
                 method.getResultType(),
                 formattingParameters
             );
-            Assignment methodReference = MethodReference.forBuiltInMethod( method, ctx );
+            MethodReference methodReference = MethodReference.forBuiltInMethod( method, ctx );
             methodReference.setAssignment( sourceRHS );
             return methodReference;
         }

@@ -23,8 +23,9 @@ public class ParameterBinding {
     private final boolean mappingTarget;
     private final boolean mappingContext;
     private final boolean targetPropertyName;
-    private final boolean sourceAnnotation;
     private final SourceRHS sourceRHS;
+    private final boolean sourceAnnotation;
+    private String sourceAnnotationFieldName;
 
     private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType,
                              boolean mappingContext, boolean targetPropertyName, boolean sourceAnnotation,
@@ -79,6 +80,14 @@ public class ParameterBinding {
      */
     public boolean isSourceAnnotation() {
         return sourceAnnotation;
+    }
+
+    public String getSourceAnnotationFieldName() {
+        return sourceAnnotationFieldName;
+    }
+
+    public void setSourceAnnotationFieldName(String sourceAnnotationFieldName) {
+        this.sourceAnnotationFieldName = sourceAnnotationFieldName;
     }
 
     /**

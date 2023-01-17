@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 
@@ -103,6 +102,8 @@ public class MappingBuilderContext {
         Set<SupportingMappingMethod> getUsedSupportedMappings();
 
         Set<Field> getUsedSupportedFields();
+
+        Set<PropertyAnnotationReflectionField> getUsedAnnotationFields();
     }
 
     private final TypeFactory typeFactory;
@@ -247,10 +248,13 @@ public class MappingBuilderContext {
         return mappingResolver.getUsedSupportedFields();
     }
 
+    public Set<PropertyAnnotationReflectionField> getUsedAnnotationFields() {
+        return mappingResolver.getUsedAnnotationFields();
+    }
+
     /**
      * @param sourceType from which an automatic sub-mapping needs to be generated
      * @param targetType to which an automatic sub-mapping needs to be generated
-     *
      * @return {@code true} if MapStruct is allowed to try and generate an automatic sub-mapping between the
      * source and target {@link Type}
      */

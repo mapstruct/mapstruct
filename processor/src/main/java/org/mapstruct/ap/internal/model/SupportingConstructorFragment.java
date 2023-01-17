@@ -23,11 +23,13 @@ public class SupportingConstructorFragment extends ModelElement {
     private final String variableName;
     private final String templateName;
     private final SupportingMappingMethod definingMethod;
+    private final ConstructorFragment fragment;
 
     public SupportingConstructorFragment(SupportingMappingMethod definingMethod,
-                                         ConstructorFragment constructorFragment, String variableName) {
-        this.templateName = getTemplateNameForClass( constructorFragment.getClass() );
+                                         ConstructorFragment fragment, String variableName) {
+        this.templateName = getTemplateNameForClass( fragment.getClass() );
         this.definingMethod = definingMethod;
+        this.fragment = fragment;
         this.variableName = variableName;
     }
 
@@ -43,6 +45,10 @@ public class SupportingConstructorFragment extends ModelElement {
 
     public SupportingMappingMethod getDefiningMethod() {
         return definingMethod;
+    }
+
+    public ConstructorFragment getFragment() {
+        return fragment;
     }
 
     public String getVariableName() {

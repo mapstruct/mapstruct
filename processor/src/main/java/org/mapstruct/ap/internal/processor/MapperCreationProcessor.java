@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.processor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,10 @@ import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
 import org.mapstruct.ap.internal.model.Field;
+import org.mapstruct.ap.internal.model.GetAnnotationConstructorFragment;
+import org.mapstruct.ap.internal.model.GetFieldAnnotation;
+import org.mapstruct.ap.internal.model.GetMethodAnnotation;
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
 import org.mapstruct.ap.internal.model.Javadoc;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
@@ -47,8 +52,10 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
+import org.mapstruct.ap.internal.model.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
+import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -191,7 +198,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // handle fields
         List<Field> fields = new ArrayList<>( mappingContext.getMapperReferences() );
-        Set<Field> supportingFieldSet = new LinkedHashSet<>(mappingContext.getUsedSupportedFields());
+        Set<Field> supportingFieldSet = new LinkedHashSet<>( mappingContext.getUsedSupportedFields() );
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 
@@ -199,11 +206,44 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
+        // handle source annotation reflections
+        GetMethodAnnotation getMethodAnnotationMethod =
+            new GetMethodAnnotation( mappingContext.getTypeFactory() );
+        GetFieldAnnotation getFieldAnnotationMethod =
+            new GetFieldAnnotation( mappingContext.getTypeFactory() );
+
+        mappingContext.getUsedAnnotationFields().stream()
+            .sorted( Comparator.comparing( PropertyAnnotationReflectionField::getVariableName ) )
+            .map( field -> {
+                fields.add( field );
+                HelperMethod method;
+                if ( field.getReflectionInfo().isMethod() ) {
+                    method = getMethodAnnotationMethod;
+                }
+                else {
+                    method = getFieldAnnotationMethod;
+                }
+                String reflectionMethodName = method.getName();
+                constructorFragments.add( new SupportingConstructorFragment(
+                    null,
+                    new GetAnnotationConstructorFragment(
+                        field.getReflectionInfo().getContainingType(),
+                        field.getReflectionInfo().getAccessorSimpleName(),
+                        field.getType(),
+                        reflectionMethodName
+                    ),
+                    field.getVariableName()
+                ) );
+                return method;
+            } )
+            .distinct()
+            .forEach( method -> mappingMethods.add( new SupportingMappingMethod( method ) ) );
+
         Mapper mapper = new Mapper.Builder()
             .element( element )
             .methods( mappingMethods )
             .fields( fields )
-            .constructorFragments(  constructorFragments )
+            .constructorFragments( constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
             .decorator( getDecorator( element, methods, mapperOptions ) )
