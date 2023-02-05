@@ -11,7 +11,9 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-@WithClasses(Issue3110Mapper.class)
+@WithClasses({
+    Issue3110Mapper.class
+})
 @IssueKey("3110")
 class Issue3110MapperTest {
     @RegisterExtension
