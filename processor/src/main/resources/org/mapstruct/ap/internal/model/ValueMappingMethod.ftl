@@ -7,7 +7,7 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.ValueMappingMethod" -->
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
         <#if !callback_has_next>
@@ -64,5 +64,13 @@
         <#else>
             null
         </#if>
+    </@compress>
+</#macro>
+<#macro throws>
+    <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
+        <#list thrownTypes as exceptionType>
+            <@includeModel object=exceptionType/>
+            <#if exceptionType_has_next>, </#if><#t>
+        </#list>
     </@compress>
 </#macro>
