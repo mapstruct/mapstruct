@@ -149,6 +149,9 @@ public class SourceRHS extends ModelElement implements Assignment {
             else if ( sourceType.isStreamType() ) {
                 return first( sourceType.determineTypeArguments( Stream.class ) );
             }
+            else if ( sourceType.isArrayType() ) {
+                return sourceType.getComponentType();
+            }
         }
         return sourceType;
     }
