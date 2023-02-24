@@ -128,6 +128,9 @@ public interface CarMapper {
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
 
+* Between `java.util.Locale` and `String`.
+** When converting from a `Locale`, the resulting `String` will be a well-formed IETF BCP 47 language tag representing the locale. When converting from a `String`, the locale that best represents the language tag will be returned. See https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[Locale.forLanguageTag()] and https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#toLanguageTag--[Locale.toLanguageTag()] for more information.
+
 [[mapping-object-references]]
 === Mapping object references
 
