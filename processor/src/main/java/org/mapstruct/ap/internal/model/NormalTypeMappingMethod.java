@@ -61,6 +61,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
         return this.factoryMethod;
     }
 
+    public InitDefaultValue getInitDefaultValueForResultType() {
+        return new InitDefaultValue( this.getResultType(), this.getFactoryMethod() );
+    }
+
     public List<Annotation> getAnnotations() {
         return annotations;
     }
