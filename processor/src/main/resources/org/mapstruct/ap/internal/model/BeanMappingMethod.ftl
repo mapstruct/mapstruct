@@ -116,11 +116,12 @@
             </#if>
         </#list>
     <#elseif !propertyMappingsByParameter(sourceParameters[0]).empty>
-        <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
+        <#assign propertyMappings = propertyMappingsByParameter(sourceParameters[0])/>
+        <#if mapNullToDefault && (propertyMappings?size > 0)>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>
-        <#if mapNullToDefault>}</#if>
+        <#if mapNullToDefault && (propertyMappings?size > 0)>}</#if>
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>

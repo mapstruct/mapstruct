@@ -28,6 +28,7 @@ public enum NullValueMappingStrategy {
      * case.</li>
      * <li>For iterable mapping methods an empty collection will be returned.</li>
      * <li>For map mapping methods an empty map will be returned.</li>
+     * <li>For optional mapping methods an empty optional will be returned.</li>
      * </ul>
      */
     RETURN_DEFAULT;

@@ -64,6 +64,7 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
+import org.mapstruct.ap.internal.util.accessor.OptionalValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
@@ -159,6 +160,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private Boolean hasAccessibleDefaultConstructor;
     private KotlinMetadata kotlinMetadata;
     private boolean kotlinMetadataInitialized;
 
@@ -397,7 +399,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         return type.getName().equals( getFullyQualifiedName() );
     }
 
-    private boolean isOptionalType() {
+    public boolean isOptionalType() {
         return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
             isType( OptionalLong.class );
     }
@@ -714,6 +716,15 @@ public class Type extends ModelElement implements Comparable<Type> {
                 .findAny()
                 .orElse( null );
             return new MapValueAccessor( getMethod, typeParameters.get( 1 ).getTypeMirror(), propertyName );
+        }
+        else if ( propertyName.equals( "?" ) && isOptionalType() ) {
+            ExecutableElement getMethod = getAllMethods()
+                .stream()
+                .filter( m -> m.getSimpleName().contentEquals( "orElse" ) )
+                .filter( m -> m.getParameters().size() == 1 )
+                .findAny()
+                .orElse( null );
+            return new OptionalValueAccessor( getMethod, typeParameters.get( 0 ).getTypeMirror(), propertyName );
         }
 
         Map<String, ReadAccessor> readAccessors = getPropertyReadAccessors();
@@ -1247,6 +1258,9 @@ public class Type extends ModelElement implements Comparable<Type> {
         else if ( "String".equals( getName() ) ) {
             return "\"\"";
         }
+        else if ( isOptionalType() ) {
+            return "Optional.empty()";
+        }
         else {
             if ( isNative() ) {
                 // must be boxed, since primitive is already checked
@@ -1390,6 +1404,20 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
         }
         return hasAccessibleConstructor;
+    }
+
+    public boolean hasAccessibleDefaultConstructor() {
+        if ( hasAccessibleDefaultConstructor == null ) {
+            hasAccessibleDefaultConstructor = false;
+            List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+            for ( ExecutableElement constructor : constructors ) {
+                if ( constructor.isDefault() && !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                    hasAccessibleDefaultConstructor = true;
+                    break;
+                }
+            }
+        }
+        return hasAccessibleDefaultConstructor;
     }
 
     public KotlinMetadata getKotlinMetadata() {
