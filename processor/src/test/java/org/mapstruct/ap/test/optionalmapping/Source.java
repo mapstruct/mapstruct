@@ -67,7 +67,7 @@ public class Source {
     }
 
     public static class SubType {
-        
+
         private final int value;
         private final String a;
 
@@ -100,7 +100,7 @@ public class Source {
         public int hashCode() {
             return Objects.hash( value, a );
         }
-        
+
     }
-    
+
 }

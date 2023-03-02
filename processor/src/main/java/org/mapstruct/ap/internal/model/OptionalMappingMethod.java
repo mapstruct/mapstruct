@@ -33,7 +33,7 @@ public class OptionalMappingMethod extends ContainerMappingMethod {
         @Override
         protected Type getElementType(Type parameterType) {
             if ( parameterType.isOptionalType() ) {
-                return parameterType.getTypeParameters().get(0);
+                return parameterType.getTypeParameters().get( 0 );
             }
             else {
                 return parameterType;
@@ -46,15 +46,10 @@ public class OptionalMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected OptionalMappingMethod instantiateMappingMethod(Method method,
-                                                                 Collection<String> existingVariables,
-                                                                 Assignment assignment,
-                                                                 MethodReference factoryMethod,
-                                                                 boolean mapNullToDefault,
-                                                                 String loopVariableName,
-                                                                 List<LifecycleCallbackMethodReference> beforeMappingMethods,
-                                                                 List<LifecycleCallbackMethodReference> afterMappingMethods,
-                                                                 SelectionParameters selectionParameters) {
+        protected OptionalMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
+            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            List<LifecycleCallbackMethodReference> beforeMappingMethods,
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new OptionalMappingMethod(
                     method,
                     getMethodAnnotations(),

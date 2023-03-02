@@ -100,12 +100,12 @@ public class OptionalMappingTest {
         Source source = OptionalTestMapper.INSTANCE.map( target );
         assertThat( source.getNonOptionalToOptional() ).isNull();
     }
-    
+
     @ProcessorTest
     public void testMappingSimpleOptionalToOptional() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.of( "some value" ) );
-        
+
         Target target = OptionalTestMapper.INSTANCE.map( source );
         assertThat( target.getOptionalToOptional() ).contains( "some value" );
     }
@@ -136,7 +136,7 @@ public class OptionalMappingTest {
         Source source = OptionalTestMapper.INSTANCE.map( target );
         assertThat( source.getOptionalToOptional() ).isEmpty();
     }
-    
+
     @ProcessorTest
     public void testMappingSubTypeOptionalToNonOptional() {
         Source source = new Source();
