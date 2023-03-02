@@ -1209,6 +1209,9 @@ public class Type extends ModelElement implements Comparable<Type> {
         else if ( "String".equals( getName() ) ) {
             return "\"\"";
         }
+        else if ( isOptionalType() ) {
+            return "Optional.empty()";
+        }
         else {
             if ( isNative() ) {
                 // must be boxed, since primitive is already checked

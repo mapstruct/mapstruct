@@ -10,6 +10,14 @@ import java.util.Optional;
 
 public class Source {
 
+    private final Optional<String> constructorOptionalToNonOptional;
+    private final String constructorNonOptionalToOptional;
+    private final Optional<String> constructorOptionalToOptional;
+
+    private final Optional<SubType> constructorOptionalSubTypeToNonOptional;
+    private final SubType constructorNonOptionalSubTypeToOptional;
+    private final Optional<SubType> constructorOptionalSubTypeToOptional;
+
     private Optional<String> optionalToNonOptional;
     private String nonOptionalToOptional;
     private Optional<String> optionalToOptional;
@@ -17,6 +25,44 @@ public class Source {
     private Optional<SubType> optionalSubTypeToNonOptional;
     private SubType nonOptionalSubTypeToOptional;
     private Optional<SubType> optionalSubTypeToOptional;
+
+    public Source(Optional<String> constructorOptionalToNonOptional,
+                  String constructorNonOptionalToOptional,
+                  Optional<String> constructorOptionalToOptional,
+                  Optional<SubType> constructorOptionalSubTypeToNonOptional,
+                  SubType constructorNonOptionalSubTypeToOptional,
+                  Optional<SubType> constructorOptionalSubTypeToOptional) {
+        this.constructorOptionalToNonOptional = constructorOptionalToNonOptional;
+        this.constructorNonOptionalToOptional = constructorNonOptionalToOptional;
+        this.constructorOptionalToOptional = constructorOptionalToOptional;
+        this.constructorOptionalSubTypeToNonOptional = constructorOptionalSubTypeToNonOptional;
+        this.constructorNonOptionalSubTypeToOptional = constructorNonOptionalSubTypeToOptional;
+        this.constructorOptionalSubTypeToOptional = constructorOptionalSubTypeToOptional;
+    }
+
+    public Optional<String> getConstructorOptionalToNonOptional() {
+        return constructorOptionalToNonOptional;
+    }
+
+    public String getConstructorNonOptionalToOptional() {
+        return constructorNonOptionalToOptional;
+    }
+
+    public Optional<String> getConstructorOptionalToOptional() {
+        return constructorOptionalToOptional;
+    }
+
+    public Optional<SubType> getConstructorOptionalSubTypeToNonOptional() {
+        return constructorOptionalSubTypeToNonOptional;
+    }
+
+    public SubType getConstructorNonOptionalSubTypeToOptional() {
+        return constructorNonOptionalSubTypeToOptional;
+    }
+
+    public Optional<SubType> getConstructorOptionalSubTypeToOptional() {
+        return constructorOptionalSubTypeToOptional;
+    }
 
     public Optional<String> getOptionalToNonOptional() {
         return optionalToNonOptional;
@@ -69,19 +115,13 @@ public class Source {
     public static class SubType {
 
         private final int value;
-        private final String a;
 
-        public SubType(int value, String a) {
+        public SubType(int value) {
             this.value = value;
-            this.a = a;
         }
 
         public int getValue() {
             return value;
-        }
-
-        public String getA() {
-            return a;
         }
 
         @Override
@@ -93,12 +133,12 @@ public class Source {
                 return false;
             }
             SubType subType = (SubType) o;
-            return value == subType.value && Objects.equals( a, subType.a );
+            return value == subType.value;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash( value, a );
+            return Objects.hash( value );
         }
 
     }
