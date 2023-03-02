@@ -5,22 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
@@ -92,6 +77,7 @@ public class TypeFactory {
     private final TypeMirror collectionType;
     private final TypeMirror mapType;
     private final TypeMirror streamType;
+    private final TypeMirror optionalType;
 
     private final Map<String, ImplementationType> implementationTypes = new HashMap<>();
     private final Map<String, String> toBeImportedTypes = new HashMap<>();
@@ -113,6 +99,7 @@ public class TypeFactory {
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
+        optionalType = typeUtils.erasure( elementUtils.getTypeElement( Optional.class.getCanonicalName() ).asType() );
 
         implementationTypes.put( Iterable.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
         implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
@@ -221,6 +208,7 @@ public class TypeFactory {
         boolean isCollectionType = typeUtils.isSubtypeErased( mirror, collectionType );
         boolean isMapType = typeUtils.isSubtypeErased( mirror, mapType );
         boolean isStreamType = streamType != null && typeUtils.isSubtypeErased( mirror, streamType );
+        boolean isOptionalType = typeUtils.isSubtypeErased( mirror, optionalType );
 
         boolean isEnumType;
         boolean isInterface;
@@ -330,6 +318,7 @@ public class TypeFactory {
             isCollectionType,
             isMapType,
             isStreamType,
+            isOptionalType,
             toBeImportedTypes,
             notToBeImportedTypes,
             toBeImported,
@@ -556,6 +545,7 @@ public class TypeFactory {
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
+                implementationType.isOptionalType(),
                 toBeImportedTypes,
                 notToBeImportedTypes,
                 null,

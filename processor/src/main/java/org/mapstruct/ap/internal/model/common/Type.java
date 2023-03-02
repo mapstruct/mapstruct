@@ -108,6 +108,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isMapType;
     private final boolean isVoid;
     private final boolean isStream;
+
+    private final boolean isOptional;
     private final boolean isLiteral;
 
     private final boolean loggingVerbose;
@@ -146,7 +148,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType,
-                Map<String, String> toBeImportedTypes,
+                boolean isOptionalType, Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
                 boolean isLiteral, boolean loggingVerbose) {
@@ -172,6 +174,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
         this.isStream = isStreamType;
+        this.isOptional = isOptionalType;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
         this.isLiteral = isLiteral;
 
@@ -392,6 +395,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isStream;
     }
 
+    public boolean isOptionalType() {
+        return isOptional;
+    }
+
     /**
      * A wild card type can have two types of bounds (mutual exclusive): extends and super.
      *
@@ -554,6 +561,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isCollectionType,
             isMapType,
             isStream,
+            isOptional,
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,
@@ -597,6 +605,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isCollectionType,
             isMapType,
             isStream,
+            isOptional,
             toBeImportedTypes,
             notToBeImportedTypes,
             isToBeImported,

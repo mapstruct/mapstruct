@@ -33,7 +33,7 @@ public class JavaFileAssert extends FileAssert {
 
     private static final String FIRST_LINE_LICENSE_REGEX = ".*Copyright MapStruct Authors.*";
     private static final String GENERATED_DATE_REGEX = "\\s+date = " +
-        "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}\",";
+        "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{4}\",";
     private static final String GENERATED_COMMENTS_REGEX = "\\s+comments = \"version: , compiler: .*, environment: " +
         ".*\"";
     private static final String IMPORT_GENERATED_ANNOTATION_REGEX = "import javax\\.annotation\\.(processing\\.)?" +

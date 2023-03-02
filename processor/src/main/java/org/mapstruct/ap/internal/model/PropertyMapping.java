@@ -316,6 +316,9 @@ public class PropertyMapping extends ModelElement {
                         || ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
                 assignment = forgeStreamMapping( sourceType, targetType, rightHandSide );
             }
+            else if ( sourceType.isOptionalType() || targetType.isOptionalType() ) {
+                assignment = forgeOptionalMapping( sourceType, targetType, rightHandSide );
+            }
             else {
                 assignment = forgeMapping( rightHandSide );
             }
@@ -753,6 +756,24 @@ public class PropertyMapping extends ModelElement {
                 .build();
 
             return createForgedAssignment( source, methodRef, iterableMappingMethod );
+        }
+
+        private Assignment forgeOptionalMapping(Type sourceType, Type targetType, SourceRHS source) {
+
+            targetType = targetType.withoutBounds();
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "?" );
+
+            OptionalMappingMethod.Builder builder = new OptionalMappingMethod.Builder();
+
+            ContainerMappingMethod optionalMappingMethod = builder
+                    .mappingContext( ctx )
+                    .method( methodRef )
+                    .selectionParameters( selectionParameters )
+                    .callingContextTargetPropertyName( targetPropertyName )
+                    .positionHint( positionHint )
+                    .build();
+
+            return createForgedAssignment( source, methodRef, optionalMappingMethod );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
