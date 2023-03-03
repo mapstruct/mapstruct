@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.optionalmapping;
 
 import java.util.Optional;
@@ -8,17 +13,17 @@ import org.mapstruct.factory.Mappers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseOptionalMappingTest {
-    
+
     private final Class<? extends BaseOptionalTestMapper> mapperClass;
     private BaseOptionalTestMapper mapper;
 
     protected BaseOptionalMappingTest(Class<? extends BaseOptionalTestMapper> mapperClass) {
         this.mapperClass = mapperClass;
     }
-    
-    private BaseOptionalTestMapper getMapper() {
+
+    protected BaseOptionalTestMapper getMapper() {
         if (this.mapper == null) {
-            this.mapper = Mappers.getMapper(mapperClass);
+            this.mapper = Mappers.getMapper( mapperClass );
         }
         return this.mapper;
     }
@@ -238,7 +243,7 @@ public abstract class BaseOptionalMappingTest {
         Source source = getMapper().fromTarget( target );
         assertThat( source.getOptionalSubTypeToOptional() ).isEmpty();
     }
-    
+
     @ProcessorTest
     public void testConstructorMappingSimpleOptionalToNonOptional() {
         Source source = new Source( Optional.of( "some value" ), null, null, null, null, null );
@@ -430,5 +435,5 @@ public abstract class BaseOptionalMappingTest {
         Source source = getMapper().fromTarget( target );
         assertThat( source.getConstructorOptionalSubTypeToOptional() ).isEmpty();
     }
-    
+
 }

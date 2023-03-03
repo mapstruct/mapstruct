@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.optionalmapping;
 
 import java.util.Optional;
@@ -5,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-03-02T03:14:40-0500",
+    date = "2023-03-02T23:19:18-0500",
     comments = "version: , compiler: javac, environment: Java 11.0.18 (Homebrew)"
 )
 public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
@@ -38,6 +43,8 @@ public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
         target.setOptionalSubTypeToNonOptional( subTypeOptionalToSubType( source.getOptionalSubTypeToNonOptional() ) );
         target.setNonOptionalSubTypeToOptional( subTypeToSubTypeOptional( source.getNonOptionalSubTypeToOptional() ) );
         target.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional( source.getOptionalSubTypeToOptional() ) );
+        target.setMonitoredOptionalToString( stringOptionalToString( source.getMonitoredOptionalToString() ) );
+        target.setMonitoredOptionalSubTypeToSubType( subTypeOptionalToSubType( source.getMonitoredOptionalSubTypeToSubType() ) );
 
         return target;
     }
@@ -70,6 +77,8 @@ public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
         source.setOptionalSubTypeToNonOptional( subTypeToSubTypeOptional1( target.getOptionalSubTypeToNonOptional() ) );
         source.setNonOptionalSubTypeToOptional( subTypeOptionalToSubType1( target.getNonOptionalSubTypeToOptional() ) );
         source.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional1( target.getOptionalSubTypeToOptional() ) );
+        source.setMonitoredOptionalToString( stringToStringOptional( target.getMonitoredOptionalToString() ) );
+        source.setMonitoredOptionalSubTypeToSubType( subTypeToSubTypeOptional1( target.getMonitoredOptionalSubTypeToSubType() ) );
 
         return source;
     }

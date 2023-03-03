@@ -26,6 +26,9 @@ public class Source {
     private SubType nonOptionalSubTypeToOptional;
     private Optional<SubType> optionalSubTypeToOptional;
 
+    private Optional<String> monitoredOptionalToString;
+    private Optional<SubType> monitoredOptionalSubTypeToSubType;
+
     public Source(Optional<String> constructorOptionalToNonOptional,
                   String constructorNonOptionalToOptional,
                   Optional<String> constructorOptionalToOptional,
@@ -110,6 +113,23 @@ public class Source {
 
     public void setOptionalSubTypeToOptional(Optional<SubType> optionalSubTypeToOptional) {
         this.optionalSubTypeToOptional = optionalSubTypeToOptional;
+    }
+
+    public Optional<String> getMonitoredOptionalToString() {
+        return monitoredOptionalToString;
+    }
+
+    public void setMonitoredOptionalToString(Optional<String> monitoredOptionalToString) {
+        this.monitoredOptionalToString = monitoredOptionalToString;
+    }
+
+    public Optional<SubType> getMonitoredOptionalSubTypeToSubType() {
+        return monitoredOptionalSubTypeToSubType;
+    }
+
+    public void setMonitoredOptionalSubTypeToSubType(
+        Optional<SubType> monitoredOptionalSubTypeToSubType) {
+        this.monitoredOptionalSubTypeToSubType = monitoredOptionalSubTypeToSubType;
     }
 
     public static class SubType {

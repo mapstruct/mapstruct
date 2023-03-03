@@ -26,6 +26,11 @@ public class Target {
     private Optional<SubType> nonOptionalSubTypeToOptional;
     private Optional<SubType> optionalSubTypeToOptional;
 
+    private String monitoredOptionalToString;
+    private boolean monitoredOptionalToStringWasCalled;
+    private SubType monitoredOptionalSubTypeToSubType;
+    private boolean monitoredOptionalSubTypeToSubTypeWasCalled;
+
     public Target(String constructorOptionalToNonOptional,
                   Optional<String> constructorNonOptionalToOptional,
                   Optional<String> constructorOptionalToOptional,
@@ -110,6 +115,33 @@ public class Target {
 
     public void setOptionalSubTypeToOptional(Optional<SubType> optionalSubTypeToOptional) {
         this.optionalSubTypeToOptional = optionalSubTypeToOptional;
+    }
+
+    public String getMonitoredOptionalToString() {
+        return monitoredOptionalToString;
+    }
+
+    public void setMonitoredOptionalToString(String monitoredOptionalToString) {
+        this.monitoredOptionalToStringWasCalled = true;
+        this.monitoredOptionalToString = monitoredOptionalToString;
+    }
+
+    public SubType getMonitoredOptionalSubTypeToSubType() {
+        return monitoredOptionalSubTypeToSubType;
+    }
+
+    public void setMonitoredOptionalSubTypeToSubType(
+        SubType monitoredOptionalSubTypeToSubType) {
+        this.monitoredOptionalSubTypeToSubTypeWasCalled = true;
+        this.monitoredOptionalSubTypeToSubType = monitoredOptionalSubTypeToSubType;
+    }
+
+    public boolean isMonitoredOptionalToStringWasCalled() {
+        return monitoredOptionalToStringWasCalled;
+    }
+
+    public boolean isMonitoredOptionalSubTypeToSubTypeWasCalled() {
+        return monitoredOptionalSubTypeToSubTypeWasCalled;
     }
 
     public static class SubType {

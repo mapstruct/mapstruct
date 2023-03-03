@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.optionalmapping;
 
 import java.util.Optional;
@@ -5,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-03-02T03:14:36-0500",
+    date = "2023-03-02T23:19:14-0500",
     comments = "version: , compiler: javac, environment: Java 11.0.18 (Homebrew)"
 )
 public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueCheckAlwaysOptionalTestMapper {
@@ -23,7 +28,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         Optional<Target.SubType> constructorNonOptionalSubTypeToOptional = null;
         Optional<Target.SubType> constructorOptionalSubTypeToOptional = null;
 
-        if ( source.getConstructorOptionalToNonOptional() != null ) {
+        if ( source.getConstructorOptionalToNonOptional() != null && source.getConstructorOptionalToNonOptional().isPresent() ) {
             constructorOptionalToNonOptional = stringOptionalToString( source.getConstructorOptionalToNonOptional() );
         }
         if ( source.getConstructorNonOptionalToOptional() != null ) {
@@ -32,13 +37,13 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             constructorNonOptionalToOptional = Optional.empty();
         }
-        if ( source.getConstructorOptionalToOptional() != null ) {
+        if ( source.getConstructorOptionalToOptional() != null && source.getConstructorOptionalToOptional().isPresent() ) {
             constructorOptionalToOptional = source.getConstructorOptionalToOptional();
         }
         else {
             constructorOptionalToOptional = Optional.empty();
         }
-        if ( source.getConstructorOptionalSubTypeToNonOptional() != null ) {
+        if ( source.getConstructorOptionalSubTypeToNonOptional() != null && source.getConstructorOptionalSubTypeToNonOptional().isPresent() ) {
             constructorOptionalSubTypeToNonOptional = subTypeOptionalToSubType( source.getConstructorOptionalSubTypeToNonOptional() );
         }
         if ( source.getConstructorNonOptionalSubTypeToOptional() != null ) {
@@ -47,7 +52,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             constructorNonOptionalSubTypeToOptional = Optional.empty();
         }
-        if ( source.getConstructorOptionalSubTypeToOptional() != null ) {
+        if ( source.getConstructorOptionalSubTypeToOptional() != null && source.getConstructorOptionalSubTypeToOptional().isPresent() ) {
             constructorOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional( source.getConstructorOptionalSubTypeToOptional() );
         }
         else {
@@ -56,7 +61,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
 
         Target target = new Target( constructorOptionalToNonOptional, constructorNonOptionalToOptional, constructorOptionalToOptional, constructorOptionalSubTypeToNonOptional, constructorNonOptionalSubTypeToOptional, constructorOptionalSubTypeToOptional );
 
-        if ( source.getOptionalToNonOptional() != null ) {
+        if ( source.getOptionalToNonOptional() != null && source.getOptionalToNonOptional().isPresent() ) {
             target.setOptionalToNonOptional( stringOptionalToString( source.getOptionalToNonOptional() ) );
         }
         if ( source.getNonOptionalToOptional() != null ) {
@@ -65,13 +70,13 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             target.setNonOptionalToOptional( Optional.empty() );
         }
-        if ( source.getOptionalToOptional() != null ) {
+        if ( source.getOptionalToOptional() != null && source.getOptionalToOptional().isPresent() ) {
             target.setOptionalToOptional( source.getOptionalToOptional() );
         }
         else {
             target.setOptionalToOptional( Optional.empty() );
         }
-        if ( source.getOptionalSubTypeToNonOptional() != null ) {
+        if ( source.getOptionalSubTypeToNonOptional() != null && source.getOptionalSubTypeToNonOptional().isPresent() ) {
             target.setOptionalSubTypeToNonOptional( subTypeOptionalToSubType( source.getOptionalSubTypeToNonOptional() ) );
         }
         if ( source.getNonOptionalSubTypeToOptional() != null ) {
@@ -80,11 +85,17 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             target.setNonOptionalSubTypeToOptional( Optional.empty() );
         }
-        if ( source.getOptionalSubTypeToOptional() != null ) {
+        if ( source.getOptionalSubTypeToOptional() != null && source.getOptionalSubTypeToOptional().isPresent() ) {
             target.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional( source.getOptionalSubTypeToOptional() ) );
         }
         else {
             target.setOptionalSubTypeToOptional( Optional.empty() );
+        }
+        if ( source.getMonitoredOptionalToString() != null && source.getMonitoredOptionalToString().isPresent() ) {
+            target.setMonitoredOptionalToString( stringOptionalToString( source.getMonitoredOptionalToString() ) );
+        }
+        if ( source.getMonitoredOptionalSubTypeToSubType() != null && source.getMonitoredOptionalSubTypeToSubType().isPresent() ) {
+            target.setMonitoredOptionalSubTypeToSubType( subTypeOptionalToSubType( source.getMonitoredOptionalSubTypeToSubType() ) );
         }
 
         return target;
@@ -109,10 +120,10 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             constructorOptionalToNonOptional = Optional.empty();
         }
-        if ( target.getConstructorNonOptionalToOptional() != null ) {
+        if ( target.getConstructorNonOptionalToOptional() != null && target.getConstructorNonOptionalToOptional().isPresent() ) {
             constructorNonOptionalToOptional = stringOptionalToString( target.getConstructorNonOptionalToOptional() );
         }
-        if ( target.getConstructorOptionalToOptional() != null ) {
+        if ( target.getConstructorOptionalToOptional() != null && target.getConstructorOptionalToOptional().isPresent() ) {
             constructorOptionalToOptional = target.getConstructorOptionalToOptional();
         }
         else {
@@ -124,10 +135,10 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             constructorOptionalSubTypeToNonOptional = Optional.empty();
         }
-        if ( target.getConstructorNonOptionalSubTypeToOptional() != null ) {
+        if ( target.getConstructorNonOptionalSubTypeToOptional() != null && target.getConstructorNonOptionalSubTypeToOptional().isPresent() ) {
             constructorNonOptionalSubTypeToOptional = subTypeOptionalToSubType1( target.getConstructorNonOptionalSubTypeToOptional() );
         }
-        if ( target.getConstructorOptionalSubTypeToOptional() != null ) {
+        if ( target.getConstructorOptionalSubTypeToOptional() != null && target.getConstructorOptionalSubTypeToOptional().isPresent() ) {
             constructorOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional1( target.getConstructorOptionalSubTypeToOptional() );
         }
         else {
@@ -142,10 +153,10 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             source.setOptionalToNonOptional( Optional.empty() );
         }
-        if ( target.getNonOptionalToOptional() != null ) {
+        if ( target.getNonOptionalToOptional() != null && target.getNonOptionalToOptional().isPresent() ) {
             source.setNonOptionalToOptional( stringOptionalToString( target.getNonOptionalToOptional() ) );
         }
-        if ( target.getOptionalToOptional() != null ) {
+        if ( target.getOptionalToOptional() != null && target.getOptionalToOptional().isPresent() ) {
             source.setOptionalToOptional( target.getOptionalToOptional() );
         }
         else {
@@ -157,14 +168,26 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         else {
             source.setOptionalSubTypeToNonOptional( Optional.empty() );
         }
-        if ( target.getNonOptionalSubTypeToOptional() != null ) {
+        if ( target.getNonOptionalSubTypeToOptional() != null && target.getNonOptionalSubTypeToOptional().isPresent() ) {
             source.setNonOptionalSubTypeToOptional( subTypeOptionalToSubType1( target.getNonOptionalSubTypeToOptional() ) );
         }
-        if ( target.getOptionalSubTypeToOptional() != null ) {
+        if ( target.getOptionalSubTypeToOptional() != null && target.getOptionalSubTypeToOptional().isPresent() ) {
             source.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional1( target.getOptionalSubTypeToOptional() ) );
         }
         else {
             source.setOptionalSubTypeToOptional( Optional.empty() );
+        }
+        if ( target.getMonitoredOptionalToString() != null ) {
+            source.setMonitoredOptionalToString( stringToStringOptional( target.getMonitoredOptionalToString() ) );
+        }
+        else {
+            source.setMonitoredOptionalToString( Optional.empty() );
+        }
+        if ( target.getMonitoredOptionalSubTypeToSubType() != null ) {
+            source.setMonitoredOptionalSubTypeToSubType( subTypeToSubTypeOptional1( target.getMonitoredOptionalSubTypeToSubType() ) );
+        }
+        else {
+            source.setMonitoredOptionalSubTypeToSubType( Optional.empty() );
         }
 
         return source;
