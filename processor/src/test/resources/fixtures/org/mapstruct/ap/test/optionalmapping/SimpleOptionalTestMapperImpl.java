@@ -10,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-03-02T23:19:18-0500",
+    date = "2023-03-03T00:01:21-0500",
     comments = "version: , compiler: javac, environment: Java 11.0.18 (Homebrew)"
 )
 public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
@@ -45,6 +45,8 @@ public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
         target.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional( source.getOptionalSubTypeToOptional() ) );
         target.setMonitoredOptionalToString( stringOptionalToString( source.getMonitoredOptionalToString() ) );
         target.setMonitoredOptionalSubTypeToSubType( subTypeOptionalToSubType( source.getMonitoredOptionalSubTypeToSubType() ) );
+        target.publicOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional( source.publicOptionalSubTypeToOptional );
+        target.publicOptionalToNonOptionalWithDefault = stringOptionalToString( source.publicOptionalToNonOptionalWithDefault );
 
         return target;
     }
@@ -79,6 +81,8 @@ public class SimpleOptionalTestMapperImpl implements SimpleOptionalTestMapper {
         source.setOptionalSubTypeToOptional( subTypeOptionalToSubTypeOptional1( target.getOptionalSubTypeToOptional() ) );
         source.setMonitoredOptionalToString( stringToStringOptional( target.getMonitoredOptionalToString() ) );
         source.setMonitoredOptionalSubTypeToSubType( subTypeToSubTypeOptional1( target.getMonitoredOptionalSubTypeToSubType() ) );
+        source.publicOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional1( target.publicOptionalSubTypeToOptional );
+        source.publicOptionalToNonOptionalWithDefault = stringToStringOptional( target.publicOptionalToNonOptionalWithDefault );
 
         return source;
     }

@@ -58,6 +58,15 @@ public class OptionalMappingTest {
             assertThat( target.isMonitoredOptionalSubTypeToSubTypeWasCalled() ).isTrue();
         }
 
+        @ProcessorTest
+        public void testMappingEmptyPublicOptionalToNonOptionalWithDefaultSetsToNull() {
+            Source source = new Source( null, null, null, null, null, null );
+            source.publicOptionalToNonOptionalWithDefault = Optional.empty();
+
+            Target target = getMapper().toTarget( source );
+            assertThat( target.publicOptionalToNonOptionalWithDefault ).isEqualTo( null );
+        }
+
     }
 
     @Nested
@@ -94,6 +103,15 @@ public class OptionalMappingTest {
             Target target = getMapper().toTarget( source );
             assertThat( target.getMonitoredOptionalSubTypeToSubType() ).isNull();
             assertThat( target.isMonitoredOptionalSubTypeToSubTypeWasCalled() ).isFalse();
+        }
+
+        @ProcessorTest
+        public void testMappingEmptyPublicOptionalToNonOptionalWithDefaultDoesNotOverwrite() {
+            Source source = new Source( null, null, null, null, null, null );
+            source.publicOptionalToNonOptionalWithDefault = Optional.empty();
+
+            Target target = getMapper().toTarget( source );
+            assertThat( target.publicOptionalToNonOptionalWithDefault ).isEqualTo( "DEFAULT" );
         }
     }
 

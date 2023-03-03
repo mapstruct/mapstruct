@@ -436,4 +436,31 @@ public abstract class BaseOptionalMappingTest {
         assertThat( source.getConstructorOptionalSubTypeToOptional() ).isEmpty();
     }
 
+    @ProcessorTest
+    public void testMappingPublicSubTypeOptionalToOptional() {
+        Source source = new Source( null, null, null, null, null, null );
+        source.publicOptionalSubTypeToOptional = Optional.of( new Source.SubType( 9 ) );
+
+        Target target = getMapper().toTarget( source );
+        assertThat( target.publicOptionalSubTypeToOptional ).contains( new Target.SubType( 9 ) );
+    }
+
+    @ProcessorTest
+    public void testMappingPublicEmptySubTypeOptionalToOptional() {
+        Source source = new Source( null, null, null, null, null, null );
+        source.publicOptionalSubTypeToOptional = Optional.empty();
+
+        Target target = getMapper().toTarget( source );
+        assertThat( target.publicOptionalSubTypeToOptional ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void testMappingPublicOptionalToNonOptionalWithDefaultSetsToNewValue() {
+        Source source = new Source( null, null, null, null, null, null );
+        source.publicOptionalToNonOptionalWithDefault = Optional.of( "new" );
+
+        Target target = getMapper().toTarget( source );
+        assertThat( target.publicOptionalToNonOptionalWithDefault ).isEqualTo( "new" );
+    }
+
 }

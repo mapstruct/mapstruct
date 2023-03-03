@@ -10,7 +10,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-03-02T23:19:14-0500",
+    date = "2023-03-03T00:01:17-0500",
     comments = "version: , compiler: javac, environment: Java 11.0.18 (Homebrew)"
 )
 public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueCheckAlwaysOptionalTestMapper {
@@ -96,6 +96,15 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         }
         if ( source.getMonitoredOptionalSubTypeToSubType() != null && source.getMonitoredOptionalSubTypeToSubType().isPresent() ) {
             target.setMonitoredOptionalSubTypeToSubType( subTypeOptionalToSubType( source.getMonitoredOptionalSubTypeToSubType() ) );
+        }
+        if ( source.publicOptionalSubTypeToOptional != null && source.publicOptionalSubTypeToOptional.isPresent() ) {
+            target.publicOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional( source.publicOptionalSubTypeToOptional );
+        }
+        else {
+            target.publicOptionalSubTypeToOptional = Optional.empty();
+        }
+        if ( source.publicOptionalToNonOptionalWithDefault != null && source.publicOptionalToNonOptionalWithDefault.isPresent() ) {
+            target.publicOptionalToNonOptionalWithDefault = stringOptionalToString( source.publicOptionalToNonOptionalWithDefault );
         }
 
         return target;
@@ -188,6 +197,18 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         }
         else {
             source.setMonitoredOptionalSubTypeToSubType( Optional.empty() );
+        }
+        if ( target.publicOptionalSubTypeToOptional != null && target.publicOptionalSubTypeToOptional.isPresent() ) {
+            source.publicOptionalSubTypeToOptional = subTypeOptionalToSubTypeOptional1( target.publicOptionalSubTypeToOptional );
+        }
+        else {
+            source.publicOptionalSubTypeToOptional = Optional.empty();
+        }
+        if ( target.publicOptionalToNonOptionalWithDefault != null ) {
+            source.publicOptionalToNonOptionalWithDefault = stringToStringOptional( target.publicOptionalToNonOptionalWithDefault );
+        }
+        else {
+            source.publicOptionalToNonOptionalWithDefault = Optional.empty();
         }
 
         return source;
