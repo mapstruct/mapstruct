@@ -54,6 +54,17 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
+    public static BeanMappingOptions forForgedMethods(BeanMappingOptions beanMapping) {
+        BeanMappingOptions options = new BeanMappingOptions(
+            beanMapping.selectionParameters != null ?
+                SelectionParameters.withoutResultType( beanMapping.selectionParameters ) : null,
+            Collections.emptyList(),
+            beanMapping.beanMapping,
+            beanMapping
+        );
+        return options;
+    }
+
     public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {
         return new BeanMappingOptions( null, Collections.emptyList(), null, delegatingOptions );
     }

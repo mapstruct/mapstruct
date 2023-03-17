@@ -69,6 +69,21 @@ public class MappingControlTest {
         assertThat( out.getShelve().getCoolBeer().getBeerCount() ).isEqualTo( "5" );
     }
 
+    @ProcessorTest
+    @IssueKey("3135")
+    @WithClasses(CloningBeanMappingMapper.class)
+    public void testDeepCloningViaBeanMapping() {
+
+        FridgeDTO in = createFridgeDTO();
+        FridgeDTO out = CloningBeanMappingMapper.INSTANCE.clone( in );
+
+        assertThat( out ).isNotNull();
+        assertThat( out.getShelve() ).isNotNull();
+        assertThat( out.getShelve() ).isNotSameAs( in.getShelve() );
+        assertThat( out.getShelve().getCoolBeer() ).isNotSameAs( in.getShelve().getCoolBeer() );
+        assertThat( out.getShelve().getCoolBeer().getBeerCount() ).isEqualTo( "5" );
+    }
+
     /**
      * Test the deep cloning annotation with lists
      */
