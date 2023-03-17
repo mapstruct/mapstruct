@@ -33,12 +33,15 @@ public class SubclassMappingOptions extends DelegatingOptions {
     private final TypeMirror source;
     private final TypeMirror target;
     private final TypeUtils typeUtils;
+    private final SelectionParameters selectionParameters;
 
-    public SubclassMappingOptions(TypeMirror source, TypeMirror target, TypeUtils typeUtils, DelegatingOptions next) {
+    public SubclassMappingOptions(TypeMirror source, TypeMirror target, TypeUtils typeUtils, DelegatingOptions next,
+                                  SelectionParameters selectionParameters) {
         super( next );
         this.source = source;
         this.target = target;
         this.typeUtils = typeUtils;
+        this.selectionParameters = selectionParameters;
     }
 
     @Override
@@ -117,6 +120,10 @@ public class SubclassMappingOptions extends DelegatingOptions {
         return target;
     }
 
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
+    }
+
     public static void addInstances(SubclassMappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                     TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
@@ -154,6 +161,12 @@ public class SubclassMappingOptions extends DelegatingOptions {
 
         TypeMirror sourceSubclass = subclassMapping.source().getValue();
         TypeMirror targetSubclass = subclassMapping.target().getValue();
+        SelectionParameters selectionParameters = new SelectionParameters(
+            subclassMapping.qualifiedBy().get(),
+            subclassMapping.qualifiedByName().get(),
+            targetSubclass,
+            typeUtils
+        );
 
         mappings
                 .add(
@@ -161,20 +174,24 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         sourceSubclass,
                         targetSubclass,
                         typeUtils,
-                        beanMappingOptions ) );
+                        beanMappingOptions,
+                        selectionParameters
+                    ) );
     }
 
     public static List<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
-                                                                        BeanMappingOptions beanMappingOptions) {
+                                                                         BeanMappingOptions beanMappingOptions) {
         // we are not interested in keeping it unique at this point.
         List<SubclassMappingOptions> mappings = new ArrayList<>();
         for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
             mappings.add(
-                        new SubclassMappingOptions(
-                                   subclassMapping.target,
-                                   subclassMapping.source,
-                                   subclassMapping.typeUtils,
-                                   beanMappingOptions ) );
+                new SubclassMappingOptions(
+                    subclassMapping.target,
+                    subclassMapping.source,
+                    subclassMapping.typeUtils,
+                    beanMappingOptions,
+                    subclassMapping.selectionParameters
+                ) );
         }
         return mappings;
     }
