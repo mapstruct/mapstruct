@@ -7,7 +7,10 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -34,14 +37,16 @@ public class SubclassMappingOptions extends DelegatingOptions {
     private final TypeMirror target;
     private final TypeUtils typeUtils;
     private final SelectionParameters selectionParameters;
+    private final SubclassMappingGem subclassMapping;
 
     public SubclassMappingOptions(TypeMirror source, TypeMirror target, TypeUtils typeUtils, DelegatingOptions next,
-                                  SelectionParameters selectionParameters) {
+                                  SelectionParameters selectionParameters, SubclassMappingGem subclassMapping) {
         super( next );
         this.source = source;
         this.target = target;
         this.typeUtils = typeUtils;
         this.selectionParameters = selectionParameters;
+        this.subclassMapping = subclassMapping;
     }
 
     @Override
@@ -124,14 +129,18 @@ public class SubclassMappingOptions extends DelegatingOptions {
         return selectionParameters;
     }
 
+    public AnnotationMirror getMirror() {
+        return Optional.ofNullable( subclassMapping ).map( SubclassMappingGem::mirror ).orElse( null );
+    }
+
     public static void addInstances(SubclassMappingsGem gem, ExecutableElement method,
                                     BeanMappingOptions beanMappingOptions, FormattingMessager messager,
                                     TypeUtils typeUtils, Set<SubclassMappingOptions> mappings,
                                     List<Parameter> sourceParameters, Type resultType,
                                     SubclassValidator subclassValidator) {
-        for ( SubclassMappingGem subclassMappingGem : gem.value().get() ) {
+        for ( SubclassMappingGem subclassMapping : gem.value().get() ) {
             addInstance(
-                subclassMappingGem,
+                subclassMapping,
                 method,
                 beanMappingOptions,
                 messager,
@@ -175,25 +184,22 @@ public class SubclassMappingOptions extends DelegatingOptions {
                         targetSubclass,
                         typeUtils,
                         beanMappingOptions,
-                        selectionParameters
+                        selectionParameters,
+                        subclassMapping
                     ) );
     }
 
-    public static List<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> subclassMappings,
+    public static List<SubclassMappingOptions> copyForInverseInheritance(Set<SubclassMappingOptions> mappings,
                                                                          BeanMappingOptions beanMappingOptions) {
         // we are not interested in keeping it unique at this point.
-        List<SubclassMappingOptions> mappings = new ArrayList<>();
-        for ( SubclassMappingOptions subclassMapping : subclassMappings ) {
-            mappings.add(
-                new SubclassMappingOptions(
-                    subclassMapping.target,
-                    subclassMapping.source,
-                    subclassMapping.typeUtils,
-                    beanMappingOptions,
-                    subclassMapping.selectionParameters
-                ) );
-        }
-        return mappings;
+        return mappings.stream().map( mapping -> new SubclassMappingOptions(
+            mapping.target,
+            mapping.source,
+            mapping.typeUtils,
+            beanMappingOptions,
+            mapping.selectionParameters,
+            mapping.subclassMapping
+        ) ).collect( Collectors.toCollection( ArrayList::new ) );
     }
 
     @Override

@@ -420,7 +420,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                        FormattingParameters.EMPTY,
                                        criteria,
                                        rightHandSide,
-                                       null,
+                                       subclassMappingOptions.getMirror(),
                                            () -> forgeSubclassMapping(
                                                rightHandSide,
                                                sourceType,
