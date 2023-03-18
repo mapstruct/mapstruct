@@ -11,6 +11,5 @@ import org.mapstruct.SubclassMapping;
 @Mapper(uses = { RossiniMapper.class, VivaldiMapper.class })
 public interface ErroneousSubclassQualifiedByMapper {
     @SubclassMapping(source = Rossini.class, target = RossiniDto.class, qualifiedBy = NonExistent.class)
-    @SubclassMapping(source = Vivaldi.class, target = VivaldiDto.class)
     ComposerDto toDto(Composer composer);
 }

@@ -230,7 +230,7 @@ public class SubclassQualifierMapperTest {
         diagnostics = @Diagnostic(
             type = ErroneousSubclassQualifiedByMapper.class,
             kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 15,
+            line = 13,
             message = "Qualifier error. No method found annotated with: [ @NonExistent ]. " +
                 "See https://mapstruct.org/faq/#qualifier for more info."
         )
@@ -245,7 +245,8 @@ public class SubclassQualifierMapperTest {
         diagnostics = @Diagnostic(
             type = ErroneousSubclassQualifiedByNameMapper.class,
             kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 15,
+            line = 13,
+            alternativeLine = 15,
             message = "Qualifier error. No method found annotated with @Named#value: [ non-existent ]. " +
                 "See https://mapstruct.org/faq/#qualifier for more info."
         )
