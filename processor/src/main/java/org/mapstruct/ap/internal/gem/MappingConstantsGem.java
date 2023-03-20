@@ -53,6 +53,8 @@ public final class MappingConstantsGem {
         public static final String JAKARTA = "jakarta";
 
         public static final String JAKARTA_CDI = "jakarta-cdi";
+
+        public static final String KORA = "kora";
      }
 
 }

@@ -149,6 +149,12 @@ public final class MappingConstants {
          */
         public static final String JAKARTA_CDI = "jakarta-cdi";
 
+        /**
+         * The generated mapper is a Kora component
+         *
+         */
+        public static final String KORA = "kora";
+
     }
 
 }

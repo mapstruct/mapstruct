@@ -44,5 +44,6 @@ public class ConstantTest {
             .isEqualTo( MappingConstantsGem.ComponentModelGem.JAKARTA );
         assertThat( MappingConstants.ComponentModel.JAKARTA_CDI )
             .isEqualTo( MappingConstantsGem.ComponentModelGem.JAKARTA_CDI );
+        assertThat( MappingConstants.ComponentModel.KORA ).isEqualTo( MappingConstantsGem.ComponentModelGem.KORA );
     }
 }

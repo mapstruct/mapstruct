@@ -11,3 +11,4 @@ org.mapstruct.ap.internal.processor.MapperRenderingProcessor
 org.mapstruct.ap.internal.processor.MethodRetrievalProcessor
 org.mapstruct.ap.internal.processor.SpringComponentProcessor
 org.mapstruct.ap.internal.processor.MapperServiceProcessor
+org.mapstruct.ap.internal.processor.KoraComponentProcessor
