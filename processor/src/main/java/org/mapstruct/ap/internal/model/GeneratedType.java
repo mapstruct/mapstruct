@@ -253,6 +253,14 @@ public abstract class GeneratedType extends ModelElement {
         constructor = null;
     }
 
+    public boolean hasJavadoc() {
+        return getJavadoc() != null;
+    }
+
+    public Javadoc getJavadoc() {
+        return null;
+    }
+
     protected void addIfImportRequired(Collection<Type> collection, Type typeToAdd) {
         if ( typeToAdd == null ) {
             return;
