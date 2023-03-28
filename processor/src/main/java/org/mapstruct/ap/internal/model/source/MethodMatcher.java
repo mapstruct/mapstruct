@@ -325,8 +325,7 @@ public class MethodMatcher {
          */
         private boolean candidatesWithinBounds(Map<Type, TypeVarCandidate> methodParCandidates ) {
             for ( Map.Entry<Type, TypeVarCandidate> entry : methodParCandidates.entrySet() ) {
-                Type bound = entry.getKey().getTypeBound();
-                if ( bound != null ) {
+                for ( Type bound : entry.getKey().getTypeBounds() ) {
                     for ( Type.ResolvedPair pair : entry.getValue().pairs ) {
                         if ( entry.getKey().hasUpperBound() ) {
                             if ( !pair.getMatch().asRawType().isAssignableTo( bound.asRawType() ) ) {

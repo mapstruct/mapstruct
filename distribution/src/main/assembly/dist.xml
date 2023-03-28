@@ -42,11 +42,7 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>target/freemarker-unpacked/META-INF/NOTICE.txt</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-        <file>
-            <source>target/freemarker-unpacked/META-INF/LICENSE.txt</source>
+            <source>target/freemarker-unpacked/META-INF/LICENSE</source>
             <outputDirectory>etc/freemarker</outputDirectory>
         </file>
         <file>

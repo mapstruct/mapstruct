@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
  * <li>{@link IterableMapping#qualifiedBy() }</li>
  * <li>{@link MapMapping#keyQualifiedBy() }</li>
  * <li>{@link MapMapping#valueQualifiedBy() }</li>
+ * <li>{@link SubclassMapping#qualifiedBy() }</li>
  * </ul>
  * <p><strong>Example:</strong></p>
  * <pre><code class='java'>

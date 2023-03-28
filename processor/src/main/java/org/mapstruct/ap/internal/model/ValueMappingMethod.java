@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -117,13 +118,20 @@ public class ValueMappingMethod extends MappingMethod {
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
-            AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
+            List<Annotation> annotations;
+            if ( method instanceof ForgedMethod ) {
+                annotations = Collections.emptyList();
+            }
+            else {
+                annotations = new ArrayList<>();
+                AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                     new AdditionalAnnotationsBuilder(
-                            ctx.getElementUtils(),
-                            ctx.getTypeFactory(),
-                            ctx.getMessager() );
-            List<Annotation> annotations = new ArrayList<>();
-            annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+                        ctx.getElementUtils(),
+                        ctx.getTypeFactory(),
+                        ctx.getMessager() );
+
+                annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+            }
             // finally return a mapping
             return new ValueMappingMethod( method,
                 annotations,

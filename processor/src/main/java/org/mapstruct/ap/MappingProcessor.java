@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -32,6 +33,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
+import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.MapperGem;
@@ -87,7 +89,9 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.DEFAULT_COMPONENT_MODEL,
     MappingProcessor.DEFAULT_INJECTION_STRATEGY,
     MappingProcessor.DISABLE_BUILDERS,
-    MappingProcessor.VERBOSE
+    MappingProcessor.VERBOSE,
+    MappingProcessor.NULL_VALUE_ITERABLE_MAPPING_STRATEGY,
+    MappingProcessor.NULL_VALUE_MAP_MAPPING_STRATEGY,
 })
 public class MappingProcessor extends AbstractProcessor {
 
@@ -106,6 +110,8 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
     protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
+    protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = "mapstruct.nullValueIterableMappingStrategy";
+    protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = "mapstruct.nullValueMapMappingStrategy";
 
     private Options options;
 
@@ -139,6 +145,9 @@ public class MappingProcessor extends AbstractProcessor {
     private Options createOptions() {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
         String unmappedSourcePolicy = processingEnv.getOptions().get( UNMAPPED_SOURCE_POLICY );
+        String nullValueIterableMappingStrategy = processingEnv.getOptions()
+            .get( NULL_VALUE_ITERABLE_MAPPING_STRATEGY );
+        String nullValueMapMappingStrategy = processingEnv.getOptions().get( NULL_VALUE_MAP_MAPPING_STRATEGY );
 
         return new Options(
             Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
@@ -149,7 +158,12 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
             Boolean.parseBoolean( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
             Boolean.parseBoolean( processingEnv.getOptions().get( DISABLE_BUILDERS ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( VERBOSE ) )
+            Boolean.parseBoolean( processingEnv.getOptions().get( VERBOSE ) ),
+            nullValueIterableMappingStrategy != null ?
+                NullValueMappingStrategyGem.valueOf( nullValueIterableMappingStrategy.toUpperCase( Locale.ROOT ) ) :
+                null,
+            nullValueMapMappingStrategy != null ?
+                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null
         );
     }
 

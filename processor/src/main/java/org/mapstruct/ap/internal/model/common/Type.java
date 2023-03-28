@@ -28,6 +28,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.IntersectionType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -114,6 +115,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> alternativeTargetAccessors = null;
 
     private Type boundingBase = null;
+    private List<Type> boundTypes = null;
 
     private Type boxedEquivalent = null;
 
@@ -352,6 +354,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isTypeVar() {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
+    }
+
+    public boolean isIntersection() {
+        return typeMirror.getKind() == TypeKind.INTERSECTION;
     }
 
     public boolean isJavaLangType() {
@@ -781,6 +787,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 if ( adderMethod != null ) {
                     // an adder has been found (according strategy) so overrule current choice.
                     candidate = adderMethod;
+                }
+
+                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE
+                    && candidate.getAccessorType() == AccessorType.GETTER ) {
+                    // If the collection mapping strategy is target immutable
+                    // then the getter method cannot be used as a setter
+                    continue;
                 }
             }
             else if ( candidate.getAccessorType() == AccessorType.FIELD  && ( Executables.isFinal( candidate ) ||
@@ -1262,6 +1275,29 @@ public class Type extends ModelElement implements Comparable<Type> {
         boundingBase = typeFactory.getType( typeFactory.getTypeBound( getTypeMirror() ) );
 
         return boundingBase;
+    }
+
+    public List<Type> getTypeBounds() {
+        if ( this.boundTypes != null ) {
+            return boundTypes;
+        }
+        Type bound = getTypeBound();
+        if ( bound == null ) {
+            this.boundTypes = Collections.emptyList();
+        }
+        else if ( !bound.isIntersection() ) {
+            this.boundTypes = Collections.singletonList( bound );
+        }
+        else {
+            List<? extends TypeMirror> bounds = ( (IntersectionType) bound.typeMirror ).getBounds();
+            this.boundTypes = new ArrayList<>( bounds.size() );
+            for ( TypeMirror mirror : bounds ) {
+                boundTypes.add( typeFactory.getType( mirror ) );
+            }
+        }
+
+        return this.boundTypes;
+
     }
 
     public boolean hasAccessibleConstructor() {

@@ -399,15 +399,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "SubclassMapping for " + sourceType.getFullyQualifiedName() );
             SelectionCriteria criteria =
                 SelectionCriteria
-                                 .forMappingMethods(
-                                     new SelectionParameters(
-                                         Collections.emptyList(),
-                                         Collections.emptyList(),
-                                         subclassMappingOptions.getTarget(),
-                                         ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
-                                     subclassMappingOptions.getMappingControl( ctx.getElementUtils() ),
-                                     null,
-                                     false );
+                    .forSubclassMappingMethods(
+                        subclassMappingOptions.getSelectionParameters().withSourceRHS( rightHandSide ),
+                        subclassMappingOptions.getMappingControl( ctx.getElementUtils() )
+                    );
             Assignment assignment = ctx
                                    .getMappingResolver()
                                    .getTargetAssignment(
@@ -426,10 +421,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
-                        .getTypeUtils()
-                        .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
+                    .getTypeUtils()
+                    .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
                     sourceArgument = parameter.getName();
-                    assignment.setSourceLocalVarName( "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                    if ( assignment != null ) {
+                        assignment.setSourceLocalVarName(
+                            "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                    }
                 }
             }
             return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
