@@ -48,26 +48,22 @@
     </#if>
 }
 <#macro writeSource source="">
-    <@compress single_line=true>
-        <#if sourceParameter.type.enumType>
-             ${source}
-        <#elseif sourceParameter.type.string>
-            "${source}"
-        </#if>
-    </@compress>
+    <#if sourceParameter.type.enumType>
+        ${source}<#t>
+    <#elseif sourceParameter.type.string>
+        "${source}"<#t>
+    </#if>
 </#macro>
 <#macro writeTarget target="">
-    <@compress single_line=true>
-        <#if target?has_content>
-            <#if returnType.enumType>
-                <@includeModel object=returnType/>.${target}
-            <#elseif returnType.string>
-                "${target}"
-            </#if>
-        <#else>
-            null
+    <#if target?has_content>
+        <#if returnType.enumType>
+            <@includeModel object=returnType/>.${target}<#t>
+        <#elseif returnType.string>
+            "${target}"<#t>
         </#if>
-    </@compress>
+    <#else>
+        null<#t>
+    </#if>
 </#macro>
 <#macro throws>
     <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
