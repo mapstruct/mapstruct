@@ -15,7 +15,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface Issue3142WithBeforeMappingExceptionMapper {
 
-    Issue3142WithBeforeMappingExceptionMapper INSTANCE = Mappers.getMapper( Issue3142WithBeforeMappingExceptionMapper.class );
+    Issue3142WithBeforeMappingExceptionMapper INSTANCE =
+        Mappers.getMapper( Issue3142WithBeforeMappingExceptionMapper.class );
 
     Target map(Source source, String id) throws Issue3142Exception;
 

@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.bugs._3142;
 
 import org.mapstruct.AfterMapping;
-import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -16,7 +15,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface Issue3142WithAfterMappingExceptionMapper {
 
-    Issue3142WithAfterMappingExceptionMapper INSTANCE = Mappers.getMapper( Issue3142WithAfterMappingExceptionMapper.class );
+    Issue3142WithAfterMappingExceptionMapper INSTANCE =
+        Mappers.getMapper( Issue3142WithAfterMappingExceptionMapper.class );
 
     Target map(Source source, String id) throws Issue3142Exception;
 
