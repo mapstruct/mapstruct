@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-parent</artifactId>
-        <version>1.5.4.Final</version>
+        <version>1.5.5-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
