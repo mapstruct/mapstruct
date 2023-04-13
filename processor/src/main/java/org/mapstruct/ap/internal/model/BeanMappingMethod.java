@@ -340,6 +340,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( factoryMethod != null ) {
                     forgedMethod.addThrownTypes( factoryMethod.getThrownTypes() );
                 }
+                for ( LifecycleCallbackMethodReference beforeMappingMethod : beforeMappingMethods ) {
+                    forgedMethod.addThrownTypes( beforeMappingMethod.getThrownTypes() );
+                }
+
+                for ( LifecycleCallbackMethodReference afterMappingMethod : afterMappingMethods ) {
+                    forgedMethod.addThrownTypes( afterMappingMethod.getThrownTypes() );
+                }
+
 
                 for ( PropertyMapping propertyMapping : propertyMappings ) {
                     if ( propertyMapping.getAssignment() != null ) {
