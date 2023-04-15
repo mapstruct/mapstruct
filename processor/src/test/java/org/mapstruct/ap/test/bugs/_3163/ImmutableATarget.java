@@ -15,7 +15,6 @@ import java.util.Optional;
  * {@code ImmutableATarget.builder()}.
  */
 @SuppressWarnings({"all"})
-@javax.annotation.processing.Generated("org.immutables.processor.ProxyProcessor")
 public final class ImmutableATarget implements ATarget {
   private final ImmutableBTarget b;
 

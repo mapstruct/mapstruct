@@ -16,7 +16,6 @@ import java.util.Objects;
  * {@code ImmutableBTarget.builder()}.
  */
 @SuppressWarnings({"all"})
-@javax.annotation.processing.Generated("org.immutables.processor.ProxyProcessor")
 public final class ImmutableBTarget implements BTarget {
   private final String s;
 
