@@ -38,7 +38,6 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
-import org.mapstruct.ap.internal.model.common.Type.ResolvedPair;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
@@ -616,11 +615,14 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
     public boolean isAssignableTo(Type other) {
-        if ( TypeKind.WILDCARD == typeMirror.getKind() ) {
-            return typeUtils.contains( typeMirror, other.typeMirror );
+        TypeMirror otherMirror = other.typeMirror;
+        if ( otherMirror.getKind() == TypeKind.WILDCARD ) {
+            otherMirror = typeUtils.erasure( other.typeMirror );
         }
-
-        return typeUtils.isAssignable( typeMirror, other.typeMirror );
+        if ( TypeKind.WILDCARD == typeMirror.getKind() ) {
+            return typeUtils.contains( typeMirror, otherMirror );
+        }
+        return typeUtils.isAssignable( typeMirror, otherMirror );
     }
 
     /**
