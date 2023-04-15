@@ -19,7 +19,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 /**
  * Tests the erroneous usage of the {@link Context} annotation in the following situations:
  * <ul>
- * <li>using the the same context parameter type twice in the same method
+ * <li>using the same context parameter type twice in the same method
  * </ul>
  *
  * @author Andreas Gudian

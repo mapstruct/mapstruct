@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.2.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.3.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
@@ -68,7 +68,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -114,15 +114,15 @@ plugins {
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.5.2.Final'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' // if you are using mapstruct in test code
 }
 ...
 ```
 
-If you don't work with a dependency management tool, you can obtain a distribution bundle from [SourceForge](https://sourceforge.net/projects/mapstruct/files/).
+If you don't work with a dependency management tool, you can obtain a distribution bundle from [Releases page](https://github.com/mapstruct/mapstruct/releases).
 
 ## Documentation and getting help
 
@@ -132,16 +132,16 @@ To learn more about MapStruct, refer to the [project homepage](http://mapstruct.
 
 MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
 
-    mvn clean install
+    ./mvnw clean install
 
 from the root of the project directory. To skip the distribution module, run 
 
-    mvn clean install -DskipDistribution=true
+    ./mvnw clean install -DskipDistribution=true
     
 ## Importing into IDE
 
-MapStruct uses the gem annotation processor to generate mapping gems for it's own annotations.
-Therefore for seamless integration within an IDE annotation processing needs to be enabled.
+MapStruct uses the gem annotation processor to generate mapping gems for its own annotations.
+Therefore, for seamless integration within an IDE annotation processing needs to be enabled.
 
 ### IntelliJ 
 

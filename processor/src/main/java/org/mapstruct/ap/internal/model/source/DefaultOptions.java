@@ -132,10 +132,18 @@ public class DefaultOptions extends DelegatingOptions {
     }
 
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        NullValueMappingStrategyGem nullValueIterableMappingStrategy = options.getNullValueIterableMappingStrategy();
+        if ( nullValueIterableMappingStrategy != null ) {
+            return nullValueIterableMappingStrategy;
+        }
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueIterableMappingStrategy().getDefaultValue() );
     }
 
     public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        NullValueMappingStrategyGem nullValueMapMappingStrategy = options.getNullValueMapMappingStrategy();
+        if ( nullValueMapMappingStrategy != null ) {
+            return nullValueMapMappingStrategy;
+        }
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().getDefaultValue() );
     }
 

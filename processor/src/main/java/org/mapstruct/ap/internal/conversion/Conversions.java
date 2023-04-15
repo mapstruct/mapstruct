@@ -41,6 +41,7 @@ public class Conversions {
     private final Map<Key, ConversionProvider> conversions = new HashMap<>();
     private final Type enumType;
     private final Type stringType;
+    private final Type integerType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -48,6 +49,7 @@ public class Conversions {
 
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
+        this.integerType = typeFactory.getType( Integer.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -185,6 +187,8 @@ public class Conversions {
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
+        register( Enum.class, Integer.class, new EnumToIntegerConversion() );
+        register( Enum.class, int.class, new EnumToIntegerConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
 
@@ -324,10 +328,16 @@ public class Conversions {
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
-        if ( sourceType.isEnumType() && targetType.equals( stringType ) ) {
+        if ( sourceType.isEnumType() &&
+                ( targetType.equals( stringType ) ||
+                  targetType.getBoxedEquivalent().equals( integerType ) )
+        ) {
             sourceType = enumType;
         }
-        else if ( targetType.isEnumType() && sourceType.equals( stringType ) ) {
+        else if ( targetType.isEnumType() &&
+                ( sourceType.equals( stringType ) ||
+                  sourceType.getBoxedEquivalent().equals( integerType ) )
+        ) {
             targetType = enumType;
         }
 

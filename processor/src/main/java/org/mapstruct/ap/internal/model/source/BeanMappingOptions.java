@@ -54,13 +54,16 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
+    public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {
+        return new BeanMappingOptions( null, Collections.emptyList(), null, delegatingOptions );
+    }
+
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
                                                    ExecutableElement method, FormattingMessager messager,
                                                    TypeUtils typeUtils, TypeFactory typeFactory
     ) {
         if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
-            BeanMappingOptions options = new BeanMappingOptions( null, Collections.emptyList(), null, mapperOptions );
-            return options;
+            return empty( mapperOptions );
         }
 
         Objects.requireNonNull( method );
@@ -89,6 +92,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     private static boolean isConsistent(BeanMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.resultType().hasValue()
+            && !gem.mappingControl().hasValue()
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.ignoreUnmappedSourceProperties().hasValue()

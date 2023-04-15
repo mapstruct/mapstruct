@@ -176,7 +176,7 @@ public abstract class HelperMethod implements Method {
      *
      * @param parameter source
      * @param returnType target
-     * @return {@code true}, iff the the type variables match
+     * @return {@code true}, iff the type variables match
      */
     public boolean doTypeVarsMatch(Type parameter, Type returnType) {
         return true;
