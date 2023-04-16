@@ -144,6 +144,51 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void mappingIsDoneUsingSubclassMappingWithCompositeMapping() {
+        VehicleCollection vehicles = new VehicleCollection();
+        vehicles.getVehicles().add( new Car() );
+        vehicles.getVehicles().add( new Bike() );
+
+        VehicleCollectionDto result = SubclassCompositeMapper.INSTANCE.map( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( CarDto.class, BikeDto.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void inverseMappingIsDoneUsingSubclassMappingWithCompositeMapping() {
+        VehicleCollectionDto vehicles = new VehicleCollectionDto();
+        vehicles.getVehicles().add( new CarDto() );
+        vehicles.getVehicles().add( new BikeDto() );
+
+        VehicleCollection result = SubclassCompositeMapper.INSTANCE.mapInverse( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class, Bike.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void subclassMappingInheritsInverseMappingWithCompositeMapping() {
+        VehicleCollectionDto vehiclesDto = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehiclesDto.getVehicles().add( carDto );
+
+        VehicleCollection result = SubclassCompositeMapper.INSTANCE.mapInverse( vehiclesDto );
+
+        assertThat( result.getVehicles() )
+            .extracting( Vehicle::getVehicleManufacturingCompany )
+            .containsExactly( "BenZ" );
+    }
+
+    @ProcessorTest
     @WithClasses({
         HatchBack.class,
         HatchBackDto.class,

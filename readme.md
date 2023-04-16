@@ -126,7 +126,7 @@ If you don't work with a dependency management tool, you can obtain a distributi
 
 ## Documentation and getting help
 
-To learn more about MapStruct, refer to the [project homepage](https://mapstruct.org). The [reference documentation](https://mapstruct.org/documentation/reference-guide/) covers all provided functionality in detail. If you need help, come and join the [mapstruct-users](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users) group.
+To learn more about MapStruct, refer to the [project homepage](https://mapstruct.org). The [reference documentation](https://mapstruct.org/documentation/reference-guide/) covers all provided functionality in detail. If you need help please ask it in the [Discussions](https://github.com/mapstruct/mapstruct/discussions).
 
 ## Building from Source
 
