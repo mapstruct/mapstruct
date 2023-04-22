@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.javadoc;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.test.annotatewith.AnnotateWithEnum;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -17,7 +16,6 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author Jose Carlos Campanero Ortiz
  */
 @IssueKey("2987")
-@WithClasses(AnnotateWithEnum.class)
 public class JavadocTest {
 
     @RegisterExtension
