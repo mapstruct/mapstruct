@@ -8,6 +8,7 @@ package org.mapstruct.ap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -33,10 +33,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
@@ -45,7 +45,6 @@ import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider;
-import org.mapstruct.ap.spi.DefaultAdditionalSupportedOptionsProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.element.ElementKind.CLASS;
@@ -111,7 +110,8 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
     protected static final String VERBOSE = "mapstruct.verbose";
 
-    private final Set<String> additionalSupportedOptions = getAdditionalSupportedOptions();
+    private final Set<String> additionalSupportedOptions;
+    private final String additionalSupportedOptionsError;
 
     private Options options;
 
@@ -128,6 +128,21 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private Set<DeferredMapper> deferredMappers = new HashSet<>();
 
+    public MappingProcessor() {
+        Set<String> additionalSupportedOptions;
+        String additionalSupportedOptionsError;
+        try {
+            additionalSupportedOptions = resolveAdditionalSupportedOptions();
+            additionalSupportedOptionsError = null;
+        }
+        catch ( IllegalStateException ex ) {
+            additionalSupportedOptions = Collections.emptySet();
+            additionalSupportedOptionsError = ex.getMessage();
+        }
+        this.additionalSupportedOptions = additionalSupportedOptions;
+        this.additionalSupportedOptionsError = additionalSupportedOptionsError;
+    }
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init( processingEnv );
@@ -141,6 +156,10 @@ public class MappingProcessor extends AbstractProcessor {
             options.isVerbose(),
             resolveAdditionalOptions( processingEnv.getOptions() )
         );
+
+        if ( additionalSupportedOptionsError != null ) {
+            processingEnv.getMessager().printMessage( Kind.ERROR, additionalSupportedOptionsError );
+        }
     }
 
     private Options createOptions() {
@@ -220,8 +239,13 @@ public class MappingProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return Stream.concat( super.getSupportedOptions().stream(), additionalSupportedOptions.stream() )
-            .collect( Collectors.toSet() );
+        Set<String> supportedOptions = super.getSupportedOptions();
+        if ( additionalSupportedOptions.isEmpty() ) {
+            return supportedOptions;
+        }
+        Set<String> allSupportedOptions = new HashSet<>( supportedOptions );
+        allSupportedOptions.addAll( additionalSupportedOptions );
+        return allSupportedOptions;
     }
 
     /**
@@ -411,19 +435,28 @@ public class MappingProcessor extends AbstractProcessor {
      *
      * @return the additional supported options
      */
-    private static Set<String> getAdditionalSupportedOptions() {
-        AdditionalSupportedOptionsProvider additionalSupportedOptionsProvider =
-            Services.get( AdditionalSupportedOptionsProvider.class, new DefaultAdditionalSupportedOptionsProvider() );
-        Set<String> additionalSupportedOptions = additionalSupportedOptionsProvider.getAdditionalSupportedOptions();
-
-        // Ensure additional options are not in the mapstruct namespace
-        additionalSupportedOptions.forEach( option -> {
-            if (option.startsWith( "mapstruct" )) {
-                throw new IllegalStateException("Additional SPI options cannot start with \"mapstruct\"");
+    private static Set<String> resolveAdditionalSupportedOptions() {
+        Set<String> additionalSupportedOptions = null;
+        for ( AdditionalSupportedOptionsProvider optionsProvider :
+            Services.all( AdditionalSupportedOptionsProvider.class ) ) {
+            if ( additionalSupportedOptions == null ) {
+                additionalSupportedOptions = new HashSet<>();
             }
-        } );
+            Set<String> providerOptions = optionsProvider.getAdditionalSupportedOptions();
 
-        return additionalSupportedOptions;
+            for ( String providerOption : providerOptions ) {
+                // Ensure additional options are not in the mapstruct namespace
+                if ( providerOption.startsWith( "mapstruct" ) ) {
+                    throw new IllegalStateException(
+                        "Additional SPI options cannot start with \"mapstruct\". Provider " + optionsProvider +
+                            " provided option " + providerOption );
+                }
+                additionalSupportedOptions.add( providerOption );
+            }
+
+        }
+
+        return additionalSupportedOptions == null ? Collections.emptySet() : additionalSupportedOptions;
     }
 
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
