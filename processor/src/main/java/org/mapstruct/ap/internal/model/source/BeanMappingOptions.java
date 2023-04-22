@@ -41,13 +41,14 @@ public class BeanMappingOptions extends DelegatingOptions {
      * creates a mapping for inheritance. Will set
      *
      * @param beanMapping the bean mapping options that should be used
+     * @param isInverse whether the inheritance is inverse
      *
      * @return new mapping
      */
-    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
+    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping, boolean isInverse) {
         BeanMappingOptions options =  new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
-            Collections.emptyList(),
+            isInverse ? Collections.emptyList() : beanMapping.ignoreUnmappedSourceProperties,
             beanMapping.beanMapping,
             beanMapping
         );

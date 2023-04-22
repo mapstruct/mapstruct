@@ -167,7 +167,7 @@ public class MappingMethodOptions {
             }
 
             if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ), isInverse ) );
             }
 
             if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {
