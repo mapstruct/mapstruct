@@ -167,7 +167,7 @@ public class MappingMethodOptions {
             }
 
             if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ), isInverse ) );
             }
 
             if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {
@@ -365,7 +365,7 @@ public class MappingMethodOptions {
             options.mappings,
             options.iterableMapping,
             options.mapMapping,
-            BeanMappingOptions.empty( options.beanMapping.next() ),
+            BeanMappingOptions.forForgedMethods( options.beanMapping ),
             options.enumMappingOptions,
             options.valueMappings,
             Collections.emptySet(),

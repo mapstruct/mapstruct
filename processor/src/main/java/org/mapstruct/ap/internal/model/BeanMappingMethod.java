@@ -285,7 +285,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            if ( !mappingReferences.isRestrictToDefinedMappings() ) {
+            boolean applyImplicitMappings = !mappingReferences.isRestrictToDefinedMappings();
+            if ( applyImplicitMappings ) {
+                applyImplicitMappings = beanMapping == null || !beanMapping.isignoreByDefault();
+            }
+            if ( applyImplicitMappings ) {
 
                 // apply name based mapping from a source reference
                 applyTargetThisMapping();
@@ -340,6 +344,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( factoryMethod != null ) {
                     forgedMethod.addThrownTypes( factoryMethod.getThrownTypes() );
                 }
+                for ( LifecycleCallbackMethodReference beforeMappingMethod : beforeMappingMethods ) {
+                    forgedMethod.addThrownTypes( beforeMappingMethod.getThrownTypes() );
+                }
+
+                for ( LifecycleCallbackMethodReference afterMappingMethod : afterMappingMethods ) {
+                    forgedMethod.addThrownTypes( afterMappingMethod.getThrownTypes() );
+                }
+
 
                 for ( PropertyMapping propertyMapping : propertyMappings ) {
                     if ( propertyMapping.getAssignment() != null ) {
@@ -412,7 +424,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                        FormattingParameters.EMPTY,
                                        criteria,
                                        rightHandSide,
-                                       null,
+                                       subclassMappingOptions.getMirror(),
                                            () -> forgeSubclassMapping(
                                                rightHandSide,
                                                sourceType,
@@ -1512,6 +1524,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private ReportingPolicyGem getUnmappedTargetPolicy() {
             if ( mappingReferences.isForForgedMethods() ) {
+                return ReportingPolicyGem.IGNORE;
+            }
+            // If we have ignoreByDefault = true, unprocessed target properties are not an issue.
+            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
             if ( method.getOptions().getBeanMapping() != null ) {

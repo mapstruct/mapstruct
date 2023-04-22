@@ -16,7 +16,7 @@
 
     <name>MapStruct Parent</name>
     <description>An annotation processor for generating type-safe bean mappers</description>
-    <url>http://mapstruct.org/</url>
+    <url>https://mapstruct.org/</url>
     <inceptionYear>2012</inceptionYear>
 
     <properties>
