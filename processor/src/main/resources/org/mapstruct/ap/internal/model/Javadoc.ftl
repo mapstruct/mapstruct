@@ -9,16 +9,16 @@
 /**
 <#list value?split("\n") as line><#nt>*<#if line?has_content> </#if>${line?trim}
 </#list>
-<#if hasAuthors()>
+<#if !authors.isEmpty()>
 *
 <#list authors as author> <#nt>* @author ${author?trim}
 </#list>
 </#if>
-<#if hasDeprecated()>
+<#if deprecated?has_content>
 *
 <#nt>* @deprecated ${deprecated?trim}
 </#if>
-<#if hasSince()>
+<#if since?has_content>
 *
 <#nt>* @since ${since?trim}
 </#if>

@@ -253,10 +253,6 @@ public abstract class GeneratedType extends ModelElement {
         constructor = null;
     }
 
-    public boolean hasJavadoc() {
-        return getJavadoc() != null;
-    }
-
     public Javadoc getJavadoc() {
         return null;
     }

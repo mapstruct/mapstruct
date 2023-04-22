@@ -7,11 +7,9 @@ package org.mapstruct.ap.internal.model;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Strings;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class Javadoc extends ModelElement {
@@ -60,7 +58,7 @@ public class Javadoc extends ModelElement {
 
     private Javadoc(String value, List<String> authors, String deprecated, String since) {
         this.value = value;
-        this.authors = authors;
+        this.authors = authors != null ? Collections.unmodifiableList( authors ) : Collections.emptyList();
         this.deprecated = deprecated;
         this.since = since;
     }
@@ -69,28 +67,12 @@ public class Javadoc extends ModelElement {
         return value;
     }
 
-    public boolean hasAuthors() {
-        return authors != null && !authors.isEmpty();
-    }
-
     public List<String> getAuthors() {
-        return Collections.unmodifiableList(
-                Optional
-                        .ofNullable( authors )
-                        .orElse( Collections.emptyList() )
-        );
-    }
-
-    public boolean hasDeprecated() {
-        return !Strings.isEmpty( deprecated );
+        return authors;
     }
 
     public String getDeprecated() {
         return deprecated;
-    }
-
-    public boolean hasSince() {
-        return !Strings.isEmpty( since );
     }
 
     public String getSince() {

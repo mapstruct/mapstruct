@@ -14,9 +14,7 @@ package ${packageName};
 import ${importedType};
 </#list>
 
-<#if hasJavadoc()>
-<#nt><@includeModel object=javadoc/>
-</#if>
+<#if javadoc??><#nt><@includeModel object=javadoc/></#if>
 <#if !generatedTypeAvailable>/*</#if>
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
