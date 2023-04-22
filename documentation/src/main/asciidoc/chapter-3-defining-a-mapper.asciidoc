@@ -126,7 +126,7 @@ Collection-typed attributes with the same element type will be copied by creatin
 MapStruct takes all public properties of the source and target types into account. This includes properties declared on super-types.
 
 [[mapping-composition]]
-=== Mapping Composition (experimental)
+=== Mapping Composition
 MapStruct supports the use of meta annotations. The `@Mapping` annotation supports now `@Target` with `ElementType#ANNOTATION_TYPE` in addition to `ElementType#METHOD`. This allows `@Mapping` to be used on other (user defined) annotations for re-use purposes. For example:
 
 ====
@@ -164,7 +164,7 @@ public interface StorageMapper {
 
 Still, they do have some properties in common. The `@ToEntity` assumes both target beans `ShelveEntity` and `BoxEntity` have properties: `"id"`, `"creationDate"` and `"name"`. It furthermore assumes that the source beans `ShelveDto` and `BoxDto` always have a property `"groupName"`. This concept is also known as "duck-typing". In other words, if it quacks like duck, walks like a duck its probably a duck.
 
-This feature is still experimental. Error messages are not mature yet: the method on which the problem occurs is displayed, as well as the concerned values in the `@Mapping` annotation. However, the composition aspect is not visible. The messages are "as if" the `@Mapping` would be present on the concerned method directly.
+Error messages are not mature yet: the method on which the problem occurs is displayed, as well as the concerned values in the `@Mapping` annotation. However, the composition aspect is not visible. The messages are "as if" the `@Mapping` would be present on the concerned method directly.
 Therefore, the user should use this feature with care, especially when uncertain when a property is always present.
 
 A more typesafe (but also more verbose) way would be to define base classes / interfaces on the target bean and the source bean and use `@InheritConfiguration` to achieve the same result (see <<mapping-configuration-inheritance>>).
