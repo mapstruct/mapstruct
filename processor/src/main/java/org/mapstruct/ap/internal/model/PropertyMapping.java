@@ -510,12 +510,16 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
-            if ( defaultValue != null || defaultJavaExpression != null ) {
+            if ( hasDefaultValueOrDefaultExpression() ) {
                 // If there is default value defined then a check is needed
                 return true;
             }
 
             return false;
+        }
+
+        private boolean hasDefaultValueOrDefaultExpression() {
+            return defaultValue != null || defaultJavaExpression != null;
         }
 
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
@@ -555,7 +559,7 @@ public class PropertyMapping extends ModelElement {
                 .targetAccessorType( targetAccessorType )
                 .rightHandSide( rightHandSide )
                 .assignment( rhs )
-                .nullValueCheckStrategy( nvcs )
+                .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
                 .build();
         }
