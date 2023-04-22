@@ -205,7 +205,7 @@ MapStruct supports enum to a String mapping along the same lines as is described
 2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
 3. Difference: `<ANY_REMAINING>` will result in an error. It acts on the premise that there is name similarity between enum constants in source and target which does not make sense for a String type.
 4. Difference: Given 1. and 3. there will never be unmapped values.
-5. Similarity: `THROW_EXCEPTION` can be used for throwing an exception for particular enum values.
+5. Similarity: `<THROW_EXCEPTION>` can be used for throwing an exception for particular enum values.
 
 *`String` to enum*
 
@@ -213,7 +213,7 @@ MapStruct supports enum to a String mapping along the same lines as is described
 2. Similarity: `<ANY_UNMAPPED`> stops after handling defined mapping and proceeds to the switch/default clause value.
 3. Similarity: `<ANY_REMAINING>` will create a mapping for each target enum constant and proceed to the switch/default clause value.
 4. Difference: A switch/default value needs to be provided to have a determined outcome (enum has a limited set of values, `String` has unlimited options). Failing to specify `<ANY_REMAINING>` or `<ANY_UNMAPPED`> will result in a warning.
-5. Similarity: `THROW_EXCEPTION` can be used for throwing an exception for any arbitrary `String` value.
+5. Similarity: `<THROW_EXCEPTION>` can be used for throwing an exception for any arbitrary `String` value.
 
 === Custom name transformation
 
