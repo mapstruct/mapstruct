@@ -135,7 +135,7 @@ public class Mapper extends GeneratedType {
     private final boolean customPackage;
     private final boolean customImplName;
     private Decorator decorator;
-    private Javadoc javadoc;
+    private final Javadoc javadoc;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name,
