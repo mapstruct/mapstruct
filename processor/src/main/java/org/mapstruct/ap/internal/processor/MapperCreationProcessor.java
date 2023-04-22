@@ -447,7 +447,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Javadoc getJavadoc(TypeElement element) {
         JavadocGem javadocGem = JavadocGem.instanceOn( element );
 
-        if ( javadocGem == null ) {
+        if ( javadocGem == null || !isConsistent( javadocGem, element, messager ) ) {
             return null;
         }
 
@@ -829,5 +829,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             gem.name().get(),
             onlyCandidate.getName()
         );
+    }
+
+    private boolean isConsistent( JavadocGem gem, TypeElement element, FormattingMessager messager ) {
+        if ( !gem.value().hasValue()
+            && !gem.authors().hasValue()
+            && !gem.deprecated().hasValue()
+            && !gem.since().hasValue() ) {
+            messager.printMessage( element, Message.JAVADOC_NO_ELEMENTS );
+            return false;
+        }
+        return true;
     }
 }

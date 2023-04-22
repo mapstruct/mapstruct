@@ -130,6 +130,8 @@ public enum Message {
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),
 
+    JAVADOC_NO_ELEMENTS( "'value', 'authors', 'deprecated' and 'since' are undefined in @Javadoc, define at least one of them.\"." ),
+
     GENERAL_CANNOT_IMPLEMENT_PRIVATE_MAPPER("Cannot create an implementation for mapper %s, because it is a private %s."),
     GENERAL_NO_IMPLEMENTATION( "No implementation type is registered for return type %s." ),
     GENERAL_ABSTRACT_RETURN_TYPE( "The return type %s is an abstract class or interface. Provide a non abstract / non interface result type or a factory method." ),
