@@ -152,6 +152,9 @@ public class SourceRHS extends ModelElement implements Assignment {
             else if ( sourceType.isArrayType() ) {
                 return sourceType.getComponentType();
             }
+            else if ( sourceType.isIterableType() ) {
+                return first( sourceType.determineTypeArguments( Iterable.class ) );
+            }
         }
         return sourceType;
     }

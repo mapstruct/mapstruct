@@ -21,21 +21,29 @@ public interface Issue3165Mapper {
 
     class Source {
         private String[] pets;
+        private Iterable<String> cats;
 
-        public Source(String[] pets) {
+        public Source(String[] pets, Iterable<String> cats) {
             this.pets = pets;
+            this.cats = cats;
         }
 
         public String[] getPets() {
             return pets;
         }
+
+        public Iterable<String> getCats() {
+            return cats;
+        }
     }
 
     class Target {
         private List<String> pets;
+        private List<String> cats;
 
         Target() {
             this.pets = new ArrayList<>();
+            this.cats = new ArrayList<>();
         }
 
         public List<String> getPets() {
@@ -44,6 +52,14 @@ public interface Issue3165Mapper {
 
         public void addPet(String pet) {
             pets.add( pet );
+        }
+
+        public List<String> getCats() {
+            return cats;
+        }
+
+        public void addCat(String cat) {
+            cats.add( cat );
         }
     }
 }

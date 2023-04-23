@@ -42,8 +42,11 @@ public class AdderWrapper extends AssignmentWrapper {
         if ( getSourceType().isCollectionType() ) {
             adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
         }
-        else { // array
-            adderType =  getSourceType().getComponentType();
+        else if ( getSourceType().isArrayType() ) {
+            adderType = getSourceType().getComponentType();
+        }
+        else { // iterable
+            adderType = first( getSourceType().determineTypeArguments( Iterable.class ) );
         }
     }
 
