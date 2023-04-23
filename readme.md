@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.3.Final-blue.svg)](https://search.maven.org/search?q=g:org.mapstruct%20AND%20v:1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.5.Final-blue.svg)](https://search.maven.org/search?q=g:org.mapstruct%20AND%20v:1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://search.maven.org/search?q=g:org.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
@@ -68,7 +68,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -114,10 +114,10 @@ plugins {
 
 dependencies {
     ...
-    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // if you are using mapstruct in test code
 }
 ...
 ```
