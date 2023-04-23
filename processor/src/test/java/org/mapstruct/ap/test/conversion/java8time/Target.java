@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,6 +33,8 @@ public class Target {
     private java.sql.Date forSqlDateConversionWithLocalDate;
 
     private Date forDateConversionWithInstant;
+
+    private LocalDateTime forLocalDateTimeConversionWithLocalDate;
 
     private String forInstantConversionWithString;
 
@@ -117,6 +120,14 @@ public class Target {
 
     public void setForDateConversionWithInstant(Date forDateConversionWithInstant) {
         this.forDateConversionWithInstant = forDateConversionWithInstant;
+    }
+
+    public LocalDateTime getForLocalDateTimeConversionWithLocalDate() {
+        return forLocalDateTimeConversionWithLocalDate;
+    }
+
+    public void setForLocalDateTimeConversionWithLocalDate(LocalDateTime forLocalDateTimeConversionWithLocalDate) {
+        this.forLocalDateTimeConversionWithLocalDate = forLocalDateTimeConversionWithLocalDate;
     }
 
     public String getForInstantConversionWithString() {
