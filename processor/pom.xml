@@ -102,6 +102,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Kora -->
+        <dependency>
+            <groupId>ru.tinkoff.kora</groupId>
+            <artifactId>common</artifactId>
+            <version>0.11.6</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -286,6 +294,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <testSource>17</testSource>
+                    <testTarget>17</testTarget>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct.tools.gem</groupId>
