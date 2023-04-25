@@ -12,6 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents the javadoc information that should be generated for a {@link Mapper}.
+ *
+ * @author Jose Carlos Campanero Ortiz
+ */
 public class Javadoc extends ModelElement {
 
     public static class Builder {
