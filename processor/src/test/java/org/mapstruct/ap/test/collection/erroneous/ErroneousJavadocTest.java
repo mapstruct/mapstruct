@@ -27,7 +27,7 @@ public class ErroneousJavadocTest {
         diagnostics = {
             @Diagnostic(type = EmptyJavadocMapper.class,
                 kind = Kind.ERROR,
-                line = 10,
+                line = 15,
                 message = "'value', 'authors', 'deprecated' and 'since' are undefined in @Javadoc, "
                     + "define at least one of them.")
         }
