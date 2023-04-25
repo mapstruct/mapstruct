@@ -836,7 +836,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             && !gem.authors().hasValue()
             && !gem.deprecated().hasValue()
             && !gem.since().hasValue() ) {
-            messager.printMessage( element, Message.JAVADOC_NO_ELEMENTS );
+            messager.printMessage( element, gem.mirror(), Message.JAVADOC_NO_ELEMENTS );
             return false;
         }
         return true;
