@@ -440,14 +440,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean isCorrectlySealed() {
-            try {
-                Type mappingSourceType = method.getMappingSourceType();
-                return isCorrectlySealed( mappingSourceType );
-            }
-            catch ( Exception e ) {
-                // SEALED not supported.
-                return false;
-            }
+            Type mappingSourceType = method.getMappingSourceType();
+            return isCorrectlySealed( mappingSourceType );
         }
 
         private boolean isCorrectlySealed(Type mappingSourceType) {
@@ -455,16 +449,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<? extends TypeMirror> unusedPermittedSubclasses =
                     new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
                 method.getOptions().getSubclassMappings().forEach( subClassOption -> {
-                    unusedPermittedSubclasses
-                                             .stream()
-                                             .filter(
-                                                 permitted -> ctx
-                                                                 .getTypeUtils()
-                                                                 .isSameType(
-                                                                     permitted,
-                                                                     subClassOption.getSource() ) )
-                                             .findFirst()
-                                             .ifPresent( unusedPermittedSubclasses::remove );
+                    Iterator<? extends TypeMirror> it = unusedPermittedSubclasses.iterator();
+                    while (it.hasNext()) {
+                        if ( ctx.getTypeUtils().isSameType( it.next(), subClassOption.getSource() ) ) {
+                            it.remove();
+                        }
+                    }
                 } );
                 for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
                                 iterator.hasNext(); ) {
