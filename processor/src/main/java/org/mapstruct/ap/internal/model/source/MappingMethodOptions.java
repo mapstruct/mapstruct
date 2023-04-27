@@ -21,7 +21,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
@@ -31,7 +30,6 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
  */
 public class MappingMethodOptions {
     private static final MappingMethodOptions EMPTY = new MappingMethodOptions(
-        null,
         null,
         Collections.emptySet(),
         null,
@@ -55,15 +53,12 @@ public class MappingMethodOptions {
 
     private SubclassValidator subclassValidator;
 
-    private TypeUtils typeUtils;
-
-    public MappingMethodOptions(TypeUtils typeUtils, MapperOptions mapper, Set<MappingOptions> mappings,
+    public MappingMethodOptions(MapperOptions mapper, Set<MappingOptions> mappings,
                                 IterableMappingOptions iterableMapping,
                                 MapMappingOptions mapMapping, BeanMappingOptions beanMapping,
                                 EnumMappingOptions enumMappingOptions,
                                 List<ValueMappingOptions> valueMappings,
                                 Set<SubclassMappingOptions> subclassMappings, SubclassValidator subclassValidator) {
-        this.typeUtils = typeUtils;
         this.mapper = mapper;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
@@ -255,8 +250,8 @@ public class MappingMethodOptions {
             return false;
         }
         for ( int i = 0; i < templateMethod.getParameters().size(); i++ ) {
-            if (!typeUtils.isSameType( templateMethod.getParameters().get( i ).getType().getTypeMirror(),
-                                       sourceMethod.getParameters().get( i ).getType().getTypeMirror() ) ) {
+            if (!templateMethod.getParameters().get( i ).getType().equals(
+                                       sourceMethod.getParameters().get( i ).getType() ) ) {
                 return false;
             }
         }
@@ -264,8 +259,7 @@ public class MappingMethodOptions {
     }
 
     private boolean resultTypeIsTheSame(SourceMethod templateMethod, SourceMethod sourceMethod) {
-        return typeUtils.isSameType( templateMethod.getResultType().getTypeMirror(),
-                                     sourceMethod.getResultType().getTypeMirror() );
+        return templateMethod.getResultType().equals( sourceMethod.getResultType() );
     }
 
     private void addAllNonRedefined(SourceMethod sourceMethod, AnnotationMirror annotationMirror,
@@ -397,7 +391,6 @@ public class MappingMethodOptions {
      */
     public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
         return new MappingMethodOptions(
-            options.typeUtils,
             options.mapper,
             options.mappings,
             options.iterableMapping,
