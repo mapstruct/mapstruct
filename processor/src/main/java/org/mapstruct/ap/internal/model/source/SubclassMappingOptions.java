@@ -212,7 +212,9 @@ public class SubclassMappingOptions extends DelegatingOptions {
                                     subclassMapping.source,
                                     subclassMapping.target,
                                     subclassMapping.typeUtils,
-                                    beanMappingOptions ) );
+                                    beanMappingOptions,
+                                    subclassMapping.selectionParameters,
+                                    subclassMapping.subclassMapping ) );
          }
          return mappings;
      }
