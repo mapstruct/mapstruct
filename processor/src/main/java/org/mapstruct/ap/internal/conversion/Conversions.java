@@ -239,7 +239,7 @@ public class Conversions {
         register( LocalDate.class, Date.class, new JavaLocalDateToDateConversion() );
         register( Instant.class, Date.class, new JavaInstantToDateConversion() );
 
-        // Java 8 time (internal)
+        // Java 8 time
         register( LocalDateTime.class, LocalDate.class, new JavaLocalDateTimeToLocalDateConversion() );
 
     }
