@@ -39,6 +39,10 @@ public class SelectionParameters {
      * @return the selection parameters based on the given ones
      */
     public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
+        return withoutResultType( selectionParameters );
+    }
+
+    public static SelectionParameters withoutResultType(SelectionParameters selectionParameters) {
         return new SelectionParameters(
             selectionParameters.qualifiers,
             selectionParameters.qualifyingNames,

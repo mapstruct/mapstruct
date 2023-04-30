@@ -10,7 +10,7 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
         <#if !callback_has_next>
@@ -48,24 +48,28 @@
     </#if>
 }
 <#macro writeSource source="">
-    <@compress single_line=true>
-        <#if sourceParameter.type.enumType>
-             ${source}
-        <#elseif sourceParameter.type.string>
-            "${source}"
-        </#if>
-    </@compress>
+    <#if sourceParameter.type.enumType>
+        ${source}<#t>
+    <#elseif sourceParameter.type.string>
+        "${source}"<#t>
+    </#if>
 </#macro>
 <#macro writeTarget target="">
-    <@compress single_line=true>
-        <#if target?has_content>
-            <#if returnType.enumType>
-                <@includeModel object=returnType/>.${target}
-            <#elseif returnType.string>
-                "${target}"
-            </#if>
-        <#else>
-            null
+    <#if target?has_content>
+        <#if returnType.enumType>
+            <@includeModel object=returnType/>.${target}<#t>
+        <#elseif returnType.string>
+            "${target}"<#t>
         </#if>
+    <#else>
+        null<#t>
+    </#if>
+</#macro>
+<#macro throws>
+    <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
+        <#list thrownTypes as exceptionType>
+            <@includeModel object=exceptionType/>
+            <#if exceptionType_has_next>, </#if><#t>
+        </#list>
     </@compress>
 </#macro>

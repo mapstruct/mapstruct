@@ -295,20 +295,24 @@ public class MappingResolverImpl implements MappingResolver {
                 }
 
                 // 2 step method, then: method(conversion(source))
-                assignment = ConversionMethod.getBestMatch( this, sourceType, targetType );
-                if ( assignment != null ) {
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return assignment;
+                if ( allowConversion() ) {
+                    assignment = ConversionMethod.getBestMatch( this, sourceType, targetType );
+                    if ( assignment != null ) {
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return assignment;
+                    }
                 }
 
                 // stop here when looking for update methods.
                 selectionCriteria.setPreferUpdateMapping( false );
 
                 // 2 step method, finally: conversion(method(source))
-                assignment = MethodConversion.getBestMatch( this, sourceType, targetType );
-                if ( assignment != null ) {
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return assignment;
+                if ( allowConversion() ) {
+                    assignment = MethodConversion.getBestMatch( this, sourceType, targetType );
+                    if ( assignment != null ) {
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return assignment;
+                    }
                 }
             }
 
@@ -763,22 +767,26 @@ public class MappingResolverImpl implements MappingResolver {
                     return mmAttempt.result;
                 }
             }
-            MethodMethod<Method, BuiltInMethod> mbAttempt =
-                new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
-                    .getBestMatch( sourceType, targetType );
-            if ( mbAttempt.hasResult ) {
-                return mbAttempt.result;
+            if ( att.allowConversion() ) {
+                MethodMethod<Method, BuiltInMethod> mbAttempt =
+                    new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
+                        .getBestMatch( sourceType, targetType );
+                if ( mbAttempt.hasResult ) {
+                    return mbAttempt.result;
+                }
+                MethodMethod<BuiltInMethod, Method> bmAttempt =
+                    new MethodMethod<>( att, att.builtIns, att.methods, att::toBuildInRef, att::toMethodRef )
+                        .getBestMatch( sourceType, targetType );
+                if ( bmAttempt.hasResult ) {
+                    return bmAttempt.result;
+                }
+                MethodMethod<BuiltInMethod, BuiltInMethod> bbAttempt =
+                    new MethodMethod<>( att, att.builtIns, att.builtIns, att::toBuildInRef, att::toBuildInRef )
+                        .getBestMatch( sourceType, targetType );
+                return bbAttempt.result;
             }
-            MethodMethod<BuiltInMethod, Method> bmAttempt =
-                new MethodMethod<>( att, att.builtIns, att.methods, att::toBuildInRef, att::toMethodRef )
-                    .getBestMatch( sourceType, targetType );
-            if ( bmAttempt.hasResult ) {
-                return bmAttempt.result;
-            }
-            MethodMethod<BuiltInMethod, BuiltInMethod> bbAttempt =
-                new MethodMethod<>( att, att.builtIns, att.builtIns, att::toBuildInRef, att::toBuildInRef )
-                    .getBestMatch( sourceType, targetType );
-            return bbAttempt.result;
+
+            return null;
         }
 
         MethodMethod(ResolvingAttempt attempt, List<T1> xMethods, List<T2> yMethods,

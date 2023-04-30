@@ -30,12 +30,6 @@ public class Issue2149Test {
                 line = 18,
                 message = "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not " +
                     "allowed. You'll need to explicitly ignore the target properties that should be ignored instead."
-            ),
-            @Diagnostic(
-                type = Erroneous2149Mapper.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 20,
-                message = "Unmapped target property: \"address\"."
             )
         }
     )
