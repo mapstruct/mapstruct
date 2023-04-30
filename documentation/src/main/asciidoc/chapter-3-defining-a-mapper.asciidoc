@@ -767,7 +767,7 @@ public class MyConverterImpl implements MyConverter {
 === Adding Javadoc comments
 
 MapStruct provides support for defining Javadoc comments in the generated mapper implementation using the
-`org.mapstruct.Javadoc annotation.
+`org.mapstruct.Javadoc` annotation.
 
 This functionality could be relevant especially in situations where certain Javadoc standards need to be met or
 to deal with Javadoc validation constraints.
