@@ -5,12 +5,15 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
@@ -19,8 +22,6 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-
-import static org.mapstruct.ap.internal.model.source.MappingOptions.getMappingTargetNamesBy;
 
 /**
  * Encapsulates all options specifiable on a mapping method
@@ -205,8 +206,15 @@ public class MappingMethodOptions {
             }
 
             if ( isInverse ) {
-                // normal inheritence of subclass mappings will result runtime in infinite loops.
                 List<SubclassMappingOptions> inheritedMappings = SubclassMappingOptions.copyForInverseInheritance(
+                                              templateOptions.getSubclassMappings(),
+                                              getBeanMapping() );
+                addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
+            }
+            else if ( methodsHaveIdenticalSignature( templateMethod, sourceMethod ) ) {
+                List<SubclassMappingOptions> inheritedMappings =
+                    SubclassMappingOptions
+                                          .copyForInheritance(
                                               templateOptions.getSubclassMappings(),
                                               getBeanMapping() );
                 addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
@@ -230,6 +238,28 @@ public class MappingMethodOptions {
             // filter new mappings
             filterNestedTargetIgnores( mappings );
         }
+    }
+
+    private boolean methodsHaveIdenticalSignature(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return parametersAreOfIdenticalTypeAndOrder( templateMethod, sourceMethod )
+            && resultTypeIsTheSame( templateMethod, sourceMethod );
+    }
+
+    private boolean parametersAreOfIdenticalTypeAndOrder(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        if (templateMethod.getParameters().size() != sourceMethod.getParameters().size()) {
+            return false;
+        }
+        for ( int i = 0; i < templateMethod.getParameters().size(); i++ ) {
+            if (!templateMethod.getParameters().get( i ).getType().equals(
+                                       sourceMethod.getParameters().get( i ).getType() ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean resultTypeIsTheSame(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return templateMethod.getResultType().equals( sourceMethod.getResultType() );
     }
 
     private void addAllNonRedefined(SourceMethod sourceMethod, AnnotationMirror annotationMirror,
