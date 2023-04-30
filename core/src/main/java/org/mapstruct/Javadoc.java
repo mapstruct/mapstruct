@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
  * </code></pre>
  *
  * <p>
- * The whole Javadoc comment block can be passed directly:
+ * The entire Javadoc comment block can be passed directly:
  * </p>
  * <pre><code class='java'>
  * &#64;Javadoc("This is the description\n"
