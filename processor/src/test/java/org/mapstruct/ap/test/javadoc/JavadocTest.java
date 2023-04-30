@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.javadoc;
 
-import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -27,25 +26,13 @@ class JavadocTest {
     @ProcessorTest
     @WithClasses( { JavadocAnnotatedWithValueMapper.class } )
     void javadocAnnotatedWithValueMapper() {
-        AbstractCharSequenceAssert<?, String> content = generatedSource
-                .forMapper( JavadocAnnotatedWithValueMapper.class )
-                .content();
-        content
-                       .contains( "This is the description" );
+        generatedSource.addComparisonToFixtureFor( JavadocAnnotatedWithValueMapper.class );
     }
 
     @ProcessorTest
     @WithClasses( { JavadocAnnotatedWithAttributesMapper.class } )
     void javadocAnnotatedWithAttributesMapper() {
-        AbstractCharSequenceAssert<?, String> content = generatedSource
-                .forMapper( JavadocAnnotatedWithAttributesMapper.class )
-                .content();
-        content
-                .contains( "This is the description" )
-                .contains( "@author author1" )
-                .contains( "@author author2" )
-                .contains( "@deprecated Use {@link OtherMapper} instead" )
-                .contains( "@since 0.1" );
+        generatedSource.addComparisonToFixtureFor( JavadocAnnotatedWithAttributesMapper.class );
     }
 
     @ProcessorTest
