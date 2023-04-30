@@ -18,6 +18,10 @@ public class Services {
     private Services() {
     }
 
+    public static <T> Iterable<T> all(Class<T> serviceType) {
+        return ServiceLoader.load( serviceType, Services.class.getClassLoader() );
+    }
+
     public static <T> T get(Class<T> serviceType, T defaultValue) {
 
         Iterator<T> services = ServiceLoader.load( serviceType, Services.class.getClassLoader() ).iterator();

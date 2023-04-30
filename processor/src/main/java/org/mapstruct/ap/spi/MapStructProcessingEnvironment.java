@@ -7,6 +7,7 @@ package org.mapstruct.ap.spi;
 
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.Map;
 
 /**
  * MapStruct will provide the implementations of its SPIs with on object implementing this interface so they can use
@@ -35,5 +36,13 @@ public interface MapStructProcessingEnvironment {
      * @return type utilities
      */
     Types getTypeUtils();
+
+    /**
+     * Returns the resolved options specified by the impl of
+     * {@link AdditionalSupportedOptionsProvider}.
+     *
+     * @return resolved options
+     */
+    Map<String, String> getOptions();
 
 }
