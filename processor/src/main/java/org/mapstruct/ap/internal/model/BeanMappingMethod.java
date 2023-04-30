@@ -63,6 +63,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.AccessorCandidates;
 import org.mapstruct.ap.internal.util.accessor.ParameterElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
@@ -104,7 +105,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
         private Map<String, Accessor> unprocessedConstructorProperties;
-        private Map<String, Accessor> unprocessedTargetProperties;
+        private AccessorCandidates unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> missingIgnoredSourceProperties;
         private Set<String> targetProperties;
@@ -223,10 +224,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             CollectionMappingStrategyGem cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
 
             // determine accessors
-            Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
+            AccessorCandidates accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
             this.targetProperties = new LinkedHashSet<>( accessors.keySet() );
 
-            this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
+            this.unprocessedTargetProperties = new AccessorCandidates( accessors );
 
             if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
                 ConstructorAccessor constructorAccessor = getConstructorAccessor( resultTypeToMap );
@@ -245,7 +246,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
 
                 this.targetProperties.addAll( this.unprocessedConstructorProperties.keySet() );
-                this.unprocessedTargetProperties.putAll( this.unprocessedConstructorProperties );
+                this.unprocessedTargetProperties.overrideAll( this.unprocessedConstructorProperties );
             }
             else {
                 unprocessedConstructorProperties = new LinkedHashMap<>();
@@ -520,13 +521,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ReadAccessor targetPropertyReadAccessor =
                         method.getResultType().getReadAccessor( propertyName );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
+                    Accessor accessor = unprocessedTargetProperties
+                                    .getBestFit( propertyName, targetPropertyReadAccessor.getAccessedType() );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
                         .sourceMethod( method )
                         .target(
                             propertyName,
                             targetPropertyReadAccessor,
-                            unprocessedTargetProperties.get( propertyName )
+                            accessor
                         )
                         .sourceReference( reference )
                         .existingVariableNames( existingVariableNames )
@@ -1068,10 +1071,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return false;
             }
 
-            Accessor targetWriteAccessor = unprocessedTargetProperties.get( targetPropertyName );
+            List<Accessor> targetWriteAccessors = unprocessedTargetProperties.get( targetPropertyName );
             ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor( targetPropertyName );
 
-            if ( targetWriteAccessor == null ) {
+            if ( targetWriteAccessors.isEmpty() ) {
                 if ( targetReadAccessor == null ) {
                     MappingOptions.InheritContext inheritContext = mapping.getInheritContext();
                     if ( inheritContext != null ) {
@@ -1164,6 +1167,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
+            // no way to check source type, so matching to any writeAccessor is fine
+            Accessor targetWriteAccessor = targetWriteAccessors.stream().findFirst().orElse( null );
             // check the mapping options
             // its an ignored property mapping
             if ( mapping.isIgnored() ) {
@@ -1276,12 +1281,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     // sourceRef == null is not considered an error here
                     if ( sourceRef.isValid() ) {
 
+                        TypeMirror sourceRefType;
+                        if ( sourceRef.getPropertyEntries().isEmpty() ) {
+                            sourceRefType = null;
+                        }
+                        else {
+                            sourceRefType = sourceRef.getPropertyEntries().get( 0 ).getType().getTypeMirror();
+                        }
                         // targetProperty == null can occur: we arrived here because we want as many errors
                         // as possible before we stop analysing
+                        Accessor accessor = unprocessedTargetProperties.getBestFit( targetPropertyName, sourceRefType );
                         propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
-                            .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
+                            .target( targetPropertyName, targetReadAccessor, accessor )
                             .sourcePropertyName( mapping.getSourceName() )
                             .sourceReference( sourceRef )
                             .selectionParameters( mapping.getSelectionParameters() )
@@ -1398,7 +1411,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( SourceReference sourceRef : sourceReferences ) {
 
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
-                Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
+                Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.getBestFit( targetPropertyName,
+                    sourceRef.getDeepestProperty().getType().getTypeMirror() );
+                unprocessedTargetProperties.remove( targetPropertyName );
                 unprocessedConstructorProperties.remove( targetPropertyName );
                 if ( targetPropertyWriteAccessor == null ) {
                     // TODO improve error message
@@ -1434,32 +1449,34 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private void applyParameterNameBasedMapping() {
 
-            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
-                unprocessedTargetProperties.entrySet().iterator();
+            Iterator<String> targetPropertyEntriesIterator =
+                unprocessedTargetProperties.keySet().iterator();
 
             while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, Accessor> targetProperty = targetPropertyEntriesIterator.next();
+                String targetProperty = targetPropertyEntriesIterator.next();
 
                 Iterator<Parameter> sourceParameters = unprocessedSourceParameters.iterator();
 
                 while ( sourceParameters.hasNext() ) {
 
                     Parameter sourceParameter = sourceParameters.next();
-                    if ( sourceParameter.getName().equals( targetProperty.getKey() ) ) {
+                    if ( sourceParameter.getName().equals( targetProperty ) ) {
 
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
-                            .name( targetProperty.getKey() )
+                            .name( targetProperty )
                             .build();
 
                         ReadAccessor targetPropertyReadAccessor =
-                            method.getResultType().getReadAccessor( targetProperty.getKey() );
-                        MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
+                            method.getResultType().getReadAccessor( targetProperty );
+                        MappingReferences mappingRefs = extractMappingReferences( targetProperty, false );
+                        Accessor accessor = unprocessedTargetProperties
+                                        .getBestFit( targetProperty, targetPropertyReadAccessor.getAccessedType() );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
-                            .target( targetProperty.getKey(), targetPropertyReadAccessor, targetProperty.getValue() )
+                            .target( targetProperty, targetPropertyReadAccessor, accessor )
                             .sourceReference( sourceRef )
                             .existingVariableNames( existingVariableNames )
                             .forgeMethodWithMappingReferences( mappingRefs )
@@ -1469,8 +1486,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         propertyMappings.add( propertyMapping );
                         targetPropertyEntriesIterator.remove();
                         sourceParameters.remove();
-                        unprocessedDefinedTargets.remove( targetProperty.getKey() );
-                        unprocessedSourceProperties.remove( targetProperty.getKey() );
+                        unprocessedDefinedTargets.remove( targetProperty );
+                        unprocessedSourceProperties.remove( targetProperty );
 
                         // The source parameter was directly mapped so ignore all of its source properties completely
                         if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
@@ -1482,7 +1499,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             }
                         }
 
-                        unprocessedConstructorProperties.remove( targetProperty.getKey() );
+                        unprocessedConstructorProperties.remove( targetProperty );
                     }
                 }
             }
