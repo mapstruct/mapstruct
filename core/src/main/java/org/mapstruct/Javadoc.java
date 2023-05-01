@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
 /**
  * Allows the definition of Javadoc comments in the MapStruct <code>Mapper</code> generated class.
  *
- *
  * <p>The annotation provides support for the usual Javadoc comments elements by defining analogous attributes.</p>
  *
  *
@@ -88,17 +87,17 @@ public @interface Javadoc {
 
     /**
      * List of authors of the code that it is being documented.
-     *
-     * It will generated a list of the Javadoc tool comment element <code>&#64;author</code>
+     * <p>
+     * It will generate a list of the Javadoc tool comment element <code>&#64;author</code>
      * with the different values and in the order provided.
      *
-     * @return List of authors of the functionality being documented.
+     * @return array of javadoc authors.
      */
     String[] authors() default { };
 
     /**
      * Specifies that the functionality that is being documented is deprecated.
-     *
+     * <p>
      * Corresponds to the <code>&#64;deprecated</code> Javadoc tool comment element.
      *
      * @return Deprecation message about the documented functionality
@@ -107,7 +106,7 @@ public @interface Javadoc {
 
     /**
      * Specifies the version since the functionality that is being documented is available.
-     *
+     * <p>
      * Corresponds to the <code>&#64;since</code> Javadoc tool comment element.
      *
      * @return Version since the functionality is available
