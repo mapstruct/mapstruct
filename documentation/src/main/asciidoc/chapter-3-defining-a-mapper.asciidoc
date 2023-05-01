@@ -761,3 +761,103 @@ public class MyConverterImpl implements MyConverter {
 }
 ----
 ====
+
+
+[[javadoc]]
+=== Adding Javadoc comments
+
+MapStruct provides support for defining Javadoc comments in the generated mapper implementation using the
+`org.mapstruct.Javadoc` annotation.
+
+This functionality could be relevant especially in situations where certain Javadoc standards need to be met or
+to deal with Javadoc validation constraints.
+
+The `@Javadoc` annotation defines attributes for the different Javadoc elements.
+
+Consider the following example:
+
+.Javadoc annotation example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@Javadoc(
+    value = "This is the description",
+    authors = { "author1", "author2" },
+    deprecated = "Use {@link OtherMapper} instead",
+    since = "0.1"
+)
+public interface MyAnnotatedWithJavadocMapper {
+    //...
+}
+----
+====
+
+.Javadoc annotated generated mapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+/**
+* This is the description
+*
+* @author author1
+* @author author2
+*
+* @deprecated Use {@link OtherMapper} instead
+* @since 0.1
+*/
+public class MyAnnotatedWithJavadocMapperImpl implements MyAnnotatedWithJavadocMapper {
+    //...
+}
+----
+====
+
+The entire Javadoc comment block can be provided directly as well.
+
+.Javadoc annotation example with the entire Javadoc comment block provided directly
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@Javadoc(
+    "This is the description\n"
+  + "\n"
+  + "@author author1\n"
+  + "@author author2\n"
+  + "\n"
+  + "@deprecated Use {@link OtherMapper} instead\n"
+  + "@since 0.1\n"
+)
+public interface MyAnnotatedWithJavadocMapper {
+    //...
+}
+----
+====
+
+Or using Text blocks:
+
+.Javadoc annotation example with the entire Javadoc comment block provided directly using Text blocks
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@Javadoc(
+    """
+    This is the description
+
+    @author author1
+    @author author2
+
+    @deprecated Use {@link OtherMapper} instead
+    @since 0.1
+    """
+)
+public interface MyAnnotatedWithJavadocMapper {
+    //...
+}
+----
+====

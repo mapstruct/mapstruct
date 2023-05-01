@@ -74,6 +74,7 @@ import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
  * </code></pre>
  *
  * @author Gunnar Morling
+ * @see Javadoc
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
