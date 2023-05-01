@@ -446,8 +446,39 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean isAbstractReturnTypeAllowed() {
-            return method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
-                && !method.getOptions().getSubclassMappings().isEmpty();
+            return !method.getOptions().getSubclassMappings().isEmpty()
+                && ( method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
+                    || isCorrectlySealed() );
+        }
+
+        private boolean isCorrectlySealed() {
+            Type mappingSourceType = method.getMappingSourceType();
+            return isCorrectlySealed( mappingSourceType );
+        }
+
+        private boolean isCorrectlySealed(Type mappingSourceType) {
+            if ( mappingSourceType.isSealed() ) {
+                List<? extends TypeMirror> unusedPermittedSubclasses =
+                    new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
+                method.getOptions().getSubclassMappings().forEach( subClassOption -> {
+                    for (Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                                   iterator.hasNext(); ) {
+                        if ( ctx.getTypeUtils().isSameType( iterator.next(), subClassOption.getSource() ) ) {
+                            iterator.remove();
+                        }
+                    }
+                } );
+                for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                                iterator.hasNext(); ) {
+                    TypeMirror typeMirror = iterator.next();
+                    Type type = ctx.getTypeFactory().getType( typeMirror );
+                    if ( type.isAbstract() && isCorrectlySealed( type ) ) {
+                        iterator.remove();
+                    }
+                }
+                return unusedPermittedSubclasses.isEmpty();
+            }
+            return false;
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {

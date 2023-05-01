@@ -112,6 +112,11 @@ public class MavenIntegrationTest {
     void protobufBuilderTest() {
     }
 
+    @ProcessorTest(baseDir = "sealedSubclassTest")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void sealedSubclassTest() {
+    }
+
     @ProcessorTest(baseDir = "recordsTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
