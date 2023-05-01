@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
 
@@ -173,6 +174,16 @@ public class CollectionAssignmentBuilder {
                     targetType,
                     nvcs,
                     nvpms,
+                    ctx.getTypeFactory(),
+                    targetAccessorType.isFieldAssignment()
+                );
+            }
+            else if ( method.isUpdateMethod() && nvpms == IGNORE ) {
+
+                result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
+                    result,
+                    method.getThrownTypes(),
+                    targetType,
                     ctx.getTypeFactory(),
                     targetAccessorType.isFieldAssignment()
                 );
