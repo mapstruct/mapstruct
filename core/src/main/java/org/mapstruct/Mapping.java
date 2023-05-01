@@ -287,7 +287,7 @@ public @interface Mapping {
 
     /**
      * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
-     * This can be useful when certain attributes should not be propagated from source or target or when properties in
+     * This can be useful when certain attributes should not be propagated from source to target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
      * default.
      *
