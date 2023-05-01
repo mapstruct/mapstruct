@@ -233,11 +233,14 @@ public class Conversions {
         register( Period.class, String.class, new StaticParseToStringConversion() );
         register( Duration.class, String.class, new StaticParseToStringConversion() );
 
-        // Java 8 to Date
+        // Java 8 time to Date
         register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( LocalDateTime.class, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( LocalDate.class, Date.class, new JavaLocalDateToDateConversion() );
         register( Instant.class, Date.class, new JavaInstantToDateConversion() );
+
+        // Java 8 time
+        register( LocalDateTime.class, LocalDate.class, new JavaLocalDateTimeToLocalDateConversion() );
 
     }
 

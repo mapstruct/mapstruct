@@ -68,6 +68,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -116,6 +119,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -166,6 +172,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -214,6 +223,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -264,6 +276,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -312,6 +327,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -362,6 +380,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -410,6 +431,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
@@ -460,6 +484,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -508,6 +535,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
@@ -558,6 +588,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -606,6 +639,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );

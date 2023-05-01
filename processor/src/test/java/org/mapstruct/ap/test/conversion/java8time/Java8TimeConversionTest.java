@@ -253,6 +253,21 @@ public class Java8TimeConversionTest {
     }
 
     @ProcessorTest
+    public void testLocalDateTimeToLocalDateMapping() {
+        LocalDate localDate = LocalDate.of( 2014, 1, 1 );
+
+        Source source = new Source();
+        source.setForLocalDateTimeConversionWithLocalDate( localDate );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+        LocalDateTime localDateTime = target.getForLocalDateTimeConversionWithLocalDate();
+        assertThat( localDateTime ).isNotNull();
+        assertThat( localDateTime ).isEqualTo( LocalDateTime.of( 2014, 1, 1, 0, 0 ) );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( source.getForLocalDateTimeConversionWithLocalDate() ).isEqualTo( localDate );
+    }
+
+    @ProcessorTest
     @DefaultTimeZone("Australia/Melbourne")
     public void testLocalDateTimeToDateMapping() {
 

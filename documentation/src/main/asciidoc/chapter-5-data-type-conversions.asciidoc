@@ -107,6 +107,8 @@ public interface CarMapper {
 
 * Between `java.time.Instant` from Java 8 Date-Time package and `java.util.Date`.
 
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.time.LocalDate` from the same package.
+
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
 * Between `java.sql.Date` and `java.util.Date`
