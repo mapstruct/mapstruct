@@ -254,6 +254,9 @@ public class MappingOptions extends DelegatingOptions {
             && gem.ignore().hasValue() && gem.ignore().getValue() ) {
             message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
         }
+        else if ( ".".equals( gem.target().get() ) && gem.ignore().hasValue() && gem.ignore().getValue() ) {
+            message = Message.PROPERTYMAPPING_TARGET_THIS_AND_IGNORE;
+        }
 
         if ( message == null ) {
             return true;
