@@ -527,7 +527,7 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
-            if ( result.getSourceType().isCollectionType() ) {
+            if ( result.getSourceType().isIterableType() ) {
                 result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
             else if ( result.getSourceType().isStreamType() ) {
