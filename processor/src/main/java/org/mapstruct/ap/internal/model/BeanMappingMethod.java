@@ -94,6 +94,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
+    private final String finalizedResultName;
+    private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType;
+    private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
 
     private final MappingReferences mappingReferences;
 
@@ -368,8 +371,35 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             MethodReference finalizeMethod = null;
 
+            List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType = new ArrayList<>();
+            List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType = new ArrayList<>();
             if ( shouldCallFinalizerMethod( returnTypeToConstruct ) ) {
                 finalizeMethod = getFinalizerMethod();
+
+                Type actualReturnType = method.getReturnType();
+
+                beforeMappingReferencesWithFinalizedReturnType.addAll( filterMappingTarget(
+                    LifecycleMethodResolver.beforeMappingMethods(
+                        method,
+                        actualReturnType,
+                        selectionParameters,
+                        ctx,
+                        existingVariableNames
+                    ),
+                    false
+                ) );
+
+                afterMappingReferencesWithFinalizedReturnType.addAll( LifecycleMethodResolver.afterMappingMethods(
+                    method,
+                    actualReturnType,
+                    selectionParameters,
+                    ctx,
+                    existingVariableNames
+                ) );
+
+                // remove methods without parameters as they are already being invoked
+                removeMappingReferencesWithoutSourceParameters( beforeMappingReferencesWithFinalizedReturnType );
+                removeMappingReferencesWithoutSourceParameters( afterMappingReferencesWithFinalizedReturnType );
             }
 
             return new BeanMappingMethod(
@@ -383,10 +413,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 returnTypeBuilder,
                 beforeMappingMethods,
                 afterMappingMethods,
+                beforeMappingReferencesWithFinalizedReturnType,
+                afterMappingReferencesWithFinalizedReturnType,
                 finalizeMethod,
                 mappingReferences,
                 subclasses
             );
+        }
+
+        private void removeMappingReferencesWithoutSourceParameters(List<LifecycleCallbackMethodReference> references) {
+            references.removeIf( r -> r.getSourceParameters().isEmpty() && r.getReturnType().isVoid() );
         }
 
         private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {
@@ -706,7 +742,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * Find a factory method for a return type or for a builder.
          * @param returnTypeImpl the return type implementation to construct
          * @param @selectionParameters
-         * @return
          */
         private void initializeFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
             List<SelectedMethod<SourceMethod>> matchingFactoryMethods =
@@ -1380,7 +1415,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * <p>
          * When a target property matches its name with the (nested) source property, it is added to the list if and
          * only if it is an unprocessed target property.
-         *
+         * <p>
          * duplicates will be handled by {@link #applyPropertyNameBasedMapping(List)}
          */
         private void applyTargetThisMapping() {
@@ -1766,6 +1801,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
+                              List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType,
+                              List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings) {
@@ -1783,9 +1820,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
+        if ( this.finalizerMethod != null ) {
+            this.finalizedResultName =
+                Strings.getSafeVariableName( getResultName() + "Result", existingVariableNames );
+            existingVariableNames.add( this.finalizedResultName );
+        }
+        else {
+            this.finalizedResultName = null;
+        }
         this.mappingReferences = mappingReferences;
 
-        // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
+        this.beforeMappingReferencesWithFinalizedReturnType = beforeMappingReferencesWithFinalizedReturnType;
+        this.afterMappingReferencesWithFinalizedReturnType = afterMappingReferencesWithFinalizedReturnType;
+
+        // initialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
         this.constantMappings = new ArrayList<>( propertyMappings.size() );
@@ -1828,6 +1876,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<SubclassMapping> getSubclassMappings() {
         return subclassMappings;
+    }
+
+    public String getFinalizedResultName() {
+        return finalizedResultName;
+    }
+
+    public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithFinalizedReturnType() {
+        return beforeMappingReferencesWithFinalizedReturnType;
+    }
+
+    public List<LifecycleCallbackMethodReference> getAfterMappingReferencesWithFinalizedReturnType() {
+        return afterMappingReferencesWithFinalizedReturnType;
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
@@ -1881,6 +1941,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         if ( returnTypeBuilder != null ) {
             types.add( returnTypeBuilder.getOwningType() );
+        }
+        for ( LifecycleCallbackMethodReference reference : beforeMappingReferencesWithFinalizedReturnType ) {
+            types.addAll( reference.getImportTypes() );
+        }
+        for ( LifecycleCallbackMethodReference reference : afterMappingReferencesWithFinalizedReturnType ) {
+            types.addAll( reference.getImportTypes() );
         }
 
         return types;
