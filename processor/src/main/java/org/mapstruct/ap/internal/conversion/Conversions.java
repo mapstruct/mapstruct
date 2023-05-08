@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -198,6 +199,7 @@ public class Conversions {
         register( Currency.class, String.class, new CurrencyToStringConversion() );
 
         register( UUID.class, String.class, new UUIDToStringConversion() );
+        register( Locale.class, String.class, new LocaleToStringConversion() );
 
         registerURLConversion();
     }
