@@ -5,7 +5,7 @@ on: [push, pull_request]
 env:
   SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
   SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-  MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+  MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
 jobs:
   test_jdk:
