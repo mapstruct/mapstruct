@@ -168,77 +168,42 @@ public class UserMapperImpl implements UserMapper {
     }
 
     private String userDTOContactDataDTOEmail(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
         ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
         if ( contactDataDTO == null ) {
             return null;
         }
-        String email = contactDataDTO.getEmail();
-        if ( email == null ) {
-            return null;
-        }
-        return email;
+        return contactDataDTO.getEmail();
     }
 
     private String userDTOContactDataDTOPhone(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
         ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
         if ( contactDataDTO == null ) {
             return null;
         }
-        String phone = contactDataDTO.getPhone();
-        if ( phone == null ) {
-            return null;
-        }
-        return phone;
+        return contactDataDTO.getPhone();
     }
 
     private String userDTOContactDataDTOAddress(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
         ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
         if ( contactDataDTO == null ) {
             return null;
         }
-        String address = contactDataDTO.getAddress();
-        if ( address == null ) {
-            return null;
-        }
-        return address;
+        return contactDataDTO.getAddress();
     }
 
     private List<String> userDTOContactDataDTOPreferences(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
         ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
         if ( contactDataDTO == null ) {
             return null;
         }
-        List<String> preferences = contactDataDTO.getPreferences();
-        if ( preferences == null ) {
-            return null;
-        }
-        return preferences;
+        return contactDataDTO.getPreferences();
     }
 
     private String[] userDTOContactDataDTOSettings(UserDTO userDTO) {
-        if ( userDTO == null ) {
-            return null;
-        }
         ContactDataDTO contactDataDTO = userDTO.getContactDataDTO();
         if ( contactDataDTO == null ) {
             return null;
         }
-        String[] settings = contactDataDTO.getSettings();
-        if ( settings == null ) {
-            return null;
-        }
-        return settings;
+        return contactDataDTO.getSettings();
     }
 }

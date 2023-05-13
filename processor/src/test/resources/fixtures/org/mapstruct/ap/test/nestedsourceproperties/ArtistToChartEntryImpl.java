@@ -74,24 +74,14 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
     }
 
     private String songArtistName(Song song) {
-        if ( song == null ) {
-            return null;
-        }
         Artist artist = song.getArtist();
         if ( artist == null ) {
             return null;
         }
-        String name = artist.getName();
-        if ( name == null ) {
-            return null;
-        }
-        return name;
+        return artist.getName();
     }
 
     private String songArtistLabelStudioName(Song song) {
-        if ( song == null ) {
-            return null;
-        }
         Artist artist = song.getArtist();
         if ( artist == null ) {
             return null;
@@ -104,17 +94,10 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         if ( studio == null ) {
             return null;
         }
-        String name = studio.getName();
-        if ( name == null ) {
-            return null;
-        }
-        return name;
+        return studio.getName();
     }
 
     private String songArtistLabelStudioCity(Song song) {
-        if ( song == null ) {
-            return null;
-        }
         Artist artist = song.getArtist();
         if ( artist == null ) {
             return null;
@@ -127,10 +110,6 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
         if ( studio == null ) {
             return null;
         }
-        String city = studio.getCity();
-        if ( city == null ) {
-            return null;
-        }
-        return city;
+        return studio.getCity();
     }
 }
