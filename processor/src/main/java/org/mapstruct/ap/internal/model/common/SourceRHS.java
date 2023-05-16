@@ -33,7 +33,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     private PresenceCheck sourcePresenceCheckerReference;
     private boolean useElementAsSourceTypeForMatching = false;
     private final String sourceParameterName;
-    private final PropertyAnnotationReflection propertyAnnotationReflection;
+    private final SourcePropertyReflectionInfo sourcePropertyReflectionInfo;
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
         String sourceErrorMessagePart ) {
@@ -42,14 +42,14 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     public SourceRHS(String sourceParameterName, String sourceReference, PresenceCheck sourcePresenceCheckerReference,
                      Type sourceType, Set<String> existingVariableNames, String sourceErrorMessagePart,
-                     PropertyAnnotationReflection propertyAnnotationReflection) {
+                     SourcePropertyReflectionInfo sourcePropertyReflectionInfo) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
         this.sourceErrorMessagePart = sourceErrorMessagePart;
         this.sourcePresenceCheckerReference = sourcePresenceCheckerReference;
         this.sourceParameterName = sourceParameterName;
-        this.propertyAnnotationReflection = propertyAnnotationReflection;
+        this.sourcePropertyReflectionInfo = sourcePropertyReflectionInfo;
     }
 
     @Override
@@ -176,8 +176,8 @@ public class SourceRHS extends ModelElement implements Assignment {
         return sourceParameterName;
     }
 
-    public PropertyAnnotationReflection getPropertyAnnotationReflection() {
-        return propertyAnnotationReflection;
+    public SourcePropertyReflectionInfo getSourcePropertyReflectionInfo() {
+        return sourcePropertyReflectionInfo;
     }
 
 }

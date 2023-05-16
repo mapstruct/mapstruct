@@ -41,10 +41,6 @@ import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
 import org.mapstruct.ap.internal.model.Field;
-import org.mapstruct.ap.internal.model.GetAnnotationConstructorFragment;
-import org.mapstruct.ap.internal.model.GetFieldAnnotation;
-import org.mapstruct.ap.internal.model.GetMethodAnnotation;
-import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
 import org.mapstruct.ap.internal.model.Javadoc;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
@@ -52,10 +48,8 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
-import org.mapstruct.ap.internal.model.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
-import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -65,6 +59,8 @@ import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.reflection.PropertyAnnotationReflectionConstructorFragment;
+import org.mapstruct.ap.internal.model.source.reflection.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -207,37 +203,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
         // handle source annotation reflections
-        GetMethodAnnotation getMethodAnnotationMethod =
-            new GetMethodAnnotation( mappingContext.getTypeFactory() );
-        GetFieldAnnotation getFieldAnnotationMethod =
-            new GetFieldAnnotation( mappingContext.getTypeFactory() );
-
+        PropertyAnnotationReflectionConstructorFragment reflectionConstructorFragment =
+            new PropertyAnnotationReflectionConstructorFragment();
         mappingContext.getUsedAnnotationFields().stream()
             .sorted( Comparator.comparing( PropertyAnnotationReflectionField::getVariableName ) )
-            .map( field -> {
+            .forEachOrdered( field -> {
                 fields.add( field );
-                HelperMethod method;
-                if ( field.getReflectionInfo().isMethod() ) {
-                    method = getMethodAnnotationMethod;
-                }
-                else {
-                    method = getFieldAnnotationMethod;
-                }
-                String reflectionMethodName = method.getName();
-                constructorFragments.add( new SupportingConstructorFragment(
-                    null,
-                    new GetAnnotationConstructorFragment(
-                        field.getReflectionInfo().getContainingType(),
-                        field.getReflectionInfo().getAccessorSimpleName(),
-                        field.getType(),
-                        reflectionMethodName
-                    ),
-                    field.getVariableName()
-                ) );
-                return method;
-            } )
-            .distinct()
-            .forEach( method -> mappingMethods.add( new SupportingMappingMethod( method ) ) );
+                reflectionConstructorFragment.addField( field );
+            } );
+        if ( !reflectionConstructorFragment.getFieldInitializers().isEmpty() ) {
+            constructorFragments.add( new SupportingConstructorFragment( null, reflectionConstructorFragment, null ) );
+        }
 
         Mapper mapper = new Mapper.Builder()
             .element( element )

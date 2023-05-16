@@ -3,24 +3,25 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.internal.model.source.reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.PropertyAnnotationReflection;
+import org.mapstruct.ap.internal.model.Field;
+import org.mapstruct.ap.internal.model.common.SourcePropertyReflectionInfo;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 
 public class PropertyAnnotationReflectionField extends Field {
 
-    private final PropertyAnnotationReflection reflectionInfo;
+    private final SourcePropertyReflectionInfo reflectionInfo;
     private final String templateName;
 
     private PropertyAnnotationReflectionField(Type type, String fieldName,
-                                              PropertyAnnotationReflection reflectionInfo) {
+                                              SourcePropertyReflectionInfo reflectionInfo) {
         super( type, fieldName, true );
         this.templateName = getTemplateNameForClass( Field.class );
         this.reflectionInfo = reflectionInfo;
@@ -31,13 +32,13 @@ public class PropertyAnnotationReflectionField extends Field {
         return templateName;
     }
 
-    public PropertyAnnotationReflection getReflectionInfo() {
+    public SourcePropertyReflectionInfo getReflectionInfo() {
         return reflectionInfo;
     }
 
     public static PropertyAnnotationReflectionField getSafeField(
         Type type,
-        PropertyAnnotationReflection reflectionInfo,
+        SourcePropertyReflectionInfo reflectionInfo,
         Set<PropertyAnnotationReflectionField> existingFields) {
 
         if ( reflectionInfo == null ) {

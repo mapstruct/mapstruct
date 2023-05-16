@@ -5,21 +5,19 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
-public class PropertyAnnotationReflection extends ModelElement {
+public class SourcePropertyReflectionInfo {
 
     private final Type containingType;
     private final String propertyName;
     private final String accessorSimpleName;
     private final boolean isMethod;
 
-    public PropertyAnnotationReflection(Type containingType, String propertyName, String accessorSimpleName,
+    public SourcePropertyReflectionInfo(Type containingType, String propertyName, String accessorSimpleName,
                                         AccessorType accessorType) {
         if ( !EnumSet.of( AccessorType.FIELD, AccessorType.GETTER ).contains( accessorType ) ) {
             throw new IllegalArgumentException( "Reading accessor type required, given: " + accessorType );
@@ -28,11 +26,6 @@ public class PropertyAnnotationReflection extends ModelElement {
         this.propertyName = propertyName;
         this.accessorSimpleName = accessorSimpleName;
         this.isMethod = ( accessorType == AccessorType.GETTER );
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return Collections.singleton( containingType );
     }
 
     public Type getContainingType() {
@@ -59,7 +52,7 @@ public class PropertyAnnotationReflection extends ModelElement {
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        PropertyAnnotationReflection that = (PropertyAnnotationReflection) o;
+        SourcePropertyReflectionInfo that = (SourcePropertyReflectionInfo) o;
         return isMethod == that.isMethod && containingType.equals( that.containingType ) &&
             propertyName.equals( that.propertyName ) && accessorSimpleName.equals( that.accessorSimpleName );
     }

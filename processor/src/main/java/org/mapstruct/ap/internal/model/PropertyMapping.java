@@ -32,7 +32,7 @@ import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
-import org.mapstruct.ap.internal.model.common.PropertyAnnotationReflection;
+import org.mapstruct.ap.internal.model.common.SourcePropertyReflectionInfo;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
@@ -601,7 +601,7 @@ public class PropertyMapping extends ModelElement {
             else if ( !sourceReference.isNested() ) {
                 ReadAccessor readAccessor = propertyEntry.getReadAccessor();
                 String sourceRef = sourceParam.getName() + "." + readAccessor.getReadValueSource();
-                PropertyAnnotationReflection reflectionInfo = new PropertyAnnotationReflection(
+                SourcePropertyReflectionInfo reflectionInfo = new SourcePropertyReflectionInfo(
                     sourceParam.getType(),
                     propertyEntry.getName(),
                     readAccessor.getSimpleName(),
@@ -662,7 +662,7 @@ public class PropertyMapping extends ModelElement {
                 }
                 NestedPropertyMappingMethod.SafePropertyEntry containingEntry = propertyEntries.get(
                     propertyEntries.size() - 2 );
-                PropertyAnnotationReflection reflectionInfo = new PropertyAnnotationReflection(
+                SourcePropertyReflectionInfo reflectionInfo = new SourcePropertyReflectionInfo(
                     containingEntry.getType(),
                     propertyEntry.getName(),
                     readAccessor.getSimpleName(),

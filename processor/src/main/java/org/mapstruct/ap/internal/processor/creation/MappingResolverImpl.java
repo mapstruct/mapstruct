@@ -36,7 +36,6 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
-import org.mapstruct.ap.internal.model.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.model.SupportingField;
 import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -51,6 +50,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.internal.model.source.reflection.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -562,7 +562,7 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( binding.isSourceAnnotation() ) {
                     PropertyAnnotationReflectionField annotationField = PropertyAnnotationReflectionField.getSafeField(
                         binding.getType(),
-                        sourceRHS.getPropertyAnnotationReflection(),
+                        sourceRHS.getSourcePropertyReflectionInfo(),
                         usedAnnotationFields
                     );
                     usedAnnotationFields.add( annotationField );
