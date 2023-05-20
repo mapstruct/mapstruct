@@ -35,8 +35,6 @@ public interface SourceTargetMapper {
                 return source.toLowerCase( Locale.ROOT );
             case "toUpperCase":
                 return source.toUpperCase( Locale.ROOT );
-            case "strip":
-                return source.strip();
             default:
                 return source;
         }
