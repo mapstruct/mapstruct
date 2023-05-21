@@ -117,6 +117,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
 
         private MappingReferences mappingReferences;
+        private List<MappingReference> targetThisReferences;
         private MethodReference factoryMethod;
         private boolean hasFactoryMethod;
 
@@ -1052,6 +1053,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( MappingReference mapping : mappingReferences.getMappingReferences() ) {
                 if ( mapping.isValid() ) {
                     String target = mapping.getTargetReference().getShallowestPropertyName();
+                    if ( target == null ) {
+                        // When the shallowest property name is null then it is for @Mapping(target = ".")
+                        if ( this.targetThisReferences == null ) {
+                            this.targetThisReferences = new ArrayList<>();
+                        }
+                        this.targetThisReferences.add( mapping );
+                        continue;
+                    }
                     if ( !handledTargets.contains( target ) ) {
                         if ( handleDefinedMapping( mapping, resultTypeToMap, handledTargets ) ) {
                             errorOccurred = true;
@@ -1419,8 +1428,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * duplicates will be handled by {@link #applyPropertyNameBasedMapping(List)}
          */
         private void applyTargetThisMapping() {
+            if ( this.targetThisReferences == null ) {
+                return;
+            }
             Set<String> handledTargetProperties = new HashSet<>();
-            for ( MappingReference targetThis : mappingReferences.getTargetThisReferences() ) {
+            for ( MappingReference targetThis : this.targetThisReferences ) {
 
                 // handle all prior unprocessed target properties, but let duplicates fall through
                 List<SourceReference> sourceRefs = targetThis
