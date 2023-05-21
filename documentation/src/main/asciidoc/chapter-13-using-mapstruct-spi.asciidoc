@@ -71,7 +71,7 @@ public class GolfPlayerDto {
 
     public GolfPlayerDto withName(String name) {
         this.name = name;
-        return this
+        return this;
     }
 }
 ----
