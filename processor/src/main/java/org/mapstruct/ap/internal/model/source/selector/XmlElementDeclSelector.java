@@ -45,18 +45,16 @@ abstract class XmlElementDeclSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType,
-                                                                         Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
+        Type resultType = context.getMappingMethod().getResultType();
+        String targetPropertyName = context.getSelectionCriteria().getTargetPropertyName();
 
         List<SelectedMethod<T>> nameMatches = new ArrayList<>();
         List<SelectedMethod<T>> scopeMatches = new ArrayList<>();
         List<SelectedMethod<T>> nameAndScopeMatches = new ArrayList<>();
         XmlElementRefInfo xmlElementRefInfo =
-            findXmlElementRef( mappingMethod.getResultType(), criteria.getTargetPropertyName() );
+            findXmlElementRef( resultType, targetPropertyName );
 
         for ( SelectedMethod<T> candidate : methods ) {
             if ( !( candidate.getMethod() instanceof SourceMethod ) ) {

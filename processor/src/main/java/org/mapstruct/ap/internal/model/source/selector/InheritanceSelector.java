@@ -22,17 +22,13 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class InheritanceSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType, Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
 
-        if ( sourceTypes.size() != 1 ) {
+        Type sourceType = context.getSourceType();
+        if ( sourceType == null ) {
             return methods;
         }
-
-        Type singleSourceType = first( sourceTypes );
 
         List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
@@ -41,7 +37,7 @@ public class InheritanceSelector implements MethodSelector {
         for ( SelectedMethod<T> method : methods ) {
             Parameter singleSourceParam = first( method.getMethod().getSourceParameters() );
 
-            int sourceTypeDistance = singleSourceType.distanceTo( singleSourceParam.getType() );
+            int sourceTypeDistance = sourceType.distanceTo( singleSourceParam.getType() );
             bestMatchingSourceTypeDistance =
                 addToCandidateListIfMinimal(
                     candidatesWithBestMatchingSourceType,

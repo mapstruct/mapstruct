@@ -23,7 +23,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -126,15 +126,11 @@ public class ObjectFactoryMethodResolver {
         MappingBuilderContext ctx) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager() );
 
         return selectors.getMatchingMethods(
-            method,
             getAllAvailableMethods( method, ctx.getSourceModel() ),
-            java.util.Collections.emptyList(),
-            alternativeTarget,
-            alternativeTarget,
-            SelectionCriteria.forFactoryMethods( selectionParameters )
+            SelectionContext.forFactoryMethods( method, alternativeTarget, selectionParameters, ctx.getTypeFactory() )
         );
     }
 

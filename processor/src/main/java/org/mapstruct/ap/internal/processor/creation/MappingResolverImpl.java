@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.firstKey;
 import static org.mapstruct.ap.internal.util.Collections.firstValue;
@@ -57,6 +56,7 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ElementUtils;
@@ -116,7 +116,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         this.conversions = new Conversions( typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
-        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory, messager );
+        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, messager );
 
         this.verboseLogging = verboseLogging;
     }
@@ -491,12 +491,8 @@ public class MappingResolverImpl implements MappingResolver {
 
         private <T extends Method> List<SelectedMethod<T>> getBestMatch(List<T> methods, Type source, Type target) {
             return methodSelectors.getMatchingMethods(
-                mappingMethod,
                 methods,
-                singletonList( source ),
-                target,
-                target,
-                selectionCriteria
+                SelectionContext.forMappingMethods( mappingMethod, source, target, selectionCriteria, typeFactory )
             );
         }
 

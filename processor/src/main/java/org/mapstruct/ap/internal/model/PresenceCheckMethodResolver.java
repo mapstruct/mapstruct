@@ -6,20 +6,18 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -60,18 +58,12 @@ public final class PresenceCheckMethodResolver {
         MethodSelectors selectors = new MethodSelectors(
             ctx.getTypeUtils(),
             ctx.getElementUtils(),
-            ctx.getTypeFactory(),
             ctx.getMessager()
         );
 
-        Type booleanType = ctx.getTypeFactory().getType( Boolean.class );
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
-            method,
             getAllAvailableMethods( method, ctx.getSourceModel() ),
-            Collections.emptyList(),
-            booleanType,
-            booleanType,
-            SelectionCriteria.forPresenceCheckMethods( selectionParameters )
+            SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() )
         );
 
         if ( matchingMethods.isEmpty() ) {

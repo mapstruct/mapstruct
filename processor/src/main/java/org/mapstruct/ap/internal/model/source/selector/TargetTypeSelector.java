@@ -11,7 +11,6 @@ import java.util.List;
 import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
@@ -31,12 +30,9 @@ public class TargetTypeSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType,
-                                                                         Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
+        SelectionCriteria criteria = context.getSelectionCriteria();
 
         TypeMirror qualifyingTypeMirror = criteria.getQualifyingResultType();
         if ( qualifyingTypeMirror != null && !criteria.isLifecycleCallbackRequired() ) {

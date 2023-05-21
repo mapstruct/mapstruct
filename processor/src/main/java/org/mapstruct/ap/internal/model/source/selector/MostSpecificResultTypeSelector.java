@@ -17,10 +17,10 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class MostSpecificResultTypeSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> candidates,
-                                                                         List<Type> sourceTypes, Type mappingTargetType,
-                                                                         Type returnType, SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> candidates,
+                                                                         SelectionContext context) {
+        SelectionCriteria criteria = context.getSelectionCriteria();
+        Type mappingTargetType = context.getMappingTargetType();
         if ( candidates.size() < 2 || !criteria.isForMapping() || criteria.getQualifyingResultType() != null) {
             return candidates;
         }

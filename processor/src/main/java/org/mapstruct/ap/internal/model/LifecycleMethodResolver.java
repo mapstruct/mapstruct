@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 
 /**
  * Factory for creating lists of appropriate {@link LifecycleCallbackMethodReference}s
@@ -134,15 +133,12 @@ public final class LifecycleMethodResolver {
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager() );
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
-            method,
             callbackMethods,
-            Collections.emptyList(),
-            targetType,
-            method.getResultType(),
-            SelectionCriteria.forLifecycleMethods( selectionParameters ) );
+            SelectionContext.forLifecycleMethods( method, targetType, selectionParameters, ctx.getTypeFactory() )
+        );
 
         return toLifecycleCallbackMethodRefs(
             method,
