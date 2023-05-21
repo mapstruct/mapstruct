@@ -74,7 +74,15 @@ public class MappingContext {
     public Order afterWithBuilderTargetReturningTarget(@MappingTarget Order.Builder orderBuilder) {
         invokedMethods.add( "afterWithBuilderTargetReturningTarget" );
 
-        return orderBuilder.create();
+        // return null, so that @AfterMapping methods on the finalized object will be called in the tests
+        return null;
+    }
+
+    @AfterMapping
+    public Order afterWithTargetReturningTarget(@MappingTarget Order order) {
+        invokedMethods.add( "afterWithTargetReturningTarget" );
+
+        return order;
     }
 
     public List<String> getInvokedMethods() {

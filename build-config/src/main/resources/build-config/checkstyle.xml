@@ -29,7 +29,9 @@
     <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
     <module name="Translation"/>
 
-    <module name="FileLength"/>
+    <module name="FileLength">
+        <property name="max" value="2500"/>
+    </module>
 
     <module name="LineLength">
         <property name="max" value="120"/>

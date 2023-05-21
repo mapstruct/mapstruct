@@ -21,6 +21,12 @@
 
     	</#if>
     </#list>
+    <#list beforeMappingReferencesWithFinalizedReturnType as callback>
+    	<@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
+    	<#if !callback_has_next>
+
+    	</#if>
+    </#list>
     <#if !mapNullToDefault>
     if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if><#else>null</#if></#if>;
@@ -129,7 +135,20 @@
     <#if returnType.name != "void">
 
     <#if finalizerMethod??>
-        return ${resultName}.<@includeModel object=finalizerMethod />;
+        <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
+            ${returnType.name} ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
+
+            <#list afterMappingReferencesWithFinalizedReturnType as callback>
+                <#if callback_index = 0>
+
+                </#if>
+                <@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
+            </#list>
+
+            return ${finalizedResultName};
+        <#else>
+            return ${resultName}.<@includeModel object=finalizerMethod />;
+        </#if>
     <#else>
         return ${resultName};
     </#if>

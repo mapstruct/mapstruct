@@ -186,8 +186,8 @@ public abstract class MappingMethod extends ModelElement {
         return returnType + " " + getName() + "(" + join( parameters, ", " ) + ")";
     }
 
-    private List<LifecycleCallbackMethodReference> filterMappingTarget(List<LifecycleCallbackMethodReference> methods,
-                                                                       boolean mustHaveMappingTargetParameter) {
+    protected static List<LifecycleCallbackMethodReference> filterMappingTarget(
+        List<LifecycleCallbackMethodReference> methods, boolean mustHaveMappingTargetParameter) {
         if ( methods == null ) {
             return Collections.emptyList();
         }
