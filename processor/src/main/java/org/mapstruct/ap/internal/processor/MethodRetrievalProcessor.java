@@ -447,7 +447,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             else if ( param.isTargetType() ) {
                 targetTypeParameters++;
             }
-            else if ( !param.isMappingContext() ) {
+            else if ( !param.isMappingContext() && !param.isSourceAnnotation() ) {
                 validSourceParameters++;
             }
         }

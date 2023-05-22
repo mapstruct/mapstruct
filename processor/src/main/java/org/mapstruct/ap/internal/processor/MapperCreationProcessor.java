@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.processor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,8 @@ import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.reflection.PropertyAnnotationReflectionConstructorFragment;
+import org.mapstruct.ap.internal.model.source.reflection.PropertyAnnotationReflectionField;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
@@ -191,7 +194,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // handle fields
         List<Field> fields = new ArrayList<>( mappingContext.getMapperReferences() );
-        Set<Field> supportingFieldSet = new LinkedHashSet<>(mappingContext.getUsedSupportedFields());
+        Set<Field> supportingFieldSet = new LinkedHashSet<>( mappingContext.getUsedSupportedFields() );
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 
@@ -199,11 +202,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
+        // handle source annotation reflections
+        PropertyAnnotationReflectionConstructorFragment reflectionConstructorFragment =
+            new PropertyAnnotationReflectionConstructorFragment();
+        mappingContext.getUsedAnnotationFields().stream()
+            .sorted( Comparator.comparing( PropertyAnnotationReflectionField::getVariableName ) )
+            .forEachOrdered( field -> {
+                fields.add( field );
+                reflectionConstructorFragment.addField( field );
+            } );
+        if ( !reflectionConstructorFragment.getFieldInitializers().isEmpty() ) {
+            constructorFragments.add( new SupportingConstructorFragment( null, reflectionConstructorFragment, null ) );
+        }
+
         Mapper mapper = new Mapper.Builder()
             .element( element )
             .methods( mappingMethods )
             .fields( fields )
-            .constructorFragments(  constructorFragments )
+            .constructorFragments( constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
             .decorator( getDecorator( element, methods, mapperOptions ) )

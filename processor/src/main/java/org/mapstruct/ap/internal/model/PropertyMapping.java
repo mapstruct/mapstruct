@@ -32,6 +32,7 @@ import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
+import org.mapstruct.ap.internal.model.common.SourcePropertyReflectionInfo;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
@@ -598,14 +599,22 @@ public class PropertyMapping extends ModelElement {
             }
             // simple property
             else if ( !sourceReference.isNested() ) {
-                String sourceRef = sourceParam.getName() + "." + propertyEntry.getReadAccessor().getReadValueSource();
+                ReadAccessor readAccessor = propertyEntry.getReadAccessor();
+                String sourceRef = sourceParam.getName() + "." + readAccessor.getReadValueSource();
+                SourcePropertyReflectionInfo reflectionInfo = new SourcePropertyReflectionInfo(
+                    sourceParam.getType(),
+                    propertyEntry.getName(),
+                    readAccessor.getSimpleName(),
+                    readAccessor.getAccessorType()
+                );
                 SourceRHS sourceRHS = new SourceRHS(
                     sourceParam.getName(),
                     sourceRef,
                     null,
                     propertyEntry.getType(),
                     existingVariableNames,
-                    sourceReference.toString()
+                    sourceReference.toString(),
+                    reflectionInfo
                 );
                 sourceRHS.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
                     sourceReference,
@@ -644,12 +653,30 @@ public class PropertyMapping extends ModelElement {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
-                SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
-                                                     sourceRef,
-                                                     null,
-                                                     sourceType,
-                                                     existingVariableNames,
-                                                     sourceReference.toString()
+
+                ReadAccessor readAccessor = propertyEntry.getReadAccessor();
+                List<NestedPropertyMappingMethod.SafePropertyEntry> propertyEntries =
+                    nestedPropertyMapping.getPropertyEntries();
+                if ( propertyEntries.size() < 2 ) {
+                    throw new IllegalStateException( "Expected more than one entry" );
+                }
+                NestedPropertyMappingMethod.SafePropertyEntry containingEntry = propertyEntries.get(
+                    propertyEntries.size() - 2 );
+                SourcePropertyReflectionInfo reflectionInfo = new SourcePropertyReflectionInfo(
+                    containingEntry.getType(),
+                    propertyEntry.getName(),
+                    readAccessor.getSimpleName(),
+                    readAccessor.getAccessorType()
+                );
+
+                SourceRHS sourceRhs = new SourceRHS(
+                    sourceParam.getName(),
+                    sourceRef,
+                    null,
+                    sourceType,
+                    existingVariableNames,
+                    sourceReference.toString(),
+                    reflectionInfo
                 );
                 sourceRhs.setSourcePresenceCheckerReference( getSourcePresenceCheckerRef(
                     sourceReference,
@@ -1105,9 +1132,8 @@ public class PropertyMapping extends ModelElement {
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-        ReadAccessor targetReadAccessorProvider, Type targetType,
-        Assignment assignment,
-        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+                            ReadAccessor targetReadAccessorProvider, Type targetType, Assignment assignment,
+                            Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;

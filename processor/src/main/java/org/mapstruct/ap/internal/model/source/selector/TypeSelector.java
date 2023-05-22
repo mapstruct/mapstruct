@@ -69,6 +69,8 @@ public class TypeSelector implements MethodSelector {
         }
 
         for ( SelectedMethod<T> method : methods ) {
+            addParameterBindingsFromSelectedMethod( availableBindings, method );
+
             List<List<ParameterBinding>> parameterBindingPermutations =
                 getCandidateParameterBindingPermutations( availableBindings, method.getMethod().getParameters() );
 
@@ -156,9 +158,18 @@ public class TypeSelector implements MethodSelector {
         }
     }
 
-    private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type returnType,
-            Method mappingMethod, SelectedMethod<T> selectedMethodInfo,
-            List<List<ParameterBinding>> parameterAssignmentVariants) {
+    private <T extends Method> void addParameterBindingsFromSelectedMethod(List<ParameterBinding> availableParams,
+                                                                           SelectedMethod<T> selectedMethodInfo) {
+        for ( Parameter param : selectedMethodInfo.getMethod().getParameters() ) {
+            if ( param.isSourceAnnotation() ) {
+                availableParams.add( ParameterBinding.forSourceAnnotationBinding( param.getType() ) );
+            }
+        }
+    }
+
+    private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(
+        Type returnType, Method mappingMethod, SelectedMethod<T> selectedMethodInfo,
+        List<List<ParameterBinding>> parameterAssignmentVariants) {
 
         List<List<ParameterBinding>> matchingParameterAssignmentVariants = new ArrayList<>(
             parameterAssignmentVariants
@@ -309,7 +320,8 @@ public class TypeSelector implements MethodSelector {
             if ( parameter.isTargetType() == candidate.isTargetType()
                 && parameter.isMappingTarget() == candidate.isMappingTarget()
                 && parameter.isMappingContext() == candidate.isMappingContext()
-                && parameter.isTargetPropertyName() == candidate.isTargetPropertyName()) {
+                && parameter.isTargetPropertyName() == candidate.isTargetPropertyName()
+                && parameter.isSourceAnnotation() == candidate.isSourceAnnotation() ) {
                 result.add( candidate );
             }
         }

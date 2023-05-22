@@ -31,6 +31,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
+import org.mapstruct.SourceAnnotation;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;
 import org.mapstruct.TargetPropertyName;
@@ -59,6 +60,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(MapMapping.class)
 @GemDefinition(SubclassMapping.class)
 @GemDefinition(SubclassMappings.class)
+@GemDefinition(SourceAnnotation.class)
 @GemDefinition(TargetType.class)
 @GemDefinition(TargetPropertyName.class)
 @GemDefinition(MappingTarget.class)
