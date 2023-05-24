@@ -791,7 +791,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( type.isRecord() ) {
-                // If the type is a record then just get the record components and use then
+
+                List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
+                    .getEnclosedElements() );
+
+                for ( ExecutableElement constructor : constructors ) {
+                    if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                        continue;
+                    }
+
+                    // prefer constructor annotated with @Default
+                    if ( hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                        return getConstructorAccessor( type, constructor );
+                    }
+                }
+
+
+                // Other than that, just get the record components and use them
                 List<Element> recordComponents = type.getRecordComponents();
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();

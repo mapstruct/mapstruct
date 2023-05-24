@@ -83,4 +83,16 @@ public class RecordsTest {
         assertThat( value.isActive() ).isEqualTo( false );
         assertThat( value.premium() ).isEqualTo( true );
     }
+
+    @Test
+    public void shouldUseDefaultConstructor() {
+        Task entity = new Task( "some-id", 1000L );
+
+        TaskDto value = TaskMapper.INSTANCE.toRecord( entity );
+
+        assertThat( value ).isNotNull();
+        assertThat( value.id() ).isEqualTo( "some-id" );
+        assertThat( value.number() ).isEqualTo( 1L );
+    }
+
 }
