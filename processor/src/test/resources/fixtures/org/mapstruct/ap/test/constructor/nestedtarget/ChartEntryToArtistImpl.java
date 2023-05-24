@@ -132,24 +132,14 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private String chartSongTitle(Chart chart) {
-        if ( chart == null ) {
-            return null;
-        }
         Song song = chart.getSong();
         if ( song == null ) {
             return null;
         }
-        String title = song.getTitle();
-        if ( title == null ) {
-            return null;
-        }
-        return title;
+        return song.getTitle();
     }
 
     private String chartSongArtistName(Chart chart) {
-        if ( chart == null ) {
-            return null;
-        }
         Song song = chart.getSong();
         if ( song == null ) {
             return null;
@@ -158,17 +148,10 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         if ( artist == null ) {
             return null;
         }
-        String name = artist.getName();
-        if ( name == null ) {
-            return null;
-        }
-        return name;
+        return artist.getName();
     }
 
     private String chartSongArtistLabelStudioName(Chart chart) {
-        if ( chart == null ) {
-            return null;
-        }
         Song song = chart.getSong();
         if ( song == null ) {
             return null;
@@ -185,17 +168,10 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         if ( studio == null ) {
             return null;
         }
-        String name = studio.getName();
-        if ( name == null ) {
-            return null;
-        }
-        return name;
+        return studio.getName();
     }
 
     private String chartSongArtistLabelStudioCity(Chart chart) {
-        if ( chart == null ) {
-            return null;
-        }
         Song song = chart.getSong();
         if ( song == null ) {
             return null;
@@ -212,25 +188,14 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         if ( studio == null ) {
             return null;
         }
-        String city = studio.getCity();
-        if ( city == null ) {
-            return null;
-        }
-        return city;
+        return studio.getCity();
     }
 
     private List<Integer> chartSongPositions(Chart chart) {
-        if ( chart == null ) {
-            return null;
-        }
         Song song = chart.getSong();
         if ( song == null ) {
             return null;
         }
-        List<Integer> positions = song.getPositions();
-        if ( positions == null ) {
-            return null;
-        }
-        return positions;
+        return song.getPositions();
     }
 }
