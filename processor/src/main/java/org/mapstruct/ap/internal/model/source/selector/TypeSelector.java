@@ -42,7 +42,7 @@ public class TypeSelector implements MethodSelector {
                                                                          List<SelectedMethod<T>> methods,
                                                                          List<Type> sourceTypes,
                                                                          Type mappingTargetType,
-                                                                         Type returnType,
+                                                                         Type resultType,
                                                                          SelectionCriteria criteria) {
 
         if ( methods.isEmpty() ) {
@@ -57,13 +57,15 @@ public class TypeSelector implements MethodSelector {
             availableBindings = getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 mappingTargetType,
-                criteria.getSourceRHS()
+                resultType,
+                criteria
             );
         }
         else {
             availableBindings = getAvailableParameterBindingsFromSourceTypes(
                 sourceTypes,
                 mappingTargetType,
+                resultType,
                 mappingMethod
             );
         }
@@ -74,7 +76,7 @@ public class TypeSelector implements MethodSelector {
 
             if ( parameterBindingPermutations != null ) {
                 SelectedMethod<T> matchingMethod =
-                    getMatchingParameterBinding( returnType, mappingMethod, method, parameterBindingPermutations );
+                    getMatchingParameterBinding( resultType, mappingMethod, method, parameterBindingPermutations );
 
                 if ( matchingMethod != null ) {
                     result.add( matchingMethod );
@@ -85,9 +87,10 @@ public class TypeSelector implements MethodSelector {
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
-        SourceRHS sourceRHS) {
+    	Type resultType, SelectionCriteria criteria) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
-
+        SourceRHS sourceRHS = criteria.getSourceRHS();
+        
         if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
             availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
@@ -96,13 +99,13 @@ public class TypeSelector implements MethodSelector {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
-        addTargetRelevantBindings( availableParams, targetType );
+        addTargetRelevantBindings( availableParams, targetType, resultType );
 
         return availableParams;
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromSourceTypes(List<Type> sourceTypes,
-            Type targetType, Method mappingMethod) {
+            Type targetType, Type resultType, Method mappingMethod) {
 
         List<ParameterBinding> availableParams = new ArrayList<>( sourceTypes.size() + 2 );
 
@@ -116,7 +119,7 @@ public class TypeSelector implements MethodSelector {
             }
         }
 
-        addTargetRelevantBindings( availableParams, targetType );
+        addTargetRelevantBindings( availableParams, targetType, resultType );
 
         return availableParams;
     }
@@ -127,15 +130,20 @@ public class TypeSelector implements MethodSelector {
      * @param availableParams Already available params, new entries will be added to this list
      * @param targetType Target type
      */
-    private void addTargetRelevantBindings(List<ParameterBinding> availableParams, Type targetType) {
+    private void addTargetRelevantBindings(List<ParameterBinding> availableParams, Type targetType,
+    	Type resultType) {
         boolean mappingTargetAvailable = false;
+        boolean resultMappingTargetAvailable = false;
         boolean targetTypeAvailable = false;
         boolean targetPropertyNameAvailable = false;
-
+        
         // search available parameter bindings if mapping-target and/or target-type is available
         for ( ParameterBinding pb : availableParams ) {
             if ( pb.isMappingTarget() ) {
                 mappingTargetAvailable = true;
+            }
+            else if ( pb.isResultMappingTarget() ) {
+            	resultMappingTargetAvailable = true;
             }
             else if ( pb.isTargetType() ) {
                 targetTypeAvailable = true;
@@ -147,6 +155,9 @@ public class TypeSelector implements MethodSelector {
 
         if ( !mappingTargetAvailable ) {
             availableParams.add( ParameterBinding.forMappingTargetBinding( targetType ) );
+        }
+        if ( !resultMappingTargetAvailable && !targetType.equals(resultType)) {
+        	availableParams.add( ParameterBinding.forResultMappingTargetBinding( resultType ) );
         }
         if ( !targetTypeAvailable ) {
             availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );

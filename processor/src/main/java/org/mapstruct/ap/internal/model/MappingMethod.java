@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -41,6 +42,7 @@ public abstract class MappingMethod extends ModelElement {
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
     private final List<LifecycleCallbackMethodReference> afterMappingReferences;
+    private final List<LifecycleCallbackMethodReference> afterMappingReferencesForResultType;
 
     /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
@@ -71,7 +73,8 @@ public abstract class MappingMethod extends ModelElement {
         this.resultName = initResultName( existingVariableNames );
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
-        this.afterMappingReferences = afterMappingReferences == null ? Collections.emptyList() : afterMappingReferences;
+        this.afterMappingReferences = filterAfterMappingTarget(afterMappingReferences, false);
+        this.afterMappingReferencesForResultType = filterAfterMappingTarget(afterMappingReferences, true);
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
@@ -203,10 +206,34 @@ public abstract class MappingMethod extends ModelElement {
 
         return result;
     }
+    
+    /**
+     * @param methods after-mapping methods for this {@link MappingMethod}.
+     * @param isForResultType boolean indicating whether the after-mapping method is meant for the result
+     * 						  type and not the target type.
+     * @return
+     */
+    private List<LifecycleCallbackMethodReference> filterAfterMappingTarget(List<LifecycleCallbackMethodReference> methods,
+    																		boolean isForResultType) {
+    	if ( isForResultType ) {
+	    	return methods.stream()
+					.filter( LifecycleCallbackMethodReference::hasResultMappingTargetParameter )
+					.collect(Collectors.toList());
+    	}
+    	else {
+	    	return methods.stream()
+					.filter( callback -> !callback.hasResultMappingTargetParameter() )
+					.collect(Collectors.toList());
+    	}
+    }
 
     public List<LifecycleCallbackMethodReference> getAfterMappingReferences() {
         return afterMappingReferences;
     }
+
+	public List<LifecycleCallbackMethodReference> getAfterMappingReferencesForResultType() {
+		return afterMappingReferencesForResultType;
+	}
 
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithMappingTarget() {
         return beforeMappingReferencesWithMappingTarget;
@@ -250,4 +277,5 @@ public abstract class MappingMethod extends ModelElement {
 
         return true;
     }
+
 }
