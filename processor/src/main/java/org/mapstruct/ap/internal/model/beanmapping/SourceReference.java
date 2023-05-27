@@ -152,15 +152,27 @@ public class SourceReference extends AbstractReference {
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
             boolean foundEntryMatch;
 
+            boolean allowedMapToBean = false;
+            if ( segments.length > 0 ) {
+                if ( parameter.getType().isMapType() ) {
+                    // When the parameter type is a map and the parameter name matches the first segment
+                    // then the first segment should not be treated as a property of the map
+                    allowedMapToBean = !segments[0].equals( parameter.getName() );
+                }
+            }
             String[] propertyNames = segments;
-            List<PropertyEntry> entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+            List<PropertyEntry> entries = matchWithSourceAccessorTypes(
+                parameter.getType(),
+                propertyNames,
+                allowedMapToBean
+            );
             foundEntryMatch = ( entries.size() == propertyNames.length );
 
             if ( !foundEntryMatch ) {
                 //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
                 if ( getSourceParameterFromMethodOrTemplate( segments[0] ) != null ) {
                     propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                    entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+                    entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames, true );
                     foundEntryMatch = ( entries.size() == propertyNames.length );
                 }
                 else {
@@ -193,7 +205,7 @@ public class SourceReference extends AbstractReference {
 
             if ( segments.length > 1 && parameter != null ) {
                 propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames );
+                entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames, true );
                 foundEntryMatch = ( entries.size() == propertyNames.length );
             }
             else {
@@ -306,13 +318,14 @@ public class SourceReference extends AbstractReference {
             }
         }
 
-        private List<PropertyEntry> matchWithSourceAccessorTypes(Type type, String[] entryNames) {
+        private List<PropertyEntry> matchWithSourceAccessorTypes(Type type, String[] entryNames,
+                                                                 boolean allowedMapToBean) {
             List<PropertyEntry> sourceEntries = new ArrayList<>();
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
                 Type noBoundsType = newType.withoutBounds();
-                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i] );
+                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i], i > 0 || allowedMapToBean );
                 if ( readAccessor != null ) {
                     PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
                     newType = typeFactory.getReturnType(
