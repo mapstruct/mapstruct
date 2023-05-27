@@ -20,15 +20,15 @@ public interface Issue3144Mapper {
 
     Issue3144Mapper INSTANCE = Mappers.getMapper( Issue3144Mapper.class );
 
-    @Mapping( target = "map", source = "sourceMap")
+    @Mapping(target = "map", source = "sourceMap")
     Target mapExplicitDefined(Map<String, String> sourceMap);
 
-    @Mapping( target = "map", ignore = true)
+    @Mapping(target = "map", ignore = true)
     Target map(Map<String, String> sourceMap);
 
     Target mapMultiParameters(Source source, Map<String, String> map);
 
-    @Mapping( target = "value", source = "map.testValue")
+    @Mapping(target = "value", source = "map.testValue")
     Target mapMultiParametersDefinedMapping(Source source, Map<String, String> map);
 
     class Source {
@@ -46,7 +46,6 @@ public interface Issue3144Mapper {
     class Target {
         private String value;
         private Map<String, String> map;
-
 
         public String getValue() {
             return value;

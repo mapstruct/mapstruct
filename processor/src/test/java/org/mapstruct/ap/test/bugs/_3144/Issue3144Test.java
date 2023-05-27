@@ -31,7 +31,7 @@ class Issue3144Test {
         Issue3144Mapper.Target target = Issue3144Mapper.INSTANCE.mapExplicitDefined( map );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getValue() ).isEqualTo("Map Value");
+        assertThat( target.getValue() ).isEqualTo( "Map Value" );
         assertThat( target.getMap() )
             .containsOnly(
                 entry( "value", "Map Value" ),
@@ -41,10 +41,10 @@ class Issue3144Test {
         target = Issue3144Mapper.INSTANCE.map( map );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getValue() ).isEqualTo("Map Value");
+        assertThat( target.getValue() ).isEqualTo( "Map Value" );
         assertThat( target.getMap() ).isNull();
 
-        target = Issue3144Mapper.INSTANCE.mapMultiParameters( null,  map );
+        target = Issue3144Mapper.INSTANCE.mapMultiParameters( null, map );
 
         assertThat( target ).isNotNull();
         assertThat( target.getValue() ).isNull();
@@ -54,10 +54,10 @@ class Issue3144Test {
                 entry( "testValue", "Map Test Value" )
             );
 
-        target = Issue3144Mapper.INSTANCE.mapMultiParametersDefinedMapping( null,  map );
+        target = Issue3144Mapper.INSTANCE.mapMultiParametersDefinedMapping( null, map );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getValue() ).isEqualTo("Map Test Value");
+        assertThat( target.getValue() ).isEqualTo( "Map Test Value" );
         assertThat( target.getMap() ).isNull();
     }
 }
