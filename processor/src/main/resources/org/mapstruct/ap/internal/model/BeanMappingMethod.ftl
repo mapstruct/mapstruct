@@ -128,10 +128,27 @@
     </#list>
     <#if returnType.name != "void">
 
+    <#if afterMappingReferencesForResultType.isEmpty()>
     <#if finalizerMethod??>
         return ${resultName}.<@includeModel object=finalizerMethod />;
     <#else>
         return ${resultName};
+    </#if>
+    <#else>
+    <@compress single_line=true>
+        <@includeModel object=resultType /> _${resultName} =
+        <#if finalizerMethod??>
+          ${resultName}.<@includeModel object=finalizerMethod />;
+        <#else>
+          ${resultName};
+        </#if>
+    </@compress>
+
+    <#list afterMappingReferencesForResultType as callback>
+        <@includeModel object=callback targetBeanName="_${resultName}" targetType=targetType/>
+    </#list>
+
+        return _${resultName};
     </#if>
     </#if>
     </#if>

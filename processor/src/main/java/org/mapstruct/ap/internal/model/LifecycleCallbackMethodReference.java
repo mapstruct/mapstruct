@@ -88,7 +88,7 @@ public class LifecycleCallbackMethodReference extends MethodReference {
     }
     
     public boolean hasResultMappingTargetParameter() {
-    	return getParameterBindings().stream().anyMatch( ParameterBinding::isResultMappingTarget );
+        return getParameterBindings().stream().anyMatch( ParameterBinding::isResultMappingTarget );
     }
 
     /**

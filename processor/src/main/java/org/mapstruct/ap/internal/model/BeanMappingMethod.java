@@ -327,7 +327,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             ctx,
                             existingVariableNames
             );
-            // TODO: Use returnTypeToConstruct to add relevant after-mapping lifecycle-method
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
                             method,
                             resultTypeToMap,

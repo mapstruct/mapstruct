@@ -195,44 +195,34 @@ public abstract class MappingMethod extends ModelElement {
             return Collections.emptyList();
         }
 
-        List<LifecycleCallbackMethodReference> result =
-            new ArrayList<>( methods.size() );
-
-        for ( LifecycleCallbackMethodReference method : methods ) {
-            if ( mustHaveMappingTargetParameter == method.hasMappingTargetParameter() ) {
-                result.add( method );
-            }
-        }
-
-        return result;
+        return methods.stream()
+                .filter( method -> mustHaveMappingTargetParameter == method.hasMappingTargetParameter() )
+                .filter( method -> !method.hasResultMappingTargetParameter() )
+                .collect( Collectors.toList() );
     }
     
     /**
      * @param methods after-mapping methods for this {@link MappingMethod}.
      * @param isForResultType boolean indicating whether the after-mapping method is meant for the result
      * 						  type and not the target type.
-     * @return
+     * @return list of method refs that conform to the condition.
      */
     private List<LifecycleCallbackMethodReference> filterAfterMappingTarget(List<LifecycleCallbackMethodReference> methods,
-    																		boolean isForResultType) {
-    	if ( isForResultType ) {
-	    	return methods.stream()
-					.filter( LifecycleCallbackMethodReference::hasResultMappingTargetParameter )
-					.collect(Collectors.toList());
-    	}
-    	else {
-	    	return methods.stream()
-					.filter( callback -> !callback.hasResultMappingTargetParameter() )
-					.collect(Collectors.toList());
-    	}
+                                                                            boolean isForResultType) {
+        if (methods == null) {
+            return Collections.emptyList();
+        }
+        
+        return methods.stream()
+                .filter( callback -> isForResultType == callback.hasResultMappingTargetParameter() ).collect(Collectors.toList());
     }
 
     public List<LifecycleCallbackMethodReference> getAfterMappingReferences() {
         return afterMappingReferences;
     }
 
-	public List<LifecycleCallbackMethodReference> getAfterMappingReferencesForResultType() {
-		return afterMappingReferencesForResultType;
+    public List<LifecycleCallbackMethodReference> getAfterMappingReferencesForResultType() {
+        return afterMappingReferencesForResultType;
 	}
 
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithMappingTarget() {
@@ -277,5 +267,4 @@ public abstract class MappingMethod extends ModelElement {
 
         return true;
     }
-
 }

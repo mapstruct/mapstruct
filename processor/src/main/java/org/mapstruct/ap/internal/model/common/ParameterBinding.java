@@ -28,12 +28,12 @@ public class ParameterBinding {
 
     private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType,
         boolean mappingContext, boolean targetPropertyName, SourceRHS sourceRHS) {
-    	this(parameterType, variableName, mappingTarget, false, targetType, mappingContext, targetPropertyName, sourceRHS);
+        this(parameterType, variableName, mappingTarget, false, targetType, mappingContext, targetPropertyName, sourceRHS);
     }
 
     private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean afterMappingTarget,
-    	boolean targetType, boolean mappingContext, boolean targetPropertyName, SourceRHS sourceRHS) {
-    	this.type = parameterType;
+        boolean targetType, boolean mappingContext, boolean targetPropertyName, SourceRHS sourceRHS) {
+        this.type = parameterType;
         this.variableName = variableName;
         this.targetType = targetType;
         this.mappingTarget = mappingTarget;
@@ -70,8 +70,8 @@ public class ParameterBinding {
      * after the finalize method is called.
      */
     public boolean isResultMappingTarget() {
-		return resultMappingTarget;
-	}
+        return resultMappingTarget;
+    }
 
 	/**
      * @return {@code true}, if the parameter being bound is a {@code @MappingContext} parameter.
@@ -173,7 +173,7 @@ public class ParameterBinding {
     }
     
     public static ParameterBinding forResultMappingTargetBinding(Type resultType) {
-    	return new ParameterBinding( resultType, null, true, true, false, false, false, null );
+        return new ParameterBinding( resultType, null, true, true, false, false, false, null );
     }
 
     /**

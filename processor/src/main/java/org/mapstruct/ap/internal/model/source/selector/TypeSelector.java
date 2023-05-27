@@ -157,7 +157,7 @@ public class TypeSelector implements MethodSelector {
             availableParams.add( ParameterBinding.forMappingTargetBinding( targetType ) );
         }
         if ( !resultMappingTargetAvailable && !targetType.equals(resultType)) {
-        	availableParams.add( ParameterBinding.forResultMappingTargetBinding( resultType ) );
+            availableParams.add( ParameterBinding.forResultMappingTargetBinding( resultType ) );
         }
         if ( !targetTypeAvailable ) {
             availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );

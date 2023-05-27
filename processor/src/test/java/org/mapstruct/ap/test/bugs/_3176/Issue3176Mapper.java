@@ -9,22 +9,22 @@ import org.mapstruct.factory.Mappers;
 public abstract class Issue3176Mapper {
 
     public abstract TargetWithBuilder toTarget(Source source);
-	
-	public static Issue3176Mapper INSTANCE = Mappers.getMapper(Issue3176Mapper.class);
-	
-	@AfterMapping
-	public void handleOriginalAfterMapping(@MappingTarget TargetWithBuilder target) {
-		target.setExample(target.getExample() + " after editing");
-	}
-	
-	@AfterMapping
-	public void handleBuilderAfterMapping(@MappingTarget TargetWithBuilder.Builder builder) {
-		builder.example(builder.getExample() + " after builder editing");
-	}
-	
-	@AfterMapping
-	public void handleBuilderAfterMapping2(@MappingTarget TargetWithBuilder.Builder builder) {
-		builder.example(builder.getExample() + " after builder editing");
-	}
-	
+
+    public static Issue3176Mapper INSTANCE = Mappers.getMapper(Issue3176Mapper.class);
+
+    @AfterMapping
+    public void handleOriginalAfterMapping(@MappingTarget TargetWithBuilder target) {
+        target.setExample(target.getExample() + " after editing");
+    }
+
+    @AfterMapping
+    public void handleBuilderAfterMapping(@MappingTarget TargetWithBuilder.Builder builder) {
+        builder.example(builder.getExample() + " after builder editing");
+    }
+
+    @AfterMapping
+    public void handleBuilderAfterMapping2(@MappingTarget TargetWithBuilder.Builder builder) {
+        builder.example(builder.getExample() + " after builder editing");
+    }
+
 }
