@@ -652,8 +652,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
 
-    public ReadAccessor getReadAccessor(String propertyName) {
-        if ( hasStringMapSignature() ) {
+    public ReadAccessor getReadAccessor(String propertyName, boolean allowedMapToBean) {
+        if ( allowedMapToBean && hasStringMapSignature() ) {
             ExecutableElement getMethod = getAllMethods()
                 .stream()
                 .filter( m -> m.getSimpleName().contentEquals( "get" ) )

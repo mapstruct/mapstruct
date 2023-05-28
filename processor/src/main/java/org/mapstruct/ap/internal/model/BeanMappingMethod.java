@@ -586,7 +586,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .build();
 
                     ReadAccessor targetPropertyReadAccessor =
-                        method.getResultType().getReadAccessor( propertyName );
+                        method.getResultType().getReadAccessor( propertyName, forceUpdateMethod );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
@@ -1160,7 +1160,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             Accessor targetWriteAccessor = unprocessedTargetProperties.get( targetPropertyName );
-            ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor( targetPropertyName );
+            ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor(
+                targetPropertyName,
+                method.getSourceParameters().size() == 1
+            );
 
             if ( targetWriteAccessor == null ) {
                 if ( targetReadAccessor == null ) {
@@ -1513,7 +1516,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
 
                 ReadAccessor targetPropertyReadAccessor =
-                    method.getResultType().getReadAccessor( targetPropertyName );
+                    method.getResultType()
+                        .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
                 MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
                 PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
                     .sourceMethod( method )
@@ -1556,7 +1560,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .build();
 
                         ReadAccessor targetPropertyReadAccessor =
-                            method.getResultType().getReadAccessor( targetProperty.getKey() );
+                            method.getResultType()
+                                .getReadAccessor( targetProperty.getKey(), method.getSourceParameters().size() == 1 );
                         MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
@@ -1600,7 +1605,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return sourceRef;
             }
 
-            ReadAccessor sourceReadAccessor = sourceParameter.getType().getReadAccessor( targetPropertyName );
+            ReadAccessor sourceReadAccessor = sourceParameter.getType()
+                .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
             if ( sourceReadAccessor != null ) {
                 // property mapping
                 PresenceCheckAccessor sourcePresenceChecker =
