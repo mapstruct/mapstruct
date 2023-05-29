@@ -59,7 +59,7 @@ public class JavaFileAssert extends FileAssert {
             return Assertions.assertThat( FileUtils.readFileToString( actual, StandardCharsets.UTF_8 ) );
         }
         catch ( IOException e ) {
-            failWithMessage( "Unable to read" + actual.toString() + ". Exception: " + e.getMessage() );
+            failWithMessage( "Unable to read" + actual + ". Exception: " + e.getMessage() );
         }
         return null;
     }

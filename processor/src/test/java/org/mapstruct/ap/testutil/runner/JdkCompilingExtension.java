@@ -135,7 +135,7 @@ class JdkCompilingExtension extends CompilingExtension {
             // The JDK 8+ compilers report all ERROR diagnostics properly. Also when there are multiple per line.
             return expectedDiagnostics;
         }
-        List<DiagnosticDescriptor> filtered = new ArrayList<DiagnosticDescriptor>( expectedDiagnostics.size() );
+        List<DiagnosticDescriptor> filtered = new ArrayList<>(expectedDiagnostics.size());
 
         // The JDK 8 compiler only reports the first message of kind ERROR that is reported for one source file line,
         // so we filter out the surplus diagnostics. The input list is already sorted by file name and line number,

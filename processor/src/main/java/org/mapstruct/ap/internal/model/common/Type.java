@@ -684,10 +684,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, ReadAccessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
-            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>();
 
             Map<String, ReadAccessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
-            modifiableGetters.putAll( recordAccessors );
+            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>(recordAccessors);
 
             List<ReadAccessor> getterList = filters.getterMethodsIn( getAllMethods() );
             for ( ReadAccessor getter : getterList ) {

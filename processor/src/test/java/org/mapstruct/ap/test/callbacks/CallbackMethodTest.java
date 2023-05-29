@@ -111,7 +111,7 @@ public class CallbackMethodTest {
         SourceEnum source = SourceEnum.B;
         TargetEnum target = SourceTargetMapper.INSTANCE.toTargetEnum( source );
 
-        List<Invocation> invocations = new ArrayList<Invocation>();
+        List<Invocation> invocations = new ArrayList<>();
         invocations.addAll( allBeforeMappingMethods( source, target, TargetEnum.class ) );
         invocations.addAll( allAfterMappingMethods( source, target, TargetEnum.class ) );
 

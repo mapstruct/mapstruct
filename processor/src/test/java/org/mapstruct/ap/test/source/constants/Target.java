@@ -20,7 +20,7 @@ public class Target {
     private int integerConstant;
     private Long longWrapperConstant;
     private Date dateConstant;
-    private List<String> nameConstants = new ArrayList<String>();
+    private List<String> nameConstants = new ArrayList<>();
     private CountryEnum country;
 
     public String getPropertyThatShouldBeMapped() {

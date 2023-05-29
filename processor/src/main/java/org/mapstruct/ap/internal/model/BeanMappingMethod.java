@@ -266,9 +266,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 Map<String, ReadAccessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
 
-                for ( Entry<String, ReadAccessor> entry : readAccessors.entrySet() ) {
-                    unprocessedSourceProperties.put( entry.getKey(), entry.getValue() );
-                }
+                unprocessedSourceProperties.putAll(readAccessors);
             }
 
             // get bean mapping (when specified as annotation )
@@ -498,12 +496,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<? extends TypeMirror> unusedPermittedSubclasses =
                     new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
                 method.getOptions().getSubclassMappings().forEach( subClassOption -> {
-                    for (Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
-                                   iterator.hasNext(); ) {
-                        if ( ctx.getTypeUtils().isSameType( iterator.next(), subClassOption.getSource() ) ) {
-                            iterator.remove();
-                        }
-                    }
+                    unusedPermittedSubclasses.removeIf(
+                            typeMirror -> ctx.getTypeUtils().isSameType(typeMirror, subClassOption.getSource()));
                 } );
                 for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
                                 iterator.hasNext(); ) {
