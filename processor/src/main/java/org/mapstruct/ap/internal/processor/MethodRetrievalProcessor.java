@@ -124,6 +124,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         List<SourceMethod> methods = new ArrayList<>();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
 
+            if ( executable.isDefault() ) {
+                // skip the default methods because these are not prototypes.
+                continue;
+            }
+
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
             boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
