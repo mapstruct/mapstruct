@@ -16,12 +16,28 @@ import org.mapstruct.factory.Mappers;
  * @author Ben Zegveld
  */
 @IssueKey( "3296" )
-@WithClasses( { SpecificEntity.class, CommonMapperConfig.class, SpecificMapper.class, SpecificPayload.class } )
+@WithClasses( { Entity.class, Payload.class } )
 public class Issue3296Test {
 
     @ProcessorTest
-    public void shouldNotRaiseErrorIfThereIsADefaultAfterOrBeforeMethodImplementation() {
-        SpecificEntity entity = Mappers.getMapper( SpecificMapper.class ).toEntity( new SpecificPayload() );
+    @WithClasses( { MapperExtendingConfig.class, MapperConfigWithPayloadArgument.class } )
+    public void shouldNotRaiseErrorForDefaultAfterMappingMethodImplementation() {
+        Payload payload = new Payload();
+        payload.setName( "original" );
+
+        Entity entity = Mappers.getMapper( MapperExtendingConfig.class ).toEntity( payload );
+
         assertThat( entity.getName() ).isEqualTo( "AfterMapping called" );
+    }
+
+    @ProcessorTest
+    @WithClasses( { MapperNotExtendingConfig.class, MapperConfigWithoutPayloadArgument.class } )
+    public void shouldNotRaiseErrorRequiringArgumentsForDefaultMethods() {
+        Payload payload = new Payload();
+        payload.setName( "original" );
+
+        Entity entity = Mappers.getMapper( MapperNotExtendingConfig.class ).toEntity( payload );
+
+        assertThat( entity.getName() ).isEqualTo( "original" );
     }
 }

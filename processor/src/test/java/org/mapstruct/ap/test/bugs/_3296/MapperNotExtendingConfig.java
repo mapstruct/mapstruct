@@ -5,15 +5,9 @@
  */
 package org.mapstruct.ap.test.bugs._3296;
 
-public class SpecificPayload {
+import org.mapstruct.Mapper;
 
-    String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+@Mapper( config = MapperConfigWithoutPayloadArgument.class )
+public interface MapperNotExtendingConfig {
+    Entity toEntity(Payload payload);
 }

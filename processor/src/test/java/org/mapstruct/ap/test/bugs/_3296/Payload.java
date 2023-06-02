@@ -5,7 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._3296;
 
-public class SpecificEntity {
+public class Payload {
+
     String name;
 
     public String getName() {

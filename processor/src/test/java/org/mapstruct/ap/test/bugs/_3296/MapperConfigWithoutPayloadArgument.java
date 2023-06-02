@@ -10,10 +10,10 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.MappingTarget;
 
 @MapperConfig
-public interface CommonMapperConfig {
+public interface MapperConfigWithoutPayloadArgument {
 
     @AfterMapping
-    default void afterMapping(@MappingTarget SpecificEntity entity, SpecificPayload payload) {
+    default void afterMapping(@MappingTarget Entity entity) {
         entity.setName( "AfterMapping called" );
     }
 }

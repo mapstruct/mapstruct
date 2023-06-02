@@ -7,7 +7,7 @@ package org.mapstruct.ap.test.bugs._3296;
 
 import org.mapstruct.Mapper;
 
-@Mapper( config = CommonMapperConfig.class )
-public interface SpecificMapper extends CommonMapperConfig {
-    SpecificEntity toEntity(SpecificPayload payload);
+@Mapper( config = MapperConfigWithPayloadArgument.class )
+public interface MapperExtendingConfig extends MapperConfigWithPayloadArgument {
+    Entity toEntity(Payload payload);
 }
