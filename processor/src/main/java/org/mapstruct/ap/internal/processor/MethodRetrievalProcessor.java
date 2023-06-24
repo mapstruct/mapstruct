@@ -124,8 +124,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         List<SourceMethod> methods = new ArrayList<>();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
 
-            if ( executable.isDefault() ) {
-                // skip the default methods because these are not prototypes.
+            if ( executable.isDefault() || executable.getModifiers().contains( Modifier.STATIC ) ) {
+                // skip the default and static methods because these are not prototypes.
                 continue;
             }
 

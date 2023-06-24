@@ -14,6 +14,10 @@ public interface MapperConfigWithoutPayloadArgument {
 
     @AfterMapping
     default void afterMapping(@MappingTarget Entity entity) {
+        staticMethod( entity );
+    }
+
+    static void staticMethod(Entity entity) {
         entity.setName( "AfterMapping called" );
     }
 }
