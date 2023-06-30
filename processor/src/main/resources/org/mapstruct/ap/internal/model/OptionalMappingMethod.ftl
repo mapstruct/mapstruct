@@ -8,6 +8,12 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.OptionalMappingMethod" -->
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+    <#list beforeMappingReferencesWithoutMappingTarget as callback>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<#if !callback_has_next>
+
+    	</#if>
+    </#list>
     if ( ${sourceParameter.name} == null ) {
         <#if resultType.optionalType>
             <#-- regardless of mapNullToDefault value, never return null for Optional resultType -->
@@ -23,11 +29,20 @@
     }
 
     <#if sourceParameter.type.optionalType>
-        return ${sourceParameter.name}.map( ${loopVariableName} -> <@includeModel object=elementAssignment/> )<#if !returnType.optionalType>.orElse( null )</#if>;
+        <@includeModel object=returnType/> ${resultName} = ${sourceParameter.name}.map( ${loopVariableName} -> <@includeModel object=elementAssignment/> )<#if !returnType.optionalType>.orElse( null )</#if>;
     <#else>
         <@includeModel object=sourceElementType/> ${loopVariableName} = ${sourceParameter.name};
-        return Optional.ofNullable( <@includeModel object=elementAssignment/> );
+        <@includeModel object=returnType/> ${resultName} = Optional.ofNullable( <@includeModel object=elementAssignment/> );
     </#if>
+
+    <#list afterMappingReferences as callback>
+    	<#if callback_index = 0>
+
+    	</#if>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    </#list>
+
+    return ${resultName};
 }
 <#macro throws>
     <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>

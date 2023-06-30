@@ -29,8 +29,8 @@ public class Source {
     private Optional<String> monitoredOptionalToString;
     private Optional<SubType> monitoredOptionalSubTypeToSubType;
 
-    public Optional<SubType> publicOptionalSubTypeToOptional;
-    public Optional<String> publicOptionalToNonOptionalWithDefault;
+    @SuppressWarnings( "VisibilityModifier" ) public Optional<SubType> publicOptionalSubTypeToOptional;
+    @SuppressWarnings( "VisibilityModifier" ) public Optional<String> publicOptionalToNonOptionalWithDefault;
 
     public Source(Optional<String> constructorOptionalToNonOptional,
                   String constructorNonOptionalToOptional,

@@ -31,8 +31,8 @@ public class Target {
     private SubType monitoredOptionalSubTypeToSubType;
     private boolean monitoredOptionalSubTypeToSubTypeWasCalled;
 
-    public Optional<SubType> publicOptionalSubTypeToOptional;
-    public String publicOptionalToNonOptionalWithDefault = "DEFAULT";
+    @SuppressWarnings( "VisibilityModifier" ) public Optional<SubType> publicOptionalSubTypeToOptional;
+    @SuppressWarnings( "VisibilityModifier" ) public String publicOptionalToNonOptionalWithDefault = "DEFAULT";
 
     public Target(String constructorOptionalToNonOptional,
                   Optional<String> constructorNonOptionalToOptional,

@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-03-03T00:01:17-0500",
-    comments = "version: , compiler: javac, environment: Java 11.0.18 (Homebrew)"
+    date = "2023-06-30T00:29:43-0400",
+    comments = "version: , compiler: javac, environment: Java 11.0.19 (Homebrew)"
 )
 public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueCheckAlwaysOptionalTestMapper {
 
@@ -219,7 +219,9 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
             return null;
         }
 
-        return optional.map( string -> string ).orElse( null );
+        String string1 = optional.map( string -> string ).orElse( null );
+
+        return string1;
     }
 
     protected Optional<String> stringToStringOptional(String string) {
@@ -228,10 +230,15 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         }
 
         String string1 = string;
-        return Optional.ofNullable( string1 );
+        Optional<String> optional = Optional.ofNullable( string1 );
+
+        return optional;
     }
 
     protected Target.SubType subTypeToSubType(Source.SubType subType) {
+        beforeNonOptionalSourceWithNoTargetType( subType );
+        beforeNonOptionalSourceWithNonOptionalTargetType( Target.SubType.class, subType );
+
         if ( subType == null ) {
             return null;
         }
@@ -242,32 +249,56 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
 
         Target.SubType subType1 = new Target.SubType( value );
 
+        afterNonOptionalSource( subType );
+
         return subType1;
     }
 
     protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
+        beforeOptionalSourceWithNoTargetType( optional );
+        beforeOptionalSourceWithNonOptionalTargetType( Target.SubType.class, optional );
+
         if ( optional == null ) {
             return null;
         }
 
-        return optional.map( subType -> subTypeToSubType( subType ) ).orElse( null );
+        Target.SubType subType1 = optional.map( subType -> subTypeToSubType( subType ) ).orElse( null );
+
+        afterOptionalSource( optional );
+        afterOptionalSourceWithNonOptionalTarget( subType1, optional );
+
+        return subType1;
     }
 
     protected Optional<Target.SubType> subTypeToSubTypeOptional(Source.SubType subType) {
+        beforeNonOptionalSourceWithNoTargetType( subType );
+
         if ( subType == null ) {
             return Optional.empty();
         }
 
         Source.SubType subType1 = subType;
-        return Optional.ofNullable( subTypeToSubType( subType1 ) );
+        Optional<Target.SubType> optional = Optional.ofNullable( subTypeToSubType( subType1 ) );
+
+        afterNonOptionalSource( subType );
+        afterNonOptionalSourceOptionalTarget( optional, subType );
+
+        return optional;
     }
 
     protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
+        beforeOptionalSourceWithNoTargetType( optional );
+
         if ( optional == null ) {
             return Optional.empty();
         }
 
-        return optional.map( subType -> subTypeToSubType( subType ) );
+        Optional<Target.SubType> optional1 = optional.map( subType -> subTypeToSubType( subType ) );
+
+        afterOptionalSource( optional );
+        afterOptionalSourceWithOptionalTarget( optional1, optional );
+
+        return optional1;
     }
 
     protected Source.SubType subTypeToSubType1(Target.SubType subType) {
@@ -290,7 +321,9 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         }
 
         Target.SubType subType1 = subType;
-        return Optional.ofNullable( subTypeToSubType1( subType1 ) );
+        Optional<Source.SubType> optional = Optional.ofNullable( subTypeToSubType1( subType1 ) );
+
+        return optional;
     }
 
     protected Source.SubType subTypeOptionalToSubType1(Optional<Target.SubType> optional) {
@@ -298,7 +331,9 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
             return null;
         }
 
-        return optional.map( subType -> subTypeToSubType1( subType ) ).orElse( null );
+        Source.SubType subType1 = optional.map( subType -> subTypeToSubType1( subType ) ).orElse( null );
+
+        return subType1;
     }
 
     protected Optional<Source.SubType> subTypeOptionalToSubTypeOptional1(Optional<Target.SubType> optional) {
@@ -306,6 +341,8 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
             return Optional.empty();
         }
 
-        return optional.map( subType -> subTypeToSubType1( subType ) );
+        Optional<Source.SubType> optional1 = optional.map( subType -> subTypeToSubType1( subType ) );
+
+        return optional1;
     }
 }
