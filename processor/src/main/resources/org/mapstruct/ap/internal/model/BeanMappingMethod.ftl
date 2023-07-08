@@ -27,7 +27,7 @@
 
     	</#if>
     </#list>
-    <#if !mapNullToDefault>
+    <#if !mapNullToDefault && !sourceParametersExcludingPrimitives.empty>
     if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if><#else>null</#if></#if>;
     }
