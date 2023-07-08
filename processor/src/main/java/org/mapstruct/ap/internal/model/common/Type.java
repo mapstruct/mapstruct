@@ -958,9 +958,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         List<Accessor> adderList = getAdders();
         List<Accessor> candidateList = new ArrayList<>();
         for ( Accessor adder : adderList ) {
-            ExecutableElement executable = (ExecutableElement) adder.getElement();
-            VariableElement arg = executable.getParameters().get( 0 );
-            if ( typeUtils.isSameType( boxed( arg.asType() ), boxed( typeArg ) ) ) {
+            TypeMirror adderParameterType = determineTargetType( adder ).getTypeMirror();
+            if ( typeUtils.isSameType( boxed( adderParameterType ), boxed( typeArg ) ) ) {
                 candidateList.add( adder );
             }
         }
