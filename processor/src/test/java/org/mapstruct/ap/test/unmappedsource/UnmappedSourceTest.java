@@ -9,6 +9,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.test.unmappedtarget.Source;
 import org.mapstruct.ap.test.unmappedtarget.Target;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -109,5 +110,21 @@ public class UnmappedSourceTest {
             }
     )
     public void shouldLeaveUnmappedSourcePropertyUnsetWithWarnPolicySetViaProcessorOption() {
+    }
+    
+
+    @ProcessorTest
+    @IssueKey("3309")
+    @WithClasses({ Source.class, Target.class, BeanMappingSourcePolicyMapper.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = BeanMappingSourcePolicyMapper.class,
+                kind = Kind.WARNING,
+                line = 18,
+                message = "Unmapped source property: \"qux\".")
+        }
+    )
+    public void shouldLeaveUnmappedSourcePropertyUnsetWithWarnPolicySetViaBeanMapping() {
     }
 }
