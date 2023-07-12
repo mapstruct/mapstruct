@@ -180,6 +180,15 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     @Override
+    public ReportingPolicyGem unmappedSourcePolicy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::unmappedSourcePolicy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( ReportingPolicyGem::valueOf )
+                .orElse( next().unmappedSourcePolicy() );
+    }
+
+    @Override
     public BuilderGem getBuilder() {
         return Optional.ofNullable( beanMapping ).map( BeanMappingGem::builder )
             .filter( GemValue::hasValue )
