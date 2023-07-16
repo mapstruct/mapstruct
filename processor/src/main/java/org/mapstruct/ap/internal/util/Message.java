@@ -123,7 +123,6 @@ public enum Message {
     SUBCLASSMAPPING_DOUBLE_SOURCE_SUBCLASS( "Subclass '%s' is already defined as a source." ),
     SUBCLASSMAPPING_ILLEGAL_SUBCLASS( "Class '%s' is not a subclass of '%s'." ),
     SUBCLASSMAPPING_NO_VALID_SUPERCLASS( "Could not find a parameter that is a superclass for '%s'." ),
-    SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED( "SubclassMapping annotation can not be used for update methods." ),
     SUBCLASSMAPPING_ILLOGICAL_ORDER( "SubclassMapping annotation for '%s' found after '%s', but all '%s' objects are also instances of '%s'.", Diagnostic.Kind.WARNING ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),

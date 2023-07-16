@@ -467,6 +467,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                sourceType,
                                                targetType,
                                                mappingReferences ) );
+
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
@@ -479,7 +480,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
-            return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
+
+            String targetArgument = null;
+            Parameter targetParameter = method.getMappingTargetParameter();
+            if ( targetParameter != null ) {
+                targetArgument = targetParameter.getName();
+                if ( assignment != null ) {
+                    assignment.setSourceLocalVarName(
+                        "(" + sourceType.createReferenceName() + ") " + sourceArgument
+                            + ", (" + targetType.createReferenceName() + ") " + targetArgument );
+                }
+            }
+
+            return new SubclassMapping( sourceType, sourceArgument, targetType, targetArgument, assignment );
         }
 
         private boolean isAbstractReturnTypeAllowed() {
@@ -1940,6 +1953,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public boolean hasSubclassMappings() {
         return !subclassMappings.isEmpty();
+    }
+
+    public boolean isUpdateMethod() {
+        return Parameter.getMappingTargetParameter( getParameters() ) != null;
     }
 
     public boolean isAbstractReturnType() {
