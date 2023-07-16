@@ -11,7 +11,13 @@ import org.junit.platform.launcher.LauncherDiscoveryListener;
 /**
  * @author Filip Hrisafov
  */
-public class CompilerLauncherDiscoveryListener implements LauncherDiscoveryListener {
+public abstract class CompilerLauncherDiscoveryListener implements LauncherDiscoveryListener {
+    private final String[] testPackages;
+
+    public CompilerLauncherDiscoveryListener(String... testPackages) {
+        this.testPackages = testPackages;
+    }
+
     @Override
     public void engineDiscoveryStarted(UniqueId engineId) {
         // Currently JUnit Jupiter does not have an SPI for providing a ClassLoader for loading the class
@@ -20,7 +26,7 @@ public class CompilerLauncherDiscoveryListener implements LauncherDiscoveryListe
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         FilteringParentClassLoader filteringParentClassLoader = new FilteringParentClassLoader(
             currentClassLoader,
-            "org.mapstruct.ap.test."
+            testPackages
         );
         ModifiableURLClassLoader newClassLoader = new ModifiableURLClassLoader( filteringParentClassLoader );
         newClassLoader.withOriginOf( getClass() );

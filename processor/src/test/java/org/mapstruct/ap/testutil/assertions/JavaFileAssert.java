@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.AbstractCharSequenceAssert;
+import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.FileAssert;
 import org.assertj.core.error.ShouldHaveSameContent;
@@ -51,7 +51,7 @@ public class JavaFileAssert extends FileAssert {
     /**
      * @return assertion on the file content
      */
-    public AbstractCharSequenceAssert<?, String> content() {
+    public AbstractStringAssert<?> content() {
         exists();
         isFile();
 

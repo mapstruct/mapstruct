@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mapstruct.ap.testutil.runner.Compiler;
 import org.mapstruct.ap.testutil.runner.ProcessorTestExtension;
 

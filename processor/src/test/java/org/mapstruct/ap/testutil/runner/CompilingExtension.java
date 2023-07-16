@@ -5,7 +5,10 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import java.io.ByteArrayOutputStream;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,35 +21,24 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.DefaultLogger;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
-import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+
+import org.mapstruct.ap.testutil.ProcessorTestConfiguration;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
-import org.xml.sax.InputSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
-import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
 /**
  * A JUnit Jupiter Extension that performs source generation using the annotation processor and compiles those sources.
@@ -75,16 +67,23 @@ abstract class CompilingExtension implements BeforeEachCallback {
     private String additionalCompilerClasspath;
     private final Compiler compiler;
 
-    protected CompilingExtension(Compiler compiler) {
+    private final ProcessorTestConfiguration configuration;
+
+    protected CompilingExtension(Compiler compiler, ProcessorTestConfiguration configuration) {
         this.compiler = compiler;
+        this.configuration = configuration;
+    }
+
+    protected Stream<Class<?>> getProcessorClasses() {
+        return Arrays.stream( configuration.getAnnotationProcessorClasses() );
     }
 
     protected void setupDirectories(Method testMethod, Class<?> testClass) {
         String compilationRoot = getBasePath()
-            + TARGET_COMPILATION_TESTS
-            + testClass.getName()
-            + "/" + testMethod.getName()
-            + getPathSuffix();
+                        + TARGET_COMPILATION_TESTS
+                        + testClass.getName()
+                        + "/" + testMethod.getName()
+                        + getPathSuffix();
 
         classOutputDir = compilationRoot + "/classes";
         sourceOutputDir = compilationRoot + "/generated-sources";
@@ -104,15 +103,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
      * needed for compiling the generated sources once the processor has run.
      */
     private static List<String> buildTestCompilationClasspath() {
-        Collection<String> whitelist = Arrays.asList(
-                // MapStruct annotations in multi-module reactor build or IDE
-                "core" + File.separator + "target",
-                // MapStruct annotations in single module build
-                "org" + File.separator + "mapstruct" + File.separator + "mapstruct" + File.separator,
-                "guava"
-        );
 
-        return filterBootClassPath( whitelist );
+        return filterBootClassPath( ProcessorTestConfiguration.getConfiguration().getTestCompilationClasspath() );
     }
 
     /**
@@ -121,18 +113,12 @@ abstract class CompilingExtension implements BeforeEachCallback {
      * The optional dependencies are not needed in this classpath.
      */
     private static List<String> buildProcessorClasspath() {
-        Collection<String> whitelist = Arrays.asList(
-                "processor" + File.separator + "target",  // the processor itself,
-                "freemarker",
-                "gem-api"
-        );
-
-        return filterBootClassPath( whitelist );
+        return filterBootClassPath( ProcessorTestConfiguration.getConfiguration().getProcessorClasspath() );
     }
 
     protected static List<String> filterBootClassPath(Collection<String> whitelist) {
         String[] bootClasspath =
-            System.getProperty( "java.class.path" ).split( File.pathSeparator );
+                        System.getProperty( "java.class.path" ).split( File.pathSeparator );
         String testClasses = "target" + File.separator + "test-classes";
 
         List<String> classpath = new ArrayList<>();
@@ -160,80 +146,29 @@ abstract class CompilingExtension implements BeforeEachCallback {
         Class<?> testClass = context.getRequiredTestClass();
 
         CompilationOutcomeDescriptor expectedResult =
-            CompilationOutcomeDescriptor.forExpectedCompilationResult(
-                findAnnotation( testMethod, ExpectedCompilationOutcome.class ).orElse( null ),
-                findAnnotation( testMethod, ExpectedNote.ExpectedNotes.class ).orElse( null ),
-                findAnnotation( testMethod, ExpectedNote.class ).orElse( null )
-            );
+                        CompilationOutcomeDescriptor.forExpectedCompilationResult(
+                            findAnnotation( testMethod, ExpectedCompilationOutcome.class ).orElse( null ),
+                            findAnnotation( testMethod, ExpectedNote.ExpectedNotes.class ).orElse( null ),
+                            findAnnotation( testMethod, ExpectedNote.class ).orElse( null )
+                                        );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
             assertThat( actualResult.getCompilationResult() ).describedAs(
                 "Compilation failed. Diagnostics: " + actualResult.getDiagnostics()
-            ).isEqualTo(
-                CompilationResult.SUCCEEDED
-            );
+                            ).isEqualTo(
+                                CompilationResult.SUCCEEDED
+                                            );
         }
         else {
             assertThat( actualResult.getCompilationResult() ).describedAs(
                 "Compilation succeeded but should have failed."
-            ).isEqualTo( CompilationResult.FAILED );
+                            ).isEqualTo( CompilationResult.FAILED );
         }
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
         assertNotes( actualResult.getNotes(), expectedResult.getNotes() );
 
-        if ( !findAnnotation( testClass, DisableCheckstyle.class ).isPresent() ) {
-            assertCheckstyleRules();
-        }
-    }
-
-    private void assertCheckstyleRules() throws Exception {
-        if ( sourceOutputDir != null ) {
-            Properties properties = new Properties();
-            properties.put( "checkstyle.cache.file", classOutputDir + "/checkstyle.cache" );
-
-            final Checker checker = new Checker();
-            checker.setModuleClassLoader( Checker.class.getClassLoader() );
-            checker.configure( ConfigurationLoader.loadConfiguration(
-                new InputSource( getClass().getClassLoader().getResourceAsStream(
-                    "checkstyle-for-generated-sources.xml" ) ),
-                new PropertiesExpander( properties ),
-                ConfigurationLoader.IgnoredModulesOptions.OMIT
-            ) );
-
-            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-            checker.addListener(
-                new DefaultLogger(
-                    NullOutputStream.NULL_OUTPUT_STREAM,
-                    AutomaticBean.OutputStreamOptions.CLOSE,
-                    errorStream,
-                    AutomaticBean.OutputStreamOptions.CLOSE
-                )
-            );
-
-            int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
-            if ( errors > 0 ) {
-                String errorLog = errorStream.toString( "UTF-8" );
-                assertThat( true ).describedAs( "Expected checkstyle compliant output, but got errors:\n" + errorLog )
-                                  .isEqualTo( false );
-            }
-        }
-    }
-
-    private static List<File> findGeneratedFiles(File file) {
-        final List<File> files = new LinkedList<>();
-
-        if ( file.canRead() ) {
-            if ( file.isDirectory() ) {
-                for ( File element : file.listFiles() ) {
-                    files.addAll( findGeneratedFiles( element ) );
-                }
-            }
-            else if ( file.isFile() ) {
-                files.add( file );
-            }
-        }
-        return files;
+        ProcessorTestConfiguration.getConfiguration().runAdditionalChecks( testClass, classOutputDir, sourceOutputDir );
     }
 
     private void assertNotes(List<String> actualNotes, List<String> expectedNotes) {
@@ -255,9 +190,9 @@ abstract class CompilingExtension implements BeforeEachCallback {
         }
 
         assertThat( expectedNotesRemaining )
-            .describedAs( "There are unmatched notes: " +
-                String.join( LINE_SEPARATOR, expectedNotesRemaining ) )
-            .isEmpty();
+        .describedAs( "There are unmatched notes: " +
+                        String.join( LINE_SEPARATOR, expectedNotesRemaining ) )
+        .isEmpty();
     }
 
     private void assertDiagnostics(List<DiagnosticDescriptor> actualDiagnostics,
@@ -278,10 +213,10 @@ abstract class CompilingExtension implements BeforeEachCallback {
                 LINE_SEPARATOR,
                 LINE_SEPARATOR,
                 expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR )
-            )
-        ).hasSize(
-            expectedDiagnostics.size()
-        );
+                            )
+                        ).hasSize(
+                            expectedDiagnostics.size()
+                                        );
 
         while ( actualIterator.hasNext() ) {
 
@@ -298,8 +233,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
                 assertThat( actual.getLine() ).as( actual.getMessage() ).isEqualTo( expected.getLine() );
             }
             assertThat( actual.getKind() )
-                .as( actual.getMessage() )
-                .isEqualTo( expected.getKind() );
+            .as( actual.getMessage() )
+            .isEqualTo( expected.getKind() );
             if ( expected.getMessage() != null && !expected.getMessage().isEmpty() ) {
                 assertThat( actual.getMessage() ).describedAs(
                     String.format(
@@ -307,8 +242,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
                         actual.getSourceFileName(),
                         actual.getLine(),
                         actual.getKind()
-                    )
-                ).isEqualTo( expected.getMessage() );
+                                    )
+                                ).isEqualTo( expected.getMessage() );
             }
             else {
                 assertThat( actual.getMessage() ).describedAs(
@@ -317,8 +252,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
                         actual.getSourceFileName(),
                         actual.getLine(),
                         actual.getKind()
-                    )
-                ).matches( "(?ms).*" + expected.getMessageRegex() + ".*" );
+                                    )
+                                ).matches( "(?ms).*" + expected.getMessageRegex() + ".*" );
             }
         }
     }
@@ -340,15 +275,15 @@ abstract class CompilingExtension implements BeforeEachCallback {
         Set<Class<?>> testClasses = new HashSet<>();
 
         findAnnotation( testMethod, WithClasses.class )
-            .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
+        .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
 
         findAnnotation( testClass, WithClasses.class )
-            .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
+        .ifPresent( withClasses -> testClasses.addAll( Arrays.asList( withClasses.value() ) ) );
 
         if ( testClasses.isEmpty() ) {
             throw new IllegalStateException(
                 "The classes to be compiled during the test must be specified via @WithClasses."
-            );
+                            );
         }
 
         return testClasses;
@@ -373,10 +308,10 @@ abstract class CompilingExtension implements BeforeEachCallback {
     private Collection<String> getAdditionalTestDependencies(Method testMethod, Class<?> testClass) {
         Collection<String> testDependencies = new HashSet<>();
         findRepeatableAnnotations( testMethod, WithTestDependency.class )
-            .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
+        .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
 
         findRepeatableAnnotations( testClass, WithTestDependency.class )
-            .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
+        .forEach( annotation ->  Collections.addAll( testDependencies, annotation.value() ) );
 
         return testDependencies;
     }
@@ -399,8 +334,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
             if ( implemented.length != 1 ) {
                 throw new IllegalArgumentException(
                     "The class " + implementor.getName()
-                        + " either needs to implement exactly one interface, or \"provides\" needs to be specified"
-                        + " as well in the annotation " + WithServiceImplementation.class.getSimpleName() + "." );
+                    + " either needs to implement exactly one interface, or \"provides\" needs to be specified"
+                    + " as well in the annotation " + WithServiceImplementation.class.getSimpleName() + "." );
             }
 
             provides = implemented[0];
@@ -443,9 +378,9 @@ abstract class CompilingExtension implements BeforeEachCallback {
             sourceFiles.add(
                 new File(
                     SOURCE_DIR + File.separator + clazz.getName().replace( ".", File.separator )
-                        + ".java"
-                )
-            );
+                    + ".java"
+                                )
+                            );
         }
 
         return sourceFiles;
@@ -461,14 +396,16 @@ abstract class CompilingExtension implements BeforeEachCallback {
             getServices( testMethod, testClass ),
             getProcessorOptions( testMethod, testClass ),
             getAdditionalTestDependencies( testMethod, testClass )
-        );
+                        );
 
         ExtensionContext.Store rootStore = context.getRoot().getStore( NAMESPACE );
 
         // We need to put the compilation request in the store, so the GeneratedSource can use it
         context.getStore( NAMESPACE ).put( context.getUniqueId() + "-compilationRequest", compilationRequest );
-        CompilationCache compilationCache = rootStore
-            .getOrComputeIfAbsent( compilationRequest, request -> new CompilationCache(), CompilationCache.class );
+        CompilationCache compilationCache = rootStore.getOrComputeIfAbsent(
+            compilationRequest,
+            request -> new CompilationCache(),
+            CompilationCache.class );
 
         if ( !needsRecompilation( compilationRequest, compilationCache ) ) {
             return compilationCache.getLastResult();
@@ -550,7 +487,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
     private boolean prepareServices(CompilationRequest compilationRequest) {
         if ( !compilationRequest.getServices().isEmpty() ) {
             String servicesDir =
-                additionalCompilerClasspath + File.separator + "META-INF" + File.separator + "services";
+                            additionalCompilerClasspath + File.separator + "META-INF" + File.separator + "services";
             File directory = new File( servicesDir );
             deleteDirectory( directory );
             directory.mkdirs();

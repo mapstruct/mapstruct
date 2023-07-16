@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticCollector;
@@ -24,7 +26,8 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import org.junit.jupiter.api.condition.JRE;
-import org.mapstruct.ap.MappingProcessor;
+
+import org.mapstruct.ap.testutil.ProcessorTestConfiguration;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
@@ -38,12 +41,13 @@ class JdkCompilingExtension extends CompilingExtension {
 
     private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( TEST_COMPILATION_CLASSPATH );
 
-    private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER =
-        new ModifiableURLClassLoader( new FilteringParentClassLoader( "org.mapstruct." ) )
-                .withPaths( PROCESSOR_CLASSPATH );
+    private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER = new ModifiableURLClassLoader(
+        new FilteringParentClassLoader(
+            ProcessorTestConfiguration.getConfiguration().getAnnotationProcessorAndTestRootPackagesOrClasses() ) )
+                    .withPaths( PROCESSOR_CLASSPATH );
 
-    JdkCompilingExtension() {
-        super( Compiler.JDK );
+    JdkCompilingExtension(ProcessorTestConfiguration configuration) {
+        super( Compiler.JDK, configuration );
     }
 
     @Override
@@ -73,23 +77,30 @@ class JdkCompilingExtension extends CompilingExtension {
         }
         else {
             processorClassloader = new ModifiableURLClassLoader(
-                new FilteringParentClassLoader( "org.mapstruct." ) )
-                    .withPaths( PROCESSOR_CLASSPATH )
-                    .withPath( additionalCompilerClasspath )
-                    .withOriginsOf( compilationRequest.getServices().values() );
+                new FilteringParentClassLoader(
+                    ProcessorTestConfiguration
+                                              .getConfiguration()
+                                              .getAnnotationProcessorAndTestRootPackagesOrClasses() ) )
+                            .withPaths( PROCESSOR_CLASSPATH )
+                            .withPath( additionalCompilerClasspath )
+                            .withOriginsOf( compilationRequest.getServices().values() );
         }
 
         CompilationTask task =
-            compiler.getTask(
-                null,
-                fileManager,
-                diagnostics,
-                compilationRequest.getProcessorOptions(),
-                null,
-                compilationUnits );
+                        compiler.getTask(
+                            null,
+                            fileManager,
+                            diagnostics,
+                            compilationRequest.getProcessorOptions(),
+                            null,
+                            compilationUnits );
+
 
         task.setProcessors(
-            Arrays.asList( (Processor) loadAndInstantiate( processorClassloader, MappingProcessor.class ) ) );
+            getProcessorClasses()
+            .map( procClass -> loadAndInstantiate( processorClassloader, procClass ) )
+            .map( Processor.class::cast )
+            .collect( Collectors.toList() ) );
 
         boolean compilationSuccessful = task.call();
 
@@ -106,7 +117,7 @@ class JdkCompilingExtension extends CompilingExtension {
         }
 
         List<File> compilerClasspathFiles = new ArrayList<>(
-            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() );
+                        COMPILER_CLASSPATH_FILES.size() + testDependencies.size() );
 
         compilerClasspathFiles.addAll( COMPILER_CLASSPATH_FILES );
         for ( String testDependencyPath : filterBootClassPath( testDependencies ) ) {
@@ -135,7 +146,7 @@ class JdkCompilingExtension extends CompilingExtension {
             // The JDK 8+ compilers report all ERROR diagnostics properly. Also when there are multiple per line.
             return expectedDiagnostics;
         }
-        List<DiagnosticDescriptor> filtered = new ArrayList<DiagnosticDescriptor>( expectedDiagnostics.size() );
+        List<DiagnosticDescriptor> filtered = new ArrayList<>( expectedDiagnostics.size() );
 
         // The JDK 8 compiler only reports the first message of kind ERROR that is reported for one source file line,
         // so we filter out the surplus diagnostics. The input list is already sorted by file name and line number,
@@ -143,9 +154,9 @@ class JdkCompilingExtension extends CompilingExtension {
         DiagnosticDescriptor previous = null;
         for ( DiagnosticDescriptor diag : expectedDiagnostics ) {
             if ( diag.getKind() != Kind.ERROR
-                || previous == null
-                || !previous.getSourceFileName().equals( diag.getSourceFileName() )
-                || !Objects.equals( previous.getLine(), diag.getLine() ) ) {
+                            || previous == null
+                            || !previous.getSourceFileName().equals( diag.getSourceFileName() )
+                            || !Objects.equals( previous.getLine(), diag.getLine() ) ) {
                 filtered.add( diag );
                 previous = diag;
             }

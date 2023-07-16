@@ -19,7 +19,8 @@ import org.codehaus.plexus.compiler.CompilerException;
 import org.codehaus.plexus.compiler.CompilerResult;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.eclipse.tycho.compiler.jdt.JDTCompiler;
-import org.mapstruct.ap.MappingProcessor;
+
+import org.mapstruct.ap.testutil.ProcessorTestConfiguration;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 
 /**
@@ -33,13 +34,13 @@ class EclipseCompilingExtension extends CompilingExtension {
     private static final List<String> ECLIPSE_COMPILER_CLASSPATH = buildEclipseCompilerClasspath();
 
     private static final ClassLoader DEFAULT_ECLIPSE_COMPILER_CLASSLOADER =
-        new ModifiableURLClassLoader( newFilteringClassLoaderForEclipse() )
-            .withPaths( ECLIPSE_COMPILER_CLASSPATH )
-            .withPaths( PROCESSOR_CLASSPATH )
-            .withOriginOf( ClassLoaderExecutor.class );
+                    new ModifiableURLClassLoader( newFilteringClassLoaderForEclipse() )
+                    .withPaths( ECLIPSE_COMPILER_CLASSPATH )
+                    .withPaths( PROCESSOR_CLASSPATH )
+                    .withOriginOf( ClassLoaderExecutor.class );
 
-    EclipseCompilingExtension() {
-        super( Compiler.ECLIPSE );
+    EclipseCompilingExtension(ProcessorTestConfiguration configuration) {
+        super( Compiler.ECLIPSE, configuration );
     }
 
     @Override
@@ -57,14 +58,14 @@ class EclipseCompilingExtension extends CompilingExtension {
                 .hidingClasses( compilationRequest.getServices().values() ) );
 
             compilerClassloader = loader.withPaths( ECLIPSE_COMPILER_CLASSPATH )
-                  .withPaths( PROCESSOR_CLASSPATH )
-                  .withOriginOf( ClassLoaderExecutor.class )
-                  .withPath( additionalCompilerClasspath )
-                  .withOriginsOf( compilationRequest.getServices().values() );
+                            .withPaths( PROCESSOR_CLASSPATH )
+                            .withOriginOf( ClassLoaderExecutor.class )
+                            .withPath( additionalCompilerClasspath )
+                            .withOriginsOf( compilationRequest.getServices().values() );
         }
 
         ClassLoaderHelper clHelper =
-            (ClassLoaderHelper) loadAndInstantiate( compilerClassloader, ClassLoaderExecutor.class );
+                        (ClassLoaderHelper) loadAndInstantiate( compilerClassloader, ClassLoaderExecutor.class );
 
         return clHelper.compileInOtherClassloader(
             compilationRequest,
@@ -82,7 +83,7 @@ class EclipseCompilingExtension extends CompilingExtension {
         }
 
         List<String> testCompilationPaths = new ArrayList<>(
-            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() );
+                        TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() );
 
         testCompilationPaths.addAll( TEST_COMPILATION_CLASSPATH );
         testCompilationPaths.addAll( filterBootClassPath( testDependencies ) );
@@ -90,14 +91,16 @@ class EclipseCompilingExtension extends CompilingExtension {
     }
 
     private static FilteringParentClassLoader newFilteringClassLoaderForEclipse() {
-        return new FilteringParentClassLoader(
-            // reload eclipse compiler classes
-            "org.eclipse.",
-            // reload mapstruct processor classes
-            "org.mapstruct.ap.internal.",
-            "org.mapstruct.ap.spi.",
-            "org.mapstruct.ap.MappingProcessor")
-        .hidingClass( ClassLoaderExecutor.class );
+        List<String> reloadClasses = new ArrayList<>();
+        // reload eclipse compiler classes
+        reloadClasses.add( "org.eclipse." );
+        // reload processor classes
+        ProcessorTestConfiguration configuration = ProcessorTestConfiguration.getConfiguration();
+        for ( String packageOrClass : configuration.getAnnotationProcessorPackagesOrClasses() ) {
+            reloadClasses.add( packageOrClass );
+        }
+        return new FilteringParentClassLoader(reloadClasses.toArray( new String[0] ))
+                        .hidingClass( ClassLoaderExecutor.class );
     }
 
     public interface ClassLoaderHelper {
@@ -110,6 +113,7 @@ class EclipseCompilingExtension extends CompilingExtension {
     }
 
     public static final class ClassLoaderExecutor implements ClassLoaderHelper {
+
         @Override
         public CompilationOutcomeDescriptor compileInOtherClassloader(CompilationRequest compilationRequest,
                                                                       List<String> testCompilationClasspath,
@@ -125,7 +129,7 @@ class EclipseCompilingExtension extends CompilingExtension {
             config.setClasspathEntries( testCompilationClasspath );
             config.setOutputLocation( classOutputDir );
             config.setGeneratedSourcesDirectory( new File( sourceOutputDir ) );
-            config.setAnnotationProcessors( new String[] { MappingProcessor.class.getName() } );
+            config.setAnnotationProcessors( getProcessorClasses() );
             config.setSourceFiles( sourceFiles );
             String version = getSourceVersion();
             config.setShowWarnings( false );
@@ -149,6 +153,14 @@ class EclipseCompilingExtension extends CompilingExtension {
                 compilerResult );
         }
 
+        public static String[] getProcessorClasses() {
+            ProcessorTestConfiguration configuration = ProcessorTestConfiguration.getConfiguration();
+            return Arrays
+                         .stream( configuration.getAnnotationProcessorClasses() )
+                         .map( Class::getName )
+                         .toArray( String[]::new );
+        }
+
         private static String getSourceVersion() {
             SourceVersion latest = SourceVersion.latest();
             if ( latest == SourceVersion.RELEASE_8 ) {
@@ -161,11 +173,11 @@ class EclipseCompilingExtension extends CompilingExtension {
 
     private static List<String> buildEclipseCompilerClasspath() {
         Collection<String> whitelist = Arrays.asList(
-                "tycho-compiler",
-                "ecj",
-                "plexus-compiler-api",
-                "plexus-component-annotations"
-        );
+            "tycho-compiler",
+            "ecj",
+            "plexus-compiler-api",
+            "plexus-component-annotations"
+                        );
 
         return filterBootClassPath( whitelist );
     }

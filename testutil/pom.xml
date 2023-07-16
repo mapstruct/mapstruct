@@ -16,9 +16,9 @@
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapstruct-processor</artifactId>
+    <artifactId>mapstruct-testutil</artifactId>
     <packaging>jar</packaging>
-    <name>MapStruct Processor</name>
+    <name>MapStruct Testutil</name>
 
     <properties>
         <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
@@ -30,125 +30,43 @@
     <dependencies>
         <!-- Compile -->
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct.tools.gem</groupId>
-            <artifactId>gem-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mapstruct</artifactId>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-compiler-jdt</artifactId>
             <scope>provided</scope>
         </dependency>
         <!-- Test -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mapstruct-testutil</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-compiler-jdt</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.inject</groupId>
-            <artifactId>jakarta.inject-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!-- plexus-container-default is a runtime-dependency of the tycho-compiler -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit-pioneer</groupId>
             <artifactId>junit-pioneer</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- There is no compile dependency to Joda-Time; It's only required for testing the Joda conversions -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -161,8 +79,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Automatic-Module-Name>org.mapstruct.processor</Automatic-Module-Name>
-                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>
+                            <Automatic-Module-Name>org.mapstruct.testutil</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -201,54 +118,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>processor-deps-shading</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.freemarker:*</include>
-                                    <include>org.mapstruct.tools.gem:gem-api</include>
-                                </includes>
-                            </artifactSet>
-                            <filters>
-                                <filter>
-                                    <artifact>org.freemarker:freemarker</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.*</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.mapstruct.tools.gem:gem-api</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.*</exclude>
-                                        <exclude>**/GemDefinition.class</exclude>
-                                        <exclude>**/GemDefinitions.class</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>freemarker</pattern>
-                                    <shadedPattern>org.mapstruct.ap.shaded.freemarker</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.mapstruct.tools.gem</pattern>
-                                    <shadedPattern>org.mapstruct.ap.shaded.org.mapstruct.tools.gem</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- The flatten plugin should run after the shading is done -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -263,43 +132,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-freemarker-license</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.freemarker</groupId>
-                                    <artifactId>freemarker</artifactId>
-                                    <outputDirectory>${project.build.directory}/classes/META-INF/freemarker</outputDirectory>
-                                    <includes>META-INF/LICENSE.txt,META-INF/NOTICE.txt</includes>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct.tools.gem</groupId>
-                            <artifactId>gem-processor</artifactId>
-                            <version>${org.mapstruct.gem.version}</version>
-                        </path>
-                        <!-- other annotation processors -->
-                    </annotationProcessorPaths>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -359,20 +191,24 @@
                     </execution>
                 </executions>
             </plugin>
+<!-- first version of this plugin, so disable this.
             <plugin>
                 <groupId>com.github.siom79.japicmp</groupId>
                 <artifactId>japicmp-maven-plugin</artifactId>
                 <configuration>
                     <parameter>
                         <includes>
-                            <include>org.mapstruct.ap</include>
+                            <include>org.mapstruct.testutils</include>
                         </includes>
-                        <excludes>
-                            <exclude>org.mapstruct.ap.internal</exclude>
-                            <exclude>org.mapstruct.ap.shaded</exclude>
-                        </excludes>
                     </parameter>
                 </configuration>
+            </plugin>
+-->
+            <plugin>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <configuration>
+                  <skip>true</skip>
+              </configuration>
             </plugin>
         </plugins>
     </build>
@@ -387,6 +223,7 @@
                 <dependency>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                    <version>2.3.1</version>
                     <scope>provided</scope>
                     <optional>true</optional>
                 </dependency>

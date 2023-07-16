@@ -11,6 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
+import org.mapstruct.ap.testutil.ProcessorTestConfiguration;
+
 /**
  * The template invocation processor responsible for providing the appropriate extensions for the different compilers.
  *
@@ -19,9 +21,11 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 public class ProcessorTestInvocationContext implements TestTemplateInvocationContext {
 
     protected Compiler compiler;
+    private final ProcessorTestConfiguration configuration;
 
-    public ProcessorTestInvocationContext(Compiler compiler) {
+    public ProcessorTestInvocationContext(Compiler compiler, ProcessorTestConfiguration configuration) {
         this.compiler = compiler;
+        this.configuration = configuration;
     }
 
     @Override
@@ -34,10 +38,10 @@ public class ProcessorTestInvocationContext implements TestTemplateInvocationCon
         List<Extension> extensions = new ArrayList<>();
         extensions.add( new CompilerTestEnabledOnJreCondition( compiler ) );
         if ( compiler == Compiler.JDK ) {
-            extensions.add( new JdkCompilingExtension() );
+            extensions.add( new JdkCompilingExtension( configuration ) );
         }
         else if ( compiler == Compiler.ECLIPSE ) {
-            extensions.add( new EclipseCompilingExtension() );
+            extensions.add( new EclipseCompilingExtension( configuration ) );
         }
         else {
             throw new IllegalArgumentException( "Compiler [" + compiler + "] is not known" );

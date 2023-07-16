@@ -15,6 +15,7 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.codehaus.plexus.compiler.CompilerMessage;
+
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 
 /**
