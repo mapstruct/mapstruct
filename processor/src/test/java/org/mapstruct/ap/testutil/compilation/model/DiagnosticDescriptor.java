@@ -189,7 +189,7 @@ public class DiagnosticDescriptor {
         if ( kind != other.kind ) {
             return false;
         }
-        if (!Objects.equals(line, other.line)) {
+        if ( !Objects.equals( line, other.line ) ) {
             return false;
         }
         if ( !Objects.equals( message, other.message ) ) {

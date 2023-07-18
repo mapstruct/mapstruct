@@ -45,7 +45,7 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
     public String getFromExpression(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("(").append(bigDecimal(conversionContext)).append(") ");
+            sb.append( "(" ).append( bigDecimal( conversionContext ) ).append( ") " );
             appendDecimalFormatter( sb, conversionContext );
             sb.append( ".parse( <SOURCE> )" );
             return sb.toString();

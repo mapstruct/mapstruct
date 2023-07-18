@@ -37,7 +37,7 @@ public class AntonymsDictionaryDto {
 
         AntonymsDictionaryDto antonymsDictionaryDto = (AntonymsDictionaryDto) o;
 
-        return Objects.equals(antonyms, antonymsDictionaryDto.antonyms);
+        return Objects.equals( antonyms, antonymsDictionaryDto.antonyms );
 
     }
 

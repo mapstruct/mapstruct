@@ -130,7 +130,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
                         ctx.getElementUtils(),
                         ctx.getTypeFactory(),
                         ctx.getMessager() );
-        return new ArrayList<>(additionalAnnotationsBuilder.getProcessedAnnotations(method.getExecutable()));
+        return new ArrayList<>( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
     }
 
 }

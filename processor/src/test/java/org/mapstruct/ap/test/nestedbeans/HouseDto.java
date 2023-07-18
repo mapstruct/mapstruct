@@ -60,7 +60,7 @@ public class HouseDto {
         if ( year != houseDto.year ) {
             return false;
         }
-        if (!Objects.equals(name, houseDto.name)) {
+        if ( !Objects.equals( name, houseDto.name ) ) {
             return false;
         }
         return Objects.equals(roof, houseDto.roof);
