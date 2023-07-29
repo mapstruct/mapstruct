@@ -1636,11 +1636,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
+            // If we have ignoreByDefault = true, unprocessed target properties are not an issue.
+            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
+                return ReportingPolicyGem.IGNORE;
+            }
             if ( method.getOptions().getBeanMapping() != null ) {
-                // If we have ignoreByDefault = true, unprocessed target properties are not an issue.
-                if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
-                    return ReportingPolicyGem.IGNORE;
-                }
                 return method.getOptions().getBeanMapping().unmappedTargetPolicy();
             }
             return method.getOptions().getMapper().unmappedTargetPolicy();
@@ -1736,14 +1736,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
-            if (method.getOptions().getBeanMapping() != null ) {
-                // If we have ignoreByDefault = true, unprocessed source properties are not an issue.
-                if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
-                    return ReportingPolicyGem.IGNORE;
-                }
-                return method.getOptions().getBeanMapping().unmappedSourcePolicy();
+            // If we have ignoreByDefault = true, unprocessed source properties are not an issue.
+            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
+                return ReportingPolicyGem.IGNORE;
             }
-            return method.getOptions().getMapper().unmappedSourcePolicy();
+            return method.getOptions().getBeanMapping().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {

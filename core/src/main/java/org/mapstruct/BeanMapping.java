@@ -159,9 +159,9 @@ public @interface BeanMapping {
      *
      * @return The reporting policy for unmapped source properties.
      *
-     * @since
+     * @since 1.6
      */
-    ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.WARN;
+    ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.IGNORE;
 
     /**
      * How unmapped properties of the target type of a mapping should be reported.
