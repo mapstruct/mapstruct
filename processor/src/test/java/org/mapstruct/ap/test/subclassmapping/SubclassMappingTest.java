@@ -277,4 +277,18 @@ public class SubclassMappingTest {
     })
     void inverseSubclassMappingNotPossible() {
     }
+
+    @ProcessorTest
+    @WithClasses(SubclassIgnoreByDefaultMapper.class)
+    void beanMappingIgnoreByDefaultShouldBePropagated() {
+        Car car = new Car();
+        car.setName( "Test car" );
+        car.setManual( true );
+        VehicleDto target = SubclassIgnoreByDefaultMapper.INSTANCE.map( car );
+        assertThat( target )
+            .isInstanceOfSatisfying( CarDto.class, carDto -> {
+                assertThat( carDto.getName() ).isEqualTo( "Test car" );
+                assertThat( carDto.isManual() ).isFalse();
+            } );
+    }
 }
