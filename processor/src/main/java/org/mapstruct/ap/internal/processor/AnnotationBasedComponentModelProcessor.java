@@ -11,10 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.AnnotatedConstructor;
+import org.mapstruct.ap.internal.model.AnnotatedSetter;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.AnnotationMapperReference;
 import org.mapstruct.ap.internal.model.Decorator;
@@ -77,6 +78,9 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         if ( injectionStrategy == InjectionStrategyGem.CONSTRUCTOR ) {
             buildConstructors( mapper );
         }
+        else if ( injectionStrategy == InjectionStrategyGem.SETTER ) {
+            buildSetters( mapper );
+        }
 
         return mapper;
     }
@@ -108,6 +112,42 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
         return mapperReferences;
+    }
+
+    private void buildSetters(Mapper mapper) {
+        List<MapperReference> mapperReferences = toMapperReferences( mapper.getFields() );
+        for ( MapperReference mapperReference : mapperReferences ) {
+            if ( mapperReference.isUsed() ) {
+                AnnotatedSetter setter = new AnnotatedSetter(
+                    mapperReference,
+                    getMapperReferenceAnnotations(),
+                    Collections.emptyList()
+                );
+                mapper.getMethods().add( setter );
+            }
+        }
+
+        Decorator decorator = mapper.getDecorator();
+        if ( decorator != null ) {
+            List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
+            Set<Type> mapperReferenceAnnotationsTypes = mapperReferenceAnnotations
+                .stream()
+                .map( Annotation::getType )
+                .collect( Collectors.toSet() );
+            for ( Field field : decorator.getFields() ) {
+                if ( field instanceof AnnotationMapperReference ) {
+
+                    List<Annotation> fieldAnnotations = ( (AnnotationMapperReference) field ).getAnnotations();
+
+                    List<Annotation> qualifiers = extractMissingAnnotations(
+                        fieldAnnotations,
+                        mapperReferenceAnnotationsTypes
+                    );
+
+                    decorator.getMethods().add( new AnnotatedSetter( field, mapperReferenceAnnotations, qualifiers ) );
+                }
+            }
+        }
     }
 
     private void buildConstructors(Mapper mapper) {
@@ -197,15 +237,31 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             AnnotationMapperReference annotationMapperReference = mapperReferenceIterator.next();
             mapperReferenceIterator.remove();
 
-            List<Annotation> qualifiers = new ArrayList<>();
-            for ( Annotation annotation : annotationMapperReference.getAnnotations() ) {
-                if ( !mapperReferenceAnnotationsTypes.contains( annotation.getType() ) ) {
-                    qualifiers.add( annotation );
-                }
-            }
+            List<Annotation> qualifiers = extractMissingAnnotations(
+                annotationMapperReference.getAnnotations(),
+                mapperReferenceAnnotationsTypes
+            );
 
             mapperReferenceIterator.add( annotationMapperReference.withNewAnnotations( qualifiers ) );
         }
+    }
+
+    /**
+     * Extract all annotations from {@code annotations} that do not have a type in {@code annotationTypes}.
+     *
+     * @param annotations     the annotations from which we need to extract information
+     * @param annotationTypes the annotation types to ignore
+     * @return the annotations that are not in the {@code annotationTypes}
+     */
+    private List<Annotation> extractMissingAnnotations(List<Annotation> annotations,
+                                                       Set<Type> annotationTypes) {
+        List<Annotation> qualifiers = new ArrayList<>();
+        for ( Annotation annotation : annotations ) {
+            if ( !annotationTypes.contains( annotation.getType() ) ) {
+                qualifiers.add( annotation );
+            }
+        }
+        return qualifiers;
     }
 
     protected boolean additionalPublicEmptyConstructor() {

@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
-import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -27,7 +26,7 @@ import static org.mapstruct.ap.internal.util.Strings.join;
  *
  * @author Gunnar Morling
  */
-public abstract class MappingMethod extends ModelElement {
+public abstract class MappingMethod extends GeneratedTypeMethod {
 
     private final String name;
     private final List<Parameter> parameters;

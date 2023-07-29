@@ -10,6 +10,7 @@ package org.mapstruct;
  * JSR330 / Jakarta.
  *
  * @author Kevin Grüneberg
+ * @author Lucas Resch
  */
 public enum InjectionStrategy {
 
@@ -17,5 +18,8 @@ public enum InjectionStrategy {
     FIELD,
 
     /** Annotations are written on the constructor **/
-    CONSTRUCTOR
+    CONSTRUCTOR,
+
+    /** A dedicated setter method is created */
+    SETTER
 }
