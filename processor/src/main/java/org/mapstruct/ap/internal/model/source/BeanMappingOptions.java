@@ -113,6 +113,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValueMappingStrategy().hasValue()
             && !gem.subclassExhaustiveStrategy().hasValue()
             && !gem.unmappedTargetPolicy().hasValue()
+            && !gem.unmappedSourcePolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
             && !gem.builder().hasValue() ) {
 

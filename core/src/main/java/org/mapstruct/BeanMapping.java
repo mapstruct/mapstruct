@@ -155,7 +155,7 @@ public @interface BeanMapping {
     /**
      * How unmapped properties of the source type of a mapping should be reported.
      * If no policy is configured, the policy given via {@link MapperConfig#unmappedSourcePolicy()} or
-     * {@link Mapper#unmappedSourcePolicy()} will be applied, using {@link ReportingPolicy#WARN} by default.
+     * {@link Mapper#unmappedSourcePolicy()} will be applied, using {@link ReportingPolicy#IGNORE} by default.
      *
      * @return The reporting policy for unmapped source properties.
      *
