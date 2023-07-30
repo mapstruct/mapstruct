@@ -6,9 +6,9 @@
 package org.mapstruct.ap.test.unmappedsource.beanmapping;
 
 public class Source {
-    
+
     private int foo;
-    
+
     private int bar;
 
     public int getFoo() {
@@ -26,5 +26,5 @@ public class Source {
     public void setBar(int bar) {
         this.bar = bar;
     }
-    
+
 }

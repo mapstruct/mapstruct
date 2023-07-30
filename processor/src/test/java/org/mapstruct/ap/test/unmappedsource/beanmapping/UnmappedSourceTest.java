@@ -33,21 +33,21 @@ class UnmappedSourceTest {
     public void shouldCompileWithUnmappedSourcePolicySetToWarnWithBeanMapping() {
         Source source = new Source();
         Source source2 = new Source();
-        
-        source.setFoo(10);
-        source.setBar(20);
-        
-        source2.setFoo(1);
-        source2.setBar(2);
-        
-        Target target = BeanMappingSourcePolicyMapper.MAPPER.map(source);
-        Target target2 = BeanMappingSourcePolicyMapper.MAPPER.map2(source2);
-        
-        assertThat(target).isNotNull();
-        assertThat(target.getFoo()).isEqualTo(10);
 
-        assertThat(target2).isNotNull();
-        assertThat(target2.getFoo()).isEqualTo(1);
+        source.setFoo( 10 );
+        source.setBar( 20 );
+
+        source2.setFoo( 1 );
+        source2.setBar( 2 );
+
+        Target target = BeanMappingSourcePolicyMapper.MAPPER.map( source );
+        Target target2 = BeanMappingSourcePolicyMapper.MAPPER.map2( source2 );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( 10 );
+
+        assertThat( target2 ).isNotNull();
+        assertThat( target2.getFoo() ).isEqualTo( 1 );
     }
 
     @ProcessorTest

@@ -14,5 +14,5 @@ public interface BeanMappingSourcePolicyErrorMapper {
 
     @BeanMapping(unmappedSourcePolicy = ReportingPolicy.ERROR)
     Target map(Source source);
-    
+
 }

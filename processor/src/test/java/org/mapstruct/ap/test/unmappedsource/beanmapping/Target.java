@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.unmappedsource.beanmapping;
 public class Target {
 
     private int foo;
-    
+
     public int getFoo() {
         return foo;
     }
@@ -16,5 +16,5 @@ public class Target {
     public void setFoo(int foo) {
         this.foo = foo;
     }
-   
+
 }

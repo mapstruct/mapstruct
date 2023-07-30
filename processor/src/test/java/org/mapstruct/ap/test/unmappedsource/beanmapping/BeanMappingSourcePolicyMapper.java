@@ -13,8 +13,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper(unmappedSourcePolicy = ReportingPolicy.ERROR)
 public interface BeanMappingSourcePolicyMapper {
 
-    public static BeanMappingSourcePolicyMapper MAPPER =
-            Mappers.getMapper(BeanMappingSourcePolicyMapper.class);
+    BeanMappingSourcePolicyMapper MAPPER =
+            Mappers.getMapper( BeanMappingSourcePolicyMapper.class );
 
     @BeanMapping(unmappedSourcePolicy = ReportingPolicy.WARN)
     Target map(Source source);
