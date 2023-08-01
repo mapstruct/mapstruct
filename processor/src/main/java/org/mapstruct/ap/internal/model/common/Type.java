@@ -38,7 +38,6 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
-import org.mapstruct.ap.internal.model.common.Type.ResolvedPair;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
@@ -596,15 +595,14 @@ public class Type extends ModelElement implements Comparable<Type> {
             return this;
         }
         newType = newType.getBoxedEquivalent();
-        List<Type> replacedTypeParameters = new ArrayList<>( typeParameters );
-        int replacementIndex = replacedTypeParameters.indexOf( oldGenericType );
-        replacedTypeParameters.add( replacementIndex, newType );
-        replacedTypeParameters.remove( replacementIndex + 1 );
-        return typeFactory.getType( typeUtils.getDeclaredType(
-                                                 typeElement,
-                                                 replacedTypeParameters.stream()
-                                                                       .map( type -> type.getTypeMirror() )
-                                                                       .toArray( TypeMirror[]::new ) ) );
+        TypeMirror[] replacedTypeMirrors = new TypeMirror[typeParameters.size()];
+        for ( int i = 0; i < typeParameters.size(); i++ ) {
+            Type typeParameter = typeParameters.get( i );
+            replacedTypeMirrors[i] =
+                typeParameter.equals( oldGenericType ) ? newType.typeMirror : typeParameter.typeMirror;
+        }
+
+        return typeFactory.getType( typeUtils.getDeclaredType( typeElement, replacedTypeMirrors ) );
     }
 
     /**
@@ -1496,7 +1494,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 resultType = resultType.replaceGeneric( generic, resolveParameterToType.getMatch() );
             }
             else {
-                Type replacementType = generic.resolveGenericTypeParameters( declared, parameterized );
+                Type replacementType = generic.resolveParameterToType( declared, parameterized ).getMatch();
                 resultType = resultType.replaceGeneric( generic, replacementType );
             }
         }
