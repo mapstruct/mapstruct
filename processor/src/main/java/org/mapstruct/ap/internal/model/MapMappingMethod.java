@@ -15,8 +15,10 @@ import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -35,6 +37,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
+    private final Parameter sourceParameter;
+    private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
@@ -235,16 +239,28 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
-    }
-
-    public Parameter getSourceParameter() {
+        Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
-                return parameter;
+                sourceParameter = parameter;
+                break;
             }
         }
 
-        throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        if ( sourceParameter == null ) {
+            throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        }
+
+        this.sourceParameter = sourceParameter;
+        this.sourceParameterPresenceCheck = new NullPresenceCheck( this.sourceParameter.getName() );
+    }
+
+    public Parameter getSourceParameter() {
+        return sourceParameter;
+    }
+
+    public PresenceCheck getSourceParameterPresenceCheck() {
+        return sourceParameterPresenceCheck;
     }
 
     public List<Type> getSourceElementTypes() {

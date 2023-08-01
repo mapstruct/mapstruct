@@ -17,7 +17,7 @@
 
     	</#if>
     </#list>
-    if ( ${sourceParameter.name} == null ) {
+    if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
         <#else>
