@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedSourcePolicy = ReportingPolicy.WARN)
-public interface BeanMappingSourcePolicyErrorMapper {
+public interface BeanMappingSourcePolicyErroneousMapper {
 
     @BeanMapping(unmappedSourcePolicy = ReportingPolicy.ERROR)
     Target map(Source source);

@@ -51,11 +51,11 @@ class UnmappedSourceTest {
     }
 
     @ProcessorTest
-    @WithClasses({ Source.class, Target.class, BeanMappingSourcePolicyErrorMapper.class })
+    @WithClasses({ Source.class, Target.class, BeanMappingSourcePolicyErroneousMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic(type = BeanMappingSourcePolicyErrorMapper.class,
+                @Diagnostic(type = BeanMappingSourcePolicyErroneousMapper.class,
                     kind = Kind.ERROR,
                     line = 16,
                     message = "Unmapped source property: \"bar\".")
