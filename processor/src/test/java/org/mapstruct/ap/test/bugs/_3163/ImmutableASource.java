@@ -16,6 +16,7 @@ import java.util.Objects;
  * {@code ImmutableASource.builder()}.
  */
 @SuppressWarnings({"all"})
+@javax.annotation.processing.Generated("org.immutables.processor.ProxyProcessor")
 public final class ImmutableASource implements ASource {
   private final ImmutableBSource b;
 
