@@ -1740,7 +1740,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
-            return method.getOptions().getMapper().unmappedSourcePolicy();
+            return method.getOptions().getBeanMapping().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {

@@ -110,4 +110,5 @@ public class UnmappedSourceTest {
     )
     public void shouldLeaveUnmappedSourcePropertyUnsetWithWarnPolicySetViaProcessorOption() {
     }
+
 }

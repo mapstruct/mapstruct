@@ -113,6 +113,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValueMappingStrategy().hasValue()
             && !gem.subclassExhaustiveStrategy().hasValue()
             && !gem.unmappedTargetPolicy().hasValue()
+            && !gem.unmappedSourcePolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
             && !gem.builder().hasValue() ) {
 
@@ -177,6 +178,15 @@ public class BeanMappingOptions extends DelegatingOptions {
                 .map( GemValue::getValue )
                 .map( ReportingPolicyGem::valueOf )
                 .orElse( next().unmappedTargetPolicy() );
+    }
+
+    @Override
+    public ReportingPolicyGem unmappedSourcePolicy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::unmappedSourcePolicy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( ReportingPolicyGem::valueOf )
+                .orElse( next().unmappedSourcePolicy() );
     }
 
     @Override
