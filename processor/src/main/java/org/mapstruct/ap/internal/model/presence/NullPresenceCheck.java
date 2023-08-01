@@ -19,18 +19,34 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class NullPresenceCheck extends ModelElement implements PresenceCheck {
 
     private final String sourceReference;
+    private final boolean negate;
 
     public NullPresenceCheck(String sourceReference) {
         this.sourceReference = sourceReference;
+        this.negate = false;
+    }
+
+    public NullPresenceCheck(String sourceReference, boolean negate) {
+        this.sourceReference = sourceReference;
+        this.negate = negate;
     }
 
     public String getSourceReference() {
         return sourceReference;
     }
 
+    public boolean isNegate() {
+        return negate;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new NullPresenceCheck( sourceReference, !negate );
     }
 
     @Override

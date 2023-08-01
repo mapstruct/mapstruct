@@ -6,7 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.MethodReferencePresenceCheck" -->
-<@includeModel object=methodReference
+<#if isNegate()>!</#if><@includeModel object=methodReference
                presenceCheck=true
                targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType/>

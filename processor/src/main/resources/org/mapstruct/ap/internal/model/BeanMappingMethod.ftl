@@ -27,8 +27,8 @@
 
     	</#if>
     </#list>
-    <#if !mapNullToDefault && !sourceParametersExcludingPrimitives.empty>
-    if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
+    <#if !mapNullToDefault && !sourcePresenceChecks.empty>
+    if ( <#list sourcePresenceChecks as sourcePresenceCheck><@includeModel object=sourcePresenceCheck.negate() /><#if sourcePresenceCheck_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if><#else>null</#if></#if>;
     }
     </#if>
@@ -47,19 +47,19 @@
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>
             <#if (sourceParameters?size > 1)>
-                <#list sourceParametersNeedingNullCheck as sourceParam>
+                <#list sourceParametersNeedingPresenceCheck as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                         </#list>
-                        if ( ${sourceParam.name} != null ) {
+                        if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
                         }
                     </#if>
                 </#list>
-                <#list sourceParametersNotNeedingNullCheck as sourceParam>
+                <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
                     <#if (constructorPropertyMappingsByParameter(sourceParam)?size > 0)>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
@@ -71,7 +71,7 @@
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
                     <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                 </#list>
-                <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
+                <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
                     <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
@@ -100,16 +100,16 @@
     	</#if>
     </#list>
     <#if (sourceParameters?size > 1)>
-        <#list sourceParametersNeedingNullCheck as sourceParam>
+        <#list sourceParametersNeedingPresenceCheck as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
-                if ( ${sourceParam.name} != null ) {
+                if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
                     <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                     </#list>
                 }
             </#if>
         </#list>
-        <#list sourceParametersNotNeedingNullCheck as sourceParam>
+        <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                     <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
@@ -117,7 +117,7 @@
             </#if>
         </#list>
     <#else>
-        <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
+        <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>

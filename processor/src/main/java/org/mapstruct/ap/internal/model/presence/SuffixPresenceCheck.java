@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.NegatePresenceCheck;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -20,10 +21,16 @@ public class SuffixPresenceCheck extends ModelElement implements PresenceCheck {
 
     private final String sourceReference;
     private final String suffix;
+    private final boolean negate;
 
     public SuffixPresenceCheck(String sourceReference, String suffix) {
+        this( sourceReference, suffix, false );
+    }
+
+    public SuffixPresenceCheck(String sourceReference, String suffix, boolean negate) {
         this.sourceReference = sourceReference;
         this.suffix = suffix;
+        this.negate = negate;
     }
 
     public String getSourceReference() {
@@ -32,6 +39,15 @@ public class SuffixPresenceCheck extends ModelElement implements PresenceCheck {
 
     public String getSuffix() {
         return suffix;
+    }
+
+    public boolean isNegate() {
+        return negate;
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new NegatePresenceCheck( this );
     }
 
     @Override

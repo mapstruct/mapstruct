@@ -46,11 +46,13 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -88,6 +90,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
+    private final Map<String, PresenceCheck> presenceChecksByParameter;
     private final List<PropertyMapping> constantMappings;
     private final List<PropertyMapping> constructorConstantMappings;
     private final List<SubclassMapping> subclassMappings;
@@ -1869,11 +1872,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
         this.constantMappings = new ArrayList<>( propertyMappings.size() );
+        this.presenceChecksByParameter = new LinkedHashMap<>();
         this.constructorMappingsByParameter = new LinkedHashMap<>();
         this.constructorConstantMappings = new ArrayList<>();
-        Set<String> sourceParameterNames = getSourceParameters().stream()
-            .map( Parameter::getName )
-            .collect( Collectors.toSet() );
+        Set<String> sourceParameterNames = new HashSet<>();
+        for ( Parameter sourceParameter : getSourceParameters() ) {
+            sourceParameterNames.add( sourceParameter.getName() );
+            if ( !sourceParameter.getType().isPrimitive() ) {
+                presenceChecksByParameter.put(
+                    sourceParameter.getName(),
+                    new NullPresenceCheck( sourceParameter.getName() )
+                );
+            }
+        }
         for ( PropertyMapping mapping : propertyMappings ) {
             if ( mapping.isConstructorMapping() ) {
                 if ( sourceParameterNames.contains( mapping.getSourceBeanName() ) ) {
@@ -1984,44 +1995,50 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return types;
     }
 
-    public List<Parameter> getSourceParametersExcludingPrimitives() {
+    public Collection<PresenceCheck> getSourcePresenceChecks() {
+        return presenceChecksByParameter.values();
+    }
+
+    public Map<String, PresenceCheck> getPresenceChecksByParameter() {
+        return presenceChecksByParameter;
+    }
+
+    public PresenceCheck getPresenceCheckByParameter(Parameter parameter) {
+        return presenceChecksByParameter.get( parameter.getName() );
+    }
+
+    public List<Parameter> getSourceParametersNeedingPresenceCheck() {
         return getSourceParameters().stream()
-                            .filter( parameter -> !parameter.getType().isPrimitive() )
+                            .filter( this::needsPresenceCheck )
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourceParametersNeedingNullCheck() {
+    public List<Parameter> getSourceParametersNotNeedingPresenceCheck() {
         return getSourceParameters().stream()
-                            .filter( this::needsNullCheck )
+                            .filter( parameter -> !needsPresenceCheck( parameter ) )
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourceParametersNotNeedingNullCheck() {
-        return getSourceParameters().stream()
-                            .filter( parameter -> !needsNullCheck( parameter ) )
-                            .collect( Collectors.toList() );
-    }
-
-    private boolean needsNullCheck(Parameter parameter) {
-        if ( parameter.getType().isPrimitive() ) {
+    private boolean needsPresenceCheck(Parameter parameter) {
+        if ( !presenceChecksByParameter.containsKey( parameter.getName() ) ) {
             return false;
         }
 
         List<PropertyMapping> mappings = propertyMappingsByParameter( parameter );
-        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+        if ( mappings.size() == 1 && doesNotNeedPresenceCheckForSourceParameter( mappings.get( 0 ) ) ) {
             return false;
         }
 
         mappings = constructorPropertyMappingsByParameter( parameter );
 
-        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+        if ( mappings.size() == 1 && doesNotNeedPresenceCheckForSourceParameter( mappings.get( 0 ) ) ) {
             return false;
         }
 
         return true;
     }
 
-    private boolean doesNotNeedNullCheckForSourceParameter(PropertyMapping mapping) {
+    private boolean doesNotNeedPresenceCheckForSourceParameter(PropertyMapping mapping) {
         if ( mapping.getAssignment().isCallingUpdateMethod() ) {
             // If the mapping assignment is calling an update method then we should do a null check
             // in the bean mapping
