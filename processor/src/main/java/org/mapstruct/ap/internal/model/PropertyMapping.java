@@ -1115,7 +1115,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
 
         this.assignment = assignment;
-        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptySet();
+        this.dependsOn = dependsOn != null ? dependsOn : Collections.emptySet();
         this.defaultValueAssignment = defaultValueAssignment;
         this.constructorMapping = constructorMapping;
     }

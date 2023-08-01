@@ -16,7 +16,7 @@ import org.mapstruct.ap.test.collection.adder.source.Foo;
  */
 public class Target2 {
 
-    private List<Foo> attributes = new ArrayList<Foo>();
+    private List<Foo> attributes = new ArrayList<>();
 
     public Foo addAttribute( Foo foo ) {
         attributes.add( foo );

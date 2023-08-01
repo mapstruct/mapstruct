@@ -22,7 +22,7 @@ public class SimpleImmutablePerson {
         this.job = builder.job;
         this.city = builder.city;
         this.address = builder.address;
-        this.children = new ArrayList<String>( builder.children );
+        this.children = new ArrayList<>(builder.children);
     }
 
     public static Builder builder() {
@@ -59,7 +59,7 @@ public class SimpleImmutablePerson {
         private String job;
         private String city;
         private String address;
-        private List<String> children = new ArrayList<String>();
+        private List<String> children = new ArrayList<>();
 
         public Builder age(int age) {
             this.age = age;

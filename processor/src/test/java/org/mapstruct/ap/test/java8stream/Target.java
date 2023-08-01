@@ -77,7 +77,7 @@ public class Target {
 
     public List<String> getStringListNoSetter() {
         if ( stringListNoSetter == null ) {
-            stringListNoSetter = new ArrayList<String>();
+            stringListNoSetter = new ArrayList<>();
         }
         return stringListNoSetter;
     }

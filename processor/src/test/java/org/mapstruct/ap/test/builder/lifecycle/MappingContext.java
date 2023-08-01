@@ -18,7 +18,7 @@ import org.mapstruct.TargetType;
  */
 public class MappingContext {
 
-    private final List<String> invokedMethods = new ArrayList<String>();
+    private final List<String> invokedMethods = new ArrayList<>();
 
     @BeforeMapping
     public void beforeWithoutParameters() {

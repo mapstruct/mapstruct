@@ -44,7 +44,7 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
             default:
         }
 
-        Collection<String> result = new ArrayList<String>( additionalExcludes.size() );
+        Collection<String> result = new ArrayList<>(additionalExcludes.size());
         for ( int i = 0; i < additionalExcludes.size(); i++ ) {
             result.add( "-DadditionalExclude" + i + "=" + additionalExcludes.get( i ) );
         }

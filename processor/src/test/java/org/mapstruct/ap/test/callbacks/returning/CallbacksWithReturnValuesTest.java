@@ -50,12 +50,7 @@ class CallbacksWithReturnValuesTest {
     @ProcessorTest
     void mappingWithContextCorrectlyResolvesCycles() {
         final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
-        ContextListener contextListener = new ContextListener() {
-            @Override
-            public void methodCalled(Integer level, String method, Object source, Object target) {
-                contextLevel.set( level );
-            }
-        };
+        ContextListener contextListener = (level, method, source, target) -> contextLevel.set( level );
 
         NodeMapperContext.addContextListener( contextListener );
         try {

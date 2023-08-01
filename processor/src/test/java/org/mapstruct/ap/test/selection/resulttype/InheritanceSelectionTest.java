@@ -192,7 +192,7 @@ public class InheritanceSelectionTest {
     })
     public void testShouldSelectResultTypeInCaseOfAmbiguityForMap() {
 
-        Map<AppleDto, AppleDto> source = new HashMap<AppleDto, AppleDto>();
+        Map<AppleDto, AppleDto> source = new HashMap<>();
         source.put( new AppleDto( "GoldenDelicious" ), new AppleDto( "AppleDto" ) );
 
         Map<Apple, Apple> result = FruitFamilyMapper.INSTANCE.mapToGoldenDeliciousMap( source );
