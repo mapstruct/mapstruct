@@ -63,7 +63,7 @@ public class HouseDto {
         if ( !Objects.equals( name, houseDto.name ) ) {
             return false;
         }
-        return Objects.equals(roof, houseDto.roof);
+        return Objects.equals( roof, houseDto.roof );
 
     }
 
