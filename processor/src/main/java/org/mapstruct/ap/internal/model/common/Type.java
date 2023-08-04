@@ -605,6 +605,21 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
+    private Type replaceGeneric(Type oldGenericType, Type newType) {
+        if ( !typeParameters.contains( oldGenericType ) || newType == null ) {
+            return this;
+        }
+        newType = newType.getBoxedEquivalent();
+        TypeMirror[] replacedTypeMirrors = new TypeMirror[typeParameters.size()];
+        for ( int i = 0; i < typeParameters.size(); i++ ) {
+            Type typeParameter = typeParameters.get( i );
+            replacedTypeMirrors[i] =
+                typeParameter.equals( oldGenericType ) ? newType.typeMirror : typeParameter.typeMirror;
+        }
+
+        return typeFactory.getType( typeUtils.getDeclaredType( typeElement, replacedTypeMirrors ) );
+    }
+
     /**
      * Whether this type is assignable to the given other type, considering the "extends / upper bounds"
      * as well.
@@ -1377,9 +1392,9 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Steps through the declaredType in order to find a match for this typeVar Type. It aligns with
-     * the provided parameterized type where this typeVar type is used.
-     *
-     * For example:
+     * the provided parameterized type where this typeVar type is used.<br>
+     * <br>
+     * For example:<pre>
      * {@code
      * this: T
      * declaredType: JAXBElement<String>
@@ -1392,12 +1407,13 @@ public class Type extends ModelElement implements Comparable<Type> {
      * parameterizedType: Callable<BigDecimal>
      * return: BigDecimal
      * }
+     * </pre>
      *
      * @param declared the type
      * @param parameterized the parameterized type
      *
-     * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)
-     *         - the matching parameter in the parameterized type when this is a type var when found
+     * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)<br>
+     *         - the matching parameter in the parameterized type when this is a type var when found<br>
      *         - null in all other cases
      */
     public ResolvedPair resolveParameterToType(Type declared, Type parameterized) {
@@ -1406,6 +1422,96 @@ public class Type extends ModelElement implements Comparable<Type> {
             return typeVarMatcher.visit( parameterized.getTypeMirror(), declared );
         }
         return new ResolvedPair( this, this );
+    }
+
+    /**
+     * Resolves generic types using the declared and parameterized types as input.<br>
+     * <br>
+     * For example:
+     * <pre>
+     * {@code
+     * this: T
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: Integer
+     *
+     * this: List<T>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: List<Integer>
+     *
+     * this: List<? extends T>
+     * declaredType: JAXBElement<? extends T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<BigDecimal>
+     *
+     * this: List<Optional<T>>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<Optional<BigDecimal>>
+     * }
+     * </pre>
+     * It also works for partial matching.<br>
+     * <br>
+     * For example:
+     * <pre>
+     * {@code
+     * this: Map<K, V>
+     * declaredType: JAXBElement<K>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: Map<BigDecimal, V>
+     * }
+     * </pre>
+     * It also works with multiple parameters at both sides.<br>
+     * <br>
+     * For example when reversing Key/Value for a Map:
+     * <pre>
+     * {@code
+     * this: Map<KEY, VALUE>
+     * declaredType: HashMap<VALUE, KEY>
+     * parameterizedType: HashMap<BigDecimal, String>
+     * result: Map<String, BigDecimal>
+     * }
+     * </pre>
+     *
+     * Mismatch result examples:
+     * <pre>
+     * {@code
+     * this: T
+     * declaredType: JAXBElement<Y>
+     * parameterizedType: JAXBElement<Integer>
+     * result: null
+     *
+     * this: List<T>
+     * declaredType: JAXBElement<Y>
+     * parameterizedType: JAXBElement<Integer>
+     * result: List<T>
+     * }
+     * </pre>
+     *
+     * @param declared the type
+     * @param parameterized the parameterized type
+     *
+     * @return - the result of {@link #resolveParameterToType(Type, Type)} when this type itself is a type var.<br>
+     *         - the type but then with the matching type parameters replaced.<br>
+     *         - the same type when this type does not contain matching type parameters.
+     */
+    public Type resolveGenericTypeParameters(Type declared, Type parameterized) {
+        if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
+            return resolveParameterToType( declared, parameterized ).getMatch();
+        }
+        Type resultType = this;
+        for ( Type generic : getTypeParameters() ) {
+            if ( generic.isTypeVar() || generic.isArrayTypeVar() || generic.isWildCardBoundByTypeVar() ) {
+                ResolvedPair resolveParameterToType = generic.resolveParameterToType( declared, parameterized );
+                resultType = resultType.replaceGeneric( generic, resolveParameterToType.getMatch() );
+            }
+            else {
+                Type replacementType = generic.resolveParameterToType( declared, parameterized ).getMatch();
+                resultType = resultType.replaceGeneric( generic, replacementType );
+            }
+        }
+        return resultType;
     }
 
     public boolean isWildCardBoundByTypeVar() {

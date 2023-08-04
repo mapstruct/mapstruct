@@ -825,7 +825,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             for ( T2 yCandidate : yMethods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
-                ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
+                ySourceType = ySourceType.resolveGenericTypeParameters( targetType, yCandidate.getResultType() );
                 Type yTargetType = yCandidate.getResultType();
                 if ( ySourceType == null
                     || !yTargetType.isRawAssignableTo( targetType )
