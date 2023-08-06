@@ -8,8 +8,13 @@ package org.mapstruct.ap.internal.model;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
@@ -25,6 +30,8 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
  * @author Gunnar Morling
  */
 public class IterableMappingMethod extends ContainerMappingMethod {
+
+    private final boolean unmodifiable;
 
     public static class Builder extends ContainerMappingMethodBuilder<Builder, IterableMappingMethod> {
 
@@ -55,6 +62,17 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+
+            final Set<Type> helperImports = new HashSet<>();
+            final boolean unmodifiable = method.getExecutable().getAnnotationMirrors().stream()
+                    .map( AnnotationMirror::getAnnotationType )
+                    .map( DeclaredType::asElement )
+                    .map( Object::toString )
+                    .anyMatch( "org.mapstruct.Unmodifiable"::equals );
+            if ( unmodifiable ) {
+                helperImports.add( ctx.getTypeFactory().getType( Collections.class ) );
+            }
+
             return new IterableMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -65,17 +83,20 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
-                selectionParameters
-            );
+                selectionParameters,
+                helperImports,
+                unmodifiable);
         }
     }
-
+    //CHECKSTYLE:OFF
     private IterableMappingMethod(Method method, List<Annotation> annotations,
                                   Collection<String> existingVariables, Assignment parameterAssignment,
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+                                  SelectionParameters selectionParameters, Set<Type> helperImports,
+                                  boolean unmodifiable) {
+    //CHECKSTYLE:ON
         super(
             method,
             annotations,
@@ -86,8 +107,10 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
+            selectionParameters,
+            helperImports
         );
+        this.unmodifiable = unmodifiable;
     }
 
     @Override
@@ -107,6 +130,10 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         else {
             return first( sourceParameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
         }
+    }
+
+    public boolean isUnmodifiable() {
+        return unmodifiable;
     }
 
     @Override

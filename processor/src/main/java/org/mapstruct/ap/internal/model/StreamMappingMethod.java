@@ -29,8 +29,6 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class StreamMappingMethod extends ContainerMappingMethod {
 
-    private final Set<Type> helperImports;
-
     public static class Builder extends ContainerMappingMethodBuilder<Builder, StreamMappingMethod> {
 
         public Builder() {
@@ -95,19 +93,9 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
-        );
+            selectionParameters,
+            helperImports);
         //CHECKSTYLE:ON
-        this.helperImports = helperImports;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> types = super.getImportTypes();
-
-        types.addAll( helperImports );
-
-        return types;
     }
 
     public Type getSourceElementType() {
