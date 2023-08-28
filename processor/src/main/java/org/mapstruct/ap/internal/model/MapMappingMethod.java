@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -39,6 +41,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     private final Assignment valueAssignment;
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
+    private final MapKeyMappingConstructorFragment mapKeyMappingConstructorFragment;
+    private String keyMappingVariableName;
     private IterableCreation iterableCreation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
@@ -99,7 +103,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyCriteria,
                 keySourceRHS,
                 null,
-                 () -> forge( keySourceRHS, keySourceType, keyTargetType, Message.MAPMAPPING_CREATE_KEY_NOTE )
+                () -> forge( keySourceRHS, keySourceType, keyTargetType, Message.MAPMAPPING_CREATE_KEY_NOTE )
             );
 
             if ( keyAssignment == null ) {
@@ -130,13 +134,15 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
             SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
-                    "map value" );
+                "map value"
+            );
 
             SelectionCriteria valueCriteria = SelectionCriteria.forMappingMethods(
                 valueSelectionParameters,
                 method.getOptions().getMapMapping().getValueMappingControl( ctx.getElementUtils() ),
                 null,
-                false );
+                false
+            );
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -214,8 +220,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             );
         }
 
-        Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType, Message message ) {
-            Assignment  assignment = forgeMapping( sourceRHS, sourceType, targetType );
+        Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType, Message message) {
+            Assignment assignment = forgeMapping( sourceRHS, sourceType, targetType );
             if ( assignment != null ) {
                 ctx.getMessager().note( 2, message, assignment );
             }
@@ -235,7 +241,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super( method, annotations, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
-            afterMappingReferences );
+            afterMappingReferences
+        );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
@@ -253,6 +260,43 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         this.sourceParameter = sourceParameter;
         this.sourceParameterPresenceCheck = new NullPresenceCheck( this.sourceParameter.getName() );
+
+        this.mapKeyMappingConstructorFragment = initializeKeyMappingConstructor( method );
+    }
+
+    private MapKeyMappingConstructorFragment initializeKeyMappingConstructor(Method method) {
+
+        List<Type> sourceTypeParams =
+            first( method.getSourceParameters() ).getType().determineTypeArguments( Map.class );
+        List<Type> resultTypeParams = method.getResultType().determineTypeArguments( Map.class );
+
+        Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
+        Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
+
+        if ( !keySourceType.isString() || !keySourceType.equals( keyTargetType ) ) {
+            return null;
+        }
+
+        List<MapKeyMappingConstructorFragment.KeyMappingEntry> keyMappings = new ArrayList<>();
+        for ( MappingOptions mapping : method.getOptions().getMappings() ) {
+            if ( mapping.getSourceName() != null && mapping.getTargetName() != null ) {
+                keyMappings.add( new MapKeyMappingConstructorFragment.KeyMappingEntry(
+                    mapping.getSourceName(),
+                    mapping.getTargetName()
+                ) );
+            }
+        }
+
+        if ( keyMappings.isEmpty() ) {
+            return null;
+        }
+
+        // safe variable name would probably be better, but chaining all fields during creation is cumbersome...
+        this.keyMappingVariableName = method.getName() + "KeyMappings";
+
+        MapKeyMappingField field = new MapKeyMappingField( sourceParameter.getType(), keyMappingVariableName );
+
+        return new MapKeyMappingConstructorFragment( field, this, keyMappings );
     }
 
     public Parameter getSourceParameter() {
@@ -278,6 +322,14 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     public Assignment getValueAssignment() {
         return valueAssignment;
+    }
+
+    public MapKeyMappingConstructorFragment getMapMappingConstructorFragment() {
+        return mapKeyMappingConstructorFragment;
+    }
+
+    public String getKeyMappingVariableName() {
+        return keyMappingVariableName;
     }
 
     @Override

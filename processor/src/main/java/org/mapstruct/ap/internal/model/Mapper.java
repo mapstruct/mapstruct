@@ -12,6 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
@@ -34,7 +35,7 @@ public class Mapper extends GeneratedType {
 
         private TypeElement element;
         private List<Field> fields;
-        private Set<SupportingConstructorFragment> fragments;
+        private Set<ConstructorFragment> fragments;
 
         private Decorator decorator;
         private String implName;
@@ -59,7 +60,7 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
-        public Builder constructorFragments(Set<SupportingConstructorFragment>  fragments) {
+        public Builder constructorFragments(Set<ConstructorFragment>  fragments) {
             this.fragments = fragments;
             return this;
         }
