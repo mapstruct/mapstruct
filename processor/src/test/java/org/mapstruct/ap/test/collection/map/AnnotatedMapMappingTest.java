@@ -48,6 +48,8 @@ public class AnnotatedMapMappingTest {
             .contains( "private final Map<String, String> stringMapWithMappingAnnotationsKeyMappings;" )
             .contains(
                 "private final Map<String, String> stringMapWithMappingAnnotationsAndDifferentNameKeyMappings;" )
+            .contains(
+                "private final Map<String, String> stringLongMapToStringIntegerMapWithMappingAnnotationsKeyMappings;" )
             .doesNotContain( "private final Map<String, String> stringMapWithInvalidMappingAnnotationsKeyMappings;" )
             .doesNotContain( "private final Map<String, String> longMapWithMappingAnnotationsKeyMappings;" )
             .contains( expectedConstructor() );
@@ -63,6 +65,8 @@ public class AnnotatedMapMappingTest {
             constructorInitOf( "stringMapWithMappingAnnotationsKeyMappings" ) +
             lineSeparator() +
             constructorInitOf( "stringMapWithMappingAnnotationsAndDifferentNameKeyMappings" ) +
+            lineSeparator() +
+            constructorInitOf( "stringLongMapToStringIntegerMapWithMappingAnnotationsKeyMappings" ) +
             "    }";
     }
 

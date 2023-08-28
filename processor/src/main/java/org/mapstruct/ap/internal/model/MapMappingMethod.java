@@ -294,7 +294,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         // safe variable name would probably be better, but chaining all fields during creation is cumbersome...
         this.keyMappingVariableName = method.getName() + "KeyMappings";
 
-        MapKeyMappingField field = new MapKeyMappingField( sourceParameter.getType(), keyMappingVariableName );
+        MapKeyMappingField field = new MapKeyMappingField( this.keyMappingVariableName );
 
         return new MapKeyMappingConstructorFragment( field, this, keyMappings );
     }

@@ -8,8 +8,6 @@ package org.mapstruct.ap.internal.model;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.Type;
-
 /**
  * Field that is used for mapping keys of a {@link MapMappingMethod}.
  *
@@ -17,8 +15,8 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public class MapKeyMappingField extends Field {
 
-    public MapKeyMappingField(Type type, String variableName) {
-        super( type, variableName, true );
+    public MapKeyMappingField(String variableName) {
+        super( null, variableName, true );
     }
 
     public static void addAllMapKeyMappingFieldsIn(List<MapMappingMethod> mapMappingMethods, Set<Field> targets) {
@@ -33,8 +31,4 @@ public class MapKeyMappingField extends Field {
         }
     }
 
-    @Override
-    protected String getTemplateName() {
-        return getTemplateNameForClass( Field.class );
-    }
 }

@@ -40,6 +40,10 @@ public interface AnnotatedSourceTargetMapper {
     @Mapping(target = "expressionNotSupported", expression = "java(\"const\")")
     Map<String, String> stringMapWithInvalidMappingAnnotations(Map<String, String> source);
 
+    @Mapping(target = "targetKey", source = "sourceKey")
+    @Mapping(target = "otherTargetKey", source = "nonExistentSourceKey")
+    Map<String, Long> stringLongMapToStringIntegerMapWithMappingAnnotations(Map<String, Integer> source);
+
     @Mapping(target = "2L", source = "1L")
     @Mapping(target = "1L", source = "2L")
     Map<Long, Long> longMapWithMappingAnnotations(Map<Long, Long> source);
