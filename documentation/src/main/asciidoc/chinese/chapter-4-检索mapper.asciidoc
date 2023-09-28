@@ -1,15 +1,26 @@
-== 检索（retrieve）mapper
+[[retrieving-mapper]]
+== 4.检索（retrieve）mapper
 
-=== Mapper工厂（无依赖注入）
+[[mappers-factory]]
+=== 4.1 Mapper工厂（无依赖注入）
 
-当不使用DI框架的时候，mapper实例可以通过org.mapstruct.factory.Mappers类检索到。您仅需调用其getMapper()方法，并传入想检索的mapper的接口类型：
+当不使用DI框架的时候，mapper实例可以通过 `org.mapstruct.factory.Mappers` 检索到。您仅需调用其 `getMapper()` 方法，并传入想检索的mapper接口的类型：
 
+.Using the Mappers factory
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 CarMapper mapper = Mappers.getMapper( CarMapper.class );
 ----
+====
 
-为了方便，一个mapper接口应该定义一个名为INSTANCE的字段参数，并且给该参数绑定一个对应mapper类型的实例。 接口类型mapper的例子如下：
+为了方便，一个mapper接口应该定义一个名为 `INSTANCE` 的字段参数，并且给该参数绑定一个对应mapper类型的实例：
 
+.Declaring an instance of a mapper (interface)
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper
 public interface CarMapper {
@@ -18,10 +29,14 @@ public interface CarMapper {
 
     CarDto carToCarDto(Car car);
 }
+
 ----
+====
 
-抽象类类型mapper的例子如下：
-
+.Declaring an instance of a mapper (abstract class)
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper
 public abstract class CarMapper {
@@ -30,60 +45,95 @@ public abstract class CarMapper {
 
     CarDto carToCarDto(Car car);
 }
+
 ----
+====
 
-该模式使得客户端能非常容易地进行对象映射，而不用重复声明新的实例，例子如下：
+这种方式使得客户端能非常容易地进行对象映射，而不用重复声明新的实例，例子如下：
 
+.Accessing a mapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 Car car = ...;
 CarDto dto = CarMapper.INSTANCE.carToCarDto( car );
 ----
+====
 
 另外，MapStruct生成的mapper都是无状态且类型安全的，因此您可以同时安全地用多线程安全地访问这些mapper。
 
+[[using-dependency-injection]]
 === 使用依赖注入
 
-如果您使用了依赖注入框架，如 https://jcp.org/en/jsr/detail?id=346[CDI] (Contexts and Dependency Injection for JavaTM EE) 或者 http://www.springsource.org/spring-framework[Spring框架]，则推荐采用依赖注入的方式来获取mapper对象（而非前一小节中提到的Mappers类方式）。为此，您需要指定组件模式（MapStruct会依照组件模式生成mapper实例）。
+如果您使用了依赖注入框架，如  http://jcp.org/en/jsr/detail?id=346[CDI] (Contexts and Dependency Injection for Java^TM^ EE) 或者 http://www.springsource.org/spring-framework[Spring Framework]，则推荐采用依赖注入的方式来获取mapper对象（而 *不是* 前一小节中提到的 `Mappers` 类方式）。为此，您需要指定组件模式（MapStruct会依照组件模式生成mapper实例）。
 
 指定组件模式的方法有两个：
 
-. 通过注解 @Mapper#componentModel
-. 修改注解处理器选项，见<<24-配置选项,配置选项>>。
+1. 通过注解 `@Mapper#componentModel`。
+2. 修改注解处理器选项，见 <<configuration-options>>。
 
-目前MapStruct支持CDI和Spring（对于Spring模式，支持其自定义注解和JSR 330注解）。无论选择哪一种，您都需要在类上加注解，以让生成的mapper实现类能完成依赖注入。 componentModel属性和mapstruct.defaultComponentModel处理器选项的取值范围是一致的，都作为常量定义在MappingConstants.ComponentModel类中（请参见<<24-配置选项,配置选项>>）。
+目前MapStruct支持CDI和Spring（对于Spring模式，支持其自定义注解和JSR 330注解）。无论选择哪一种，您都需要在类上加注解，这样生成的mapper实现类才能完成依赖注入。
+`componentModel` 属性和 `mapstruct.defaultComponentModel` 处理器选项的取值范围是一致的，都作为常量定义在MappingConstants.ComponentModel类中（参见 <<configuration-options>>）。
 
 使用CDI的例子如下：
 
+.A mapper using the CDI component model
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI)
 public interface CarMapper {
 
     CarDto carToCarDto(Car car);
 }
+
 ----
+====
 
-生成的mapper实现会被加上@ApplicationScoped注解，之后您就可以使用@Inject注解将该实例注入到字段、构造器参数等地方，例子如下：
+生成的mapper实现类会被加上 `@ApplicationScoped` 注解，之后您就可以使用 `@Inject` 将其注入到字段、构造器参数等地方，例子如下：
 
+The generated mapper implementation will be marked with the `@ApplicationScoped` annotation and thus can be injected into fields, constructor arguments etc. using the `@Inject` annotation:
+
+.Obtaining a mapper via dependency injection
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Inject
 private CarMapper mapper;
 ----
+====
 
-一个使用了其他mapper的mapper（<<55-调用其他mapper,调用其他mapper>>）会通过配置的组件模式持有依赖mapper的实例。所以如果前面例子中的CarMapper 使用了别的mapper，那么这个"`别的mapper`"必须也是个可注入的CDI bean。
+一个使用了其他mapper的mapper（参见 <<invoking-other-mappers>>）会通过配置的组件模式持有依赖mapper的实例。举例来讲，如果上例中的 `CarMapper` 使用了别的mapper，那么这个“别的mapper”必须也是个可注入的CDI bean。
 
+[[injection-strategy]]
 === 注入策略
 
-当使用依赖注入(<<42-使用依赖注入,使用依赖注入>>)时，您可以注入字段或者构造器。您可以通过@Mapper注解或者@MapperConfig注解来选择注入策略。
+当使用 <<using-dependency-injection,dependency injection>> 时，您可以选择注入字段或者构造器。
 
+您可以通过 `@Mapper` 或者 `@MapperConfig` 来选择注入策略。
+
+.Using constructor injection
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI, uses = EngineMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CarMapper {
     CarDto carToCarDto(Car car);
 }
 ----
+====
 
-如果uses属性中定义的类在mapping过程中确实被用到了，那么该类就会被注入到生成的mapper中。
+在生成实例时，如果确实需要使用 **uses** 属性中定义的类，那么该类就会被注入到生成的mapper中。
 
-当使用InjectionStrategy#CONSTRUCTOR策略时，对应注解会打到构造器上，而不会打到对应字段上；当使用InjectionStrategy#FIELD策略时，对应注解会直接打到对应字段上。 目前默认的注入策略是字段注入，但是该策略可以配置(<<24-配置选项,配置选项>>)，推荐使用构造器注入，以简化测试。
+当使用 `InjectionStrategy#CONSTRUCTOR` 策略时，对应注解会打到构造器上，而不会打到对应字段上；
+当使用 `InjectionStrategy#FIELD` 策略时，对应注解会直接打到对应字段上。
+目前默认的注入策略是字段注入，但是该策略可以配置(参见 <<configuration-options>>)，推荐使用构造器注入，以简化测试。
 
-* 对于抽象类/装饰器，应该使用setter注入。
+[TIP]
+====
+对于抽象类/装饰器，应该使用setter注入。
+====

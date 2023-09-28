@@ -1,11 +1,16 @@
 == 映射配置复用
 
-该本章讨论了几种如何将映射配置复用到多个映射方法的配置方式：从其他方法"`继承`"配置，或者在多个映射类型间共享中心化配置。
+本章讨论了几种在多个映射方法之间复用映射配置的方式：从其他方法 "继承" 配置，或者在多个映射类型间共享中心化配置。
 
+[[mapping-configuration-inheritance]]
 === 继承映射配置
 
-方法级别的配置注解（比如 @Mapping, @BeanMapping, @IterableMapping等）可以通过@InheritConfiguration注解将其从一个映射方法继承到另一个映射方法上：
+方法级别的配置注解（比如 `@Mapping`, `@BeanMapping`, `@IterableMapping`）可以通过 `@InheritConfiguration` 注解将其从一个映射方法 *继承* 到另一个 *类似的* 映射方法上：
 
+.Update method inheriting its configuration
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper
 public interface CarMapper {
@@ -17,25 +22,36 @@ public interface CarMapper {
     void carDtoIntoCar(CarDto carDto, @MappingTarget Car car);
 }
 ----
+====
 
-上例中，映射方法carDtoToCar()有一个配置，该配置描述了如何映射得到Car类型的numberOfSeats字段。更新方法则会使用同样的配置来更新已经存在的Car实例，并成功更新所有属性。在该方法上声明@InheritConfiguration使得MapStruct寻找继承候选来应用继承的方法的注解。
+上例中，定义了一个映射方法 `carDtoToCar()`，该方法有一个配置，该配置描述了如何映射得到 `Car` 中的 `numberOfSeats` 字段。更新类的方法要想将 `Car` 实例的属性全部更新成功，就需要同样的配置。在该方法上声明 `@InheritConfiguration` 会使得MapStruct寻找继承的候选，并应用继承来的配置。
 
-如果方法A的所有类型（source类型和返回值类型）都是B对应类型的子类，那么方法A可以继承方法B的配置。
+如果方法 *A* 的所有类型（source类型和返回值类型）都是方法 *B* 对应类型的子类，那么方法 *A* 可以继承方法 *B* 的配置。
 
-方法B要么定义在同一个mapper中，要么在父类/接口中，要么在共享配置（见11.3）的接口中。
+能继承的方法要么定义在同一个mapper中，要么在父类/接口中，要么在共享配置（见 <<shared-configurations>> ）的接口中。
 
-如果有不止一个方法要使用继承，则该方法必须加类似如下注解：@InheritConfiguration( name = "carDtoToCar" )。
+如果有不止一个方法可以作为继承的源，那么必须在注解中指定方法名：`@InheritConfiguration( name = "carDtoToCar" )`。
 
-一个方法在使用@InheritConfiguration注解后，可以通过@Mapping, @BeanMapping等注解覆盖或追加配置。
+一个方法在使用 `@InheritConfiguration` 注解后，可以通过 `@Mapping`、`@BeanMapping` 等注解覆盖或追加配置。
 
-* @InheritConfiguration不能指向@Mapper#uses中mapper的方法。
+[NOTE]
+====
+`@InheritConfiguration` 不能指向@Mapper#uses中mapper的方法。
+====
 
+[[inverse-mappings]]
 === 反转映射
 
-双向映射的情况时，比如把DO映射成DTO和从DTO映射DO，正向映射和反向映射的映射规则通常都是相似的，一般把source和target对调就是对方的规则。
+在双向映射的情况下，比如把实体映射成DTO和把DTO映射成实体，正向映射和反向映射的映射规则通常都是相似的，一般把 `source` 和 `target` 对调就是对方的规则。
 
-对一个方法使用@InheritInverseConfiguration注解会使该方法继承逆方法的相反配置。
+对一个方法使用 `@InheritInverseConfiguration` 注解，会使该方法继承其对应逆方法的相反的配置。
 
+在下例中，不需要手写逆方法的配置。假设有多个映射方法，写逆方法是繁琐且容易出错的。
+
+.Inverse mapping method inheriting its configuration and ignoring some of them
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper
 public interface CarMapper {
@@ -48,39 +64,44 @@ public interface CarMapper {
     Car carDtoToCar(CarDto carDto);
 }
 ----
+====
 
-上例子中，carDtoToCar()方法是carToDto()的逆方法。请注意，carToDto()中的所有属性映射会在carDtoToCar()中反过来。在@InheritInverseConfiguration注解下，该过程是自动完成的。
+在这里，`carDtoToCar()` 是 `carToDto()` 的逆方法。请注意， `carToDto()` 中的所有属性映射会在 `carDtoToCar()` 中反过来。在 `@InheritInverseConfiguration` 注解下，该过程是自动完成的。
 
-在逆方法上指明的映射可以被该映射上的ignore, expression或者constant覆盖，比如：@Mapping(target = "numberOfSeats", ignore=true)。
+在逆方法上指明的映射可以（可选）由映射上的 `ignore`, `expression` 或者 `constant` 覆盖，比如： `@Mapping(target = "numberOfSeats", ignore=true)`。
 
-当方法A的返回值类型是方法B的入参类型（B必须是单入参方法），并且A的入参类型（A也必须是单入参方法）是B的返回值类型时，称方法A是方法B的逆方法。
+方法 *A* 是方法 *B* 的逆方法：当且仅当方法 *A* 的返回值类型是方法 *B* 的入参类型（B必须是单参数方法），并且 *A* 的入参类型（A也必须是单参数方法）是 *B* 的返回值类型。
 
-一个方法要有逆方法，需要和逆方法定义在同一个mapper里，或者定义在逆方法的父类/接口。
+逆方法需要定义在同一个mapper里，或者定义在父类/接口。
 
-如果有多个方法，则继承的是哪个方法需要手动指明，如：@InheritInverseConfiguration(name = "carToDto")。
+如果有多个方法符合条件，则需要用 `name` 手动指明继承的是哪个方法的配置，如：`@InheritInverseConfiguration(name = "carToDto")`。
 
-在冲突时，@InheritConfiguration的优先级比@InheritInverseConfiguration高。
+在冲突时，`@InheritConfiguration` 的优先级比 `@InheritInverseConfiguration` 高。
 
-配置是传递式继承的，如果method C定义了一个映射@Mapping( target = "x", ignore = true)，方法BC定义了一个映射@Mapping( target = "y", ignore = true)，那么如果A继承了B，那么A也继承了C，也就是A会继承x字段和y字段的映射。
+配置继承是传递式的，如果method `C` 定义了一个映射 `@Mapping( target = "x", ignore = true)` ，方法B定义了一个映射`@Mapping( target = "y", ignore = true)`，此时如果 `A` 继承了 `B`，那么 `A` 也继承了 `C` ，也就是 `A` 会继承字段 `x` 和字段 `y` 的映射。
 
-@Mapping#expression, @Mapping#defaultExpression, @Mapping#defaultValue and @Mapping#constant
+`@InheritInverseConfiguration` 中的`@Mapping#expression`, `@Mapping#defaultExpression`, `@Mapping#defaultValue` 和 `@Mapping#constant` 会被悄无声息地排除在外。
 
-在@InheritInverseConfiguration中，@Mapping#expression, @Mapping#defaultExpression, @Mapping#defaultValue 和 @Mapping#constant 会被悄无声息地排除在外。
+只有当 `@InheritInverseConfiguration` 里有 `@Mapping#source` 时，`@Mapping#ignore` 才会生效。
 
-只有当@InheritInverseConfiguration上出现@Mapping#source时，@Mapping#ignore才会生效。
+自1.1.0.Beta2 release版本起，嵌套source字段的逆映射作为实验性特性开放。当source字段名和target字段名完全一致时，将自动进行逆映射。否则，`@Mapping` 应该同时target字段名称和source字段名称。在所有情况下，都需要为反向映射准备合适的映射方法。
 
-嵌套source字段的逆映射自1.1.0.Beta2release版本中作为实验性特性开放。当source字段名和target字段名完全一致时，将自动进行逆映射。否则，@Mapping应该同时target字段名称和source字段名称。
+[NOTE]
+====
+`@InheritInverseConfiguration` 不能指向@Mapper#uses中mapper的方法。
+====
 
-在所有情况下，都需要为反向映射准备合适的映射方法。
-
-* @InheritInverseConfiguration不能指向@Mapper#uses中mapper的方法。
-
+[[shared-configurations]]
 === 共享配置
 
-您可以通过加@MapperConfig注解的方式指定"`中心接口`"，并以此定义共享配置。要让mapper使用共享配置，需要在@Mapper#config属性中定义配置接口。
+MapStruct中，通过 `@MapperConfig` 注解指定一个中心接口，您就可以定义一份共享配置。如果一个mapper要使用共享配置，就需要在 `@Mapper#config` 属性中定义配置接口。
 
-@MapperConfig注解和@Mapper注解的属性一致。所有@Mapper中没有设定的属性值都从自共享配置中继承。在@Mapper中定义的属性值生效优先级高于其共享配置中的属性值，而uses这种列表属性（译注：即可以有多个值的属性）就是简单地把值组合起来：
+`@MapperConfig` 注解和 `@Mapper` 注解的属性一致。所有 `@Mapper` 中没有设定的属性值都从自共享配置中继承。在 `@Mapper` 中定义的属性值生效优先级高于其共享配置中的属性值，而uses这种列表属性就是简单地把值组合起来：
 
+.Mapper configuration class and mapper using it
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @MapperConfig(
     uses = CustomMapperViaMapperConfig.class,
@@ -89,7 +110,8 @@ public interface CarMapper {
 public interface CentralConfig {
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
 // Effective configuration:
@@ -100,10 +122,16 @@ public interface CentralConfig {
 public interface SourceTargetMapper {
   ...
 }
+
 ----
+====
 
-带有@MapperConfig注解的接口也可能会声明映射方法的原型，这些原型方法上方法级别的注解也会被继承。这些原型方法并不打算作为映射器API的一部分来实现或使用。
+带有 `@MapperConfig` 注解的接口也可能会声明映射方法的 *原型* ，这些原型方法上方法级别的注解也会被继承。这些原型方法并不会作为映射器API的一部分来实现或使用。
 
+.Mapper configuration class with prototype methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @MapperConfig(
     uses = CustomMapperViaMapperConfig.class,
@@ -117,7 +145,8 @@ public interface CentralConfig {
     BaseEntity anyDtoToEntity(BaseDto dto);
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(config = CentralConfig.class, uses = { CustomMapperViaMapper.class } )
 public interface SourceTargetMapper {
@@ -128,10 +157,11 @@ public interface SourceTargetMapper {
     Car toCar(CarDto car)
 }
 ----
+====
 
-当mapper中的方法从接口中的原型方法中继承了方法级别的映射注解，@Mapper#mappingInheritanceStrategy() / @MapperConfig#mappingInheritanceStrategy()会：
+当方法级别的映射配置注解由接口中的原型方法继承而来，`@Mapper#mappingInheritanceStrategy()` / `@MapperConfig#mappingInheritanceStrategy()` 属性会配置为mapper中的方法配置：
 
-* EXPLICIT（默认）：如果target映射方法有@InheritConfiguration注解，并且source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类（详见11.1），那么仅配置会被继承。
-* AUTO_INHERIT_FROM_CONFIG：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么配置会被自动继承。如果有多个匹配的原型方法，请通过@InheritConfiguration(name = ...​)来消除歧义，该项同时会导致AUTO_INHERIT_FROM_CONFIG失效
-* AUTO_INHERIT_REVERSE_FROM_CONFIG：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么逆配置会被自动继承。如果有多个匹配的原型方法，请通过@InheritInverseConfiguration(name = ...​)来消除歧义，该项同时会导致AUTO_INHERIT_REVERSE_FROM_CONFIG失效。
-* AUTO_INHERIT_ALL_FROM_CONFIG：配置和逆配置都会被自动继承。AUTO_INHERIT_FROM_CONFIG 或 AUTO_INHERIT_REVERSE_FROM_CONFIG的规则也适用于这里。
+* `EXPLICIT` （默认）：如果target映射方法有@InheritConfiguration注解，并且source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类（详见 <<mapping-configuration-inheritance>> ），那么仅配置会被继承。
+* `AUTO_INHERIT_FROM_CONFIG` ：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么配置会被自动继承。如果有多个匹配的原型方法，请通过 `@InheritConfiguration(name = ...)`  来消除歧义，该项同时会导致 `AUTO_INHERIT_FROM_CONFIG` 失效
+* `AUTO_INHERIT_REVERSE_FROM_CONFIG` ：如果source类型是原型方法source类型的子类，target类型也是原型方法中target类型的子类，那么逆配置会被自动继承。如果有多个匹配的原型方法，请通过 `@InheritConfiguration(name = ...)`  来消除歧义，该项同时会导致 `AUTO_INHERIT_REVERSE_FROM_CONFIG` 失效。
+* `AUTO_INHERIT_ALL_FROM_CONFIG` ：配置和逆配置都会被自动继承。`AUTO_INHERIT_FROM_CONFIG` 或  `AUTO_INHERIT_REVERSE_FROM_CONFIG` 的规则也适用于这里。

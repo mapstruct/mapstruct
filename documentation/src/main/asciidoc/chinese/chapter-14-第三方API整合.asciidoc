@@ -1,15 +1,28 @@
+
+[[third-party-api-integration]]
 == 第三方API整合
 
+[[non-shipped-annotations]]
 === Non-shipped注解
 
-为了让MapStruct能使用正确的代码段，很多时候您都必须解决歧义问题。然而，MapStruct的主要目标是完成bean映射的同时不污染entity的代码。因此，MapStruct足够灵活，能和三方库中已经定义的注解进行交互。其需求是能够匹配注解的名字。因此，我们说注解可以来自任何包。
+为了让MapStruct能使用正确的代码段，很多时候您都必须解决歧义问题。
+然而，MapStruct的主要目标是完成bean映射的同时不污染entity的代码。
+因此，MapStruct足够灵活，能和三方库中已经定义的注解进行交互。
+为了满足该要求，只要注解的 _名称_ 匹配即可。因此，注解可以来自 _任何包_ 。
 
-在上文中，我们使用了名为@ConstructorProperties和@Default的注解，就是此处的例子。
+在前文中，我们使用了 _名为_ `@ConstructorProperties` 和 `@Default` 的注解，就是此处的例子。
 
-* 如果存在这样的命名的三方库注解，不保证它的@Target与预期的位置匹配。请注意，不建议仅仅为了映射而采用第三方注解，因为它可能会导致该库产生不必要的副作用。
+[WARNING]
+====
+如果存在这样命名的三方注解，不保证其 `@Target` 与预期的位置匹配。请注意，不建议仅仅为了映射而采用第三方注解，因为它可能会导致该库产生不必要的副作用。
+====
 
-一个非常常见的场景是，导入到项目中的第三方依赖项没有提供这样的注解，或者不适合使用。在这种情况下，创建自己的注解，例如:
+一个非常常见的场景是，导入到项目中的第三方依赖项没有提供这样的注解，或者不适合使用。
+在这种情况下，可以创建自己的注解，例如:
 
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 package foo.support.mapstruct;
 
@@ -24,15 +37,22 @@ public @interface Default {
 
 }
 ----
+====
 
+[[lombok]]
 === Lombok
 
-MapStruct能够和 https://projectlombok.org/[Lombok]一起使用，比如MapStruct 1.2.0.Beta1 和 Lombok 1.16.14。
+MapStruct能够和 https://projectlombok.org/[Lombok] 一起使用，比如MapStruct 1.2.0.Beta1 和 Lombok 1.16.14。
 
 MapStruct会利用生成的getters, setters, 和constructors，并且用它们来生成mapper实现。
 
-* Lombok 1.18.16有一个破坏式改动（ link:Lombok 1.18.16[changelong]）。为了让Lombok和MapStruct一起工作，您必须添加一个额外的注解处理器lombok-mapstruct-binding ( https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven])，该注解处理器解决了Lombok模块和MapStruct模块的编译问题。
+[NOTE]
+====
+Lombok 1.18.16有一个破坏式改新（https://projectlombok.org/changelog[changelog]）。
+为了让Lombok和MapStruct一起工作，您必须添加一个额外的注解处理器 `lombok-mapstruct-binding` (https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven])。
+该注解处理器解决了Lombok模块和MapStruct模块的编译问题。
 
+[source, xml]
 ----
 <path>
     <groupId>org.projectlombok</groupId>
@@ -40,16 +60,20 @@ MapStruct会利用生成的getters, setters, 和constructors，并且用它们�
     <version>0.2.0</version>
 </path>
 ----
+====
 
 ==== 设置
 
-此处使用的MapStruct的Gradle/Maven设置和第二章中的设置一致，您需要额外添加的是Lombok的依赖。
+此处使用的MapStruct的Gradle/Maven设置和 <<setup>> 中的设置一致，您需要额外添加的是Lombok的依赖。
 
-Maven配置如下：
-
+.Maven configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
 ----
+
 <properties>
-    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
+    <org.mapstruct.version>{mapstructVersion}</org.mapstruct.version>
     <org.projectlombok.version>1.18.16</org.projectlombok.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -104,22 +128,32 @@ Maven配置如下：
     </plugins>
 </build>
 ----
+====
 
-Gradle配置如下：
-
+.Gradle configuration (3.4 and later)
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
 ----
+
 dependencies {
 
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation "org.projectlombok:lombok:1.18.16"
+    compileOnly "org.projectlombok:lombok:1.18.16"
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.projectlombok:lombok:1.18.16"
 }
+
 ----
+====
 
-之后，您就可以同时使用Lombok和MapStruct了
+之后，您就可以同时使用Lombok和 <<defining-mapper>> 了。
 
+.Usage of MapStruct with Lombok
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Data
 public class Source {
@@ -148,6 +182,8 @@ public interface SourceTargetMapper {
     @Mapping( source = "test", target = "testing" )
     Target toTarget( Source s );
 }
-----
 
-您可以在Github上找到一个样例工程 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-lombok[mapstruct-lombok]
+----
+====
+
+您可以在Github上找到一个样例工程 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-lombok[mapstruct-lombok]。

@@ -1,11 +1,17 @@
-== 集合的映射
+[[mapping-collections]]
+== Mapping collections
 
-集合类型（List、Set等）的映射方法和bean类型的映射方法是一致的，都是在mapper接口中定义接口，并在接口中指定要映射的source类型和target类型。MapStruct支持来自 https://docs.oracle.com/javase/tutorial/collections/intro/index.html[Java Collection Framework]中广泛的iterable类型。
+集合类型（List、Set等）的映射和bean类型的映射采用相同方式，都是在mapper接口中定义方法，并指定要映射的source类型和target类型。MapStruct支持来自 http://docs.oracle.com/javase/tutorial/collections/intro/index.html[Java Collection Framework] 中广泛的iterable类型。
 
-生成的代码中会包含source集合的一个循环遍历，在该循环中每个元素都会先完成转换，再塞到target集合中。MapStruct如果在该mapper中(或者该mapper使用的mapper中)发现有一个适用于该集合元素类型的映射方法，则会调用该方法完成映射。 如果source元素类型和target元素类型之间存在隐式转换，则会执行该隐式转换。
+生成的代码会包含source集合的一个循环遍历，在该循环中，每个元素都会先完成转换再塞到target集合中。MapStruct如果在该mapper中(或者该mapper使用的mapper中)发现有一个适用于该集合元素类型的映射方法，则会调用该方法完成映射。
+如果source元素类型和target元素类型之间存在隐式转换，则会执行该隐式转换。
 
 集合映射的例子如下：
 
+.Mapper with collection mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper
 public interface CarMapper {
@@ -17,9 +23,14 @@ public interface CarMapper {
     CarDto carToCarDto(Car car);
 }
 ----
+====
 
-在生成的integerSetToStringSet()实现中，每个元素都会完成从Integer到String的转换。同时，在生成的carsToCarDtos()实现中，则会对每个元素调用carToCarDto()完成转换。
+在生成的 `integerSetToStringSet` 实现中，每个元素都会完成从 `Integer` 到 `String` 的转换。同时，在生成的 `carsToCarDtos()` 实现中，则会对每个元素调用 `carToCarDto()` 方法以完成转换：
 
+.Generated collection mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 @Override
@@ -52,29 +63,49 @@ public List<CarDto> carsToCarDtos(List<Car> cars) {
     return list;
 }
 ----
+====
 
-注意，当映射bean中的集合类型字段时，MapStruct会找参数类型和返回值类型都匹配的映射方法。比如，把Car#passengers（该字段类型为List+++<Person>+++）映射为CarDto#passengers（该字段类型为List+++<PersonDto>+++）。例子如下：+++</PersonDto>++++++</Person>+++
+注意，对bean中的集合类型的字段做映射时，MapStruct会找参数类型和返回值类型都匹配的集合映射方法。比如，把 `Car#passengers` （该字段类型为 `List<Person>` ）映射为 `CarDto#passengers` （该字段类型为 `List<PersonDto>` ）。例子如下：
 
+.Usage of collection mapping method to map a bean property
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 carDto.setPassengers( personsToPersonDtos( car.getPassengers() ) );
 ...
 ----
+====
 
-一些框架或者库只暴露JavaBeans的getter，但是不暴露setter。用JAXB把XML schema映射来的类型默认就遵循是如此。 这种情况下，生成的该字段的映射方法会先调用其getter，并把所有映射后的元素塞进去，例子如下：
+一些框架和库对于集合类型的字段，只暴露他们的JavaBeans getter，但是不暴露setter。用JAXB把XML schema映射来的类型默认就是如此。
+这种情况下，生成的该字段的映射方法会先调用其getter，再把映射后的所有元素塞进去，例子如下：
 
+.Usage of an adding method for collection mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 carDto.getPassengers().addAll( personsToPersonDtos( car.getPassengers() ) );
 ...
 ----
+====
 
-* 不允许将iterable类型的source对象转换为非iterable类型的target，反过来也不行。如果检测到这种情况MapStruct会抛出错误。
+[WARNING]
+====
+不允许将iterable类型的source对象转换为非iterable类型的target，反过来也不行。如果检测到这种情况MapStruct会抛出错误。
+====
 
+[[mapping-maps]]
 === map的映射
 
 MapStruct支持基于map的映射方法。下面是一个例子：
 
+.Map mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 public interface SourceTargetMapper {
 
@@ -82,9 +113,14 @@ public interface SourceTargetMapper {
     Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
 }
 ----
+====
 
 类似iterable类型的映射，生成的代码会迭代source map，转换每个键值对（要么通过隐式转换，要么通过调用别的映射方法）再把他们塞到target map中，例子如下：
 
+.Generated implementation of map mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 @Override
@@ -112,51 +148,87 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
     return map;
 }
 ----
+====
 
+[[collection-mapping-strategies]]
 === 集合映射策略
 
-MapStruct有一个CollectionMappingStrategy元素，其可能的值有：ACCESSOR_ONLY, SETTER_PREFERRED, ADDER_PREFERRED 和 TARGET_IMMUTABLE。
+MapStruct有一个 `CollectionMappingStrategy` 元素，其可能的值有：`ACCESSOR_ONLY`, `SETTER_PREFERRED`, `ADDER_PREFERRED` 和 `TARGET_IMMUTABLE`。
 
-下面的表格中，"`-`"指代属性名称。"`s`"指代复数形式。 该表格展示了选项值，以及target对象中"`set-s`"、"`add-`"和"`get-s`"方法存在/不存在时的行为。
 
+下面的表格中，`-` 指代属性名称。尾缀 `s` 指代复数形式。
+该表格展示了选项值，以及target对象的“set-s”、“add-”和“get-s”方法存在/不存在时的行为。
+
+.Collection mapping strategy options
 |===
-| 选项 | target中仅有 set-s 方法可用 | target中仅有 add- 方法可用 | target中 set-s/add- 方法都有 | target中 set-s/add- 方法都没有 | 存在Target(@TargetType)
+|选项|Only target set-s Available|Only target add- Available|Both set-s / add- Available|No set-s / add- Available|Existing Target(`@TargetType`)
 
-| ACCESSOR_ONLY
-| set-s
-| set-s
-| get-s
-| set-s
-| get-s
+|`ACCESSOR_ONLY`
+|set-s
+|get-s
+|set-s
+|get-s
+|get-s
 
-| SETTER_PREFERRED
-| set-s
-| set-s
-| get-s
-| set-s
-| get-s
+|`SETTER_PREFERRED`
+|set-s
+|add-
+|set-s
+|get-s
+|get-s
 
-| ADDER_PREFERRED
-| set-s
-| set-s
-| get-s
-| set-s
-| get-s
+|`ADDER_PREFERRED`
+|set-s
+|add-
+|add-
+|get-s
+|get-s
 
-| TARGET_IMMUTABLE
-| set-s
-| set-s
-| get-s
-| set-s
-| get-s
+|`TARGET_IMMUTABLE`
+|set-s
+|exception
+|set-s
+|exception
+|set-s
 |===
 
-一些背景知识：adder方法通常用在 https://www.eclipse.org/webtools/dali/[生成的实体(JPA)]中，用来给底部集合（underlying collection）添加单个元素（实体）。调用adder方法会使得父类（调用adder的bean（实体））和其子类之间建立父子关系。为了找到合适的adder方法，MapStruct会尝试匹配底部集合的的泛型参数类型与候选的adder方法的单个参数的参数类型是否相等。当有多个候选时，setter / getter的复数名称会转换为单数形，并在匹配之外也会使用。
+一些背景知识：`adder` 方法通常用在 http://www.eclipse.org/webtools/dali/[generated (JPA) entities] 的场景中，用来给底部集合（underlying collection）添加单个元素（实体）。调用adder方法会使得父类（调用adder的bean（实体））和其子类之间建立父子关系。为了找到合适的 `adder` 方法，MapStruct会尝试匹配底部集合的的泛型参数类型与候选的 `adder` 方法的单个参数的参数类型是否相同。当有多个候选时，`setter` / `getter` 的复数形会转换为单数形，并会用在匹配之外。
 
-"`DEFAULT `"选项不应该被显式使用。它用于区分用户是否想显式重写@MapperConfig中默认值，以替代@Mapper中隐式的MapStruct选择。DEFAULT 与 ACCESSOR_ONLY 是同义的。
+`DEFAULT`选项不应该被显式使用。它用于区分用户是否想显式重写 `@MapperConfig` 中默认值，以替代 `@Mapper` 中隐式的MapStruct选择。`DEFAULT` 与 `ACCESSOR_ONLY` 是同义的。
 
-* 当使用adder方法与JPA实体时，Mapstruct假定target集合已经实例化为集合实现类（如ArrayList）。您可以使用工厂来创造一个带有实例化集合的新的target实体，而非让MapStruct用它的构造器创建target实例
+[TIP]
+====
+当使用 `adder` 方法与JPA实体时，Mapstruct假定target的集合都已经实例化为集合实现类（如 `ArrayList` ）。您可以使用工厂来创造一个带有实例化集合的新的target实体，而非让MapStruct用target构造器创建实例。
 
+====
+
+[[implementation-types-for-collection-mappings]]
 === 用于集合映射的实现类型
 
-当进行集合映射时，如果映射方法声明一个接口类型作为返回值类型时，生成代码会使用该接口的实现类来进行实例化。下面的表格中占了支持的接口类型和生成代码中对应的实现类型： |  接口类型  | 实现类型 | |  ---  | ---  | | Iterable  | ArrayList | | Collection  | ArrayList | | List  | ArrayList | | Set  |LinkedHashSet | | SortedSet  | TreeSet | | NavigableSet  | TreeSet | | Map  | LinkedHashMap | | SortedMap  | TreeMap | | NavigableMap  | TreeMap | | ConcurrentMap  | ConcurrentHashMap | | ConcurrentNavigableMap  | ConcurrentSkipListMap |
+当进行集合映射时，如果映射方法声明一个接口类型作为返回值类型时，生成代码会使用该接口的实现类来进行实例化。下面的表格中表明了支持的接口类型和生成代码中对应的实现类型：
+
+.Collection mapping implementation types
+|===
+|接口类型|实现类型
+
+|`Iterable`|`ArrayList`
+
+|`Collection`|`ArrayList`
+
+|`List`|`ArrayList`
+
+|`Set`|`LinkedHashSet`
+
+|`SortedSet`|`TreeSet`
+
+|`NavigableSet`|`TreeSet`
+
+|`Map`|`LinkedHashMap`
+
+|`SortedMap`|`TreeMap`
+
+|`NavigableMap`|`TreeMap`
+
+|`ConcurrentMap`|`ConcurrentHashMap`
+|`ConcurrentNavigableMap`|`ConcurrentSkipListMap`
+|===

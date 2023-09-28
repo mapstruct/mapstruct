@@ -1,14 +1,22 @@
-
+[[object-factories]]
 == 对象工厂
 
-默认情况下，MapStruct生成的代码会把一个bean类型映射为另一个bean类型，或者更新一个bean，这个过程会调用默认的构造器来初始化target类型的实例。
+By default, the generated code for mapping one bean type into another or updating a bean will call the default constructor to instantiate the target type.
 
-然而，您可以插入自定义对象工厂方法，以此自定义如何获得target类型实例。一哥使用场景是JAXB，其创建了ObjectFactory类来获得schema类型的新实例。
+默认情况下，在MapStruct生成的映射代码中，代码会调用默认的构造器来初始化target类型的实例。
 
-为了使用自定义的工厂，请按照5.5节中的描述，使用@Mapper#uses()将其注册，或者您可以直接在您的mapper中实现工厂。当在bean映射中创建target对象时，MapStruct会寻找一个无参方法，一个有@ObjectFactory注解的方法，或者一个仅有一个@TargetType参数的方法，该参数会指明需要的返回值类型，接下来MapStruct会调用该方法，而不是采用默认的构造器
+作为扩展，您可以使用自定义的对象工厂，以此来获得target类型的实例。一个实例是JAXB，其创建了 `ObjectFactory` 来获得schema类型的新实例。
 
-自定义工厂方法的例子：
+To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
 
+如需要用，请按照 <<invoking-other-mappers>> 的描述，通过 `@Mapper#uses()` 注册自定义工厂，或者直接在您的mapper中实现自定义工厂。
+
+当在bean映射中创建target对象时，MapStruct会寻找一个返回需要target类型的方法，选择范围是无参方法、有 `@ObjectFactory` 的方法和带 `@TargetType` 的单参方法。如果找到了，那么接下来MapStruct会调用该方法替代默认构造器。
+
+.Custom object factories
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 public class DtoFactory {
 
@@ -17,7 +25,8 @@ public class DtoFactory {
      }
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 public class EntityFactory {
 
@@ -26,7 +35,8 @@ public class EntityFactory {
      }
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(uses= { DtoFactory.class, EntityFactory.class } )
 public interface CarMapper {
@@ -38,7 +48,8 @@ public interface CarMapper {
     Car carDtoToCar(CarDto carDto);
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 public class CarMapperImpl implements CarMapper {
@@ -74,9 +85,12 @@ public class CarMapperImpl implements CarMapper {
     }
 }
 ----
+====
 
-带有更新方法的自定义工厂：
-
+.具有更新方法的自定义工厂
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 @Mapper(uses = { DtoFactory.class, EntityFactory.class, CarMapper.class } )
 public interface OwnerMapper {
@@ -88,7 +102,8 @@ public interface OwnerMapper {
     void updateOwner(OwnerDto ownerDto, @MappingTarget Owner owner);
 }
 ----
-
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 //GENERATED CODE
 public class OwnerMapperImpl implements OwnerMapper {
@@ -138,9 +153,19 @@ public class OwnerMapperImpl implements OwnerMapper {
     }
 }
 ----
+====
 
-另外，将工厂方法加上@ObjectFactory注解会让您可以访问mapping source。source对象可以以参数的形式添加，就像映射方法一样。@ObjectFactory是必须的，这样MapStruct才能知道指定的方法是唯一的工厂方法。
+另外，在工厂方法上加 `@ObjectFactory` 可以让您访问控制source对象。
 
+source对象可以添加到参数里，和映射方法中一样。
+
+为了让MapStruct知道指定的方法是唯一的工厂方法，`@ObjectFactory` 是必须的。
+
+.Custom object factories with `@ObjectFactory`
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
 ----
 public class DtoFactory {
 
@@ -150,3 +175,4 @@ public class DtoFactory {
      }
 }
 ----
+====
