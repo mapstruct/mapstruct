@@ -278,6 +278,7 @@ public class MappingMethodOptions {
     }
 
     private void addAllNonRedefined(Set<MappingOptions> inheritedMappings) {
+        // We are only adding the targets here since this mappings have already been reversed
         Set<String> redefinedTargets = new HashSet<>();
         for ( MappingOptions redefinedMappings : mappings ) {
             if ( redefinedMappings.getTargetName() != null ) {
