@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
@@ -56,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Configuration
 @WithSpring
 @DefaultTimeZone("Europe/Berlin")
+@Tag("spring")
 public class SpringConstructorMapperTest {
 
     private static TimeZone originalTimeZone;

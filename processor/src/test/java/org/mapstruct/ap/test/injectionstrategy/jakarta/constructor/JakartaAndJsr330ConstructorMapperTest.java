@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.jakarta.constructor;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -38,6 +39,7 @@ import static java.lang.System.lineSeparator;
 @Configuration
 @WithJakartaInject
 @WithJavaxInject
+@Tag("spring")
 public class JakartaAndJsr330ConstructorMapperTest {
 
     @RegisterExtension

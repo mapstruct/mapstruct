@@ -5,6 +5,7 @@
  */
 package org.mapstruct.itest.tests;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.parallel.Execution;
@@ -80,6 +81,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "jsr330Test")
+    @Tag("spring")
     void jsr330Test() {
     }
 
@@ -156,6 +158,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "springTest")
+    @Tag("spring")
     void springTest() {
     }
 

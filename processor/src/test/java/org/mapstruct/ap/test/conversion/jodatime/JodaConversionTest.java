@@ -100,7 +100,7 @@ public class JodaConversionTest {
     }
 
     @ProcessorTest
-    @EnabledForJreRange(min = JRE.JAVA_11)
+    @EnabledForJreRange(min = JRE.JAVA_11, max = JRE.JAVA_20)
     // See https://bugs.openjdk.java.net/browse/JDK-8211262, there is a difference in the default formats on Java 9+
     public void testSourceToTargetMappingForStringsJdk11() {
         Source src = new Source();
@@ -123,6 +123,33 @@ public class JodaConversionTest {
         assertThat( target ).isNotNull();
         assertThat( target.getDateTime() ).isEqualTo( "1. Januar 2014 um 00:00:00 UTC" );
         assertThat( target.getLocalDateTime() ).isEqualTo( "1. Januar 2014 um 00:00:00" );
+        assertThat( target.getLocalDate() ).isEqualTo( "1. Januar 2014" );
+        assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
+    }
+
+    @ProcessorTest
+    @EnabledForJreRange(min = JRE.JAVA_21)
+    public void testSourceToTargetMappingForStringsJdk21() {
+        Source src = new Source();
+        src.setLocalTime( new LocalTime( 0, 0 ) );
+        src.setLocalDate( new LocalDate( 2014, 1, 1 ) );
+        src.setLocalDateTime( new LocalDateTime( 2014, 1, 1, 0, 0 ) );
+        src.setDateTime( new DateTime( 2014, 1, 1, 0, 0, 0, DateTimeZone.UTC ) );
+
+        // with given format
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( src );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getDateTime() ).isEqualTo( "01.01.2014 00:00 UTC" );
+        assertThat( target.getLocalDateTime() ).isEqualTo( "01.01.2014 00:00" );
+        assertThat( target.getLocalDate() ).isEqualTo( "01.01.2014" );
+        assertThat( target.getLocalTime() ).isEqualTo( "00:00" );
+
+        // and now with default mappings
+        target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( src );
+        assertThat( target ).isNotNull();
+        assertThat( target.getDateTime() ).isEqualTo( "1. Januar 2014, 00:00:00 UTC" );
+        assertThat( target.getLocalDateTime() ).isEqualTo( "1. Januar 2014, 00:00:00" );
         assertThat( target.getLocalDate() ).isEqualTo( "1. Januar 2014" );
         assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
     }

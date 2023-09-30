@@ -10,16 +10,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [19-ea]
+        java: [EA]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v3
       - name: 'Set up JDK'
-        uses: actions/setup-java@v3
+        uses: oracle-actions/setup-java@v1
         with:
-          distribution: 'zulu'
-          java-version: ${{ matrix.java }}
+          website: 'jdk.java.net'
+          release: ${{ matrix.java }}
       - name: 'Test'
-        run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true
+        run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true -DexcludedGroups=spring

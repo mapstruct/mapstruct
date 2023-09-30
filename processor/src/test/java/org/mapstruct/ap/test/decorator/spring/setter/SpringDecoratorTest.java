@@ -9,6 +9,7 @@ import java.util.Calendar;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("3229")
 @ComponentScan(basePackageClasses = SpringDecoratorTest.class)
 @Configuration
+@Tag("spring")
 public class SpringDecoratorTest {
 
     @Autowired
