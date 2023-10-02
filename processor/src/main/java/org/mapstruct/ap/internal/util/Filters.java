@@ -114,7 +114,7 @@ public class Filters {
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
-        TypeMirror returnType = getWithinContext( executableElement ).getReturnType();
+        TypeMirror returnType = getMethodAsMemberOfDefiningClass( executableElement ).getReturnType();
         if ( returnType.getKind() == TypeKind.WILDCARD ) {
             // we got 2 versions of wildcards: '?' or '? extends ...'
             if ( ( (WildcardType) returnType ).getExtendsBound() != null ) {
@@ -155,10 +155,10 @@ public class Filters {
     }
 
     private TypeMirror getFirstParameter(ExecutableElement executableElement) {
-        return first( getWithinContext( executableElement ).getParameterTypes() );
+        return first( getMethodAsMemberOfDefiningClass( executableElement ).getParameterTypes() );
     }
 
-    private ExecutableType getWithinContext( ExecutableElement executableElement ) {
+    private ExecutableType getMethodAsMemberOfDefiningClass( ExecutableElement executableElement ) {
         return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
     }
 

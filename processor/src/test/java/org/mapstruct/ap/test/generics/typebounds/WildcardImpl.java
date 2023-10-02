@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.generics.typebounds;
 /**
  * @author Ben Zegveld
  */
-class WildcardedInterfaceImpl implements WildcardedInterface {
+class WildcardImpl implements Wildcard {
 
     private String contents;
     private boolean shouldMap;

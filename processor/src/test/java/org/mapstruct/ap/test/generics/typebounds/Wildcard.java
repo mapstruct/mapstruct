@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.generics.typebounds;
 /**
  * @author Ben Zegveld
  */
-public interface WildcardedInterface {
+public interface Wildcard {
 
     String getContents();
 

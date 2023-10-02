@@ -20,14 +20,14 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
  * @author Ben Zegveld
  */
 @IssueKey( "2947" )
-@WithClasses( { Source.class, Target.class, WildcardedInterface.class } )
+@WithClasses( { Source.class, Target.class, Wildcard.class } )
 class WildcardTypeBoundsTest {
 
     @ProcessorTest
     @WithClasses( { WildcardExtendsMapper.class } )
     void mapsWithWildcardSuccesfully() {
-        Source<WildcardedInterfaceImpl> source = new Source<>();
-        source.setObject( new WildcardedInterfaceImpl() );
+        Source<WildcardImpl> source = new Source<>();
+        source.setObject( new WildcardImpl() );
         source.getObject().setContents( "Test contents" );
 
         Target target = WildcardExtendsMapper.INSTANCE.map( source );
@@ -37,9 +37,9 @@ class WildcardTypeBoundsTest {
 
     @ProcessorTest
     @WithClasses( { WildcardConditionalExtendsMapper.class } )
-    void mapsWithWildcardConditionTrue() {
-        Source<WildcardedInterfaceImpl> source = new Source<>();
-        WildcardedInterfaceImpl sourceImpl = new WildcardedInterfaceImpl();
+    void mapsWithWildcardConditionFalse() {
+        Source<WildcardImpl> source = new Source<>();
+        WildcardImpl sourceImpl = new WildcardImpl();
         source.setObject( sourceImpl );
         sourceImpl.setContents( "Test contents" );
         sourceImpl.setShouldMap( false );
@@ -51,9 +51,9 @@ class WildcardTypeBoundsTest {
 
     @ProcessorTest
     @WithClasses( { WildcardConditionalExtendsMapper.class } )
-    void mapsWithWildcardConditionFalse() {
-        Source<WildcardedInterfaceImpl> source = new Source<>();
-        WildcardedInterfaceImpl sourceImpl = new WildcardedInterfaceImpl();
+    void mapsWithWildcardConditionTrue() {
+        Source<WildcardImpl> source = new Source<>();
+        WildcardImpl sourceImpl = new WildcardImpl();
         source.setObject( sourceImpl );
         sourceImpl.setContents( "Test contents" );
         sourceImpl.setShouldMap( true );
@@ -66,8 +66,8 @@ class WildcardTypeBoundsTest {
     @ProcessorTest
     @WithClasses( { WildcardNestedExtendsMapper.class, SourceContainer.class } )
     void mapsWithNestedWildcardSuccessfully() {
-        Source<WildcardedInterfaceImpl> source = new Source<>();
-        source.setObject( new WildcardedInterfaceImpl() );
+        Source<WildcardImpl> source = new Source<>();
+        source.setObject( new WildcardImpl() );
         source.getObject().setContents( "Test contents" );
         SourceContainer sourceContainer = new SourceContainer();
         sourceContainer.setContained( source );
@@ -80,10 +80,10 @@ class WildcardTypeBoundsTest {
     @ProcessorTest
     @WithClasses( { WildcardNestedInheritedExtendsMapper.class, SourceContainerInherited.class } )
     void mapsWithNestedInheritedWildcardSuccessfully() {
-        Source<WildcardedInterfaceImpl> source = new Source<>();
-        source.setObject( new WildcardedInterfaceImpl() );
+        Source<WildcardImpl> source = new Source<>();
+        source.setObject( new WildcardImpl() );
         source.getObject().setContents( "Test contents" );
-        SourceContainerInherited<WildcardedInterfaceImpl> sourceContainer = new SourceContainerInherited<>();
+        SourceContainerInherited<WildcardImpl> sourceContainer = new SourceContainerInherited<>();
         sourceContainer.setContained( source );
 
         Target target = WildcardNestedInheritedExtendsMapper.INSTANCE.map( sourceContainer );
@@ -92,7 +92,7 @@ class WildcardTypeBoundsTest {
     }
 
     @ProcessorTest
-    @WithClasses( { ErroneousTypeVarExtendsMapper.class, WildcardedInterfaceImpl.class } )
+    @WithClasses( { ErroneousTypeVarExtendsMapper.class, WildcardImpl.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(

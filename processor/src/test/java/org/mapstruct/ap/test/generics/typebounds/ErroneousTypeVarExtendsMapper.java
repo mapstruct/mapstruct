@@ -16,10 +16,10 @@ public abstract class ErroneousTypeVarExtendsMapper {
     public static final ErroneousTypeVarExtendsMapper INSTANCE =
         Mappers.getMapper( ErroneousTypeVarExtendsMapper.class );
 
-    // not supported yet, use `? extends WildcardedInterfaceImpl` in the map method instead.
-    public abstract <L extends WildcardedInterfaceImpl> Target map(Source<L> action);
+    // not supported yet, use `? extends WildcardImpl` in the map method instead.
+    public abstract <L extends WildcardImpl> Target map(Source<L> action);
 
-    String mapToString(WildcardedInterfaceImpl rawData) {
+    String mapToString(WildcardImpl rawData) {
         return rawData.getContents();
     }
 }

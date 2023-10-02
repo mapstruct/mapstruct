@@ -20,7 +20,7 @@ public abstract class WildcardNestedInheritedExtendsMapper {
     @Mapping( target = "object", source = "contained.object" )
     public abstract Target map(SourceContainerInherited<?> source);
 
-    String mapToString(WildcardedInterface rawData) {
+    String mapToString(Wildcard rawData) {
         return rawData.getContents();
     }
 }

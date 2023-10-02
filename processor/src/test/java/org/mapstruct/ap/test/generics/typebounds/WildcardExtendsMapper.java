@@ -19,7 +19,7 @@ public abstract class WildcardExtendsMapper {
     @Mapping( target = "object", source = "object" )
     public abstract Target map(Source<?> action);
 
-    String mapToString(WildcardedInterface rawData) {
+    String mapToString(Wildcard rawData) {
         return rawData.getContents();
     }
 }

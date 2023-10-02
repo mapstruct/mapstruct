@@ -8,7 +8,7 @@ package org.mapstruct.ap.test.generics.typebounds;
 /**
  * @author Ben Zegveld
  */
-public class Source<T extends WildcardedInterface> {
+public class Source<T extends Wildcard> {
     private T object;
 
     public T getObject() {
