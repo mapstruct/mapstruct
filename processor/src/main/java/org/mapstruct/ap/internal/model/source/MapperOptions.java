@@ -12,9 +12,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.ElementUtils;
 
-import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
@@ -26,6 +24,8 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
+import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 public class MapperOptions extends DelegatingOptions {
 
@@ -190,6 +190,30 @@ public class MapperOptions extends DelegatingOptions {
             return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() );
         }
         return next().getNullValueMapMappingStrategy();
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyIterableMappingStrategy() {
+        if ( mapper.nullValuePropertyIterableMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem
+                .valueOf( mapper.nullValuePropertyIterableMappingStrategy().get() );
+        }
+        if ( mapper.nullValuePropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValuePropertyMappingStrategy().get() );
+        }
+        return next().getNullValuePropertyIterableMappingStrategy();
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMapMappingStrategy() {
+        if ( mapper.nullValuePropertyMapMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem
+                .valueOf( mapper.nullValuePropertyMapMappingStrategy().get() );
+        }
+        if ( mapper.nullValuePropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValuePropertyMappingStrategy().get() );
+        }
+        return next().getNullValuePropertyMapMappingStrategy();
     }
 
     @Override

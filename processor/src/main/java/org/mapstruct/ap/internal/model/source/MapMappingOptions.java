@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
@@ -100,7 +102,8 @@ public class MapMappingOptions extends DelegatingOptions {
             && !gem.valueQualifiedByName().hasValue()
             && !gem.keyTargetType().hasValue()
             && !gem.valueTargetType().hasValue()
-            && !gem.nullValueMappingStrategy().hasValue() ) {
+            && !gem.nullValueMappingStrategy().hasValue()
+            && !gem.nullValuePropertyMappingStrategy().hasValue() ) {
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -145,6 +148,15 @@ public class MapMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
             .orElse( next().getNullValueMapMappingStrategy() );
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return Optional.ofNullable( mapMapping ).map( MapMappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValuePropertyMapMappingStrategy() );
     }
 
     public MappingControl getKeyMappingControl(ElementUtils elementUtils) {

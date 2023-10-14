@@ -36,6 +36,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
@@ -115,6 +116,10 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String VERBOSE = "mapstruct.verbose";
     protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = "mapstruct.nullValueIterableMappingStrategy";
     protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = "mapstruct.nullValueMapMappingStrategy";
+    protected static final String NULL_VALUE_PROPERTY_ITERABLE_MAPPING_STRATEGY =
+        "mapstruct.nullValuePropertyIterableMappingStrategy";
+    protected static final String NULL_VALUE_PROPERTY_MAP_MAPPING_STRATEGY =
+        "mapstruct.nullValuePropertyMapMappingStrategy";
 
     private final Set<String> additionalSupportedOptions;
     private final String additionalSupportedOptionsError;
@@ -174,6 +179,10 @@ public class MappingProcessor extends AbstractProcessor {
         String nullValueIterableMappingStrategy = processingEnv.getOptions()
             .get( NULL_VALUE_ITERABLE_MAPPING_STRATEGY );
         String nullValueMapMappingStrategy = processingEnv.getOptions().get( NULL_VALUE_MAP_MAPPING_STRATEGY );
+        String nullValuePropertyIterableMappingStrategy = processingEnv.getOptions()
+            .get( NULL_VALUE_PROPERTY_ITERABLE_MAPPING_STRATEGY );
+        String nullValuePropertyMapMappingStrategy = processingEnv.getOptions()
+            .get( NULL_VALUE_PROPERTY_MAP_MAPPING_STRATEGY );
 
         return new Options(
             Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
@@ -189,7 +198,14 @@ public class MappingProcessor extends AbstractProcessor {
                 NullValueMappingStrategyGem.valueOf( nullValueIterableMappingStrategy.toUpperCase( Locale.ROOT ) ) :
                 null,
             nullValueMapMappingStrategy != null ?
-                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null
+                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) :
+                null,
+            nullValuePropertyIterableMappingStrategy != null ?
+                NullValuePropertyMappingStrategyGem
+                    .valueOf( nullValuePropertyIterableMappingStrategy.toUpperCase( Locale.ROOT ) ) : null,
+            nullValuePropertyMapMappingStrategy != null ?
+                NullValuePropertyMappingStrategyGem
+                    .valueOf( nullValuePropertyMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null
         );
     }
 

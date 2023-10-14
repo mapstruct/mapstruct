@@ -125,6 +125,17 @@ public @interface IterableMapping {
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
+     * The strategy to be applied when {@code null} is passed as source value to this iterable mapping. If no
+     * strategy is configured, the strategy given via {@link MapperConfig#nullValuePropertyMappingStrategy()} or
+     * {@link Mapper#nullValuePropertyMappingStrategy()} will be applied, using
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
+     */
+    NullValuePropertyMappingStrategy nullValuePropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * Allows detailed control over the mapping process.
      *
      * @return the mapping control

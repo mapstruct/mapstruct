@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.option;
 
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
 /**
@@ -26,6 +27,8 @@ public class Options {
     private final boolean verbose;
     private final NullValueMappingStrategyGem nullValueIterableMappingStrategy;
     private final NullValueMappingStrategyGem nullValueMapMappingStrategy;
+    private final NullValuePropertyMappingStrategyGem nullValuePropertyIterableMappingStrategy;
+    private final NullValuePropertyMappingStrategyGem nullValuePropertyMapMappingStrategy;
 
     //CHECKSTYLE:OFF
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
@@ -36,7 +39,9 @@ public class Options {
                    boolean disableBuilders,
                    boolean verbose,
                    NullValueMappingStrategyGem nullValueIterableMappingStrategy,
-                   NullValueMappingStrategyGem nullValueMapMappingStrategy
+                   NullValueMappingStrategyGem nullValueMapMappingStrategy,
+                   NullValuePropertyMappingStrategyGem nullValuePropertyIterableMappingStrategy,
+                   NullValuePropertyMappingStrategyGem nullValuePropertyMapMappingStrategy
                    ) {
         //CHECKSTYLE:ON
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
@@ -50,6 +55,8 @@ public class Options {
         this.verbose = verbose;
         this.nullValueIterableMappingStrategy = nullValueIterableMappingStrategy;
         this.nullValueMapMappingStrategy = nullValueMapMappingStrategy;
+        this.nullValuePropertyIterableMappingStrategy = nullValuePropertyIterableMappingStrategy;
+        this.nullValuePropertyMapMappingStrategy = nullValuePropertyMapMappingStrategy;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
@@ -94,5 +101,13 @@ public class Options {
 
     public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
         return nullValueMapMappingStrategy;
+    }
+
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyIterableMappingStrategy() {
+        return nullValuePropertyIterableMappingStrategy;
+    }
+
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMapMappingStrategy() {
+        return nullValuePropertyMapMappingStrategy;
     }
 }

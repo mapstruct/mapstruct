@@ -5,7 +5,8 @@
  */
 package org.mapstruct.ap.test.nullvaluepropertymapping;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.mapstruct.ap.testutil.IssueKey;
@@ -42,7 +43,8 @@ public class NullValuePropertyMappingTest {
         userDTO.setHomeDTO( new HomeDTO() );
         userDTO.getHomeDTO().setAddressDTO( new AddressDTO() );
         userDTO.getHomeDTO().getAddressDTO().setHouseNo( 5 );
-        userDTO.setDetails( Arrays.asList( "green hair" ) );
+        userDTO.setDetails( Collections.singletonList( "green hair" ) );
+        userDTO.setOtherDetails( Collections.singletonMap( "weight", "100kg" ) );
 
         CustomerMapper.INSTANCE.mapCustomer( customer, userDTO );
 
@@ -51,6 +53,31 @@ public class NullValuePropertyMappingTest {
         assertThat( userDTO.getHomeDTO().getAddressDTO().getHouseNo() ).isEqualTo( 5 );
         assertThat( userDTO.getDetails() ).isNotNull();
         assertThat( userDTO.getDetails() ).containsExactly( "green hair" );
+        assertThat( userDTO.getOtherDetails() ).isNotNull();
+        assertThat( userDTO.getOtherDetails() ).containsEntry( "weight", "100kg" ).hasSize( 1 );
+    }
+
+    @ProcessorTest
+    @WithClasses(CustomerNullBeanDefaultIterableIgnoreMapMapper.class)
+    public void testMixedStrategiesAppliedOnForgedMethod() {
+
+        Customer customer = new Customer();
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setHomeDTO( new HomeDTO() );
+        userDTO.getHomeDTO().setAddressDTO( new AddressDTO() );
+        userDTO.setDetails( Collections.singletonList( "green hair" ) );
+        Map<String, String> otherDetails = Collections.singletonMap( "weight", "100kg" );
+        userDTO.setOtherDetails( otherDetails );
+
+        CustomerNullBeanDefaultIterableIgnoreMapMapper.INSTANCE.mapCustomer( customer, userDTO );
+
+        assertThat( userDTO.getHomeDTO() ).isNotNull();
+        assertThat( userDTO.getHomeDTO().getAddressDTO() ).isNull();
+        assertThat( userDTO.getDetails() ).isNotNull();
+        assertThat( userDTO.getDetails() ).isEmpty();
+        assertThat( userDTO.getOtherDetails() == otherDetails ).isTrue();
+        assertThat( userDTO.getOtherDetails() ).containsEntry( "weight", "100kg" ).hasSize( 1 );
     }
 
     @ProcessorTest
@@ -88,7 +115,8 @@ public class NullValuePropertyMappingTest {
         userDTO.setHomeDTO( new HomeDTO() );
         userDTO.getHomeDTO().setAddressDTO( new AddressDTO() );
         userDTO.getHomeDTO().getAddressDTO().setHouseNo( 5 );
-        userDTO.setDetails( Arrays.asList( "green hair" ) );
+        userDTO.setDetails( Collections.singletonList( "green hair" ) );
+        userDTO.setOtherDetails( Collections.singletonMap( "weight", "100kg" ) );
 
         CustomerDefaultMapper.INSTANCE.mapCustomer( customer, userDTO );
 
@@ -97,6 +125,8 @@ public class NullValuePropertyMappingTest {
         assertThat( userDTO.getHomeDTO().getAddressDTO().getHouseNo() ).isNull();
         assertThat( userDTO.getDetails() ).isNotNull();
         assertThat( userDTO.getDetails() ).isEmpty();
+        assertThat( userDTO.getOtherDetails() ).isNotNull();
+        assertThat( userDTO.getOtherDetails() ).isEmpty();
     }
 
     @ProcessorTest
@@ -187,7 +217,7 @@ public class NullValuePropertyMappingTest {
         CustomerDTO customerDto = new CustomerDTO();
         customerDto.setAddress( new AddressDTO() );
         customerDto.getAddress().setHouseNo( 5 );
-        customerDto.setDetails( Arrays.asList( "green hair" ) );
+        customerDto.setDetails( Collections.singletonList( "green hair" ) );
 
         customerMapper.accept( customer, customerDto );
 

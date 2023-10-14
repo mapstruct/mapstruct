@@ -357,14 +357,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 FormattingParameters keyFormattingParameters = null;
                 SelectionParameters valueSelectionParameters = null;
                 FormattingParameters valueFormattingParameters = null;
-                NullValueMappingStrategyGem nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getMapMapping() != null ) {
                     keySelectionParameters = mappingOptions.getMapMapping().getKeySelectionParameters();
                     keyFormattingParameters = mappingOptions.getMapMapping().getKeyFormattingParameters();
                     valueSelectionParameters = mappingOptions.getMapMapping().getValueSelectionParameters();
                     valueFormattingParameters = mappingOptions.getMapMapping().getValueFormattingParameters();
-                    nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
                 this.messager.note( 1, Message.MAPMAPPING_CREATE_NOTE, method );

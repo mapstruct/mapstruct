@@ -249,6 +249,34 @@ public @interface Mapper {
         NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when {@code null} is passed as source argument value to an {@link IterableMapping} of
+     * this mapper. If unset, the strategy set with {@link #nullValuePropertyMappingStrategy()} will be applied.
+     * If neither strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValuePropertyIterableMappingStrategy()} will be applied, using
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to an {@link IterableMapping} of
+     * this mapper.
+     * @since 1.6
+     */
+    NullValuePropertyMappingStrategy nullValuePropertyIterableMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * The strategy to be applied when {@code null} is passed as source argument value to a {@link MapMapping} of this
+     * mapper. If unset, the strategy set with {@link #nullValuePropertyMappingStrategy()} will be applied.
+     * If neither strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValuePropertyMapMappingStrategy()} will be applied, using
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to a {@link MapMapping} of this
+     * mapper.
+     * @since 1.6
+     */
+    NullValuePropertyMappingStrategy nullValuePropertyMapMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
      * specified with {@link #config()}. Annotations that can be inherited are for example {@link Mapping},
      * {@link IterableMapping}, {@link MapMapping}, or {@link BeanMapping}.

@@ -8,14 +8,15 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -65,7 +66,8 @@ public class IterableMappingOptions extends DelegatingOptions {
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.elementTargetType().hasValue()
-            && !gem.nullValueMappingStrategy().hasValue() ) {
+            && !gem.nullValueMappingStrategy().hasValue()
+            && !gem.nullValuePropertyMappingStrategy().hasValue() ) {
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -100,6 +102,15 @@ public class IterableMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValueMappingStrategyGem::valueOf )
             .orElse( next().getNullValueIterableMappingStrategy() );
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValuePropertyMappingStrategy() {
+        return Optional.ofNullable( iterableMapping ).map( IterableMappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValuePropertyIterableMappingStrategy() );
     }
 
     public MappingControl getElementMappingControl(ElementUtils elementUtils) {

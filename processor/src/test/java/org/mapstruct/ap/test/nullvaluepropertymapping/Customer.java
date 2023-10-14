@@ -6,11 +6,14 @@
 package org.mapstruct.ap.test.nullvaluepropertymapping;
 
 import java.util.List;
+import java.util.Map;
 
 public class Customer {
 
     private Address address;
     private List<String> details;
+
+    private Map<String, String> otherDetails;
 
     public Address getAddress() {
         return address;
@@ -26,5 +29,13 @@ public class Customer {
 
     public void setDetails(List<String> details) {
         this.details = details;
+    }
+
+    public Map<String, String> getOtherDetails() {
+        return otherDetails;
+    }
+
+    public void setOtherDetails(Map<String, String> otherDetails) {
+        this.otherDetails = otherDetails;
     }
 }
