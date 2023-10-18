@@ -249,7 +249,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
 
         Target.SubType subType1 = new Target.SubType( value );
 
-        afterNonOptionalSource( subType );
+        afterNonOptionalSourceWithNoTarget( subType );
 
         return subType1;
     }
@@ -264,7 +264,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
 
         Target.SubType subType1 = optional.map( subType -> subTypeToSubType( subType ) ).orElse( null );
 
-        afterOptionalSource( optional );
+        afterOptionalSourceWithNoTarget( optional );
         afterOptionalSourceWithNonOptionalTarget( subType1, optional );
 
         return subType1;
@@ -280,7 +280,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
         Source.SubType subType1 = subType;
         Optional<Target.SubType> optional = Optional.ofNullable( subTypeToSubType( subType1 ) );
 
-        afterNonOptionalSource( subType );
+        afterNonOptionalSourceWithNoTarget( subType );
         afterNonOptionalSourceOptionalTarget( optional, subType );
 
         return optional;
@@ -295,7 +295,7 @@ public class NullValueCheckAlwaysOptionalTestMapperImpl implements NullValueChec
 
         Optional<Target.SubType> optional1 = optional.map( subType -> subTypeToSubType( subType ) );
 
-        afterOptionalSource( optional );
+        afterOptionalSourceWithNoTarget( optional );
         afterOptionalSourceWithOptionalTarget( optional1, optional );
 
         return optional1;
