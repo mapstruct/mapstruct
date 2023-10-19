@@ -442,7 +442,7 @@ public @interface Mapping {
      *
      * @return Default value to set in case the source property is {@code null}.
      */
-    String defaultValue() default "";
+    String defaultValue();
 
     /**
      * Determines when to include a null check on the source property value of a bean mapping.
