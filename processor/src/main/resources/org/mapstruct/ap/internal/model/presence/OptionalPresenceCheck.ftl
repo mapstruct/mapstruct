@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck" -->
-${sourceReference}.isPresent()
+${sourceReference}<#if isNegate()>.isEmpty()<#else>.isPresent()</#if>

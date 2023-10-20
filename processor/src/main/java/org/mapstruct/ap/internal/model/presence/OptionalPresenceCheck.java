@@ -21,9 +21,16 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class OptionalPresenceCheck extends ModelElement implements PresenceCheck {
 
     private final String sourceReference;
+    private final boolean negate;
 
     public OptionalPresenceCheck(String sourceReference) {
         this.sourceReference = sourceReference;
+        this.negate = false;
+    }
+
+    public OptionalPresenceCheck(String sourceReference, boolean negate) {
+        this.sourceReference = sourceReference;
+        this.negate = negate;
     }
 
     public String getSourceReference() {
@@ -33,6 +40,15 @@ public class OptionalPresenceCheck extends ModelElement implements PresenceCheck
     @Override
     public Set<Type> getImportTypes() {
         return Collections.emptySet();
+    }
+
+    public boolean isNegate() {
+        return negate;
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new OptionalPresenceCheck( sourceReference, !negate );
     }
 
     @Override
