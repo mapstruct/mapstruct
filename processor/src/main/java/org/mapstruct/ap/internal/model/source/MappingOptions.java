@@ -222,6 +222,9 @@ public class MappingOptions extends DelegatingOptions {
         else if ( gem.expression().hasValue() && gem.defaultExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED;
         }
+        else if (gem.expression().hasValue() && gem.conditionQualifiedByName().hasValue()) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED;
+        }
         else if ( gem.expression().hasValue() && gem.conditionExpression().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_EXPRESSION_BOTH_DEFINED;
         }
