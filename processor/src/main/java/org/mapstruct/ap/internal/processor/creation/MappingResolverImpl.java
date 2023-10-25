@@ -434,7 +434,6 @@ public class MappingResolverImpl implements MappingResolver {
         private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {
 
             ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
-
             if ( conversionProvider == null ) {
                 return null;
             }

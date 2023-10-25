@@ -25,6 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Set;
+import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -43,6 +45,7 @@ public class Conversions {
     private final Type enumType;
     private final Type stringType;
     private final Type integerType;
+    private final Type iterableType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -51,6 +54,7 @@ public class Conversions {
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
         this.integerType = typeFactory.getType( Integer.class );
+        this.iterableType = typeFactory.getType( Iterable.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -193,6 +197,10 @@ public class Conversions {
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
 
+        // iterable
+        registerIterableConversion( Iterable.class, List.class, new IterableToListConversion() );
+        registerIterableConversion( Iterable.class, Set.class, new IterableToSetConversion() );
+
         registerJavaTimeSqlConversions();
 
         // java.util.Currency <~> String
@@ -312,6 +320,14 @@ public class Conversions {
         }
     }
 
+    private void registerIterableConversion(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceClass ).asRawType();
+        Type targetType = typeFactory.getType( targetClass ).asRawType();
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
+    }
+
     private boolean isJavaURLAvailable() {
         return typeFactory.isTypeAvailable( "java.net.URL" );
     }
@@ -344,6 +360,10 @@ public class Conversions {
                   sourceType.getBoxedEquivalent().equals( integerType ) )
         ) {
             targetType = enumType;
+        }
+        else if ( sourceType.isIterableType() && targetType.isCollectionType() ) {
+            sourceType = sourceType.asRawType();
+            targetType = targetType.asRawType();
         }
 
         return conversions.get( new Key( sourceType, targetType ) );
