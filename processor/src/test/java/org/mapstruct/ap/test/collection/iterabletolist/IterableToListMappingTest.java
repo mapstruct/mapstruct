@@ -15,6 +15,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ *
+ * @author Xiu-Hong Kooi
+ */
 @WithClasses({ FruitsMenu.class, FruitSalad.class, Fruit.class, FruitsMapper.class })
 public class IterableToListMappingTest {
 

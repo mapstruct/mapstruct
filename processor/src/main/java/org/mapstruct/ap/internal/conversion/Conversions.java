@@ -319,7 +319,7 @@ public class Conversions {
     }
 
     private void registerIterableConversion(Class<?> targetClass, ConversionProvider conversion) {
-        Type sourceType = typeFactory.getType( Iterable.class );
+        Type sourceType = typeFactory.getType( Iterable.class ).asRawType();
         Type targetType = typeFactory.getType( targetClass ).asRawType();
 
         conversions.put( new Key( sourceType, targetType ), conversion );

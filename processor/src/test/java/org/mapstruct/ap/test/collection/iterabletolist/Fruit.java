@@ -7,7 +7,7 @@ package org.mapstruct.ap.test.collection.iterabletolist;
 
 /**
  *
- * @author Saheb Preet Singh
+ * @author Xiu-Hong Kooi
  */
 public class Fruit {
 

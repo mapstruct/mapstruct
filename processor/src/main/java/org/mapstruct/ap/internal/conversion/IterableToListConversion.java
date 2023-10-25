@@ -9,8 +9,10 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.collectors;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.streamSupport;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -22,7 +24,8 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 public class IterableToListConversion extends SimpleConversion {
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return streamSupport( conversionContext ) + ".stream( <SOURCE>.spliterator(), false ).toList()";
+        return streamSupport( conversionContext ) + ".stream( <SOURCE>.spliterator(), false )" +
+                ".collect( " + collectors( conversionContext ) + ".toList() )";
     }
 
     @Override
@@ -32,6 +35,7 @@ public class IterableToListConversion extends SimpleConversion {
 
     @Override
     protected Set<Type> getToConversionImportTypes(final ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( StreamSupport.class ) );
+        return asSet( conversionContext.getTypeFactory().getType( StreamSupport.class ),
+                conversionContext.getTypeFactory().getType( Collectors.class ) );
     }
 }

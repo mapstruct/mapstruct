@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  *
- * @author Saheb Preet Singh
+ * @author Xiu-Hong Kooi
  */
 public class FruitsMenu implements Iterable<Fruit> {
 
