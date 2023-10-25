@@ -45,7 +45,6 @@ public class Conversions {
     private final Type enumType;
     private final Type stringType;
     private final Type integerType;
-    private final Type iterableType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -54,7 +53,6 @@ public class Conversions {
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
         this.integerType = typeFactory.getType( Integer.class );
-        this.iterableType = typeFactory.getType( Iterable.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
