@@ -198,8 +198,8 @@ public class Conversions {
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
 
         // iterable
-        registerIterableConversion( Iterable.class, List.class, new IterableToListConversion() );
-        registerIterableConversion( Iterable.class, Set.class, new IterableToSetConversion() );
+        registerIterableConversion( List.class, new IterableToListConversion() );
+        registerIterableConversion( Set.class, new IterableToSetConversion() );
 
         registerJavaTimeSqlConversions();
 
@@ -320,8 +320,8 @@ public class Conversions {
         }
     }
 
-    private void registerIterableConversion(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
-        Type sourceType = typeFactory.getType( sourceClass ).asRawType();
+    private void registerIterableConversion(Class<?> targetClass, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( Iterable.class );
         Type targetType = typeFactory.getType( targetClass ).asRawType();
 
         conversions.put( new Key( sourceType, targetType ), conversion );
