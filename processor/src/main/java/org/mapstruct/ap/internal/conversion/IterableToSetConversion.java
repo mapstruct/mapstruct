@@ -22,8 +22,8 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 public class IterableToSetConversion extends SimpleConversion {
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return streamSupport( conversionContext ) + ".stream(<SOURCE>.spliterator(), false)" +
-                ".collect(Collectors.toSet())";
+        return streamSupport( conversionContext ) + ".stream( <SOURCE>.spliterator(), false )" +
+                ".collect( Collectors.toSet() )";
     }
 
     @Override

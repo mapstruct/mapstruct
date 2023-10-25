@@ -22,7 +22,7 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 public class IterableToListConversion extends SimpleConversion {
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return streamSupport( conversionContext ) + ".stream(<SOURCE>.spliterator(), false).toList()";
+        return streamSupport( conversionContext ) + ".stream( <SOURCE>.spliterator(), false ).toList()";
     }
 
     @Override
