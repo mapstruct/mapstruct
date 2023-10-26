@@ -25,8 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.Set;
-import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -195,10 +193,6 @@ public class Conversions {
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
 
-        // iterable
-        registerIterableConversion( List.class, new IterableToListConversion() );
-        registerIterableConversion( Set.class, new IterableToSetConversion() );
-
         registerJavaTimeSqlConversions();
 
         // java.util.Currency <~> String
@@ -318,14 +312,6 @@ public class Conversions {
         }
     }
 
-    private void registerIterableConversion(Class<?> targetClass, ConversionProvider conversion) {
-        Type sourceType = typeFactory.getType( Iterable.class ).asRawType();
-        Type targetType = typeFactory.getType( targetClass ).asRawType();
-
-        conversions.put( new Key( sourceType, targetType ), conversion );
-        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
-    }
-
     private boolean isJavaURLAvailable() {
         return typeFactory.isTypeAvailable( "java.net.URL" );
     }
@@ -358,10 +344,6 @@ public class Conversions {
                   sourceType.getBoxedEquivalent().equals( integerType ) )
         ) {
             targetType = enumType;
-        }
-        else if ( sourceType.isIterableType() && targetType.isCollectionType() ) {
-            sourceType = sourceType.asRawType();
-            targetType = targetType.asRawType();
         }
 
         return conversions.get( new Key( sourceType, targetType ) );

@@ -301,7 +301,8 @@ public class PropertyMapping extends ModelElement {
         private Assignment forge( ) {
             Assignment assignment;
             Type sourceType = rightHandSide.getSourceType();
-            if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+            if ( ( sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()
+                    || ( sourceType.isIterableType() && targetType.isCollectionType() ) ) {
                 assignment = forgeIterableMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
