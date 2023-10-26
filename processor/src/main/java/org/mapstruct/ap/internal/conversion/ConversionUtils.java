@@ -279,25 +279,4 @@ public final class ConversionUtils {
         return typeReferenceName( conversionContext, URL.class );
     }
 
-    /**
-     * Name for {@link java.util.stream.StreamSupport}.
-     *
-     * @param conversionContext Conversion context
-     *
-     * @return Name or fully-qualified name.
-     */
-    public static String streamSupport(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, java.util.stream.StreamSupport.class );
-    }
-
-    /**
-     * Name for {@link java.util.stream.Collectors}.
-     *
-     * @param conversionContext Conversion context
-     *
-     * @return Name or fully-qualified name.
-     */
-    public static String collectors(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, java.util.stream.Collectors.class );
-    }
 }
