@@ -33,7 +33,7 @@ public class ConstantsMapperImpl implements ConstantsMapper {
         constantsTarget.setIntValue( -03777777 );
         constantsTarget.setIntBoxed( 15 );
         constantsTarget.setLongValue( 0x7fffffffffffffffL );
-        constantsTarget.setLongBoxed( (long) 0xCAFEBABEL );
+        constantsTarget.setLongBoxed( 0xCAFEBABEL );
         constantsTarget.setFloatValue( 1.40e-45f );
         constantsTarget.setFloatBoxed( 3.4028235e38f );
         constantsTarget.setDoubleValue( 1e137 );
