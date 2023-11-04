@@ -2,10 +2,10 @@
 
 [![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.5.Final-blue.svg)](https://search.maven.org/search?q=g:org.mapstruct%20AND%20v:1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://search.maven.org/search?q=g:org.mapstruct)
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/main/LICENSE.txt)
 
-[![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=master)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amaster+workflow%3ACI)
-[![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct)
+[![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=main)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amain+workflow%3ACI)
+[![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct/tree/main)
 [![Gitter](https://img.shields.io/gitter/room/mapstruct/mapstruct.svg)](https://gitter.im/mapstruct/mapstruct-users)
 [![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/context:java)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/alerts)
