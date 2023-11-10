@@ -49,7 +49,7 @@ import org.mapstruct.util.Experimental;
  * }
  * </code></pre>
  * <strong>Example 2:</strong> For parents that can be created. (e.g. normal classes or interfaces with
- * &#64;Mappper( uses = ObjectFactory.class ) )
+ * &#64;Mapper( uses = ObjectFactory.class ) )
  * <pre><code class='java'>
  * // generates
  * &#64;Override
