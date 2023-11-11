@@ -68,4 +68,5 @@ Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
 Valentin Kulesh - https://github.com/unshare
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
+Winter Andreas - https://github.dev/wandi34
 Xiu Hong Kooi - https://github.com/kooixh
