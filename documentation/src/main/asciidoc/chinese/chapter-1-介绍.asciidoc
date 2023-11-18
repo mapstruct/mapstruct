@@ -7,7 +7,7 @@ MapStruct是一个java https://docs.oracle.com/javase/6/docs/technotes/guides/ap
 
 MapStruct可以节省开发人员的时间，相比之下，手写映射代码不仅繁琐耗时且容易出错。
 
-MapStruct采用"`约定大于配置`"的方式。默认情况下，MapStruct会使用合适的默认设置，但也支持您按照自己的方式去配置或实现特殊行为。
+MapStruct采用 `约定大于配置` 的方式。默认情况下，MapStruct会使用合适的默认设置，但也支持您按照自己的方式去配置或实现特殊行为。
 
 与动态映射框架相比，MapStruct具有以下优点：
 

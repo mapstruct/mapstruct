@@ -48,6 +48,7 @@ XML Schema： 专有名词 不翻译
 strip：字符串的一种处理方法，不翻译
 
 另外，对于带连字符的名词：
+
 * 部分较为通用的进行了翻译，如：type-safe翻译为了“类型安全”；null-check翻译为“null校验”
 * 部分与MapStruct关联较强的未翻译，如：before-mapping未翻译，MapStruct中有@BeforeMapping注解，为了在上下文中显示一致性，故未翻译。
 
@@ -70,6 +71,7 @@ underlying collection：底部集合
 此外，为了更符合中文习惯与突出重点，标点与段落划分未与原文严格保持一致。
 
 原官方指南作者：Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
+
 翻译：高松（约周）
 
 

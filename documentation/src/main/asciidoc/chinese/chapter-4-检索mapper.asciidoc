@@ -94,8 +94,6 @@ public interface CarMapper {
 
 生成的mapper实现类会被加上 `@ApplicationScoped` 注解，之后您就可以使用 `@Inject` 将其注入到字段、构造器参数等地方，例子如下：
 
-The generated mapper implementation will be marked with the `@ApplicationScoped` annotation and thus can be injected into fields, constructor arguments etc. using the `@Inject` annotation:
-
 .Obtaining a mapper via dependency injection
 ====
 [source, java, linenums]

@@ -119,13 +119,12 @@ dependencies {
 您可以在github的 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-ant[mapstruct-examples]工程中找到一个完整的例子。
 
 [[configuration-options]]
-=== Configuration options
+=== 配置选项
 
-The MapStruct code generator can be configured using _annotation processor options_.
-您可以使用注解处理器选项来配置MapStruct代码生成器。
+您可以使用 _注解处理器选项_ 来配置MapStruct代码生成器。
 
-当直接调用javac时，这些选项会以 -Akey=value 的形式透传给编译器。
-当以maven方式使用MapStruct时，所有处理器选项都可以通过maven处理器插件里的`compilerArgs`元素透传给编译器，如：
+当直接调用javac时，这些选项会以 _-Akey=value_ 的形式透传给编译器。
+当以maven方式使用MapStruct时，所有处理器选项都可以通过maven处理器插件里的 `compilerArgs` 元素透传给编译器，如：
 
 .Maven configuration
 ====

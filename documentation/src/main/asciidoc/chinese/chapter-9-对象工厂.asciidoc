@@ -1,13 +1,9 @@
 [[object-factories]]
 == 对象工厂
 
-By default, the generated code for mapping one bean type into another or updating a bean will call the default constructor to instantiate the target type.
-
 默认情况下，在MapStruct生成的映射代码中，代码会调用默认的构造器来初始化target类型的实例。
 
 作为扩展，您可以使用自定义的对象工厂，以此来获得target类型的实例。一个实例是JAXB，其创建了 `ObjectFactory` 来获得schema类型的新实例。
-
-To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
 
 如需要用，请按照 <<invoking-other-mappers>> 的描述，通过 `@Mapper#uses()` 注册自定义工厂，或者直接在您的mapper中实现自定义工厂。
 
