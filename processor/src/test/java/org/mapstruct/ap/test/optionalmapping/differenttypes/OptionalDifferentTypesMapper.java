@@ -6,10 +6,9 @@
 package org.mapstruct.ap.test.optionalmapping.differenttypes;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION)
+@Mapper
 public interface OptionalDifferentTypesMapper {
 
     OptionalDifferentTypesMapper INSTANCE = Mappers.getMapper(

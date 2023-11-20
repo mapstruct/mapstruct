@@ -6,11 +6,10 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.TargetType;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper
 public interface OptionalBeforeAfterMapper {
 
     OptionalBeforeAfterMapper INSTANCE = Mappers.getMapper( OptionalBeforeAfterMapper.class);

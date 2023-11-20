@@ -41,7 +41,7 @@ public class OptionalDifferentTypesTest {
         Source source = new Source( null, null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToOptional() ).isEmpty();
+        assertThat( target.getConstructorOptionalToOptional() ).isNull();
     }
 
     @ProcessorTest
@@ -110,7 +110,7 @@ public class OptionalDifferentTypesTest {
         source.setOptionalToOptional( null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).isEmpty();
+        assertThat( target.getOptionalToOptional() ).isNull();
     }
 
     @ProcessorTest
@@ -184,7 +184,7 @@ public class OptionalDifferentTypesTest {
         source.publicOptionalToOptional = null;
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToOptional ).isEmpty();
+        assertThat( target.publicOptionalToOptional ).isNull();
     }
 
     @ProcessorTest

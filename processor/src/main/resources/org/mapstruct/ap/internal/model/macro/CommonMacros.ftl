@@ -22,7 +22,7 @@
         }
         <@elseDefaultAssignment/>
     <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
-        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null<#if sourceType.optionalType> && <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>.isPresent()</#if> ) {
+        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
@@ -40,9 +40,9 @@
       else {
         <@handeDefaultAssigment/>
       }
-    <#elseif setExplicitlyToDefault || setExplicitlyToNull || ext.targetType.optionalType>
+    <#elseif setExplicitlyToDefault || setExplicitlyToNull>
       else {
-        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault || ext.targetType.optionalType><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
+        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
       }
     </#if>
 </#macro>

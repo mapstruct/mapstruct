@@ -14,22 +14,16 @@
 
     	</#if>
     </#list>
-    if ( ${sourceParameter.name} == null ) {
-        <#if resultType.optionalType>
-            <#-- regardless of mapNullToDefault value, never return null for Optional resultType -->
-            return Optional.empty();
+    if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
+        <#if (!sourceParameter.type.optionalType && resultType.optionalType) || mapNullToDefault>
+            return <@includeModel object=initDefaultValueForResultType/>;
         <#else>
-            <#if !mapNullToDefault>
-                return null;
-            <#else>
-                <#-- TODO: this should return the default value for whatever the returnType is -->
-                return null;
-            </#if>
+            return<#if returnType.name != "void"> null</#if>;
         </#if>
     }
 
     <#if sourceParameter.type.optionalType>
-        <@includeModel object=returnType/> ${resultName} = ${sourceParameter.name}.map( ${loopVariableName} -> <@includeModel object=elementAssignment/> )<#if !returnType.optionalType>.orElse( null )</#if>;
+        <@includeModel object=returnType/> ${resultName} = ${sourceParameter.name}.map( ${loopVariableName} -> <@includeModel object=elementAssignment/> )<#if !returnType.optionalType>.orElse( <#if mapNullToDefault><@includeModel object=initDefaultValueForResultType/><#else>null</#if> )</#if>;
     <#else>
         <@includeModel object=sourceElementType/> ${loopVariableName} = ${sourceParameter.name};
         <@includeModel object=returnType/> ${resultName} = Optional.ofNullable( <@includeModel object=elementAssignment/> );

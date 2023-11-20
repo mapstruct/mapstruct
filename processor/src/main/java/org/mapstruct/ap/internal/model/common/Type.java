@@ -137,6 +137,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private Boolean hasAccessibleDefaultConstructor;
 
     private final Filters filters;
 
@@ -1355,6 +1356,20 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
         }
         return hasAccessibleConstructor;
+    }
+
+    public boolean hasAccessibleDefaultConstructor() {
+        if ( hasAccessibleDefaultConstructor == null ) {
+            hasAccessibleDefaultConstructor = false;
+            List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+            for ( ExecutableElement constructor : constructors ) {
+                if ( constructor.isDefault() && !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                    hasAccessibleDefaultConstructor = true;
+                    break;
+                }
+            }
+        }
+        return hasAccessibleDefaultConstructor;
     }
 
     /**

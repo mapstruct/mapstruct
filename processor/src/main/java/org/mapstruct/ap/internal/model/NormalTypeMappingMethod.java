@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.InitDefaultValue;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
@@ -65,6 +66,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
 
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
+    }
+
+    public InitDefaultValue getInitDefaultValueForResultType() {
+        return new InitDefaultValue( this.getResultType(), this.getFactoryMethod() );
     }
 
     public List<Annotation> getAnnotations() {
