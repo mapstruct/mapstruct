@@ -36,6 +36,7 @@ public enum NullValuePropertyMappingStrategy {
      * <p>
      * This means:
      * <ol>
+     * <li>For {@code Optional} MapStruct generates an {@code Optional.empty()}</li>
      * <li>For {@code List} MapStruct generates an {@code ArrayList}</li>
      * <li>For {@code Map} a {@code HashMap}</li>
      * <li>For arrays an empty array</li>

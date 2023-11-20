@@ -3,17 +3,17 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.optionalmapping.mapnulltodefault;
+package org.mapstruct.ap.test.optionalmapping.nullvaluetodefault;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-public interface MapNullToDefaultMapper {
+public interface NullValueToDefaultMapper {
 
-    MapNullToDefaultMapper INSTANCE = Mappers.getMapper(
-        MapNullToDefaultMapper.class);
+    NullValueToDefaultMapper INSTANCE = Mappers.getMapper(
+        NullValueToDefaultMapper.class);
 
     Target toTarget(Source source);
 

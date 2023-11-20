@@ -15,6 +15,7 @@
   macro: constructTargetObject
 
   purpose: Either call the constructor of the target object directly or of the implementing type.
+           If the target type is an Object but does not have a public default constructor, null is returned.
 -->
 <#macro constructTargetObject><@compress single_line=true>
     <#if targetType.implementationType?? && targetType.implementationType.hasAccessibleDefaultConstructor()>

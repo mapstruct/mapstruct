@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.optionalmapping.mapnulltodefault;
+package org.mapstruct.ap.test.optionalmapping.nullvaluepropertytodefault;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -11,36 +11,11 @@ import java.util.Optional;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Source {
 
-    private final Optional<SubType> constructorOptionalToOptional;
-    private final Optional<SubType> constructorOptionalToNonOptional;
-    private final SubType constructorNonOptionalToOptional;
-
     private Optional<SubType> optionalToOptional;
-    private Optional<SubType> optionalToNonOptional;
     private SubType nonOptionalToOptional;
 
     public Optional<SubType> publicOptionalToOptional;
-    public Optional<SubType> publicOptionalToNonOptional;
     public SubType publicNonOptionalToOptional;
-
-    public Source(Optional<SubType> constructorOptionalToOptional, Optional<SubType> constructorOptionalToNonOptional,
-                  SubType constructorNonOptionalToOptional) {
-        this.constructorOptionalToOptional = constructorOptionalToOptional;
-        this.constructorOptionalToNonOptional = constructorOptionalToNonOptional;
-        this.constructorNonOptionalToOptional = constructorNonOptionalToOptional;
-    }
-
-    public Optional<SubType> getConstructorOptionalToOptional() {
-        return constructorOptionalToOptional;
-    }
-
-    public Optional<SubType> getConstructorOptionalToNonOptional() {
-        return constructorOptionalToNonOptional;
-    }
-
-    public SubType getConstructorNonOptionalToOptional() {
-        return constructorNonOptionalToOptional;
-    }
 
     public Optional<SubType> getOptionalToOptional() {
         return optionalToOptional;
@@ -48,14 +23,6 @@ public class Source {
 
     public void setOptionalToOptional(Optional<SubType> optionalToOptional) {
         this.optionalToOptional = optionalToOptional;
-    }
-
-    public Optional<SubType> getOptionalToNonOptional() {
-        return optionalToNonOptional;
-    }
-
-    public void setOptionalToNonOptional(Optional<SubType> optionalToNonOptional) {
-        this.optionalToNonOptional = optionalToNonOptional;
     }
 
     public SubType getNonOptionalToOptional() {
