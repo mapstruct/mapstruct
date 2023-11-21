@@ -91,7 +91,7 @@ public class OptionalNestedTest {
         source.setOptionalToOptional( Optional.of( new Source.NestedOptional( null ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).isEmpty();
+        assertThat( target.getOptionalToOptional() ).isNull();
     }
 
     @ProcessorTest
@@ -172,7 +172,7 @@ public class OptionalNestedTest {
         source.setNonOptionalToOptional( Optional.of( new Source.NestedNonOptional( "some value" ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).contains("some value");
+        assertThat( target.getNonOptionalToOptional() ).contains("some value");
     }
     
 }

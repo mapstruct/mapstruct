@@ -120,7 +120,8 @@ public class SourceReference extends AbstractReference {
                 );
             }
 
-            String[] segments = sourceNameTrimmed.split( "\\." );
+            // Split by "." but also include "?" as a separate segment for optionals
+            String[] segments = sourceNameTrimmed.split( "\\.|(?=\\?)" );
 
             // start with an invalid source reference
             SourceReference result = new SourceReference( null, new ArrayList<>(  ), false );
