@@ -5,8 +5,10 @@
  */
 package org.mapstruct.ap.test.optionalmapping.nullcheckalways;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     OptionalNullCheckAlwaysMapper.class, Source.class, Target.class
 })
 public class OptionalNullCheckAlwaysTest {
+
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalNullCheckAlwaysMapper.class );
 
     @ProcessorTest
     public void optionalToOptionalWhenNull() {

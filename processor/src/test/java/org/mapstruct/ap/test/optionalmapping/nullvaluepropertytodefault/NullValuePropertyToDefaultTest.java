@@ -5,8 +5,10 @@
  */
 package org.mapstruct.ap.test.optionalmapping.nullvaluepropertytodefault;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,6 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     Target.class
 })
 public class NullValuePropertyToDefaultTest {
+
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( NullValuePropertyToDefaultMapper.class );
 
     @ProcessorTest
     public void optionalToOptionalWhenNull() {

@@ -7,8 +7,10 @@ package org.mapstruct.ap.test.optionalmapping.sametype;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,6 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
     OptionalSameTypeMapper.class, Source.class, Target.class
 })
 public class OptionalSameTypeTest {
+
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalSameTypeMapper.class );
 
     @ProcessorTest
     public void constructorOptionalToOptionalWhenPresent() {
