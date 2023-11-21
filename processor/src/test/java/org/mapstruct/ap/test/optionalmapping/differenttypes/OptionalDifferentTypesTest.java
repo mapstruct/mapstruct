@@ -13,13 +13,12 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
-    OptionalDifferentTypesMapper.class,
-    Source.class,
-    Target.class })
+    OptionalDifferentTypesMapper.class, Source.class, Target.class
+})
 public class OptionalDifferentTypesTest {
 
     @ProcessorTest
-    public void constructorOptionalToOptional_present() {
+    public void constructorOptionalToOptionalWhenPresent() {
         Source source = new Source( Optional.of( new Source.SubType( "some value" ) ), null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -27,7 +26,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToOptional_empty() {
+    public void constructorOptionalToOptionalWhenEmpty() {
         Source source = new Source( Optional.empty(), null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -37,7 +36,7 @@ public class OptionalDifferentTypesTest {
     // TODO Contentious
     // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
-    public void constructorOptionalToOptional_null() {
+    public void constructorOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -45,7 +44,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_present() {
+    public void constructorOptionalToNonOptionalWhenPresent() {
         Source source = new Source( null, Optional.of( new Source.SubType( "some value" ) ), null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -53,7 +52,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_empty() {
+    public void constructorOptionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, Optional.empty(), null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -61,7 +60,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_null() {
+    public void constructorOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -69,7 +68,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorNonOptionalToOptional_nonNull() {
+    public void constructorNonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, new Source.SubType( "some value" ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -77,7 +76,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void constructorNonOptionalToOptional_null() {
+    public void constructorNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -85,7 +84,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_present() {
+    public void optionalToOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( Optional.of( new Source.SubType( "some value" ) ) );
 
@@ -94,7 +93,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_empty() {
+    public void optionalToOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( Optional.empty() );
 
@@ -105,7 +104,7 @@ public class OptionalDifferentTypesTest {
     // TODO Contentious
     // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
-    public void optionalToOptional_null() {
+    public void optionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( null );
 
@@ -114,7 +113,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_present() {
+    public void optionalToNonOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( Optional.of( new Source.SubType( "some value" ) ) );
 
@@ -123,7 +122,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_empty() {
+    public void optionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( Optional.empty() );
 
@@ -132,7 +131,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_null() {
+    public void optionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( null );
 
@@ -141,7 +140,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_nonNull() {
+    public void nonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, null );
         source.setNonOptionalToOptional( new Source.SubType( "some value" ) );
 
@@ -150,7 +149,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_null() {
+    public void nonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setNonOptionalToOptional( null );
 
@@ -159,7 +158,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_present() {
+    public void publicOptionalToOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = Optional.of( new Source.SubType( "some value" ) );
 
@@ -168,7 +167,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_empty() {
+    public void publicOptionalToOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = Optional.empty();
 
@@ -179,7 +178,7 @@ public class OptionalDifferentTypesTest {
     // TODO Contentious
     // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
-    public void publicOptionalToOptional_null() {
+    public void publicOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = null;
 
@@ -188,7 +187,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_present() {
+    public void publicOptionalToNonOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = Optional.of( new Source.SubType( "some value" ) );
 
@@ -197,7 +196,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_empty() {
+    public void publicOptionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = Optional.empty();
 
@@ -206,7 +205,7 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_null() {
+    public void publicOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = null;
 
@@ -215,21 +214,21 @@ public class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_nonNull() {
+    public void publicNonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, null );
-        source.publicNonOptionalToOptional = new Source.SubType( "some value" ) ;
+        source.publicNonOptionalToOptional = new Source.SubType( "some value" );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
         assertThat( target.publicNonOptionalToOptional ).contains( new Target.SubType( "some value" ) );
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_null() {
+    public void publicNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
-        source.publicNonOptionalToOptional = null ;
+        source.publicNonOptionalToOptional = null;
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
         assertThat( target.publicNonOptionalToOptional ).isEmpty();
     }
-    
+
 }

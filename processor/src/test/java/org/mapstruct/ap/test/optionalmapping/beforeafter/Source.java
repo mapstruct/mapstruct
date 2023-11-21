@@ -55,7 +55,7 @@ public class Source {
     }
 
     public static class SubType {
-        
+
         private final String value;
 
         public SubType(String value) {
@@ -83,5 +83,5 @@ public class Source {
             return Objects.hash( value );
         }
     }
-    
+
 }

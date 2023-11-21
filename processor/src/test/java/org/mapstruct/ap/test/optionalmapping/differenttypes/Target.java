@@ -19,8 +19,11 @@ public class Target {
     private SubType optionalToNonOptional;
     private Optional<SubType> nonOptionalToOptional;
 
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<SubType> publicOptionalToOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public SubType publicOptionalToNonOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<SubType> publicNonOptionalToOptional;
 
     public Target(Optional<SubType> constructorOptionalToOptional, SubType constructorOptionalToNonOptional,

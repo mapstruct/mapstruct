@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.optionalmapping.nullvaluepropertytodefault;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
@@ -15,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 public interface NullValuePropertyToDefaultMapper {
 
     NullValuePropertyToDefaultMapper INSTANCE = Mappers.getMapper(
-        NullValuePropertyToDefaultMapper.class);
+        NullValuePropertyToDefaultMapper.class );
 
     void mapTarget(Source source, @MappingTarget Target target);
 

@@ -18,8 +18,11 @@ public class Target {
     private String optionalToNonOptional;
     private Optional<String> nonOptionalToOptional;
 
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<String> publicOptionalToOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public String publicOptionalToNonOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<String> publicNonOptionalToOptional;
 
     public Target(Optional<String> constructorOptionalToOptional, String constructorOptionalToNonOptional,

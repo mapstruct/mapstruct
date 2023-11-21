@@ -14,7 +14,9 @@ public class Source {
     private Optional<SubType> optionalToOptional;
     private SubType nonOptionalToOptional;
 
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<SubType> publicOptionalToOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public SubType publicNonOptionalToOptional;
 
     public Optional<SubType> getOptionalToOptional() {
@@ -34,7 +36,7 @@ public class Source {
     }
 
     public static class SubType {
-        
+
         private final String value;
 
         public SubType(String value) {
@@ -62,5 +64,5 @@ public class Source {
             return Objects.hash( value );
         }
     }
-    
+
 }

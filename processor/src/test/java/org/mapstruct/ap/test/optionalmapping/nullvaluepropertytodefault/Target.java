@@ -14,7 +14,9 @@ public class Target {
     private Optional<SubType> optionalToOptional;
     private Optional<SubType> nonOptionalToOptional;
 
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<SubType> publicOptionalToOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<SubType> publicNonOptionalToOptional;
 
     public Optional<SubType> getOptionalToOptional() {

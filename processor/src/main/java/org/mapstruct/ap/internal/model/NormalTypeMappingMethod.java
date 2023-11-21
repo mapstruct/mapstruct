@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.InitDefaultValue;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 

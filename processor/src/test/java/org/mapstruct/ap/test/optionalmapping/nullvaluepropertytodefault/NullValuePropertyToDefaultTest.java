@@ -13,11 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({
     NullValuePropertyToDefaultMapper.class,
     Source.class,
-    Target.class })
+    Target.class
+})
 public class NullValuePropertyToDefaultTest {
 
     @ProcessorTest
-    public void optionalToOptional_null() {
+    public void optionalToOptionalWhenNull() {
         Source source = new Source();
         source.setOptionalToOptional( null );
 
@@ -27,7 +28,7 @@ public class NullValuePropertyToDefaultTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_null() {
+    public void nonOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.setNonOptionalToOptional( null );
 
@@ -37,7 +38,7 @@ public class NullValuePropertyToDefaultTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_null() {
+    public void publicOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.publicOptionalToOptional = null;
 
@@ -47,7 +48,7 @@ public class NullValuePropertyToDefaultTest {
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_null() {
+    public void publicNonOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.publicNonOptionalToOptional = null;
 
@@ -55,5 +56,5 @@ public class NullValuePropertyToDefaultTest {
         NullValuePropertyToDefaultMapper.INSTANCE.mapTarget( source, target );
         assertThat( target.publicNonOptionalToOptional ).isEmpty();
     }
-    
+
 }

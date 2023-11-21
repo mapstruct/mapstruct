@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.optionalmapping.nullvaluetodefault;
 
-import java.util.Optional;
-
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
@@ -15,11 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({
     NullValueToDefaultMapper.class,
     Source.class,
-    Target.class })
+    Target.class
+})
 public class NullValueToDefaultTest {
 
     @ProcessorTest
-    public void constructorOptionalToOptional_null() {
+    public void constructorOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = NullValueToDefaultMapper.INSTANCE.toTarget( source );
@@ -27,7 +26,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_null() {
+    public void constructorOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = NullValueToDefaultMapper.INSTANCE.toTarget( source );
@@ -35,7 +34,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void constructorNonOptionalToOptional_null() {
+    public void constructorNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = NullValueToDefaultMapper.INSTANCE.toTarget( source );
@@ -43,7 +42,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_null() {
+    public void optionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( null );
 
@@ -52,7 +51,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_null() {
+    public void optionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( null );
 
@@ -61,7 +60,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_null() {
+    public void nonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setNonOptionalToOptional( null );
 
@@ -70,7 +69,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_null() {
+    public void publicOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = null;
 
@@ -79,7 +78,7 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_null() {
+    public void publicOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = null;
 
@@ -88,12 +87,12 @@ public class NullValueToDefaultTest {
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_null() {
+    public void publicNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
-        source.publicNonOptionalToOptional = null ;
+        source.publicNonOptionalToOptional = null;
 
         Target target = NullValueToDefaultMapper.INSTANCE.toTarget( source );
         assertThat( target.publicNonOptionalToOptional ).isEmpty();
     }
-    
+
 }

@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 public interface NullValueToDefaultMapper {
 
     NullValueToDefaultMapper INSTANCE = Mappers.getMapper(
-        NullValueToDefaultMapper.class);
+        NullValueToDefaultMapper.class );
 
     Target toTarget(Source source);
 

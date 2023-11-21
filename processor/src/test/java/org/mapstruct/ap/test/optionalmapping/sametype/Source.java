@@ -18,8 +18,11 @@ public class Source {
     private Optional<String> optionalToNonOptional;
     private String nonOptionalToOptional;
 
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<String> publicOptionalToOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public Optional<String> publicOptionalToNonOptional;
+    @SuppressWarnings( "VisibilityModifier" )
     public String publicNonOptionalToOptional;
 
     public Source(Optional<String> constructorOptionalToOptional, Optional<String> constructorOptionalToNonOptional,

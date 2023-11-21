@@ -13,13 +13,12 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
-    OptionalSameTypeMapper.class,
-    Source.class,
-    Target.class })
+    OptionalSameTypeMapper.class, Source.class, Target.class
+})
 public class OptionalSameTypeTest {
 
     @ProcessorTest
-    public void constructorOptionalToOptional_present() {
+    public void constructorOptionalToOptionalWhenPresent() {
         Source source = new Source( Optional.of( "some value" ), null, null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -27,7 +26,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToOptional_empty() {
+    public void constructorOptionalToOptionalWhenEmpty() {
         Source source = new Source( Optional.empty(), null, null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -41,7 +40,7 @@ public class OptionalSameTypeTest {
     // Optional<String> -> Optional<String>, therefore no nested mapping is required.
     // By default, the mapper just generates `target.prop = source.prop`.
     @ProcessorTest
-    public void constructorOptionalToOptional_null() {
+    public void constructorOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -49,7 +48,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_present() {
+    public void constructorOptionalToNonOptionalWhenPresent() {
         Source source = new Source( null, Optional.of( "some value" ), null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -57,7 +56,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_empty() {
+    public void constructorOptionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, Optional.empty(), null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -65,7 +64,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorOptionalToNonOptional_null() {
+    public void constructorOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -73,7 +72,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorNonOptionalToOptional_nonNull() {
+    public void constructorNonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, "some value" );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -81,7 +80,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void constructorNonOptionalToOptional_null() {
+    public void constructorNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
@@ -89,7 +88,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_present() {
+    public void optionalToOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( Optional.of( "some value" ) );
 
@@ -98,7 +97,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_empty() {
+    public void optionalToOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( Optional.empty() );
 
@@ -113,7 +112,7 @@ public class OptionalSameTypeTest {
     // Optional<String> -> Optional<String>, therefore no nested mapping is required.
     // By default, the mapper just generates `target.prop = source.prop`.
     @ProcessorTest
-    public void optionalToOptional_null() {
+    public void optionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( null );
 
@@ -122,7 +121,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_present() {
+    public void optionalToNonOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( Optional.of( "some value" ) );
 
@@ -131,7 +130,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_empty() {
+    public void optionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( Optional.empty() );
 
@@ -140,7 +139,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_null() {
+    public void optionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToNonOptional( null );
 
@@ -149,7 +148,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_nonNull() {
+    public void nonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, null );
         source.setNonOptionalToOptional( "some value" );
 
@@ -158,7 +157,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_null() {
+    public void nonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setNonOptionalToOptional( null );
 
@@ -167,7 +166,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_present() {
+    public void publicOptionalToOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = Optional.of( "some value" );
 
@@ -176,7 +175,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToOptional_empty() {
+    public void publicOptionalToOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = Optional.empty();
 
@@ -191,7 +190,7 @@ public class OptionalSameTypeTest {
     // Optional<String> -> Optional<String>, therefore no nested mapping is required.
     // By default, the mapper just generates `target.prop = source.prop`.
     @ProcessorTest
-    public void publicOptionalToOptional_null() {
+    public void publicOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = null;
 
@@ -200,7 +199,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_present() {
+    public void publicOptionalToNonOptionalWhenPresent() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = Optional.of( "some value" );
 
@@ -209,7 +208,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_empty() {
+    public void publicOptionalToNonOptionalWhenEmpty() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = Optional.empty();
 
@@ -218,7 +217,7 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicOptionalToNonOptional_null() {
+    public void publicOptionalToNonOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToNonOptional = null;
 
@@ -227,21 +226,21 @@ public class OptionalSameTypeTest {
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_nonNull() {
+    public void publicNonOptionalToOptionalWhenNotNull() {
         Source source = new Source( null, null, null );
-        source.publicNonOptionalToOptional = "some value" ;
+        source.publicNonOptionalToOptional = "some value";
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
         assertThat( target.publicNonOptionalToOptional ).contains( "some value" );
     }
 
     @ProcessorTest
-    public void publicNonOptionalToOptional_null() {
+    public void publicNonOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
-        source.publicNonOptionalToOptional = null ;
+        source.publicNonOptionalToOptional = null;
 
         Target target = OptionalSameTypeMapper.INSTANCE.toTarget( source );
         assertThat( target.publicNonOptionalToOptional ).isEmpty();
     }
-    
+
 }

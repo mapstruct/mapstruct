@@ -12,7 +12,7 @@ import org.mapstruct.factory.Mappers;
 public interface OptionalDifferentTypesMapper {
 
     OptionalDifferentTypesMapper INSTANCE = Mappers.getMapper(
-        OptionalDifferentTypesMapper.class);
+        OptionalDifferentTypesMapper.class );
 
     Target toTarget(Source source);
 

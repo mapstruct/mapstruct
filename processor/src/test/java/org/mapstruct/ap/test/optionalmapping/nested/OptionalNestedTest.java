@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.optionalmapping.nested;
 
 import java.util.Optional;
@@ -8,22 +13,21 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
-    OptionalNestedMapper.class,
-    Source.class,
-    Target.class })
+    OptionalNestedMapper.class, Source.class, Target.class
+})
 public class OptionalNestedTest {
 
     @ProcessorTest
-    public void optionalToNonOptional_empty() {
+    public void optionalToNonOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToNonOptional( Optional.empty() );
-        
+
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
         assertThat( target.getOptionalToNonOptional() ).isNull();
     }
 
     @ProcessorTest
-    public void optionalToNonOptional_null() {
+    public void optionalToNonOptionalWhenNull() {
         Source source = new Source();
         source.setOptionalToNonOptional( null );
 
@@ -32,7 +36,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToNonOptional_empty() {
+    public void nestedOptionalToNonOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToNonOptional( Optional.of( new Source.NestedOptional( Optional.empty() ) ) );
 
@@ -41,7 +45,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToNonOptional_null() {
+    public void nestedOptionalToNonOptionalWhenNull() {
         Source source = new Source();
         source.setOptionalToNonOptional( Optional.of( new Source.NestedOptional( null ) ) );
 
@@ -50,16 +54,16 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToNonOptional_nonNull() {
+    public void nestedOptionalToNonOptionalWhenNotNull() {
         Source source = new Source();
         source.setOptionalToNonOptional( Optional.of( new Source.NestedOptional( Optional.of( "some value" ) ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToNonOptional() ).isEqualTo("some value");
+        assertThat( target.getOptionalToNonOptional() ).isEqualTo( "some value" );
     }
 
     @ProcessorTest
-    public void optionalToOptional_empty() {
+    public void optionalToOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.empty() );
 
@@ -68,7 +72,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void optionalToOptional_null() {
+    public void optionalToOptionalWhenNull() {
         Source source = new Source();
         source.setOptionalToOptional( null );
 
@@ -77,7 +81,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToOptional_empty() {
+    public void nestedOptionalToOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.of( new Source.NestedOptional( Optional.empty() ) ) );
 
@@ -86,7 +90,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToOptional_null() {
+    public void nestedOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.of( new Source.NestedOptional( null ) ) );
 
@@ -95,16 +99,16 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedOptionalToOptional_nonNull() {
+    public void nestedOptionalToOptionalWhenNotNull() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.of( new Source.NestedOptional( Optional.of( "some value" ) ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).contains("some value");
+        assertThat( target.getOptionalToOptional() ).contains( "some value" );
     }
 
     @ProcessorTest
-    public void nonOptionalToNonOptional_empty() {
+    public void nonOptionalToNonOptionalWhenEmpty() {
         Source source = new Source();
         source.setNonOptionalToNonOptional( Optional.empty() );
 
@@ -113,7 +117,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToNonOptional_null() {
+    public void nonOptionalToNonOptionalWhenNull() {
         Source source = new Source();
         source.setNonOptionalToNonOptional( null );
 
@@ -122,7 +126,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedNonOptionalToNonOptional_null() {
+    public void nestedNonOptionalToNonOptionalWhenNull() {
         Source source = new Source();
         source.setNonOptionalToNonOptional( Optional.of( new Source.NestedNonOptional( null ) ) );
 
@@ -131,16 +135,16 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedNonOptionalToNonOptional_nonNull() {
+    public void nestedNonOptionalToNonOptionalWhenNotNull() {
         Source source = new Source();
         source.setNonOptionalToNonOptional( Optional.of( new Source.NestedNonOptional( "some value" ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getNonOptionalToNonOptional() ).isEqualTo("some value");
+        assertThat( target.getNonOptionalToNonOptional() ).isEqualTo( "some value" );
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_empty() {
+    public void nonOptionalToOptionalWhenEmpty() {
         Source source = new Source();
         source.setNonOptionalToOptional( Optional.empty() );
 
@@ -149,7 +153,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nonOptionalToOptional_null() {
+    public void nonOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.setNonOptionalToOptional( null );
 
@@ -158,7 +162,7 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedNonOptionalToOptional_null() {
+    public void nestedNonOptionalToOptionalWhenNull() {
         Source source = new Source();
         source.setNonOptionalToOptional( Optional.of( new Source.NestedNonOptional( null ) ) );
 
@@ -167,12 +171,12 @@ public class OptionalNestedTest {
     }
 
     @ProcessorTest
-    public void nestedNonOptionalToOptional_nonNull() {
+    public void nestedNonOptionalToOptionalWhenNotNull() {
         Source source = new Source();
         source.setNonOptionalToOptional( Optional.of( new Source.NestedNonOptional( "some value" ) ) );
 
         Target target = OptionalNestedMapper.INSTANCE.toTarget( source );
-        assertThat( target.getNonOptionalToOptional() ).contains("some value");
+        assertThat( target.getNonOptionalToOptional() ).contains( "some value" );
     }
-    
+
 }

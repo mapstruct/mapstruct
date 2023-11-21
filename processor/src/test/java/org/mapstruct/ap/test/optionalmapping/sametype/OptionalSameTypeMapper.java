@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 public interface OptionalSameTypeMapper {
 
     OptionalSameTypeMapper INSTANCE = Mappers.getMapper(
-        OptionalSameTypeMapper.class);
+        OptionalSameTypeMapper.class );
 
     Target toTarget(Source source);
 

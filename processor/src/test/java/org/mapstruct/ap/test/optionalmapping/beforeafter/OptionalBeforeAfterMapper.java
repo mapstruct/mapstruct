@@ -1,3 +1,8 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.mapstruct.ap.test.optionalmapping.beforeafter;
 
 import java.util.Optional;
@@ -12,8 +17,8 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface OptionalBeforeAfterMapper {
 
-    OptionalBeforeAfterMapper INSTANCE = Mappers.getMapper( OptionalBeforeAfterMapper.class);
-    
+    OptionalBeforeAfterMapper INSTANCE = Mappers.getMapper( OptionalBeforeAfterMapper.class );
+
     Target toTarget(Source source);
 
     @BeforeMapping
@@ -22,7 +27,7 @@ public interface OptionalBeforeAfterMapper {
 
     @BeforeMapping
     default void beforeDeepOptionalSourceWithNonOptionalTargetType(@TargetType Class<Target.SubType> targetType,
-                                                               Optional<Source.SubType> source) {
+                                                                   Optional<Source.SubType> source) {
     }
 
     @AfterMapping
@@ -32,26 +37,26 @@ public interface OptionalBeforeAfterMapper {
 
     @AfterMapping
     default void afterDeepOptionalSourceWithNonOptionalTarget(@MappingTarget Target.SubType target,
-                                                          Optional<Source.SubType> source) {
+                                                              Optional<Source.SubType> source) {
     }
 
     @AfterMapping
     default void afterDeepOptionalSourceWithOptionalTarget(@MappingTarget Optional<Target.SubType> target,
-                                                       Optional<Source.SubType> source) {
+                                                           Optional<Source.SubType> source) {
     }
 
     @AfterMapping
     default void afterDeepNonOptionalSourceOptionalTarget(@MappingTarget Optional<Target.SubType> target,
-                                                      Source.SubType source) {
+                                                          Source.SubType source) {
     }
-    
+
     @BeforeMapping
     default void beforeShallowOptionalSourceWithNoTargetType(Optional<String> source) {
     }
 
     @BeforeMapping
     default void beforeShallowOptionalSourceWithNonOptionalTargetType(@TargetType Class<String> targetType,
-                                                                   Optional<String> source) {
+                                                                      Optional<String> source) {
     }
 
     @AfterMapping
@@ -61,12 +66,11 @@ public interface OptionalBeforeAfterMapper {
 
     @AfterMapping
     default void afterShallowOptionalSourceWithNonOptionalTarget(@MappingTarget String target,
-                                                              Optional<String> source) {
+                                                                 Optional<String> source) {
     }
 
     @AfterMapping
-    default void afterShallowNonOptionalSourceOptionalTarget(@MappingTarget Optional<String> target,
-                                                          String source) {
+    default void afterShallowNonOptionalSourceOptionalTarget(@MappingTarget Optional<String> target, String source) {
     }
-    
+
 }

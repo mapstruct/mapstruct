@@ -19,8 +19,7 @@ public class Source {
         return optionalToNonOptional;
     }
 
-    public void setOptionalToNonOptional(
-        Optional<NestedOptional> optionalToNonOptional) {
+    public void setOptionalToNonOptional(Optional<NestedOptional> optionalToNonOptional) {
         this.optionalToNonOptional = optionalToNonOptional;
     }
 
@@ -28,8 +27,7 @@ public class Source {
         return optionalToOptional;
     }
 
-    public void setOptionalToOptional(
-        Optional<NestedOptional> optionalToOptional) {
+    public void setOptionalToOptional(Optional<NestedOptional> optionalToOptional) {
         this.optionalToOptional = optionalToOptional;
     }
 
@@ -37,8 +35,7 @@ public class Source {
         return nonOptionalToNonOptional;
     }
 
-    public void setNonOptionalToNonOptional(
-        Optional<NestedNonOptional> nonOptionalToNonOptional) {
+    public void setNonOptionalToNonOptional(Optional<NestedNonOptional> nonOptionalToNonOptional) {
         this.nonOptionalToNonOptional = nonOptionalToNonOptional;
     }
 
@@ -46,8 +43,7 @@ public class Source {
         return nonOptionalToOptional;
     }
 
-    public void setNonOptionalToOptional(
-        Optional<NestedNonOptional> nonOptionalToOptional) {
+    public void setNonOptionalToOptional(Optional<NestedNonOptional> nonOptionalToOptional) {
         this.nonOptionalToOptional = nonOptionalToOptional;
     }
 
@@ -76,5 +72,5 @@ public class Source {
             return value;
         }
     }
-    
+
 }
