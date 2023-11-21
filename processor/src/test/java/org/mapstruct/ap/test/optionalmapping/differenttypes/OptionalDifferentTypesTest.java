@@ -39,14 +39,12 @@ public class OptionalDifferentTypesTest {
         assertThat( target.getConstructorOptionalToOptional() ).isEmpty();
     }
 
-    // TODO Contentious
-    // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
     public void constructorOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToOptional() ).isNull();
+        assertThat( target.getConstructorOptionalToOptional() ).isEmpty();
     }
 
     @ProcessorTest
@@ -107,15 +105,13 @@ public class OptionalDifferentTypesTest {
         assertThat( target.getOptionalToOptional() ).isEmpty();
     }
 
-    // TODO Contentious
-    // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
     public void optionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.setOptionalToOptional( null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).isNull();
+        assertThat( target.getOptionalToOptional() ).isEmpty();
     }
 
     @ProcessorTest
@@ -181,15 +177,13 @@ public class OptionalDifferentTypesTest {
         assertThat( target.publicOptionalToOptional ).isEmpty();
     }
 
-    // TODO Contentious
-    // Should null Optional map to null Optional, or explicitly to empty?
     @ProcessorTest
     public void publicOptionalToOptionalWhenNull() {
         Source source = new Source( null, null, null );
         source.publicOptionalToOptional = null;
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToOptional ).isNull();
+        assertThat( target.publicOptionalToOptional ).isEmpty();
     }
 
     @ProcessorTest

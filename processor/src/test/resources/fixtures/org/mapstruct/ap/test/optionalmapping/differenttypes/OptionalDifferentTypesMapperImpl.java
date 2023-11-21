@@ -57,7 +57,7 @@ public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesM
 
     protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
         if ( optional == null ) {
-            return null;
+            return Optional.empty();
         }
 
         Optional<Target.SubType> optional1 = optional.map( subType -> subTypeToSubType( subType ) );

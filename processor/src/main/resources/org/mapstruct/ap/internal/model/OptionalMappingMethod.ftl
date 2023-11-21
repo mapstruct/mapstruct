@@ -15,7 +15,7 @@
     	</#if>
     </#list>
     if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
-        <#if (!sourceParameter.type.optionalType && resultType.optionalType) || mapNullToDefault>
+        <#if resultType.optionalType || mapNullToDefault>
             return <@includeModel object=initDefaultValueForResultType/>;
         <#else>
             return<#if returnType.name != "void"> null</#if>;
