@@ -11,6 +11,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 
+/**
+ * An {@link Accessor} for retrieving the value inside an {@link java.util.Optional}.
+ *
+ * @author Ken Wang
+ */
 public class OptionalValueAccessor implements ReadAccessor {
 
     private final TypeMirror valueTypeMirror;

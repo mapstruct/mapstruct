@@ -24,7 +24,7 @@ import org.mapstruct.ap.internal.model.common.Type;
  * <p>If no default value can be constructed, a null is returned instead.
  * TODO: Consider throwing an exception instead of returning null.
  *
- * @author kenwang
+ * @author Ken Wang
  */
 public class InitDefaultValue extends ModelElement {
 

@@ -21,7 +21,7 @@ package org.mapstruct;
 public enum NullValueCheckStrategy {
 
     /**
-     * This option includes a null check as well as an empty check for Optional type. When:
+     * This option includes a null check. When:
      * <br>
      * <br>
      * <ol>
@@ -36,7 +36,7 @@ public enum NullValueCheckStrategy {
     ON_IMPLICIT_CONVERSION,
 
     /**
-     * This option always includes a null check as well as an empty check for Optional type.
+     * This option always includes a null check.
      */
     ALWAYS;
 
