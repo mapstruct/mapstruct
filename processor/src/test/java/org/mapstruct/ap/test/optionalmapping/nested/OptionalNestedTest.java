@@ -20,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OptionalNestedTest {
 
     @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalNestedMapper.class );
+    final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( OptionalNestedMapper.class );
 
     @ProcessorTest
     public void optionalToNonOptionalWhenEmpty() {

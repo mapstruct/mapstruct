@@ -18,7 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OptionalNullCheckAlwaysTest {
 
     @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalNullCheckAlwaysMapper.class );
+    final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( OptionalNullCheckAlwaysMapper.class );
 
     @ProcessorTest
     public void optionalToOptionalWhenNull() {

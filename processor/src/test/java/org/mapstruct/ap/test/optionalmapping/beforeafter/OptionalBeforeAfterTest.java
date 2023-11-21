@@ -16,7 +16,8 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 public class OptionalBeforeAfterTest {
 
     @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalBeforeAfterMapper.class );
+    final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( OptionalBeforeAfterMapper.class );
 
     @ProcessorTest
     public void dummyTest() {

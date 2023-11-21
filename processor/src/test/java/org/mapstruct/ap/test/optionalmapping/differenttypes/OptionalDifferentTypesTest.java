@@ -20,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OptionalDifferentTypesTest {
 
     @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( OptionalDifferentTypesMapper.class );
+    final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( OptionalDifferentTypesMapper.class );
 
     @ProcessorTest
     public void constructorOptionalToOptionalWhenPresent() {

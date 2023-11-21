@@ -20,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class NullValueToDefaultTest {
 
     @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor( NullValueToDefaultMapper.class );
+    final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( NullValueToDefaultMapper.class );
 
     @ProcessorTest
     public void constructorOptionalToOptionalWhenNull() {
