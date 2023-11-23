@@ -24,7 +24,7 @@ public class Issue3413Test {
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 20,
+                line = 19,
                 message = "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name."
             )
         }
