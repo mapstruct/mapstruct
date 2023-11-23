@@ -15,20 +15,21 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 /**
  * @author Muhammad Usama
  */
-@IssueKey( "3413" )
+@IssueKey("3413")
 public class Issue3413Test {
     @ProcessorTest
-    @WithClasses( Erroneous3413Mapper.class )
+    @WithClasses(Erroneous3413Mapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 19,
-                message = "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name."
+                message = "Expression and condition qualified by name are both defined in @Mapping, " +
+                    "either define an expression or a condition qualified by name."
             )
         }
     )
-    void errorExpectedBecauseExpressionAndConditionQualifiedByNameCannotCoExists(){
+    void errorExpectedBecauseExpressionAndConditionQualifiedByNameCannotCoExists() {
     }
 }
