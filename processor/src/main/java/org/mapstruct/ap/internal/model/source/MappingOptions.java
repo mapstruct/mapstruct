@@ -207,13 +207,13 @@ public class MappingOptions extends DelegatingOptions {
         if ( gem.source().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
-        else if (gem.expression().hasValue() && gem.conditionQualifiedByName().hasValue()) {
+        else if ( gem.expression().hasValue() && gem.conditionQualifiedByName().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED;
         }
         else if ( gem.source().hasValue() && gem.expression().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
-        else if (gem.expression().hasValue() && gem.constant().hasValue() ) {
+        else if ( gem.expression().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( gem.expression().hasValue() && gem.defaultValue().hasValue() ) {
