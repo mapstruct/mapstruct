@@ -42,6 +42,7 @@ Kevin Grüneberg - https://github.com/kevcodez
 Lukas Lazar - https://github.com/LukeLaz
 Nikolas Charalambidis - https://github.com/Nikolas-Charalambidis
 Michael Pardo - https://github.com/pardom
+Muhammad Usama - https://github.com/the-mgi
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat
 Oliver Erhart - https://github.com/thunderhook
