@@ -84,6 +84,7 @@ public enum Message {
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PROPERTY_FROM_TARGET("The type of parameter \"%s\" has no property named \"%s\". Please define the source property explicitly."),
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
+    PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
