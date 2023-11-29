@@ -284,7 +284,7 @@ public class NativeTypes {
 
         @Override
         public Class<?> getLiteral() {
-            return float.class;
+            return double.class;
         }
 
     }
@@ -363,7 +363,7 @@ public class NativeTypes {
 
         @Override
         public Class<?> getLiteral() {
-            return int.class;
+            return long.class;
         }
     }
 
