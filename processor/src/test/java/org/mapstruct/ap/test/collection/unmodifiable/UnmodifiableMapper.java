@@ -14,35 +14,36 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import org.mapstruct.IterableMapping;
+import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Unmodifiable;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface UnmodifiableMapper {
     UnmodifiableMapper INSTANCE = Mappers.getMapper( UnmodifiableMapper.class );
 
-    @Unmodifiable
+    @IterableMapping(unmodifiable = true)
     Collection<Target> mapToCollection(List<Source> sources);
 
-    @Unmodifiable
+    @IterableMapping(unmodifiable = true)
     List<Target> mapToList(List<Source> sources);
 
-    @Unmodifiable
+    @IterableMapping(unmodifiable = true)
     Set<Target> mapToSet(List<Source> sources);
 
-    @Unmodifiable
+    @IterableMapping(unmodifiable = true)
     NavigableSet<Target> mapToNavigableSet(List<Source> sources);
 
-    @Unmodifiable
+    @IterableMapping(unmodifiable = true)
     SortedSet<Target> mapToSortedSet(List<Source> sources);
 
-    @Unmodifiable
+    @MapMapping(unmodifiable = true)
     Map<String, Target> mapToMap(Map<String, Source> sources);
 
-    @Unmodifiable
+    @MapMapping(unmodifiable = true)
     NavigableMap<String, Target> mapToNavigableMap(Map<String, Source> sources);
 
-    @Unmodifiable
+    @MapMapping(unmodifiable = true)
     SortedMap<String, Target> mapToSortedMap(Map<String, Source> sources);
 }
