@@ -358,6 +358,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 SelectionParameters valueSelectionParameters = null;
                 FormattingParameters valueFormattingParameters = null;
                 NullValueMappingStrategyGem nullValueMappingStrategy = null;
+                boolean unmodifiable = false;
 
                 if ( mappingOptions.getMapMapping() != null ) {
                     keySelectionParameters = mappingOptions.getMapMapping().getKeySelectionParameters();
@@ -365,6 +366,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     valueSelectionParameters = mappingOptions.getMapMapping().getValueSelectionParameters();
                     valueFormattingParameters = mappingOptions.getMapMapping().getValueFormattingParameters();
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
+                    unmodifiable = mappingOptions.getMapMapping().isUnmodifiable();
                 }
 
                 this.messager.note( 1, Message.MAPMAPPING_CREATE_NOTE, method );
@@ -375,6 +377,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keySelectionParameters( keySelectionParameters )
                     .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
+                    .unmodifiable( unmodifiable )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
@@ -474,10 +477,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         FormattingParameters formattingParameters = null;
         SelectionParameters selectionParameters = null;
+        boolean unmodifiable = false;
 
         if ( mappingMethodOptions.getIterableMapping() != null ) {
             formattingParameters = mappingMethodOptions.getIterableMapping().getFormattingParameters();
             selectionParameters = mappingMethodOptions.getIterableMapping().getSelectionParameters();
+            unmodifiable = mappingMethodOptions.getIterableMapping().isUnmodifiable();
         }
 
         return builder
@@ -485,6 +490,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .method( method )
             .formattingParameters( formattingParameters )
             .selectionParameters( selectionParameters )
+            .unmodifiable( unmodifiable )
             .build();
     }
 

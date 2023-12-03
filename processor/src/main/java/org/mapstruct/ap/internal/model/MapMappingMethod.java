@@ -5,16 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.DeclaredType;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -28,6 +18,13 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -54,6 +51,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         private FormattingParameters valueFormattingParameters;
         private SelectionParameters keySelectionParameters;
         private SelectionParameters valueSelectionParameters;
+        private boolean unmodifiable;
 
         public Builder() {
             super( Builder.class );
@@ -76,6 +74,11 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         public Builder valueFormattingParameters(FormattingParameters valueFormattingParameters) {
             this.valueFormattingParameters = valueFormattingParameters;
+            return this;
+        }
+
+        public Builder unmodifiable(boolean unmodifiable) {
+            this.unmodifiable = unmodifiable;
             return this;
         }
 
@@ -209,11 +212,6 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 LifecycleMethodResolver.afterMappingMethods( method, null, ctx, existingVariables );
 
             final Set<Type> helperImports = new HashSet<>();
-            final boolean unmodifiable = method.getExecutable().getAnnotationMirrors().stream()
-                    .map( AnnotationMirror::getAnnotationType )
-                    .map( DeclaredType::asElement )
-                    .map( Object::toString )
-                    .anyMatch( "org.mapstruct.Unmodifiable"::equals );
             if ( unmodifiable ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collections.class ) );
             }

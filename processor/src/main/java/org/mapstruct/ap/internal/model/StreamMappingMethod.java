@@ -49,7 +49,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            boolean unmodifiable) {
 
             Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {

@@ -5,6 +5,8 @@
  */
 package org.mapstruct;
 
+import org.mapstruct.control.MappingControl;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,8 +15,9 @@ import java.lang.annotation.Target;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.mapstruct.control.MappingControl;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.SortedMap;
 
 /**
  * Configures the mapping between two map types, e.g. Map&lt;String, String&gt; and Map&lt;Long, Date&gt;.
@@ -197,4 +200,16 @@ public @interface MapMapping {
      */
     Class<? extends Annotation> valueMappingControl() default MappingControl.class;
 
+    /**
+     * If set to {@code true}, the target {@code Iterable} will not be modifiable.
+     *
+     * @return whether the returned {@code Iterable} shall be unmodifiable
+     *
+     * @since 1.6
+     *
+     * @see java.util.Collections#unmodifiableMap(Map)
+     * @see java.util.Collections#unmodifiableSortedMap(SortedMap)
+     * @see java.util.Collections#unmodifiableNavigableMap(NavigableMap)
+     */
+    boolean unmodifiable() default false;
 }

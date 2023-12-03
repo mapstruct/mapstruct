@@ -30,6 +30,7 @@ public class MapMappingOptions extends DelegatingOptions {
     private final FormattingParameters keyFormattingParameters;
     private final FormattingParameters valueFormattingParameters;
     private final MapMappingGem mapMapping;
+    private final boolean unmodifiable;
 
     public static MapMappingOptions fromGem(MapMappingGem mapMapping, MapperOptions mapperOptions,
                                             ExecutableElement method, FormattingMessager messager,
@@ -42,8 +43,8 @@ public class MapMappingOptions extends DelegatingOptions {
                 null,
                 null,
                 null,
-                mapperOptions
-            );
+                mapperOptions,
+                false );
             return options;
         }
 
@@ -77,14 +78,16 @@ public class MapMappingOptions extends DelegatingOptions {
             method
         );
 
+        boolean unmodifiable = Boolean.TRUE.equals( mapMapping.unmodifiable().get() );
+
         MapMappingOptions options = new MapMappingOptions(
             keyFormatting,
             keySelection,
             valueFormatting,
             valueSelection,
             mapMapping,
-            mapperOptions
-        );
+            mapperOptions,
+                unmodifiable );
         return options;
     }
 
@@ -100,7 +103,8 @@ public class MapMappingOptions extends DelegatingOptions {
             && !gem.valueQualifiedByName().hasValue()
             && !gem.keyTargetType().hasValue()
             && !gem.valueTargetType().hasValue()
-            && !gem.nullValueMappingStrategy().hasValue() ) {
+            && !gem.nullValueMappingStrategy().hasValue()
+            && !Boolean.TRUE.equals( gem.unmodifiable().get() ) ) {
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -109,13 +113,14 @@ public class MapMappingOptions extends DelegatingOptions {
 
     private MapMappingOptions(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
                               FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters,
-                              MapMappingGem mapMapping, DelegatingOptions next ) {
+                              MapMappingGem mapMapping, DelegatingOptions next, boolean unmodifiable) {
         super( next );
         this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
         this.valueFormattingParameters = valueFormatting;
         this.valueSelectionParameters = valueSelectionParameters;
         this.mapMapping = mapMapping;
+        this.unmodifiable = unmodifiable;
     }
 
     public FormattingParameters getKeyFormattingParameters() {
@@ -161,6 +166,10 @@ public class MapMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( mc -> MappingControl.fromTypeMirror( mc, elementUtils ) )
             .orElse( next().getMappingControl( elementUtils ) );
+    }
+
+    public boolean isUnmodifiable() {
+        return unmodifiable;
     }
 
     @Override

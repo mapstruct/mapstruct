@@ -13,9 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.DeclaredType;
-
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -61,14 +58,10 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            boolean unmodifiable) {
 
             final Set<Type> helperImports = new HashSet<>();
-            final boolean unmodifiable = method.getExecutable().getAnnotationMirrors().stream()
-                    .map( AnnotationMirror::getAnnotationType )
-                    .map( DeclaredType::asElement )
-                    .map( Object::toString )
-                    .anyMatch( "org.mapstruct.Unmodifiable"::equals );
             if ( unmodifiable ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collections.class ) );
             }
