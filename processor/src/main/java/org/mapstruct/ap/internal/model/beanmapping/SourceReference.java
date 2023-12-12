@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.DeclaredType;
@@ -152,15 +153,19 @@ public class SourceReference extends AbstractReference {
         private SourceReference buildFromSingleSourceParameters(String[] segments, Parameter parameter) {
             boolean foundEntryMatch;
 
-            boolean allowedMapToBean = false;
-            if ( segments.length > 0 ) {
-                if ( parameter.getType().isMapType() ) {
-                    // When the parameter type is a map and the parameter name matches the first segment
-                    // then the first segment should not be treated as a property of the map
-                    allowedMapToBean = !segments[0].equals( parameter.getName() );
-                }
-            }
             String[] propertyNames = segments;
+            boolean allowedMapToBean = false;
+            if ( segments.length > 0 && parameter.getType().isMapType() ) {
+                // When the parameter type is a map and the parameter name matches the first segment
+                // then the first segment should not be treated as a property of the map
+                boolean firstSegmentIsPathParameterName = segments[0].equals( parameter.getName() );
+                // do not allow map mapping to bean when the parameter name is the map itself
+                allowedMapToBean = !( firstSegmentIsPathParameterName && segments.length == 1 );
+
+                int segmentsToSkip = firstSegmentIsPathParameterName ? 1 : 0;
+                propertyNames = new String[] { joinSegmentsToDottedString( segments, segmentsToSkip ) };
+            }
+
             List<PropertyEntry> entries = matchWithSourceAccessorTypes(
                 parameter.getType(),
                 propertyNames,
@@ -205,6 +210,9 @@ public class SourceReference extends AbstractReference {
 
             if ( segments.length > 1 && parameter != null ) {
                 propertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+                if (parameter.getType().isMapType() ) {
+                    propertyNames = new String[] { joinSegmentsToDottedString( segments, 1 ) };
+                }
                 entries = matchWithSourceAccessorTypes( parameter.getType(), propertyNames, true );
                 foundEntryMatch = ( entries.size() == propertyNames.length );
             }
@@ -218,6 +226,12 @@ public class SourceReference extends AbstractReference {
             }
 
             return new SourceReference( parameter, entries, foundEntryMatch );
+        }
+
+        private static String joinSegmentsToDottedString(String[] segments, int skip) {
+            return Arrays.stream( segments )
+                .skip( skip )
+                .collect( Collectors.joining( "." ) );
         }
 
         /**
