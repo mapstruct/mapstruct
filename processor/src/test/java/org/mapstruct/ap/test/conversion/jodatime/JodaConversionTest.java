@@ -92,8 +92,8 @@ public class JodaConversionTest {
         // and now with default mappings
         target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( src );
         assertThat( target ).isNotNull();
-        assertThat( target.getDateTime() ).isEqualTo( "1. Januar 2014 00:00:00 UTC" );
-        assertThat( target.getLocalDateTime() ).isEqualTo( "1. Januar 2014 00:00:00" );
+        assertThat( target.getDateTime() ).isEqualTo( "1. Januar 2014, 00:00:00 UTC" );
+        assertThat( target.getLocalDateTime() ).isEqualTo( "1. Januar 2014, 00:00:00" );
         assertThat( target.getLocalDate() ).isEqualTo( "1. Januar 2014" );
         assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
     }
