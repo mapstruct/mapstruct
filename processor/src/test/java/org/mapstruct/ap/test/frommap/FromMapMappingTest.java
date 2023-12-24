@@ -287,10 +287,10 @@ class FromMapMappingTest {
 
     @IssueKey("3066")
     @Nested
-    @WithClasses(MapToBeanFromMapWithKeyContainingDotMapper.class)
     class MapToBeanWithKeyContainingDot {
 
         @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithKeyContainingDotMapper.class)
         void shouldMapToBeanFromMapWithKeyContainingDotDirect() {
 
             Map<String, String> source = new HashMap<>();
@@ -304,6 +304,7 @@ class FromMapMappingTest {
         }
 
         @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithKeyContainingDotMapper.class)
         void shouldMapToBeanFromMapWithKeyContainingDotLeadingParameterName() {
 
             Map<String, String> source = new HashMap<>();
@@ -314,6 +315,77 @@ class FromMapMappingTest {
 
             assertThat( target ).isNotNull();
             assertThat( target.getSomeValue() ).isEqualTo( "value" );
+        }
+
+        @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithSource.class)
+        void shouldMapFromMapWithSource() {
+            Map<String, MapToBeanFromMapWithSource.Source> sourceMap = new HashMap<>();
+            MapToBeanFromMapWithSource.Source sourceA = new MapToBeanFromMapWithSource.Source();
+            sourceA.setName( "value" );
+            sourceMap.put( "sourceA", sourceA );
+            sourceMap.put( "sourceB", new MapToBeanFromMapWithSource.Source() );
+
+            MapToBeanFromMapWithSource.Target target = MapToBeanFromMapWithSource.INSTANCE.toTarget( sourceMap );
+
+            assertThat( target.getTargetName() ).isEqualTo( "value" );
+        }
+
+        @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithSource.class)
+        void shouldMapFromMapWithSourceWithLeadingParameterName() {
+            Map<String, MapToBeanFromMapWithSource.Source> sourceMap = new HashMap<>();
+            MapToBeanFromMapWithSource.Source sourceA = new MapToBeanFromMapWithSource.Source();
+            sourceA.setName( "value" );
+            sourceMap.put( "sourceA", sourceA );
+            sourceMap.put( "sourceB", new MapToBeanFromMapWithSource.Source() );
+
+            MapToBeanFromMapWithSource.Target target =
+                MapToBeanFromMapWithSource.INSTANCE.toTargetWithLeadingParameterName( sourceMap );
+
+            assertThat( target.getTargetName() ).isEqualTo( "value" );
+        }
+
+        @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithSourceDeepNested.class)
+        void shouldMapFromMapWithSourceDeepNested() {
+            MapToBeanFromMapWithSourceDeepNested.Source source =
+                new MapToBeanFromMapWithSourceDeepNested.Source();
+            HashMap<String, MapToBeanFromMapWithSourceDeepNested.SourceEntry> innerMap = new HashMap<>();
+            MapToBeanFromMapWithSourceDeepNested.SourceEntry johnDoeEntry =
+                new MapToBeanFromMapWithSourceDeepNested.SourceEntry();
+            MapToBeanFromMapWithSourceDeepNested.Person johnDoePerson =
+                new MapToBeanFromMapWithSourceDeepNested.Person();
+            johnDoePerson.setFirstName( "John" );
+            johnDoeEntry.setPerson( johnDoePerson );
+            innerMap.put( "john.doe", johnDoeEntry );
+            source.setInnerMap( innerMap );
+
+            MapToBeanFromMapWithSourceDeepNested.Target target =
+                MapToBeanFromMapWithSourceDeepNested.INSTANCE.toTarget( source );
+
+            assertThat( target.getTargetName() ).isEqualTo( "John" );
+        }
+
+        @ProcessorTest
+        @WithClasses(MapToBeanFromMapWithSourceDeepNested.class)
+        void shouldMapFromMapWithSourceDeepNestedWithLeadingParameterName() {
+            MapToBeanFromMapWithSourceDeepNested.Source source =
+                new MapToBeanFromMapWithSourceDeepNested.Source();
+            HashMap<String, MapToBeanFromMapWithSourceDeepNested.SourceEntry> innerMap = new HashMap<>();
+            MapToBeanFromMapWithSourceDeepNested.SourceEntry johnDoeEntry =
+                new MapToBeanFromMapWithSourceDeepNested.SourceEntry();
+            MapToBeanFromMapWithSourceDeepNested.Person johnDoePerson =
+                new MapToBeanFromMapWithSourceDeepNested.Person();
+            johnDoePerson.setFirstName( "John" );
+            johnDoeEntry.setPerson( johnDoePerson );
+            innerMap.put( "john.doe", johnDoeEntry );
+            source.setInnerMap( innerMap );
+
+            MapToBeanFromMapWithSourceDeepNested.Target target =
+                MapToBeanFromMapWithSourceDeepNested.INSTANCE.toTargetWithLeadingParameterName( source );
+
+            assertThat( target.getTargetName() ).isEqualTo( "John" );
         }
 
     }

@@ -20,7 +20,7 @@ public interface MapToBeanWithDefaultMapper {
     MapToBeanWithDefaultMapper INSTANCE = Mappers.getMapper( MapToBeanWithDefaultMapper.class );
 
     @Mapping(target = "normalInt", source = "number", defaultValue = "4711")
-    @Mapping(target = "normalIntWithDots", source = "number.with.dots", defaultValue = "999")
+    @Mapping(target = "normalIntWithDots", source = "number\\.with\\.dots", defaultValue = "999")
     Target toTarget(Map<String, Integer> source);
 
     class Target {

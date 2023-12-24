@@ -20,10 +20,10 @@ public interface MapToBeanFromMapWithKeyContainingDotMapper {
     MapToBeanFromMapWithKeyContainingDotMapper INSTANCE =
         Mappers.getMapper( MapToBeanFromMapWithKeyContainingDotMapper.class );
 
-    @Mapping(target = "someValue", source = "some.value")
+    @Mapping(target = "someValue", source = "some\\.value")
     Target toTargetDirect(Map<String, String> source);
 
-    @Mapping(target = "someValue", source = "source.some.value")
+    @Mapping(target = "someValue", source = "source.some\\.value")
     Target toTargetWithLeadingParameterName(Map<String, String> source);
 
     class Target {

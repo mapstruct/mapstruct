@@ -20,7 +20,7 @@ public interface MapToBeanUsingMappingMethodMapper {
     MapToBeanUsingMappingMethodMapper INSTANCE = Mappers.getMapper( MapToBeanUsingMappingMethodMapper.class );
 
     @Mapping(target = "normalInt", source = "source.number")
-    @Mapping(target = "normalIntWithDots", source = "source.number.with.dots")
+    @Mapping(target = "normalIntWithDots", source = "source.number\\.with\\.dots")
     Target toTarget(Map<String, Integer> source);
 
     default String mapIntegerToString( Integer input ) {
