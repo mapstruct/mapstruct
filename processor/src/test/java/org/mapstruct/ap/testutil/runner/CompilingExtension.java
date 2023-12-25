@@ -182,9 +182,16 @@ abstract class CompilingExtension implements BeforeEachCallback {
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
         assertNotes( actualResult.getNotes(), expectedResult.getNotes() );
 
-        if ( !findAnnotation( testClass, DisableCheckstyle.class ).isPresent() ) {
+        if ( !findAnnotation( testClass, DisableCheckstyle.class ).isPresent() && !skipCheckstyleBySystemProperty() ) {
             assertCheckstyleRules();
         }
+    }
+
+    private static boolean skipCheckstyleBySystemProperty() {
+
+        String skipCheckstyleProperty = System.getProperty( "checkstyle.skip" );
+
+        return skipCheckstyleProperty != null && !skipCheckstyleProperty.equals( "false" );
     }
 
     private void assertCheckstyleRules() throws Exception {
