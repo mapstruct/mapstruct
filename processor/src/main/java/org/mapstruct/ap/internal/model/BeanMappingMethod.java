@@ -284,10 +284,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             initializeMappingReferencesIfNeeded( resultTypeToMap );
 
-            // map properties with mapping
-            boolean mappingErrorOccurred = handleDefinedMappings( resultTypeToMap );
-            if ( mappingErrorOccurred ) {
-                return null;
+            boolean hasSubclassMappingsWithAllSupportedClasses = hasSubclassMappingsWithAllSupportedClasses(
+                resultTypeToMap );
+
+
+            if ( hasSubclassMappingsWithAllSupportedClasses ) {
+                // map properties with mapping
+                boolean mappingErrorOccurred = handleDefinedMappings( resultTypeToMap );
+                if ( mappingErrorOccurred ) {
+                    return null;
+                }
             }
 
             boolean applyImplicitMappings = !mappingReferences.isRestrictToDefinedMappings();
@@ -1043,6 +1049,36 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         @SuppressWarnings("unchecked")
         private List<AnnotationValue> getValueAsList(AnnotationValue av) {
             return (List<AnnotationValue>) av.getValue();
+        }
+
+        /**
+         * Determine whether the result type has subclass mappings with all supported classes.
+         * It has if any of the following is true:
+         * <ul>
+         *     <li>The {@code resultTypeToMap} is not abstract</li>
+         *     <li>There is a factory method</li>
+         *     <li>The method is an update method</li>
+         * </ul>
+         * Otherwise, it means that we have reached this because subclass mappings are being used
+         * and the chosen strategy is runtime exception.
+         *
+         * @param resultTypeToMap the type in which the defined target properties are defined
+         * @return {@code true} if there are subclass mappings with all supported classes, {@code false} otherwise
+         */
+        private boolean hasSubclassMappingsWithAllSupportedClasses(Type resultTypeToMap) {
+            if ( !resultTypeToMap.isAbstract() ) {
+                return true;
+            }
+
+            if ( hasFactoryMethod ) {
+                return true;
+            }
+
+            if ( method.isUpdateMethod() ) {
+                return true;
+            }
+
+            return false;
         }
 
         /**
