@@ -188,10 +188,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
     }
 
     private static boolean skipCheckstyleBySystemProperty() {
-
-        String skipCheckstyleProperty = System.getProperty( "checkstyle.skip" );
-
-        return skipCheckstyleProperty != null && !skipCheckstyleProperty.equals( "false" );
+        return Boolean.parseBoolean( System.getProperty( "checkstyle.skip" ) );
     }
 
     private void assertCheckstyleRules() throws Exception {
