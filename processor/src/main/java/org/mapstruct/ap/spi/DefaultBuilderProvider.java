@@ -14,6 +14,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -107,19 +108,17 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * @throws TypeHierarchyErroneousException if the {@link TypeMirror} is of kind {@link TypeKind#ERROR}
      */
     protected TypeElement getTypeElement(TypeMirror type) {
-        if ( type.getKind() == TypeKind.ERROR ) {
-            throw new TypeHierarchyErroneousException( type );
-        }
-        DeclaredType declaredType = type.accept(
-            new SimpleTypeVisitor6<DeclaredType, Void>() {
-                @Override
-                public DeclaredType visitDeclared(DeclaredType t, Void p) {
-                    return t;
-                }
-            },
-            null
-        );
+        DeclaredType declaredType = getDeclaredType( type );
+        return getTypeElement( declaredType );
+    }
 
+    /**
+     * Find the {@link TypeElement} for the given {@link DeclaredType}.
+     *
+     * @param declaredType for which the {@link TypeElement} needs to be found.
+     * @return the type element or {@code null} if the declared type element is not {@link TypeElement}
+     */
+    private TypeElement getTypeElement(DeclaredType declaredType) {
         if ( declaredType == null ) {
             return null;
         }
@@ -129,6 +128,28 @@ public class DefaultBuilderProvider implements BuilderProvider {
                 @Override
                 public TypeElement visitType(TypeElement e, Void p) {
                     return e;
+                }
+            },
+            null
+        );
+    }
+
+    /**
+     * Find the {@link DeclaredType} for the given {@link TypeMirror}.
+     *
+     * @param type for which the {@link DeclaredType} needs to be found.
+     * @return the declared or {@code null} if the {@link TypeMirror} is not a {@link DeclaredType}
+     * @throws TypeHierarchyErroneousException if the {@link TypeMirror} is of kind {@link TypeKind#ERROR}
+     */
+    private DeclaredType getDeclaredType(TypeMirror type) {
+        if ( type.getKind() == TypeKind.ERROR ) {
+            throw new TypeHierarchyErroneousException( type );
+        }
+        return type.accept(
+            new SimpleTypeVisitor6<DeclaredType, Void>() {
+                @Override
+                public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                    return t;
                 }
             },
             null
@@ -218,14 +239,14 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * Searches for a build method for {@code typeElement} within the {@code builderElement}.
      * <p>
      * The default implementation iterates over each method in {@code builderElement} and uses
-     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, TypeElement)} to check if the method is a
+     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, DeclaredType, TypeElement)} to check if the method is a
      * build method for {@code typeElement}.
      * <p>
      * The default implementation uses {@link DefaultBuilderProvider#shouldIgnore(TypeElement)} to check if the
      * {@code builderElement} should be ignored, i.e. not checked for build elements.
      * <p>
      * If there are multiple methods that satisfy
-     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, TypeElement)} and one of those methods
+     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, DeclaredType, TypeElement)} and one of those methods
      * is names {@code build} that that method would be considered as a build method.
      * @param builderElement the element for the builder
      * @param typeElement the element for the type that is being built
@@ -233,6 +254,20 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * {@code build}
      */
     protected Collection<ExecutableElement> findBuildMethods(TypeElement builderElement, TypeElement typeElement) {
+        if ( shouldIgnore( builderElement ) || typeElement == null ) {
+            return Collections.emptyList();
+        }
+        DeclaredType builderType = getDeclaredType( builderElement.asType() );
+
+        if ( builderType == null ) {
+            return Collections.emptyList();
+        }
+
+        return findBuildMethods( builderElement, builderType, typeElement );
+    }
+
+    private Collection<ExecutableElement> findBuildMethods(TypeElement builderElement, DeclaredType builderType,
+                                                           TypeElement typeElement) {
         if ( shouldIgnore( builderElement ) ) {
             return Collections.emptyList();
         }
@@ -240,23 +275,57 @@ public class DefaultBuilderProvider implements BuilderProvider {
         List<ExecutableElement> builderMethods = ElementFilter.methodsIn( builderElement.getEnclosedElements() );
         List<ExecutableElement> buildMethods = new ArrayList<>();
         for ( ExecutableElement buildMethod : builderMethods ) {
-            if ( isBuildMethod( buildMethod, typeElement ) ) {
+            if ( isBuildMethod( buildMethod, builderType, typeElement ) ) {
                 buildMethods.add( buildMethod );
             }
         }
 
-        if ( buildMethods.isEmpty() ) {
-            return findBuildMethods(
-                getTypeElement( builderElement.getSuperclass() ),
-                typeElement
-            );
+        if ( !buildMethods.isEmpty() ) {
+            return buildMethods;
         }
 
-        return buildMethods;
+        Collection<ExecutableElement> parentClassBuildMethods = findBuildMethods(
+            getTypeElement( builderElement.getSuperclass() ),
+            builderType,
+            typeElement
+        );
+
+        if ( !parentClassBuildMethods.isEmpty() ) {
+            return parentClassBuildMethods;
+        }
+
+        List<? extends TypeMirror> interfaces = builderElement.getInterfaces();
+        if ( interfaces.isEmpty() ) {
+            return Collections.emptyList();
+        }
+
+        Collection<ExecutableElement> interfaceBuildMethods = new ArrayList<>();
+
+        for ( TypeMirror builderInterface : interfaces ) {
+            interfaceBuildMethods.addAll( findBuildMethods(
+                getTypeElement( builderInterface ),
+                builderType,
+                typeElement
+            ) );
+        }
+
+        return interfaceBuildMethods;
     }
 
     /**
-     * Checks if the {@code buildMethod} is a method that creates {@code typeElement}.
+     * @see #isBuildMethod(ExecutableElement, DeclaredType, TypeElement)
+     * @deprecated use {@link #isBuildMethod(ExecutableElement, DeclaredType, TypeElement)} instead
+     */
+    @Deprecated
+    protected boolean isBuildMethod(ExecutableElement buildMethod, TypeElement typeElement) {
+        return buildMethod.getParameters().isEmpty() &&
+            buildMethod.getModifiers().contains( Modifier.PUBLIC )
+            && typeUtils.isAssignable( buildMethod.getReturnType(), typeElement.asType() );
+    }
+
+    /**
+     * Checks if the {@code buildMethod} is a method that creates the {@code typeElement}
+     * as a member of the {@code builderType}.
      * <p>
      * The default implementation considers a method to be a build method if the following is satisfied:
      * <ul>
@@ -266,14 +335,23 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * </ul>
      *
      * @param buildMethod the method that should be checked
+     * @param builderType the type of the builder in which the {@code buildMethod} is located in
      * @param typeElement the type element that needs to be built
      * @return {@code true} if the {@code buildMethod} is a build method for {@code typeElement}, {@code false}
      * otherwise
      */
-    protected boolean isBuildMethod(ExecutableElement buildMethod, TypeElement typeElement) {
-        return buildMethod.getParameters().isEmpty() &&
-            buildMethod.getModifiers().contains( Modifier.PUBLIC )
-            && typeUtils.isAssignable( buildMethod.getReturnType(), typeElement.asType() );
+    protected boolean isBuildMethod(ExecutableElement buildMethod, DeclaredType builderType, TypeElement typeElement) {
+        if ( !buildMethod.getParameters().isEmpty() ) {
+            return false;
+        }
+        if ( !buildMethod.getModifiers().contains( Modifier.PUBLIC ) ) {
+            return false;
+        }
+        TypeMirror buildMethodType = typeUtils.asMemberOf( builderType, buildMethod );
+        if ( buildMethodType instanceof ExecutableType ) {
+            return typeUtils.isAssignable( ( (ExecutableType) buildMethodType ).getReturnType(), typeElement.asType() );
+        }
+        return false;
     }
 
     /**
