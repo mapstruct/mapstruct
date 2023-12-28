@@ -832,7 +832,8 @@ public class Type extends ModelElement implements Comparable<Type> {
                 // When the candidate is a getter then it can't be used in the following cases:
                 // 1. The collection mapping strategy is target immutable
                 // 2. The target type is a stream (streams are immutable)
-                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE || targetType != null && targetType.isStreamType() ) {
+                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ||
+                    targetType != null && targetType.isStreamType() ) {
                     continue;
                 }
             }
