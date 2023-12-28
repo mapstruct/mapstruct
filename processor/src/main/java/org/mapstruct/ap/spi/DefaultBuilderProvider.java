@@ -239,15 +239,12 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * Searches for a build method for {@code typeElement} within the {@code builderElement}.
      * <p>
      * The default implementation iterates over each method in {@code builderElement} and uses
-     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, DeclaredType, TypeElement)} to check if the method is a
-     * build method for {@code typeElement}.
+     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, DeclaredType, TypeElement)}
+     * to check if the method is a build method for {@code typeElement}.
      * <p>
      * The default implementation uses {@link DefaultBuilderProvider#shouldIgnore(TypeElement)} to check if the
      * {@code builderElement} should be ignored, i.e. not checked for build elements.
      * <p>
-     * If there are multiple methods that satisfy
-     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, DeclaredType, TypeElement)} and one of those methods
-     * is names {@code build} that that method would be considered as a build method.
      * @param builderElement the element for the builder
      * @param typeElement the element for the type that is being built
      * @return the build method for the {@code typeElement} if it exists, or {@code null} if it does not
