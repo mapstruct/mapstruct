@@ -821,17 +821,21 @@ public class Type extends ModelElement implements Comparable<Type> {
                     candidate = adderMethod;
                 }
 
-                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE
-                    && candidate.getAccessorType() == AccessorType.GETTER ) {
-                    // If the collection mapping strategy is target immutable
-                    // then the getter method cannot be used as a setter
-                    continue;
-                }
             }
             else if ( candidate.getAccessorType() == AccessorType.FIELD  && ( Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
                 // if the candidate is a field and a mapping already exists, then use that one, skip it.
                 continue;
+            }
+
+            if ( candidate.getAccessorType() == AccessorType.GETTER ) {
+                // When the candidate is a getter then it can't be used in the following cases:
+                // 1. The collection mapping strategy is target immutable
+                // 2. The target type is a stream (streams are immutable)
+                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ||
+                    targetType != null && targetType.isStreamType() ) {
+                    continue;
+                }
             }
 
             Accessor previousCandidate = result.get( targetPropertyName );
