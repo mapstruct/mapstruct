@@ -121,7 +121,7 @@ public class MappingOptions extends DelegatingOptions {
         String defaultValue = mapping.defaultValue().getValue();
 
         Set<String> dependsOn = mapping.dependsOn().hasValue() ?
-            new LinkedHashSet( mapping.dependsOn().getValue() ) :
+            new LinkedHashSet<>( mapping.dependsOn().getValue() ) :
             Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
