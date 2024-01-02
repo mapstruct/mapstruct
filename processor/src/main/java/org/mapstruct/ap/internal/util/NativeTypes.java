@@ -270,11 +270,11 @@ public class NativeTypes {
 
                 @Override
                 void parse(String val, int radix) {
-                    Double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
+                    double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
                     if ( doubleHasBecomeZero( d  ) ) {
                         throw new NumberFormatException( "floating point number too small" );
                     }
-                    if ( d.isInfinite() ) {
+                    if ( Double.isInfinite( d ) ) {
                         throw new NumberFormatException( "infinitive is not allowed" );
                     }
                 }
@@ -297,11 +297,11 @@ public class NativeTypes {
             NumberRepresentation br = new NumberRepresentation( s, false, false, true ) {
                 @Override
                 void parse(String val, int radix) {
-                    Float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
+                    float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
                     if ( doubleHasBecomeZero( f  ) ) {
                         throw new NumberFormatException( "floating point number too small" );
                     }
-                    if ( f.isInfinite() ) {
+                    if ( Float.isInfinite( f ) ) {
                         throw new NumberFormatException( "infinitive is not allowed" );
                     }
                 }
