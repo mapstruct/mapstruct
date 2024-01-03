@@ -44,11 +44,12 @@ public class Issue289Test {
         Source source = new Source();
         source.setCollection( null );
         TargetWithoutSetter target = new TargetWithoutSetter();
-        target.getCollection().add( new TargetElement() );
+        TargetElement existingElement = new TargetElement();
+        target.getCollection().add( existingElement );
 
         Issue289Mapper.INSTANCE.sourceToTargetWithoutSetter( source, target );
 
-        assertThat( target.getCollection() ).isEmpty();
+        assertThat( target.getCollection() ).containsExactly( existingElement );
     }
 
     @ProcessorTest
