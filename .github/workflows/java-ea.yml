@@ -17,9 +17,9 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v3
       - name: 'Set up JDK'
-        uses: actions/setup-java@v3
+        uses: oracle-actions/setup-java@v1
         with:
-          distribution: 'zulu'
-          java-version: ${{ matrix.java }}
+          website: jdk.java.net
+          release: EA
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true

@@ -49,12 +49,9 @@ public class QualifierSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType,
-                                                                         Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
+        SelectionCriteria criteria = context.getSelectionCriteria();
 
         int numberOfQualifiersToMatch = 0;
 

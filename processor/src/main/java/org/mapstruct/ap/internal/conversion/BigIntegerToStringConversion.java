@@ -47,7 +47,7 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
     public String getFromExpression(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
             StringBuilder sb = new StringBuilder();
-            sb.append( "( (" + bigDecimal( conversionContext ) + ") " );
+            sb.append( "( (" ).append( bigDecimal( conversionContext ) ).append( ") " );
             appendDecimalFormatter( sb, conversionContext );
             sb.append( ".parse( <SOURCE> )" );
             sb.append( " ).toBigInteger()" );

@@ -75,6 +75,10 @@ public class MavenIntegrationTest {
     void jaxbTest() {
     }
 
+    @ProcessorTest(baseDir = "jakartaJaxbTest")
+    void jakartaJaxbTest() {
+    }
+
     @ProcessorTest(baseDir = "jsr330Test")
     void jsr330Test() {
     }
@@ -106,6 +110,11 @@ public class MavenIntegrationTest {
         ProcessorTest.ProcessorType.JAVAC
     })
     void protobufBuilderTest() {
+    }
+
+    @ProcessorTest(baseDir = "sealedSubclassTest")
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void sealedSubclassTest() {
     }
 
     @ProcessorTest(baseDir = "recordsTest", processorTypes = {

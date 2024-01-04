@@ -74,6 +74,7 @@ import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
  * </code></pre>
  *
  * @author Gunnar Morling
+ * @see Javadoc
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
@@ -298,7 +299,7 @@ public @interface Mapper {
      * Can be configured by the {@link MapperConfig#disableSubMappingMethodsGeneration()} as well.
      * <p>
      * Note: If you need to use {@code disableSubMappingMethodsGeneration} please contact the MapStruct team at
-     * <a href="http://mapstruct.org">mapstruct.org</a> or
+     * <a href="https://mapstruct.org">mapstruct.org</a> or
      * <a href="https://github.com/mapstruct/mapstruct">github.com/mapstruct/mapstruct</a> to share what problem you
      * are facing with the automatic sub-mapping generation.
      *

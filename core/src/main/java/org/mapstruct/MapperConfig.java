@@ -269,7 +269,7 @@ public @interface MapperConfig {
      * Can be overridden by {@link Mapper#disableSubMappingMethodsGeneration()}
      * <p>
      * Note: If you need to use {@code disableSubMappingMethodsGeneration} please contact the MapStruct team at
-     * <a href="http://mapstruct.org">mapstruct.org</a> or
+     * <a href="https://mapstruct.org">mapstruct.org</a> or
      * <a href="https://github.com/mapstruct/mapstruct">github.com/mapstruct/mapstruct</a> to share what problem you
      * are facing with the automatic sub-mapping generation.
      *

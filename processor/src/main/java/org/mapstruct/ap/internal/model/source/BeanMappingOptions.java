@@ -41,12 +41,24 @@ public class BeanMappingOptions extends DelegatingOptions {
      * creates a mapping for inheritance. Will set
      *
      * @param beanMapping the bean mapping options that should be used
+     * @param isInverse whether the inheritance is inverse
      *
      * @return new mapping
      */
-    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping) {
+    public static BeanMappingOptions forInheritance(BeanMappingOptions beanMapping, boolean isInverse) {
         BeanMappingOptions options =  new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
+            isInverse ? Collections.emptyList() : beanMapping.ignoreUnmappedSourceProperties,
+            beanMapping.beanMapping,
+            beanMapping
+        );
+        return options;
+    }
+
+    public static BeanMappingOptions forForgedMethods(BeanMappingOptions beanMapping) {
+        BeanMappingOptions options = new BeanMappingOptions(
+            beanMapping.selectionParameters != null ?
+                SelectionParameters.withoutResultType( beanMapping.selectionParameters ) : null,
             Collections.emptyList(),
             beanMapping.beanMapping,
             beanMapping
@@ -54,13 +66,16 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
+    public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {
+        return new BeanMappingOptions( null, Collections.emptyList(), null, delegatingOptions );
+    }
+
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
                                                    ExecutableElement method, FormattingMessager messager,
                                                    TypeUtils typeUtils, TypeFactory typeFactory
     ) {
         if ( beanMapping == null || !isConsistent( beanMapping, method, messager ) ) {
-            BeanMappingOptions options = new BeanMappingOptions( null, Collections.emptyList(), null, mapperOptions );
-            return options;
+            return empty( mapperOptions );
         }
 
         Objects.requireNonNull( method );
@@ -89,6 +104,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     private static boolean isConsistent(BeanMappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
         if ( !gem.resultType().hasValue()
+            && !gem.mappingControl().hasValue()
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.ignoreUnmappedSourceProperties().hasValue()
@@ -97,6 +113,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValueMappingStrategy().hasValue()
             && !gem.subclassExhaustiveStrategy().hasValue()
             && !gem.unmappedTargetPolicy().hasValue()
+            && !gem.unmappedSourcePolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
             && !gem.builder().hasValue() ) {
 
@@ -161,6 +178,15 @@ public class BeanMappingOptions extends DelegatingOptions {
                 .map( GemValue::getValue )
                 .map( ReportingPolicyGem::valueOf )
                 .orElse( next().unmappedTargetPolicy() );
+    }
+
+    @Override
+    public ReportingPolicyGem unmappedSourcePolicy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::unmappedSourcePolicy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( ReportingPolicyGem::valueOf )
+                .orElse( next().unmappedSourcePolicy() );
     }
 
     @Override

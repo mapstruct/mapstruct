@@ -207,10 +207,13 @@ public class MappingOptions extends DelegatingOptions {
         if ( gem.source().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
+        else if ( gem.expression().hasValue() && gem.conditionQualifiedByName().hasValue() ) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED;
+        }
         else if ( gem.source().hasValue() && gem.expression().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
-        else if (gem.expression().hasValue() && gem.constant().hasValue() ) {
+        else if ( gem.expression().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( gem.expression().hasValue() && gem.defaultValue().hasValue() ) {
@@ -253,6 +256,9 @@ public class MappingOptions extends DelegatingOptions {
         else if ( gem.nullValuePropertyMappingStrategy().hasValue()
             && gem.ignore().hasValue() && gem.ignore().getValue() ) {
             message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
+        }
+        else if ( ".".equals( gem.target().get() ) && gem.ignore().hasValue() && gem.ignore().getValue() ) {
+            message = Message.PROPERTYMAPPING_TARGET_THIS_AND_IGNORE;
         }
 
         if ( message == null ) {

@@ -43,12 +43,16 @@ public class BuilderLifecycleCallbacksTest {
         assertThat( context.getInvokedMethods() )
             .contains(
                 "beforeWithoutParameters",
+                "beforeWithTargetType",
                 "beforeWithBuilderTargetType",
                 "beforeWithBuilderTarget",
                 "afterWithoutParameters",
                 "afterWithBuilderTargetType",
                 "afterWithBuilderTarget",
-                "afterWithBuilderTargetReturningTarget"
+                "afterWithBuilderTargetReturningTarget",
+                "afterWithTargetType",
+                "afterWithTarget",
+                "afterWithTargetReturningTarget"
             );
     }
 }

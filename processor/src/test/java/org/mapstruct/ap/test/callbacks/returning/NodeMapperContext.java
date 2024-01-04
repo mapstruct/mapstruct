@@ -19,11 +19,11 @@ import org.mapstruct.TargetType;
  * @author Pascal Grün
  */
 public class NodeMapperContext {
-    private static final ThreadLocal<Integer> LEVEL = new ThreadLocal<Integer>();
-    private static final ThreadLocal<Map<Object, Object>> MAPPING = new ThreadLocal<Map<Object, Object>>();
+    private static final ThreadLocal<Integer> LEVEL = new ThreadLocal<>();
+    private static final ThreadLocal<Map<Object, Object>> MAPPING = new ThreadLocal<>();
 
     /** Only for test-inspection */
-    private static final List<ContextListener> LISTENERS = new CopyOnWriteArrayList<ContextListener>();
+    private static final List<ContextListener> LISTENERS = new CopyOnWriteArrayList<>();
 
     private NodeMapperContext() {
         // Only allow static access

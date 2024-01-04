@@ -131,7 +131,7 @@ public class DiagnosticDescriptor {
 
         //Make the URI absolute in case it isn't (the case with JDK 6)
         try {
-            return new URI( "file:" + uri.toString() );
+            return new URI( "file:" + uri );
         }
         catch ( URISyntaxException e ) {
             throw new RuntimeException( e );
@@ -189,7 +189,7 @@ public class DiagnosticDescriptor {
         if ( kind != other.kind ) {
             return false;
         }
-        if ( line != other.line ) {
+        if ( !Objects.equals( line, other.line ) ) {
             return false;
         }
         if ( !Objects.equals( message, other.message ) ) {

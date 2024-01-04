@@ -42,8 +42,13 @@ public class AnnotateWithTest {
     }
 
     @ProcessorTest
-    @WithClasses( { CustomNamedMapper.class, CustomAnnotationWithParamsContainer.class,
-        CustomAnnotationWithParams.class } )
+    @WithClasses( {
+        CustomNamedMapper.class,
+        CustomAnnotationWithParamsContainer.class,
+        CustomAnnotationWithParams.class,
+        CustomClassOnlyAnnotation.class,
+        CustomMethodOnlyAnnotation.class,
+    } )
     public void annotationWithValue() {
         generatedSource.addComparisonToFixtureFor( CustomNamedMapper.class );
     }
@@ -588,5 +593,4 @@ public class AnnotateWithTest {
         Method method = mapper.getClass().getMethod( "map", String.class );
         assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
-
 }

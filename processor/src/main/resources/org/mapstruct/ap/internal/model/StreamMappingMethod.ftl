@@ -18,7 +18,7 @@
 
     	</#if>
     </#list>
-    if ( ${sourceParameter.name} == null ) {
+    if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
         <#else>
@@ -114,7 +114,7 @@
     <#else>
         <#-- Streams are immutable so we can't update them -->
         <#if !existingInstanceMapping>
-            <#--TODO fhr: after the the result is no longer the same instance, how does it affect the
+            <#--TODO fhr: after the result is no longer the same instance, how does it affect the
                 Before mapping methods. Does it even make sense to have before mapping on a stream? -->
             <#if sourceParameter.type.arrayType>
                 <@returnLocalVarDefOrUpdate>Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>

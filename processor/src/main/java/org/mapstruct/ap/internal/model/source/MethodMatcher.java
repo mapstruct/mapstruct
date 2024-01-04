@@ -82,6 +82,17 @@ public class MethodMatcher {
         // (the relation target / target type, target type being a class)
 
         if ( !analyser.candidateReturnType.isVoid() ) {
+            if ( targetType.isPrimitive() ) {
+                // If the target type is primitive
+                // then we are going to check if its boxed equivalent
+                // is assignable to the candidate return type
+                // This is done because primitives can be assigned from their own narrower counterparts
+                // directly without any casting.
+                // e.g. a Long is assignable to a primitive double
+                // However, in order not to lose information we are not going to allow this
+                return targetType.getBoxedEquivalent()
+                    .isAssignableTo( analyser.candidateReturnType.getBoxedEquivalent() );
+            }
             if ( !( analyser.candidateReturnType.isAssignableTo( targetType ) ) ) {
                 return false;
             }
@@ -314,8 +325,7 @@ public class MethodMatcher {
          */
         private boolean candidatesWithinBounds(Map<Type, TypeVarCandidate> methodParCandidates ) {
             for ( Map.Entry<Type, TypeVarCandidate> entry : methodParCandidates.entrySet() ) {
-                Type bound = entry.getKey().getTypeBound();
-                if ( bound != null ) {
+                for ( Type bound : entry.getKey().getTypeBounds() ) {
                     for ( Type.ResolvedPair pair : entry.getValue().pairs ) {
                         if ( entry.getKey().hasUpperBound() ) {
                             if ( !pair.getMatch().asRawType().isAssignableTo( bound.asRawType() ) ) {

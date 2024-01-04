@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
@@ -21,11 +20,9 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class FactoryParameterSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType, Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
+        SelectionCriteria criteria = context.getSelectionCriteria();
         if ( !criteria.isObjectFactoryRequired() || methods.size() <= 1 ) {
             return methods;
         }

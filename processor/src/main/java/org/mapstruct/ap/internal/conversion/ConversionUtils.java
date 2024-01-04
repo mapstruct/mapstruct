@@ -12,6 +12,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -191,6 +192,17 @@ public final class ConversionUtils {
     }
 
     /**
+     * Name for {@link java.time.LocalDate}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String localDate(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, LocalDate.class );
+    }
+
+    /**
      * Name for {@link java.time.LocalDateTime}.
      *
      * @param conversionContext Conversion context
@@ -266,4 +278,5 @@ public final class ConversionUtils {
     public static String url(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, URL.class );
     }
+
 }

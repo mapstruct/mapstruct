@@ -26,11 +26,17 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
         // SPI not working correctly here.. (not picked up)
         additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1596/*.java" );
         additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1801/*.java" );
+        additionalExcludes.add( "org/mapstruct/ap/test/bugs/_3089/*.java" );
 
         switch ( currentJreVersion ) {
             case JAVA_8:
                 additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/cdi/**/*.java" );
                 additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/jakarta_cdi/**/*.java" );
+                additionalExcludes.add( "org/mapstruct/ap/test/annotatewith/deprecated/jdk11/*.java" );
+                if ( processorType == ProcessorTest.ProcessorType.ECLIPSE_JDT ) {
+                    additionalExcludes.add(
+                        "org/mapstruct/ap/test/selection/methodgenerics/wildcards/LifecycleIntersectionMapper.java" );
+                }
                 break;
             case JAVA_9:
                 // TODO find out why this fails:
@@ -39,7 +45,7 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
             default:
         }
 
-        Collection<String> result = new ArrayList<String>( additionalExcludes.size() );
+        Collection<String> result = new ArrayList<>(additionalExcludes.size());
         for ( int i = 0; i < additionalExcludes.size(); i++ ) {
             result.add( "-DadditionalExclude" + i + "=" + additionalExcludes.get( i ) );
         }

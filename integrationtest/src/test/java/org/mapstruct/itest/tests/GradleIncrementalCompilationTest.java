@@ -62,7 +62,7 @@ public class GradleIncrementalCompilationTest {
     }
 
     private GradleRunner getRunner(String... additionalArguments) {
-        List<String> fullArguments = new ArrayList<String>( compileArgs );
+        List<String> fullArguments = new ArrayList<>(compileArgs);
         fullArguments.addAll( Arrays.asList( additionalArguments ) );
         return runner.withArguments( fullArguments );
     }

@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import java.util.Collections;
@@ -277,5 +280,25 @@ public class TargetPropertyNameTest {
                 "addresses",
                 "addresses.street"
             );
+    }
+
+    @IssueKey("2863")
+    @ProcessorTest
+    @WithClasses({
+        ErroneousNonStringTargetPropertyNameParameter.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousNonStringTargetPropertyNameParameter.class,
+                line = 18,
+                message = "@TargetPropertyName can only by applied to a String parameter."
+            )
+        }
+    )
+    public void nonStringTargetPropertyNameParameter() {
+
     }
 }

@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.firstKey;
 import static org.mapstruct.ap.internal.util.Collections.firstValue;
@@ -57,6 +56,7 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ElementUtils;
@@ -116,7 +116,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         this.conversions = new Conversions( typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
-        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory, messager );
+        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, messager );
 
         this.verboseLogging = verboseLogging;
     }
@@ -196,7 +196,6 @@ public class MappingResolverImpl implements MappingResolver {
 
             this.mappingMethod = mappingMethod;
             this.description = description;
-            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
@@ -207,18 +206,23 @@ public class MappingResolverImpl implements MappingResolver {
             this.builtIns = builtIns;
             this.messager = messager;
             this.reportingLimitAmbiguous = verboseLogging ? Integer.MAX_VALUE : LIMIT_REPORTING_AMBIGUOUS;
+            this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
         }
         // CHECKSTYLE:ON
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) && !candidate.equals( mappingMethod )) {
+                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate )) {
                     result.add( candidate );
                 }
             }
 
             return result;
+        }
+
+        private <T extends Method> boolean isNotSelfOrSelfAllowed(T mappingMethod, T candidate) {
+            return selectionCriteria == null || selectionCriteria.isSelfAllowed() || !candidate.equals( mappingMethod );
         }
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
@@ -291,20 +295,24 @@ public class MappingResolverImpl implements MappingResolver {
                 }
 
                 // 2 step method, then: method(conversion(source))
-                assignment = ConversionMethod.getBestMatch( this, sourceType, targetType );
-                if ( assignment != null ) {
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return assignment;
+                if ( allowConversion() ) {
+                    assignment = ConversionMethod.getBestMatch( this, sourceType, targetType );
+                    if ( assignment != null ) {
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return assignment;
+                    }
                 }
 
                 // stop here when looking for update methods.
                 selectionCriteria.setPreferUpdateMapping( false );
 
                 // 2 step method, finally: conversion(method(source))
-                assignment = MethodConversion.getBestMatch( this, sourceType, targetType );
-                if ( assignment != null ) {
-                    usedSupportedMappings.addAll( supportingMethodCandidates );
-                    return assignment;
+                if ( allowConversion() ) {
+                    assignment = MethodConversion.getBestMatch( this, sourceType, targetType );
+                    if ( assignment != null ) {
+                        usedSupportedMappings.addAll( supportingMethodCandidates );
+                        return assignment;
+                    }
                 }
             }
 
@@ -426,7 +434,6 @@ public class MappingResolverImpl implements MappingResolver {
         private ConversionAssignment resolveViaConversion(Type sourceType, Type targetType) {
 
             ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
-
             if ( conversionProvider == null ) {
                 return null;
             }
@@ -483,12 +490,8 @@ public class MappingResolverImpl implements MappingResolver {
 
         private <T extends Method> List<SelectedMethod<T>> getBestMatch(List<T> methods, Type source, Type target) {
             return methodSelectors.getMatchingMethods(
-                mappingMethod,
                 methods,
-                singletonList( source ),
-                target,
-                target,
-                selectionCriteria
+                SelectionContext.forMappingMethods( mappingMethod, source, target, selectionCriteria, typeFactory )
             );
         }
 
@@ -759,22 +762,26 @@ public class MappingResolverImpl implements MappingResolver {
                     return mmAttempt.result;
                 }
             }
-            MethodMethod<Method, BuiltInMethod> mbAttempt =
-                new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
-                    .getBestMatch( sourceType, targetType );
-            if ( mbAttempt.hasResult ) {
-                return mbAttempt.result;
+            if ( att.allowConversion() ) {
+                MethodMethod<Method, BuiltInMethod> mbAttempt =
+                    new MethodMethod<>( att, att.methods, att.builtIns, att::toMethodRef, att::toBuildInRef )
+                        .getBestMatch( sourceType, targetType );
+                if ( mbAttempt.hasResult ) {
+                    return mbAttempt.result;
+                }
+                MethodMethod<BuiltInMethod, Method> bmAttempt =
+                    new MethodMethod<>( att, att.builtIns, att.methods, att::toBuildInRef, att::toMethodRef )
+                        .getBestMatch( sourceType, targetType );
+                if ( bmAttempt.hasResult ) {
+                    return bmAttempt.result;
+                }
+                MethodMethod<BuiltInMethod, BuiltInMethod> bbAttempt =
+                    new MethodMethod<>( att, att.builtIns, att.builtIns, att::toBuildInRef, att::toBuildInRef )
+                        .getBestMatch( sourceType, targetType );
+                return bbAttempt.result;
             }
-            MethodMethod<BuiltInMethod, Method> bmAttempt =
-                new MethodMethod<>( att, att.builtIns, att.methods, att::toBuildInRef, att::toMethodRef )
-                    .getBestMatch( sourceType, targetType );
-            if ( bmAttempt.hasResult ) {
-                return bmAttempt.result;
-            }
-            MethodMethod<BuiltInMethod, BuiltInMethod> bbAttempt =
-                new MethodMethod<>( att, att.builtIns, att.builtIns, att::toBuildInRef, att::toBuildInRef )
-                    .getBestMatch( sourceType, targetType );
-            return bbAttempt.result;
+
+            return null;
         }
 
         MethodMethod(ResolvingAttempt attempt, List<T1> xMethods, List<T2> yMethods,
@@ -817,7 +824,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             for ( T2 yCandidate : yMethods ) {
                 Type ySourceType = yCandidate.getMappingSourceType();
-                ySourceType = ySourceType.resolveParameterToType( targetType, yCandidate.getResultType() ).getMatch();
+                ySourceType = ySourceType.resolveGenericTypeParameters( targetType, yCandidate.getResultType() );
                 Type yTargetType = yCandidate.getResultType();
                 if ( ySourceType == null
                     || !yTargetType.isRawAssignableTo( targetType )

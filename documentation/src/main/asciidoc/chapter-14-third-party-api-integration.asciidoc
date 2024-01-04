@@ -46,8 +46,10 @@ public @interface Default {
 MapStruct works together with https://projectlombok.org/[Project Lombok] as of MapStruct 1.2.0.Beta1 and Lombok 1.16.14.
 
 MapStruct takes advantage of generated getters, setters, and constructors and uses them to generate the mapper implementations.
+Be reminded that the generated code by Lombok might not always be compatible with the expectations from the individual mappings.
+In such a case, either Mapstruct mapping must be changed or Lombok must be configured accordingly using https://projectlombok.org/features/configuration[`lombok.config`] for mutual synergy.
 
-[NOTE]
+[WARNING]
 ====
 Lombok 1.18.16 introduces a breaking change (https://projectlombok.org/changelog[changelog]).
 The additional annotation processor `lombok-mapstruct-binding` (https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding[Maven]) must be added otherwise MapStruct stops working with Lombok.

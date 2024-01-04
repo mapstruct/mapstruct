@@ -54,7 +54,7 @@ public class UpdateWrapper extends AssignmentWrapper {
             return targetType.getImplementationType();
         }
 
-        // no factory method means we create a new instance ourself and thus need to import the type
+        // no factory method means we create a new instance ourselves and thus need to import the type
         return targetType;
     }
 

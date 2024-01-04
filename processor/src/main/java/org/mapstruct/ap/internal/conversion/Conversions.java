@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class Conversions {
     private final Map<Key, ConversionProvider> conversions = new HashMap<>();
     private final Type enumType;
     private final Type stringType;
+    private final Type integerType;
     private final TypeFactory typeFactory;
 
     public Conversions(TypeFactory typeFactory) {
@@ -48,6 +50,7 @@ public class Conversions {
 
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
+        this.integerType = typeFactory.getType( Integer.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -185,6 +188,8 @@ public class Conversions {
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
+        register( Enum.class, Integer.class, new EnumToIntegerConversion() );
+        register( Enum.class, int.class, new EnumToIntegerConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
 
@@ -194,6 +199,7 @@ public class Conversions {
         register( Currency.class, String.class, new CurrencyToStringConversion() );
 
         register( UUID.class, String.class, new UUIDToStringConversion() );
+        register( Locale.class, String.class, new LocaleToStringConversion() );
 
         registerURLConversion();
     }
@@ -229,11 +235,14 @@ public class Conversions {
         register( Period.class, String.class, new StaticParseToStringConversion() );
         register( Duration.class, String.class, new StaticParseToStringConversion() );
 
-        // Java 8 to Date
+        // Java 8 time to Date
         register( ZonedDateTime.class, Date.class, new JavaZonedDateTimeToDateConversion() );
         register( LocalDateTime.class, Date.class, new JavaLocalDateTimeToDateConversion() );
         register( LocalDate.class, Date.class, new JavaLocalDateToDateConversion() );
         register( Instant.class, Date.class, new JavaInstantToDateConversion() );
+
+        // Java 8 time
+        register( LocalDateTime.class, LocalDate.class, new JavaLocalDateTimeToLocalDateConversion() );
 
     }
 
@@ -324,10 +333,16 @@ public class Conversions {
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
-        if ( sourceType.isEnumType() && targetType.equals( stringType ) ) {
+        if ( sourceType.isEnumType() &&
+                ( targetType.equals( stringType ) ||
+                  targetType.getBoxedEquivalent().equals( integerType ) )
+        ) {
             sourceType = enumType;
         }
-        else if ( targetType.isEnumType() && sourceType.equals( stringType ) ) {
+        else if ( targetType.isEnumType() &&
+                ( sourceType.equals( stringType ) ||
+                  sourceType.getBoxedEquivalent().equals( integerType ) )
+        ) {
             targetType = enumType;
         }
 

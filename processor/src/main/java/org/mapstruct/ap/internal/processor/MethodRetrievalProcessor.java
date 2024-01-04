@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingsGem;
+import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -69,7 +70,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
     private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubclassMapping";
     private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubclassMappings";
-
+    private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
+    private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -121,6 +123,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         TypeElement typeElement = asTypeElement( mapperAnnotation.mapperConfigType() );
         List<SourceMethod> methods = new ArrayList<>();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
+
+            if ( executable.isDefault() || executable.getModifiers().contains( Modifier.STATIC ) ) {
+                // skip the default and static methods because these are not prototypes.
+                continue;
+            }
 
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -229,7 +236,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
             || isValidLifecycleCallbackMethod( method )
-            || isValidPresenceCheckMethod( method, returnType ) ) {
+            || isValidPresenceCheckMethod( method, parameters, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -406,7 +413,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return ObjectFactoryGem.instanceOn( method ) != null;
     }
 
-    private boolean isValidPresenceCheckMethod(ExecutableElement method, Type returnType) {
+    private boolean isValidPresenceCheckMethod(ExecutableElement method, List<Parameter> parameters, Type returnType) {
+        for ( Parameter param : parameters ) {
+            if ( param.isTargetPropertyName() && !param.getType().isString() ) {
+                messager.printMessage(
+                    param.getElement(),
+                    TargetPropertyNameGem.instanceOn( param.getElement() ).mirror(),
+                    Message.RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE
+                );
+                return false;
+            }
+        }
         return isBoolean( returnType ) && hasConditionAnnotation( method );
     }
 
@@ -714,22 +731,36 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private List<ValueMappingOptions> getValueMappings(ExecutableElement method) {
-        List<ValueMappingOptions> valueMappings = new ArrayList<>();
+        Set<ValueMappingOptions> processedAnnotations = new RepeatValueMappings().getProcessedAnnotations( method );
+        return new ArrayList<>(processedAnnotations);
+    }
 
-        ValueMappingGem mappingAnnotation = ValueMappingGem.instanceOn( method );
-        ValueMappingsGem mappingsAnnotation = ValueMappingsGem.instanceOn( method );
+    private class RepeatValueMappings
+        extends RepeatableAnnotations<ValueMappingGem, ValueMappingsGem, ValueMappingOptions> {
 
-        if ( mappingAnnotation != null ) {
-            ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingGem( mappingAnnotation );
-            if ( valueMapping != null ) {
-                valueMappings.add( valueMapping );
-            }
+        protected RepeatValueMappings() {
+            super( elementUtils, VALUE_MAPPING_FQN, VALUE_MAPPINGS_FQN );
         }
 
-        if ( mappingsAnnotation != null ) {
-            ValueMappingOptions.fromMappingsGem( mappingsAnnotation, method, messager, valueMappings );
+        @Override
+        protected ValueMappingGem singularInstanceOn(Element element) {
+            return ValueMappingGem.instanceOn( element );
         }
 
-        return valueMappings;
+        @Override
+        protected ValueMappingsGem multipleInstanceOn(Element element) {
+            return ValueMappingsGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(ValueMappingGem gem, Element source, Set<ValueMappingOptions> mappings) {
+            ValueMappingOptions valueMappingOptions = ValueMappingOptions.fromMappingGem( gem );
+            mappings.add( valueMappingOptions );
+        }
+
+        @Override
+        protected void addInstances(ValueMappingsGem gems, Element source, Set<ValueMappingOptions> mappings) {
+            ValueMappingOptions.fromMappingsGem( gems, (ExecutableElement) source, messager, mappings );
+        }
     }
 }

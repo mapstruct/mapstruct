@@ -25,6 +25,8 @@
         <additionalExclude2>x</additionalExclude2>
         <additionalExclude3>x</additionalExclude3>
         <additionalExclude4>x</additionalExclude4>
+        <additionalExclude5>x</additionalExclude5>
+        <additionalExclude6>x</additionalExclude6>
     </properties>
 
     <build>
@@ -45,6 +47,8 @@
                         <exclude>${additionalExclude2}</exclude>
                         <exclude>${additionalExclude3}</exclude>
                         <exclude>${additionalExclude4}</exclude>
+                        <exclude>${additionalExclude5}</exclude>
+                        <exclude>${additionalExclude6}</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -83,6 +87,13 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -93,14 +104,16 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <version>2.3.2</version>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <scope>provided</scope>
+                    <optional>true</optional>
                 </dependency>
                 <dependency>
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-runtime</artifactId>
-                    <version>2.3.2</version>
+                    <scope>provided</scope>
+                    <optional>true</optional>
                 </dependency>
             </dependencies>
         </profile>

@@ -43,6 +43,9 @@ public interface CarMapper {
 ====
 * Between `enum` types and `String`.
 
+* Between `enum` types and `Integer`, according to `enum.ordinal()`.
+** When converting from an `Integer`, the value needs to be less than the number of values of the enum, otherwise an `ArrayOutOfBoundsException` is thrown.
+
 * Between big number types (`java.math.BigInteger`, `java.math.BigDecimal`) and Java primitive types (including their wrappers) as well as String. A format string as understood by `java.text.DecimalFormat` can be specified.
 
 .Conversion from BigDecimal to String
@@ -104,6 +107,8 @@ public interface CarMapper {
 
 * Between `java.time.Instant` from Java 8 Date-Time package and `java.util.Date`.
 
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.time.LocalDate` from the same package.
+
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
 * Between `java.sql.Date` and `java.util.Date`
@@ -124,6 +129,9 @@ public interface CarMapper {
 
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
+
+* Between `java.util.Locale` and `String`.
+** When converting from a `Locale`, the resulting `String` will be a well-formed IETF BCP 47 language tag representing the locale. When converting from a `String`, the locale that best represents the language tag will be returned. See https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[Locale.forLanguageTag()] and https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#toLanguageTag--[Locale.toLanguageTag()] for more information.
 
 [[mapping-object-references]]
 === Mapping object references

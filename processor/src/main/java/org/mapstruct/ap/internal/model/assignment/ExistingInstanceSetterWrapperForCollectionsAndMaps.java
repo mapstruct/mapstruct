@@ -22,7 +22,7 @@ import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
  *
- * In case of a pre-existing target the wrapper checks if there is an collection or map initialized on the target bean
+ * In case of a pre-existing target the wrapper checks if there is a collection or map initialized on the target bean
  * (not null). If so it uses the addAll (for collections) or putAll (for maps). The collection / map is cleared in case
  * of a pre-existing target {@link org.mapstruct.MappingTarget }before adding the source entries.
  *

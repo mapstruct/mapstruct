@@ -102,7 +102,7 @@ A mapper which uses other mapper classes (see <<invoking-other-mappers>>) will o
 [[injection-strategy]]
 === Injection strategy
 
-When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection.
+When using <<using-dependency-injection,dependency injection>>, you can choose between constructor, field, or setter injection.
 This can be done by either providing the injection strategy via `@Mapper` or `@MapperConfig` annotation.
 
 .Using constructor injection
@@ -120,8 +120,12 @@ public interface CarMapper {
 The generated mapper will inject classes defined in the **uses** attribute if MapStruct has detected that it needs to use an instance of it for a mapping.
 When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't.
 When `InjectionStrategy#FIELD` is used, the annotation is on the field itself.
+When `InjectionStrategy#SETTER` is used the annotation is on a generated setter method.
 For now, the default injection strategy is field injection, but it can be configured with <<configuration-options>>.
 It is recommended to use constructor injection to simplify testing.
+
+When you define mappers in Spring with circular dependencies compilation may fail.
+In that case utilize the `InjectionStrategy#SETTER` strategy.
 
 [TIP]
 ====

@@ -53,6 +53,36 @@ public class SubclassMappingTest {
     }
 
     @ProcessorTest
+    @WithClasses( DeepCloneMapper.class )
+    void deepCloneMappingClonesObjects() {
+        Car car = new Car();
+        car.setManual( true );
+        car.setName( "namedCar" );
+        car.setVehicleManufacturingCompany( "veMac" );
+
+        Vehicle result = DeepCloneMapper.INSTANCE.map( car );
+
+        assertThat( result ).isInstanceOf( Car.class );
+        assertThat( result ).isNotSameAs( car );
+        assertThat( result ).usingRecursiveComparison().isEqualTo( car );
+    }
+
+    @ProcessorTest
+    @WithClasses( DeepCloneMethodMapper.class )
+    void deepCloneMappingOnMethodClonesObjects() {
+        Car car = new Car();
+        car.setManual( true );
+        car.setName( "namedCar" );
+        car.setVehicleManufacturingCompany( "veMac" );
+
+        Vehicle result = DeepCloneMethodMapper.INSTANCE.map( car );
+
+        assertThat( result ).isInstanceOf( Car.class );
+        assertThat( result ).isNotSameAs( car );
+        assertThat( result ).usingRecursiveComparison().isEqualTo( car );
+    }
+
+    @ProcessorTest
     @WithClasses( SimpleSubclassMapper.class )
     void inverseMappingIsDoneUsingSubclassMapping() {
         VehicleCollectionDto vehicles = new VehicleCollectionDto();
@@ -100,7 +130,7 @@ public class SubclassMappingTest {
         HatchBack.class,
         InverseOrderSubclassMapper.class
     } )
-    void subclassMappingOverridesInverseInheritsMapping() {
+    void subclassMappingOverridesInverseInheritedMapping() {
         VehicleCollectionDto vehicleDtos = new VehicleCollectionDto();
         CarDto carDto = new CarDto();
         carDto.setMaker( "BenZ" );
@@ -111,6 +141,69 @@ public class SubclassMappingTest {
         assertThat( result.getVehicles() ) // remove generic so that test works.
             .extracting( vehicle -> (Class) vehicle.getClass() )
             .containsExactly( Car.class );
+    }
+
+    @IssueKey( "3125" )
+    @ProcessorTest
+    @WithClasses( {
+        HatchBack.class,
+        InheritedSubclassMapper.class
+    } )
+    void subclassMappingOverridesInheritedMapping() {
+        Vehicle bike = new Bike();
+
+        VehicleDto result = InheritedSubclassMapper.INSTANCE.map( bike );
+        VehicleDto resultInherited = InheritedSubclassMapper.INSTANCE.mapInherited( bike );
+        VehicleDto resultOverride = InheritedSubclassMapper.INSTANCE.mapInheritedOverride( bike );
+
+        assertThat( result ).isInstanceOf( BikeDto.class );
+        assertThat( resultInherited ).isInstanceOf( BikeDto.class );
+        assertThat( resultOverride ).isInstanceOf( CarDto.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void mappingIsDoneUsingSubclassMappingWithCompositeMapping() {
+        VehicleCollection vehicles = new VehicleCollection();
+        vehicles.getVehicles().add( new Car() );
+        vehicles.getVehicles().add( new Bike() );
+
+        VehicleCollectionDto result = SubclassCompositeMapper.INSTANCE.map( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( CarDto.class, BikeDto.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void inverseMappingIsDoneUsingSubclassMappingWithCompositeMapping() {
+        VehicleCollectionDto vehicles = new VehicleCollectionDto();
+        vehicles.getVehicles().add( new CarDto() );
+        vehicles.getVehicles().add( new BikeDto() );
+
+        VehicleCollection result = SubclassCompositeMapper.INSTANCE.mapInverse( vehicles );
+
+        assertThat( result.getVehicles() ).doesNotContainNull();
+        assertThat( result.getVehicles() ) // remove generic so that test works.
+            .extracting( vehicle -> (Class) vehicle.getClass() )
+            .containsExactly( Car.class, Bike.class );
+    }
+
+    @ProcessorTest
+    @WithClasses( { SubclassCompositeMapper.class, CompositeSubclassMappingAnnotation.class })
+    void subclassMappingInheritsInverseMappingWithCompositeMapping() {
+        VehicleCollectionDto vehiclesDto = new VehicleCollectionDto();
+        CarDto carDto = new CarDto();
+        carDto.setMaker( "BenZ" );
+        vehiclesDto.getVehicles().add( carDto );
+
+        VehicleCollection result = SubclassCompositeMapper.INSTANCE.mapInverse( vehiclesDto );
+
+        assertThat( result.getVehicles() )
+            .extracting( Vehicle::getVehicleManufacturingCompany )
+            .containsExactly( "BenZ" );
     }
 
     @ProcessorTest
@@ -183,5 +276,19 @@ public class SubclassMappingTest {
         )
     })
     void inverseSubclassMappingNotPossible() {
+    }
+
+    @ProcessorTest
+    @WithClasses(SubclassIgnoreByDefaultMapper.class)
+    void beanMappingIgnoreByDefaultShouldBePropagated() {
+        Car car = new Car();
+        car.setName( "Test car" );
+        car.setManual( true );
+        VehicleDto target = SubclassIgnoreByDefaultMapper.INSTANCE.map( car );
+        assertThat( target )
+            .isInstanceOfSatisfying( CarDto.class, carDto -> {
+                assertThat( carDto.getName() ).isEqualTo( "Test car" );
+                assertThat( carDto.isManual() ).isFalse();
+            } );
     }
 }

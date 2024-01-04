@@ -21,6 +21,7 @@ import org.mapstruct.EnumMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
+import org.mapstruct.Javadoc;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -45,6 +46,7 @@ import org.mapstruct.tools.gem.GemDefinition;
  *
  * @author Gunnar Morling
  */
+@GemDefinition(Deprecated.class)
 @GemDefinition(AnnotateWith.class)
 @GemDefinition(AnnotateWith.Element.class)
 @GemDefinition(AnnotateWiths.class)
@@ -74,6 +76,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(Context.class)
 @GemDefinition(Builder.class)
 @GemDefinition(Condition.class)
+@GemDefinition(Javadoc.class)
 
 @GemDefinition(MappingControl.class)
 @GemDefinition(MappingControls.class)

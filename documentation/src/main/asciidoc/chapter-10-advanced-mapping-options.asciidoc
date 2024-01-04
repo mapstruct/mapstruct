@@ -141,6 +141,8 @@ In the case that the `Fruit` is an abstract class or an interface, you would get
 To allow mappings for abstract classes or interfaces you need to set the `subclassExhaustiveStrategy` to `RUNTIME_EXCEPTION`, you can do this at the `@MapperConfig`, `@Mapper` or `@BeanMapping` annotations. If you then pass a `GrapeDto` an `IllegalArgumentException` will be thrown because it is unknown how to map a `GrapeDto`.
 Adding the missing (`@SubclassMapping`) for it will fix that.
 
+<<selection-based-on-qualifiers>> can be used to further control which methods may be chosen to map a specific subclass. For that, you will need to use one of `SubclassMapping#qualifiedByName` or `SubclassMapping#qualifiedBy`.
+
 [TIP]
 ====
 If the mapping method for the subclasses does not exist it will be created and any other annotations on the fruit mapping method will be inherited by the newly generated mappings.

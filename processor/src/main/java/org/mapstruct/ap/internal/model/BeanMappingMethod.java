@@ -46,11 +46,13 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -88,12 +90,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final Map<String, List<PropertyMapping>> constructorMappingsByParameter;
+    private final Map<String, PresenceCheck> presenceChecksByParameter;
     private final List<PropertyMapping> constantMappings;
     private final List<PropertyMapping> constructorConstantMappings;
     private final List<SubclassMapping> subclassMappings;
     private final Type returnTypeToConstruct;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
+    private final String finalizedResultName;
+    private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType;
+    private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
 
     private final MappingReferences mappingReferences;
 
@@ -114,6 +120,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
 
         private MappingReferences mappingReferences;
+        private List<MappingReference> targetThisReferences;
         private MethodReference factoryMethod;
         private boolean hasFactoryMethod;
 
@@ -262,9 +269,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 Map<String, ReadAccessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
 
-                for ( Entry<String, ReadAccessor> entry : readAccessors.entrySet() ) {
-                    unprocessedSourceProperties.put( entry.getKey(), entry.getValue() );
-                }
+                unprocessedSourceProperties.putAll( readAccessors );
             }
 
             // get bean mapping (when specified as annotation )
@@ -285,7 +290,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            if ( !mappingReferences.isRestrictToDefinedMappings() ) {
+            boolean applyImplicitMappings = !mappingReferences.isRestrictToDefinedMappings();
+            if ( applyImplicitMappings ) {
+                applyImplicitMappings = beanMapping == null || !beanMapping.isignoreByDefault();
+            }
+            if ( applyImplicitMappings ) {
 
                 // apply name based mapping from a source reference
                 applyTargetThisMapping();
@@ -340,6 +349,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( factoryMethod != null ) {
                     forgedMethod.addThrownTypes( factoryMethod.getThrownTypes() );
                 }
+                for ( LifecycleCallbackMethodReference beforeMappingMethod : beforeMappingMethods ) {
+                    forgedMethod.addThrownTypes( beforeMappingMethod.getThrownTypes() );
+                }
+
+                for ( LifecycleCallbackMethodReference afterMappingMethod : afterMappingMethods ) {
+                    forgedMethod.addThrownTypes( afterMappingMethod.getThrownTypes() );
+                }
+
 
                 for ( PropertyMapping propertyMapping : propertyMappings ) {
                     if ( propertyMapping.getAssignment() != null ) {
@@ -356,8 +373,35 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             MethodReference finalizeMethod = null;
 
+            List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType = new ArrayList<>();
+            List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType = new ArrayList<>();
             if ( shouldCallFinalizerMethod( returnTypeToConstruct ) ) {
                 finalizeMethod = getFinalizerMethod();
+
+                Type actualReturnType = method.getReturnType();
+
+                beforeMappingReferencesWithFinalizedReturnType.addAll( filterMappingTarget(
+                    LifecycleMethodResolver.beforeMappingMethods(
+                        method,
+                        actualReturnType,
+                        selectionParameters,
+                        ctx,
+                        existingVariableNames
+                    ),
+                    false
+                ) );
+
+                afterMappingReferencesWithFinalizedReturnType.addAll( LifecycleMethodResolver.afterMappingMethods(
+                    method,
+                    actualReturnType,
+                    selectionParameters,
+                    ctx,
+                    existingVariableNames
+                ) );
+
+                // remove methods without parameters as they are already being invoked
+                removeMappingReferencesWithoutSourceParameters( beforeMappingReferencesWithFinalizedReturnType );
+                removeMappingReferencesWithoutSourceParameters( afterMappingReferencesWithFinalizedReturnType );
             }
 
             return new BeanMappingMethod(
@@ -371,10 +415,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 returnTypeBuilder,
                 beforeMappingMethods,
                 afterMappingMethods,
+                beforeMappingReferencesWithFinalizedReturnType,
+                afterMappingReferencesWithFinalizedReturnType,
                 finalizeMethod,
                 mappingReferences,
                 subclasses
             );
+        }
+
+        private void removeMappingReferencesWithoutSourceParameters(List<LifecycleCallbackMethodReference> references) {
+            references.removeIf( r -> r.getSourceParameters().isEmpty() && r.getReturnType().isVoid() );
         }
 
         private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {
@@ -399,15 +449,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "SubclassMapping for " + sourceType.getFullyQualifiedName() );
             SelectionCriteria criteria =
                 SelectionCriteria
-                                 .forMappingMethods(
-                                     new SelectionParameters(
-                                         Collections.emptyList(),
-                                         Collections.emptyList(),
-                                         subclassMappingOptions.getTarget(),
-                                         ctx.getTypeUtils() ).withSourceRHS( rightHandSide ),
-                                     null,
-                                     null,
-                                     false );
+                    .forSubclassMappingMethods(
+                        subclassMappingOptions.getSelectionParameters().withSourceRHS( rightHandSide ),
+                        subclassMappingOptions.getMappingControl( ctx.getElementUtils() )
+                    );
             Assignment assignment = ctx
                                    .getMappingResolver()
                                    .getTargetAssignment(
@@ -417,7 +462,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                        FormattingParameters.EMPTY,
                                        criteria,
                                        rightHandSide,
-                                       null,
+                                       subclassMappingOptions.getMirror(),
                                            () -> forgeSubclassMapping(
                                                rightHandSide,
                                                sourceType,
@@ -426,18 +471,52 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
-                        .getTypeUtils()
-                        .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
+                    .getTypeUtils()
+                    .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
                     sourceArgument = parameter.getName();
-                    assignment.setSourceLocalVarName( "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                    if ( assignment != null ) {
+                        assignment.setSourceLocalVarName(
+                            "(" + sourceType.createReferenceName() + ") " + sourceArgument );
+                    }
                 }
             }
             return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
         }
 
         private boolean isAbstractReturnTypeAllowed() {
-            return method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
-                && !method.getOptions().getSubclassMappings().isEmpty();
+            return !method.getOptions().getSubclassMappings().isEmpty()
+                && ( method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
+                    || isCorrectlySealed() );
+        }
+
+        private boolean isCorrectlySealed() {
+            Type mappingSourceType = method.getMappingSourceType();
+            return isCorrectlySealed( mappingSourceType );
+        }
+
+        private boolean isCorrectlySealed(Type mappingSourceType) {
+            if ( mappingSourceType.isSealed() ) {
+                List<? extends TypeMirror> unusedPermittedSubclasses =
+                    new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
+                method.getOptions().getSubclassMappings().forEach( subClassOption -> {
+                    for (Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                         iterator.hasNext(); ) {
+                        if ( ctx.getTypeUtils().isSameType( iterator.next(), subClassOption.getSource() ) ) {
+                            iterator.remove();
+                        }
+                    }
+                } );
+                for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                                iterator.hasNext(); ) {
+                    TypeMirror typeMirror = iterator.next();
+                    Type type = ctx.getTypeFactory().getType( typeMirror );
+                    if ( type.isAbstract() && isCorrectlySealed( type ) ) {
+                        iterator.remove();
+                    }
+                }
+                return unusedPermittedSubclasses.isEmpty();
+            }
+            return false;
         }
 
         private void initializeMappingReferencesIfNeeded(Type resultTypeToMap) {
@@ -508,7 +587,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .build();
 
                     ReadAccessor targetPropertyReadAccessor =
-                        method.getResultType().getReadAccessor( propertyName );
+                        method.getResultType().getReadAccessor( propertyName, forceUpdateMethod );
                     MappingReferences mappingRefs = extractMappingReferences( propertyName, true );
                     PropertyMapping propertyMapping = new PropertyMappingBuilder()
                         .mappingContext( ctx )
@@ -665,7 +744,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * Find a factory method for a return type or for a builder.
          * @param returnTypeImpl the return type implementation to construct
          * @param @selectionParameters
-         * @return
          */
         private void initializeFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
             List<SelectedMethod<SourceMethod>> matchingFactoryMethods =
@@ -715,7 +793,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( type.isRecord() ) {
-                // If the type is a record then just get the record components and use then
+
+                List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
+                    .getEnclosedElements() );
+
+                for ( ExecutableElement constructor : constructors ) {
+                    if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                        continue;
+                    }
+
+                    // prefer constructor annotated with @Default
+                    if ( hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                        return getConstructorAccessor( type, constructor );
+                    }
+                }
+
+
+                // Other than that, just get the record components and use them
                 List<Element> recordComponents = type.getRecordComponents();
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
@@ -976,6 +1070,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( MappingReference mapping : mappingReferences.getMappingReferences() ) {
                 if ( mapping.isValid() ) {
                     String target = mapping.getTargetReference().getShallowestPropertyName();
+                    if ( target == null ) {
+                        // When the shallowest property name is null then it is for @Mapping(target = ".")
+                        if ( this.targetThisReferences == null ) {
+                            this.targetThisReferences = new ArrayList<>();
+                        }
+                        this.targetThisReferences.add( mapping );
+                        continue;
+                    }
                     if ( !handledTargets.contains( target ) ) {
                         if ( handleDefinedMapping( mapping, resultTypeToMap, handledTargets ) ) {
                             errorOccurred = true;
@@ -1059,7 +1161,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             Accessor targetWriteAccessor = unprocessedTargetProperties.get( targetPropertyName );
-            ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor( targetPropertyName );
+            ReadAccessor targetReadAccessor = resultTypeToMap.getReadAccessor(
+                targetPropertyName,
+                method.getSourceParameters().size() == 1
+            );
 
             if ( targetWriteAccessor == null ) {
                 if ( targetReadAccessor == null ) {
@@ -1285,8 +1390,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .options( mapping )
                             .build();
                         handledTargets.add( targetPropertyName );
-                        unprocessedSourceParameters.remove( sourceRef.getParameter() );
-                        unprocessedSourceProperties.remove( sourceRef.getShallowestPropertyName() );
+                        Parameter sourceParameter = sourceRef.getParameter();
+                        unprocessedSourceParameters.remove( sourceParameter );
+                        // If the source parameter was directly mapped
+                        if ( sourceRef.getPropertyEntries().isEmpty() ) {
+                            // Ignore all of its source properties completely
+                            ignoreSourceProperties( sourceParameter );
+                        }
+                        else {
+                            unprocessedSourceProperties.remove( sourceRef.getShallowestPropertyName() );
+                        }
                     }
                     else {
                         errorOccured = true;
@@ -1331,12 +1444,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * <p>
          * When a target property matches its name with the (nested) source property, it is added to the list if and
          * only if it is an unprocessed target property.
-         *
+         * <p>
          * duplicates will be handled by {@link #applyPropertyNameBasedMapping(List)}
          */
         private void applyTargetThisMapping() {
+            if ( this.targetThisReferences == null ) {
+                return;
+            }
             Set<String> handledTargetProperties = new HashSet<>();
-            for ( MappingReference targetThis : mappingReferences.getTargetThisReferences() ) {
+            for ( MappingReference targetThis : this.targetThisReferences ) {
 
                 // handle all prior unprocessed target properties, but let duplicates fall through
                 List<SourceReference> sourceRefs = targetThis
@@ -1401,7 +1517,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
 
                 ReadAccessor targetPropertyReadAccessor =
-                    method.getResultType().getReadAccessor( targetPropertyName );
+                    method.getResultType()
+                        .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
                 MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
                 PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
                     .sourceMethod( method )
@@ -1444,7 +1561,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .build();
 
                         ReadAccessor targetPropertyReadAccessor =
-                            method.getResultType().getReadAccessor( targetProperty.getKey() );
+                            method.getResultType()
+                                .getReadAccessor( targetProperty.getKey(), method.getSourceParameters().size() == 1 );
                         MappingReferences mappingRefs = extractMappingReferences( targetProperty.getKey(), false );
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
@@ -1461,19 +1579,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
                         unprocessedSourceProperties.remove( targetProperty.getKey() );
-
-                        // The source parameter was directly mapped so ignore all of its source properties completely
-                        if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
-                            // We explicitly ignore source properties from primitives or array types
-                            Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
-                                .getPropertyReadAccessors();
-                            for ( String sourceProperty : readAccessors.keySet() ) {
-                                unprocessedSourceProperties.remove( sourceProperty );
-                            }
-                        }
-
                         unprocessedConstructorProperties.remove( targetProperty.getKey() );
+                        ignoreSourceProperties( sourceParameter );
                     }
+                }
+            }
+        }
+
+        private void ignoreSourceProperties(Parameter sourceParameter) {
+            // The source parameter was directly mapped so ignore all of its source properties completely
+            if ( !sourceParameter.getType().isPrimitive() && !sourceParameter.getType().isArrayType() ) {
+                // We explicitly ignore source properties from primitives or array types
+                Map<String, ReadAccessor> readAccessors = sourceParameter.getType()
+                    .getPropertyReadAccessors();
+                for ( String sourceProperty : readAccessors.keySet() ) {
+                    unprocessedSourceProperties.remove( sourceProperty );
                 }
             }
         }
@@ -1486,7 +1606,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return sourceRef;
             }
 
-            ReadAccessor sourceReadAccessor = sourceParameter.getType().getReadAccessor( targetPropertyName );
+            ReadAccessor sourceReadAccessor = sourceParameter.getType()
+                .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
             if ( sourceReadAccessor != null ) {
                 // property mapping
                 PresenceCheckAccessor sourcePresenceChecker =
@@ -1514,6 +1635,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private ReportingPolicyGem getUnmappedTargetPolicy() {
             if ( mappingReferences.isForForgedMethods() ) {
+                return ReportingPolicyGem.IGNORE;
+            }
+            // If we have ignoreByDefault = true, unprocessed target properties are not an issue.
+            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
             if ( method.getOptions().getBeanMapping() != null ) {
@@ -1616,7 +1741,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
-            return method.getOptions().getMapper().unmappedSourcePolicy();
+            return method.getOptions().getBeanMapping().unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
@@ -1711,6 +1836,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               BuilderType returnTypeBuilder,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
+                              List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType,
+                              List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings) {
@@ -1728,17 +1855,36 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
+        if ( this.finalizerMethod != null ) {
+            this.finalizedResultName =
+                Strings.getSafeVariableName( getResultName() + "Result", existingVariableNames );
+            existingVariableNames.add( this.finalizedResultName );
+        }
+        else {
+            this.finalizedResultName = null;
+        }
         this.mappingReferences = mappingReferences;
 
-        // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
+        this.beforeMappingReferencesWithFinalizedReturnType = beforeMappingReferencesWithFinalizedReturnType;
+        this.afterMappingReferencesWithFinalizedReturnType = afterMappingReferencesWithFinalizedReturnType;
+
+        // initialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
         this.constantMappings = new ArrayList<>( propertyMappings.size() );
+        this.presenceChecksByParameter = new LinkedHashMap<>();
         this.constructorMappingsByParameter = new LinkedHashMap<>();
         this.constructorConstantMappings = new ArrayList<>();
-        Set<String> sourceParameterNames = getSourceParameters().stream()
-            .map( Parameter::getName )
-            .collect( Collectors.toSet() );
+        Set<String> sourceParameterNames = new HashSet<>();
+        for ( Parameter sourceParameter : getSourceParameters() ) {
+            sourceParameterNames.add( sourceParameter.getName() );
+            if ( !sourceParameter.getType().isPrimitive() ) {
+                presenceChecksByParameter.put(
+                    sourceParameter.getName(),
+                    new NullPresenceCheck( sourceParameter.getName() )
+                );
+            }
+        }
         for ( PropertyMapping mapping : propertyMappings ) {
             if ( mapping.isConstructorMapping() ) {
                 if ( sourceParameterNames.contains( mapping.getSourceBeanName() ) ) {
@@ -1773,6 +1919,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<SubclassMapping> getSubclassMappings() {
         return subclassMappings;
+    }
+
+    public String getFinalizedResultName() {
+        return finalizedResultName;
+    }
+
+    public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithFinalizedReturnType() {
+        return beforeMappingReferencesWithFinalizedReturnType;
+    }
+
+    public List<LifecycleCallbackMethodReference> getAfterMappingReferencesWithFinalizedReturnType() {
+        return afterMappingReferencesWithFinalizedReturnType;
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
@@ -1827,48 +1985,60 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         if ( returnTypeBuilder != null ) {
             types.add( returnTypeBuilder.getOwningType() );
         }
+        for ( LifecycleCallbackMethodReference reference : beforeMappingReferencesWithFinalizedReturnType ) {
+            types.addAll( reference.getImportTypes() );
+        }
+        for ( LifecycleCallbackMethodReference reference : afterMappingReferencesWithFinalizedReturnType ) {
+            types.addAll( reference.getImportTypes() );
+        }
 
         return types;
     }
 
-    public List<Parameter> getSourceParametersExcludingPrimitives() {
+    public Collection<PresenceCheck> getSourcePresenceChecks() {
+        return presenceChecksByParameter.values();
+    }
+
+    public Map<String, PresenceCheck> getPresenceChecksByParameter() {
+        return presenceChecksByParameter;
+    }
+
+    public PresenceCheck getPresenceCheckByParameter(Parameter parameter) {
+        return presenceChecksByParameter.get( parameter.getName() );
+    }
+
+    public List<Parameter> getSourceParametersNeedingPresenceCheck() {
         return getSourceParameters().stream()
-                            .filter( parameter -> !parameter.getType().isPrimitive() )
+                            .filter( this::needsPresenceCheck )
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourceParametersNeedingNullCheck() {
+    public List<Parameter> getSourceParametersNotNeedingPresenceCheck() {
         return getSourceParameters().stream()
-                            .filter( this::needsNullCheck )
+                            .filter( parameter -> !needsPresenceCheck( parameter ) )
                             .collect( Collectors.toList() );
     }
 
-    public List<Parameter> getSourceParametersNotNeedingNullCheck() {
-        return getSourceParameters().stream()
-                            .filter( parameter -> !needsNullCheck( parameter ) )
-                            .collect( Collectors.toList() );
-    }
-
-    private boolean needsNullCheck(Parameter parameter) {
-        if ( parameter.getType().isPrimitive() ) {
+    private boolean needsPresenceCheck(Parameter parameter) {
+        if ( !presenceChecksByParameter.containsKey( parameter.getName() ) ) {
             return false;
         }
 
         List<PropertyMapping> mappings = propertyMappingsByParameter( parameter );
-        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+        if ( mappings.size() == 1 && doesNotNeedPresenceCheckForSourceParameter( mappings.get( 0 ) ) ) {
             return false;
         }
 
         mappings = constructorPropertyMappingsByParameter( parameter );
 
-        if ( mappings.size() == 1 && doesNotNeedNullCheckForSourceParameter( mappings.get( 0 ) ) ) {
+        if ( mappings.size() == 1 && doesNotNeedPresenceCheckForSourceParameter( mappings.get( 0 ) ) ) {
             return false;
         }
 
         return true;
     }
 
-    private boolean doesNotNeedNullCheckForSourceParameter(PropertyMapping mapping) {
+    private boolean doesNotNeedPresenceCheckForSourceParameter(PropertyMapping mapping) {
         if ( mapping.getAssignment().isCallingUpdateMethod() ) {
             // If the mapping assignment is calling an update method then we should do a null check
             // in the bean mapping

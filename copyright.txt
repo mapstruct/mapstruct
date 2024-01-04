@@ -42,8 +42,10 @@ Kevin Grüneberg - https://github.com/kevcodez
 Lukas Lazar - https://github.com/LukeLaz
 Nikolas Charalambidis - https://github.com/Nikolas-Charalambidis
 Michael Pardo - https://github.com/pardom
+Muhammad Usama - https://github.com/the-mgi
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat
+Oliver Erhart - https://github.com/thunderhook
 Paul Strugnell - https://github.com/ps-powa
 Pascal Grün - https://github.com/pascalgn
 Pavel Makhov - https://github.com/streetturtle
@@ -67,3 +69,5 @@ Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
 Valentin Kulesh - https://github.com/unshare
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
+Winter Andreas - https://github.dev/wandi34
+Xiu Hong Kooi - https://github.com/kooixh

@@ -31,7 +31,7 @@ final class ModifiableURLClassLoader extends URLClassLoader {
         tryRegisterAsParallelCapable();
     }
 
-    private final ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<URL, URL>();
+    private final ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<>();
 
     ModifiableURLClassLoader(ClassLoader parent) {
         super( new URL[] { }, parent );

@@ -1,0 +1,43 @@
+name: Feature Request
+description: Suggest an idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the use-case you have. This will better help us understand the context in which you're looking for a new feature.
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: |
+        Please describe the use-case you have. This will better help us understand the context in which you're looking for a new feature.
+      placeholder: Describe the use-case here
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Generated Code
+      description: |
+        Please describe the possible generated code you'd like to see in MapStruct generate.
+        Please note, it's not always easy to describe a good solution. Describing the use-case above is much more important to us.
+      placeholder: Describe the possible solution here.
+    validations:
+      required: false
+  - type: textarea
+    id: workarounds
+    attributes:
+      label: Possible workarounds
+      description: |
+        Please describe the possible workarounds you've implemented to work around the lacking functionality.
+      placeholder: Describe the possible workarounds here.
+    validations:
+      required: false
+  - type: input
+    id: mapstruct-version
+    attributes:
+      label: MapStruct Version
+      description: What MapStruct version and edition did you try?
+      placeholder: ex. MapStruct 1.5.2
+    validations:
+      required: false

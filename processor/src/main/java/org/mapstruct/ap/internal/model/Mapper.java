@@ -43,6 +43,7 @@ public class Mapper extends GeneratedType {
         private boolean customPackage;
         private boolean suppressGeneratorTimestamp;
         private Set<Annotation> customAnnotations;
+        private Javadoc javadoc;
 
         public Builder() {
             super( Builder.class );
@@ -90,6 +91,11 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder javadoc(Javadoc javadoc) {
+            this.javadoc = javadoc;
+            return this;
+        }
+
         public Mapper build() {
             String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
                 ( decorator == null ? "" : "_" );
@@ -119,7 +125,8 @@ public class Mapper extends GeneratedType {
                 fields,
                 constructor,
                 decorator,
-                extraImportedTypes
+                extraImportedTypes,
+                javadoc
             );
         }
 
@@ -128,6 +135,7 @@ public class Mapper extends GeneratedType {
     private final boolean customPackage;
     private final boolean customImplName;
     private Decorator decorator;
+    private final Javadoc javadoc;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name,
@@ -136,7 +144,7 @@ public class Mapper extends GeneratedType {
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
                    boolean suppressGeneratorTimestamp,
                    Accessibility accessibility, List<Field> fields, Constructor constructor,
-                   Decorator decorator, SortedSet<Type> extraImportedTypes ) {
+                   Decorator decorator, SortedSet<Type> extraImportedTypes, Javadoc javadoc ) {
 
         super(
             typeFactory,
@@ -157,6 +165,8 @@ public class Mapper extends GeneratedType {
         customAnnotations.forEach( this::addAnnotation );
 
         this.decorator = decorator;
+
+        this.javadoc = javadoc;
     }
 
     public Decorator getDecorator() {
@@ -169,6 +179,11 @@ public class Mapper extends GeneratedType {
 
     public boolean hasCustomImplementation() {
         return customImplName || customPackage;
+    }
+
+    @Override
+    public Javadoc getJavadoc() {
+        return javadoc;
     }
 
     @Override

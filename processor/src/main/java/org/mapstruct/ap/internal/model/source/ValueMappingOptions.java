@@ -5,8 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
@@ -34,7 +34,7 @@ public class ValueMappingOptions {
     private final AnnotationValue targetAnnotationValue;
 
     public static void fromMappingsGem(ValueMappingsGem mappingsGem, ExecutableElement method,
-                                       FormattingMessager messager, List<ValueMappingOptions> mappings) {
+                                       FormattingMessager messager, Set<ValueMappingOptions> mappings) {
 
         boolean anyFound = false;
         for ( ValueMappingGem mappingGem : mappingsGem.value().get() ) {

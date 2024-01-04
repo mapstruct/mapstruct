@@ -14,6 +14,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Strings;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -121,14 +122,15 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
     }
 
     public List<Annotation> getMethodAnnotations() {
+        if ( method instanceof ForgedMethod ) {
+            return Collections.emptyList();
+        }
         AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                 new AdditionalAnnotationsBuilder(
                         ctx.getElementUtils(),
                         ctx.getTypeFactory(),
                         ctx.getMessager() );
-        List<Annotation> annotations = new ArrayList<>();
-        annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
-        return annotations;
+        return new ArrayList<>( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
     }
 
 }

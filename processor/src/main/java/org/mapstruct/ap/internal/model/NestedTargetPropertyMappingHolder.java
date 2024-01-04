@@ -607,7 +607,7 @@ public class NestedTargetPropertyMappingHolder {
          * @param hasNoMappings parameter indicating whether there were any extracted mappings for this target property
          * @param sourceParameter the source parameter for which the grouping is being done
          *
-         * @return a list with valid single target references
+         * @return a set with valid single target references
          */
         private Set<MappingReference> extractSingleTargetReferencesToUseAndPopulateSourceParameterMappings(
             Set<MappingReference> singleTargetReferences, Set<MappingReference> sourceParameterMappings,
@@ -643,7 +643,10 @@ public class NestedTargetPropertyMappingHolder {
                                                                      boolean forceUpdateMethod) {
 
             Accessor targetWriteAccessor = targetPropertiesWriteAccessors.get( targetPropertyName );
-            ReadAccessor targetReadAccessor = targetType.getReadAccessor( targetPropertyName );
+            ReadAccessor targetReadAccessor = targetType.getReadAccessor(
+                targetPropertyName,
+                method.getSourceParameters().size() == 1
+            );
             if ( targetWriteAccessor == null ) {
                 Set<String> readAccessors = targetType.getPropertyReadAccessors().keySet();
                 String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );

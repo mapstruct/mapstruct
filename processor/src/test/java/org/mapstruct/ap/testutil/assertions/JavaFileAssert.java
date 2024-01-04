@@ -5,7 +5,11 @@
  */
 package org.mapstruct.ap.testutil.assertions;
 
-import static java.lang.String.format;
+import org.assertj.core.api.FileAssert;
+import org.assertj.core.error.ShouldHaveSameContent;
+import org.assertj.core.internal.Diff;
+import org.assertj.core.internal.Failures;
+import org.assertj.core.util.diff.Delta;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.FileAssert;
-import org.assertj.core.error.ShouldHaveSameContent;
-import org.assertj.core.internal.Diff;
-import org.assertj.core.internal.Failures;
-import org.assertj.core.util.diff.Delta;
+import static java.lang.String.format;
 
 /**
  * Allows to perform assertions on .java source files.
@@ -39,29 +36,13 @@ public class JavaFileAssert extends FileAssert {
     private static final String IMPORT_GENERATED_ANNOTATION_REGEX = "import javax\\.annotation\\.(processing\\.)?" +
         "Generated;";
 
-    private Diff diff = new Diff();
+    private final Diff diff = new Diff();
 
     /**
      * @param actual the actual file
      */
     public JavaFileAssert(File actual) {
         super( actual );
-    }
-
-    /**
-     * @return assertion on the file content
-     */
-    public AbstractCharSequenceAssert<?, String> content() {
-        exists();
-        isFile();
-
-        try {
-            return Assertions.assertThat( FileUtils.readFileToString( actual, StandardCharsets.UTF_8 ) );
-        }
-        catch ( IOException e ) {
-            failWithMessage( "Unable to read" + actual.toString() + ". Exception: " + e.getMessage() );
-        }
-        return null;
     }
 
     /**
@@ -118,7 +99,6 @@ public class JavaFileAssert extends FileAssert {
      * or if it is a change delta for the date/comments part of a {@code @Generated} annotation.
      *
      * @param delta that needs to be checked
-     *
      * @return {@code true} if this delta should be ignored, {@code false} otherwise
      */
     private boolean ignoreDelta(Delta<String> delta) {

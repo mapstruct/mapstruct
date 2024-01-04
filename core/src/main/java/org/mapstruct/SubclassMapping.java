@@ -5,6 +5,7 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -48,7 +49,7 @@ import org.mapstruct.util.Experimental;
  * }
  * </code></pre>
  * <strong>Example 2:</strong> For parents that can be created. (e.g. normal classes or interfaces with
- * &#64;Mappper( uses = ObjectFactory.class ) )
+ * &#64;Mapper( uses = ObjectFactory.class ) )
  * <pre><code class='java'>
  * // generates
  * &#64;Override
@@ -81,4 +82,29 @@ public @interface SubclassMapping {
      * @return the target subclass to map the source to.
      */
     Class<?> target();
+
+    /**
+     * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
+     * mapping methods (hand written or generated) qualify and thus would result in an 'Ambiguous mapping methods found'
+     * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
+     *
+     * @return the qualifiers
+     * @see Qualifier
+     */
+    Class<? extends Annotation>[] qualifiedBy() default {};
+
+    /**
+     * String-based form of qualifiers; When looking for a suitable mapping method for a given property, MapStruct will
+     * only consider those methods carrying directly or indirectly (i.e. on the class-level) a {@link Named} annotation
+     * for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
+     *
+     * @return One or more qualifier name(s)
+     * @see #qualifiedBy()
+     * @see Named
+     */
+    String[] qualifiedByName() default {};
 }

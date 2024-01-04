@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.NegatePresenceCheck;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -26,6 +27,11 @@ public class JavaExpressionPresenceCheck extends ModelElement implements Presenc
 
     public String getJavaExpression() {
         return javaExpression;
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new NegatePresenceCheck( this );
     }
 
     @Override

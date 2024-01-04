@@ -215,10 +215,11 @@ suppressGeneratorVersionInfoComment`
 Supported values are:
 
 * `default`: the mapper uses no component model, instances are typically retrieved via `Mappers#getMapper(Class)`
-* `cdi`: the generated mapper is an application-scoped CDI bean and can be retrieved via `@Inject`
+* `cdi`: the generated mapper is an application-scoped (from javax.enterprise.context or jakarta.enterprise.context, depending on which one is available with javax.inject having priority) CDI bean and can be retrieved via `@Inject`
 * `spring`: the generated mapper is a singleton-scoped Spring bean and can be retrieved via `@Autowired`
 * `jsr330`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from javax.inject or jakarta.inject, depending which one is available with javax.inject having priority), e.g. using Spring
 * `jakarta`: the generated mapper is annotated with {@code @Named} and can be retrieved via `@Inject` (from jakarta.inject), e.g. using Spring
+* `jakarta-cdi`: the generated mapper is an application-scoped (from jakarta.enterprise.context) CDI bean and can be retrieved via `@Inject`
 
 If a component model is given for a specific mapper via `@Mapper#componentModel()`, the value from the annotation takes precedence.
 |`default`
@@ -266,6 +267,30 @@ If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappe
 disableBuilders`
 |If set to `true`, then MapStruct will not use builder patterns when doing the mapping. This is equivalent to doing `@Mapper( builder = @Builder( disableBuilder = true ) )` for all of your mappers.
 |`false`
+
+|`mapstruct.nullValueIterableMappingStrategy`
+|The strategy to be applied when `null` is passed as a source value to an iterable mapping.
+
+Supported values are:
+
+* `RETURN_NULL`: if `null` is passed as a source value, then `null` will be returned
+* `RETURN_DEFAULT`: if `null` is passed then a default value (empty collection) will be returned
+
+If a strategy is given for a specific mapper via `@Mapper#nullValueIterableMappingStrategy()`, the value from the annotation takes precedence.
+If a strategy is given for a specific iterable mapping via `@IterableMapping#nullValueMappingStrategy()`, it takes precedence over both `@Mapper#nullValueIterableMappingStrategy()` and the option.
+|`RETURN_NULL`
+
+|`mapstruct.nullValueMapMappingStrategy`
+|The strategy to be applied when `null` is passed as a source value to a map mapping.
+
+Supported values are:
+
+* `RETURN_NULL`: if `null` is passed as a source value, then `null` will be returned
+* `RETURN_DEFAULT`: if `null` is passed then a default value (empty map) will be returned
+
+If a strategy is given for a specific mapper via `@Mapper#nullValueMapMappingStrategy()`, the value from the annotation takes precedence.
+If a strategy is given for a specific map mapping via `@MapMapping#nullValueMappingStrategy()`, it takes precedence over both `@Mapper#nullValueMapMappingStrategy()` and the option.
+|`RETURN_NULL`
 |===
 
 === Using MapStruct with the Java Module System

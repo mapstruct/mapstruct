@@ -124,7 +124,7 @@ public final class ImmutableItem extends Item {
 
     /**
      * Initializes the value for the {@link Item#getId() id} attribute.
-     * @param id The value for id 
+     * @param id The value for id
      * @return {@code this} builder for use in a chained invocation
      */
     public final Builder id(String id) {

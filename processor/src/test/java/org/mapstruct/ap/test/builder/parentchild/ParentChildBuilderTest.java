@@ -26,7 +26,7 @@ public class ParentChildBuilderTest {
     public void testParentChildBuilderMapper() {
         final MutableParent parent = new MutableParent();
         parent.setCount( 4 );
-        parent.setChildren( new ArrayList<MutableChild>() );
+        parent.setChildren( new ArrayList<>() );
         parent.getChildren().add( new MutableChild( "Phineas" ) );
         parent.getChildren().add( new MutableChild( "Ferb" ) );
 

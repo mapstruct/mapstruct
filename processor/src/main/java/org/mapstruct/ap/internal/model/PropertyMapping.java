@@ -301,7 +301,8 @@ public class PropertyMapping extends ModelElement {
         private Assignment forge( ) {
             Assignment assignment;
             Type sourceType = rightHandSide.getSourceType();
-            if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+            if ( ( sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()
+                    || ( sourceType.isIterableType() && targetType.isCollectionType() ) ) {
                 assignment = forgeIterableMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
@@ -510,7 +511,7 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
-            if ( defaultValue != null || defaultJavaExpression != null ) {
+            if ( hasDefaultValueOrDefaultExpression() ) {
                 // If there is default value defined then a check is needed
                 return true;
             }
@@ -518,12 +519,16 @@ public class PropertyMapping extends ModelElement {
             return false;
         }
 
+        private boolean hasDefaultValueOrDefaultExpression() {
+            return defaultValue != null || defaultJavaExpression != null;
+        }
+
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
 
             Assignment result = rightHandSide;
 
             String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
-            if ( result.getSourceType().isCollectionType() ) {
+            if ( result.getSourceType().isIterableType() ) {
                 result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
             else if ( result.getSourceType().isStreamType() ) {
@@ -555,7 +560,7 @@ public class PropertyMapping extends ModelElement {
                 .targetAccessorType( targetAccessorType )
                 .rightHandSide( rightHandSide )
                 .assignment( rhs )
-                .nullValueCheckStrategy( nvcs )
+                .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
                 .build();
         }
@@ -1111,7 +1116,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
 
         this.assignment = assignment;
-        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptySet();
+        this.dependsOn = dependsOn != null ? dependsOn : Collections.emptySet();
         this.defaultValueAssignment = defaultValueAssignment;
         this.constructorMapping = constructorMapping;
     }

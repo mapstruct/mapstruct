@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
 import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
+import org.mapstruct.ap.internal.gem.JavadocGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
@@ -40,6 +41,7 @@ import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
+import org.mapstruct.ap.internal.model.Javadoc;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
@@ -212,6 +214,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperOptions.implementationPackage() )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
+            .javadoc( getJavadoc( element ) )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -439,6 +442,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return mappingMethods;
+    }
+
+    private Javadoc getJavadoc(TypeElement element) {
+        JavadocGem javadocGem = JavadocGem.instanceOn( element );
+
+        if ( javadocGem == null || !isConsistent( javadocGem, element, messager ) ) {
+            return null;
+        }
+
+        Javadoc javadoc = new Javadoc.Builder()
+                .value( javadocGem.value().getValue() )
+                .authors( javadocGem.authors().getValue() )
+                .deprecated( javadocGem.deprecated().getValue() )
+                .since( javadocGem.since().getValue() )
+                .build();
+
+        return javadoc;
     }
 
     private Type getUserDesiredReturnType(SourceMethod method) {
@@ -809,5 +829,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             gem.name().get(),
             onlyCandidate.getName()
         );
+    }
+
+    private boolean isConsistent( JavadocGem gem, TypeElement element, FormattingMessager messager ) {
+        if ( !gem.value().hasValue()
+            && !gem.authors().hasValue()
+            && !gem.deprecated().hasValue()
+            && !gem.since().hasValue() ) {
+            messager.printMessage( element, gem.mirror(), Message.JAVADOC_NO_ELEMENTS );
+            return false;
+        }
+        return true;
     }
 }
