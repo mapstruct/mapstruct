@@ -3,9 +3,16 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.targetpropertyname;
+package org.mapstruct.ap.test.conditional.propertyname.sourcepropertyname;
+
+import java.util.Collections;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.test.conditional.propertyname.Address;
+import org.mapstruct.ap.test.conditional.propertyname.AddressDto;
+import org.mapstruct.ap.test.conditional.propertyname.DomainModel;
+import org.mapstruct.ap.test.conditional.propertyname.Employee;
+import org.mapstruct.ap.test.conditional.propertyname.EmployeeDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -14,15 +21,15 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
  * @author Nikola Ivačič
+ * @author Mohammad Al Zouabi
+ * @author Oliver Erhart
  */
-@IssueKey("2051")
+@IssueKey("3323")
 @WithClasses({
     Address.class,
     AddressDto.class,
@@ -30,23 +37,23 @@ import static org.assertj.core.api.Assertions.assertThat;
     EmployeeDto.class,
     DomainModel.class
 })
-public class TargetPropertyNameTest {
+public class SourcePropertyNameTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
     @WithClasses({
-        ConditionalMethodInMapperWithTargetPropertyName.class
+        ConditionalMethodInMapperWithSourcePropertyName.class
     })
-    public void conditionalMethodInMapperWithTargetPropertyName() {
-        ConditionalMethodInMapperWithTargetPropertyName mapper
-            = ConditionalMethodInMapperWithTargetPropertyName.INSTANCE;
+    public void conditionalMethodInMapperWithSourcePropertyName() {
+        ConditionalMethodInMapperWithSourcePropertyName mapper
+            = ConditionalMethodInMapperWithSourcePropertyName.INSTANCE;
 
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -62,16 +69,16 @@ public class TargetPropertyNameTest {
 
     @ProcessorTest
     @WithClasses({
-        ConditionalMethodForCollectionMapperWithTargetPropertyName.class
+        ConditionalMethodForCollectionMapperWithSourcePropertyName.class
     })
-    public void conditionalMethodForCollectionMapperWithTargetPropertyName() {
-        ConditionalMethodForCollectionMapperWithTargetPropertyName mapper
-            = ConditionalMethodForCollectionMapperWithTargetPropertyName.INSTANCE;
+    public void conditionalMethodForCollectionMapperWithSourcePropertyName() {
+        ConditionalMethodForCollectionMapperWithSourcePropertyName mapper
+            = ConditionalMethodForCollectionMapperWithSourcePropertyName.INSTANCE;
 
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -85,16 +92,16 @@ public class TargetPropertyNameTest {
 
     @ProcessorTest
     @WithClasses({
-        ConditionalMethodInUsesMapperWithTargetPropertyName.class
+        ConditionalMethodInUsesMapperWithSourcePropertyName.class
     })
-    public void conditionalMethodInUsesMapperWithTargetPropertyName() {
-        ConditionalMethodInUsesMapperWithTargetPropertyName mapper
-            = ConditionalMethodInUsesMapperWithTargetPropertyName.INSTANCE;
+    public void conditionalMethodInUsesMapperWithSourcePropertyName() {
+        ConditionalMethodInUsesMapperWithSourcePropertyName mapper
+            = ConditionalMethodInUsesMapperWithSourcePropertyName.INSTANCE;
 
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -122,7 +129,7 @@ public class TargetPropertyNameTest {
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -135,7 +142,9 @@ public class TargetPropertyNameTest {
         assertThat( employee.getAddresses() )
             .extracting( Address::getStreet )
             .containsExactly( "Testing St. 6" );
-        assertThat( utils.visited )
+        assertThat( utils.visitedSourceNames )
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "originCountry" );
+        assertThat( utils.visitedTargetNames )
             .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country" );
         assertThat( utils.visitedSources ).containsExactly( "EmployeeDto" );
         assertThat( utils.visitedTargets ).containsExactly( "Employee" );
@@ -155,7 +164,7 @@ public class TargetPropertyNameTest {
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -168,24 +177,24 @@ public class TargetPropertyNameTest {
             .extracting( Address::getStreet )
             .containsExactly( "Testing St. 6" );
         assertThat( utils.visited )
-            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country", "street" );
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "originCountry", "street" );
         assertThat( utils.visitedSources ).containsExactlyInAnyOrder( "EmployeeDto", "AddressDto" );
     }
 
     @ProcessorTest
     @WithClasses({
-        ConditionalMethodWithTargetPropertyNameInContextMapper.class
+        ConditionalMethodWithSourcePropertyNameInContextMapper.class
     })
-    public void conditionalMethodWithTargetPropertyNameInUsesContextMapper() {
-        ConditionalMethodWithTargetPropertyNameInContextMapper mapper
-            = ConditionalMethodWithTargetPropertyNameInContextMapper.INSTANCE;
+    public void conditionalMethodWithSourcePropertyNameInUsesContextMapper() {
+        ConditionalMethodWithSourcePropertyNameInContextMapper mapper
+            = ConditionalMethodWithSourcePropertyNameInContextMapper.INSTANCE;
 
-        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils utils =
-            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtils();
+        ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtils utils =
+            new ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtils();
 
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setLastName( "  " );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -197,14 +206,14 @@ public class TargetPropertyNameTest {
             .extracting( Address::getStreet )
             .containsExactly( "Testing St. 6" );
         assertThat( utils.visited )
-            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "country", "street" );
+            .containsExactlyInAnyOrder( "firstName", "lastName", "title", "originCountry", "street" );
 
-        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps allPropsUtils =
-            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllProps();
+        ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtilsAllProps allPropsUtils =
+            new ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtilsAllProps();
 
         employeeDto = new EmployeeDto();
         employeeDto.setLastName( "Tester" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
@@ -220,7 +229,7 @@ public class TargetPropertyNameTest {
                 "firstName",
                 "lastName",
                 "title",
-                "country",
+                "originCountry",
                 "active",
                 "age",
                 "boss",
@@ -229,18 +238,18 @@ public class TargetPropertyNameTest {
                 "street"
             );
 
-        ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource allPropsUtilsWithSource =
-            new ConditionalMethodWithTargetPropertyNameInContextMapper.PresenceUtilsAllPropsWithSource();
+        ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtilsAllPropsWithSource allPropsUtilsWithSource =
+            new ConditionalMethodWithSourcePropertyNameInContextMapper.PresenceUtilsAllPropsWithSource();
 
         EmployeeDto bossEmployeeDto = new EmployeeDto();
         bossEmployeeDto.setLastName( "Boss Tester" );
-        bossEmployeeDto.setCountry( "US" );
+        bossEmployeeDto.setOriginCountry( "US" );
         bossEmployeeDto.setAddresses( Collections.singletonList( new AddressDto(
             "Testing St. 10" ) ) );
 
         employeeDto = new EmployeeDto();
         employeeDto.setLastName( "Tester" );
-        employeeDto.setCountry( "US" );
+        employeeDto.setOriginCountry( "US" );
         employeeDto.setBoss( bossEmployeeDto );
         employeeDto.setAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
@@ -259,17 +268,17 @@ public class TargetPropertyNameTest {
             .containsExactly( "Testing St. 10" );
         assertThat( allPropsUtilsWithSource.visited )
             .containsExactly(
+                "originCountry",
                 "firstName",
                 "lastName",
                 "title",
-                "country",
                 "active",
                 "age",
                 "boss",
+                "boss.originCountry",
                 "boss.firstName",
                 "boss.lastName",
                 "boss.title",
-                "boss.country",
                 "boss.active",
                 "boss.age",
                 "boss.boss",
@@ -282,23 +291,22 @@ public class TargetPropertyNameTest {
             );
     }
 
-    @IssueKey("2863")
     @ProcessorTest
     @WithClasses({
-        ErroneousNonStringTargetPropertyNameParameter.class
+        ErroneousNonStringSourcePropertyNameParameter.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousNonStringTargetPropertyNameParameter.class,
-                line = 18,
-                message = "@TargetPropertyName can only by applied to a String parameter."
+                type = ErroneousNonStringSourcePropertyNameParameter.class,
+                line = 22,
+                message = "@SourcePropertyName can only by applied to a String parameter."
             )
         }
     )
-    public void nonStringTargetPropertyNameParameter() {
+    public void nonStringSourcePropertyNameParameter() {
 
     }
 }

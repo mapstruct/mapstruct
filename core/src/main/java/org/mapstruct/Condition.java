@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
  *         <li>The mapping source parameter</li>
  *         <li>{@code @}{@link Context} parameter</li>
  *         <li>{@code @}{@link TargetPropertyName} parameter</li>
+ *         <li>{@code @}{@link SourcePropertyName} parameter</li>
  *     </ul>
  *
  * <strong>Note:</strong> The usage of this annotation is <em>mandatory</em>

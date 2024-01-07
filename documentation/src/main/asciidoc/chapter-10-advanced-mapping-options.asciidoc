@@ -406,9 +406,9 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
-Additionally `@TargetPropertyName` of type `java.lang.String` can be used in custom condition check method:
+Additionally `@TargetPropertyName` or `@SourcePropertyName` of type `java.lang.String` can be used in custom condition check method:
 
-.Mapper using custom condition check method with `@TargetPropertyName`
+.Mapper using custom condition check method with `@TargetPropertyName` and `@SourcePropertyName`
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -416,11 +416,19 @@ Additionally `@TargetPropertyName` of type `java.lang.String` can be used in cus
 @Mapper
 public interface CarMapper {
 
+    @Mapping(target = "owner", source = "ownerName")
     CarDto carToCarDto(Car car, @MappingTarget CarDto carDto);
 
     @Condition
-    default boolean isNotEmpty(String value, @TargetPropertyName String name) {
-        if ( name.equals( "owner" ) {
+    default boolean isNotEmpty(
+        String value,
+        @TargetPropertyName String targetPropertyName,
+        @SourcePropertyName String sourcePropertyName
+    ) {
+
+        if ( targetPropertyName.equals( "owner" )
+             && sourcePropertyName.equals( "ownerName" ) ) {
+
            return value != null
                     && !value.isEmpty()
                     && !value.equals( value.toLowerCase() );
@@ -431,7 +439,7 @@ public interface CarMapper {
 ----
 ====
 
-The generated mapper with `@TargetPropertyName` will look like:
+The generated mapper with `@TargetPropertyName` and `@SourcePropertyName` will look like:
 
 .Custom condition check in generated implementation
 ====
@@ -447,7 +455,7 @@ public class CarMapperImpl implements CarMapper {
             return carDto;
         }
 
-        if ( isNotEmpty( car.getOwner(), "owner" ) ) {
+        if ( isNotEmpty( car.getOwner(), "owner", "ownerName" ) ) {
             carDto.setOwner( car.getOwner() );
         } else {
             carDto.setOwner( null );
@@ -470,7 +478,7 @@ If there is a custom `@Condition` method applicable for the property it will hav
 ====
 Methods annotated with `@Condition` in addition to the value of the source property can also have the source parameter as an input.
 
-`@TargetPropertyName` parameter can only be used in `@Condition` methods.
+`@TargetPropertyName` and `@SourcePropertyName` parameters can only be used in `@Condition` methods.
 ====
 
 <<selection-based-on-qualifiers>> is also valid for `@Condition` methods.

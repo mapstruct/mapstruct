@@ -171,6 +171,7 @@ public class SelectionContext {
         if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
             availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
+            addSourcePropertyNameBindings( availableParams, sourceRHS.getSourceType(), typeFactory );
         }
         else {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
@@ -189,6 +190,7 @@ public class SelectionContext {
         List<ParameterBinding> availableParams = new ArrayList<>();
 
         availableParams.add( ParameterBinding.forSourceTypeBinding( sourceType ) );
+        addSourcePropertyNameBindings( availableParams, sourceType, typeFactory );
 
         for ( Parameter param : mappingMethod.getParameters() ) {
             if ( param.isMappingContext() ) {
@@ -199,6 +201,22 @@ public class SelectionContext {
         addTargetRelevantBindings( availableParams, targetType, typeFactory );
 
         return availableParams;
+    }
+
+    private static void addSourcePropertyNameBindings(List<ParameterBinding> availableParams, Type sourceType,
+                                                      TypeFactory typeFactory) {
+
+        boolean sourcePropertyNameAvailable = false;
+        for ( ParameterBinding pb : availableParams ) {
+            if ( pb.isSourcePropertyName() ) {
+                sourcePropertyNameAvailable = true;
+                break;
+            }
+        }
+        if ( !sourcePropertyNameAvailable ) {
+            availableParams.add( ParameterBinding.forSourcePropertyNameBinding( typeFactory.getType( String.class ) ) );
+        }
+
     }
 
     /**

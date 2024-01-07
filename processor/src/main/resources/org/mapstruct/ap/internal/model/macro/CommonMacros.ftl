@@ -17,6 +17,7 @@
     <#if sourcePresenceCheckerReference??>
         if ( <@includeModel object=sourcePresenceCheckerReference
                targetPropertyName=ext.targetPropertyName
+               sourcePropertyName=ext.sourcePropertyName
                targetType=ext.targetType/> ) {
             <#nested>
         }
@@ -61,6 +62,7 @@
   <#if sourcePresenceCheckerReference??>
     if ( <@includeModel object=sourcePresenceCheckerReference
            targetType=ext.targetType
+           sourcePropertyName=ext.sourcePropertyName
            targetPropertyName=ext.targetPropertyName /> ) {
       <#if needs_explicit_local_var>
         <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;

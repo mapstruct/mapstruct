@@ -3,27 +3,26 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.targetpropertyname;
+package org.mapstruct.ap.test.conditional.propertyname;
 
 import java.util.List;
 
 /**
  * @author Nikola Ivačič
  */
-public class Employee implements DomainModel {
+public class EmployeeDto implements DomainModel {
 
     private String firstName;
     private String lastName;
     private String title;
-    private String country;
+    private String originCountry;
     private boolean active;
     private int age;
 
-    private Employee boss;
+    private EmployeeDto boss;
 
-    private Address primaryAddress;
-
-    private List<Address> addresses;
+    private AddressDto primaryAddress;
+    private List<AddressDto> addresses;
 
     public String getFirstName() {
         return firstName;
@@ -49,12 +48,12 @@ public class Employee implements DomainModel {
         this.title = title;
     }
 
-    public String getCountry() {
-        return country;
+    public String getOriginCountry() {
+        return originCountry;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setOriginCountry(String originCountry) {
+        this.originCountry = originCountry;
     }
 
     public boolean isActive() {
@@ -73,27 +72,27 @@ public class Employee implements DomainModel {
         this.age = age;
     }
 
-    public Employee getBoss() {
+    public EmployeeDto getBoss() {
         return boss;
     }
 
-    public void setBoss(Employee boss) {
+    public void setBoss(EmployeeDto boss) {
         this.boss = boss;
     }
 
-    public Address getPrimaryAddress() {
+    public AddressDto getPrimaryAddress() {
         return primaryAddress;
     }
 
-    public void setPrimaryAddress(Address primaryAddress) {
+    public void setPrimaryAddress(AddressDto primaryAddress) {
         this.primaryAddress = primaryAddress;
     }
 
-    public List<Address> getAddresses() {
+    public List<AddressDto> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<Address> addresses) {
+    public void setAddresses(List<AddressDto> addresses) {
         this.addresses = addresses;
     }
 }

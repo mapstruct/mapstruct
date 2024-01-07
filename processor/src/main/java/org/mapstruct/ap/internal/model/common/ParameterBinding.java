@@ -22,16 +22,19 @@ public class ParameterBinding {
     private final boolean targetType;
     private final boolean mappingTarget;
     private final boolean mappingContext;
+    private final boolean sourcePropertyName;
     private final boolean targetPropertyName;
     private final SourceRHS sourceRHS;
 
     private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType,
-        boolean mappingContext, boolean targetPropertyName, SourceRHS sourceRHS) {
+                             boolean mappingContext, boolean sourcePropertyName, boolean targetPropertyName,
+                             SourceRHS sourceRHS) {
         this.type = parameterType;
         this.variableName = variableName;
         this.targetType = targetType;
         this.mappingTarget = mappingTarget;
         this.mappingContext = mappingContext;
+        this.sourcePropertyName = sourcePropertyName;
         this.targetPropertyName = targetPropertyName;
         this.sourceRHS = sourceRHS;
     }
@@ -65,10 +68,17 @@ public class ParameterBinding {
     }
 
     /**
+     * @return {@code true}, if the parameter being bound is a {@code @SourcePropertyName} parameter.
+     */
+    public boolean isSourcePropertyName() {
+        return sourcePropertyName;
+    }
+
+    /**
      * @return {@code true}, if the parameter being bound is a {@code @TargetPropertyName} parameter.
      */
     public boolean isTargetPropertyName() {
-      return targetPropertyName;
+        return targetPropertyName;
     }
 
     /**
@@ -108,6 +118,7 @@ public class ParameterBinding {
             parameter.isMappingTarget(),
             parameter.isTargetType(),
             parameter.isMappingContext(),
+            parameter.isSourcePropertyName(),
             parameter.isTargetPropertyName(),
             null
         );
@@ -129,6 +140,7 @@ public class ParameterBinding {
             false,
             false,
             false,
+            false,
             null
         );
     }
@@ -138,14 +150,21 @@ public class ParameterBinding {
      * @return a parameter binding representing a target type parameter
      */
     public static ParameterBinding forTargetTypeBinding(Type classTypeOf) {
-        return new ParameterBinding( classTypeOf, null, false, true, false, false, null );
+        return new ParameterBinding( classTypeOf, null, false, true, false, false, false, null );
     }
 
     /**
      * @return a parameter binding representing a target property name parameter
      */
     public static ParameterBinding forTargetPropertyNameBinding(Type classTypeOf) {
-        return new ParameterBinding( classTypeOf, null, false, false, false, true, null );
+        return new ParameterBinding( classTypeOf, null, false, false, false, false, true, null );
+    }
+
+    /**
+     * @return a parameter binding representing a source property name parameter
+     */
+    public static ParameterBinding forSourcePropertyNameBinding(Type classTypeOf) {
+        return new ParameterBinding( classTypeOf, null, false, false, false, true, false, null );
     }
 
     /**
@@ -153,7 +172,7 @@ public class ParameterBinding {
      * @return a parameter binding representing a mapping target parameter
      */
     public static ParameterBinding forMappingTargetBinding(Type resultType) {
-        return new ParameterBinding( resultType, null, true, false, false, false, null );
+        return new ParameterBinding( resultType, null, true, false, false, false, false, null );
     }
 
     /**
@@ -161,10 +180,10 @@ public class ParameterBinding {
      * @return a parameter binding representing a mapping source type
      */
     public static ParameterBinding forSourceTypeBinding(Type sourceType) {
-        return new ParameterBinding( sourceType, null, false, false, false, false, null );
+        return new ParameterBinding( sourceType, null, false, false, false, false, false, null );
     }
 
     public static ParameterBinding fromSourceRHS(SourceRHS sourceRHS) {
-        return new ParameterBinding( sourceRHS.getSourceType(), null, false, false, false, false, sourceRHS );
+        return new ParameterBinding( sourceRHS.getSourceType(), null, false, false, false, false, false, sourceRHS );
     }
 }

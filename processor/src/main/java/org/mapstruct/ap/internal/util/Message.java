@@ -177,6 +177,7 @@ public enum Message {
     RETRIEVAL_MAPPER_USES_CYCLE( "The mapper %s is referenced itself in Mapper#uses.", Diagnostic.Kind.WARNING ),
     RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED( "@AfterMapping can only be applied to an implemented method." ),
     RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED( "@BeforeMapping can only be applied to an implemented method." ),
+    RETRIEVAL_SOURCE_PROPERTY_NAME_WRONG_TYPE( "@SourcePropertyName can only by applied to a String parameter." ),
     RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE( "@TargetPropertyName can only by applied to a String parameter." ),
 
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
