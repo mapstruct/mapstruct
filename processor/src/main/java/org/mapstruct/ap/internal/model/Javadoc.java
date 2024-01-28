@@ -31,7 +31,7 @@ public class Javadoc extends ModelElement {
             return this;
         }
 
-        public Builder authors(List authors) {
+        public Builder authors(List<String> authors) {
             this.authors = authors;
             return this;
         }
