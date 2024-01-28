@@ -281,7 +281,7 @@ First calling a mapping method on the source property is not protected by a null
 
 The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
 
-The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MaperConfig#nullValueCheckStrategy`.
+The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MapperConfig#nullValueCheckStrategy`.
 
 [[source-presence-check]]
 === Source presence checking
