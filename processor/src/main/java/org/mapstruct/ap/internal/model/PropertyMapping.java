@@ -1101,7 +1101,7 @@ public class PropertyMapping extends ModelElement {
         ReadAccessor targetReadAccessorProvider,
         Type targetType, Assignment propertyAssignment,
         Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
-        this( name, name, null, targetWriteAccessorName, targetReadAccessorProvider,
+        this( name, null, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment,
             constructorMapping
         );

@@ -34,6 +34,7 @@ public interface ConditionalMethodInMapperWithAllExceptTarget {
     }
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee, @Context PresenceUtils utils);
 
     @Condition

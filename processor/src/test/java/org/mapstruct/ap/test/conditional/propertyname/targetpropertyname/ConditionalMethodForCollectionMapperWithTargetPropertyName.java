@@ -25,6 +25,7 @@ public interface ConditionalMethodForCollectionMapperWithTargetPropertyName {
         = Mappers.getMapper( ConditionalMethodForCollectionMapperWithTargetPropertyName.class );
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee);
 
     @Condition

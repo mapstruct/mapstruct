@@ -22,7 +22,7 @@ public class EmployeeDto implements DomainModel {
     private EmployeeDto boss;
 
     private AddressDto primaryAddress;
-    private List<AddressDto> addresses;
+    private List<AddressDto> originAddresses;
 
     public String getFirstName() {
         return firstName;
@@ -88,11 +88,11 @@ public class EmployeeDto implements DomainModel {
         this.primaryAddress = primaryAddress;
     }
 
-    public List<AddressDto> getAddresses() {
-        return addresses;
+    public List<AddressDto> getOriginAddresses() {
+        return originAddresses;
     }
 
-    public void setAddresses(List<AddressDto> addresses) {
-        this.addresses = addresses;
+    public void setOriginAddresses(List<AddressDto> originAddresses) {
+        this.originAddresses = originAddresses;
     }
 }

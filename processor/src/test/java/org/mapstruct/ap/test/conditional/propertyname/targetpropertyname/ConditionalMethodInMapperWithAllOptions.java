@@ -38,6 +38,7 @@ public interface ConditionalMethodInMapperWithAllOptions {
     }
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     void map(EmployeeDto employeeDto,
              @MappingTarget Employee employee,
              @Context PresenceUtils utils);

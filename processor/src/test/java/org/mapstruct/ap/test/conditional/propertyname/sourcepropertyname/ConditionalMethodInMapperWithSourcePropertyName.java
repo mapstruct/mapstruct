@@ -26,11 +26,12 @@ public interface ConditionalMethodInMapperWithSourcePropertyName {
         = Mappers.getMapper( ConditionalMethodInMapperWithSourcePropertyName.class );
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee);
 
     @Condition
     default boolean isNotBlank(String value, @SourcePropertyName String propName) {
-        if ( propName.equalsIgnoreCase( "lastName" ) ) {
+        if ( propName.equalsIgnoreCase( "originCountry" ) ) {
             return false;
         }
         return value != null && !value.trim().isEmpty();

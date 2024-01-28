@@ -27,11 +27,12 @@ public interface ConditionalMethodForCollectionMapperWithSourcePropertyName {
         = Mappers.getMapper( ConditionalMethodForCollectionMapperWithSourcePropertyName.class );
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee);
 
     @Condition
     default <T> boolean isNotEmpty(Collection<T> collection, @SourcePropertyName String propName) {
-        if ( "addresses".equalsIgnoreCase( propName ) ) {
+        if ( "originAddresses".equalsIgnoreCase( propName ) ) {
             return false;
         }
         return collection != null && !collection.isEmpty();
@@ -39,7 +40,7 @@ public interface ConditionalMethodForCollectionMapperWithSourcePropertyName {
 
     @Condition
     default boolean isNotBlank(String value, @SourcePropertyName String propName) {
-        if ( propName.equalsIgnoreCase( "lastName" ) ) {
+        if ( propName.equalsIgnoreCase( "originCountry" ) ) {
             return false;
         }
         return value != null && !value.trim().isEmpty();

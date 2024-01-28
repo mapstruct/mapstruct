@@ -54,14 +54,14 @@ public class SourcePropertyNameTest {
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
         Employee employee = mapper.map( employeeDto );
-        assertThat( employee.getLastName() ).isNull();
+        assertThat( employee.getLastName() ).isEqualTo( "Testirovich" );
         assertThat( employee.getFirstName() ).isNull();
-        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getCountry() ).isNull();
         assertThat( employee.getAddresses() )
             .extracting( Address::getStreet )
             .containsExactly( "Testing St. 6" );
@@ -79,14 +79,14 @@ public class SourcePropertyNameTest {
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
         Employee employee = mapper.map( employeeDto );
-        assertThat( employee.getLastName() ).isNull();
+        assertThat( employee.getLastName() ).isEqualTo( "Testirovich" );
         assertThat( employee.getFirstName() ).isNull();
-        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getCountry() ).isNull();
         assertThat( employee.getAddresses() ).isNull();
     }
 
@@ -102,14 +102,14 @@ public class SourcePropertyNameTest {
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
         Employee employee = mapper.map( employeeDto );
-        assertThat( employee.getLastName() ).isNull();
+        assertThat( employee.getLastName() ).isEqualTo( "Testirovich" );
         assertThat( employee.getFirstName() ).isNull();
-        assertThat( employee.getCountry() ).isEqualTo( "US" );
+        assertThat( employee.getCountry() ).isNull();
         assertThat( employee.getAddresses() )
             .extracting( Address::getStreet )
             .containsExactly( "Testing St. 6" );
@@ -130,7 +130,7 @@ public class SourcePropertyNameTest {
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
@@ -165,7 +165,7 @@ public class SourcePropertyNameTest {
         employeeDto.setFirstName( "  " );
         employeeDto.setLastName( "Testirovich" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
@@ -195,7 +195,7 @@ public class SourcePropertyNameTest {
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setLastName( "  " );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
@@ -214,7 +214,7 @@ public class SourcePropertyNameTest {
         employeeDto = new EmployeeDto();
         employeeDto.setLastName( "Tester" );
         employeeDto.setOriginCountry( "US" );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
@@ -234,7 +234,7 @@ public class SourcePropertyNameTest {
                 "age",
                 "boss",
                 "primaryAddress",
-                "addresses",
+                "originAddresses",
                 "street"
             );
 
@@ -244,14 +244,14 @@ public class SourcePropertyNameTest {
         EmployeeDto bossEmployeeDto = new EmployeeDto();
         bossEmployeeDto.setLastName( "Boss Tester" );
         bossEmployeeDto.setOriginCountry( "US" );
-        bossEmployeeDto.setAddresses( Collections.singletonList( new AddressDto(
+        bossEmployeeDto.setOriginAddresses( Collections.singletonList( new AddressDto(
             "Testing St. 10" ) ) );
 
         employeeDto = new EmployeeDto();
         employeeDto.setLastName( "Tester" );
         employeeDto.setOriginCountry( "US" );
         employeeDto.setBoss( bossEmployeeDto );
-        employeeDto.setAddresses(
+        employeeDto.setOriginAddresses(
             Collections.singletonList( new AddressDto( "Testing St. 6" ) )
         );
 
@@ -269,6 +269,8 @@ public class SourcePropertyNameTest {
         assertThat( allPropsUtilsWithSource.visited )
             .containsExactly(
                 "originCountry",
+                "originAddresses",
+                "originAddresses.street",
                 "firstName",
                 "lastName",
                 "title",
@@ -276,6 +278,8 @@ public class SourcePropertyNameTest {
                 "age",
                 "boss",
                 "boss.originCountry",
+                "boss.originAddresses",
+                "boss.originAddresses.street",
                 "boss.firstName",
                 "boss.lastName",
                 "boss.title",
@@ -283,11 +287,7 @@ public class SourcePropertyNameTest {
                 "boss.age",
                 "boss.boss",
                 "boss.primaryAddress",
-                "boss.addresses",
-                "boss.addresses.street",
-                "primaryAddress",
-                "addresses",
-                "addresses.street"
+                "primaryAddress"
             );
     }
 
@@ -301,7 +301,7 @@ public class SourcePropertyNameTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousNonStringSourcePropertyNameParameter.class,
-                line = 22,
+                line = 23,
                 message = "@SourcePropertyName can only by applied to a String parameter."
             )
         }

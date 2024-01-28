@@ -24,6 +24,7 @@ public interface ConditionalMethodInUsesMapperWithTargetPropertyName {
         = Mappers.getMapper( ConditionalMethodInUsesMapperWithTargetPropertyName.class );
 
     @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee);
 
     class PresenceUtils {
