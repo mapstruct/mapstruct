@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.accessibility.referenced;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.test.accessibility.referenced.a.ReferencedMapperDefaultOther;
 import org.mapstruct.factory.Mappers;
 
@@ -14,7 +15,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = ReferencedMapperDefaultOther.class)
+@Mapper(uses = ReferencedMapperDefaultOther.class, unmappedSourcePolicy = ReportingPolicy.WARN)
 public interface SourceTargetMapperDefaultOther {
 
     SourceTargetMapperDefaultOther INSTANCE =

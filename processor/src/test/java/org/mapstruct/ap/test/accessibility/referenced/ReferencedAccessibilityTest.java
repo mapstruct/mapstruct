@@ -21,6 +21,7 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author Sjaak Derksen
  */
 @WithClasses( { Source.class, Target.class, ReferencedSource.class, ReferencedTarget.class } )
+@IssueKey("2788")
 public class ReferencedAccessibilityTest {
 
     @RegisterExtension
@@ -34,8 +35,13 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 22,
+                line = 23,
                 message = "Unmapped target property: \"bar\". Mapping from property " +
+                    "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\"."),
+            @Diagnostic(type = SourceTargetMapperPrivate.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 23,
+                message = "Unmapped source property: \"foo\". Mapping from property " +
                     "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
         }
     )
@@ -61,8 +67,13 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperDefaultOther.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 24,
+                line = 25,
                 message = "Unmapped target property: \"bar\". Mapping " +
+                    "from property \"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\"."),
+            @Diagnostic(type = SourceTargetMapperDefaultOther.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 25,
+                message = "Unmapped source property: \"foo\". Mapping " +
                     "from property \"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
         }
     )
@@ -83,8 +94,13 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = AbstractSourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 24,
                 message = "Unmapped target property: \"bar\". Mapping from property " +
+                    "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\"."),
+            @Diagnostic(type = AbstractSourceTargetMapperPrivate.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 24,
+                message = "Unmapped source property: \"foo\". Mapping from property " +
                     "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
         }
     )

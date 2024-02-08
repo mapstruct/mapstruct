@@ -1682,53 +1682,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
             else if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
-                if ( !( method instanceof ForgedMethod ) ) {
-                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                        Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
-                    Object[] args = new Object[] {
-                        MessageFormat.format(
-                            "{0,choice,1#property|1<properties}: \"{1}\"",
-                            unprocessedTargetProperties.size(),
-                            Strings.join( unprocessedTargetProperties.keySet(), ", " )
-                        )
-                    };
+                Message unmappedPropertiesMsg =
+                                unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                                Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR :
+                                Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
+                Message unmappedForgedPropertiesMsg =
+                                unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                                Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
+                                Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
 
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        msg,
-                        args
-                    );
-                }
-                else if ( !ctx.isErroneous() ) {
-                    Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
-                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
-                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
-                    String targetErrorMessage = method.getReturnType().describe();
-                    if ( ( (ForgedMethod) method ).getHistory() != null ) {
-                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
-                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
-                        targetErrorMessage = MessageFormat.format(
-                            "\"{0} {1}\"",
-                            history.getTargetType().describe(),
-                            history.createTargetPropertyName()
-                        );
-                    }
-                    Object[] args = new Object[] {
-                        MessageFormat.format(
-                            "{0,choice,1#property|1<properties}: \"{1}\"",
-                            unprocessedTargetProperties.size(),
-                            Strings.join( unprocessedTargetProperties.keySet(), ", " )
-                        ),
-                        sourceErrorMessage,
-                        targetErrorMessage
-                    };
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        msg,
-                        args
-                    );
-                }
+                reportErrorForUnmappedProperties(
+                    unprocessedTargetProperties,
+                    unmappedPropertiesMsg,
+                    unmappedForgedPropertiesMsg );
 
             }
         }
@@ -1746,22 +1712,65 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
             ReportingPolicyGem unmappedSourcePolicy = getUnmappedSourcePolicy();
-
             if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
+                Message unmappedPropertiesMsg =
+                                unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                                Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR :
+                                Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
+                Message unmappedForgedPropertiesMsg =
+                                unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                                Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_ERROR :
+                                Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_WARNING;
 
-                Message msg = unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                    Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR : Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
+                reportErrorForUnmappedProperties(
+                    unprocessedSourceProperties,
+                    unmappedPropertiesMsg,
+                    unmappedForgedPropertiesMsg );
+            }
+        }
+
+        private void reportErrorForUnmappedProperties(Map<String, Accessor> unmappedProperties,
+                                                                Message unmappedPropertiesMsg,
+                                                                Message unmappedForgedPropertiesMsg) {
+            if ( !( method instanceof ForgedMethod ) ) {
                 Object[] args = new Object[] {
                     MessageFormat.format(
                         "{0,choice,1#property|1<properties}: \"{1}\"",
-                        unprocessedSourceProperties.size(),
-                        Strings.join( unprocessedSourceProperties.keySet(), ", " )
+                        unmappedProperties.size(),
+                        Strings.join( unmappedProperties.keySet(), ", " )
                     )
                 };
 
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
-                    msg,
+                    unmappedPropertiesMsg,
+                    args
+                );
+            }
+            else if ( !ctx.isErroneous() ) {
+                String sourceErrorMessage = method.getParameters().get( 0 ).getType().describe();
+                String targetErrorMessage = method.getReturnType().describe();
+                if ( ( (ForgedMethod) method ).getHistory() != null ) {
+                    ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
+                    sourceErrorMessage = history.createSourcePropertyErrorMessage();
+                    targetErrorMessage = MessageFormat.format(
+                        "\"{0} {1}\"",
+                        history.getTargetType().describe(),
+                        history.createTargetPropertyName()
+                    );
+                }
+                Object[] args = new Object[] {
+                    MessageFormat.format(
+                        "{0,choice,1#property|1<properties}: \"{1}\"",
+                        unmappedProperties.size(),
+                        Strings.join( unmappedProperties.keySet(), ", " )
+                    ),
+                    sourceErrorMessage,
+                    targetErrorMessage
+                };
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    unmappedForgedPropertiesMsg,
                     args
                 );
             }
