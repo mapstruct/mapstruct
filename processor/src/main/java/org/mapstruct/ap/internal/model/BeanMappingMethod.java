@@ -1713,14 +1713,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
             ReportingPolicyGem unmappedSourcePolicy = getUnmappedSourcePolicy();
             if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
-                Message unmappedPropertiesMsg =
-                                unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                                Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR :
-                                Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
-                Message unmappedForgedPropertiesMsg =
-                                unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                                Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_ERROR :
-                                Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_WARNING;
+                Message unmappedPropertiesMsg;
+                Message unmappedForgedPropertiesMsg;
+                if ( unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ) {
+                    unmappedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR;
+                    unmappedForgedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_ERROR;
+                }
+                else {
+                    unmappedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
+                    unmappedForgedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_FORGED_SOURCES_WARNING;
+                }
 
                 reportErrorForUnmappedProperties(
                     unprocessedSourceProperties,
