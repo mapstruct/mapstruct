@@ -9,6 +9,7 @@ import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.TargetPropertyName;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -31,13 +32,14 @@ public interface ConditionalMethodWithSourceToTargetMapper {
 
     @Condition
     @Named("mapCustomerFromOrder")
-    default boolean mapCustomerFromOrder(OrderDTO orderDTO) {
-        return orderDTO != null && ( orderDTO.getCustomerName() != null || mapAddressFromOrder( orderDTO ) );
+    default boolean mapCustomerFromOrder(OrderDTO orderDTO, @TargetPropertyName String propertyName) {
+        return orderDTO != null &&
+            ( orderDTO.getCustomerName() != null || mapAddressFromOrder( orderDTO, propertyName ) );
     }
 
     @Condition
     @Named("mapAddressFromOrder")
-    default boolean mapAddressFromOrder(OrderDTO orderDTO) {
+    default boolean mapAddressFromOrder(OrderDTO orderDTO, @TargetPropertyName String propertyName) {
         return orderDTO != null && ( orderDTO.getLine1() != null || orderDTO.getLine2() != null );
     }
 

@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.conditional.basic;
 
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
+import org.mapstruct.TargetPropertyName;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -21,7 +22,7 @@ public interface ConditionalMethodWithSourceParameterMapper {
     BasicEmployee map(BasicEmployeeDto employee);
 
     @Condition
-    default boolean shouldMap(BasicEmployeeDto source) {
+    default boolean shouldMap(BasicEmployeeDto source, @TargetPropertyName String propertyName) {
         return "map".equals( source.getStrategy() );
     }
 
