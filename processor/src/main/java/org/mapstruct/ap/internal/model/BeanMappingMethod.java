@@ -319,8 +319,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             handleUnmappedConstructorProperties();
 
             // report errors on unmapped properties
-            reportErrorForUnmappedTargetPropertiesIfRequired();
-            reportErrorForUnmappedSourcePropertiesIfRequired();
+            if ( shouldHandledDefinedMappings ) {
+                reportErrorForUnmappedTargetPropertiesIfRequired();
+                reportErrorForUnmappedSourcePropertiesIfRequired();
+            }
             reportErrorForMissingIgnoredSourceProperties();
             reportErrorForUnusedSourceParameters();
 
