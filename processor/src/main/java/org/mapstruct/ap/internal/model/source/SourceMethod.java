@@ -47,6 +47,7 @@ public class SourceMethod implements Method {
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
     private final Parameter targetTypeParameter;
+    private final Parameter sourcePropertyNameParameter;
     private final Parameter targetPropertyNameParameter;
     private final boolean isObjectFactory;
     private final boolean isPresenceCheck;
@@ -249,6 +250,7 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
+        this.sourcePropertyNameParameter = Parameter.getSourcePropertyNameParameter( parameters );
         this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
@@ -265,9 +267,10 @@ public class SourceMethod implements Method {
     private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
+        boolean hasNoSourcePropertyNameParam = getSourcePropertyNameParameter() == null;
         boolean hasNoTargetPropertyNameParam = getTargetPropertyNameParameter() == null;
         return !isLifecycleCallbackMethod() && !returnType.isVoid()
-            && hasNoMappingTargetParam && hasNoTargetPropertyNameParam
+            && hasNoMappingTargetParam && hasNoSourcePropertyNameParam && hasNoTargetPropertyNameParam
             && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
     }
 
@@ -380,6 +383,10 @@ public class SourceMethod implements Method {
     @Override
     public Parameter getTargetTypeParameter() {
         return targetTypeParameter;
+    }
+
+    public Parameter getSourcePropertyNameParameter() {
+        return sourcePropertyNameParameter;
     }
 
     public Parameter getTargetPropertyNameParameter() {

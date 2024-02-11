@@ -3,14 +3,17 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.targetpropertyname;
+package org.mapstruct.ap.test.conditional.propertyname.targetpropertyname;
+
+import java.util.Collection;
 
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.TargetPropertyName;
+import org.mapstruct.ap.test.conditional.propertyname.Employee;
+import org.mapstruct.ap.test.conditional.propertyname.EmployeeDto;
 import org.mapstruct.factory.Mappers;
-
-import java.util.Collection;
 
 /**
  * @author Nikola Ivačič
@@ -21,6 +24,8 @@ public interface ConditionalMethodForCollectionMapperWithTargetPropertyName {
     ConditionalMethodForCollectionMapperWithTargetPropertyName INSTANCE
         = Mappers.getMapper( ConditionalMethodForCollectionMapperWithTargetPropertyName.class );
 
+    @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee);
 
     @Condition

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.targetpropertyname;
+package org.mapstruct.ap.test.conditional.propertyname;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ public class EmployeeDto implements DomainModel {
     private String firstName;
     private String lastName;
     private String title;
-    private String country;
+    private String originCountry;
     private boolean active;
     private int age;
 
     private EmployeeDto boss;
 
     private AddressDto primaryAddress;
-    private List<AddressDto> addresses;
+    private List<AddressDto> originAddresses;
 
     public String getFirstName() {
         return firstName;
@@ -48,12 +48,12 @@ public class EmployeeDto implements DomainModel {
         this.title = title;
     }
 
-    public String getCountry() {
-        return country;
+    public String getOriginCountry() {
+        return originCountry;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setOriginCountry(String originCountry) {
+        this.originCountry = originCountry;
     }
 
     public boolean isActive() {
@@ -88,11 +88,11 @@ public class EmployeeDto implements DomainModel {
         this.primaryAddress = primaryAddress;
     }
 
-    public List<AddressDto> getAddresses() {
-        return addresses;
+    public List<AddressDto> getOriginAddresses() {
+        return originAddresses;
     }
 
-    public void setAddresses(List<AddressDto> addresses) {
-        this.addresses = addresses;
+    public void setOriginAddresses(List<AddressDto> originAddresses) {
+        this.originAddresses = originAddresses;
     }
 }

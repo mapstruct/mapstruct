@@ -1522,6 +1522,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
                 PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
                     .sourceMethod( method )
+                    .sourcePropertyName( targetPropertyName )
                     .target( targetPropertyName, targetPropertyReadAccessor, targetPropertyWriteAccessor )
                     .sourceReference( sourceRef )
                     .existingVariableNames( existingVariableNames )

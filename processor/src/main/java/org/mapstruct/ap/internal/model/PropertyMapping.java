@@ -70,6 +70,7 @@ import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.D
 public class PropertyMapping extends ModelElement {
 
     private final String name;
+    private final String sourcePropertyName;
     private final String sourceBeanName;
     private final String targetWriteAccessorName;
     private final ReadAccessor targetReadAccessorProvider;
@@ -286,6 +287,7 @@ public class PropertyMapping extends ModelElement {
             }
 
             return new PropertyMapping(
+                sourcePropertyName,
                 targetPropertyName,
                 rightHandSide.getSourceParameterName(),
                 targetWriteAccessor.getSimpleName(),
@@ -1099,16 +1101,17 @@ public class PropertyMapping extends ModelElement {
         ReadAccessor targetReadAccessorProvider,
         Type targetType, Assignment propertyAssignment,
         Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
+        this( name, null, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment,
             constructorMapping
         );
     }
 
-    private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-        ReadAccessor targetReadAccessorProvider, Type targetType,
-        Assignment assignment,
-        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+    private PropertyMapping(String sourcePropertyName, String name, String sourceBeanName,
+                            String targetWriteAccessorName, ReadAccessor targetReadAccessorProvider, Type targetType,
+                            Assignment assignment,
+                            Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+        this.sourcePropertyName = sourcePropertyName;
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -1126,6 +1129,10 @@ public class PropertyMapping extends ModelElement {
      */
     public String getName() {
         return name;
+    }
+
+    public String getSourcePropertyName() {
+        return sourcePropertyName;
     }
 
     public String getSourceBeanName() {

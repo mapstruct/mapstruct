@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.SourcePropertyNameGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingsGem;
 import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
@@ -415,6 +416,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private boolean isValidPresenceCheckMethod(ExecutableElement method, List<Parameter> parameters, Type returnType) {
         for ( Parameter param : parameters ) {
+
+            if ( param.isSourcePropertyName() && !param.getType().isString() ) {
+                messager.printMessage(
+                    param.getElement(),
+                    SourcePropertyNameGem.instanceOn( param.getElement() ).mirror(),
+                    Message.RETRIEVAL_SOURCE_PROPERTY_NAME_WRONG_TYPE
+                );
+                return false;
+            }
+
             if ( param.isTargetPropertyName() && !param.getType().isString() ) {
                 messager.printMessage(
                     param.getElement(),

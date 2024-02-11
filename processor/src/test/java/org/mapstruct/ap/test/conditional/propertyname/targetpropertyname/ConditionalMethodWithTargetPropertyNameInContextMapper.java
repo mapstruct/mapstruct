@@ -3,20 +3,28 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.conditional.targetpropertyname;
+package org.mapstruct.ap.test.conditional.propertyname.targetpropertyname;
+
+import java.util.Deque;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Condition;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.TargetPropertyName;
+import org.mapstruct.TargetType;
+import org.mapstruct.ap.test.conditional.propertyname.Address;
+import org.mapstruct.ap.test.conditional.propertyname.AddressDto;
+import org.mapstruct.ap.test.conditional.propertyname.DomainModel;
+import org.mapstruct.ap.test.conditional.propertyname.Employee;
+import org.mapstruct.ap.test.conditional.propertyname.EmployeeDto;
 import org.mapstruct.factory.Mappers;
-
-import java.util.Deque;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * @author Nikola Ivačič
@@ -27,6 +35,8 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
     ConditionalMethodWithTargetPropertyNameInContextMapper INSTANCE
         = Mappers.getMapper( ConditionalMethodWithTargetPropertyNameInContextMapper.class );
 
+    @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee, @Context PresenceUtils utils);
 
     Address map(AddressDto addressDto, @Context PresenceUtils utils);
@@ -41,6 +51,8 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
         }
     }
 
+    @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee, @Context PresenceUtilsAllProps utils);
 
     Address map(AddressDto addressDto, @Context PresenceUtilsAllProps utils);
@@ -55,6 +67,8 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
         }
     }
 
+    @Mapping(target = "country", source = "originCountry")
+    @Mapping(target = "addresses", source = "originAddresses")
     Employee map(EmployeeDto employee, @Context PresenceUtilsAllPropsWithSource utils);
 
     Address map(AddressDto addressDto, @Context PresenceUtilsAllPropsWithSource utils);
@@ -68,8 +82,11 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
     }
 
     @AfterMapping
-    default void after(@Context PresenceUtilsAllPropsWithSource utils) {
-        utils.path.pollLast();
+    default <T>  void after(@TargetType Class<T> targetClass, @Context PresenceUtilsAllPropsWithSource utils) {
+        // intermediate method for collection mapping must not change the path
+        if (targetClass != List.class) {
+            utils.path.pollLast();
+        }
     }
 
     class PresenceUtilsAllPropsWithSource {
