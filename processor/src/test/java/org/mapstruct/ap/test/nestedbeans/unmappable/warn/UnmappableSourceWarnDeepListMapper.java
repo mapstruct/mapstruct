@@ -5,10 +5,13 @@
  */
 package org.mapstruct.ap.test.nestedbeans.unmappable.warn;
 
+import static org.mapstruct.ReportingPolicy.IGNORE;
+import static org.mapstruct.ReportingPolicy.WARN;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepListMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
 
-@Mapper(uses = RoofTypeMapper.class)
-public abstract class UnmappableWarnDeepListMapper extends BaseDeepListMapper {
+@Mapper( uses = RoofTypeMapper.class, unmappedTargetPolicy = IGNORE, unmappedSourcePolicy = WARN )
+public abstract class UnmappableSourceWarnDeepListMapper extends BaseDeepListMapper {
 }

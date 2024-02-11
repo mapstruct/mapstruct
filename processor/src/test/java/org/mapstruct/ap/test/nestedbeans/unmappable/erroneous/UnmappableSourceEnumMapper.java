@@ -20,7 +20,7 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.User;
 import org.mapstruct.ap.test.nestedbeans.unmappable.UserDto;
 
 @Mapper
-public abstract class UnmappableEnumMapper {
+public abstract class UnmappableSourceEnumMapper {
 
     abstract UserDto userToUserDto(User user);
 
