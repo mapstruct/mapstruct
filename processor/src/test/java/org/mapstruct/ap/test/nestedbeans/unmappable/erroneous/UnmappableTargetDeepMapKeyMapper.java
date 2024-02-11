@@ -10,6 +10,6 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepMapKeyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
 
-@Mapper(uses = RoofTypeMapper.class, unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper( uses = RoofTypeMapper.class, unmappedTargetPolicy = ReportingPolicy.ERROR )
 public abstract class UnmappableTargetDeepMapKeyMapper extends BaseDeepMapKeyMapper {
 }
