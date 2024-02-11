@@ -284,10 +284,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             initializeMappingReferencesIfNeeded( resultTypeToMap );
 
-            // map properties with mapping
-            boolean mappingErrorOccurred = handleDefinedMappings( resultTypeToMap );
-            if ( mappingErrorOccurred ) {
-                return null;
+            boolean shouldHandledDefinedMappings = shouldHandledDefinedMappings( resultTypeToMap );
+
+
+            if ( shouldHandledDefinedMappings ) {
+                // map properties with mapping
+                boolean mappingErrorOccurred = handleDefinedMappings( resultTypeToMap );
+                if ( mappingErrorOccurred ) {
+                    return null;
+                }
             }
 
             boolean applyImplicitMappings = !mappingReferences.isRestrictToDefinedMappings();
@@ -1043,6 +1048,36 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         @SuppressWarnings("unchecked")
         private List<AnnotationValue> getValueAsList(AnnotationValue av) {
             return (List<AnnotationValue>) av.getValue();
+        }
+
+        /**
+         * Determine whether defined mappings should be handled on the result type.
+         * They should be, if any of the following is true:
+         * <ul>
+         *     <li>The {@code resultTypeToMap} is not abstract</li>
+         *     <li>There is a factory method</li>
+         *     <li>The method is an update method</li>
+         * </ul>
+         * Otherwise, it means that we have reached this because subclass mappings are being used
+         * and the chosen strategy is runtime exception.
+         *
+         * @param resultTypeToMap the type in which the defined target properties are defined
+         * @return {@code true} if defined mappings should be handled for the result type, {@code false} otherwise
+         */
+        private boolean shouldHandledDefinedMappings(Type resultTypeToMap) {
+            if ( !resultTypeToMap.isAbstract() ) {
+                return true;
+            }
+
+            if ( hasFactoryMethod ) {
+                return true;
+            }
+
+            if ( method.isUpdateMethod() ) {
+                return true;
+            }
+
+            return false;
         }
 
         /**
