@@ -284,11 +284,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             initializeMappingReferencesIfNeeded( resultTypeToMap );
 
-            boolean hasSubclassMappingsWithAllSupportedClasses = hasSubclassMappingsWithAllSupportedClasses(
-                resultTypeToMap );
+            boolean shouldHandledDefinedMappings = shouldHandledDefinedMappings( resultTypeToMap );
 
 
-            if ( hasSubclassMappingsWithAllSupportedClasses ) {
+            if ( shouldHandledDefinedMappings ) {
                 // map properties with mapping
                 boolean mappingErrorOccurred = handleDefinedMappings( resultTypeToMap );
                 if ( mappingErrorOccurred ) {
@@ -1052,8 +1051,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * Determine whether the result type has subclass mappings with all supported classes.
-         * It has if any of the following is true:
+         * Determine whether defined mappings should be handled on the result type.
+         * They should be, if any of the following is true:
          * <ul>
          *     <li>The {@code resultTypeToMap} is not abstract</li>
          *     <li>There is a factory method</li>
@@ -1063,9 +1062,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * and the chosen strategy is runtime exception.
          *
          * @param resultTypeToMap the type in which the defined target properties are defined
-         * @return {@code true} if there are subclass mappings with all supported classes, {@code false} otherwise
+         * @return {@code true} if defined mappings should be handled for the result type, {@code false} otherwise
          */
-        private boolean hasSubclassMappingsWithAllSupportedClasses(Type resultTypeToMap) {
+        private boolean shouldHandledDefinedMappings(Type resultTypeToMap) {
             if ( !resultTypeToMap.isAbstract() ) {
                 return true;
             }
