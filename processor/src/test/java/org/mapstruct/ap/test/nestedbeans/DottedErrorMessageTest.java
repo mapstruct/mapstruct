@@ -69,6 +69,7 @@ import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableTargetWarnDee
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableTargetWarnDeepMapValueMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableTargetWarnDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.warn.UnmappableTargetWarnValuePropertyMapper;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -206,6 +207,7 @@ public class DottedErrorMessageTest {
     public void testTargetMapValueProperty() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceDeepNestingMapper.class
@@ -224,6 +226,7 @@ public class DottedErrorMessageTest {
     public void testSourceDeepNestedBeans() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceDeepListMapper.class
@@ -242,6 +245,7 @@ public class DottedErrorMessageTest {
     public void testSourceIterables() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceDeepMapKeyMapper.class
@@ -260,6 +264,7 @@ public class DottedErrorMessageTest {
     public void testSourceMapKeys() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceDeepMapValueMapper.class
@@ -278,6 +283,7 @@ public class DottedErrorMessageTest {
     public void testSourceMapValues() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceCollectionElementPropertyMapper.class
@@ -296,6 +302,7 @@ public class DottedErrorMessageTest {
     public void testSourceCollectionElementProperty() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceValuePropertyMapper.class
@@ -387,6 +394,7 @@ public class DottedErrorMessageTest {
     public void testWarnUnmappedTargetProperties() {
     }
 
+    @IssueKey( "2788" )
     @ProcessorTest
     @WithClasses({
         UnmappableSourceWarnDeepNestingMapper.class,
