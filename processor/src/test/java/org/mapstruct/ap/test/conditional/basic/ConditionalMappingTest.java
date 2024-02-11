@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.conditional.basic;
 
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -206,6 +206,38 @@ public class ConditionalMappingTest {
         assertThat( dto.getBooks() )
             .extracting( ConditionalMethodForCollectionMapper.BookDto::getName )
             .containsExactly( "Test", "Test Vol. 2" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ConditionalMethodForSourceBeanMapper.class
+    })
+    public void conditionalMethodForSourceBean() {
+        ConditionalMethodForSourceBeanMapper mapper = ConditionalMethodForSourceBeanMapper.INSTANCE;
+
+        ConditionalMethodForSourceBeanMapper.Employee employee = mapper.map(
+            new ConditionalMethodForSourceBeanMapper.EmployeeDto(
+                "1",
+                "Tester"
+            ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( null );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceBeanMapper.EmployeeDto( null, "Tester" ) );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceBeanMapper.EmployeeDto( "test-123", "Tester" ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "test-123" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
     }
 
     @ProcessorTest

@@ -7,9 +7,11 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
@@ -37,6 +39,37 @@ public final class PresenceCheckMethodResolver {
         SelectedMethod<SourceMethod> matchingMethod = findMatchingPresenceCheckMethod(
             method,
             selectionParameters,
+            SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() ),
+            PresenceCheckMethodResolver::isNotApplicableForPropertyPresenceCheck,
+            ctx
+        );
+
+        if ( matchingMethod == null ) {
+            return null;
+        }
+
+        MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
+
+        return new MethodReferencePresenceCheck( methodReference );
+
+    }
+
+    public static PresenceCheck getPresenceCheckForSourceParameter(
+        Method method,
+        SelectionParameters selectionParameters,
+        Parameter sourceParameter,
+        MappingBuilderContext ctx
+    ) {
+        SelectedMethod<SourceMethod> matchingMethod = findMatchingPresenceCheckMethod(
+            method,
+            selectionParameters,
+            SelectionContext.forSourceParameterPresenceCheckMethods(
+                method,
+                selectionParameters,
+                sourceParameter,
+                ctx.getTypeFactory()
+            ),
+            null,
             ctx
         );
 
@@ -53,6 +86,8 @@ public final class PresenceCheckMethodResolver {
     private static SelectedMethod<SourceMethod> findMatchingPresenceCheckMethod(
         Method method,
         SelectionParameters selectionParameters,
+        SelectionContext selectionContext,
+        Predicate<SelectedMethod<SourceMethod>> methodRemover,
         MappingBuilderContext ctx
     ) {
         MethodSelectors selectors = new MethodSelectors(
@@ -63,8 +98,12 @@ public final class PresenceCheckMethodResolver {
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             getAllAvailableMethods( method, ctx.getSourceModel() ),
-            SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() )
+            selectionContext
         );
+
+        if ( methodRemover != null ) {
+            matchingMethods.removeIf( methodRemover );
+        }
 
         if ( matchingMethods.isEmpty() ) {
             return null;
@@ -85,6 +124,32 @@ public final class PresenceCheckMethodResolver {
         }
 
         return matchingMethods.get( 0 );
+    }
+
+    private static boolean isNotApplicableForPropertyPresenceCheck(SelectedMethod<SourceMethod> method) {
+        List<ParameterBinding> parameterBindings = method.getParameterBindings();
+        if ( parameterBindings.isEmpty() ) {
+            return true;
+        }
+
+        return parameterBindings.stream()
+            .noneMatch( PresenceCheckMethodResolver::isApplicableForPropertyPresenceCheck );
+    }
+
+    private static boolean isApplicableForPropertyPresenceCheck(ParameterBinding parameterBinding) {
+        if ( parameterBinding.isForSourceRhs() ) {
+            return true;
+        }
+
+        if ( parameterBinding.isTargetPropertyName() ) {
+            return true;
+        }
+
+        if ( parameterBinding.isSourcePropertyName() ) {
+            return true;
+        }
+
+        return false;
     }
 
     private static MethodReference getPresenceCheckMethodReference(
