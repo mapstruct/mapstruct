@@ -7,9 +7,9 @@ package org.mapstruct.ap.test.nestedbeans.unmappable.erroneous;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepNestingMapper;
+import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepListMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
 
 @Mapper(uses = RoofTypeMapper.class, unmappedTargetPolicy = ReportingPolicy.ERROR)
-public abstract class UnmappableDeepNestingMapper extends BaseDeepNestingMapper {
+public abstract class UnmappableTargetDeepListMapper extends BaseDeepListMapper {
 }

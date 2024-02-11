@@ -5,11 +5,13 @@
  */
 package org.mapstruct.ap.test.nestedbeans.unmappable.erroneous;
 
+import static org.mapstruct.ReportingPolicy.ERROR;
+import static org.mapstruct.ReportingPolicy.IGNORE;
+
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseValuePropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
 
-@Mapper(uses = RoofTypeMapper.class, unmappedTargetPolicy = ReportingPolicy.ERROR)
-public abstract class UnmappableValuePropertyMapper extends BaseValuePropertyMapper {
+@Mapper( uses = RoofTypeMapper.class, unmappedTargetPolicy = IGNORE, unmappedSourcePolicy = ERROR )
+public abstract class UnmappableSourceValuePropertyMapper extends BaseValuePropertyMapper {
 }
