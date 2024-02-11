@@ -1682,14 +1682,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
             else if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
-                Message unmappedPropertiesMsg =
-                                unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                                Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR :
-                                Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
-                Message unmappedForgedPropertiesMsg =
-                                unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
-                                Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
-                                Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
+                Message unmappedPropertiesMsg;
+                Message unmappedForgedPropertiesMsg;
+                if ( unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ) {
+                    unmappedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR;
+                    unmappedForgedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR;
+                }
+                else {
+                    unmappedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
+                    unmappedForgedPropertiesMsg = Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
+                }
 
                 reportErrorForUnmappedProperties(
                     unprocessedTargetProperties,
