@@ -7,14 +7,13 @@ package org.mapstruct.ap.test.accessibility.referenced;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = ReferencedMapperProtected.class, unmappedSourcePolicy = ReportingPolicy.WARN)
+@Mapper(uses = ReferencedMapperProtected.class)
 public interface SourceTargetMapperProtected {
 
     SourceTargetMapperProtected INSTANCE = Mappers.getMapper( SourceTargetMapperProtected.class );
