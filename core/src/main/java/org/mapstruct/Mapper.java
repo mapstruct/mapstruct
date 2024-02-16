@@ -77,7 +77,7 @@ import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
  * @see Javadoc
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Mapper {
 
     /**
