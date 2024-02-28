@@ -71,6 +71,7 @@ public enum Message {
     PROPERTYMAPPING_DEFAULT_EXPERSSION_AND_NVPMS( "DefaultExpression and nullValuePropertyMappingStrategy are both defined in @Mapping, either define a defaultExpression or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_IGNORE_AND_NVPMS( "Ignore and nullValuePropertyMappingStrategy are both defined in @Mapping, either define ignore or an nullValuePropertyMappingStrategy." ),
     PROPERTYMAPPING_TARGET_THIS_AND_IGNORE( "Using @Mapping( target = \".\", ignore = true ) is not allowed. You need to use @BeanMapping( ignoreByDefault = true ) if you would like to ignore all non explicitly mapped target properties." ),
+    PROPERTYMAPPING_TARGET_THIS_NO_SOURCE( "Using @Mapping( target = \".\") requires a source property. Expression or constant could not be used as a source."),
     PROPERTYMAPPING_EXPRESSION_AND_QUALIFIER_BOTH_DEFINED("Expression and a qualifier both defined in @Mapping, either define an expression or a qualifier."),
     PROPERTYMAPPING_INVALID_EXPRESSION( "Value for expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION( "Value for default expression must be given in the form \"java(<EXPRESSION>)\"." ),
