@@ -26,7 +26,8 @@ public class Issue3485Test {
                     @Diagnostic(type = Issue3485Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 25,
-                            message = "Using @Mapping( target = \".\") requires a source property. Expression or constant could not be used as a source.")
+                            message = "Using @Mapping( target = \".\") requires a source property. Expression or " +
+                                    "constant could not be used as a source.")
             })
     void thisMappingWithoutSource() {
     }
