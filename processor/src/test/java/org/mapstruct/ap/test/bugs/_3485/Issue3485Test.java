@@ -16,14 +16,13 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
  * @author hduelme
  */
 @IssueKey("3463")
-@WithClasses({
-        Issue3485Mapper.class
-})
 public class Issue3485Test {
+
     @ProcessorTest
+    @WithClasses(ErroneousIssue3485Mapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
-                    @Diagnostic(type = Issue3485Mapper.class,
+                    @Diagnostic(type = ErroneousIssue3485Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 33,
                             message = "Using @Mapping( target = \".\") requires a source property. Expression or " +

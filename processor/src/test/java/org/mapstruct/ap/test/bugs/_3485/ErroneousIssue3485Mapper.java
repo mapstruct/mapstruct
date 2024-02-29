@@ -14,9 +14,9 @@ import org.mapstruct.factory.Mappers;
  * @author hduelme
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface Issue3485Mapper {
+public interface ErroneousIssue3485Mapper {
 
-    Issue3485Mapper INSTANCE = Mappers.getMapper( Issue3485Mapper.class );
+    ErroneousIssue3485Mapper INSTANCE = Mappers.getMapper( ErroneousIssue3485Mapper.class );
     class Target {
         private final String value;
 
