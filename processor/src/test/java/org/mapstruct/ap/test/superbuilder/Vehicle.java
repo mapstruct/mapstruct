@@ -3,19 +3,8 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.lombok.superbuilder;
+package org.mapstruct.ap.test.superbuilder;
 
-/**
- * Delomboked version of a non-abstract super class using a <code>lombok.experimental.SuperBuilder</code>.
- * <p>
- * <pre>
- * &#64;SuperBuilder
- * &#64;Getter
- * public class Vehicle {
- *     private final int amountOfTires;
- * }
- * </pre>
- */
 public class Vehicle {
 
     private final int amountOfTires;
@@ -32,9 +21,8 @@ public class Vehicle {
         return this.amountOfTires;
     }
 
-    // CHECKSTYLE:OFF
-    public static abstract class VehicleBuilder<C extends Vehicle, B extends VehicleBuilder<C, B>> {
-        // CHECKSTYLE:ON
+    public abstract static class VehicleBuilder<C extends Vehicle, B extends VehicleBuilder<C, B>> {
+
         private int amountOfTires;
 
         public B amountOfTires(int amountOfTires) {
@@ -45,10 +33,6 @@ public class Vehicle {
         protected abstract B self();
 
         public abstract C build();
-
-        public String toString() {
-            return "Vehicle.VehicleBuilder(amountOfTires=" + this.amountOfTires + ")";
-        }
     }
 
     private static final class VehicleBuilderImpl extends VehicleBuilder<Vehicle, VehicleBuilderImpl> {

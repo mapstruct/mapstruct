@@ -3,14 +3,14 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.lombok.superbuilder;
+package org.mapstruct.ap.test.superbuilder;
 
-public class CarDto extends VehicleDto {
+public class InheritedAbstractCarDto extends AbstractVehicleDto {
 
     private final String manufacturer;
 
-    public CarDto(int amountOfTires, String manufacturer, PassengerDto passenger) {
-        super( amountOfTires, passenger );
+    public InheritedAbstractCarDto(int amountOfTires, String manufacturer) {
+        super( amountOfTires );
         this.manufacturer = manufacturer;
     }
 

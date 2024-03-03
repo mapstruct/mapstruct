@@ -3,20 +3,8 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.lombok.superbuilder;
+package org.mapstruct.ap.test.superbuilder;
 
-/**
- * Delomboked version of a class inheriting an intermediate super class
- * via <code>lombok.experimental.SuperBuilder</code>.
- * <p>
- * <pre>
- * &#64;SuperBuilder
- * &#64;Getter
- * public class MuscleCar extends Car {
- *     private final float horsePower;
- * }
- * </pre>
- */
 public class MuscleCar extends Car {
 
     private final float horsePower;
@@ -34,9 +22,9 @@ public class MuscleCar extends Car {
         return this.horsePower;
     }
 
-    // CHECKSTYLE:OFF
-    public static abstract class MuscleCarBuilder<C extends MuscleCar, B extends MuscleCarBuilder<C, B>> extends CarBuilder<C, B> {
-        // CHECKSTYLE:ON
+    public abstract static class MuscleCarBuilder<C extends MuscleCar, B extends MuscleCarBuilder<C, B>>
+        extends CarBuilder<C, B> {
+
         private float horsePower;
 
         public B horsePower(float horsePower) {
@@ -47,10 +35,6 @@ public class MuscleCar extends Car {
         protected abstract B self();
 
         public abstract C build();
-
-        public String toString() {
-            return "MuscleCar.MuscleCarBuilder(super=" + super.toString() + ", horsePower=" + this.horsePower + ")";
-        }
     }
 
     private static final class MuscleCarBuilderImpl extends MuscleCarBuilder<MuscleCar, MuscleCarBuilderImpl> {

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.lombok.superbuilder;
+package org.mapstruct.ap.test.superbuilder;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     CarMapper.class
 })
 @IssueKey("3524")
-public class LombokSuperBuilderTest {
+public class SuperBuilderTest {
 
     @ProcessorTest
     public void simpleMapping() {

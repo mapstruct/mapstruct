@@ -3,19 +3,8 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.lombok.superbuilder;
+package org.mapstruct.ap.test.superbuilder;
 
-/**
- * Delomboked version of a class inheriting an abstract super class via <code>lombok.experimental.SuperBuilder</code>.
- * <p>
- * <pre>
- * &#64;SuperBuilder
- * &#64;Getter
- * public class InheritedAbstractCar extends AbstractVehicle {
- *     private final String manufacturer;
- * }
- * </pre>
- */
 public class InheritedAbstractCar extends AbstractVehicle {
 
     private final String manufacturer;
@@ -33,9 +22,9 @@ public class InheritedAbstractCar extends AbstractVehicle {
         return this.manufacturer;
     }
 
-    // CHECKSTYLE:OFF
-    public static abstract class InheritedAbstractCarBuilder<C extends InheritedAbstractCar, B extends InheritedAbstractCarBuilder<C, B>>
-        // CHECKSTYLE:ON
+    public abstract static class InheritedAbstractCarBuilder<C extends InheritedAbstractCar,
+        B extends InheritedAbstractCarBuilder<C, B>>
+
         extends AbstractVehicleBuilder<C, B> {
         private String manufacturer;
 
@@ -47,11 +36,6 @@ public class InheritedAbstractCar extends AbstractVehicle {
         protected abstract B self();
 
         public abstract C build();
-
-        public String toString() {
-            return "InheritedAbstractCar.InheritedAbstractCarBuilder(super=" + super.toString() + ", manufacturer=" +
-                this.manufacturer + ")";
-        }
     }
 
     private static final class InheritedAbstractCarBuilderImpl
