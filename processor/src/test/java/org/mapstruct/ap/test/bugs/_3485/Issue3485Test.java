@@ -26,7 +26,7 @@ public class Issue3485Test {
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 33,
                             message = "Using @Mapping( target = \".\") requires a source property. Expression or " +
-                                    "constant could not be used as a source.")
+                                    "constant cannot be used as a source.")
             })
     void thisMappingWithoutSource() {
     }
