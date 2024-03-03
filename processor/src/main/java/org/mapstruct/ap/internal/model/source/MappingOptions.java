@@ -260,6 +260,9 @@ public class MappingOptions extends DelegatingOptions {
         else if ( ".".equals( gem.target().get() ) && gem.ignore().hasValue() && gem.ignore().getValue() ) {
             message = Message.PROPERTYMAPPING_TARGET_THIS_AND_IGNORE;
         }
+        else if ( ".".equals( gem.target().get() ) && !gem.source().hasValue() ) {
+            message = Message.PROPERTYMAPPING_TARGET_THIS_NO_SOURCE;
+        }
 
         if ( message == null ) {
             return true;
