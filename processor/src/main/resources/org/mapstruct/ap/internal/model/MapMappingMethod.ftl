@@ -52,7 +52,11 @@
         <@includeModel object=valueAssignment
                    targetWriteAccessorName=valueVariableName
                    targetType=resultElementTypes[1].typeBound/>
-        ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
+        <#if keyMappingVariableName?? >
+          ${resultName}.put( this.${keyMappingVariableName}.getOrDefault( ${keyVariableName}, ${keyVariableName} ), ${valueVariableName} );
+        <#else>
+          ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
+        </#if>
     }
     <#list afterMappingReferences as callback>
     	<#if callback_index = 0>

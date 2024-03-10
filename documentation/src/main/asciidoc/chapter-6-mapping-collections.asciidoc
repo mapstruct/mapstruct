@@ -146,6 +146,60 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
 ----
 ====
 
+It is also possible to reassign keys of a map-based mapping method when the keys are of type `java.lang.String`. The following shows an example:
+
+.Map mapping method with reassigning keys
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public interface CsvMapMapper {
+
+    @Mapping(target = "payments", source = "Raw_Payments")
+    @Mapping(target = "count", source = "Raw_Count")
+    Map<String, Long> mapCsvContent(Map<String, String> source);
+}
+----
+====
+
+The generated mapper will look like:
+
+.Map mapping method with reassigning keys generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CsvMapMapperImpl implements CsvMapMapper {
+
+    private final Map<String, String> mapCsvContentKeyMappings;
+
+    public CsvMapMapperImpl() {
+        this.mapCsvContentKeyMappings = new HashMap<>();
+        this.mapCsvContentKeyMappings.put( "Raw_Payments", "payments" );
+        this.mapCsvContentKeyMappings.put( "Raw_Count", "count" );
+    }
+
+    @Override
+    public Map<String, Long> mapCsvContent(Map<String, String> source) {
+        if ( source == null ) {
+            return null;
+        }
+
+        Map<String, Long> map = new LinkedHashMap<String, Long>();
+
+        for ( Map.Entry<String, String> entry : source.entrySet() ) {
+            String key = entry.getKey();
+            Long value = Long.parseLong( entry.getValue() );
+            map.put( this.mapCsvContentKeyMappings.getOrDefault( key, key ), value );
+        }
+
+        return map;
+    }
+}
+----
+====
+
 [[collection-mapping-strategies]]
 === Collection mapping strategies
 
