@@ -12,7 +12,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.mapstruct.control.MappingControl;
 
@@ -137,4 +142,18 @@ public @interface IterableMapping {
      */
     Class<? extends Annotation> elementMappingControl() default MappingControl.class;
 
+    /**
+     * If set to {@code true}, the target {@code Iterable} will not be modifiable.
+     *
+     * @return whether the returned {@code Iterable} shall be unmodifiable
+     *
+     * @since 1.6
+     *
+     * @see java.util.Collections#unmodifiableCollection(Collection)
+     * @see java.util.Collections#unmodifiableList(List)
+     * @see java.util.Collections#unmodifiableSet(Set)
+     * @see java.util.Collections#unmodifiableSortedSet(SortedSet)
+     * @see java.util.Collections#unmodifiableNavigableSet(NavigableSet)
+     */
+    boolean unmodifiable() default false;
 }

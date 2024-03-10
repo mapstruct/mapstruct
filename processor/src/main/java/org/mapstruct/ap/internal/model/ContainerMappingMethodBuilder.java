@@ -40,6 +40,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
     private AnnotationMirror positionHint;
+    private boolean unmodifiable;
 
     ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
@@ -63,6 +64,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     public B positionHint(AnnotationMirror positionHint) {
         this.positionHint = positionHint;
+        return myself;
+    }
+
+    public B unmodifiable(boolean unmodifiable) {
+        this.unmodifiable = unmodifiable;
         return myself;
     }
 
@@ -161,7 +167,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
-            selectionParameters
+            selectionParameters,
+            unmodifiable
         );
     }
 
@@ -178,7 +185,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-        SelectionParameters selectionParameters);
+        SelectionParameters selectionParameters, boolean unmodifiable);
 
     protected abstract Type getElementType(Type parameterType);
 

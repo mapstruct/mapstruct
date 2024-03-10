@@ -34,14 +34,17 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final String index2Name;
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
+    private final Set<Type> helperImports;
     private IterableCreation iterableCreation;
 
+    //CHECKSTYLE:OFF
     ContainerMappingMethod(Method method, List<Annotation> annotations,
                            Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters, Set<Type> helperImports) {
+    //CHECKSTYLE:ON
         super( method, annotations, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
         this.elementAssignment = parameterAssignment;
@@ -49,6 +52,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         this.selectionParameters = selectionParameters;
         this.index1Name = Strings.getSafeVariableName( "i", existingVariables );
         this.index2Name = Strings.getSafeVariableName( "j", existingVariables );
+        this.helperImports = helperImports;
 
         Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
@@ -96,6 +100,11 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         if ( iterableCreation != null ) {
             types.addAll( iterableCreation.getImportTypes() );
         }
+
+        if ( helperImports != null ) {
+            types.addAll( helperImports );
+        }
+
         return types;
     }
 

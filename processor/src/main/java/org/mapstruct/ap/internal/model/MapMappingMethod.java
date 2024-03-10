@@ -5,12 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -24,6 +18,13 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -39,6 +40,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     private final Assignment valueAssignment;
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
+    private final boolean unmodifiable;
+    private final Set<Type> helperImports;
+
     private IterableCreation iterableCreation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
@@ -47,6 +51,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         private FormattingParameters valueFormattingParameters;
         private SelectionParameters keySelectionParameters;
         private SelectionParameters valueSelectionParameters;
+        private boolean unmodifiable;
 
         public Builder() {
             super( Builder.class );
@@ -69,6 +74,11 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         public Builder valueFormattingParameters(FormattingParameters valueFormattingParameters) {
             this.valueFormattingParameters = valueFormattingParameters;
+            return this;
+        }
+
+        public Builder unmodifiable(boolean unmodifiable) {
+            this.unmodifiable = unmodifiable;
             return this;
         }
 
@@ -201,6 +211,11 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, null, ctx, existingVariables );
 
+            final Set<Type> helperImports = new HashSet<>();
+            if ( unmodifiable ) {
+                helperImports.add( ctx.getTypeFactory().getType( Collections.class ) );
+            }
+
             return new MapMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -210,7 +225,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                helperImports,
+                unmodifiable
             );
         }
 
@@ -229,16 +246,21 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     }
 
+    //CHECKSTYLE:OFF
     private MapMappingMethod(Method method, List<Annotation> annotations,
                              Collection<String> existingVariableNames, Assignment keyAssignment,
                              Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                             List<LifecycleCallbackMethodReference> afterMappingReferences, Set<Type> helperImports,
+                             boolean unmodifiable) {
+    //CHECKSTYLE:ON
         super( method, annotations, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
+        this.helperImports = helperImports;
+        this.unmodifiable = unmodifiable;
         Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
@@ -295,6 +317,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             types.addAll( iterableCreation.getImportTypes() );
         }
 
+        if ( helperImports != null ) {
+            types.addAll( helperImports );
+        }
+
         return types;
     }
 
@@ -324,5 +350,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             iterableCreation = IterableCreation.create( this, getSourceParameter() );
         }
         return iterableCreation;
+    }
+
+    public boolean isUnmodifiable() {
+        return unmodifiable;
     }
 }
