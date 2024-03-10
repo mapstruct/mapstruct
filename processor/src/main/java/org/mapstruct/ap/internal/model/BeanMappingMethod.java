@@ -1652,7 +1652,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     sourceParameter.getType().getPresenceChecker( targetPropertyName );
 
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
-                Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
+                Type returnType = ctx.getTypeFactory().getReturnType( sourceReadAccessor );
                 sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
                                                                      .type( returnType )
                                                                      .readAccessor( sourceReadAccessor )
