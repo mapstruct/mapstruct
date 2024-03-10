@@ -1,0 +1,60 @@
+[[mapping-streams]]
+== Stream的映射
+
+`java.util.Stream` 的映射类似于集合类型的映射，也是在mapper接口中按需定义方法，并在上面指定对应source与target的类型。
+
+生成的代码会从已有的 `Iterable`/array 中生成 `Stream`，或者从 `Stream` 中收集数据生成 `Iterable`/array。如果相互映射的元素之间存在映射方法或隐式类型转换，那么该转换会以 `Stream#map()` 的方式实现。下面是一个具体的例子：
+
+.Mapper with stream mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    Set<String> integerStreamToStringSet(Stream<Integer> integers);
+
+    List<CarDto> carsToCarDtos(Stream<Car> cars);
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+在生成的 `integerStreamToStringSet()` 实现中，展示了每个元素如何从 `Integer` 转换到`String`，同时，`carsToCarDtos()` 的实现中，展示了每个元素如何使用 `carToCarDto()` 来完成转换：
+
+.Generated stream mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@Override
+public Set<String> integerStreamToStringSet(Stream<Integer> integers) {
+    if ( integers == null ) {
+        return null;
+    }
+
+    return integers.map( integer -> String.valueOf( integer ) )
+        .collect( Collectors.toCollection( LinkedHashSet<String>::new ) );
+}
+
+@Override
+public List<CarDto> carsToCarDtos(Stream<Car> cars) {
+    if ( cars == null ) {
+        return null;
+    }
+
+    return cars.map( car -> carToCarDto( car ) )
+        .collect( Collectors.toCollection( ArrayList<CarDto>::new ) );
+}
+----
+====
+
+[WARNING]
+====
+如果一个 `Stream` 转换为了 `Iterable`/array ，那该流就已经被消费了，所以不能再被消费。
+====
+
+在 `Stream` 映射到 `Iterable` 的过程中，创建新集合时关于类型的部分与<<implementation-types-for-collection-mappings>> 相同。
