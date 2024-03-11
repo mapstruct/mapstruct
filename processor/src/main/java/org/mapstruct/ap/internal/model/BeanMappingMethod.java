@@ -287,7 +287,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             if ( beanMapping != null ) {
                 for (String ignoreUnmapped : beanMapping.getIgnoreUnmappedTargetProperties()) {
-                    MappingOptions forIgnore = MappingOptions.forIgnore( ignoreUnmapped );
+                    MappingOptions forIgnore = MappingOptions.
+                            forBeanMappingIgnoreTargets( ignoreUnmapped, method.getExecutable() );
+
                     mappingReferences.getMappingReferences().add( new MappingReference(
                             forIgnore,
                             new TargetReference(null, Arrays.asList( ignoreUnmapped.split(  "\\."  ) )),
