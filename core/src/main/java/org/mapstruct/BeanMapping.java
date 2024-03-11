@@ -153,6 +153,28 @@ public @interface BeanMapping {
     String[] ignoreUnmappedSourceProperties() default {};
 
     /**
+     * Used to support multiple target properties ignoring.
+     * Repeated declarations of the ignore property of multiple {@link Mapping} annotations can be replaced
+     *
+     *
+     * <p> For example, see the following Mapping list </p>
+     * <p>&#64;Mapping(target = "foo", ignore = true)</p>
+     * <p>&#64;Mapping(target = "bar", ignore = true)</p>
+     * <p>&#64;Mapping(target = "baz", ignore = true)</p>
+     * <p>&#64;Mapping(target = "qux", ignore = true)</p>
+     *
+     *
+     * <p> Can be simplified as
+     * &#64;BeanMapping(ignoreTargets = ["foo", "bar", "baz", "qux"]) </p>
+     *
+     * @return The target properties should be ignored
+     *
+     * @since 1.7
+     */
+    String[] ignoreTargets() default {};
+
+
+    /**
      * How unmapped properties of the source type of a mapping should be reported.
      * If no policy is configured, the policy given via {@link MapperConfig#unmappedSourcePolicy()} or
      * {@link Mapper#unmappedSourcePolicy()} will be applied, using {@link ReportingPolicy#IGNORE} by default.

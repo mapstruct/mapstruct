@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -283,6 +284,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             initializeMappingReferencesIfNeeded( resultTypeToMap );
+
+            if ( beanMapping != null ) {
+                for (String ignoreUnmapped : beanMapping.getIgnoreUnmappedTargetProperties()) {
+                    MappingOptions forIgnore = MappingOptions.
+                            forBeanMappingIgnoreTargets( ignoreUnmapped, method.getExecutable() );
+
+                    mappingReferences.getMappingReferences().add( new MappingReference(
+                            forIgnore,
+                            new TargetReference(null, Arrays.asList( ignoreUnmapped.split(  "\\."  ) )),
+                            null
+
+                    ) );
+                }
+            }
 
             boolean shouldHandledDefinedMappings = shouldHandledDefinedMappings( resultTypeToMap );
 
