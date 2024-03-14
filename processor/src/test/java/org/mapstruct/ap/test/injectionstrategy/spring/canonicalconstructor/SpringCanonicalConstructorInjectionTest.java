@@ -74,9 +74,10 @@ public class SpringCanonicalConstructorInjectionTest {
         generatedSource.forMapper( UserSpringCanonicalConstructorMapper.class )
             .content()
             .contains(
-                "    public UserSpringCanonicalConstructorMapperImpl(ContactRepository contactRepository) {" + lineSeparator() +
-                "        super( contactRepository );" + lineSeparator() +
-                "    }" );
+                "    public UserSpringCanonicalConstructorMapperImpl(ContactRepository contactRepository) {" +
+                    lineSeparator() +
+                    "        super( contactRepository );" + lineSeparator() +
+                    "    }" );
     }
 
 }
