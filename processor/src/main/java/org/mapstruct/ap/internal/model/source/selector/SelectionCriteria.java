@@ -97,6 +97,13 @@ public class SelectionCriteria {
         return type == Type.PRESENCE_CHECK;
     }
 
+    /**
+     * @return {@code true} if source parameter check methods should be selected, {@code false} otherwise
+     */
+    public boolean isSourceParameterCheckRequired() {
+        return type == Type.SOURCE_PARAMETER_CHECK;
+    }
+
     public void setIgnoreQualifiers(boolean ignoreQualifiers) {
         this.ignoreQualifiers = ignoreQualifiers;
     }
@@ -177,6 +184,10 @@ public class SelectionCriteria {
         return new SelectionCriteria( selectionParameters, null, null, Type.PRESENCE_CHECK );
     }
 
+    public static SelectionCriteria forSourceParameterCheckMethods(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, null, Type.SOURCE_PARAMETER_CHECK );
+    }
+
     public static SelectionCriteria forSubclassMappingMethods(SelectionParameters selectionParameters,
         MappingControl mappingControl) {
         return new SelectionCriteria( selectionParameters, mappingControl, null, Type.SELF_NOT_ALLOWED );
@@ -187,6 +198,7 @@ public class SelectionCriteria {
         OBJECT_FACTORY,
         LIFECYCLE_CALLBACK,
         PRESENCE_CHECK,
+        SOURCE_PARAMETER_CHECK,
         SELF_NOT_ALLOWED,
     }
 }

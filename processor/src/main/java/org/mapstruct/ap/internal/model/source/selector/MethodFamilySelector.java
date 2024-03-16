@@ -28,6 +28,7 @@ public class MethodFamilySelector implements MethodSelector {
             if ( method.getMethod().isObjectFactory() == criteria.isObjectFactoryRequired()
                 && method.getMethod().isLifecycleCallbackMethod() == criteria.isLifecycleCallbackRequired()
                 && method.getMethod().isPresenceCheck() == criteria.isPresenceCheckRequired()
+                && method.getMethod().isSourceParameterCheck() == criteria.isSourceParameterCheckRequired()
             ) {
 
                 result.add( method );

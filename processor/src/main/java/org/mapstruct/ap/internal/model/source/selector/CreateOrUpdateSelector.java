@@ -32,6 +32,7 @@ public class CreateOrUpdateSelector implements MethodSelector {
                                                                          SelectionContext context) {
         SelectionCriteria criteria = context.getSelectionCriteria();
         if ( criteria.isLifecycleCallbackRequired() || criteria.isObjectFactoryRequired()
+            || criteria.isSourceParameterCheckRequired()
             || criteria.isPresenceCheckRequired() ) {
             return methods;
         }

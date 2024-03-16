@@ -143,6 +143,7 @@ public enum Message {
     GENERAL_AMBIGUOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
     GENERAL_AMBIGUOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
     GENERAL_AMBIGUOUS_PRESENCE_CHECK_METHOD( "Ambiguous presence check methods found for checking %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
+    GENERAL_AMBIGUOUS_SOURCE_PARAMETER_CHECK_METHOD( "Ambiguous source parameter check methods found for checking %s: %s. See " + FAQ_AMBIGUOUS_URL + " for more info." ),
     GENERAL_AMBIGUOUS_CONSTRUCTORS( "Ambiguous constructors found for creating %s: %s. Either declare parameterless constructor or annotate the default constructor with an annotation named @Default." ),
     GENERAL_CONSTRUCTOR_PROPERTIES_NOT_MATCHING_PARAMETERS( "Incorrect @ConstructorProperties for %s. The size of the @ConstructorProperties does not match the number of constructor parameters" ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),

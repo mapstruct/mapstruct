@@ -167,7 +167,7 @@ public class SelectionContext {
                                                                           SelectionParameters selectionParameters,
                                                                           Parameter sourceParameter,
                                                                           TypeFactory typeFactory) {
-        SelectionCriteria criteria = SelectionCriteria.forPresenceCheckMethods( selectionParameters );
+        SelectionCriteria criteria = SelectionCriteria.forSourceParameterCheckMethods( selectionParameters );
         Type booleanType = typeFactory.getType( Boolean.class );
         return new SelectionContext(
             null,
