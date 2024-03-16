@@ -99,6 +99,14 @@ public interface Method {
     }
 
     /**
+     * Returns whether the method is designated as a source parameter check method
+     * @return {@code true} if it is a source parameter check method
+     */
+    default boolean isSourceParameterCheck() {
+        return false;
+    }
+
+    /**
      * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
      *
      * @return target type parameter (when present) null otherwise.

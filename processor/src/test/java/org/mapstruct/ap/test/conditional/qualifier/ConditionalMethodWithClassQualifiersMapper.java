@@ -15,7 +15,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.Qualifier;
-import org.mapstruct.TargetPropertyName;
 import org.mapstruct.ap.test.conditional.Employee;
 import org.mapstruct.ap.test.conditional.EmployeeDto;
 import org.mapstruct.factory.Mappers;
@@ -45,13 +44,13 @@ public interface ConditionalMethodWithClassQualifiersMapper {
 
         @Condition
         @Named("american")
-        static boolean isAmericanCitizen(EmployeeDto employerDto, @TargetPropertyName String propertyName) {
+        static boolean isAmericanCitizen(EmployeeDto employerDto) {
             return "US".equals( employerDto.getCountry() );
         }
 
         @Condition
         @Named("british")
-        static boolean isBritishCitizen(EmployeeDto employeeDto, @TargetPropertyName String propertyName) {
+        static boolean isBritishCitizen(EmployeeDto employeeDto) {
             return "UK".equals( employeeDto.getCountry() );
         }
     }

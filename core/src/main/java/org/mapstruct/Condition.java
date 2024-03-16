@@ -11,9 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks a method as a <em>presence check method</em> to check check for presence in beans.
+ * This annotation marks a method as a <em>presence check method</em> to check for presence in beans.
  * <p>
- * By default bean properties are checked against {@code null} or using a presence check method in the source bean.
+ * By default, bean properties are checked against {@code null} or using a presence check method in the source bean.
  * If a presence check method is available then it will be used instead.
  * <p>
  * Presence check methods have to return {@code boolean}.
@@ -48,8 +48,7 @@ import java.lang.annotation.Target;
  *
  * The following implementation of {@code MovieMapper} will be generated:
  *
- * <pre>
- * <code>
+ * <pre><code>
  * public class MovieMapperImpl implements MovieMapper {
  *
  *     &#64;Override
@@ -67,11 +66,11 @@ import java.lang.annotation.Target;
  *         return movieDto;
  *     }
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @author Filip Hrisafov
  * @since 1.5
+ * @see SourceCondition
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
