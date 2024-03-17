@@ -411,6 +411,26 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 removeMappingReferencesWithoutSourceParameters( afterMappingReferencesWithFinalizedReturnType );
             }
 
+            Map<String, PresenceCheck> presenceChecksByParameter = new LinkedHashMap<>();
+            for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                PresenceCheck parameterPresenceCheck = PresenceCheckMethodResolver.getPresenceCheckForSourceParameter(
+                    method,
+                    selectionParameters,
+                    sourceParameter,
+                    ctx
+                );
+                if ( parameterPresenceCheck != null ) {
+                    presenceChecksByParameter.put( sourceParameter.getName(), parameterPresenceCheck );
+                }
+                else if ( !sourceParameter.getType().isPrimitive() ) {
+                    presenceChecksByParameter.put(
+                        sourceParameter.getName(),
+                        new NullPresenceCheck( sourceParameter.getName() )
+                    );
+                }
+            }
+
+
             return new BeanMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -426,7 +446,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 afterMappingReferencesWithFinalizedReturnType,
                 finalizeMethod,
                 mappingReferences,
-                subclasses
+                subclasses,
+                presenceChecksByParameter
             );
         }
 
@@ -1891,7 +1912,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
-                              List<SubclassMapping> subclassMappings) {
+                              List<SubclassMapping> subclassMappings,
+                              Map<String, PresenceCheck> presenceChecksByParameter) {
         super(
             method,
             annotations,
@@ -1923,18 +1945,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         // parameter mapping.
         this.mappingsByParameter = new HashMap<>();
         this.constantMappings = new ArrayList<>( propertyMappings.size() );
-        this.presenceChecksByParameter = new LinkedHashMap<>();
+        this.presenceChecksByParameter = presenceChecksByParameter;
         this.constructorMappingsByParameter = new LinkedHashMap<>();
         this.constructorConstantMappings = new ArrayList<>();
         Set<String> sourceParameterNames = new HashSet<>();
         for ( Parameter sourceParameter : getSourceParameters() ) {
             sourceParameterNames.add( sourceParameter.getName() );
-            if ( !sourceParameter.getType().isPrimitive() ) {
-                presenceChecksByParameter.put(
-                    sourceParameter.getName(),
-                    new NullPresenceCheck( sourceParameter.getName() )
-                );
-            }
         }
         for ( PropertyMapping mapping : propertyMappings ) {
             if ( mapping.isConstructorMapping() ) {

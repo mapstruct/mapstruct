@@ -133,6 +133,14 @@ public class Parameter extends ModelElement {
         return varArgs;
     }
 
+    public boolean isSourceParameter() {
+        return !isMappingTarget() &&
+            !isTargetType() &&
+            !isMappingContext() &&
+            !isSourcePropertyName() &&
+            !isTargetPropertyName();
+    }
+
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
@@ -222,14 +230,6 @@ public class Parameter extends ModelElement {
 
     public static Parameter getTargetPropertyNameParameter(List<Parameter> parameters) {
       return parameters.stream().filter( Parameter::isTargetPropertyName ).findAny().orElse( null );
-    }
-
-    private static boolean isSourceParameter( Parameter parameter ) {
-        return !parameter.isMappingTarget() &&
-               !parameter.isTargetType() &&
-               !parameter.isMappingContext() &&
-               !parameter.isSourcePropertyName() &&
-               !parameter.isTargetPropertyName();
     }
 
 }

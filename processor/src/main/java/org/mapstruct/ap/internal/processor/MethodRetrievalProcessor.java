@@ -358,6 +358,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
                 if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory()
+                    || sourceMethod.isSourceParameterCheck()
                     || sourceMethod.isPresenceCheck() ) {
                     contextProvidedMethods.add( sourceMethod );
                 }

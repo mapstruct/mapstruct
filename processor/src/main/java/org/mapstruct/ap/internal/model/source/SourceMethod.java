@@ -17,6 +17,7 @@ import javax.lang.model.element.Modifier;
 
 import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.SourceConditionGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -51,6 +52,7 @@ public class SourceMethod implements Method {
     private final Parameter targetPropertyNameParameter;
     private final boolean isObjectFactory;
     private final boolean isPresenceCheck;
+    private final boolean isSourceParameterCheck;
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
@@ -255,6 +257,7 @@ public class SourceMethod implements Method {
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
         this.isPresenceCheck = determineIfIsPresenceCheck();
+        this.isSourceParameterCheck = determineIfIsSourceParameterCheck();
 
         this.typeUtils = builder.typeUtils;
         this.typeFactory = builder.typeFactory;
@@ -285,6 +288,19 @@ public class SourceMethod implements Method {
         }
 
         return ConditionGem.instanceOn( executable ) != null;
+    }
+
+    private boolean determineIfIsSourceParameterCheck() {
+        if ( returnType.isPrimitive() ) {
+            if ( !returnType.getName().equals( "boolean" ) ) {
+                return false;
+            }
+        }
+        else if ( !returnType.getFullyQualifiedName().equals( Boolean.class.getCanonicalName() ) ) {
+            return false;
+        }
+
+        return SourceConditionGem.instanceOn( executable ) != null;
     }
 
     @Override
@@ -570,6 +586,11 @@ public class SourceMethod implements Method {
     @Override
     public boolean isPresenceCheck() {
         return isPresenceCheck;
+    }
+
+    @Override
+    public boolean isSourceParameterCheck() {
+        return isSourceParameterCheck;
     }
 
     public boolean isAfterMappingMethod() {
