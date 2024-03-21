@@ -5,9 +5,11 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -22,6 +24,7 @@ public class CanonicalConstructor extends ModelElement implements Constructor {
     private final String name;
     private final List<ConstructorParameter> parameters;
     private boolean includeNoArgConstructor;
+    private List<Annotation> annotations;
     private final TypeFactory typeFactory;
 
     public CanonicalConstructor(String name, List<ConstructorParameter> parameters, boolean includeNoArgConstructor,
@@ -30,6 +33,7 @@ public class CanonicalConstructor extends ModelElement implements Constructor {
         this.parameters = parameters;
         this.includeNoArgConstructor = includeNoArgConstructor;
         this.typeFactory = typeFactory;
+        this.annotations = Collections.emptyList();
     }
 
     @Override
@@ -49,13 +53,21 @@ public class CanonicalConstructor extends ModelElement implements Constructor {
         this.includeNoArgConstructor = includeNoArgConstructor;
     }
 
+    public List<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<Annotation> annotations) {
+        this.annotations = annotations;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> importTypes = parameters.stream()
-            .flatMap( param -> param.getType().getImportTypes().stream() )
+        Set<Type> importTypes = Stream.concat( parameters.stream(), annotations.stream() )
+            .flatMap( type -> type.getImportTypes().stream() )
             .collect( Collectors.toSet() );
 
-        if (includeNoArgConstructor && parameters.stream().anyMatch( ConstructorParameter::isAnnotatedMapper )) {
+        if ( includeNoArgConstructor && parameters.stream().anyMatch( ConstructorParameter::isAnnotatedMapper ) ) {
             importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
         }
         return importTypes;

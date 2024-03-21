@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.AnnotatedSetter;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.AnnotationMapperReference;
 import org.mapstruct.ap.internal.model.CanonicalConstructor;
+import org.mapstruct.ap.internal.model.Constructor;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
@@ -76,14 +77,14 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
 
+        adjustConstructorToComponentModel( mapper.getConstructor() );
+
         if ( injectionStrategy == InjectionStrategyGem.CONSTRUCTOR ) {
             buildConstructors( mapper );
         }
         else if ( injectionStrategy == InjectionStrategyGem.SETTER ) {
             buildSetters( mapper );
         }
-
-        shouldHaveAdditionalNoArgsConstructor( mapper );
 
         return mapper;
     }
@@ -267,15 +268,16 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         return qualifiers;
     }
 
-    protected boolean additionalPublicEmptyConstructor() {
-        return false;
+    protected void adjustConstructorToComponentModel(Constructor constructor) {
+        if (constructor instanceof CanonicalConstructor ) {
+            CanonicalConstructor canonicalConstructor = (CanonicalConstructor) constructor;
+            canonicalConstructor.setIncludeNoArgConstructor( additionalPublicEmptyConstructor() );
+            canonicalConstructor.setAnnotations( getMapperReferenceAnnotations() );
+        }
     }
 
-    private void shouldHaveAdditionalNoArgsConstructor(Mapper mapper) {
-        if (mapper.getConstructor() instanceof CanonicalConstructor ) {
-            CanonicalConstructor constructor = (CanonicalConstructor) mapper.getConstructor();
-            constructor.setIncludeNoArgConstructor( additionalPublicEmptyConstructor() );
-        }
+    protected boolean additionalPublicEmptyConstructor() {
+        return false;
     }
 
     protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
