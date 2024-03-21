@@ -37,7 +37,6 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.CanonicalConstructor;
-import org.mapstruct.ap.internal.model.Constructor;
 import org.mapstruct.ap.internal.model.ConstructorParameter;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -52,7 +51,6 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
-import org.mapstruct.ap.internal.model.NoArgumentConstructor;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
@@ -855,7 +853,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         TypeElement element = mapper.getMapperDefinitionType().getTypeElement();
         if ( element.getModifiers().contains( Modifier.ABSTRACT ) && hasCanonicalConstructor( element ) ) {
             ExecutableElement superConstructor = constructorsIn( element.getEnclosedElements() ).get( 0 );
-            mapper.setConstructor( new CanonicalConstructor( mapper.getName(), getParameters( superConstructor ), true, typeFactory ) );
+            mapper.setConstructor( new CanonicalConstructor(
+                mapper.getName(),
+                getParameters( superConstructor ),
+                true,
+                typeFactory
+            ) );
         }
     }
 
