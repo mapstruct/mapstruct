@@ -15,12 +15,12 @@ public class ConstructorParameter extends ModelElement {
 
     private final Type type;
     private final String name;
-    private final boolean isMapper;
+    private final boolean isAnnotatedMapper;
 
-    public ConstructorParameter(Type type, String name, boolean isMapper) {
+    public ConstructorParameter(Type type, String name, boolean isAnnotatedMapper) {
         this.type = type;
         this.name = name;
-        this.isMapper = isMapper;
+        this.isAnnotatedMapper = isAnnotatedMapper;
     }
 
     public Type getType() {
@@ -31,8 +31,8 @@ public class ConstructorParameter extends ModelElement {
         return name;
     }
 
-    public boolean isMapper() {
-        return isMapper;
+    public boolean isAnnotatedMapper() {
+        return isAnnotatedMapper;
     }
 
     @Override

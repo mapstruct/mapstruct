@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.canonicalconstructor.spring;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
@@ -94,7 +93,6 @@ public class SpringCanonicalConstructorInjectionTest {
                     "    }" );
     }
 
-    @Disabled("TODO")
     @ProcessorTest
     public void shouldNotHaveNoArgsConstructor() {
         generatedSource.forMapper( UserSpringCanonicalConstructorMapper.class )

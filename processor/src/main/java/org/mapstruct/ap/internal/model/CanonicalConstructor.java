@@ -55,7 +55,9 @@ public class CanonicalConstructor extends ModelElement implements Constructor {
             .flatMap( param -> param.getType().getImportTypes().stream() )
             .collect( Collectors.toSet() );
 
-        importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
+        if (includeNoArgConstructor && parameters.stream().anyMatch( ConstructorParameter::isAnnotatedMapper )) {
+            importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
+        }
         return importTypes;
     }
 

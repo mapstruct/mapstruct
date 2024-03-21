@@ -21,7 +21,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -159,7 +158,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
-                MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                isAnnotatedMapper( usedMapper ),
                 hasSingletonInstance( usedMapper ),
                 typeFactory,
                 variableNames
@@ -872,12 +871,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .map( param -> new ConstructorParameter(
                 typeFactory.getType( param.asType() ),
                 param.getSimpleName().toString(),
-                isAnnotatedMapper( param )
+                isAnnotatedMapper( param.asType() )
             ) )
             .collect( Collectors.toList() );
     }
 
-    private boolean isAnnotatedMapper(VariableElement parameter) {
-        return MapperGem.instanceOn( typeUtils.asElement( parameter.asType() ) ) != null;
+    private boolean isAnnotatedMapper(TypeMirror type) {
+        return MapperGem.instanceOn( typeUtils.asElement( type ) ) != null;
     }
 }

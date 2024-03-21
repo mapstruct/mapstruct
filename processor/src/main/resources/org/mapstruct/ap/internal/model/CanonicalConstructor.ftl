@@ -10,8 +10,8 @@ public ${name}(<#list parameters as param><@includeModel object=param.type/> ${p
     super( <#list parameters as param>${param.name}<#if param_has_next>, </#if></#list> );
 }
 
-<#if shouldIncludeNoArgConstructor()??>
+<#if shouldIncludeNoArgConstructor()>
 public ${name}() {
-    super( <#list parameters as param><#if param.isMapper()>Mappers.getMapper( <@includeModel object=param.type/>.class )<#else>new <@includeModel object=param.type/>()</#if><#if param_has_next>, </#if></#list> );
+    super( <#list parameters as param><#if param.annotatedMapper>Mappers.getMapper( <@includeModel object=param.type/>.class )<#else>new <@includeModel object=param.type/>()</#if><#if param_has_next>, </#if></#list> );
 }
 </#if>
