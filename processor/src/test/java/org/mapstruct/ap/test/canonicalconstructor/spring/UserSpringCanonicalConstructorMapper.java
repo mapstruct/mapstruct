@@ -7,6 +7,8 @@ package org.mapstruct.ap.test.canonicalconstructor.spring;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
+import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
 
@@ -27,5 +29,9 @@ public abstract class UserSpringCanonicalConstructorMapper {
     }
 
     protected abstract UserDto map(UserEntity userEntity, String phoneNumber);
+
+    protected AddressDto map(AddressEntity addressEntity) {
+        return addressMapper.map( addressEntity );
+    }
 
 }

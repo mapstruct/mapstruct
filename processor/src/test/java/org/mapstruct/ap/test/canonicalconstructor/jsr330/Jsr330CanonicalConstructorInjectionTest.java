@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.canonicalconstructor.spring;
+package org.mapstruct.ap.test.canonicalconstructor.jsr330;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithSpring;
+import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -29,23 +29,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({
     UserEntity.class,
     UserDto.class,
-    UserSpringCanonicalConstructorMapper.class,
+    UserJsr330CanonicalConstructorMapper.class,
     ContactRepository.class,
     AddressEntity.class,
     AddressDto.class,
     AddressMapper.class,
 })
 @IssueKey("2257")
-@ComponentScan(basePackageClasses = SpringCanonicalConstructorInjectionTest.class)
+@ComponentScan(basePackageClasses = Jsr330CanonicalConstructorInjectionTest.class)
 @Configuration
-@WithSpring
-public class SpringCanonicalConstructorInjectionTest {
+@WithJavaxInject
+public class Jsr330CanonicalConstructorInjectionTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @Autowired
-    private UserSpringCanonicalConstructorMapper userMapper;
+    private UserJsr330CanonicalConstructorMapper userMapper;
+
     private ConfigurableApplicationContext context;
 
     @BeforeEach
@@ -84,20 +85,29 @@ public class SpringCanonicalConstructorInjectionTest {
     @ProcessorTest
     @SuppressWarnings("LineLength")
     public void shouldHaveCanonicalConstructorInjection() {
-        generatedSource.forMapper( UserSpringCanonicalConstructorMapper.class )
+        generatedSource.forMapper( UserJsr330CanonicalConstructorMapper.class )
             .content()
-            .contains(
-                "    public UserSpringCanonicalConstructorMapperImpl(ContactRepository contactRepository, AddressMapper addressMapper) {" +
-                    lineSeparator() +
-                    "        super( contactRepository, addressMapper );" + lineSeparator() +
-                    "    }" );
+            .contains( "    @Inject" + lineSeparator() +
+                "    public UserJsr330CanonicalConstructorMapperImpl(ContactRepository contactRepository, AddressMapper addressMapper) {" +
+                lineSeparator() +
+                "        super( contactRepository, addressMapper );" + lineSeparator() +
+                "    }" );
     }
 
     @ProcessorTest
     public void shouldNotHaveNoArgsConstructor() {
-        generatedSource.forMapper( UserSpringCanonicalConstructorMapper.class )
+        generatedSource.forMapper( UserJsr330CanonicalConstructorMapper.class )
             .content()
-            .doesNotContain( "public UserSpringCanonicalConstructorMapperImpl()" );
+            .doesNotContain( "public UserJsr330CanonicalConstructorMapperImpl()" );
     }
 
+    @ProcessorTest
+    public void shouldContainProperImports() {
+        generatedSource.forMapper( UserJsr330CanonicalConstructorMapper.class )
+            .content()
+            .contains( "import javax.inject.Inject;" )
+            .contains( "import javax.inject.Named;" )
+            .contains( "import javax.inject.Singleton;" )
+            .doesNotContain( "import jakarta.inject" );
+    }
 }

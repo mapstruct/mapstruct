@@ -3,25 +3,22 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.canonicalconstructor.defaultcomponentmodel;
+package org.mapstruct.ap.test.canonicalconstructor.jsr330;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
-public abstract class UserCanonicalConstructorMapper {
-
-    public static final UserCanonicalConstructorMapper INSTANCE =
-        Mappers.getMapper( UserCanonicalConstructorMapper.class );
+@Mapper(componentModel = MappingConstants.ComponentModel.JSR330)
+public abstract class UserJsr330CanonicalConstructorMapper {
 
     private final ContactRepository contactRepository;
     private final AddressMapper addressMapper;
 
-    public UserCanonicalConstructorMapper(ContactRepository contactRepository, AddressMapper addressMapper) {
+    public UserJsr330CanonicalConstructorMapper(ContactRepository contactRepository, AddressMapper addressMapper) {
         this.contactRepository = contactRepository;
         this.addressMapper = addressMapper;
     }
