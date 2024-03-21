@@ -6,6 +6,6 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.CanonicalConstructor" -->
-public ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+public ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
     super( <#list parameters as param>${param.name}<#if param_has_next>, </#if></#list> );
 }

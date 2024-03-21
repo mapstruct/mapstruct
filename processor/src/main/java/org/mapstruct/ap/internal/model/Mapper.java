@@ -8,14 +8,20 @@ package org.mapstruct.ap.internal.model;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import static javax.lang.model.util.ElementFilter.constructorsIn;
 
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
@@ -102,10 +108,6 @@ public class Mapper extends GeneratedType {
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
-            Constructor constructor = null;
-            if ( !fragments.isEmpty() ) {
-                constructor = new NoArgumentConstructor( implementationName, fragments );
-            }
 
             Type definitionType = typeFactory.getType( element );
 
@@ -123,11 +125,44 @@ public class Mapper extends GeneratedType {
                 suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 fields,
-                constructor,
+                getConstructor( implementationName ),
                 decorator,
                 extraImportedTypes,
                 javadoc
             );
+        }
+
+        private Constructor getConstructor(String implementationName) {
+            Constructor constructor = null;
+            if ( !fragments.isEmpty() ) {
+                constructor = new NoArgumentConstructor( implementationName, fragments );
+            }
+            else if ( element.getModifiers().contains( Modifier.ABSTRACT ) && hasCanonicalConstructor() ) {
+                ExecutableElement superConstructor = constructorsIn( element.getEnclosedElements() ).get( 0 );
+                constructor = new CanonicalConstructor( implementationName, getParameters( superConstructor ) );
+            }
+            return constructor;
+        }
+
+        private boolean hasCanonicalConstructor() {
+            List<ExecutableElement> constructors = constructorsIn( element.getEnclosedElements() );
+            return constructors.size() == 1 && !constructors.get( 0 ).getParameters().isEmpty();
+        }
+
+        private List<ConstructorParameter> getParameters(ExecutableElement superConstructor) {
+            return superConstructor.getParameters().stream()
+                .map( param -> new ConstructorParameter(
+                    typeFactory.getType( param.asType() ),
+                    param.getSimpleName().toString(),
+                    isAnnotatedMapper( param )
+                ) )
+                .collect( Collectors.toList() );
+        }
+
+        private static boolean isAnnotatedMapper(VariableElement parameter) {
+            return parameter.getAnnotationMirrors().stream()
+                .anyMatch( a -> "org.mapstruct.Mapper".contentEquals(
+                    ( (TypeElement) a.getAnnotationType().asElement() ).getQualifiedName() ) );
         }
 
     }

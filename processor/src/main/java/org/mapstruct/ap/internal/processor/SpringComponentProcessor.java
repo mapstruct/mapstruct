@@ -11,25 +11,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.model.CanonicalConstructor;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
-import org.mapstruct.ap.internal.model.common.Parameter;
-
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 
 import static javax.lang.model.element.ElementKind.PACKAGE;
-import static javax.lang.model.util.ElementFilter.constructorsIn;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -40,40 +33,6 @@ import static javax.lang.model.util.ElementFilter.constructorsIn;
  * @author Andreas Gudian
  */
 public class SpringComponentProcessor extends AnnotationBasedComponentModelProcessor {
-
-    @Override
-    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
-        super.process( context, mapperTypeElement, mapper );
-        buildCanonicalConstructor( mapperTypeElement, mapper );
-        return mapper;
-    }
-
-    private void buildCanonicalConstructor(TypeElement mapperTypeElement, Mapper mapper) {
-        if ( mapperTypeElement.getModifiers().contains( Modifier.ABSTRACT ) ) {
-            List<ExecutableElement> constructors = constructorsIn( mapperTypeElement.getEnclosedElements() );
-            if ( constructors.size() == 1 ) {
-                ExecutableElement canonicalConstructor = constructors.get( 0 );
-                if ( !canonicalConstructor.getParameters().isEmpty() ) {
-                    mapper.setConstructor( new CanonicalConstructor(
-                            mapper.getName(),
-                            getParameters( canonicalConstructor )
-                        )
-                    );
-                }
-            }
-        }
-    }
-
-    private List<Parameter> getParameters(ExecutableElement superConstructor) {
-        List<Parameter> parameters = new ArrayList<>();
-        for ( VariableElement parameter : superConstructor.getParameters() ) {
-            parameters.add( new Parameter(
-                parameter.getSimpleName().toString(),
-                getTypeFactory().getType( parameter.asType() )
-            ) );
-        }
-        return parameters;
-    }
 
     @Override
     protected String getComponentModelIdentifier() {
