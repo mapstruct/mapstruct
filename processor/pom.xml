@@ -27,11 +27,29 @@
         <minimum.java.version>11</minimum.java.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>maven central</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>google</id>
+            <name>google maven repository</name>
+            <url>https://maven.google.com/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Compile -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>androidx.room</groupId>
+            <artifactId>room-compiler-processing</artifactId>
+            <version>2.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct.tools.gem</groupId>
@@ -42,12 +60,12 @@
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- Test -->
         <dependency>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-compiler-jdt</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
