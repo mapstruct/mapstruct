@@ -19,6 +19,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 
+import androidx.room.compiler.processing.XElement;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;

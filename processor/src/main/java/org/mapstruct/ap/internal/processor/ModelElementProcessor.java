@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.Map;
-import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
 
 import androidx.room.compiler.processing.XFiler;

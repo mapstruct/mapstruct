@@ -6,10 +6,10 @@
 package org.mapstruct.ap.internal.util;
 
 import androidx.room.compiler.processing.XProcessingEnv;
+import androidx.room.compiler.processing.XType;
+import androidx.room.compiler.processing.XTypeElement;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 public class EclipseElementUtilsDecorator extends AbstractElementUtilsDecorator {
 
@@ -30,9 +30,9 @@ public class EclipseElementUtilsDecorator extends AbstractElementUtilsDecorator 
      * @return the element freshly resolved using the qualified name, if the original element did not return any
      *         enclosed elements, whereas the resolved element does return enclosed elements.
      */
-    protected TypeElement replaceTypeElementIfNecessary(TypeElement element) {
+    protected XTypeElement replaceTypeElementIfNecessary(XTypeElement element) {
         if ( element.getEnclosedElements().isEmpty() ) {
-            TypeElement resolvedByName = delegate.getTypeElement( element.getQualifiedName() );
+            XTypeElement resolvedByName = delegate.findTypeElement( element.getQualifiedName() );
             if ( resolvedByName != null && !resolvedByName.getEnclosedElements().isEmpty() ) {
                 return resolvedByName;
             }

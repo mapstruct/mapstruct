@@ -11,6 +11,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import androidx.room.compiler.processing.XFiler;
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.GeneratedType;
@@ -55,7 +56,7 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
         return 10000;
     }
 
-    private void writeToSourceFile(Filer filer, Mapper model) {
+    private void writeToSourceFile(XFiler filer, Mapper model) {
         ModelWriter modelWriter = new ModelWriter();
         ServicesEntry servicesEntry = getServicesEntry( model );
 

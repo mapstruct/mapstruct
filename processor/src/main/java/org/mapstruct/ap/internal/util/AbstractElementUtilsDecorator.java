@@ -30,6 +30,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import androidx.room.compiler.processing.XProcessingEnv;
+import androidx.room.compiler.processing.XTypeElement;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.util.ElementFilter.fieldsIn;
@@ -45,9 +46,9 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
     private final Element moduleElement;
 
     @IgnoreJRERequirement
-    AbstractElementUtilsDecorator(XProcessingEnv processingEnv, TypeElement mapperElement) {
+    AbstractElementUtilsDecorator(XProcessingEnv processingEnv, XTypeElement mapperElement) {
         this.delegate = processingEnv;
-        if ( SourceVersion.RELEASE_8.compareTo( processingEnv.getSourceVersion() ) >= 0 ) {
+        if ( processingEnv.getJvmVersion() <= 8 ) {
             // We are running with Java 8 or lower
             this.moduleElement = null;
         }

@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.processing.Processor;
-import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
@@ -34,6 +33,8 @@ import javax.tools.Diagnostic.Kind;
 import androidx.room.compiler.processing.XElement;
 import androidx.room.compiler.processing.XProcessingEnv;
 import androidx.room.compiler.processing.XProcessingStep;
+import androidx.room.compiler.processing.XType;
+import androidx.room.compiler.processing.XTypeElement;
 import org.jetbrains.annotations.NotNull;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
@@ -281,8 +282,7 @@ public class MappingProcessor implements XProcessingStep {
         return deferred;
     }
 
-    private Set<TypeElement> getMappers(Map<String, ? extends Set<? extends XElement>> elementsByAnnotation,
-                                        final RoundEnvironment roundEnvironment) {
+    private Set<TypeElement> getMappers(Map<String, ? extends Set<? extends XElement>> elementsByAnnotation) {
         Set<TypeElement> mapperTypes = new HashSet<>();
 
         for ( Map.Entry<String, ? extends Set<? extends XElement>> entry : elementsByAnnotation.entrySet() ) {
@@ -290,7 +290,7 @@ public class MappingProcessor implements XProcessingStep {
             try {
                 Set<? extends XElement> annotatedMappers = entry.getValue();
                 for (XElement mapperElement : annotatedMappers) {
-                    TypeElement mapperTypeElement = asTypeElement( mapperElement );
+                    XElement mapperTypeElement = asTypeElement( mapperElement );
 
                     // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
                     // annotations unknown to the compiler, even though they are not declared Mappers
@@ -425,21 +425,22 @@ public class MappingProcessor implements XProcessingStep {
         return processors;
     }
 
-    private TypeElement asTypeElement(Element element) {
-        return element.accept(
-            new ElementKindVisitor6<TypeElement, Void>() {
-                @Override
-                public TypeElement visitTypeAsInterface(TypeElement e, Void p) {
-                    return e;
-                }
-
-                @Override
-                public TypeElement visitTypeAsClass(TypeElement e, Void p) {
-                    return e;
-                }
-
-            }, null
-        );
+    private XElement asTypeElement(XElement element) {
+        return element;
+//        return element.accept(
+//            new ElementKindVisitor6<TypeElement, Void>() {
+//                @Override
+//                public TypeElement visitTypeAsInterface(TypeElement e, Void p) {
+//                    return e;
+//                }
+//
+//                @Override
+//                public TypeElement visitTypeAsClass(TypeElement e, Void p) {
+//                    return e;
+//                }
+//
+//            }, null
+//        );
     }
 
     /**
