@@ -34,6 +34,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
+import androidx.room.compiler.processing.XElement;
+import androidx.room.compiler.processing.XProcessingEnv;
+import androidx.room.compiler.processing.XProcessingStep;
+import org.jetbrains.annotations.NotNull;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
@@ -96,7 +100,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.NULL_VALUE_ITERABLE_MAPPING_STRATEGY,
     MappingProcessor.NULL_VALUE_MAP_MAPPING_STRATEGY,
 })
-public class MappingProcessor extends AbstractProcessor {
+public class MappingProcessor extends AbstractProcessor implements XProcessingStep {
 
     /**
      * Whether this processor claims all processed annotations exclusively or not.
@@ -471,6 +475,18 @@ public class MappingProcessor extends AbstractProcessor {
         }
 
         return additionalSupportedOptions == null ? Collections.emptySet() : additionalSupportedOptions;
+    }
+
+    @NotNull
+    @Override
+    public Set<String> annotations() {
+        return new HashSet<>();
+    }
+
+    @NotNull
+    @Override
+    public Set<XElement> process(@NotNull XProcessingEnv env, @NotNull Map<String, ? extends Set<? extends XElement>> elementsByAnnotation, boolean isLastRound) {
+        return XProcessingStep.super.process(env, elementsByAnnotation, isLastRound);
     }
 
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
