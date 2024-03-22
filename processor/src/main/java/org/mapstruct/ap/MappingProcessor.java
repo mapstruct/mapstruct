@@ -18,15 +18,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
@@ -100,7 +97,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.NULL_VALUE_ITERABLE_MAPPING_STRATEGY,
     MappingProcessor.NULL_VALUE_MAP_MAPPING_STRATEGY,
 })
-public class MappingProcessor extends AbstractProcessor implements XProcessingStep {
+public class MappingProcessor implements XProcessingStep {
 
     /**
      * Whether this processor claims all processed annotations exclusively or not.
@@ -153,11 +150,12 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         this.additionalSupportedOptionsError = additionalSupportedOptionsError;
     }
 
-    @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init( processingEnv );
 
-        options = createOptions();
+
+
+    @Override
+    public synchronized void init(XProcessingEnv processingEnv) {
+        options = createOptions(processingEnv);
         annotationProcessorContext = new AnnotationProcessorContext(
             processingEnv.getElementUtils(),
             processingEnv.getTypeUtils(),
@@ -172,7 +170,7 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         }
     }
 
-    private Options createOptions() {
+    private Options createOptions(XProcessingEnv processingEnv) {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
         String unmappedSourcePolicy = processingEnv.getOptions().get( UNMAPPED_SOURCE_POLICY );
         String nullValueIterableMappingStrategy = processingEnv.getOptions()
@@ -202,19 +200,20 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         return SourceVersion.latestSupported();
     }
 
+    @NotNull
     @Override
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) {
+    public Set<XElement> process(@NotNull XProcessingEnv processingEnv, @NotNull Map<String, ? extends Set<? extends XElement>> elementsByAnnotation, boolean isLastRound) {
         // nothing to do in the last round
-        if ( !roundEnvironment.processingOver() ) {
+        if ( !isLastRound ) {
             RoundContext roundContext = new RoundContext( annotationProcessorContext );
 
             // process any mappers left over from previous rounds
             Set<TypeElement> deferredMappers = getAndResetDeferredMappers();
-            processMapperElements( deferredMappers, roundContext );
+            processMapperElements( processingEnv, deferredMappers, roundContext );
 
             // get and process any mappers from this round
-            Set<TypeElement> mappers = getMappers( annotations, roundEnvironment );
-            processMapperElements( mappers, roundContext );
+            Set<TypeElement> mappers = getMappers( elementsByAnnotation );
+            processMapperElements( processingEnv, mappers, roundContext );
         }
         else if ( !deferredMappers.isEmpty() ) {
             // If the processing is over and there are deferred mappers it means something wrong occurred and
@@ -282,20 +281,15 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         return deferred;
     }
 
-    private Set<TypeElement> getMappers(final Set<? extends TypeElement> annotations,
+    private Set<TypeElement> getMappers(Map<String, ? extends Set<? extends XElement>> elementsByAnnotation,
                                         final RoundEnvironment roundEnvironment) {
         Set<TypeElement> mapperTypes = new HashSet<>();
 
-        for ( TypeElement annotation : annotations ) {
-            //Indicates that the annotation's type isn't on the class path of the compiled
-            //project. Let the compiler deal with that and print an appropriate error.
-            if ( annotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
-                continue;
-            }
+        for ( Map.Entry<String, ? extends Set<? extends XElement>> entry : elementsByAnnotation.entrySet() ) {
 
             try {
-                Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
-                for (Element mapperElement : annotatedMappers) {
+                Set<? extends XElement> annotatedMappers = entry.getValue();
+                for (XElement mapperElement : annotatedMappers) {
                     TypeElement mapperTypeElement = asTypeElement( mapperElement );
 
                     // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
@@ -313,7 +307,7 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         return mapperTypes;
     }
 
-    private void processMapperElements(Set<TypeElement> mapperElements, RoundContext roundContext) {
+    private void processMapperElements(@NotNull XProcessingEnv processingEnv, Set<TypeElement> mapperElements, RoundContext roundContext) {
         for ( TypeElement mapperElement : mapperElements ) {
             try {
                 // create a new context for each generated mapper in order to have imports of referenced types
@@ -330,7 +324,7 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
                     mapperElement
                 );
 
-                processMapperTypeElement( context, mapperElement );
+                processMapperTypeElement( processingEnv, context, mapperElement );
             }
             catch ( TypeHierarchyErroneousException thie ) {
                 TypeMirror erroneousType = thie.getType();
@@ -376,7 +370,7 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
      * @param context The processor context.
      * @param mapperTypeElement The mapper type element.
      */
-    private void processMapperTypeElement(ProcessorContext context, TypeElement mapperTypeElement) {
+    private void processMapperTypeElement(@NotNull XProcessingEnv processingEnv, ProcessorContext context, TypeElement mapperTypeElement) {
         Object model = null;
 
         for ( ModelElementProcessor<?, ?> processor : getProcessors() ) {
@@ -483,12 +477,6 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
         HashSet<String> annotations = new HashSet<>();
         annotations.add("org.mapstruct.Mapper");
         return annotations;
-    }
-
-    @NotNull
-    @Override
-    public Set<XElement> process(@NotNull XProcessingEnv env, @NotNull Map<String, ? extends Set<? extends XElement>> elementsByAnnotation, boolean isLastRound) {
-        return XProcessingStep.super.process(env, elementsByAnnotation, isLastRound);
     }
 
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {

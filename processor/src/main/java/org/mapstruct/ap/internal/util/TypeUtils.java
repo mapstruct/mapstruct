@@ -9,11 +9,12 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
+import androidx.room.compiler.processing.XProcessingEnv;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 public interface TypeUtils extends Types {
 
-     static TypeUtils create(ProcessingEnvironment processingEnvironment, VersionInformation info ) {
+     static TypeUtils create(XProcessingEnv processingEnvironment, VersionInformation info ) {
         if ( info.isEclipseJDTCompiler() ) {
             return new EclipseTypeUtilsDecorator( processingEnvironment );
         }

@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.processor;
 import java.util.Map;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
+
+import androidx.room.compiler.processing.XFiler;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import javax.tools.Diagnostic.Kind;
@@ -42,7 +44,7 @@ public interface ModelElementProcessor<P, R> {
      */
     public interface ProcessorContext {
 
-        Filer getFiler();
+        XFiler getFiler();
 
         TypeUtils getTypeUtils();
 

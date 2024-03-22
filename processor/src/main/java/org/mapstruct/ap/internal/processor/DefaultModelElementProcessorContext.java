@@ -16,6 +16,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 
+import androidx.room.compiler.processing.XFiler;
+import androidx.room.compiler.processing.XMessager;
+import androidx.room.compiler.processing.XProcessingEnv;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
@@ -36,7 +39,7 @@ import org.mapstruct.ap.spi.EnumTransformationStrategy;
  */
 public class DefaultModelElementProcessorContext implements ProcessorContext {
 
-    private final ProcessingEnvironment processingEnvironment;
+    private final XProcessingEnv processingEnvironment;
     private final DelegatingMessager messager;
     private final Options options;
     private final TypeFactory typeFactory;
@@ -46,8 +49,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final AccessorNamingUtils accessorNaming;
     private final RoundContext roundContext;
 
-    public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
-            RoundContext roundContext, Map<String, String> notToBeImported, TypeElement mapperElement) {
+    public DefaultModelElementProcessorContext(XProcessingEnv processingEnvironment, Options options,
+                                               RoundContext roundContext, Map<String, String> notToBeImported, TypeElement mapperElement) {
 
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
@@ -68,7 +71,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     }
 
     @Override
-    public Filer getFiler() {
+    public XFiler getFiler() {
         return processingEnvironment.getFiler();
     }
 
@@ -124,11 +127,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
 
     private static final class DelegatingMessager implements FormattingMessager {
 
-        private final Messager delegate;
+        private final XMessager delegate;
         private boolean isErroneous = false;
         private final boolean verbose;
 
-        DelegatingMessager(Messager delegate, boolean verbose) {
+        DelegatingMessager(XMessager delegate, boolean verbose) {
             this.delegate = delegate;
             this.verbose = verbose;
         }

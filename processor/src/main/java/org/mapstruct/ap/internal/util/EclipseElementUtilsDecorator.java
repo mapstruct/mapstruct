@@ -5,17 +5,19 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import androidx.room.compiler.processing.XProcessingEnv;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 public class EclipseElementUtilsDecorator extends AbstractElementUtilsDecorator {
 
-    private final Elements delegate;
+    private final XProcessingEnv delegate;
 
-    EclipseElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
+    EclipseElementUtilsDecorator(XProcessingEnv processingEnv, TypeElement mapperElement) {
         super( processingEnv, mapperElement );
-        this.delegate = processingEnv.getElementUtils();
+        this.delegate = processingEnv;
     }
 
     /**

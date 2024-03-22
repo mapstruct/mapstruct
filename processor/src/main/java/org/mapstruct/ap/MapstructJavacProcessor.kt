@@ -16,6 +16,7 @@
 
 package org.mapstruct.ap
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
 import androidx.room.compiler.processing.javac.JavacBasicAnnotationProcessor
 import javax.lang.model.SourceVersion
 
@@ -37,8 +38,9 @@ class MapstructJavacProcessor : JavacBasicAnnotationProcessor(
     /** Helper variable to avoid reporting the warning twice. */
     private var jdkVersionHasBugReported = false
 
+    @OptIn(ExperimentalProcessingApi::class)
     override fun processingSteps() = listOf(
-        MappingProcessor()
+        MappingProcessor().also { it.init(xProcessingEnv) }
     )
 
     override fun getSupportedOptions(): MutableSet<String> {

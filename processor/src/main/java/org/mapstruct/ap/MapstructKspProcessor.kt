@@ -16,6 +16,7 @@
 
 package org.mapstruct.ap
 
+import androidx.room.compiler.processing.ExperimentalProcessingApi
 import androidx.room.compiler.processing.ksp.KspBasicAnnotationProcessor
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -47,8 +48,9 @@ class MapstructKspProcessor(
 //        }
 //    }
 
+    @OptIn(ExperimentalProcessingApi::class)
     override fun processingSteps() = listOf(
-        MappingProcessor()
+        MappingProcessor().also { it.init(xProcessingEnv) }
     )
 
 //    override fun postRound(env: XProcessingEnv, round: XRoundEnv) {

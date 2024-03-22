@@ -5,11 +5,13 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import androidx.room.compiler.processing.XProcessingEnv;
+
 import javax.annotation.processing.ProcessingEnvironment;
 
 public class JavacTypeUtilsDecorator extends AbstractTypeUtilsDecorator {
 
-    JavacTypeUtilsDecorator(ProcessingEnvironment processingEnv) {
+    JavacTypeUtilsDecorator(XProcessingEnv processingEnv) {
         super( processingEnv );
     }
 }

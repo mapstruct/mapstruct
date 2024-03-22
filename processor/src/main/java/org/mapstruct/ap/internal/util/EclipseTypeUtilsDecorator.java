@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import androidx.room.compiler.processing.XProcessingEnv;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -16,7 +18,7 @@ public class EclipseTypeUtilsDecorator extends AbstractTypeUtilsDecorator {
 
     private final Types delegate;
 
-    EclipseTypeUtilsDecorator(ProcessingEnvironment processingEnv) {
+    EclipseTypeUtilsDecorator(XProcessingEnv processingEnv) {
         super( processingEnv );
         this.delegate = processingEnv.getTypeUtils();
     }

@@ -12,11 +12,12 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 
+import androidx.room.compiler.processing.XProcessingEnv;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 public interface ElementUtils extends Elements {
 
-     static ElementUtils create(ProcessingEnvironment processingEnvironment, VersionInformation info,
+     static ElementUtils create(XProcessingEnv processingEnvironment, VersionInformation info,
                                 TypeElement mapperElement) {
         if ( info.isEclipseJDTCompiler() ) {
             return new EclipseElementUtilsDecorator( processingEnvironment, mapperElement );

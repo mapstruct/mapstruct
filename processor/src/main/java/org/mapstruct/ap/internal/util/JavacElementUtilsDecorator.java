@@ -5,12 +5,14 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import androidx.room.compiler.processing.XProcessingEnv;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 
 public class JavacElementUtilsDecorator extends AbstractElementUtilsDecorator {
 
-    JavacElementUtilsDecorator(ProcessingEnvironment processingEnv, TypeElement mapperElement) {
+    JavacElementUtilsDecorator(XProcessingEnv processingEnv, TypeElement mapperElement) {
         super( processingEnv, mapperElement );
     }
 

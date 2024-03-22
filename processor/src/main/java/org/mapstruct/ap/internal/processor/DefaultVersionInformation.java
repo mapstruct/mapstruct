@@ -15,6 +15,7 @@ import java.util.jar.Manifest;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.SourceVersion;
 
+import androidx.room.compiler.processing.XProcessingEnv;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -45,14 +46,14 @@ public class DefaultVersionInformation implements VersionInformation {
     private final boolean javac;
 
     DefaultVersionInformation(String runtimeVersion, String runtimeVendor, String compiler,
-        SourceVersion sourceVersion) {
+        int sourceVersion) {
         this.runtimeVersion = runtimeVersion;
         this.runtimeVendor = runtimeVendor;
         this.compiler = compiler;
         this.eclipseJDT = compiler.startsWith( COMPILER_NAME_ECLIPSE_JDT );
         this.javac = compiler.startsWith( COMPILER_NAME_JAVAC );
         // If the difference between the source version and RELEASE_6 is more that 2 than we are at least on 9
-        this.sourceVersionAtLeast9 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 2;
+        this.sourceVersionAtLeast9 = sourceVersion >= 9;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class DefaultVersionInformation implements VersionInformation {
         return javac;
     }
 
-    static DefaultVersionInformation fromProcessingEnvironment(ProcessingEnvironment processingEnv) {
+    static DefaultVersionInformation fromProcessingEnvironment(XProcessingEnv processingEnv) {
         String runtimeVersion = System.getProperty( "java.version" );
         String runtimeVendor = System.getProperty( "java.vendor" );
 
@@ -100,11 +101,11 @@ public class DefaultVersionInformation implements VersionInformation {
             runtimeVersion,
             runtimeVendor,
             compiler,
-            processingEnv.getSourceVersion()
+            processingEnv.getJvmVersion()
         );
     }
 
-    private static String getCompiler(ProcessingEnvironment processingEnv) {
+    private static String getCompiler(XProcessingEnv processingEnv) {
         String className;
         if ( Proxy.isProxyClass( processingEnv.getClass() ) ) {
             // IntelliJ IDEA wraps the ProcessingEnvironment in a Proxy.
@@ -135,7 +136,7 @@ public class DefaultVersionInformation implements VersionInformation {
         if ( className.equals( JDT_IDE_PE_CLASS ) ) {
             // the processing environment for the IDE integrated APT is in a different bundle than the APT classes
             return COMPILER_NAME_ECLIPSE_JDT + " (IDE) "
-                + getLibraryName( processingEnv.getTypeUtils().getClass(), true );
+                + getLibraryName( processingEnv.getClass(), true );
         }
 
         if ( className.equals( JDT_BATCH_PE_CLASS ) ) {

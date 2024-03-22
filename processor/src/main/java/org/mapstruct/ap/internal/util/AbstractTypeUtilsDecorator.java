@@ -5,8 +5,9 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import androidx.room.compiler.processing.XProcessingEnv;
+
 import java.util.List;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -18,7 +19,6 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Types;
 
 /**
  * Replaces the usage of {@link TypeUtils} within MapStruct by delegating to the original implementation or to our
@@ -28,15 +28,15 @@ import javax.lang.model.util.Types;
  */
 public abstract class AbstractTypeUtilsDecorator implements TypeUtils {
 
-    private final Types delegate;
+    private final XProcessingEnv delegate;
 
-    AbstractTypeUtilsDecorator(ProcessingEnvironment processingEnv) {
-        this.delegate = processingEnv.getTypeUtils();
+    AbstractTypeUtilsDecorator(XProcessingEnv processingEnv) {
+        this.delegate = processingEnv;
     }
 
     @Override
     public Element asElement(TypeMirror t) {
-        return delegate.asElement( t );
+        return delegate.findTypeElement( t.toString() );
     }
 
     @Override
