@@ -480,7 +480,9 @@ public class MappingProcessor extends AbstractProcessor implements XProcessingSt
     @NotNull
     @Override
     public Set<String> annotations() {
-        return new HashSet<>();
+        HashSet<String> annotations = new HashSet<>();
+        annotations.add("org.mapstruct.Mapper");
+        return annotations;
     }
 
     @NotNull
