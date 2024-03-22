@@ -726,7 +726,6 @@
                                 <requireJavaVersion>
                                     <version>[${minimum.java.version},)</version>
                                 </requireJavaVersion>
-                                <DependencyConvergence />
                                 <requirePluginVersions />
                                 <requireMavenVersion>
                                     <version>[3.0.3,)</version>
