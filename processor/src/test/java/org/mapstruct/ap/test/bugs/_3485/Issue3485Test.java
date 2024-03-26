@@ -15,7 +15,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 /**
  * @author hduelme
  */
-@IssueKey("3463")
+@IssueKey("3485")
 public class Issue3485Test {
 
     @ProcessorTest
