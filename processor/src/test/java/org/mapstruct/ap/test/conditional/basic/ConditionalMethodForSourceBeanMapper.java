@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.conditional.basic;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.SourceCondition;
+import org.mapstruct.SourceParameterCondition;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -19,7 +19,7 @@ public interface ConditionalMethodForSourceBeanMapper {
 
     Employee map(EmployeeDto employee);
 
-    @SourceCondition
+    @SourceParameterCondition
     default boolean canMapEmployeeDto(EmployeeDto employee) {
         return employee != null && employee.getId() != null;
     }

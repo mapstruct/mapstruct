@@ -297,81 +297,81 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
-        ErroneousSourceConditionalWithMappingTargetMapper.class
+        ErroneousSourceParameterConditionalWithMappingTargetMapper.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousSourceConditionalWithMappingTargetMapper.class,
+                type = ErroneousSourceParameterConditionalWithMappingTargetMapper.class,
                 line = 21,
                 message = "Parameter \"@MappingTarget BasicEmployee employee\"" +
                     " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
-                    " Only source and @Context parameters are allowed for conditions applicable to source properties."
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
             )
         }
     )
-    public void sourceConditionalWithMappingTarget() {
+    public void sourceParameterConditionalWithMappingTarget() {
     }
 
     @ProcessorTest
     @WithClasses({
-        ErroneousSourceConditionalWithTargetTypeMapper.class
+        ErroneousSourceParameterConditionalWithTargetTypeMapper.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousSourceConditionalWithTargetTypeMapper.class,
+                type = ErroneousSourceParameterConditionalWithTargetTypeMapper.class,
                 line = 21,
                 message = "Parameter \"@TargetType Class<?> targetClass\"" +
                     " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
-                    " Only source and @Context parameters are allowed for conditions applicable to source properties."
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
             )
         }
     )
-    public void sourceConditionalWithTargetType() {
+    public void sourceParameterConditionalWithTargetType() {
     }
 
     @ProcessorTest
     @WithClasses({
-        ErroneousSourceConditionalWithTargetPropertyNameMapper.class
+        ErroneousSourceParameterConditionalWithTargetPropertyNameMapper.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousSourceConditionalWithTargetPropertyNameMapper.class,
+                type = ErroneousSourceParameterConditionalWithTargetPropertyNameMapper.class,
                 line = 21,
                 message = "Parameter \"@TargetPropertyName String targetProperty\"" +
                     " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
-                    " Only source and @Context parameters are allowed for conditions applicable to source properties."
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
             )
         }
     )
-    public void sourceConditionalWithTargetPropertyName() {
+    public void sourceParameterConditionalWithTargetPropertyName() {
     }
 
     @ProcessorTest
     @WithClasses({
-        ErroneousSourceConditionalWithSourcePropertyNameMapper.class
+        ErroneousSourceParameterConditionalWithSourcePropertyNameMapper.class
     })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                type = ErroneousSourceConditionalWithSourcePropertyNameMapper.class,
+                type = ErroneousSourceParameterConditionalWithSourcePropertyNameMapper.class,
                 line = 21,
                 message = "Parameter \"@SourcePropertyName String sourceProperty\"" +
                     " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
-                    " Only source and @Context parameters are allowed for conditions applicable to source properties."
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
             )
         }
     )
-    public void sourceConditionalWithSourcePropertyName() {
+    public void sourceParametersConditionalWithSourcePropertyName() {
     }
 }

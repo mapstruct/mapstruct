@@ -8,18 +8,18 @@ package org.mapstruct.ap.test.conditional.basic;
 import org.mapstruct.Condition;
 import org.mapstruct.ConditionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.SourcePropertyName;
+import org.mapstruct.TargetPropertyName;
 
 /**
  * @author Filip Hrisafov
  */
 @Mapper
-public interface ErroneousSourceConditionalWithSourcePropertyNameMapper {
+public interface ErroneousSourceParameterConditionalWithTargetPropertyNameMapper {
 
     BasicEmployee map(BasicEmployeeDto employee);
 
     @Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)
-    default boolean isNotBlank(String value, @SourcePropertyName String sourceProperty) {
+    default boolean isNotBlank(String value, @TargetPropertyName String targetProperty) {
         return value != null && !value.trim().isEmpty();
     }
 

@@ -80,7 +80,7 @@ import java.lang.annotation.Target;
  * This annotation can also be used as a meta-annotation to define the condition strategy.
  *
  * @author Filip Hrisafov
- * @see SourceCondition
+ * @see SourceParameterCondition
  * @since 1.5
  */
 @Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })

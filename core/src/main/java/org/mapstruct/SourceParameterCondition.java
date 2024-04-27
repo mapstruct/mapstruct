@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * <pre><code>
  * public class PresenceCheckUtils {
  *
- *   &#64;SourceCondition
+ *   &#64;SourceParameterCondition
  *   public static boolean isDefined(Car car) {
  *      return car != null &#38;&#38; car.getId() != null;
  *   }
@@ -69,6 +69,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
 @Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)
-public @interface SourceCondition {
+public @interface SourceParameterCondition {
 
 }

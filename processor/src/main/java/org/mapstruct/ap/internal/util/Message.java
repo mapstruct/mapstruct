@@ -47,7 +47,7 @@ public enum Message {
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
 
     CONDITION_MISSING_APPLIES_TO_STRATEGY("'appliesTo' has to have at least one value in @Condition" ),
-    CONDITION_SOURCE_PARAMETERS_INVALID_PARAMETER("Parameter \"%s\" cannot be used with the ConditionStrategy#SOURCE_PARAMETERS. Only source and @Context parameters are allowed for conditions applicable to source properties." ),
+    CONDITION_SOURCE_PARAMETERS_INVALID_PARAMETER("Parameter \"%s\" cannot be used with the ConditionStrategy#SOURCE_PARAMETERS. Only source and @Context parameters are allowed for conditions applicable to source parameters." ),
     CONDITION_PROPERTIES_INVALID_PARAMETER("Parameter \"%s\" cannot be used with the ConditionStrategy#PROPERTIES. Only source, @Context, @MappingTarget, @TargetType, @TargetPropertyName and @SourcePropertyName parameters are allowed for conditions applicable to properties." ),
 
     PROPERTYMAPPING_MAPPING_NOTE( "mapping property: %s to: %s.", Diagnostic.Kind.NOTE ),

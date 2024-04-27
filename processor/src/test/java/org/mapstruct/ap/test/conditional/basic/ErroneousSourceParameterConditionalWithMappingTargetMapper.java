@@ -14,7 +14,7 @@ import org.mapstruct.MappingTarget;
  * @author Filip Hrisafov
  */
 @Mapper
-public interface ErroneousSourceConditionalWithMappingTargetMapper {
+public interface ErroneousSourceParameterConditionalWithMappingTargetMapper {
 
     BasicEmployee map(BasicEmployeeDto employee);
 
