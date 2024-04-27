@@ -5,17 +5,17 @@
  */
 package org.mapstruct.ap.test.nestedbeans.deepstructure;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface DeepNestedMapper {
-    public static DeepNestedMapper INSTANCE = Mappers.getMapper( DeepNestedMapper.class );
+public interface DeepNestedIgnoreByDefaultMapper {
 
     @Mapping( target = "target.nestedSecondTargetChild.autoMapChild", source = "source.sourceInnerChild.nestedSecondSourceChild" )
     @Mapping( target = "target.nestedTargetChild", source = "source.sourceInnerChild.nestedSourceChild" )
     @Mapping( target = "targetCollection", source = "collectionContainer.source" )
+    @BeanMapping( ignoreByDefault = true )
     TargetContainer map(SourceContainer source);
 
 }

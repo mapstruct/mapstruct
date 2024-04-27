@@ -6,7 +6,8 @@
 package org.mapstruct.ap.test.nestedbeans.deepstructure;
 
 class Source {
-    SourceInnerChild sourceInnerChild;
+    private SourceInnerChild sourceInnerChild;
+    private String otherField;
 
     public SourceInnerChild getSourceInnerChild() {
         return sourceInnerChild;
@@ -14,5 +15,13 @@ class Source {
 
     public void setSourceInnerChild(SourceInnerChild sourceInnerChild) {
         this.sourceInnerChild = sourceInnerChild;
+    }
+
+    public String getOtherField() {
+        return otherField;
+    }
+
+    public void setOtherField(String otherField) {
+        this.otherField = otherField;
     }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 public class Target {
     private List<TargetChild> nestedTargetChild;
     private TargetChild nestedSecondTargetChild;
+    private String otherField;
 
     public TargetChild getNestedSecondTargetChild() {
         return nestedSecondTargetChild;
@@ -25,5 +26,13 @@ public class Target {
 
     public void setNestedTargetChild(List<TargetChild> nestedTargetChild) {
         this.nestedTargetChild = nestedTargetChild;
+    }
+
+    public String getOtherField() {
+        return otherField;
+    }
+
+    public void setOtherField(String otherField) {
+        this.otherField = otherField;
     }
 }

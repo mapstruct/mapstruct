@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.nestedbeans.deepstructure;
 public class SourceContainer {
     private Source source;
     private SourceCollectionContainer collectionContainer;
+    private String otherField;
 
     public Source getSource() {
         return source;
@@ -23,5 +24,13 @@ public class SourceContainer {
 
     public void setCollectionContainer(SourceCollectionContainer collectionContainer) {
         this.collectionContainer = collectionContainer;
+    }
+
+    public String getOtherField() {
+        return otherField;
+    }
+
+    public void setOtherField(String otherField) {
+        this.otherField = otherField;
     }
 }

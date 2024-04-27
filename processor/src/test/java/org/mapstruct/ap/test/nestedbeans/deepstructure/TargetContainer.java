@@ -9,7 +9,8 @@ import java.util.List;
 
 public class TargetContainer {
     private Target target;
-    List<TargetCollectionItem> targetCollection;
+    private List<TargetCollectionItem> targetCollection;
+    private String otherField;
 
     public Target getTarget() {
         return target;
@@ -25,5 +26,13 @@ public class TargetContainer {
 
     public void setTargetCollection(List<TargetCollectionItem> targetCollection) {
         this.targetCollection = targetCollection;
+    }
+
+    public String getOtherField() {
+        return otherField;
+    }
+
+    public void setOtherField(String otherField) {
+        this.otherField = otherField;
     }
 }

@@ -1,7 +1,7 @@
 package org.mapstruct.ap.test.nestedbeans.deepstructure;
 
 class TargetChild {
-    TargetSubChild autoMapChild;
+    private TargetSubChild autoMapChild;
 
     public TargetSubChild getAutoMapChild() {
         return autoMapChild;
