@@ -68,6 +68,7 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)
+@Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)
 public @interface SourceCondition {
 
 }

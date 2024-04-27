@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
@@ -25,10 +26,22 @@ public class MethodFamilySelector implements MethodSelector {
 
         List<SelectedMethod<T>> result = new ArrayList<>( methods.size() );
         for ( SelectedMethod<T> method : methods ) {
-            if ( method.getMethod().isObjectFactory() == criteria.isObjectFactoryRequired()
+            if ( criteria.isPresenceCheckRequired() ) {
+                if ( method.getMethod()
+                    .getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.PROPERTIES ) ) {
+                    result.add( method );
+                }
+            }
+            else if ( criteria.isSourceParameterCheckRequired() ) {
+                if ( method.getMethod()
+                    .getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.SOURCE_PARAMETERS ) ) {
+                    result.add( method );
+                }
+            }
+            else if ( method.getMethod().isObjectFactory() == criteria.isObjectFactoryRequired()
                 && method.getMethod().isLifecycleCallbackMethod() == criteria.isLifecycleCallbackRequired()
-                && method.getMethod().isPresenceCheck() == criteria.isPresenceCheckRequired()
-                && method.getMethod().isSourceParameterCheck() == criteria.isSourceParameterCheckRequired()
             ) {
 
                 result.add( method );

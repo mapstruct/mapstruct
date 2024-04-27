@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -172,14 +173,16 @@ public final class PresenceCheckMethodResolver {
 
         for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
             if ( selectionCriteria.isPresenceCheckRequired() ) {
-                // add only methods from context that do have the @Condition annotation
-                if ( methodProvidedByParams.isPresenceCheck() ) {
+                // add only methods from context that do have the @Condition for properties annotation
+                if ( methodProvidedByParams.getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.PROPERTIES ) ) {
                     availableMethods.add( methodProvidedByParams );
                 }
             }
             else if ( selectionCriteria.isSourceParameterCheckRequired() ) {
-                // add only methods from context that do have the @SourceCondition annotation
-                if ( methodProvidedByParams.isSourceParameterCheck() ) {
+                // add only methods from context that do have the @Condition for source parameters annotation
+                if ( methodProvidedByParams.getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.SOURCE_PARAMETERS ) ) {
                     availableMethods.add( methodProvidedByParams );
                 }
             }

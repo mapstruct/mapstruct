@@ -11,12 +11,14 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.ConditionStrategy;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
+import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -65,6 +67,12 @@ public class EnumGemsTest {
     public void injectionStrategyGemIsCorrect() {
         assertThat( namesOf( InjectionStrategy.values() ) ).isEqualTo(
             namesOf( InjectionStrategyGem.values() ) );
+    }
+
+    @Test
+    public void conditionStrategyGemIsCorrect() {
+        assertThat( namesOf( ConditionStrategy.values() ) ).isEqualTo(
+            namesOf( ConditionStrategyGem.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

@@ -11,7 +11,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks a method as a <em>presence check method</em> to check for presence in beans.
+ * This annotation marks a method as a <em>presence check method</em> to check for presence in beans
+ * or it can be used to define additional check methods for something like source parameters.
  * <p>
  * By default, bean properties are checked against {@code null} or using a presence check method in the source bean.
  * If a presence check method is available then it will be used instead.
@@ -20,11 +21,19 @@ import java.lang.annotation.Target;
  * The following parameters are accepted for the presence check methods:
  *     <ul>
  *         <li>The parameter with the value of the source property.
- *         e.g. the value given by calling {@code getName()} for the name property of the source bean</li>
+ *         e.g. the value given by calling {@code getName()} for the name property of the source bean
+ *         - only possible when using the {@link ConditionStrategy#PROPERTIES}
+ *         </li>
  *         <li>The mapping source parameter</li>
  *         <li>{@code @}{@link Context} parameter</li>
- *         <li>{@code @}{@link TargetPropertyName} parameter</li>
- *         <li>{@code @}{@link SourcePropertyName} parameter</li>
+ *         <li>
+ *             {@code @}{@link TargetPropertyName} parameter -
+ *             only possible when using the {@link ConditionStrategy#PROPERTIES}
+ *         </li>
+ *         <li>
+ *             {@code @}{@link SourcePropertyName} parameter -
+ *             only possible when using the {@link ConditionStrategy#PROPERTIES}
+ *         </li>
  *     </ul>
  *
  * <strong>Note:</strong> The usage of this annotation is <em>mandatory</em>
@@ -45,7 +54,7 @@ import java.lang.annotation.Target;
  *     MovieDto map(Movie movie);
  * }
  * </code></pre>
- *
+ * <p>
  * The following implementation of {@code MovieMapper} will be generated:
  *
  * <pre><code>
@@ -67,13 +76,21 @@ import java.lang.annotation.Target;
  *     }
  * }
  * </code></pre>
+ * <p>
+ * This annotation can also be used as a meta-annotation to define the condition strategy.
  *
  * @author Filip Hrisafov
- * @since 1.5
  * @see SourceCondition
+ * @since 1.5
  */
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.CLASS)
 public @interface Condition {
+
+    /**
+     * @return the places where the condition should apply to
+     * @since 1.6
+     */
+    ConditionStrategy[] appliesTo() default ConditionStrategy.PROPERTIES;
 
 }
