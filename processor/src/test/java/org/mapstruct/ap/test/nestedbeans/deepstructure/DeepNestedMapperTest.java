@@ -31,8 +31,8 @@ public class DeepNestedMapperTest {
         TargetContainer targetContainer = DeepNestedMapper.INSTANCE.map( sourceContainer );
 
         assertTargetFields( targetContainer );
-        assertThat(targetContainer.getOtherField()).isNotNull();
-        assertThat(targetContainer.getTarget().getOtherField()).isNotNull();
+        assertThat( targetContainer.getOtherField() ).isNotNull();
+        assertThat( targetContainer.getTarget().getOtherField() ).isNotNull();
     }
 
     @ProcessorTest
@@ -40,10 +40,10 @@ public class DeepNestedMapperTest {
     void mapperWithIgnoreByDefault() {
         SourceContainer sourceContainer = createSourceContainer();
 
-        TargetContainer targetContainer = Mappers.getMapper( DeepNestedIgnoreByDefaultMapper.class ).map( sourceContainer );
+        TargetContainer targetContainer = DeepNestedIgnoreByDefaultMapper.INSTANCE.map( sourceContainer );
 
-        assertThat(targetContainer.getOtherField()).isNull(); // covered by ignoreByDefault
-        assertThat(targetContainer.getTarget().getOtherField()).isNull(); // covered by ignoreByDefault
+        assertThat( targetContainer.getOtherField() ).isNull(); // covered by ignoreByDefault
+        assertThat( targetContainer.getTarget().getOtherField() ).isNull(); // covered by ignoreByDefault
         assertTargetFields( targetContainer ); // these should not be covered by ignoreByDefault
     }
 
@@ -73,7 +73,7 @@ public class DeepNestedMapperTest {
     }
 
     private void assertTargetFields(TargetContainer container) {
-        Optional<String> targetSubChildAutoMapField =//
+        Optional<String> targetSubChildAutoMapField =
             Optional
                     .ofNullable( container )
                     .map( TargetContainer::getTarget )
@@ -81,7 +81,7 @@ public class DeepNestedMapperTest {
                     .map( TargetChild::getAutoMapChild )
                     .map( TargetSubChild::getAutoMapField );
         assertThat( targetSubChildAutoMapField ).contains( "automapfield - nestedSecondSourceChild" );
-        Stream<String> nestedTargetChildsAutoMapFields =//
+        Stream<String> nestedTargetChildsAutoMapFields =
             Optional
                     .ofNullable( container )
                     .map( TargetContainer::getTarget )
@@ -91,7 +91,7 @@ public class DeepNestedMapperTest {
                     .map( TargetChild::getAutoMapChild )
                     .map( TargetSubChild::getAutoMapField );
         assertThat( nestedTargetChildsAutoMapFields ).containsExactly( "automapfield - sourceSubChild" );
-        Stream<String> targetCollectionItems =//
+        Stream<String> targetCollectionItems =
             Optional
                     .ofNullable( container )
                     .map( TargetContainer::getTargetCollection )

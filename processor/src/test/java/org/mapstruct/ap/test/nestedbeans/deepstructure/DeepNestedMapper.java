@@ -11,9 +11,10 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface DeepNestedMapper {
-    public static DeepNestedMapper INSTANCE = Mappers.getMapper( DeepNestedMapper.class );
+    DeepNestedMapper INSTANCE = Mappers.getMapper( DeepNestedMapper.class );
 
-    @Mapping( target = "target.nestedSecondTargetChild.autoMapChild", source = "source.sourceInnerChild.nestedSecondSourceChild" )
+    @Mapping( target = "target.nestedSecondTargetChild.autoMapChild",
+              source = "source.sourceInnerChild.nestedSecondSourceChild" )
     @Mapping( target = "target.nestedTargetChild", source = "source.sourceInnerChild.nestedSourceChild" )
     @Mapping( target = "targetCollection", source = "collectionContainer.source" )
     TargetContainer map(SourceContainer source);

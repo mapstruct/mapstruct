@@ -185,7 +185,10 @@ public class ForgedMethod implements Method {
         this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
 
-        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions(
+            basedOn.getOptions(),
+            mappingReferences.hasNestedTargetReferences()
+        );
     }
 
     /**
@@ -209,7 +212,10 @@ public class ForgedMethod implements Method {
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
 
-        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
+        this.options = MappingMethodOptions.getForgedMethodInheritedOptions(
+            basedOn.getOptions(),
+            mappingReferences.hasNestedTargetReferences()
+        );
     }
 
     @Override

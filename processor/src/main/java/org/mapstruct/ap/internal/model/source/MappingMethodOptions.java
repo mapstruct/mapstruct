@@ -385,13 +385,15 @@ public class MappingMethodOptions {
      *
      * @return a MappingMethodOptions without SubclassMappingOptions or SubclassValidator.
      */
-    public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options) {
+    public static MappingMethodOptions getForgedMethodInheritedOptions(MappingMethodOptions options,
+                                                                       boolean hasNestedMappings) {
+        boolean applyIgnoreByDefault = hasNestedMappings || !options.getSubclassMappings().isEmpty();
         return new MappingMethodOptions(
             options.mapper,
             options.mappings,
             options.iterableMapping,
             options.mapMapping,
-            BeanMappingOptions.forForgedMethods( options.beanMapping ),
+            BeanMappingOptions.forForgedMethods( options.beanMapping, applyIgnoreByDefault ),
             options.enumMappingOptions,
             options.valueMappings,
             Collections.emptySet(),

@@ -36,6 +36,7 @@ public class BeanMappingOptions extends DelegatingOptions {
     private final SelectionParameters selectionParameters;
     private final List<String> ignoreUnmappedSourceProperties;
     private final BeanMappingGem beanMapping;
+    private boolean applyIgnoreByDefault;
 
     /**
      * creates a mapping for inheritance. Will set
@@ -50,24 +51,30 @@ public class BeanMappingOptions extends DelegatingOptions {
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
             isInverse ? Collections.emptyList() : beanMapping.ignoreUnmappedSourceProperties,
             beanMapping.beanMapping,
+            true,
             beanMapping
         );
         return options;
     }
 
     public static BeanMappingOptions forForgedMethods(BeanMappingOptions beanMapping) {
+        return forForgedMethods( beanMapping, true );
+    }
+
+    public static BeanMappingOptions forForgedMethods(BeanMappingOptions beanMapping, boolean applyIgnoreByDefault) {
         BeanMappingOptions options = new BeanMappingOptions(
             beanMapping.selectionParameters != null ?
                 SelectionParameters.withoutResultType( beanMapping.selectionParameters ) : null,
             Collections.emptyList(),
             beanMapping.beanMapping,
+            applyIgnoreByDefault,
             beanMapping
         );
         return options;
     }
 
     public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {
-        return new BeanMappingOptions( null, Collections.emptyList(), null, delegatingOptions );
+        return new BeanMappingOptions( null, Collections.emptyList(), null, true, delegatingOptions );
     }
 
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
@@ -96,6 +103,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             selectionParameters,
             beanMapping.ignoreUnmappedSourceProperties().get(),
             beanMapping,
+            true,
             mapperOptions
         );
         return options;
@@ -126,11 +134,13 @@ public class BeanMappingOptions extends DelegatingOptions {
     private BeanMappingOptions(SelectionParameters selectionParameters,
                                List<String> ignoreUnmappedSourceProperties,
                                BeanMappingGem beanMapping,
+                               boolean applyIgnoreByDefault,
                                DelegatingOptions next) {
         super( next );
         this.selectionParameters = selectionParameters;
         this.ignoreUnmappedSourceProperties = ignoreUnmappedSourceProperties;
         this.beanMapping = beanMapping;
+        this.applyIgnoreByDefault = applyIgnoreByDefault;
     }
 
     // @Mapping, @BeanMapping
@@ -213,9 +223,13 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public boolean isignoreByDefault() {
-        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::ignoreByDefault )
-            .map( GemValue::get )
-            .orElse( false );
+        if (applyIgnoreByDefault) {
+            return Optional.ofNullable( beanMapping )
+                .map( BeanMappingGem::ignoreByDefault )
+                .map( GemValue::get )
+                .orElse( false );
+        }
+        return false;
     }
 
     public List<String> getIgnoreUnmappedSourceProperties() {
