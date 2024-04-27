@@ -31,7 +31,6 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
-import org.mapstruct.SourceParameterCondition;
 import org.mapstruct.SourcePropertyName;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;

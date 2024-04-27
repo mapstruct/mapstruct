@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.conditional.basic;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -373,5 +373,27 @@ public class ConditionalMappingTest {
         }
     )
     public void sourceParametersConditionalWithSourcePropertyName() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousAmbiguousSourceParameterConditionalMethodMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousAmbiguousSourceParameterConditionalMethodMapper.class,
+                line = 17,
+                message = "Ambiguous source parameter check methods found for checking BasicEmployeeDto: " +
+                    "boolean hasName(BasicEmployeeDto value), " +
+                    "boolean hasStrategy(BasicEmployeeDto value). " +
+                    "See https://mapstruct.org/faq/#ambiguous for more info."
+            )
+        }
+    )
+    public void ambiguousSourceParameterConditionalMethod() {
+
     }
 }

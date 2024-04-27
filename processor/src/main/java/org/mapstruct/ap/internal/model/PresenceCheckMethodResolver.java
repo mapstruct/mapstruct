@@ -85,12 +85,11 @@ public final class PresenceCheckMethodResolver {
             ctx
         );
 
-        if (matchingMethods.isEmpty() ) {
+        if ( matchingMethods.isEmpty() ) {
             return null;
         }
 
         if ( matchingMethods.size() > 1 ) {
-            //TODO better error message
             ctx.getMessager().printMessage(
                 method.getExecutable(),
                 Message.GENERAL_AMBIGUOUS_SOURCE_PARAMETER_CHECK_METHOD,
