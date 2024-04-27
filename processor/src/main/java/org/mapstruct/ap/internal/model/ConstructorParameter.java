@@ -16,11 +16,19 @@ public class ConstructorParameter extends ModelElement {
     private final Type type;
     private final String name;
     private final boolean isAnnotatedMapper;
+    private final boolean isNeededForSuper;
 
+    public ConstructorParameter(Type type, String name, boolean isAnnotatedMapper, boolean isNeededForSuper) {
+        this.type = type;
+        this.name = name;
+        this.isAnnotatedMapper = isAnnotatedMapper;
+        this.isNeededForSuper = isNeededForSuper;
+    }
     public ConstructorParameter(Type type, String name, boolean isAnnotatedMapper) {
         this.type = type;
         this.name = name;
         this.isAnnotatedMapper = isAnnotatedMapper;
+        this.isNeededForSuper = true;
     }
 
     public Type getType() {
@@ -33,6 +41,10 @@ public class ConstructorParameter extends ModelElement {
 
     public boolean isAnnotatedMapper() {
         return isAnnotatedMapper;
+    }
+
+    public boolean isNeededForSuper() {
+        return isNeededForSuper;
     }
 
     @Override

@@ -14,16 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.TypeElement;
 
-import org.mapstruct.ap.internal.model.AnnotatedConstructor;
-import org.mapstruct.ap.internal.model.AnnotatedSetter;
-import org.mapstruct.ap.internal.model.Annotation;
-import org.mapstruct.ap.internal.model.AnnotationMapperReference;
-import org.mapstruct.ap.internal.model.CanonicalConstructor;
-import org.mapstruct.ap.internal.model.Constructor;
-import org.mapstruct.ap.internal.model.Decorator;
-import org.mapstruct.ap.internal.model.Field;
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.model.MapperReference;
+import org.mapstruct.ap.internal.model.*;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
@@ -118,6 +109,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         return mapperReferences;
     }
 
+    private MapperReference toMapperReferences(ConstructorParameter p) {
+        return new AnnotationMapperReference(p.getType(),p.getName(),Collections.emptyList(),true,true,false,true);
+    }
+
     private void buildSetters(Mapper mapper) {
         List<MapperReference> mapperReferences = toMapperReferences( mapper.getFields() );
         for ( MapperReference mapperReference : mapperReferences ) {
@@ -177,6 +172,14 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         List<MapperReference> mapperReferences = toMapperReferences( mapper.getFields() );
         List<AnnotationMapperReference> mapperReferencesForConstructor =
             new ArrayList<>( mapperReferences.size() );
+        if (mapper.getConstructor() instanceof CanonicalConstructor
+        && ((CanonicalConstructor) mapper.getConstructor()).getParameters().stream().anyMatch(p -> p.isNeededForSuper())){
+            List<AnnotationMapperReference> collect = ((CanonicalConstructor) mapper.getConstructor()).getParameters().stream()
+                    .filter(ConstructorParameter::isNeededForSuper)
+                    .map(p -> (AnnotationMapperReference) toMapperReferences(p))
+                    .collect(Collectors.toList());
+            mapperReferencesForConstructor.addAll(collect);
+        }
 
         for ( MapperReference mapperReference : mapperReferences ) {
             if ( mapperReference.isUsed() ) {

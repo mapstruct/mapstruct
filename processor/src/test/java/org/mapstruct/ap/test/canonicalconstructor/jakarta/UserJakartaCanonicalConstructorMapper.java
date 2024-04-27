@@ -5,14 +5,18 @@
  */
 package org.mapstruct.ap.test.canonicalconstructor.jakarta;
 
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.ap.test.canonicalconstructor.defaultcomponentmodel.ExampleMapper;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA)
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA,
+uses = ExampleMapper.class,
+injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class UserJakartaCanonicalConstructorMapper {
 
     private final ContactRepository contactRepository;

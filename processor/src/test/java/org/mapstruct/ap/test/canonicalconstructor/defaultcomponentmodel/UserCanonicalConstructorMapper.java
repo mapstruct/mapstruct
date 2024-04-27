@@ -6,13 +6,16 @@
 package org.mapstruct.ap.test.canonicalconstructor.defaultcomponentmodel;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(
+        uses = ExampleMapper.class
+)
 public abstract class UserCanonicalConstructorMapper {
 
     public static final UserCanonicalConstructorMapper INSTANCE =
@@ -31,6 +34,7 @@ public abstract class UserCanonicalConstructorMapper {
         return map( userEntity, phoneNumber );
     }
 
+//    @Mapping(target = "userId", qualifiedByName = "getNumber")
     protected abstract UserDto map(UserEntity userEntity, String phoneNumber);
 
     protected AddressDto map(AddressEntity addressEntity) {

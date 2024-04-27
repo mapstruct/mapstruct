@@ -850,11 +850,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private void setCanonicalConstructor(Mapper mapper) {
         TypeElement element = mapper.getMapperDefinitionType().getTypeElement();
-        if ( element.getModifiers().contains( Modifier.ABSTRACT ) && hasCanonicalConstructor( element ) ) {
+        List<ConstructorParameter> constructorParameters = mapper.getFields().stream()
+                .filter(Field::isUsed)
+                .map(field -> new ConstructorParameter(field.getType(), field.getVariableName(), true,false))
+                .collect(Collectors.toList());
+        if ( element.getModifiers().contains( Modifier.ABSTRACT )
+                && hasCanonicalConstructor( element )
+                || !constructorParameters.isEmpty()) {
             ExecutableElement superConstructor = constructorsIn( element.getEnclosedElements() ).get( 0 );
+            constructorParameters.addAll(getParameters(superConstructor));
             mapper.setConstructor( new CanonicalConstructor(
                 mapper.getName(),
-                getParameters( superConstructor ),
+                    constructorParameters,
                 true,
                 typeFactory
             ) );

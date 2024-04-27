@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.canonicalconstructor.jakarta;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.test.canonicalconstructor.defaultcomponentmodel.ExampleMapper;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
@@ -28,6 +29,7 @@ import static java.lang.System.lineSeparator;
     AddressEntity.class,
     AddressDto.class,
     AddressMapper.class,
+        ExampleMapper.class
 })
 @IssueKey("2257")
 @ComponentScan(basePackageClasses = JakartaCanonicalConstructorInjectionTest.class)
@@ -44,10 +46,12 @@ public class JakartaCanonicalConstructorInjectionTest {
         generatedSource.forMapper( UserJakartaCanonicalConstructorMapper.class )
             .content()
             .contains( "    @Inject" + lineSeparator() +
-                "    public UserJakartaCanonicalConstructorMapperImpl(ContactRepository contactRepository, AddressMapper addressMapper) {" +
+                "    public UserJakartaCanonicalConstructorMapperImpl(ContactRepository contactRepository, AddressMapper addressMapper, ExampleMapper exampleMapper) {" +
                 lineSeparator() +
+                    lineSeparator() +
                 "        super( contactRepository, addressMapper );" + lineSeparator() +
-                "    }" );
+                "        this.exampleMapper = exampleMapper;"+ lineSeparator() +
+                    "    }" );
     }
 
     @ProcessorTest

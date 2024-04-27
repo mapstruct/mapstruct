@@ -27,6 +27,7 @@ public class AnnotationMapperReference extends MapperReference {
     private final boolean fieldFinal;
 
     private final boolean includeAnnotationsOnField;
+    private boolean isNeededForSuper = false;
 
     public AnnotationMapperReference(Type type, String variableName, List<Annotation> annotations, boolean isUsed,
                                      boolean fieldFinal, boolean includeAnnotationsOnField) {
@@ -35,9 +36,24 @@ public class AnnotationMapperReference extends MapperReference {
         this.fieldFinal = fieldFinal;
         this.includeAnnotationsOnField = includeAnnotationsOnField;
     }
+    public AnnotationMapperReference(Type type, String variableName, List<Annotation> annotations, boolean isUsed,
+                                     boolean fieldFinal, boolean includeAnnotationsOnField, boolean isNeededForSuper) {
+        super( type, variableName, isUsed );
+        this.annotations = annotations;
+        this.fieldFinal = fieldFinal;
+        this.includeAnnotationsOnField = includeAnnotationsOnField;
+        this.isNeededForSuper = isNeededForSuper;
+    }
 
     public List<Annotation> getAnnotations() {
         return annotations;
+    }
+
+    public void isNeededForSuper(boolean isNeededForSuper) {
+        this.isNeededForSuper = isNeededForSuper;
+    }
+    public boolean isNeededForSuper(){
+        return isNeededForSuper;
     }
 
     @Override
@@ -67,6 +83,7 @@ public class AnnotationMapperReference extends MapperReference {
             annotations,
             isUsed(),
             isFieldFinal(),
-            isIncludeAnnotationsOnField() );
+            isIncludeAnnotationsOnField(),
+                isNeededForSuper());
     }
 }

@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     AddressEntity.class,
     AddressDto.class,
     AddressMapper.class,
+        ExampleMapper.class
 })
 @IssueKey("2257")
 public class CanonicalConstructorTest {
