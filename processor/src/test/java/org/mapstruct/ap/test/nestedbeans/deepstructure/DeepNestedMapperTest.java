@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.factory.Mappers;
 
 @IssueKey( "3575" )
 @WithClasses( { Source.class, Target.class, SourceContainer.class, TargetContainer.class, TargetCollectionItem.class,
