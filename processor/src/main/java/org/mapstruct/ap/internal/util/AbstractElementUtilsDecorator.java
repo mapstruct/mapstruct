@@ -259,8 +259,8 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
         return true;
     }
 
-    private TypeElement getParentType(ExecutableElement executableInSubtype) {
-        return (TypeElement) executableInSubtype.getEnclosingElement();
+    private TypeElement getParentType(ExecutableElement executableElement) {
+        return (TypeElement) executableElement.getEnclosingElement();
     }
 
     private void addEnclosedFieldsInHierarchy( List<VariableElement> alreadyAdded,
