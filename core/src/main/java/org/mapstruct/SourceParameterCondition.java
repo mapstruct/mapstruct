@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * <strong>Note:</strong> The usage of this annotation is <em>mandatory</em>
  * for a method to be considered as a source check method.
  *
- * <pre><code>
+ * <pre><code class='java'>
  * public class PresenceCheckUtils {
  *
  *   &#64;SourceParameterCondition
@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  *
  * The following implementation of {@code CarMapper} will be generated:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * public class CarMapperImpl implements CarMapper {
  *
  *     &#64;Override

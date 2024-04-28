@@ -242,6 +242,52 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
+        ConditionalMethodForSourceParameterAndPropertyMapper.class
+    })
+    public void conditionalMethodForSourceParameterAndProperty() {
+        ConditionalMethodForSourceParameterAndPropertyMapper mapper =
+            ConditionalMethodForSourceParameterAndPropertyMapper.INSTANCE;
+
+        ConditionalMethodForSourceParameterAndPropertyMapper.Employee employee = mapper.map(
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+                "1",
+                "Tester"
+            ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+        assertThat( employee.getManager() ).isNull();
+
+        employee = mapper.map( null );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+            "1",
+            "Tester",
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto( null, "Manager" )
+        ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getManager() ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+            "1",
+            "Tester",
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto( "2", "Manager" )
+        ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+        assertThat( employee.getManager() ).isNotNull();
+        assertThat( employee.getManager().getId() ).isEqualTo( "2" );
+        assertThat( employee.getManager().getName() ).isEqualTo( "Manager" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
         OptionalLikeConditionalMapper.class
     })
     @IssueKey("2084")

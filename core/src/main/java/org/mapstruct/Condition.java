@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  * <strong>Note:</strong> The usage of this annotation is <em>mandatory</em>
  * for a method to be considered as a presence check method.
  *
- * <pre><code>
+ * <pre><code class='java'>
  * public class PresenceCheckUtils {
  *
  *   &#64;Condition
@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
  * <p>
  * The following implementation of {@code MovieMapper} will be generated:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * public class MovieMapperImpl implements MovieMapper {
  *
  *     &#64;Override

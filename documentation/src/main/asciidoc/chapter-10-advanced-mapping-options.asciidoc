@@ -303,8 +303,10 @@ null check, regardless the value of the `NullValueCheckStrategy` to avoid additi
 
 Conditional Mapping is a type of <<source-presence-check>>.
 The difference is that it allows users to write custom condition methods that will be invoked to check if a property needs to be mapped or not.
+Conditional mapping can also be used to check if a source parameter should be mapped or not.
 
-A custom condition method is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
+A custom condition method for properties is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
+A custom condition method for source parameters is annotated with `org.mapstruct.SourceParameterCondition`, `org.mapstruct.Condition(appliesTo = org.mapstruct.ConditionStrategy#SOURCE_PARAMETERS)` or meta-annotated with `Condition(appliesTo = ConditionStrategy#SOURCE_PARAMETERS)`
 
 e.g. if you only want to map a String property when it is not `null`, and it is not empty then you can do something like:
 
@@ -483,6 +485,55 @@ Methods annotated with `@Condition` in addition to the value of the source prope
 
 <<selection-based-on-qualifiers>> is also valid for `@Condition` methods.
 In order to use a more specific condition method you will need to use one of `Mapping#conditionQualifiedByName` or `Mapping#conditionQualifiedBy`.
+
+If we want to only map cars that have an id provided then we can do something like:
+
+
+.Mapper using custom condition source parameter check method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+
+    @SourceParameterCondition
+    default boolean hasCar(Car car) {
+        return car != null && car.getId() != null;
+    }
+}
+----
+====
+
+The generated mapper will look like:
+
+.Custom condition source parameter check generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car) {
+        if ( !hasCar( car ) ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+
+        carDto.setOwner( car.getOwner() );
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
 
 [[exceptions]]
 === Exceptions
