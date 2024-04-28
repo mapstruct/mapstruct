@@ -19,6 +19,8 @@ import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 /**
  * Configures the mapping between two bean types.
  * <p>
+ * Unless otherwise specified these properties are inherited to the generated bean mapping methods.
+ * <p>
  * Either {@link #resultType()}, {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
  * <p><strong>Example:</strong> Determining the result type</p>
@@ -58,6 +60,8 @@ public @interface BeanMapping {
 
     /**
      * Specifies the result type of the factory method to be used in case several factory methods qualify.
+     * <p>
+     * <b>NOTE</b>: This property is not inherited to generated mapping methods
      *
      * @return the resultType to select
      */
@@ -145,6 +149,8 @@ public @interface BeanMapping {
      * source properties report.
      * <p>
      * <b>NOTE</b>: This does not support ignoring nested source properties
+     * <p>
+     * <b>NOTE</b>: This property is not inherited to generated mapping methods
      *
      * @return The source properties that should be ignored when performing a report
      *
