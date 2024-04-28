@@ -39,8 +39,8 @@ The property name as defined in the http://www.oracle.com/technetwork/java/javas
 ====
 [TIP]
 ====
-By means of the `@BeanMapping(ignoreByDefault = true)` the default behavior will be *explicit mapping*, meaning that all mappings have to be specified by means of the `@Mapping` and no warnings will be issued on missing target properties.
-This allows to ignore all fields, except the ones that are explicitly defined through `@Mapping`. Keep in mind that an explicitly defined mapping will not start the implicit mapping of its properties.
+By means of the `@BeanMapping(ignoreByDefault = true)` the default behavior will be *explicit mapping*, meaning that all mappings (including nested ones) have to be specified by means of the `@Mapping` and no warnings will be issued on missing target properties.
+This allows to ignore all fields, except the ones that are explicitly defined through `@Mapping`.
 ====
 [TIP]
 ====
