@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.conditional.basic;
 import org.mapstruct.Condition;
 import org.mapstruct.ConditionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.SourceParameterCondition;
 import org.mapstruct.factory.Mappers;
 
 /**
