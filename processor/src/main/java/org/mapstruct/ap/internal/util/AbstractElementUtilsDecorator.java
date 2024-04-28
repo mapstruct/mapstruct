@@ -178,7 +178,7 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
             // This can happen when diamond inheritance is used with interfaces
             return;
         }
-        addMethodNotYetOverridden( alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
+        addMethodNotYetOverridden( alreadyAdded, methodsIn( element.getEnclosedElements() ) );
 
         if ( hasNonObjectSuperclass( element ) ) {
             addEnclosedMethodsInHierarchy(
@@ -204,15 +204,13 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
      * @param alreadyCollected methods that have already been collected and to which the not-yet-overridden methods will
      *                         be added
      * @param methodsToAdd     methods to add to alreadyAdded, if they are not yet overridden by an element in the list
-     * @param parentType       the type for with elements are collected
      */
     private void addMethodNotYetOverridden(List<ExecutableElement> alreadyCollected,
-                                           List<ExecutableElement> methodsToAdd,
-                                           TypeElement parentType) {
+                                           List<ExecutableElement> methodsToAdd) {
         List<ExecutableElement> safeToAdd = new ArrayList<>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotPrivate( toAdd ) && isNotObjectEquals( toAdd )
-                && methodWasNotYetOverridden( alreadyCollected, toAdd, parentType ) ) {
+                && methodWasNotYetOverridden( alreadyCollected, toAdd ) ) {
                 safeToAdd.add( toAdd );
             }
         }
@@ -239,20 +237,19 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
      * @param alreadyCollected the list of already collected methods of one type hierarchy (order is from sub-types to
      *                         super-types)
      * @param executable       the method to check
-     * @param parentType       the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
     private boolean methodWasNotYetOverridden(List<ExecutableElement> alreadyCollected,
-                                              ExecutableElement executable, TypeElement parentType) {
+                                              ExecutableElement executable) {
         for ( ListIterator<ExecutableElement> it = alreadyCollected.listIterator(); it.hasNext(); ) {
             ExecutableElement executableInSubtype = it.next();
             if ( executableInSubtype == null ) {
                 continue;
             }
-            if ( delegate.overrides( executableInSubtype, executable, parentType ) ) {
+            if ( delegate.overrides( executableInSubtype, executable, getParentType( executableInSubtype ) ) ) {
                 return false;
             }
-            else if ( delegate.overrides( executable, executableInSubtype, parentType ) ) {
+            else if ( delegate.overrides( executable, executableInSubtype, getParentType( executable ) ) ) {
                 // remove the method from another interface hierarchy that is overridden by the executable to add
                 it.remove();
                 return true;
@@ -260,6 +257,10 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
         }
 
         return true;
+    }
+
+    private TypeElement getParentType(ExecutableElement executableInSubtype) {
+        return (TypeElement) executableInSubtype.getEnclosingElement();
     }
 
     private void addEnclosedFieldsInHierarchy( List<VariableElement> alreadyAdded,
