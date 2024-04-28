@@ -470,6 +470,9 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private boolean isCandidateForMapping(Method methodCandidate) {
+            if ( methodCandidate.isPresenceCheck() ) {
+                return false;
+            }
             return isCreateMethodForMapping( methodCandidate ) || isUpdateMethodForMapping( methodCandidate );
         }
 
