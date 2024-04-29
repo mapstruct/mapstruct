@@ -17,17 +17,18 @@ import static java.lang.System.lineSeparator;
     FooMapper.class,
     FooMapperConfigured.class,
     FooSource.class,
-    FooTarget.class
+    FooTarget.class,
+    FooSourceNested.class
 })
 @IssueKey("3133")
 public class RedundantNullCheckTest {
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
+    private final String ls = lineSeparator();
 
     @ProcessorTest
     @IssueKey("3133")
     void shouldNotCreateRedundantNullCheckWithAdditionalPrimitiveParameters() {
-        String ls = lineSeparator();
         generatedSource.forMapper( FooMapper.class )
             .content()
             .contains( "@Override" + ls +
@@ -42,8 +43,80 @@ public class RedundantNullCheckTest {
 
     @ProcessorTest
     @IssueKey("3133")
+    void shouldNotCreateRedundantNullCheckWithMultipleAdditionalPrimitiveParameters() {
+        generatedSource.forMapper( FooMapper.class )
+            .content()
+            .contains( "@Override" + ls +
+                "    public void updateFoo(FooSource input, FooTarget toUpdate, boolean baz, int bay) {" + ls +
+                "        if ( input == null ) {" + ls +
+                "            return;" + ls +
+                "        }" + ls +
+                ls +
+                "        toUpdate.setBar( input.getBar() );" + ls +
+                "    }" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3133")
+    void shouldNotCreateRedundantNullCheckWithReturnValue() {
+        generatedSource.forMapper( FooMapper.class )
+            .content()
+            .contains( "@Override" + ls +
+                "    public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate) {" + ls +
+                "        if ( input == null ) {" + ls +
+                "            return toUpdate;" + ls +
+                "        }" + ls +
+                ls +
+                "        toUpdate.setBar( input.getBar() );" + ls +
+                ls +
+                "        return toUpdate;" + ls +
+                "    }" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3133")
+    void shouldNotCreateRedundantNullCheckWithReturnValueWithAdditionalPrimitiveParameters() {
+        generatedSource.forMapper( FooMapper.class )
+            .content()
+            .contains( "@Override" + ls +
+                "    public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate, boolean baz) {" + ls +
+                "        if ( input == null ) {" + ls +
+                "            return toUpdate;" + ls +
+                "        }" + ls +
+                ls +
+                "        toUpdate.setBar( input.getBar() );" + ls +
+                ls +
+                "        return toUpdate;" + ls +
+                "    }" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3133")
+    void shouldNotCreateRedundantNullCheckForNestedSourceWithReturnValueWithAdditionalPrimitiveParameters() {
+        generatedSource.forMapper( FooMapper.class )
+            .content()
+            .containsIgnoringWhitespaces( "@Override" + ls +
+                "    public FooTarget map(FooSourceNested input, FooTarget toUpdate, boolean baz) {" + ls +
+                "        if ( input == null ) {" + ls +
+                "            return toUpdate;" + ls +
+                "        }" + ls +
+                ls +
+                "        toUpdate.setBar( inputNestedBar( input ) );" + ls +
+                ls +
+                "        return toUpdate;" + ls +
+                "    }" + ls +
+                "    private String inputNestedBar(FooSourceNested fooSourceNested) {" + ls +
+                "        FooSource nested = fooSourceNested.getNested();" + ls +
+                "        if ( nested == null ) {" + ls +
+                "            return null;" + ls +
+                "        }" + ls +
+                "        return nested.getBar();" + ls +
+                "    }" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3133")
     void shouldNotCreateRedundantNullCheck() {
-        String ls = lineSeparator();
         generatedSource.forMapper( FooMapper.class )
             .content()
             .contains( "@Override" + ls +
@@ -56,10 +129,10 @@ public class RedundantNullCheckTest {
                 "    }" );
     }
 
+
     @ProcessorTest
     @IssueKey("3133")
     void shouldCreateNullCheckIfNoGuardClauseIsPresentWithAdditionalPrimitiveParameters() {
-        String ls = lineSeparator();
         generatedSource.forMapper( FooMapperConfigured.class )
             .content()
             .contains( "@Override" + ls +
@@ -74,7 +147,6 @@ public class RedundantNullCheckTest {
     @ProcessorTest
     @IssueKey("3133")
     void shouldCreateNullCheckIfNoGuardClauseIsPresent() {
-        String ls = lineSeparator();
         generatedSource.forMapper( FooMapperConfigured.class )
             .content()
             .contains( "@Override" + ls +
@@ -85,5 +157,25 @@ public class RedundantNullCheckTest {
                 "        }" + ls +
                 "    }" );
     }
+
+    @ProcessorTest
+    @IssueKey("3133")
+    void shouldCreateNullCheckIfNoGuardClauseIsPresentForNestedTargetClass() {
+        generatedSource.forMapper( FooMapper.class )
+            .content()
+            .contains( "@Override" + ls +
+                "    public FooTarget map(FooSourceNested source) {" + ls +
+                "        if ( source == null ) {" + ls +
+                "            return null;" + ls +
+                "        }" + ls +
+                ls +
+                "        FooTarget fooTarget = new FooTarget();" + ls +
+                ls +
+                "        fooTarget.setBar( source.getBar() );" + ls +
+                ls +
+                "        return fooTarget;" + ls +
+                "    }" );
+    }
+
 
 }
