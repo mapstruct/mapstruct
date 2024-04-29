@@ -91,14 +91,6 @@ public interface Method {
     boolean isObjectFactory();
 
     /**
-     * Returns whether the method is designated as a presence check method
-     * @return {@code true} if it is a presence check method
-     */
-    default boolean isPresenceCheck() {
-        return false;
-    }
-
-    /**
      * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
      *
      * @return target type parameter (when present) null otherwise.
@@ -186,6 +178,10 @@ public interface Method {
      * @return the mapping options for this method
      */
     MappingMethodOptions getOptions();
+
+    default ConditionMethodOptions getConditionOptions() {
+        return ConditionMethodOptions.empty();
+    }
 
     /**
      *

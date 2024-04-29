@@ -210,6 +210,84 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
+        ConditionalMethodForSourceBeanMapper.class
+    })
+    public void conditionalMethodForSourceBean() {
+        ConditionalMethodForSourceBeanMapper mapper = ConditionalMethodForSourceBeanMapper.INSTANCE;
+
+        ConditionalMethodForSourceBeanMapper.Employee employee = mapper.map(
+            new ConditionalMethodForSourceBeanMapper.EmployeeDto(
+                "1",
+                "Tester"
+            ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+
+        employee = mapper.map( null );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceBeanMapper.EmployeeDto( null, "Tester" ) );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceBeanMapper.EmployeeDto( "test-123", "Tester" ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "test-123" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ConditionalMethodForSourceParameterAndPropertyMapper.class
+    })
+    public void conditionalMethodForSourceParameterAndProperty() {
+        ConditionalMethodForSourceParameterAndPropertyMapper mapper =
+            ConditionalMethodForSourceParameterAndPropertyMapper.INSTANCE;
+
+        ConditionalMethodForSourceParameterAndPropertyMapper.Employee employee = mapper.map(
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+                "1",
+                "Tester"
+            ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+        assertThat( employee.getManager() ).isNull();
+
+        employee = mapper.map( null );
+
+        assertThat( employee ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+            "1",
+            "Tester",
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto( null, "Manager" )
+        ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getManager() ).isNull();
+
+        employee = mapper.map( new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto(
+            "1",
+            "Tester",
+            new ConditionalMethodForSourceParameterAndPropertyMapper.EmployeeDto( "2", "Manager" )
+        ) );
+
+        assertThat( employee ).isNotNull();
+        assertThat( employee.getId() ).isEqualTo( "1" );
+        assertThat( employee.getName() ).isEqualTo( "Tester" );
+        assertThat( employee.getManager() ).isNotNull();
+        assertThat( employee.getManager().getId() ).isEqualTo( "2" );
+        assertThat( employee.getManager().getName() ).isEqualTo( "Manager" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
         OptionalLikeConditionalMapper.class
     })
     @IssueKey("2084")
@@ -243,5 +321,125 @@ public class ConditionalMappingTest {
         mapper.map( new BasicEmployeeDto( "ReplacementName" ), targetEmployee );
 
         assertThat( targetEmployee.getName() ).isEqualTo( "CurrentName" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousConditionalWithoutAppliesToMethodMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousConditionalWithoutAppliesToMethodMapper.class,
+                line = 19,
+                message = "'appliesTo' has to have at least one value in @Condition"
+            )
+        }
+    )
+    public void emptyConditional() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousSourceParameterConditionalWithMappingTargetMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousSourceParameterConditionalWithMappingTargetMapper.class,
+                line = 21,
+                message = "Parameter \"@MappingTarget BasicEmployee employee\"" +
+                    " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
+            )
+        }
+    )
+    public void sourceParameterConditionalWithMappingTarget() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousSourceParameterConditionalWithTargetTypeMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousSourceParameterConditionalWithTargetTypeMapper.class,
+                line = 21,
+                message = "Parameter \"@TargetType Class<?> targetClass\"" +
+                    " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
+            )
+        }
+    )
+    public void sourceParameterConditionalWithTargetType() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousSourceParameterConditionalWithTargetPropertyNameMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousSourceParameterConditionalWithTargetPropertyNameMapper.class,
+                line = 21,
+                message = "Parameter \"@TargetPropertyName String targetProperty\"" +
+                    " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
+            )
+        }
+    )
+    public void sourceParameterConditionalWithTargetPropertyName() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousSourceParameterConditionalWithSourcePropertyNameMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousSourceParameterConditionalWithSourcePropertyNameMapper.class,
+                line = 21,
+                message = "Parameter \"@SourcePropertyName String sourceProperty\"" +
+                    " cannot be used with the ConditionStrategy#SOURCE_PARAMETERS." +
+                    " Only source and @Context parameters are allowed for conditions applicable to source parameters."
+            )
+        }
+    )
+    public void sourceParametersConditionalWithSourcePropertyName() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousAmbiguousSourceParameterConditionalMethodMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousAmbiguousSourceParameterConditionalMethodMapper.class,
+                line = 17,
+                message = "Ambiguous source parameter check methods found for checking BasicEmployeeDto: " +
+                    "boolean hasName(BasicEmployeeDto value), " +
+                    "boolean hasStrategy(BasicEmployeeDto value). " +
+                    "See https://mapstruct.org/faq/#ambiguous for more info."
+            )
+        }
+    )
+    public void ambiguousSourceParameterConditionalMethod() {
+
     }
 }
