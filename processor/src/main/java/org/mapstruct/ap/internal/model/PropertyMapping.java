@@ -53,6 +53,7 @@ import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.CLEAR;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
@@ -273,15 +274,11 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = rightHandSide.getSourceType();
             if ( assignment != null ) {
                 ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
-                if ( targetType.isCollectionOrMapType() ) {
-                    assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
+                if ( !targetType.isCollectionOrMapType() &&
+                    nvpms == CLEAR ) { // TODO: It works, but should the check be done here?
+                    reportNullValueClearStrategyError();
                 }
-                else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
-                    assignment = assignToArray( targetType, assignment );
-                }
-                else {
-                    assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
-                }
+                assignment = assignToTargetType( assignment, sourceType );
             }
             else {
                 reportCannotCreateMapping();
@@ -298,6 +295,27 @@ public class PropertyMapping extends ModelElement {
                 dependsOn,
                 getDefaultValueAssignment( assignment ),
                 targetWriteAccessorType == AccessorType.PARAMETER
+            );
+        }
+
+        private Assignment assignToTargetType(Assignment assignment, Type sourceType) {
+            if ( targetType.isCollectionOrMapType() ) {
+                assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
+            }
+            else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
+                assignment = assignToArray( targetType, assignment );
+            }
+            else {
+                assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
+            }
+            return assignment;
+        }
+
+        private void reportNullValueClearStrategyError() {
+            ctx.getMessager().printMessage( //TODO: Is this the correct way to print the error?
+                method.getExecutable(),
+                Message.PROPERTYMAPPING_NULL_VALUE_CLEAR_STRATEGY_CANT_BE_USED_WITH_NON_MAP_OR_COLLECTION_TYPE,
+                targetPropertyName
             );
         }
 

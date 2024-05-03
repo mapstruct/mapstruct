@@ -92,6 +92,9 @@ public enum Message {
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
+    PROPERTYMAPPING_NULL_VALUE_CLEAR_STRATEGY_CANT_BE_USED_WITH_NON_MAP_OR_COLLECTION_TYPE(
+        "Target property: \"%s\" is not a Collection or Map and can't be used with NullValuePropertyMappingStrategy: 'CLEAR'",
+        Diagnostic.Kind.ERROR ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
