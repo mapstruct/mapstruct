@@ -12,6 +12,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+
+import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.option.Options;
@@ -26,6 +28,7 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
+import org.mapstruct.ap.internal.util.Message;
 
 public class MapperOptions extends DelegatingOptions {
 
@@ -223,6 +226,17 @@ public class MapperOptions extends DelegatingOptions {
 
     public boolean isValid() {
         return mapper.isValid();
+    }
+
+    public void validate(ModelElementProcessor.ProcessorContext context, TypeElement mapperTypeElement) {
+        if ( getNullValuePropertyMappingStrategy() == NullValuePropertyMappingStrategyGem.CLEAR ) {
+            context.getMessager().printMessage(
+                mapperTypeElement,
+                Message.MAPPINGCONFIG_STRATEGY_CANT_BE_USED,
+                NullValuePropertyMappingStrategyGem.CLEAR,
+                "nullValuePropertyMapping"
+            );
+        }
     }
 
     public AnnotationMirror getAnnotationMirror() {

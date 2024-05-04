@@ -96,6 +96,8 @@ public enum Message {
         "Target property: \"%s\" is not a Collection or Map and can't be used with NullValuePropertyMappingStrategy: 'CLEAR'",
         Diagnostic.Kind.ERROR ),
 
+    MAPPINGCONFIG_STRATEGY_CANT_BE_USED( "The strategy: \"%s\" can't be used for: \"%s\".", Diagnostic.Kind.ERROR ),
+
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
 

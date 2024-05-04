@@ -112,6 +112,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             new AdditionalAnnotationsBuilder( elementUtils, typeFactory, messager );
 
         MapperOptions mapperOptions = MapperOptions.getInstanceOn( mapperTypeElement, context.getOptions() );
+        mapperOptions.validate( context, mapperTypeElement );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperOptions );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
