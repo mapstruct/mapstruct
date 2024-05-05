@@ -11,6 +11,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -27,13 +28,15 @@ public class IterableCreation extends ModelElement {
     private final Type resultType;
     private final Parameter sourceParameter;
     private final MethodReference factoryMethod;
+    private final VersionInformation versionInformation;
     private final boolean canUseSize;
     private final boolean loadFactorAdjustment;
 
-    private IterableCreation(Type resultType, Parameter sourceParameter, MethodReference factoryMethod) {
+    private IterableCreation(Type resultType, Parameter sourceParameter, MethodReference factoryMethod, VersionInformation versionInformation) {
         this.resultType = resultType;
         this.sourceParameter = sourceParameter;
         this.factoryMethod = factoryMethod;
+        this.versionInformation = versionInformation;
         this.canUseSize = ( sourceParameter.getType().isCollectionOrMapType() ||
             sourceParameter.getType().isArrayType() )
             && resultType.getImplementation() != null && resultType.getImplementation().hasInitialCapacityConstructor();
@@ -41,8 +44,8 @@ public class IterableCreation extends ModelElement {
 
     }
 
-    public static IterableCreation create(NormalTypeMappingMethod mappingMethod, Parameter sourceParameter) {
-        return new IterableCreation( mappingMethod.getResultType(), sourceParameter, mappingMethod.getFactoryMethod() );
+    public static IterableCreation create(NormalTypeMappingMethod mappingMethod, Parameter sourceParameter, VersionInformation versionInformation) {
+        return new IterableCreation( mappingMethod.getResultType(), sourceParameter, mappingMethod.getFactoryMethod(), versionInformation );
     }
 
     public Type getResultType() {
@@ -86,5 +89,25 @@ public class IterableCreation extends ModelElement {
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( resultType.getFullyQualifiedName() );
+    }
+
+    public boolean isHashSet() {
+        return "java.util.HashSet".equals( resultType.getImplementationType().getFullyQualifiedName() );
+    }
+
+    public boolean isHashMap() {
+        return "java.util.HashMap".equals( resultType.getImplementationType().getFullyQualifiedName() );
+    }
+
+    public boolean isLinkedHashSet() {
+        return "java.util.LinkedHashSet".equals( resultType.getImplementationType().getFullyQualifiedName() );
+    }
+
+    public boolean isLinkedHashMap() {
+        return "java.util.LinkedHashMap".equals( resultType.getImplementationType().getFullyQualifiedName() );
+    }
+
+    public boolean isSourceVersionAtLeast19() {
+        return versionInformation != null && versionInformation.isSourceVersionAtLeast19();
     }
 }

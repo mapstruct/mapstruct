@@ -24,6 +24,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -40,6 +41,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
+    private VersionInformation versionInformation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
 
@@ -210,7 +212,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                versionInformation
             );
         }
 
@@ -233,7 +236,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                              Collection<String> existingVariableNames, Assignment keyAssignment,
                              Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                             List<LifecycleCallbackMethodReference> afterMappingReferences,
+                             VersionInformation versionInformation) {
         super( method, annotations, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
 
@@ -253,6 +257,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         this.sourceParameter = sourceParameter;
         this.sourceParameterPresenceCheck = new NullPresenceCheck( this.sourceParameter.getName() );
+        this.versionInformation = versionInformation;
     }
 
     public Parameter getSourceParameter() {
@@ -321,7 +326,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     public IterableCreation getIterableCreation() {
         if ( iterableCreation == null ) {
-            iterableCreation = IterableCreation.create( this, getSourceParameter() );
+            iterableCreation = IterableCreation.create( this, getSourceParameter(), versionInformation );
         }
         return iterableCreation;
     }

@@ -375,6 +375,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keySelectionParameters( keySelectionParameters )
                     .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
+                    .versionInformation( versionInformation )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
@@ -484,6 +485,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mappingContext( mappingContext )
             .method( method )
             .formattingParameters( formattingParameters )
+            .versionInformation( versionInformation )
             .selectionParameters( selectionParameters )
             .build();
     }

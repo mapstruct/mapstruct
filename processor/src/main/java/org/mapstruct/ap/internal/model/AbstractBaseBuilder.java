@@ -16,6 +16,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * @author Filip Hrisafov
@@ -25,6 +26,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     protected B myself;
     protected MappingBuilderContext ctx;
     protected Method method;
+    protected VersionInformation versionInformation;
 
     AbstractBaseBuilder(Class<B> selfType) {
         myself = selfType.cast( this );
@@ -37,6 +39,11 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
 
     public B method(Method sourceMethod) {
         this.method = sourceMethod;
+        return myself;
+    }
+
+    public B versionInformation(VersionInformation versionInformation) {
+        this.versionInformation = versionInformation;
         return myself;
     }
 

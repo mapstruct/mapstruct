@@ -10,6 +10,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,7 +52,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters, VersionInformation versionInformation) {
 
             Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {
@@ -73,6 +74,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
+                versionInformation,
                 selectionParameters,
                 helperImports
             );
@@ -84,6 +86,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                                 MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
+                                VersionInformation versionInformation,
         SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
@@ -95,7 +98,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
+            selectionParameters,
+            versionInformation
         );
         //CHECKSTYLE:ON
         this.helperImports = helperImports;
