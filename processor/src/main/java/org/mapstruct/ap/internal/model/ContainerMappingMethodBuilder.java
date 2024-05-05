@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -40,6 +41,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
     private AnnotationMirror positionHint;
+    private VersionInformation versionInformation;
 
     ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
@@ -48,6 +50,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     public B formattingParameters(FormattingParameters formattingParameters) {
         this.formattingParameters = formattingParameters;
+        return myself;
+    }
+
+    public B versionInformation(VersionInformation versionInformation) {
+        this.versionInformation = versionInformation;
         return myself;
     }
 
@@ -161,7 +168,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
-            selectionParameters
+            selectionParameters,
+            versionInformation
         );
     }
 
@@ -178,7 +186,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-        SelectionParameters selectionParameters);
+                                                  SelectionParameters selectionParameters,
+                                                  VersionInformation versionInformation);
 
     protected abstract Type getElementType(Type parameterType);
 
