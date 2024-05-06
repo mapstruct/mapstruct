@@ -375,6 +375,7 @@ public class PropertyMapping extends ModelElement {
                     .mappingContext( ctx )
                     .sourceMethod( method )
                     .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
+                    .versionInformation( versionInformation )
                     .build();
                 return build.getAssignment();
             }
@@ -388,6 +389,7 @@ public class PropertyMapping extends ModelElement {
                     .mappingContext( ctx )
                     .sourceMethod( method )
                     .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
+                    .versionInformation( versionInformation )
                     .build();
                 return build.getAssignment();
             }
@@ -753,6 +755,7 @@ public class PropertyMapping extends ModelElement {
                 .selectionParameters( selectionParameters )
                 .callingContextTargetPropertyName( targetPropertyName )
                 .positionHint( positionHint )
+                .versionInformation( versionInformation )
                 .build();
 
             return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreator );
@@ -776,6 +779,7 @@ public class PropertyMapping extends ModelElement {
             Supplier<MappingMethod> mapMappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
+                .versionInformation( versionInformation )
                 .build();
 
             return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreator );
