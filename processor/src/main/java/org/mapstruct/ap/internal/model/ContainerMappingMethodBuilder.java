@@ -41,7 +41,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
     private AnnotationMirror positionHint;
-    private VersionInformation versionInformation;
 
     ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
@@ -50,11 +49,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     public B formattingParameters(FormattingParameters formattingParameters) {
         this.formattingParameters = formattingParameters;
-        return myself;
-    }
-
-    public B versionInformation(VersionInformation versionInformation) {
-        this.versionInformation = versionInformation;
         return myself;
     }
 
