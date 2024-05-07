@@ -1,0 +1,105 @@
+package org.mapstruct.ap.test.nullcheck.redundant;
+
+import javax.annotation.processing.Generated;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2024-05-07T18:50:27+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.2 (Azul Systems, Inc.)"
+)
+public class FooMapperImpl implements FooMapper {
+
+    @Override
+    public void updateFoo(FooSource input, FooTarget toUpdate, boolean baz) {
+        if ( input == null ) {
+            return;
+        }
+
+        toUpdate.setBar( input.getBar() );
+    }
+
+    @Override
+    public void updateFoo(FooSource input, FooTarget toUpdate, boolean baz, int bay) {
+        if ( input == null ) {
+            return;
+        }
+
+        toUpdate.setBar( input.getBar() );
+    }
+
+    @Override
+    public void updateFoo(FooSource input, FooTarget toUpdate) {
+        if ( input == null ) {
+            return;
+        }
+
+        toUpdate.setBar( input.getBar() );
+    }
+
+    @Override
+    public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate) {
+        if ( input == null ) {
+            return toUpdate;
+        }
+
+        toUpdate.setBar( input.getBar() );
+
+        return toUpdate;
+    }
+
+    @Override
+    public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate, boolean baz) {
+        if ( input == null ) {
+            return toUpdate;
+        }
+
+        toUpdate.setBar( input.getBar() );
+
+        return toUpdate;
+    }
+
+    @Override
+    public FooTarget map(FooSource source) {
+        if ( source == null ) {
+            return null;
+        }
+
+        FooTarget fooTarget = new FooTarget();
+
+        fooTarget.setBar( source.getBar() );
+
+        return fooTarget;
+    }
+
+    @Override
+    public FooTarget map(FooSourceNested source) {
+        if ( source == null ) {
+            return null;
+        }
+
+        FooTarget fooTarget = new FooTarget();
+
+        fooTarget.setBar( source.getBar() );
+
+        return fooTarget;
+    }
+
+    @Override
+    public FooTarget map(FooSourceNested input, FooTarget toUpdate, boolean baz) {
+        if ( input == null ) {
+            return toUpdate;
+        }
+
+        toUpdate.setBar( inputNestedBar( input ) );
+
+        return toUpdate;
+    }
+
+    private String inputNestedBar(FooSourceNested fooSourceNested) {
+        FooSource nested = fooSourceNested.getNested();
+        if ( nested == null ) {
+            return null;
+        }
+        return nested.getBar();
+    }
+}
