@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -101,6 +102,7 @@ public class NestedTargetPropertyMappingHolder {
         private Set<String> handledTargets;
         private Map<String, Accessor> targetPropertiesWriteAccessors;
         private Type targetType;
+        private VersionInformation versionInformation;
         private boolean errorOccurred;
 
         public Builder mappingReferences(MappingReferences mappingReferences) {
@@ -130,6 +132,11 @@ public class NestedTargetPropertyMappingHolder {
 
         public Builder targetPropertyType(Type targetType) {
             this.targetType = targetType;
+            return this;
+        }
+
+        public Builder versionInformation(VersionInformation versionInformation) {
+            this.versionInformation = versionInformation;
             return this;
         }
 
@@ -693,6 +700,7 @@ public class NestedTargetPropertyMappingHolder {
                 .forceUpdateMethod( forceUpdateMethod )
                 .forgedNamedBased( false )
                 .options( method.getOptions().getBeanMapping() )
+                .versionInformation( versionInformation )
                 .build();
         }
 

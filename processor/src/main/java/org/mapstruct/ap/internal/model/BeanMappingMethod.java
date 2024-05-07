@@ -1176,6 +1176,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 .targetPropertyType( resultTypeToMap )
                 .mappingReferences( mappingReferences )
                 .existingVariableNames( existingVariableNames )
+                .versionInformation( versionInformation )
                 .build();
 
             unprocessedSourceParameters.removeAll( holder.getProcessedSourceParameters() );
