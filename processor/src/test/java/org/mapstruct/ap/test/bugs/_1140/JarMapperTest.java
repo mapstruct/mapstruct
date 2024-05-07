@@ -30,4 +30,21 @@ class JarMapperTest {
         assertThat( emptyJar ).hasAllNullFieldsOrProperties();
     }
 
+
+    @ProcessorTest
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = JarToAirplaneMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                message = "Target \"AirplaneWithNoAccessors\" has no target properties, targeted by this mapping method: \"AirplaneWithNoAccessors mapToAirplaneWithNoAccessors(FilledJar jar)\"")
+        })
+    @WithClasses({ FilledJar.class, AirplaneWithNoAccessors.class, JarToAirplaneMapper.class })
+    void targetHasNoAccessibleProperties() {
+
+        AirplaneWithNoAccessors airplane = JarToAirplaneMapper.INSTANCE.mapToAirplaneWithNoAccessors( new FilledJar() );
+
+        assertThat( airplane )
+            .hasFieldOrPropertyWithValue( "flightNumber", 0 )
+            .hasFieldOrPropertyWithValue( "airplaneName", null );
+    }
 }
