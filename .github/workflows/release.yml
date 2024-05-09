@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+      next:
+        description: 'Next version'
+        required: false
+
+env:
+  JAVA_VERSION: '11'
+  JAVA_DISTRO: 'zulu'
+
+jobs:
+  release:
+    # This job has been inspired by the moditect release (https://github.com/moditect/moditect/blob/main/.github/workflows/release.yml)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ vars.JAVA_VERSION }}
+          distribution: ${{ vars.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Set release version
+        id: version
+        run: |
+          RELEASE_VERSION=${{ github.event.inputs.version }}
+          NEXT_VERSION=${{ github.event.inputs.next }}
+          PLAIN_VERSION=`echo ${RELEASE_VERSION} | awk 'match($0, /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/) { print substr($0, RSTART, RLENGTH); }'`
+          COMPUTED_NEXT_VERSION="${PLAIN_VERSION}-SNAPSHOT"
+          if [ -z $NEXT_VERSION ]
+          then
+            NEXT_VERSION=$COMPUTED_NEXT_VERSION
+          fi
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION -pl :mapstruct-parent -DgenerateBackupPoms=false
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Releasing version $RELEASE_VERSION"
+          git push
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+          echo "PLAIN_VERSION=$PLAIN_VERSION" >> $GITHUB_ENV
+
+      - name: Stage
+        run: |
+          export GPG_TTY=$(tty)
+          ./mvnw -ntp -B --file pom.xml \
+            -Dmaven.site.skip=true -Drelease=true -Ppublication,stage
+
+      - name: Release
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          ./mvnw -ntp -B --file pom.xml -pl :mapstruct-parent -Pjreleaser jreleaser:release
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-release
+          path: |
+            parent/target/jreleaser/trace.log
+            parent/target/jreleaser/output.properties
+
+      - name: Set next version
+        run: |
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=${{ env.NEXT_VERSION }} -pl :mapstruct-parent -DgenerateBackupPoms=false
+          sed -i -e "s@project.build.outputTimestamp>.*</project.build.outputTimestamp@project.build.outputTimestamp>\${git.commit.author.time}</project.build.outputTimestamp@g" parent/pom.xml
+          git config --global user.email "${{ vars.GH_BOT_EMAIL }}"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Next version ${{ env.NEXT_VERSION }}"
+          git push
+
+  update-website:
+    # This job has been inspired by the JReleaser update-website job (https://github.com/jreleaser/jreleaser/blob/main/.github/workflows/release.yml)
+    name: Update Website
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: mapstruct/mapstruct.org
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GIT_WEBSITE_ACCESS_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ vars.JAVA_VERSION }}
+          distribution: ${{ vars.JAVA_DISTRO }}
+
+      - name: Download assets
+        shell: bash
+        run: |
+          curl -sL https://raw.githubusercontent.com/mapstruct/mapstruct/main/.github/scripts/update-website.sh --output update-website.sh --create-dirs --output-dir tmp
+          curl -sL "https://github.com/mapstruct/mapstruct/releases/download/${VERSION}/mapstruct-${VERSION}-dist.tar.gz" --output mapstruct-${VERSION}-dist.tar.gz --create-dirs --output-dir tmp
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+
+      - name: Commit
+        shell: bash
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          GH_BOT_EMAIL: ${{ vars.GH_BOT_EMAIL }}
+        run: |
+          chmod +x update-website.sh
+          ./update-website.sh
