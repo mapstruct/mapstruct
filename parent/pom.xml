@@ -21,6 +21,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <project.repository>mapstruct/mapstruct</project.repository>
+        <local.repository.path>/tmp/repository</local.repository.path>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- value comes from property git.commit.author.time -->
+        <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
+
         <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
         <org.apache.maven.plugins.enforcer.version>3.4.1</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
@@ -30,6 +39,7 @@
         <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
         <org.junit.jupiter.version>5.10.1</org.junit.jupiter.version>
         <junit-pioneer.version>2.2.0</junit-pioneer.version>
+        <jreleaser.plugin.version>1.12.0</jreleaser.plugin.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
         <assertj.version>3.24.2</assertj.version>
@@ -392,10 +402,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -835,6 +841,136 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>publication</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>stage</id>
+            <properties>
+                <altDeploymentRepository>local::file:${maven.multiModuleProjectDirectory}/target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>jreleaser</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jreleaser-maven-plugin</artifactId>
+                        <version>${jreleaser.plugin.version}</version>
+                        <configuration>
+                            <gitRootSearch>true</gitRootSearch>
+                            <jreleaser>
+                                <project>
+                                    <name>Mapstruct</name>
+                                    <links>
+                                        <homepage>https://mapstruct.org/</homepage>
+                                        <documentation>https://mapstruct.org/documentation/stable/reference/html/</documentation>
+                                    </links>
+                                </project>
+                                <signing>
+                                    <active>ALWAYS</active>
+                                    <armored>true</armored>
+                                    <!-- This is temporarily like this in order to test how it would work -->
+                                    <mode>FILE</mode>
+                                </signing>
+                                <checksum>
+                                    <files>false</files>
+                                </checksum>
+                                <deploy>
+                                    <maven>
+                                        <nexus2>
+                                            <maven-central>
+                                                <active>ALWAYS</active>
+                                                <url>https://oss.sonatype.org/service/local</url>
+                                                <snapshotUrl>https://oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
+                                                <closeRepository>true</closeRepository>
+                                                <releaseRepository>true</releaseRepository>
+                                                <stagingRepositories>${maven.multiModuleProjectDirectory}/target/staging-deploy</stagingRepositories>
+                                                <artifactOverrides>
+                                                    <artifactOverride>
+                                                        <groupId>org.mapstruct</groupId>
+                                                        <artifactId>mapstruct-jdk8</artifactId>
+                                                        <sourceJar>false</sourceJar>
+                                                        <javadocJar>false</javadocJar>
+                                                    </artifactOverride>
+                                                </artifactOverrides>
+                                            </maven-central>
+                                        </nexus2>
+                                    </maven>
+                                </deploy>
+                                <release>
+                                    <github>
+                                        <tagName>{{projectVersion}}</tagName>
+                                        <releaseName>{{projectVersion}}</releaseName>
+                                        <overwrite>false</overwrite>
+                                        <update>
+                                            <enabled>true</enabled>
+                                        </update>
+                                        <changelog>
+                                            <enabled>true</enabled>
+                                            <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
+                                        </changelog>
+                                    </github>
+                                </release>
+                                <files>
+                                    <artifacts>
+                                        <artifact>
+                                            <path>${maven.multiModuleProjectDirectory}/distribution/target/mapstruct-{{projectVersion}}-dist.tar.gz</path>
+                                        </artifact>
+                                        <artifact>
+                                            <path>${maven.multiModuleProjectDirectory}/distribution/target/mapstruct-{{projectVersion}}-dist.zip</path>
+                                        </artifact>
+                                    </artifacts>
+                                </files>
+                            </jreleaser>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
