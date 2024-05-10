@@ -856,8 +856,6 @@
                                 <signing>
                                     <active>ALWAYS</active>
                                     <armored>true</armored>
-                                    <!-- This is temporarily like this in order to test how it would work -->
-                                    <mode>FILE</mode>
                                 </signing>
                                 <checksum>
                                     <files>false</files>
@@ -888,12 +886,7 @@
                                     <github>
                                         <tagName>{{projectVersion}}</tagName>
                                         <releaseName>{{projectVersion}}</releaseName>
-                                        <overwrite>false</overwrite>
-                                        <update>
-                                            <enabled>true</enabled>
-                                        </update>
                                         <changelog>
-                                            <enabled>true</enabled>
                                             <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
                                         </changelog>
                                     </github>
