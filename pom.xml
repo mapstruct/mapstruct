@@ -27,7 +27,6 @@
         <module>core</module>
         <module>core-jdk8</module>
         <module>processor</module>
-        <module>integrationtest</module>
     </modules>
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -69,6 +68,18 @@
             <modules>
                 <module>documentation</module>
                 <module>distribution</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>integrationtest</module>
             </modules>
         </profile>
     </profiles>
