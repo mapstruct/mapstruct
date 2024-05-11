@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._2677;
+package org.mapstruct.ap.test.generics.typebounds;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -16,16 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey("2677")
 @WithClasses({
-    Issue2677Mapper.class
+    ExtendsBoundMapper.class
 })
-class Issue2677Test {
+class ExtendsBoundTest {
 
     @ProcessorTest
     void shouldCorrectlyUseGenericsWithExtends() {
-        Issue2677Mapper.Parent parent = new Issue2677Mapper.Parent( 10 );
-        Issue2677Mapper.Child child = new Issue2677Mapper.Child( 15, "Test" );
+        ExtendsBoundMapper.Parent parent = new ExtendsBoundMapper.Parent( 10 );
+        ExtendsBoundMapper.Child child = new ExtendsBoundMapper.Child( 15, "Test" );
 
-        Issue2677Mapper.Output output = Issue2677Mapper.INSTANCE.map( new Issue2677Mapper.Wrapper<>(
+        ExtendsBoundMapper.Output output = ExtendsBoundMapper.INSTANCE.map( new ExtendsBoundMapper.Wrapper<>(
             parent,
             "extends"
         ) );
@@ -33,7 +33,7 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "extends" );
         assertThat( output.getId() ).isEqualTo( 10 );
 
-        output = Issue2677Mapper.INSTANCE.mapFromChild( new Issue2677Mapper.Wrapper<>(
+        output = ExtendsBoundMapper.INSTANCE.mapFromChild( new ExtendsBoundMapper.Wrapper<>(
             child,
             "child"
         ) );
@@ -41,7 +41,7 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "child" );
         assertThat( output.getId() ).isEqualTo( 15 );
 
-        output = Issue2677Mapper.INSTANCE.mapFromParent( new Issue2677Mapper.Wrapper<>(
+        output = ExtendsBoundMapper.INSTANCE.mapFromParent( new ExtendsBoundMapper.Wrapper<>(
             parent,
             "parent"
         ) );
@@ -49,7 +49,7 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "parent" );
         assertThat( output.getId() ).isEqualTo( 10 );
 
-        output = Issue2677Mapper.INSTANCE.mapImplicitly( new Issue2677Mapper.Wrapper<>(
+        output = ExtendsBoundMapper.INSTANCE.mapImplicitly( new ExtendsBoundMapper.Wrapper<>(
             child,
             "implicit"
         ) );
@@ -57,9 +57,9 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "implicit" );
         assertThat( output.getId() ).isEqualTo( 15 );
 
-        Issue2677Mapper.Wrapper<String> result = Issue2677Mapper.INSTANCE.mapToWrapper(
+        ExtendsBoundMapper.Wrapper<String> result = ExtendsBoundMapper.INSTANCE.mapToWrapper(
             "test",
-            new Issue2677Mapper.Wrapper<>(
+            new ExtendsBoundMapper.Wrapper<>(
                 child,
                 "super"
             )
@@ -68,9 +68,9 @@ class Issue2677Test {
         assertThat( result.getStatus() ).isEqualTo( "super" );
         assertThat( result.getValue() ).isEqualTo( "test" );
 
-        output = Issue2677Mapper.INSTANCE.mapWithPresenceCheck(
-            new Issue2677Mapper.Wrapper<>(
-                new Issue2677Mapper.ParentWithPresenceCheck( 8 ),
+        output = ExtendsBoundMapper.INSTANCE.mapWithPresenceCheck(
+            new ExtendsBoundMapper.Wrapper<>(
+                new ExtendsBoundMapper.ParentWithPresenceCheck( 8 ),
                 "presenceCheck"
             )
         );
@@ -78,9 +78,9 @@ class Issue2677Test {
         assertThat( output.getStatus() ).isEqualTo( "presenceCheck" );
         assertThat( output.getId() ).isEqualTo( 0 );
 
-        output = Issue2677Mapper.INSTANCE.mapWithPresenceCheck(
-            new Issue2677Mapper.Wrapper<>(
-                new Issue2677Mapper.ParentWithPresenceCheck( 15 ),
+        output = ExtendsBoundMapper.INSTANCE.mapWithPresenceCheck(
+            new ExtendsBoundMapper.Wrapper<>(
+                new ExtendsBoundMapper.ParentWithPresenceCheck( 15 ),
                 "presenceCheck"
             )
         );
