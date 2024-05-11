@@ -10,10 +10,6 @@ on:
         description: 'Next version'
         required: false
 
-env:
-  JAVA_VERSION: '11'
-  JAVA_DISTRO: 'zulu'
-
 jobs:
   release:
     # This job has been inspired by the moditect release (https://github.com/moditect/moditect/blob/main/.github/workflows/release.yml)
@@ -26,8 +22,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ vars.JAVA_VERSION }}
-          distribution: ${{ vars.JAVA_DISTRO }}
+          java-version: 11
+          distribution: 'zulu'
           cache: maven
 
       - name: Set release version
@@ -98,12 +94,6 @@ jobs:
           ref: main
           fetch-depth: 0
           token: ${{ secrets.GIT_WEBSITE_ACCESS_TOKEN }}
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ vars.JAVA_VERSION }}
-          distribution: ${{ vars.JAVA_DISTRO }}
 
       - name: Download assets
         shell: bash
