@@ -109,5 +109,5 @@ jobs:
           VERSION: ${{ github.event.inputs.version }}
           GH_BOT_EMAIL: ${{ vars.GH_BOT_EMAIL }}
         run: |
-          chmod +x update-website.sh
-          ./update-website.sh
+          chmod +x tmp/update-website.sh
+          tmp/update-website.sh
