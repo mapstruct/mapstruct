@@ -177,4 +177,30 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             sourceType.describe()
         );
     }
+
+    /**
+     * Reports that a mapping could not be created.
+     *
+     * @param method the method that should be mapped
+     * @param posHint hint which @Mapping is the culprit
+     * @param sourceErrorMessagePart the error message part for the source
+     * @param sourceType the source type of the mapping
+     * @param targetType the type of the target mapping
+     * @param targetPropertyName the name of the target property
+     */
+    void reportCannotCreateMappingBetweenDifferentTypeVars(Method method, AnnotationMirror posHint,
+                                   String sourceErrorMessagePart,
+                                   Type sourceType, Type targetType,
+                                   String targetPropertyName) {
+        ctx.getMessager().printMessage(
+            method.getExecutable(),
+            posHint,
+            Message.PROPERTYMAPPING_MAPPING_TYPE_VAR_MISMATCH,
+            sourceErrorMessagePart,
+            targetType.describe(),
+            targetPropertyName,
+            targetType.describe(),
+            sourceType.describe()
+                        );
+    }
 }
