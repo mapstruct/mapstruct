@@ -225,4 +225,12 @@ public class SelectionParameters {
             sourceRHS
         );
     }
+
+    public boolean isEmpty() {
+        return qualifiers.isEmpty()
+            && qualifyingNames.isEmpty()
+            && conditionQualifiers.isEmpty()
+            && conditionQualifyingNames.isEmpty()
+            && resultType == null;
+    }
 }
