@@ -18,7 +18,6 @@ import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which does mapping of generic types.
@@ -36,21 +35,18 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
-    private final VersionInformation versionInformation;
 
     ContainerMappingMethod(Method method, List<Annotation> annotations,
                            Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters,
-        VersionInformation versionInformation) {
+        SelectionParameters selectionParameters) {
         super( method, annotations, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.loopVariableName = loopVariableName;
         this.selectionParameters = selectionParameters != null ? selectionParameters : SelectionParameters.empty();
-        this.versionInformation = versionInformation;
         this.index1Name = Strings.getSafeVariableName( "i", existingVariables );
         this.index2Name = Strings.getSafeVariableName( "j", existingVariables );
 
@@ -81,7 +77,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
 
     public IterableCreation getIterableCreation() {
         if ( iterableCreation == null ) {
-            iterableCreation = IterableCreation.create( this, getSourceParameter(), versionInformation );
+            iterableCreation = IterableCreation.create( this, getSourceParameter());
         }
         return iterableCreation;
     }

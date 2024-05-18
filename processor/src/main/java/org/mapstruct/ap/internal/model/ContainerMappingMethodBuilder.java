@@ -19,7 +19,6 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -162,8 +161,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
-            selectionParameters,
-            versionInformation
+            selectionParameters
         );
     }
 
@@ -180,8 +178,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-                                                  SelectionParameters selectionParameters,
-                                                  VersionInformation versionInformation);
+                                                  SelectionParameters selectionParameters);
 
     protected abstract Type getElementType(Type parameterType);
 

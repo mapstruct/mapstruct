@@ -375,7 +375,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keySelectionParameters( keySelectionParameters )
                     .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
-                    .versionInformation( versionInformation )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
@@ -425,7 +424,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .sourceMethod( method )
                     .userDefinedReturnType( userDefinedReturnType )
                     .returnTypeBuilder( typeFactory.builderTypeFor( builderBaseType, builder ) )
-                    .versionInformation( versionInformation )
                     .build();
 
                 // We can consider that the bean mapping method can always be constructed. If there is a problem
@@ -486,7 +484,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mappingContext( mappingContext )
             .method( method )
             .formattingParameters( formattingParameters )
-            .versionInformation( versionInformation )
             .selectionParameters( selectionParameters )
             .build();
     }

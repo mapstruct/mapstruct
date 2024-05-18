@@ -16,23 +16,29 @@ public class ImplementationType {
     private final Type type;
     private final boolean initialCapacityConstructor;
     private final boolean loadFactorAdjustment;
+    private final String factoryMethodName;
 
-    private ImplementationType(Type type, boolean initialCapacityConstructor, boolean loadFactorAdjustment) {
+    private ImplementationType(
+        Type type,
+        boolean initialCapacityConstructor,
+        boolean loadFactorAdjustment,
+        String factoryMethodName) {
         this.type = type;
         this.initialCapacityConstructor = initialCapacityConstructor;
         this.loadFactorAdjustment = loadFactorAdjustment;
+        this.factoryMethodName = factoryMethodName;
     }
 
     public static ImplementationType withDefaultConstructor(Type type) {
-        return new ImplementationType( type, false, false );
+        return new ImplementationType( type, false, false, null );
     }
 
     public static ImplementationType withInitialCapacity(Type type) {
-        return new ImplementationType( type, true, false );
+        return new ImplementationType( type, true, false, null );
     }
 
-    public static ImplementationType withLoadFactorAdjustment(Type type) {
-        return new ImplementationType( type, true, true );
+    public static ImplementationType withLoadFactorAdjustment(Type type, String factoryMethodName) {
+        return new ImplementationType( type, true, true, factoryMethodName );
     }
 
     /**
@@ -44,7 +50,7 @@ public class ImplementationType {
      * @return a new implementation type with the given {@code type}
      */
     public ImplementationType createNew(Type type) {
-        return new ImplementationType( type, initialCapacityConstructor, loadFactorAdjustment );
+        return new ImplementationType( type, initialCapacityConstructor, loadFactorAdjustment, factoryMethodName );
     }
 
     /**
@@ -70,5 +76,9 @@ public class ImplementationType {
      */
     public boolean isLoadFactorAdjustment() {
         return loadFactorAdjustment;
+    }
+
+    public String getFactoryMethodName() {
+        return factoryMethodName;
     }
 }
