@@ -42,7 +42,7 @@ public class IterableCreation extends ModelElement {
     }
 
     public static IterableCreation create(NormalTypeMappingMethod mappingMethod, Parameter sourceParameter) {
-        return new IterableCreation( mappingMethod.getResultType(), sourceParameter, mappingMethod.getFactoryMethod());
+        return new IterableCreation( mappingMethod.getResultType(), sourceParameter, mappingMethod.getFactoryMethod() );
     }
 
     public Type getResultType() {
