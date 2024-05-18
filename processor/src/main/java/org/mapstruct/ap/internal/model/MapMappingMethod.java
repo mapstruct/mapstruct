@@ -321,7 +321,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     public IterableCreation getIterableCreation() {
         if ( iterableCreation == null ) {
-            iterableCreation = IterableCreation.create( this, getSourceParameter());
+            iterableCreation = IterableCreation.create( this, getSourceParameter() );
         }
         return iterableCreation;
     }
