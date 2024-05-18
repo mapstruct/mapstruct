@@ -52,6 +52,7 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
@@ -87,6 +88,7 @@ public class TypeFactory {
     private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final RoundContext roundContext;
+    private final VersionInformation versionInformation;
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
@@ -100,11 +102,13 @@ public class TypeFactory {
     private final boolean loggingVerbose;
 
     public TypeFactory(ElementUtils elementUtils, TypeUtils typeUtils, FormattingMessager messager,
-                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
+                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose,
+                       VersionInformation versionInformation) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.roundContext = roundContext;
+        this.versionInformation = versionInformation;
         this.notToBeImportedTypes = notToBeImportedTypes;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
@@ -118,16 +122,28 @@ public class TypeFactory {
         implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
         implementationTypes.put( List.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
 
-        implementationTypes.put( Set.class.getName(), withLoadFactorAdjustment( getType( LinkedHashSet.class ) ) );
+        implementationTypes.put(
+            Set.class.getName(),
+            withLoadFactorAdjustment(
+                getType( LinkedHashSet.class ),
+                isSourceVersionAtLeast19() ? "newLinkedHashSet" : null
+            )
+        );
         implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
         implementationTypes.put( NavigableSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
 
-        implementationTypes.put( Map.class.getName(), withLoadFactorAdjustment( getType( LinkedHashMap.class ) ) );
+        implementationTypes.put(
+            Map.class.getName(),
+            withLoadFactorAdjustment(
+                getType( LinkedHashMap.class ),
+                isSourceVersionAtLeast19() ? "newLinkedHashMap" : null
+            )
+        );
         implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put( NavigableMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put(
             ConcurrentMap.class.getName(),
-            withLoadFactorAdjustment( getType( ConcurrentHashMap.class ) )
+            withLoadFactorAdjustment( getType( ConcurrentHashMap.class ), null )
         );
         implementationTypes.put(
             ConcurrentNavigableMap.class.getName(),
@@ -461,6 +477,10 @@ public class TypeFactory {
 
     private boolean isExecutableType(TypeMirror accessorType) {
         return accessorType.getKind() == TypeKind.EXECUTABLE;
+    }
+
+    private boolean isSourceVersionAtLeast19() {
+        return versionInformation != null && versionInformation.isSourceVersionAtLeast19();
     }
 
     public Type getReturnType(ExecutableType method) {

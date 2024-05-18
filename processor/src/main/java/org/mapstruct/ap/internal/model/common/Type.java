@@ -314,7 +314,15 @@ public class Type extends ModelElement implements Comparable<Type> {
      * type, {@code null} otherwise.
      */
     public Type getImplementationType() {
+        if (implementationType != null && implementationType.getType().toString().contains("LinkedHashMap")) {
+            System.out.println("wtf? implType " + (implementationType != null ? implementationType.getType() : null));
+            System.out.println("wtf? factMeth " + getFactoryMethodName());
+        }
         return implementationType != null ? implementationType.getType() : null;
+    }
+
+    public String getFactoryMethodName() {
+        return implementationType != null ? implementationType.getFactoryMethodName() : null;
     }
 
     public ImplementationType getImplementation() {

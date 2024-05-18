@@ -631,7 +631,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .forgeMethodWithMappingReferences( mappingRefs )
                         .forceUpdateMethod( forceUpdateMethod )
                         .forgedNamedBased( false )
-                        .versionInformation( versionInformation )
                         .build();
 
                     if ( propertyMapping != null ) {
@@ -662,7 +661,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .target( targetPropertyName, null, accessor )
                     .dependsOn( Collections.emptySet() )
                     .mirror( null )
-                    .versionInformation( versionInformation )
                     .build()
                 );
             }
@@ -1174,7 +1172,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 .targetPropertyType( resultTypeToMap )
                 .mappingReferences( mappingReferences )
                 .existingVariableNames( existingVariableNames )
-                .versionInformation( versionInformation )
                 .build();
 
             unprocessedSourceParameters.removeAll( holder.getProcessedSourceParameters() );
@@ -1337,7 +1334,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                         .dependsOn( mapping.getDependsOn() )
                         .mirror( mapping.getMirror() )
-                        .versionInformation( versionInformation )
                         .build();
                 }
                 handledTargets.add( targetPropertyName );
@@ -1359,7 +1355,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .existingVariableNames( existingVariableNames )
                     .dependsOn( mapping.getDependsOn() )
                     .mirror( mapping.getMirror() )
-                    .versionInformation( versionInformation )
                     .build();
                 handledTargets.add( targetPropertyName );
             }
@@ -1377,7 +1372,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                     .dependsOn( mapping.getDependsOn() )
                     .mirror( mapping.getMirror() )
-                    .versionInformation( versionInformation )
                     .build();
                 handledTargets.add( targetPropertyName );
             }
@@ -1452,7 +1446,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .conditionJavaExpression( mapping.getConditionJavaExpression() )
                             .mirror( mapping.getMirror() )
                             .options( mapping )
-                            .versionInformation( versionInformation )
                             .build();
                         handledTargets.add( targetPropertyName );
                         Parameter sourceParameter = sourceRef.getParameter();
@@ -1593,7 +1586,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .existingVariableNames( existingVariableNames )
                     .forgeMethodWithMappingReferences( mappingRefs )
                     .options( method.getOptions().getBeanMapping() )
-                    .versionInformation( versionInformation )
                     .build();
 
                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -1639,7 +1631,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .existingVariableNames( existingVariableNames )
                             .forgeMethodWithMappingReferences( mappingRefs )
                             .options( method.getOptions().getBeanMapping() )
-                            .versionInformation( versionInformation )
                             .build();
 
                         propertyMappings.add( propertyMapping );

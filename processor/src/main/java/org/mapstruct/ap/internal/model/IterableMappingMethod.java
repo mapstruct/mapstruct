@@ -17,7 +17,6 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -55,8 +54,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
-            VersionInformation versionInformation) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -67,7 +65,6 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
-                versionInformation,
                 selectionParameters
             );
         }
@@ -78,8 +75,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                  VersionInformation versionInformation,
-        SelectionParameters selectionParameters) {
+                                  SelectionParameters selectionParameters) {
         super(
             method,
             annotations,
@@ -90,8 +86,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters,
-            versionInformation
+            selectionParameters
         );
     }
 

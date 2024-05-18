@@ -11,18 +11,8 @@
         <@includeModel object=factoryMethod targetType=resultType/>
     <#elseif enumSet>
         EnumSet.noneOf( <@includeModel object=enumSetElementType raw=true/>.class )
-    <#elseif sourceVersionAtLeast19 && resultType.implementationType?? && ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>
-        <#if linkedHashSet>
-            LinkedHashSet.newLinkedHashSet( <@iterableSize /> )
-        <#elseif linkedHashMap>
-            LinkedHashMap.newLinkedHashMap( <@iterableSize /> )
-        <#elseif hashSet>
-            HashSet.newHashSet( <@iterableSize /> )
-        <#elseif hashMap>
-            HashMap.newHashMap( <@iterableSize /> )
-        <#else>
-            new <@includeModel object=resultType.implementationType/><#if ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>( <@sizeForCreation /> )<#else>()</#if>
-        </#if>
+    <#elseif resultType.implementationType?? && resultType.factoryMethodName?? && ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>
+        <@includeModel object=resultType.implementationType raw=true />.${resultType.factoryMethodName}( <@iterableSize /> )
     <#else>
     new
         <#if resultType.implementationType??>
