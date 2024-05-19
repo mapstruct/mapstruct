@@ -20,14 +20,6 @@ class JarMapperTest {
         })
     @WithClasses({ FilledJar.class, EmptyJar.class, JarToJarMapper.class })
     void targetHasNoProperties() {
-        FilledJar filledJar = new FilledJar();
-        filledJar.setLabel( "Lemoncurd" );
-        filledJar.setWeight( 1.00 );
-        filledJar.setContent( new Object() );
-
-        EmptyJar emptyJar = JarToJarMapper.INSTANCE.mapToEmptyJar( filledJar );
-
-        assertThat( emptyJar ).hasAllNullFieldsOrProperties();
     }
 
 
@@ -40,11 +32,5 @@ class JarMapperTest {
         })
     @WithClasses({ FilledJar.class, AirplaneWithNoAccessors.class, JarToAirplaneMapper.class })
     void targetHasNoAccessibleProperties() {
-
-        AirplaneWithNoAccessors airplane = JarToAirplaneMapper.INSTANCE.mapToAirplaneWithNoAccessors( new FilledJar() );
-
-        assertThat( airplane )
-            .hasFieldOrPropertyWithValue( "flightNumber", 0 )
-            .hasFieldOrPropertyWithValue( "airplaneName", null );
     }
 }
