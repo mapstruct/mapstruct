@@ -1,4 +1,4 @@
-package org.mapstruct.ap.test.bugs._1140;
+package org.mapstruct.ap.test.emptytarget;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

@@ -1,4 +1,4 @@
-package org.mapstruct.ap.test.bugs._1140;
+package org.mapstruct.ap.test.emptytarget;
 
 public class FilledJar {
     private String label;
