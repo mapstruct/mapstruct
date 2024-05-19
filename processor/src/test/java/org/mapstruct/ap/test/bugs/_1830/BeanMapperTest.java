@@ -6,9 +6,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
     Bean.class,
     BeanDTO.class,
     BeanMapper.class,
-    NestedBean.class
+    NestedBean.class,
+    BeanMapperWithStrategyDefinedInConfig.class
 })
 class BeanMapperTest {
 
     private static final String EXPECTED_MAPPER_IMPL = "src/test/resources/fixtures/org/mapstruct/ap/test/bugs/_1830/BeanMapperImplClear.java";
+
     @RegisterExtension
     GeneratedSource generatedSource = new GeneratedSource();
     private final Bean bean = new Bean();
@@ -47,20 +46,22 @@ class BeanMapperTest {
     }
 
     @ProcessorTest
-    @WithClasses({
-        MapperWithErrorInTargetMapping.class,
-        BeanWithId.class,
-        BeanDTOWithId.class
-    })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = MapperWithErrorInTargetMapping.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 15,
-                message = "Target property: \"id\" is not a Collection or Map and can't be used with NullValuePropertyMappingStrategy: 'CLEAR'")
-        })
-    void mapNullWithCustomClearStrategy() {
+    void generatedMapperWithMappingDefinedInConfigMethodsShouldCallClear() {
+        generatedSource.forMapper( BeanMapperWithStrategyDefinedInConfig.class )
+            .hasSameMapperContent( FileUtils.getFile( "src/test/resources/fixtures/org/mapstruct/ap/test/bugs/_1830/BeanMapperWithStrategyDefinedInConfigImplClear.java" ) );
     }
+
+    @ProcessorTest
+    @WithClasses({
+        BeanMapperWithClearOnNonCollectionTypes.class,
+        BeanWithId.class,
+        BeanDTOWithId.class,
+    })
+    void nonCollectionTypesWithClearStrategyShouldUseDefaultBehaviour() {
+        generatedSource.forMapper( BeanMapperWithClearOnNonCollectionTypes.class )
+            .hasSameMapperContent( FileUtils.getFile( "src/test/resources/fixtures/org/mapstruct/ap/test/bugs/_1830/BeanMapperWithClearStrategyOnNonCollectionTypes.java" ) );
+    }
+
 
 
 }

@@ -7,9 +7,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper()
-public interface MapperWithErrorInTargetMapping {
+public interface BeanMapperWithClearOnNonCollectionTypes {
 
-    MapperWithErrorInTargetMapping INSTANCE = Mappers.getMapper( MapperWithErrorInTargetMapping.class );
+    BeanMapperWithClearOnNonCollectionTypes INSTANCE = Mappers.getMapper( BeanMapperWithClearOnNonCollectionTypes.class );
 
     @Mapping(target = "id", source = "id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
     BeanDTOWithId map(BeanWithId source, @MappingTarget BeanDTOWithId target);

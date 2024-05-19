@@ -228,17 +228,6 @@ public class MapperOptions extends DelegatingOptions {
         return mapper.isValid();
     }
 
-    public void validate(ModelElementProcessor.ProcessorContext context, TypeElement mapperTypeElement) {
-        if ( getNullValuePropertyMappingStrategy() == NullValuePropertyMappingStrategyGem.CLEAR ) {
-            context.getMessager().printMessage(
-                mapperTypeElement,
-                Message.MAPPINGCONFIG_STRATEGY_CANT_BE_USED,
-                NullValuePropertyMappingStrategyGem.CLEAR,
-                "nullValuePropertyMapping"
-            );
-        }
-    }
-
     public AnnotationMirror getAnnotationMirror() {
         return mapper.mirror();
     }
