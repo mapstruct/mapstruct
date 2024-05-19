@@ -274,10 +274,6 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = rightHandSide.getSourceType();
             if ( assignment != null ) {
                 ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
-                if ( !targetType.isCollectionOrMapType() &&
-                    nvpms == CLEAR ) { // TODO: It works, but should the check be done here?
-                    reportNullValueClearStrategyError();
-                }
                 assignment = assignToTargetType( assignment, sourceType );
             }
             else {
@@ -309,14 +305,6 @@ public class PropertyMapping extends ModelElement {
                 assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
             }
             return assignment;
-        }
-
-        private void reportNullValueClearStrategyError() {
-            ctx.getMessager().printMessage( //TODO: Is this the correct way to print the error?
-                method.getExecutable(),
-                Message.PROPERTYMAPPING_NULL_VALUE_CLEAR_STRATEGY_CANT_BE_USED_WITH_NON_MAP_OR_COLLECTION_TYPE,
-                targetPropertyName
-            );
         }
 
         private Assignment forge( ) {
