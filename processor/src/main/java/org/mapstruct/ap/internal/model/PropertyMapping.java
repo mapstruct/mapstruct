@@ -746,6 +746,12 @@ public class PropertyMapping extends ModelElement {
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
+            if ( ctx.getForgedMethodsUnderCreation().containsKey( methodRef ) ) {
+                return createAssignment(source, methodRef);
+            } else {
+                ctx.getForgedMethodsUnderCreation().put( methodRef, methodRef );
+            }
+
             ContainerMappingMethod iterableMappingMethod = builder
                 .mappingContext( ctx )
                 .method( methodRef )
@@ -754,7 +760,10 @@ public class PropertyMapping extends ModelElement {
                 .positionHint( positionHint )
                 .build();
 
-            return createForgedAssignment( source, methodRef, iterableMappingMethod );
+            Assignment forgedAssignment = createForgedAssignment( source, methodRef, iterableMappingMethod );
+            ctx.getForgedMethodsUnderCreation().remove( methodRef );
+
+            return forgedAssignment;
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
