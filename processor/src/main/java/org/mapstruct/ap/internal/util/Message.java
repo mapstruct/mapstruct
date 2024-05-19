@@ -92,10 +92,7 @@ public enum Message {
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
-    PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES(
-        "Target \"%s\" has no target properties, targeted by this mapping method: \"%s\"",
-        Diagnostic.Kind.WARNING
-    ),
+    PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES( "Target \"%s\" has no target properties, targeted by this mapping method: \"%s\"", Diagnostic.Kind.WARNING ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
@@ -229,10 +226,7 @@ public enum Message {
     ANNOTATE_WITH_ENUM_CLASS_NOT_DEFINED( "enumClass needs to be defined when using enums." ),
     ANNOTATE_WITH_ENUMS_NOT_DEFINED( "enums needs to be defined when using enumClass." ),
     ANNOTATE_WITH_ANNOTATION_IS_NOT_REPEATABLE( "Annotation \"%s\" is not repeatable." ),
-    ANNOTATE_WITH_DUPLICATE(
-        "Annotation \"%s\" is already present with the same elements configuration.",
-        Diagnostic.Kind.WARNING
-    );
+    ANNOTATE_WITH_DUPLICATE( "Annotation \"%s\" is already present with the same elements configuration.", Diagnostic.Kind.WARNING );
     // CHECKSTYLE:ON
 
     private final String description;
