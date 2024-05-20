@@ -421,7 +421,7 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     public SelectionParameters getSelectionParameters() {
-        return selectionParameters.isEmpty() ? null : selectionParameters;
+        return selectionParameters;
     }
 
     public boolean isIgnored() {

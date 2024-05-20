@@ -1,6 +1,11 @@
 package org.mapstruct.ap.test.bugs._3591;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -29,78 +34,43 @@ public class CompilationErrorDuplicateMethodsBugTest {
 
     @ProcessorTest
     @WithClasses({
-        BeanDto.class,
-        SpecialBeanDto.class,
-        Bean.class,
-        BeanMapperWithSelectionParameters.class
+        ContainerBean.class,
+        ContainerBeanDto.class,
+        ContainerBeanMapper.class,
     })
-    void shouldSelectMethodByQualifier() {
-        Bean bean = testBean();
-        BeanDto beanDto = new BeanDto();
+    void shouldMapNestedMapAndStream() {
+        ContainerBean containerBean = testContainerBean();
 
-        BeanMapperWithSelectionParameters.INSTANCE.mapWithQualifier( bean, beanDto );
+        ContainerBeanDto dto = ContainerBeanMapper.INSTANCE.mapWithMapMapping( containerBean, new ContainerBeanDto() );
 
-        assertThat( beanDto.getBeans() ).isNotEmpty();
-        assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "withQualifier" );
+        assertThat( dto.getBeanMap() ).isNotEmpty();
+        assertThat( dto.getBeanMap().get( "child" ).getValue() ).isEqualTo( "mapChild" );
+
+        List<ContainerBeanDto> fromStream = dto.getBeanStream().collect( Collectors.toList() );
+        assertThat( fromStream ).isNotEmpty();
+        assertThat( fromStream.get( 0 ).getValue() ).isEqualTo( "streamChild" );
     }
 
-    @ProcessorTest
-    @WithClasses({
-        BeanDto.class,
-        SpecialBeanDto.class,
-        Bean.class,
-        BeanMapperWithSelectionParameters.class
-    })
-    void shouldSelectMethodByName() {
-        Bean bean = testBean();
-        BeanDto beanDto = new BeanDto();
+    static ContainerBean testContainerBean() {
+        ContainerBean containerBean = new ContainerBean( "parent" );
 
-        BeanMapperWithSelectionParameters.INSTANCE.mapWithQualifiedByName( bean, beanDto );
+        Map<String, ContainerBean> beanMap = new HashMap<>();
+        beanMap.put( "child", new ContainerBean( "mapChild" ) );
+        containerBean.setBeanMap( beanMap );
 
-        assertThat( beanDto.getBeans() ).isNotEmpty();
-        assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "QualifiedByName" );
+        Stream<ContainerBean> streamChild = Stream.of( new ContainerBean( "streamChild" ) );
+        containerBean.setBeanStream( streamChild );
+
+        return containerBean;
     }
 
-    @ProcessorTest
-    @WithClasses({
-        BeanDto.class,
-        SpecialBeanDto.class,
-        Bean.class,
-        BeanMapperWithSelectionParameters.class
-    })
-    void shouldMapChildrenBeansToSpecialBeans() {
-        Bean bean = testBean();
-        BeanDto beanDto = new BeanDto();
-
-        BeanMapperWithSelectionParameters.INSTANCE.mapToResultType( bean, beanDto );
-
-        assertThat( beanDto.getBeans() ).isNotEmpty();
-        assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "child" );
-        assertThat( beanDto.getBeans().get( 0 ) ).isInstanceOf( SpecialBeanDto.class );
-    }
-
-    @ProcessorTest
-    @WithClasses({
-        BeanDto.class,
-        SpecialBeanDto.class,
-        Bean.class,
-        BeanMapperWithSelectionParameters.class
-    })
-    void shouldMapWithoutAnySelection() {
-        Bean bean = testBean();
-        BeanDto beanDto = new BeanDto();
-
-        BeanMapperWithSelectionParameters.INSTANCE.map( bean, beanDto );
-
-        assertThat( beanDto.getBeans() ).isNotEmpty();
-        assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "child" );
-        assertThat( beanDto.getBeans().get( 0 ) ).isInstanceOf( BeanDto.class );
-    }
-
-    Bean testBean() {
+    static Bean testBean() {
         Bean bean = new Bean( "parent" );
         Bean child = new Bean( "child" );
-        bean.setBeans( List.of( child ) );
+        List<Bean> childList = new ArrayList<>();
+        childList.add( child );
+        bean.setBeans( childList );
+
         return bean;
     }
 
