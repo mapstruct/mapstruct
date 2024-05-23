@@ -83,6 +83,8 @@ public class TypeFactory {
             sb.append( ')' );
             return sb.toString();
         };
+    private static final String LINKED_HASH_SET_FACTORY_METHOD_NAME = "newLinkedHashSet";
+    private static final String LINKED_HASH_MAP_FACTORY_METHOD_NAME = "newLinkedHashMap";
 
     private final ElementUtils elementUtils;
     private final TypeUtils typeUtils;
@@ -126,7 +128,7 @@ public class TypeFactory {
             Set.class.getName(),
             withLoadFactorAdjustment(
                 getType( LinkedHashSet.class ),
-                isSourceVersionAtLeast19() ? "newLinkedHashSet" : null
+                isSourceVersionAtLeast19() ? LINKED_HASH_SET_FACTORY_METHOD_NAME : null
             )
         );
         implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
@@ -136,7 +138,7 @@ public class TypeFactory {
             Map.class.getName(),
             withLoadFactorAdjustment(
                 getType( LinkedHashMap.class ),
-                isSourceVersionAtLeast19() ? "newLinkedHashMap" : null
+                isSourceVersionAtLeast19() ? LINKED_HASH_MAP_FACTORY_METHOD_NAME : null
             )
         );
         implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
