@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 public interface ContainerBeanMapper {
 
     ContainerBeanMapper INSTANCE = Mappers.getMapper( ContainerBeanMapper.class );
+
     @Mapping(source = "beanMap", target = "beanMap")
     @Mapping(source = "beanStream", target = "beanStream")
     ContainerBeanDto mapWithMapMapping(ContainerBean containerBean, @MappingTarget ContainerBeanDto containerBeanDto);

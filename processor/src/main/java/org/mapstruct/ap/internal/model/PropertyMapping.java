@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -746,13 +747,7 @@ public class PropertyMapping extends ModelElement {
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
-            if ( ctx.getForgedMethodsUnderCreation().containsKey( methodRef ) ) {
-                return createAssignment(source, methodRef);
-            } else {
-                ctx.getForgedMethodsUnderCreation().put( methodRef, methodRef );
-            }
-
-            ContainerMappingMethod iterableMappingMethod = builder
+            Supplier<MappingMethod> mappingMethodCreation = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
@@ -760,10 +755,7 @@ public class PropertyMapping extends ModelElement {
                 .positionHint( positionHint )
                 .build();
 
-            Assignment forgedAssignment = createForgedAssignment( source, methodRef, iterableMappingMethod );
-            ctx.getForgedMethodsUnderCreation().remove( methodRef );
-
-            return forgedAssignment;
+            return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreation );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
@@ -781,12 +773,12 @@ public class PropertyMapping extends ModelElement {
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
-            MapMappingMethod mapMappingMethod = builder
+            Supplier<MappingMethod> mapMappingMethodCreation = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .build();
 
-            return createForgedAssignment( source, methodRef, mapMappingMethod );
+            return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreation );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {

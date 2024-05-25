@@ -7,14 +7,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("3591")
 public class CompilationErrorDuplicateMethodsBugTest {
+
+    @RegisterExtension
+    GeneratedSource generatedSource = new GeneratedSource();
+
 
     @ProcessorTest
     @WithClasses({
@@ -30,6 +36,16 @@ public class CompilationErrorDuplicateMethodsBugTest {
         assertThat( beanDto.getValue() ).isEqualTo( "parent" );
         assertThat( beanDto.getBeans() ).isNotEmpty();
         assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "child" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ContainerBean.class,
+        ContainerBeanDto.class,
+        ContainerBeanMapper.class,
+    })
+    void shouldCreateOnlyOneMethodForStreamMapping() {
+        generatedSource.addComparisonToFixtureFor( ContainerBeanMapper.class );
     }
 
     @ProcessorTest
