@@ -569,6 +569,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mappingOptions.applyIgnoreAll( method, typeFactory, mappingContext.getMessager() );
         }
 
+        // @BeanMapping ( ignoreTargets = {...} )
+        if ( mappingOptions.getBeanMapping() != null &&
+                mappingOptions.getBeanMapping().getIgnoreUnmappedTargetProperties() != null ) {
+            mappingOptions.applyIgnoreTargets( method,
+                    mappingContext.getMessager(),
+                    mappingOptions.getBeanMapping().getIgnoreUnmappedTargetProperties() );
+        }
+
         mappingOptions.markAsFullyInitialized();
     }
 

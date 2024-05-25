@@ -11,14 +11,20 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
+import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("3539")
 public class BeanMappingIgnoreTargetTest {
 
     @ProcessorTest
     @WithClasses({Source.class, Target.class, BeanMappingIgnoreTargetMapper.class})
     public void shouldIgnoreTargetProperty() {
-        BeanMappingIgnoreTargetMapper.INSTANCE.convert( new Source() );
+        Source source = new Source();
+        source.setAge( 18 );
+        source.setName( "TOM" );
+        source.setNested( new Source.NestedSource() );
+        Target target = BeanMappingIgnoreTargetMapper.INSTANCE.convert( source );
+        assertThat( target.getName() ).isEqualTo( source.getName() );
+        assertThat( target.getAge() ).isEqualTo( source.getAge() );
     }
 
     @ProcessorTest
@@ -34,5 +40,21 @@ public class BeanMappingIgnoreTargetTest {
             }
     )
     public void shouldRaiseErrorDueToUnknownProperty() {
+    }
+
+    @ProcessorTest
+    @WithClasses({Source.class, Target.class, ErroneousBeanMappingIgnoreTargetConflictMapper.class})
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(type = ErroneousBeanMappingIgnoreTargetConflictMapper.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 19,
+                            message = "Use @BeanMapping(ignoreTargets = \"[name, address]\") " +
+                                    "and @Mapping(target = \"name\",...) There's a conflict.")
+            }
+    )
+    public void shouldRaiseErrorDueToConflictProperty() {
+
     }
 }

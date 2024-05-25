@@ -355,6 +355,27 @@ public class MappingMethodOptions {
         }
     }
 
+    public void applyIgnoreTargets(SourceMethod method, FormattingMessager messager,
+                                    List<String> ignoreTargets ) {
+        for ( MappingOptions mapping : mappings ) {
+            if ( !mapping.isIgnored() && ignoreTargets.contains( mapping.getTargetName() ) ) {
+                messager.printMessage(
+                        method.getExecutable(),
+                        getBeanMapping().getMirror(),
+                        Message.BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_ERROR,
+                        ignoreTargets,
+                        mapping.getTargetName()
+                );
+            }
+        }
+
+        for (String ignoreTarget : ignoreTargets) {
+            MappingOptions mapping =
+                    MappingOptions.forBeanMappingIgnoreTargets( ignoreTarget, method.getExecutable() );
+            mappings.add( mapping );
+        }
+    }
+
     private void filterNestedTargetIgnores( Set<MappingOptions> mappings) {
 
         // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
