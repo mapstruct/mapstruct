@@ -75,16 +75,9 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      */
     Assignment createForgedAssignment(SourceRHS sourceRHS, BuilderType builderType, ForgedMethod forgedMethod) {
 
-        if ( ctx.getForgedMethodsUnderCreation().containsKey( forgedMethod ) ) {
-            return createAssignment( sourceRHS, ctx.getForgedMethodsUnderCreation().get( forgedMethod ) );
-        }
-        else {
-            ctx.getForgedMethodsUnderCreation().put( forgedMethod, forgedMethod );
-        }
-
-        MappingMethod forgedMappingMethod;
+        Supplier<MappingMethod> forgedMappingMethod;
         if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
-            forgedMappingMethod = new ValueMappingMethod.Builder()
+            forgedMappingMethod = () -> new ValueMappingMethod.Builder()
                 .method( forgedMethod )
                 .valueMappings( forgedMethod.getOptions().getValueMappings() )
                 .enumMapping( forgedMethod.getOptions().getEnumMappingOptions() )
@@ -92,16 +85,14 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
                 .build();
         }
         else {
-            forgedMappingMethod = new BeanMappingMethod.Builder()
+            forgedMappingMethod = () -> new BeanMappingMethod.Builder()
                 .forgedMethod( forgedMethod )
                 .returnTypeBuilder( builderType )
                 .mappingContext( ctx )
                 .build();
         }
 
-        Assignment forgedAssignment = createForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
-        ctx.getForgedMethodsUnderCreation().remove( forgedMethod );
-        return forgedAssignment;
+        return getOrCreateForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
     }
 
     Assignment getOrCreateForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod,
@@ -140,7 +131,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         return createAssignment( source, methodRef );
     }
 
-    Assignment createAssignment(SourceRHS source, ForgedMethod methodRef) {
+    private Assignment createAssignment(SourceRHS source, ForgedMethod methodRef) {
         Assignment assignment = MethodReference.forForgedMethod(
             methodRef,
             ParameterBinding.fromParameters( methodRef.getParameters() )

@@ -5,11 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._3591;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -33,7 +30,9 @@ public class CompilationErrorDuplicateMethodsBugTest {
         BeanMapper.class
     })
     void mapNestedBeansWithMappingAnnotation() {
-        Bean bean = testBean();
+        Bean bean = new Bean( "parent" );
+        Bean child = new Bean( "child" );
+        bean.setBeans( List.of( child ) );
 
         BeanDto beanDto = BeanMapper.INSTANCE.map( bean, new BeanDto() );
 
@@ -59,39 +58,23 @@ public class CompilationErrorDuplicateMethodsBugTest {
         ContainerBeanMapper.class,
     })
     void shouldMapNestedMapAndStream() {
-        ContainerBean containerBean = testContainerBean();
-
-        ContainerBeanDto dto = ContainerBeanMapper.INSTANCE.mapWithMapMapping( containerBean, new ContainerBeanDto() );
-
-        assertThat( dto.getBeanMap() ).isNotEmpty();
-        assertThat( dto.getBeanMap().get( "child" ).getValue() ).isEqualTo( "mapChild" );
-
-        List<ContainerBeanDto> fromStream = dto.getBeanStream().collect( Collectors.toList() );
-        assertThat( fromStream ).isNotEmpty();
-        assertThat( fromStream.get( 0 ).getValue() ).isEqualTo( "streamChild" );
-    }
-
-    static ContainerBean testContainerBean() {
         ContainerBean containerBean = new ContainerBean( "parent" );
-
-        Map<String, ContainerBean> beanMap = new HashMap<>();
-        beanMap.put( "child", new ContainerBean( "mapChild" ) );
-        containerBean.setBeanMap( beanMap );
+        containerBean.setBeanMap( Map.of( "child", new ContainerBean( "mapChild" ) ) );
 
         Stream<ContainerBean> streamChild = Stream.of( new ContainerBean( "streamChild" ) );
         containerBean.setBeanStream( streamChild );
 
-        return containerBean;
-    }
+        ContainerBeanDto dto = ContainerBeanMapper.INSTANCE.mapWithMapMapping( containerBean, new ContainerBeanDto() );
 
-    static Bean testBean() {
-        Bean bean = new Bean( "parent" );
-        Bean child = new Bean( "child" );
-        List<Bean> childList = new ArrayList<>();
-        childList.add( child );
-        bean.setBeans( childList );
+        assertThat( dto.getBeanMap() )
+            .extractingByKey( "child" )
+            .extracting( ContainerBeanDto::getValue )
+            .isEqualTo( "mapChild" );
 
-        return bean;
+        assertThat( dto.getBeanStream() )
+            .singleElement()
+            .extracting( ContainerBeanDto::getValue )
+            .isEqualTo( "streamChild" );
     }
 
 }

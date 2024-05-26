@@ -225,4 +225,9 @@ public class SelectionParameters {
             sourceRHS
         );
     }
+
+    public static SelectionParameters emptyInstance() {
+        return forSourceRHS( null );
+    }
+
 }
