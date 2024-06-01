@@ -53,7 +53,6 @@ import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.CLEAR;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
@@ -274,7 +273,15 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = rightHandSide.getSourceType();
             if ( assignment != null ) {
                 ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
-                assignment = assignToTargetType( assignment, sourceType );
+                if ( targetType.isCollectionOrMapType() ) {
+                    assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
+                }
+                else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
+                    assignment = assignToArray( targetType, assignment );
+                }
+                else {
+                    assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
+                }
             }
             else {
                 reportCannotCreateMapping();
@@ -292,19 +299,6 @@ public class PropertyMapping extends ModelElement {
                 getDefaultValueAssignment( assignment ),
                 targetWriteAccessorType == AccessorType.PARAMETER
             );
-        }
-
-        private Assignment assignToTargetType(Assignment assignment, Type sourceType) {
-            if ( targetType.isCollectionOrMapType() ) {
-                assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
-            }
-            else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
-                assignment = assignToArray( targetType, assignment );
-            }
-            else {
-                assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
-            }
-            return assignment;
         }
 
         private Assignment forge( ) {
