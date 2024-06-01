@@ -12,35 +12,30 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-@WithClasses({
-    FooMapper.class,
-    FooMapperConfigured.class,
-    FooSource.class,
-    FooTarget.class,
-    FooSourceNested.class
-})
-@IssueKey("3133")
+@WithClasses( { FooMapper.class, FooMapperConfigured.class, FooSource.class, FooTarget.class, FooSourceNested.class } )
+@IssueKey( "3133" )
 public class RedundantNullCheckTest {
 
-    private static final String EXPECTED_MAPPER_IMPL = "src/test/resources/fixtures/org/mapstruct/ap/test/nullcheck/ExpectedFooMapper.java";
-    private static final String EXPECTED_MAPPER_CONFIGURED_IMPL = "src/test/resources/fixtures/org/mapstruct/ap/test/nullcheck/ExpectedFooMapperConfigured.java";
+    private static final String EXPECTED_MAPPER_IMPL =
+                    "src/test/resources/fixtures/org/mapstruct/ap/test/nullcheck/ExpectedFooMapper.java";
+    private static final String EXPECTED_MAPPER_CONFIGURED_IMPL =
+                    "src/test/resources/fixtures/org/mapstruct/ap/test/nullcheck/ExpectedFooMapperConfigured.java";
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
-    @IssueKey("3133")
+    @IssueKey( "3133" )
     void generatedMapperShouldNotContainAnyRedundantNullChecks() {
-        generatedSource.forMapper( FooMapper.class )
-            .hasSameMapperContent( FileUtils.getFile( EXPECTED_MAPPER_IMPL ) );
+        generatedSource.forMapper( FooMapper.class ).hasSameMapperContent( FileUtils.getFile( EXPECTED_MAPPER_IMPL ) );
     }
 
     @ProcessorTest
-    @IssueKey("3133")
+    @IssueKey( "3133" )
     void generatedMapperConfiguredShouldNotContainAnyRedundantNullChecks() {
-        generatedSource.forMapper( FooMapperConfigured.class )
-            .hasSameMapperContent( FileUtils.getFile( EXPECTED_MAPPER_CONFIGURED_IMPL ) );
+        generatedSource
+                        .forMapper( FooMapperConfigured.class )
+                        .hasSameMapperContent( FileUtils.getFile( EXPECTED_MAPPER_CONFIGURED_IMPL ) );
     }
-
 
 }
