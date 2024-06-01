@@ -18,8 +18,6 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps.NullValueMappingStrategy.MAP_NULL_TO_CLEAR;
-import static org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps.NullValueMappingStrategy.MAP_NULL_TO_DEFAULT;
 
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
@@ -76,7 +74,7 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<>( super.getImportTypes() );
-        if ( needsImport() && ( targetType.getImplementationType() != null ) ) {
+        if ( isMapNullToDefault() && ( targetType.getImplementationType() != null ) ) {
             imported.add( targetType.getImplementationType() );
         }
         return imported;
@@ -87,18 +85,14 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     }
 
     public boolean isMapNullToDefault() {
-        return nullValueMappingStrategy == MAP_NULL_TO_DEFAULT;
+        return nullValueMappingStrategy == NullValueMappingStrategy.MAP_NULL_TO_DEFAULT;
     }
 
     public boolean isMapNullToClear() {
-        return nullValueMappingStrategy == MAP_NULL_TO_CLEAR;
+        return nullValueMappingStrategy == NullValueMappingStrategy.MAP_NULL_TO_CLEAR;
     }
 
-    private boolean needsImport() {
-        return nullValueMappingStrategy == MAP_NULL_TO_DEFAULT || nullValueMappingStrategy == MAP_NULL_TO_CLEAR;
-    }
-
-    public enum NullValueMappingStrategy {
+    private enum NullValueMappingStrategy {
         MAP_NULL_TO_NULL,
         MAP_NULL_TO_DEFAULT,
         MAP_NULL_TO_CLEAR
