@@ -1,29 +1,80 @@
 ### Features
 
-* Support conditional mapping for source parameters (#2610, #3459, #3270)
-* Add `@SourcePropertyName` to handle a property name of the source object (#3323) - Currently only applicable for `@Condition` methods
 
 ### Enhancements
 
-* Improve error message for mapping to `target = "."` using expression (#3485)
-* Improve error messages for auto generated mappings (#2788)
-* Remove unnecessary casts to long (#3400)
-
 ### Bugs
 
-* `@Condition` cannot be used only with `@Context` parameters (#3561)
-* `@Condition` treated as ambiguous mapping for methods returning Boolean/boolean (#3565)
-* Subclass mapping warns about unmapped property that is mapped in referenced mapper (#3360)
-* Interface inherited build method is not found (#3463)
-* Bean with getter returning Stream is treating the Stream as an alternative setter (#3462)
-* Using `Mapping#expression` and `Mapping#conditionalQualifiedBy(Name)` should lead to compile error (#3413)
-* Defined mappings for subclass mappings with runtime exception subclass exhaustive strategy not working if result type is abstract class (#3331)
+* Breaking change: Presence check method used only once when multiple source parameters are provided (#3601)
 
 ### Documentation
 
-* Clarify that `Mapping#ignoreByDefault` is inherited in nested mappings in documentation (#3577)
 
 ### Build
 
-* Improve tests to show that Lombok `@SuperBuilder` is supported (#3524)
-* Add Java 21 CI matrix build (#3473)
+## Breaking changes
+
+### Presence checks for source parameters
+
+In 1.6 support for presence checks on source parameters has been added.
+This means that even if you want to map a source parameter directly to some target property the new `@SourceParameterCondition` or `@Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)` has to be used.
+
+e.g.
+
+If we had the following in 1.5
+```java
+@Mapper
+public interface OrderMapper {
+
+    @Mapping(source = "dto", target = "customer", conditionQualifiedByName = "mapCustomerFromOrder")
+    Order map(OrderDTO dto);
+
+    @Condition
+    @Named("mapCustomerFromOrder")
+    default boolean mapCustomerFromOrder(OrderDTO dto) {
+        return dto != null && dto.getCustomerName() != null;
+    }
+
+}
+```
+
+The MapStruct would generate
+
+```java
+public class OrderMapperImpl implements OrderMapper {
+
+    @Override
+    public Order map(OrderDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        Order order = new Order();
+
+        if ( mapCustomerFromOrder( dto ) ) {
+            order.setCustomer( orderDtoToCustomer( orderDTO ) );
+        }
+
+        return order;
+    }
+}
+```
+
+In order for the same to be generated in 1.6. The mapper needs to look like:
+
+```java
+@Mapper
+public interface OrderMapper {
+
+    @Mapping(source = "dto", target = "customer", conditionQualifiedByName = "mapCustomerFromOrder")
+    Order map(OrderDTO dto);
+
+    @SourceParameterCondition
+    @Named("mapCustomerFromOrder")
+    default boolean mapCustomerFromOrder(OrderDTO dto) {
+        return dto != null && dto.getCustomerName() != null;
+    }
+
+}
+```
+
