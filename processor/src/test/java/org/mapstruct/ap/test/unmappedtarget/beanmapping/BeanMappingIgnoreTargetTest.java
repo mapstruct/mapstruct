@@ -50,7 +50,8 @@ public class BeanMappingIgnoreTargetTest {
                     @Diagnostic(type = ErroneousBeanMappingIgnoreTargetConflictMapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 19,
-                            message = "The target property name cannot be mapped more than once in @BeanMapping and @Mapping.")
+                            message = "The target property name cannot be mapped more than once " +
+                                    "in @BeanMapping and @Mapping.")
             }
     )
     public void shouldRaiseErrorDueToConflictProperty() {
