@@ -45,7 +45,9 @@ public enum Message {
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
-    BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_ERROR("Use @BeanMapping(ignoreTargets = \"%s\") and @Mapping(target = \"%s\",...) There's a conflict."),
+    BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_ERROR("The target property %s cannot be mapped more than once in @BeanMapping and @Mapping."),
+    BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreTargets = {\".\"} ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
+
 
     PROPERTYMAPPING_MAPPING_NOTE( "mapping property: %s to: %s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_CREATE_NOTE( "creating property mapping: %s.", Diagnostic.Kind.NOTE ),

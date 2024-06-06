@@ -50,11 +50,29 @@ public class BeanMappingIgnoreTargetTest {
                     @Diagnostic(type = ErroneousBeanMappingIgnoreTargetConflictMapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 19,
-                            message = "Use @BeanMapping(ignoreTargets = \"[name, address]\") " +
-                                    "and @Mapping(target = \"name\",...) There's a conflict.")
+                            message = "The target property name cannot be mapped more than once in @BeanMapping and @Mapping.")
             }
     )
     public void shouldRaiseErrorDueToConflictProperty() {
 
     }
+
+    @ProcessorTest
+    @WithClasses({Source.class, Target.class, ErroneousBeanMappingIgnoreTargetThisMapper.class})
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(type = ErroneousBeanMappingIgnoreTargetThisMapper.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 19,
+                            message = "Using @BeanMapping( ignoreTargets = {\".\"} ) " +
+                                    "with @Mapping( target = \".\", ... ) is not allowed. " +
+                                    "You'll need to explicitly ignore the target properties " +
+                                    "that should be ignored instead.")
+            }
+    )
+    public void shouldRaiseErrorDueToThisProperty() {
+
+    }
+
 }

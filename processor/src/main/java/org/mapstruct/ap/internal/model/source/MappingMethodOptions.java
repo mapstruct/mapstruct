@@ -357,13 +357,20 @@ public class MappingMethodOptions {
 
     public void applyIgnoreTargets(SourceMethod method, FormattingMessager messager,
                                     List<String> ignoreTargets ) {
+        if ( ignoreTargets.contains( "." ) ) {
+            messager.printMessage(
+                    method.getExecutable(),
+                    getBeanMapping().getMirror(),
+                    Message.BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_THIS
+            );
+            return;
+        }
         for ( MappingOptions mapping : mappings ) {
-            if ( !mapping.isIgnored() && ignoreTargets.contains( mapping.getTargetName() ) ) {
+            if ( ignoreTargets.contains( mapping.getTargetName() ) ) {
                 messager.printMessage(
                         method.getExecutable(),
                         getBeanMapping().getMirror(),
                         Message.BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_ERROR,
-                        ignoreTargets,
                         mapping.getTargetName()
                 );
             }
