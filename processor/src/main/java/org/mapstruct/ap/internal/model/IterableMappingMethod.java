@@ -75,7 +75,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                  SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters) {
         super(
             method,
             annotations,
