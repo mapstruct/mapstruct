@@ -84,7 +84,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                                 MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                SelectionParameters selectionParameters, Set<Type> helperImports) {
+        SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
             annotations,

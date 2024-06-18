@@ -38,12 +38,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
@@ -51,6 +50,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
@@ -59,6 +59,7 @@ import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withFactoryMethod;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
 
@@ -126,26 +127,24 @@ public class TypeFactory {
 
         implementationTypes.put(
             Set.class.getName(),
-            withLoadFactorAdjustment(
-                getType( LinkedHashSet.class ),
-                isSourceVersionAtLeast19() ? LINKED_HASH_SET_FACTORY_METHOD_NAME : null
-            )
+            isSourceVersionAtLeast19() ?
+                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
         );
         implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
         implementationTypes.put( NavigableSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
 
         implementationTypes.put(
             Map.class.getName(),
-            withLoadFactorAdjustment(
-                getType( LinkedHashMap.class ),
-                isSourceVersionAtLeast19() ? LINKED_HASH_MAP_FACTORY_METHOD_NAME : null
-            )
+            isSourceVersionAtLeast19() ?
+                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
         );
         implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put( NavigableMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put(
             ConcurrentMap.class.getName(),
-            withLoadFactorAdjustment( getType( ConcurrentHashMap.class ), null )
+            withLoadFactorAdjustment( getType( ConcurrentHashMap.class ) )
         );
         implementationTypes.put(
             ConcurrentNavigableMap.class.getName(),

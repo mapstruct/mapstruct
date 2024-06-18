@@ -22,7 +22,8 @@ public class ImplementationType {
         Type type,
         boolean initialCapacityConstructor,
         boolean loadFactorAdjustment,
-        String factoryMethodName) {
+        String factoryMethodName
+    ) {
         this.type = type;
         this.initialCapacityConstructor = initialCapacityConstructor;
         this.loadFactorAdjustment = loadFactorAdjustment;
@@ -37,8 +38,12 @@ public class ImplementationType {
         return new ImplementationType( type, true, false, null );
     }
 
-    public static ImplementationType withLoadFactorAdjustment(Type type, String factoryMethodName) {
-        return new ImplementationType( type, true, true, factoryMethodName );
+    public static ImplementationType withLoadFactorAdjustment(Type type) {
+        return new ImplementationType( type, true, true, null );
+    }
+
+    public static ImplementationType withFactoryMethod(Type type, String factoryMethodName) {
+        return new ImplementationType( type, true, false, factoryMethodName );
     }
 
     /**

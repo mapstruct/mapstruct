@@ -178,7 +178,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-                                                  SelectionParameters selectionParameters);
+        SelectionParameters selectionParameters);
 
     protected abstract Type getElementType(Type parameterType);
 
