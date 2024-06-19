@@ -44,12 +44,15 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      */
     private ThreadLocal<String> sourceOutputDir = new ThreadLocal<>();
 
+    private Compiler compiler;
+
     private List<Class<?>> fixturesFor = new ArrayList<>();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         CompilationRequest compilationRequest = context.getStore( NAMESPACE )
             .get( context.getUniqueId() + "-compilationRequest", CompilationRequest.class );
+        this.compiler = compilationRequest.getCompiler();
         setSourceOutputDir( context.getStore( NAMESPACE )
             .get( compilationRequest, CompilationCache.class )
             .getLastSourceOutputDir() );
@@ -138,7 +141,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
 
     private URL getExpectedResource( String fixtureName ) {
         ClassLoader classLoader = getClass().getClassLoader();
-        for ( int version = Runtime.version().feature(); version >= 11; version-- ) {
+        for ( int version = Runtime.version().feature(); version >= 11 && compiler != Compiler.ECLIPSE; version-- ) {
             URL resource = classLoader.getResource( FIXTURES_ROOT + "/" + version + "/" + fixtureName );
             if ( resource != null ) {
                 return resource;
