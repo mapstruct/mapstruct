@@ -72,6 +72,10 @@ jobs:
             parent/target/jreleaser/trace.log
             parent/target/jreleaser/output.properties
 
+      - name: Reset NEXT_RELEASE_CHANGELOG.md
+        run: |
+          echo -e "### Features\n\n### Enhancements\n\n### Bugs\n\n### Documentation\n\n### Build\n" > NEXT_RELEASE_CHANGELOG.md
+
       - name: Set next version
         run: |
           ./mvnw -ntp -B versions:set versions:commit -DnewVersion=${{ env.NEXT_VERSION }} -pl :mapstruct-parent -DgenerateBackupPoms=false
