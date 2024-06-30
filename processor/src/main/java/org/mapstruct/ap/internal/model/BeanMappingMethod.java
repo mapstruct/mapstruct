@@ -235,7 +235,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
 
-            if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
+            if ( !method.isUpdateMethod() && !hasFactoryMethod && !isCorrectlyDefinedTargetThisForEnumTarget() ) {
                 ConstructorAccessor constructorAccessor = getConstructorAccessor( resultTypeToMap );
                 if ( constructorAccessor != null ) {
 
@@ -310,6 +310,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 // map parameters without a mapping
                 applyParameterNameBasedMapping();
 
+                // map this enum mapping
+                applyTargetThisMappingForEnumTarget();
             }
 
             // Process the unprocessed defined targets
@@ -514,7 +516,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private boolean isAbstractReturnTypeAllowed() {
             return !method.getOptions().getSubclassMappings().isEmpty()
                 && ( method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
-                    || isCorrectlySealed() );
+                    || isCorrectlySealed() )
+                || isCorrectlyDefinedTargetThisForEnumTarget();
         }
 
         private boolean isCorrectlySealed() {
@@ -756,7 +759,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private boolean isReturnTypeAbstractOrCanBeConstructed(Type returnType) {
             boolean error = true;
-            if ( !returnType.isAbstract() && !returnType.hasAccessibleConstructor() ) {
+            if ( !returnType.isAbstract()
+              && !returnType.hasAccessibleConstructor()
+              && !isCorrectlyDefinedTargetThisForEnumTarget() ) {
                 ctx
                    .getMessager()
                    .printMessage(
@@ -1533,6 +1538,38 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
+         * When a single target this mapping is present, and the current target type is an enum.
+         */
+        private void applyTargetThisMappingForEnumTarget() {
+            if ( !isCorrectlyDefinedTargetThisForEnumTarget() ) {
+                return;
+            }
+
+            for ( MappingReference targetThis : this.targetThisReferences ) {
+                PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
+                    .sourceMethod( method )
+                    .sourcePropertyName( "test" )
+                    .sourceReference( targetThis.getSourceReference() )
+                    .targetType( this.method.getReturnType() )
+                    .forgedNamedBased( false )
+                    .existingVariableNames( existingVariableNames )
+                    .forgeMethodWithMappingReferences( MappingReferences.empty() )
+                    .options( method.getOptions().getBeanMapping() )
+                    .build();
+
+                if ( propertyMapping != null ) {
+                    propertyMappings.add( propertyMapping );
+                }
+            }
+        }
+
+        private boolean isCorrectlyDefinedTargetThisForEnumTarget() {
+            return this.method.getOptions().getMappings().size() == 1
+                && this.method.getOptions().getMappings().iterator().next().getTargetName().equals( "." )
+                && this.method.getReturnType().isEnumType();
+        }
+
+        /**
          * Iterates over all target properties and all source parameters.
          * <p>
          * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
@@ -2113,6 +2150,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         return mapping.getAssignment().isSourceReferenceParameter();
+    }
+
+    public boolean shouldDirectlyReturnOnlyMappingResult() {
+        return this.returnTypeToConstruct.isEnumType() && this.propertyMappings.size() == 1;
     }
 
     @Override

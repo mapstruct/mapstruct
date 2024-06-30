@@ -5,12 +5,22 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
+import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
+import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
+import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -20,6 +30,7 @@ import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.ResultWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
@@ -50,15 +61,6 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
-
-import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_NULL;
-import static org.mapstruct.ap.internal.model.ForgedMethod.forElementMapping;
-import static org.mapstruct.ap.internal.model.ForgedMethod.forParameterMapping;
-import static org.mapstruct.ap.internal.model.ForgedMethod.forPropertyMapping;
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -158,6 +160,11 @@ public class PropertyMapping extends ModelElement {
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
+        }
+
+        public PropertyMappingBuilder targetType(Type targetType) {
+            this.targetType = targetType;
+            return this;
         }
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
@@ -278,6 +285,9 @@ public class PropertyMapping extends ModelElement {
                 else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
                     assignment = assignToArray( targetType, assignment );
                 }
+                else if ( targetType.isEnumType() && targetType == this.method.getResultType() ) {
+                    assignment = assignToReturn( assignment );
+                }
                 else {
                     assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
                 }
@@ -290,7 +300,7 @@ public class PropertyMapping extends ModelElement {
                 sourcePropertyName,
                 targetPropertyName,
                 rightHandSide.getSourceParameterName(),
-                targetWriteAccessor.getSimpleName(),
+                targetWriteAccessor == null ? "" : targetWriteAccessor.getSimpleName(),
                 targetReadAccessor,
                 targetType,
                 assignment,
@@ -391,6 +401,12 @@ public class PropertyMapping extends ModelElement {
                 return build.getAssignment();
             }
             return null;
+        }
+
+        private Assignment assignToReturn(Assignment assignment) {
+
+            return new ResultWrapper( assignment );
+
         }
 
         private Assignment assignToPlain(Type targetType, AccessorType targetAccessorType,

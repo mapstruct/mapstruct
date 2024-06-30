@@ -88,7 +88,9 @@
 
 
             <@includeModel object=returnTypeToConstruct/> ${resultName} = <@includeModel object=factoryMethod targetType=returnTypeToConstruct/>;
-        <#else >
+        <#elseif shouldDirectlyReturnOnlyMappingResult()>
+            <@includeModel object=returnTypeToConstruct/> ${resultName};
+        <#else>
             <@includeModel object=returnTypeToConstruct/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=returnTypeToConstruct/><#else>new <@includeModel object=returnTypeToConstruct/>()</#if>;
         </#if>
 
