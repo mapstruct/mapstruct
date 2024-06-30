@@ -1764,10 +1764,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( mappingReferences.isForForgedMethods() ) {
                 return ReportingPolicyGem.IGNORE;
             }
-            // If we have ignoreByDefault = true, unprocessed source properties are not an issue.
-            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
-                return ReportingPolicyGem.IGNORE;
-            }
             return method.getOptions().getBeanMapping().unmappedSourcePolicy();
         }
 
