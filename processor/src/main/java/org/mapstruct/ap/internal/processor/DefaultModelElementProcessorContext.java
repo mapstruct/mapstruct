@@ -62,7 +62,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             messager,
             roundContext,
             notToBeImported,
-            options.isVerbose()
+            options.isVerbose(),
+            versionInformation
         );
         this.options = options;
     }

@@ -41,6 +41,7 @@ public class DefaultVersionInformation implements VersionInformation {
     private final String runtimeVendor;
     private final String compiler;
     private final boolean sourceVersionAtLeast9;
+    private final boolean sourceVersionAtLeast19;
     private final boolean eclipseJDT;
     private final boolean javac;
 
@@ -53,6 +54,7 @@ public class DefaultVersionInformation implements VersionInformation {
         this.javac = compiler.startsWith( COMPILER_NAME_JAVAC );
         // If the difference between the source version and RELEASE_6 is more that 2 than we are at least on 9
         this.sourceVersionAtLeast9 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 2;
+        this.sourceVersionAtLeast19 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 12;
     }
 
     @Override
@@ -78,6 +80,11 @@ public class DefaultVersionInformation implements VersionInformation {
     @Override
     public boolean isSourceVersionAtLeast9() {
         return sourceVersionAtLeast9;
+    }
+
+    @Override
+    public boolean isSourceVersionAtLeast19() {
+        return sourceVersionAtLeast19;
     }
 
     @Override
