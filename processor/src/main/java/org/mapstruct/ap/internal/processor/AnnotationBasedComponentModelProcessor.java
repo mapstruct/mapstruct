@@ -18,6 +18,8 @@ import org.mapstruct.ap.internal.model.AnnotatedConstructor;
 import org.mapstruct.ap.internal.model.AnnotatedSetter;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.AnnotationMapperReference;
+import org.mapstruct.ap.internal.model.CanonicalConstructor;
+import org.mapstruct.ap.internal.model.Constructor;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
@@ -74,6 +76,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
                 iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
             }
         }
+
+        adjustConstructorToComponentModel( mapper.getConstructor() );
 
         if ( injectionStrategy == InjectionStrategyGem.CONSTRUCTOR ) {
             buildConstructors( mapper );
@@ -262,6 +266,14 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             }
         }
         return qualifiers;
+    }
+
+    protected void adjustConstructorToComponentModel(Constructor constructor) {
+        if (constructor instanceof CanonicalConstructor ) {
+            CanonicalConstructor canonicalConstructor = (CanonicalConstructor) constructor;
+            canonicalConstructor.setIncludeNoArgConstructor( additionalPublicEmptyConstructor() );
+            canonicalConstructor.setAnnotations( getMapperReferenceAnnotations() );
+        }
     }
 
     protected boolean additionalPublicEmptyConstructor() {
