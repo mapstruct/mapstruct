@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -48,8 +49,8 @@ import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
-import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -71,6 +72,8 @@ import org.mapstruct.ap.internal.version.VersionInformation;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
+import static org.mapstruct.ap.internal.model.MapKeyMappingField.addAllMapKeyMappingFieldsIn;
+import static org.mapstruct.ap.internal.model.MapKeyMappingConstructorFragment.addAllMapKeyMappingFragmentsIn;
 import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
 import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -191,13 +194,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // handle fields
         List<Field> fields = new ArrayList<>( mappingContext.getMapperReferences() );
-        Set<Field> supportingFieldSet = new LinkedHashSet<>(mappingContext.getUsedSupportedFields());
-        addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
-        fields.addAll( supportingFieldSet );
+        Set<Field> fieldSet = new LinkedHashSet<>( mappingContext.getUsedSupportedFields() );
+        addAllFieldsIn( mappingContext.getUsedSupportedMappings(), fieldSet );
+        addAllMapKeyMappingFieldsIn( getMapMappingMethods( mappingMethods ), fieldSet );
+        fields.addAll( fieldSet );
 
         // handle constructorfragments
-        Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
+        Set<ConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
+        addAllMapKeyMappingFragmentsIn( getMapMappingMethods( mappingMethods ), constructorFragments );
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
@@ -234,6 +239,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return mapper;
+    }
+
+    private static List<MapMappingMethod> getMapMappingMethods(List<MappingMethod> mappingMethods) {
+        return mappingMethods.stream()
+            .filter( MapMappingMethod.class::isInstance )
+            .map( MapMappingMethod.class::cast )
+            .collect( Collectors.toList() );
     }
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, MapperOptions mapperOptions) {
