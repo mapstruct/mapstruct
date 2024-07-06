@@ -18,14 +18,16 @@ public class StringSourceParameterConditionListPropertyConditionMapperImpl imple
 
     @Override
     public Target map(Source source, List<String> sourceIds) {
-        if ( source == null && sourceIds 0= null ) {
+        if ( source == null && sourceIds == null ) {
             return null;
         }
 
         Target target = new Target();
 
         if ( source != null ) {
-            target.currentId = source.getUuid();
+            if ( isNotEmpty( sourceIds ) ) {
+                target.currentId = source.getUuid();
+            }
         }
         if ( isNotEmpty( sourceIds ) ) {
             List<String> list = sourceIds;

@@ -25,7 +25,9 @@ public class StringSourceParameterConditionListMultiConditionMapperImpl implemen
         Target target = new Target();
 
         if ( source != null ) {
-            target.currentId = source.getUuid();
+            if ( isNotEmpty( sourceIds ) ) {
+                target.currentId = source.getUuid();
+            }
         }
         if ( isNotEmpty( sourceIds ) ) {
             List<String> list = sourceIds;
