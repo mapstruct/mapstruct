@@ -14,8 +14,9 @@ import org.mapstruct.factory.Mappers;
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     unmappedSourcePolicy = ReportingPolicy.ERROR)
-public interface SourceTargetMapper {
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+public interface ErroneousSourceTargetMapperWithIgnoreByDefault {
+    ErroneousSourceTargetMapperWithIgnoreByDefault INSTANCE = Mappers.getMapper(
+        ErroneousSourceTargetMapperWithIgnoreByDefault.class );
 
     @Mapping(source = "one", target = "one")
     @BeanMapping(ignoreByDefault = true)
