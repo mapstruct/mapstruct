@@ -60,7 +60,7 @@ public interface SourceTargetMapper {
 ----
 ====
 
-The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless it's used otherwise explicitly in the `ErroneousSourceTargetMapperWithIgnoreByDefault`). This can be resolved by defining `imports` on the `@Mapper` annotation.
+The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless it's used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
 
 .Declaring an import
 ====
@@ -108,7 +108,7 @@ public interface SourceTargetMapper {
 ----
 ====
 
-The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `ErroneousSourceTargetMapperWithIgnoreByDefault`). This can be resolved by defining imports on the @Mapper annotation (see <<expressions>>).
+The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation (see <<expressions>>).
 
 [[sub-class-mappings]]
 === Subclass Mapping

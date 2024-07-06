@@ -24,7 +24,7 @@ public class IgnoreByDefaultSourcesTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapperWithIgnoreByDefault.class,
                 kind = Kind.ERROR,
-                line = 22,
+                line = 23,
                 message = "Unmapped source property: \"other\".")
         }
     )
