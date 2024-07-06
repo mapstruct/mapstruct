@@ -31,8 +31,8 @@ public class OnlyListPropertyConditionMapperImpl implements OnlyListPropertyCond
                 target.currentId = source.getUuid();
             }
         }
-        if ( isNotEmpty( sourceIds ) ) {
-            List<String> list = sourceIds;
+        List<String> list = sourceIds;
+        if ( list != null ) {
             target.targetIds = new ArrayList<String>( list );
         }
 

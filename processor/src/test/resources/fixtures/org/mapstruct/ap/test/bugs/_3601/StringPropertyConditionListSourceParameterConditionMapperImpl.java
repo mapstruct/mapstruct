@@ -29,8 +29,8 @@ public class StringPropertyConditionListSourceParameterConditionMapperImpl imple
                 target.currentId = source.getUuid();
             }
         }
-        List<String> list = sourceIds;
-        if ( list != null ) {
+        if ( isNotEmpty( sourceIds ) ) {
+            List<String> list = sourceIds;
             target.targetIds = new ArrayList<String>( list );
         }
 
