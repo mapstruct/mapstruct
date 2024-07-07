@@ -261,7 +261,7 @@ Supported values are:
 
 If a policy is given for a specific mapper via `@Mapper#unmappedSourcePolicy()`, the value from the annotation takes precedence.
 If a policy is given for a specific bean mapping via `@BeanMapping#ignoreUnmappedSourceProperties()`, it takes precedence over both `@Mapper#unmappedSourcePolicy()` and the option.
-|`WARN`
+|`IGNORE`
 
 |`mapstruct.
 disableBuilders`
