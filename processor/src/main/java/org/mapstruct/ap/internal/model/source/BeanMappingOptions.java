@@ -55,15 +55,26 @@ public class BeanMappingOptions extends DelegatingOptions {
         return options;
     }
 
-    public static BeanMappingOptions forForgedMethods(BeanMappingOptions beanMapping) {
-        BeanMappingOptions options = new BeanMappingOptions(
+    public static BeanMappingOptions forForgedMethods(MappingMethodOptions mappingMethodOptions) {
+
+        BeanMappingOptions beanMapping = mappingMethodOptions.getBeanMapping();
+
+        return new BeanMappingOptions(
             beanMapping.selectionParameters != null ?
                 SelectionParameters.withoutResultType( beanMapping.selectionParameters ) : null,
-            Collections.emptyList(),
+            takeOverIgnoreUnmappedSourceProperties( mappingMethodOptions ),
             beanMapping.beanMapping,
             beanMapping
         );
-        return options;
+    }
+
+    private static List<String> takeOverIgnoreUnmappedSourceProperties(MappingMethodOptions mappingMethodOptions) {
+
+        if (!mappingMethodOptions.getSubclassMappings().isEmpty()) {
+            return mappingMethodOptions.getBeanMapping().getIgnoreUnmappedSourceProperties();
+        }
+
+        return Collections.emptyList();
     }
 
     public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {

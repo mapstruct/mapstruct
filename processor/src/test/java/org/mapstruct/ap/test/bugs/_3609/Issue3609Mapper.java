@@ -5,13 +5,17 @@
  */
 package org.mapstruct.ap.test.bugs._3609;
 
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.MapperConfig;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.SubclassExhaustiveStrategy;
+import org.mapstruct.SubclassMapping;
 
 @Mapper(config = Issue3609Mapper.Config.class)
 public abstract class Issue3609Mapper {
-
-    public static Issue3609Mapper INSTANCE = Mappers.getMapper( Issue3609Mapper.class );
 
     @SubclassMapping(source = CarDto.class, target = Car.class)
     @SubclassMapping(source = TruckDto.class, target = Truck.class)
@@ -22,6 +26,7 @@ public abstract class Issue3609Mapper {
     @Mapping(target = "id", ignore = true)
     public abstract VehicleDto toVehicleDto(Vehicle vehicle);
 
+    //CHECKSTYLE:OFF
     static class Vehicle {
         public int price;
     }
@@ -51,6 +56,7 @@ public abstract class Issue3609Mapper {
     static class TruckDto extends VehicleDto {
         public int capacity;
     }
+    //CHECKSTYLE:ON
 
     @MapperConfig(
         unmappedSourcePolicy = ReportingPolicy.ERROR,
