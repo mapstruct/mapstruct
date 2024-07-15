@@ -448,7 +448,7 @@ E.g. If an object factory exists for our `PersonBuilder` then this factory would
 
 [NOTE]
 ======
-Detected builders influence `@BeforeMapping` and `@AfterMapping` behavior. See chapter `Mapping customization with before-mapping and after-mapping methods` for more information.
+Detected builders influence `@BeforeMapping` and `@AfterMapping` behavior. See <<customizing-mappings-with-before-and-after>> for more information.
 ======
 
 .Person with Builder example
