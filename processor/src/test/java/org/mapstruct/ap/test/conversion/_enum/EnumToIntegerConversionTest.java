@@ -30,7 +30,7 @@ public class EnumToIntegerConversionTest {
     public void shouldApplyEnumToIntegerConversion() {
         EnumToIntegerSource source = new EnumToIntegerSource();
 
-        for ( EnumToIntegerEnum value: EnumToIntegerEnum.values() ) {
+        for ( EnumToIntegerEnum value : EnumToIntegerEnum.values() ) {
             source.setEnumValue( value );
 
             EnumToIntegerTarget target = EnumToIntegerMapper.INSTANCE.sourceToTarget( source );
