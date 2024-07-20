@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -746,7 +747,7 @@ public class PropertyMapping extends ModelElement {
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
-            ContainerMappingMethod iterableMappingMethod = builder
+            Supplier<MappingMethod> mappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
@@ -754,7 +755,7 @@ public class PropertyMapping extends ModelElement {
                 .positionHint( positionHint )
                 .build();
 
-            return createForgedAssignment( source, methodRef, iterableMappingMethod );
+            return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreator );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
@@ -772,12 +773,12 @@ public class PropertyMapping extends ModelElement {
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
-            MapMappingMethod mapMappingMethod = builder
+            Supplier<MappingMethod> mapMappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .build();
 
-            return createForgedAssignment( source, methodRef, mapMappingMethod );
+            return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreator );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
