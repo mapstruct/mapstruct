@@ -29,8 +29,6 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class StreamMappingMethod extends ContainerMappingMethod {
 
-    private final Set<Type> helperImports;
-
     public static class Builder extends ContainerMappingMethodBuilder<Builder, StreamMappingMethod> {
 
         public Builder() {
@@ -51,7 +49,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            boolean unmodifiable) {
 
             Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {
@@ -95,19 +94,9 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
-        );
+            selectionParameters,
+            helperImports);
         //CHECKSTYLE:ON
-        this.helperImports = helperImports;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> types = super.getImportTypes();
-
-        types.addAll( helperImports );
-
-        return types;
     }
 
     public Type getSourceElementType() {

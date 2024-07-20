@@ -85,7 +85,11 @@
     </#list>
 
     <#if returnType.name != "void">
-        return ${resultName};
+        <#if unmodifiable>
+            return Collections.unmodifiable${returnType.name}( ${resultName} );
+        <#else>
+            return ${resultName};
+        </#if>
     </#if>
 }
 <#macro throws>

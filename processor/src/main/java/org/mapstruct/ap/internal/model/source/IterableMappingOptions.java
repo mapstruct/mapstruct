@@ -28,13 +28,14 @@ public class IterableMappingOptions extends DelegatingOptions {
     private final SelectionParameters selectionParameters;
     private final FormattingParameters formattingParameters;
     private final IterableMappingGem iterableMapping;
+    private final boolean unmodifiable;
 
     public static IterableMappingOptions fromGem(IterableMappingGem iterableMapping,
                                                  MapperOptions mapperOptions, ExecutableElement method,
                                                  FormattingMessager messager, TypeUtils typeUtils) {
 
         if ( iterableMapping == null || !isConsistent( iterableMapping, method, messager ) ) {
-            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mapperOptions );
+            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mapperOptions, false );
             return options;
         }
 
@@ -53,8 +54,10 @@ public class IterableMappingOptions extends DelegatingOptions {
             method
         );
 
+        boolean unmodifiable = Boolean.TRUE.equals( iterableMapping.unmodifiable().get() );
+
         IterableMappingOptions options =
-            new IterableMappingOptions( formatting, selection, iterableMapping, mapperOptions );
+            new IterableMappingOptions( formatting, selection, iterableMapping, mapperOptions, unmodifiable );
         return options;
     }
 
@@ -65,7 +68,8 @@ public class IterableMappingOptions extends DelegatingOptions {
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.elementTargetType().hasValue()
-            && !gem.nullValueMappingStrategy().hasValue() ) {
+            && !gem.nullValueMappingStrategy().hasValue()
+            && !Boolean.TRUE.equals( gem.unmodifiable().get() ) ) {
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
             return false;
         }
@@ -74,11 +78,12 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     private IterableMappingOptions(FormattingParameters formattingParameters, SelectionParameters selectionParameters,
                                    IterableMappingGem iterableMapping,
-                                   DelegatingOptions next) {
+                                   DelegatingOptions next, boolean unmodifiable) {
         super( next );
         this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;
         this.iterableMapping = iterableMapping;
+        this.unmodifiable = unmodifiable;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -87,6 +92,10 @@ public class IterableMappingOptions extends DelegatingOptions {
 
     public FormattingParameters getFormattingParameters() {
         return formattingParameters;
+    }
+
+    public boolean isUnmodifiable() {
+        return unmodifiable;
     }
 
     public AnnotationMirror getMirror() {
