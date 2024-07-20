@@ -35,6 +35,7 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     private final SelectionParameters selectionParameters;
     private final List<String> ignoreUnmappedSourceProperties;
+    private final List<String> ignoreUnmappedTargetProperties;
     private final BeanMappingGem beanMapping;
 
     /**
@@ -49,6 +50,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         BeanMappingOptions options =  new BeanMappingOptions(
             SelectionParameters.forInheritance( beanMapping.selectionParameters ),
             isInverse ? Collections.emptyList() : beanMapping.ignoreUnmappedSourceProperties,
+            isInverse ? Collections.emptyList() : beanMapping.ignoreUnmappedTargetProperties,
             beanMapping.beanMapping,
             beanMapping
         );
@@ -59,6 +61,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         BeanMappingOptions options = new BeanMappingOptions(
             beanMapping.selectionParameters != null ?
                 SelectionParameters.withoutResultType( beanMapping.selectionParameters ) : null,
+            Collections.emptyList(),
             Collections.emptyList(),
             beanMapping.beanMapping,
             beanMapping
@@ -78,7 +81,8 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     public static BeanMappingOptions empty(DelegatingOptions delegatingOptions) {
-        return new BeanMappingOptions( null, Collections.emptyList(), null, delegatingOptions );
+        return new BeanMappingOptions( null, Collections.emptyList(),
+                Collections.emptyList(), null, delegatingOptions );
     }
 
     public static BeanMappingOptions getInstanceOn(BeanMappingGem beanMapping, MapperOptions mapperOptions,
@@ -106,6 +110,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         BeanMappingOptions options = new BeanMappingOptions(
             selectionParameters,
             beanMapping.ignoreUnmappedSourceProperties().get(),
+            beanMapping.ignoreTargets().get(),
             beanMapping,
             mapperOptions
         );
@@ -119,6 +124,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.qualifiedBy().hasValue()
             && !gem.qualifiedByName().hasValue()
             && !gem.ignoreUnmappedSourceProperties().hasValue()
+            && !gem.ignoreTargets().hasValue()
             && !gem.nullValueCheckStrategy().hasValue()
             && !gem.nullValuePropertyMappingStrategy().hasValue()
             && !gem.nullValueMappingStrategy().hasValue()
@@ -136,11 +142,13 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     private BeanMappingOptions(SelectionParameters selectionParameters,
                                List<String> ignoreUnmappedSourceProperties,
+                               List<String> ignoreUnmappedTargetProperties,
                                BeanMappingGem beanMapping,
                                DelegatingOptions next) {
         super( next );
         this.selectionParameters = selectionParameters;
         this.ignoreUnmappedSourceProperties = ignoreUnmappedSourceProperties;
+        this.ignoreUnmappedTargetProperties = ignoreUnmappedTargetProperties;
         this.beanMapping = beanMapping;
     }
 
@@ -231,6 +239,10 @@ public class BeanMappingOptions extends DelegatingOptions {
 
     public List<String> getIgnoreUnmappedSourceProperties() {
         return ignoreUnmappedSourceProperties;
+    }
+
+    public List<String> getIgnoreUnmappedTargetProperties() {
+        return ignoreUnmappedTargetProperties;
     }
 
     public AnnotationMirror getMirror() {

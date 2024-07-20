@@ -190,6 +190,28 @@ public class MappingOptions extends DelegatingOptions {
         );
     }
 
+    public static MappingOptions forBeanMappingIgnoreTargets(String targetName, Element element) {
+        return new MappingOptions(
+                targetName,
+                element,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                null,
+                null,
+                Collections.emptySet(),
+                null,
+                null,
+                null
+        );
+    }
+
     private static boolean isConsistent(MappingGem gem, ExecutableElement method,
                                         FormattingMessager messager) {
 

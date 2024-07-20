@@ -45,6 +45,9 @@ public enum Message {
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
+    BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_ERROR("The target property %s cannot be mapped more than once in @BeanMapping and @Mapping."),
+    BEANMAPPING_IGNORE_TARGETS_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreTargets = {\".\"} ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
+
 
     CONDITION_MISSING_APPLIES_TO_STRATEGY("'appliesTo' has to have at least one value in @Condition" ),
     CONDITION_SOURCE_PARAMETERS_INVALID_PARAMETER("Parameter \"%s\" cannot be used with the ConditionStrategy#SOURCE_PARAMETERS. Only source and @Context parameters are allowed for conditions applicable to source parameters." ),
