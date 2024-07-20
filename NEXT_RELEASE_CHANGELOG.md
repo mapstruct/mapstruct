@@ -14,12 +14,12 @@
 
 ### Presence checks for source parameters
 
-In 1.6 support for presence checks on source parameters has been added.
-This means that even if you want to map a source parameter directly to some target property the new `@SourceParameterCondition` or `@Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)` has to be used.
+In 1.6, support for presence checks on source parameters has been added.
+This means that even if you want to map a source parameter directly to some target property the new `@SourceParameterCondition` or `@Condition(appliesTo = ConditionStrategy.SOURCE_PARAMETERS)` should be used.
 
 e.g.
 
-If we had the following in 1.5
+If we had the following in 1.5:
 ```java
 @Mapper
 public interface OrderMapper {
@@ -36,7 +36,7 @@ public interface OrderMapper {
 }
 ```
 
-The MapStruct would generate
+Them MapStruct would generate
 
 ```java
 public class OrderMapperImpl implements OrderMapper {
@@ -58,7 +58,7 @@ public class OrderMapperImpl implements OrderMapper {
 }
 ```
 
-In order for the same to be generated in 1.6. The mapper needs to look like:
+In order for the same to be generated in 1.6, the mapper needs to look like this:
 
 ```java
 @Mapper
