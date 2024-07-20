@@ -398,4 +398,17 @@ public class MappingMethodOptions {
             null );
     }
 
+    public static MappingMethodOptions getSubclassForgedMethodInheritedOptions(MappingMethodOptions options) {
+        return new MappingMethodOptions(
+            options.mapper,
+            options.mappings,
+            options.iterableMapping,
+            options.mapMapping,
+            BeanMappingOptions.forSubclassForgedMethods( options.beanMapping ),
+            options.enumMappingOptions,
+            options.valueMappings,
+            Collections.emptySet(),
+            null );
+    }
+
 }
