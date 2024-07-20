@@ -146,13 +146,30 @@ public class ForgedMethod implements Method {
             basedOn,
             history,
             mappingReferences == null ? MappingReferences.empty() : mappingReferences,
-            forgedNameBased
+            forgedNameBased,
+            MappingMethodOptions.getSubclassForgedMethodInheritedOptions( basedOn.getOptions() )
         );
     }
 
     private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
                          Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
                          boolean forgedNameBased) {
+        this(
+            name,
+            sourceType,
+            returnType,
+            additionalParameters,
+            basedOn,
+            history,
+            mappingReferences,
+            forgedNameBased,
+            MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() )
+        );
+    }
+
+    private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
+                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
+                         boolean forgedNameBased, MappingMethodOptions options) {
 
         // establish name
         String sourceParamSafeName;
@@ -185,7 +202,7 @@ public class ForgedMethod implements Method {
         this.mappingReferences = mappingReferences;
         this.forgedNameBased = forgedNameBased;
 
-        this.options = MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() );
+        this.options = options;
     }
 
     /**
