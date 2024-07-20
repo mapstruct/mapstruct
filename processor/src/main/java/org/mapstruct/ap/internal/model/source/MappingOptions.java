@@ -182,7 +182,7 @@ public class MappingOptions extends DelegatingOptions {
             null,
             true,
             null,
-            null,
+            SelectionParameters.empty(),
             Collections.emptySet(),
             null,
             null,

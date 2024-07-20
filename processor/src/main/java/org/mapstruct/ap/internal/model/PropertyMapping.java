@@ -747,7 +747,7 @@ public class PropertyMapping extends ModelElement {
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
-            Supplier<MappingMethod> mappingMethodCreation = () -> builder
+            Supplier<MappingMethod> mappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
@@ -755,7 +755,7 @@ public class PropertyMapping extends ModelElement {
                 .positionHint( positionHint )
                 .build();
 
-            return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreation );
+            return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreator );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
@@ -773,12 +773,12 @@ public class PropertyMapping extends ModelElement {
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
-            Supplier<MappingMethod> mapMappingMethodCreation = () -> builder
+            Supplier<MappingMethod> mapMappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .build();
 
-            return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreation );
+            return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreator );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {

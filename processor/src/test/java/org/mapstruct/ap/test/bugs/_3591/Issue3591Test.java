@@ -5,7 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._3591;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,7 +19,7 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("3591")
-public class CompilationErrorDuplicateMethodsBugTest {
+class Issue3591Test {
 
     @RegisterExtension
     GeneratedSource generatedSource = new GeneratedSource();
@@ -32,23 +33,15 @@ public class CompilationErrorDuplicateMethodsBugTest {
     void mapNestedBeansWithMappingAnnotation() {
         Bean bean = new Bean( "parent" );
         Bean child = new Bean( "child" );
-        bean.setBeans( List.of( child ) );
+        bean.setBeans( Collections.singletonList( child ) );
 
         BeanDto beanDto = BeanMapper.INSTANCE.map( bean, new BeanDto() );
 
+        assertThat( beanDto ).isNotNull();
         assertThat( beanDto.getValue() ).isEqualTo( "parent" );
-        assertThat( beanDto.getBeans() ).isNotEmpty();
-        assertThat( beanDto.getBeans().get( 0 ).getValue() ).isEqualTo( "child" );
-    }
-
-    @ProcessorTest
-    @WithClasses({
-        ContainerBean.class,
-        ContainerBeanDto.class,
-        ContainerBeanMapper.class,
-    })
-    void shouldCreateOnlyOneMethodForStreamMapping() {
-        generatedSource.addComparisonToFixtureFor( ContainerBeanMapper.class );
+        assertThat( beanDto.getBeans() )
+            .extracting( BeanDto::getValue )
+            .containsExactly( "child" );
     }
 
     @ProcessorTest
@@ -58,13 +51,19 @@ public class CompilationErrorDuplicateMethodsBugTest {
         ContainerBeanMapper.class,
     })
     void shouldMapNestedMapAndStream() {
+        generatedSource.addComparisonToFixtureFor( ContainerBeanMapper.class );
+
         ContainerBean containerBean = new ContainerBean( "parent" );
-        containerBean.setBeanMap( Map.of( "child", new ContainerBean( "mapChild" ) ) );
+        Map<String, ContainerBean> beanMap = new HashMap<>();
+        beanMap.put( "child", new ContainerBean( "mapChild" ) );
+        containerBean.setBeanMap( beanMap );
 
         Stream<ContainerBean> streamChild = Stream.of( new ContainerBean( "streamChild" ) );
         containerBean.setBeanStream( streamChild );
 
         ContainerBeanDto dto = ContainerBeanMapper.INSTANCE.mapWithMapMapping( containerBean, new ContainerBeanDto() );
+
+        assertThat( dto ).isNotNull();
 
         assertThat( dto.getBeanMap() )
             .extractingByKey( "child" )

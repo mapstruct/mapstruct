@@ -75,9 +75,9 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      */
     Assignment createForgedAssignment(SourceRHS sourceRHS, BuilderType builderType, ForgedMethod forgedMethod) {
 
-        Supplier<MappingMethod> forgedMappingMethod;
+        Supplier<MappingMethod> forgedMappingMethodCreator;
         if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
-            forgedMappingMethod = () -> new ValueMappingMethod.Builder()
+            forgedMappingMethodCreator = () -> new ValueMappingMethod.Builder()
                 .method( forgedMethod )
                 .valueMappings( forgedMethod.getOptions().getValueMappings() )
                 .enumMapping( forgedMethod.getOptions().getEnumMappingOptions() )
@@ -85,18 +85,18 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
                 .build();
         }
         else {
-            forgedMappingMethod = () -> new BeanMappingMethod.Builder()
+            forgedMappingMethodCreator = () -> new BeanMappingMethod.Builder()
                 .forgedMethod( forgedMethod )
                 .returnTypeBuilder( builderType )
                 .mappingContext( ctx )
                 .build();
         }
 
-        return getOrCreateForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
+        return getOrCreateForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethodCreator );
     }
 
     Assignment getOrCreateForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod,
-                                           Supplier<MappingMethod> mappingMethodCreation) {
+                                           Supplier<MappingMethod> mappingMethodCreator) {
 
         if ( ctx.getForgedMethodsUnderCreation().containsKey( forgedMethod ) ) {
             return createAssignment( sourceRHS, ctx.getForgedMethodsUnderCreation().get( forgedMethod ) );
@@ -105,7 +105,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             ctx.getForgedMethodsUnderCreation().put( forgedMethod, forgedMethod );
         }
 
-        MappingMethod forgedMappingMethod = mappingMethodCreation.get();
+        MappingMethod forgedMappingMethod = mappingMethodCreator.get();
 
         Assignment forgedAssignment = createForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
         ctx.getForgedMethodsUnderCreation().remove( forgedMethod );

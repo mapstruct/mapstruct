@@ -38,9 +38,9 @@ public class MapMappingOptions extends DelegatingOptions {
         if ( mapMapping == null || !isConsistent( mapMapping, method, messager ) ) {
             MapMappingOptions options = new MapMappingOptions(
                 null,
+                SelectionParameters.empty(),
                 null,
-                null,
-                null,
+                SelectionParameters.empty(),
                 null,
                 mapperOptions
             );
