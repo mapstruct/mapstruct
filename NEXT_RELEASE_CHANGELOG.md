@@ -47,7 +47,7 @@ public interface OrderMapper {
 }
 ```
 
-Them MapStruct would generate
+Then MapStruct would generate
 
 ```java
 public class OrderMapperImpl implements OrderMapper {
