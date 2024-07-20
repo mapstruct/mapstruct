@@ -401,6 +401,39 @@ When having a custom mapper hooked into the generated mapper with `@Mapper#uses(
 
 For instance, the `CarDto` could have a property `owner` of type `Reference` that contains the primary key of a `Person` entity. You could now create a generic custom mapper that resolves any `Reference` objects to their corresponding managed JPA entity instances.
 
+e.g.
+
+.Example classes for the passing target type example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Car {
+
+    private Person owner;
+    // ...
+}
+
+public class Person extends BaseEntity {
+
+    // ...
+}
+
+public class Reference {
+
+    private String pk;
+    // ...
+}
+
+public class CarDto {
+
+    private Reference owner;
+    // ...
+}
+----
+====
+
+
 .Mapping method expecting mapping target type as parameter
 ====
 [source, java, linenums]
