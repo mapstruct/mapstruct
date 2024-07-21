@@ -189,12 +189,6 @@ public class SpecialOrderMapperImpl implements SpecialOrderMapper {
 ----
 ====
 
-
-[WARNING]
-====
-The mapping of enum to enum via the `@Mapping` annotation is *DEPRECATED*. It will be removed from future versions of MapStruct. Please adapt existing enum mapping methods to make use of `@ValueMapping` instead.
-====
-
 === Mapping enum-to-String or String-to-enum
 
 MapStruct supports enum to a String mapping along the same lines as is described in <<Mapping enum to enum types, enum-to-enum types>>. There are similarities and differences:

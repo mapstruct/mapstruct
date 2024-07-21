@@ -20,7 +20,7 @@ import org.mapstruct.control.MappingControl;
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
- * Configures the mapping of one bean attribute or enum constant.
+ * Configures the mapping of one bean attribute.
  * <p>
  * The name of the mapped attribute or constant is to be specified via {@link #target()}. For mapped bean attributes it
  * is assumed by default that the attribute has the same name in the source bean. Alternatively, one of
@@ -135,9 +135,6 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *   // ...
  * }
  * </code></pre>
- *
- * <b>IMPORTANT NOTE:</b> the enum mapping capability is deprecated and replaced by {@link ValueMapping} it
- * will be removed in subsequent versions.
  *
  * @author Gunnar Morling
  */
