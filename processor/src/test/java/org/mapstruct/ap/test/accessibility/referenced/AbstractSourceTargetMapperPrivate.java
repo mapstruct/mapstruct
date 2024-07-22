@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.accessibility.referenced;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class AbstractSourceTargetMapperPrivate extends SourceTargetmapperPrivateBase {
 
     public static final AbstractSourceTargetMapperPrivate INSTANCE =

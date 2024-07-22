@@ -5,14 +5,13 @@
  */
 package org.mapstruct.ap.test.accessibility.referenced;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.accessibility.referenced.a.ReferencedMapperDefaultOther;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
@@ -27,68 +26,85 @@ public class ReferencedAccessibilityTest {
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
-    @IssueKey("206")
-    @WithClasses({ SourceTargetMapperPrivate.class, ReferencedMapperPrivate.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.SUCCEEDED,
-        diagnostics = {
-            @Diagnostic(type = SourceTargetMapperPrivate.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 22,
-                message = "Unmapped target property: \"bar\". Mapping from property " +
-                    "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
-        }
-    )
+    @IssueKey( "206" )
+    @WithClasses( { SourceTargetMapperPrivate.class, ReferencedMapperPrivate.class } )
     public void shouldNotBeAbleToAccessPrivateMethodInReferenced() {
         generatedSource.addComparisonToFixtureFor( SourceTargetMapperPrivate.class );
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
+
+        Target target = SourceTargetMapperPrivate.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isNull();
+    }
+
+    @ProcessorTest
+    @IssueKey( "206" )
+    @WithClasses( { SourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class } )
+    public void shouldNotBeAbleToAccessDefaultMethodInReferencedInOtherPackage() {
+        generatedSource.addComparisonToFixtureFor( SourceTargetMapperDefaultOther.class );
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
+
+        Target target = SourceTargetMapperDefaultOther.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isNull();
+    }
+
+    @ProcessorTest
+    @IssueKey( "206" )
+    @WithClasses( { AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class } )
+    public void shouldNotBeAbleToAccessPrivateMethodInBase() {
+        generatedSource.addComparisonToFixtureFor( AbstractSourceTargetMapperPrivate.class );
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
+
+        Target target = AbstractSourceTargetMapperPrivate.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isNull();
     }
 
     @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperDefaultSame.class, ReferencedMapperDefaultSame.class } )
-    public void shouldBeAbleToAccessDefaultMethodInReferencedInSamePackage() { }
+    public void shouldBeAbleToAccessDefaultMethodInReferencedInSamePackage() {
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
+
+        Target target = SourceTargetMapperDefaultSame.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isEqualTo( "Foo" );
+    }
 
     @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperProtected.class, ReferencedMapperProtected.class } )
-    public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() { }
+    public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() {
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
 
-    @ProcessorTest
-    @IssueKey("206")
-    @WithClasses({ SourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.SUCCEEDED,
-        diagnostics = {
-            @Diagnostic(type = SourceTargetMapperDefaultOther.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 24,
-                message = "Unmapped target property: \"bar\". Mapping " +
-                    "from property \"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
-        }
-    )
-    public void shouldNotBeAbleToAccessDefaultMethodInReferencedInOtherPackage() {
-        generatedSource.addComparisonToFixtureFor( SourceTargetMapperDefaultOther.class );
+        Target target = SourceTargetMapperProtected.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isEqualTo( "Foo" );
     }
 
     @ProcessorTest
     @IssueKey( "206" )
     @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetmapperProtectedBase.class } )
-    public void shouldBeAbleToAccessProtectedMethodInBase() { }
+    public void shouldBeAbleToAccessProtectedMethodInBase() {
+        Source source = createSourceWithReferencedSourceAndField( "Foo" );
 
-    @ProcessorTest
-    @IssueKey("206")
-    @WithClasses({ AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.SUCCEEDED,
-        diagnostics = {
-            @Diagnostic(type = AbstractSourceTargetMapperPrivate.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
-                message = "Unmapped target property: \"bar\". Mapping from property " +
-                    "\"ReferencedSource referencedSource\" to \"ReferencedTarget referencedTarget\".")
-        }
-    )
-    public void shouldNotBeAbleToAccessPrivateMethodInBase() {
-        generatedSource.addComparisonToFixtureFor( AbstractSourceTargetMapperPrivate.class );
+        Target target = AbstractSourceTargetMapperProtected.INSTANCE.toTarget( source );
+
+        assertThat( target.getReferencedTarget() ).isNotNull();
+        assertThat( target.getReferencedTarget().getBar() ).isEqualTo( "Foo" );
+    }
+
+    private Source createSourceWithReferencedSourceAndField(String fieldValue) {
+        Source source = new Source();
+        ReferencedSource referencedSource = new ReferencedSource();
+        referencedSource.setFoo( fieldValue );
+        source.setReferencedSource( referencedSource );
+        return source;
     }
 }
