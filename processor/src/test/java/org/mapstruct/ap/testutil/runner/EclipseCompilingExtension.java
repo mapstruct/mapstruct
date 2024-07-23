@@ -138,6 +138,7 @@ class EclipseCompilingExtension extends CompilingExtension {
 
             CompilerResult compilerResult;
             try {
+
                 compilerResult = compiler.performCompile( config );
             }
             catch ( CompilerException e ) {
