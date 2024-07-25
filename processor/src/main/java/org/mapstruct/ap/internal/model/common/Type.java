@@ -317,6 +317,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return implementationType != null ? implementationType.getType() : null;
     }
 
+    public String getFactoryMethodName() {
+        return implementationType != null ? implementationType.getFactoryMethodName() : null;
+    }
+
     public ImplementationType getImplementation() {
         return implementationType;
     }

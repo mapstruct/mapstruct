@@ -11,6 +11,8 @@
         <@includeModel object=factoryMethod targetType=resultType/>
     <#elseif enumSet>
         EnumSet.noneOf( <@includeModel object=enumSetElementType raw=true/>.class )
+    <#elseif resultType.implementationType?? && resultType.factoryMethodName?? && ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>
+        <@includeModel object=resultType.implementationType raw=true />.${resultType.factoryMethodName}( <@iterableSize /> )
     <#else>
     new
         <#if resultType.implementationType??>
