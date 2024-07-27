@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -145,6 +147,20 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
     }
 
     @Override
+    public SequencedSet<TargetFoo> sourceFoosToTargetFooSequencedSet(Collection<SourceFoo> foos) {
+        if ( foos == null ) {
+            return null;
+        }
+
+        SequencedSet<TargetFoo> sequencedSet = new LinkedHashSet<TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        for ( SourceFoo sourceFoo : foos ) {
+            sequencedSet.add( sourceFooToTargetFoo( sourceFoo ) );
+        }
+
+        return sequencedSet;
+    }
+
+    @Override
     public SortedSet<TargetFoo> sourceFoosToTargetFooSortedSet(Collection<SourceFoo> foos) {
         if ( foos == null ) {
             return null;
@@ -187,6 +203,23 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
 
         return map;
+    }
+
+    @Override
+    public SequencedMap<String, TargetFoo> sourceFooMapToTargetFooSequencedMap(Map<Long, SourceFoo> foos) {
+        if ( foos == null ) {
+            return null;
+        }
+
+        SequencedMap<String, TargetFoo> sequencedMap = new LinkedHashMap<String, TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+
+        for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = String.valueOf( entry.getKey() );
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            sequencedMap.put( key, value );
+        }
+
+        return sequencedMap;
     }
 
     @Override

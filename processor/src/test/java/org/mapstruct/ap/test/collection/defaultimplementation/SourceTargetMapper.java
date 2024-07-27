@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -45,11 +47,15 @@ public interface SourceTargetMapper {
     Iterable<TargetFoo> sourceFoosToTargetFoosUsingTargetParameterAndReturn(Iterable<SourceFoo> sourceFoos,
                                                                             @MappingTarget List<TargetFoo> targetFoos);
 
+    SequencedSet<TargetFoo> sourceFoosToTargetFooSequencedSet(Collection<SourceFoo> foos);
+
     SortedSet<TargetFoo> sourceFoosToTargetFooSortedSet(Collection<SourceFoo> foos);
 
     NavigableSet<TargetFoo> sourceFoosToTargetFooNavigableSet(Collection<SourceFoo> foos);
 
     Map<String, TargetFoo> sourceFooMapToTargetFooMap(Map<Long, SourceFoo> foos);
+
+    SequencedMap<String, TargetFoo> sourceFooMapToTargetFooSequencedMap(Map<Long, SourceFoo> foos);
 
     SortedMap<String, TargetFoo> sourceFooMapToTargetFooSortedMap(Map<Long, SourceFoo> foos);
 

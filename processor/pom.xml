@@ -24,7 +24,7 @@
         <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
             Therefore we set this empty property here-->
         <jacocoArgLine />
-        <minimum.java.version>11</minimum.java.version>
+        <minimum.java.version>21</minimum.java.version>
     </properties>
 
     <dependencies>

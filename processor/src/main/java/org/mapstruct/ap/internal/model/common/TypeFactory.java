@@ -38,7 +38,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-
+import org.mapstruct.ap.internal.util.JavaCollectionConstants;
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
@@ -148,6 +148,18 @@ public class TypeFactory {
         implementationTypes.put(
             ConcurrentNavigableMap.class.getName(),
             withDefaultConstructor( getType( ConcurrentSkipListMap.class ) )
+        );
+        implementationTypes.put(
+            JavaCollectionConstants.SEQUENCED_SET_FQN,
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
+        );
+        implementationTypes.put(
+            JavaCollectionConstants.SEQUENCED_MAP_FQN,
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
         );
 
         this.loggingVerbose = loggingVerbose;

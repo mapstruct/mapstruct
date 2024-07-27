@@ -127,14 +127,17 @@ To learn more about MapStruct, refer to the [project homepage](https://mapstruct
 
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
+MapStruct uses Maven for its build. Java 21(*) is required for building MapStruct from source.
+To build the complete project, run
 
     ./mvnw clean install
 
 from the root of the project directory. To skip the distribution module, run 
 
     ./mvnw clean install -DskipDistribution=true
-    
+
+_*Java21 SequencedSet/Map types are referenced in processor module test, which requires JDK21 at testCompileTime._
+
 ## Importing into IDE
 
 MapStruct uses the gem annotation processor to generate mapping gems for its own annotations.

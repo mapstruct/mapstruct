@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -78,6 +80,15 @@ public class DefaultCollectionImplementationTest {
     }
 
     @ProcessorTest
+    @IssueKey("3420")
+    public void shouldUseDefaultImplementationForSequencedMap() {
+        SequencedMap<String, TargetFoo> target =
+                SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooSequencedMap( createSourceFooMap() );
+
+        assertResultMap( target );
+    }
+
+    @ProcessorTest
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSortedMap() {
         SortedMap<String, TargetFoo> target =
@@ -126,6 +137,15 @@ public class DefaultCollectionImplementationTest {
     public void shouldUseDefaultImplementationForSet() {
         Set<TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<>( createSourceFooList() ) );
+
+        assertResultList( target );
+    }
+
+    @ProcessorTest
+    @IssueKey("3420")
+    public void shouldUseDefaultImplementationForSequencedSet() {
+        SequencedSet<TargetFoo> target =
+                SourceTargetMapper.INSTANCE.sourceFoosToTargetFooSequencedSet( createSourceFooList() );
 
         assertResultList( target );
     }
