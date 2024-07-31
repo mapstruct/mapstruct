@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -34,6 +35,8 @@ import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
+import org.mapstruct.ap.internal.model.CanonicalConstructor;
+import org.mapstruct.ap.internal.model.ConstructorParameter;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
 import org.mapstruct.ap.internal.model.Decorator;
@@ -71,6 +74,7 @@ import org.mapstruct.ap.internal.version.VersionInformation;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
+import static javax.lang.model.util.ElementFilter.constructorsIn;
 import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
 import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -154,7 +158,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( TypeMirror usedMapper : mapperAnnotation.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
-                MapperGem.instanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                isAnnotatedMapper( usedMapper ),
                 hasSingletonInstance( usedMapper ),
                 typeFactory,
                 variableNames
@@ -216,6 +220,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
             .javadoc( getJavadoc( element ) )
             .build();
+
+        setCanonicalConstructor( mapper );
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
             messager.printMessage( element, Message.GENERAL_NOT_ALL_FORGED_CREATED,
@@ -840,5 +846,37 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             return false;
         }
         return true;
+    }
+
+    private void setCanonicalConstructor(Mapper mapper) {
+        TypeElement element = mapper.getMapperDefinitionType().getTypeElement();
+        if ( element.getModifiers().contains( Modifier.ABSTRACT ) && hasCanonicalConstructor( element ) ) {
+            ExecutableElement superConstructor = constructorsIn( element.getEnclosedElements() ).get( 0 );
+            mapper.setConstructor( new CanonicalConstructor(
+                mapper.getName(),
+                getParameters( superConstructor ),
+                true,
+                typeFactory
+            ) );
+        }
+    }
+
+    private boolean hasCanonicalConstructor(TypeElement element) {
+        List<ExecutableElement> constructors = constructorsIn( element.getEnclosedElements() );
+        return constructors.size() == 1 && !constructors.get( 0 ).getParameters().isEmpty();
+    }
+
+    private List<ConstructorParameter> getParameters(ExecutableElement superConstructor) {
+        return superConstructor.getParameters().stream()
+            .map( param -> new ConstructorParameter(
+                typeFactory.getType( param.asType() ),
+                param.getSimpleName().toString(),
+                isAnnotatedMapper( param.asType() )
+            ) )
+            .collect( Collectors.toList() );
+    }
+
+    private boolean isAnnotatedMapper(TypeMirror type) {
+        return MapperGem.instanceOn( typeUtils.asElement( type ) ) != null;
     }
 }
