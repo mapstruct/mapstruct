@@ -102,6 +102,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
 
     private final MappingReferences mappingReferences;
+    private List<Type> typeParameters;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
@@ -1970,6 +1971,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
         this.subclassMappings = subclassMappings;
+        this.typeParameters = method.getTypeParameters();
     }
 
     public List<PropertyMapping> getConstantMappings() {
@@ -2025,6 +2027,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public MethodReference getFinalizerMethod() {
         return finalizerMethod;
+    }
+
+    public List<Type> getTypeParameters() {
+        return typeParameters;
     }
 
     @Override
