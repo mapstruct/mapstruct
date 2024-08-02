@@ -1,0 +1,374 @@
+[[using-spi]]
+== 使用MapStruct SPI
+
+为了使用自定义的SPI实现，必须在 `META-INF/services/` 中能以全称定位到你的自定义实现，即一个独立的jar文件，且该文件以SPI命名（比如 `org.mapstruct.ap.spi.AccessorNamingStrategy`），文件内容为自定义类的全路径（比如 `org.mapstruct.example.CustomAccessorNamingStrategy`）。这个jar文件需要被添加到注解处理器的路径里（即，在您添加 mapstruct-processor jar的位置之后添加该文件）。
+
+[NOTE]
+====
+有可能需要将该jar包添加到您的IDE注解处理器工厂路径里。不然的话，当运行您的调用工具成功时，如果找不到该包那么您会收到一个报错。
+====
+
+=== 自定义Accessor命名策略
+
+SPI 名称: `org.mapstruct.ap.spi.AccessorNamingStrategy`
+
+MapStruct通过Service Provider Interface (SPI)提供覆盖 `AccessorNamingStrategy` 的能力。下方是一个很好的例子，展示了source object `GolfPlayer` 和 `GolfPlayerDto` 的流式API。
+
+.Source object GolfPlayer with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class GolfPlayer {
+
+    private double handicap;
+    private String name;
+
+    public double handicap() {
+        return handicap;
+    }
+
+    public GolfPlayer withHandicap(double handicap) {
+        this.handicap = handicap;
+        return this;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public GolfPlayer withName(String name) {
+        this.name = name;
+        return this;
+    }
+}
+----
+====
+
+.Source object GolfPlayerDto with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class GolfPlayerDto {
+
+    private double handicap;
+    private String name;
+
+    public double handicap() {
+        return handicap;
+    }
+
+    public GolfPlayerDto withHandicap(double handicap) {
+        this.handicap = handicap;
+        return this;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public GolfPlayerDto withName(String name) {
+        this.name = name;
+        return this
+    }
+}
+----
+====
+
+我们希望 `GolfPlayer` 被映射为 `GolfPlayerDto` 的方式如下：
+
+.Source object with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface GolfPlayerMapper {
+
+    GolfPlayerMapper INSTANCE = Mappers.getMapper( GolfPlayerMapper.class );
+
+    GolfPlayerDto toDto(GolfPlayer player);
+
+    GolfPlayer toPlayer(GolfPlayerDto player);
+
+}
+----
+====
+
+这可以通过实现SPI `org.mapstruct.ap.spi.AccessorNamingStrategy` 来完成，就像下例子中展示的一样。
+
+.CustomAccessorNamingStrategy
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+/**
+ * A custom {@link AccessorNamingStrategy} recognizing getters in the form of {@code property()} and setters in the
+ * form of {@code withProperty(value)}.
+ */
+public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
+
+    @Override
+    public boolean isGetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return !methodName.startsWith( "with" ) && method.getReturnType().getKind() != TypeKind.VOID;
+    }
+
+    @Override
+    public boolean isSetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return methodName.startsWith( "with" ) && methodName.length() > 4;
+    }
+
+    @Override
+    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+        String methodName = getterOrSetterMethod.getSimpleName().toString();
+        return IntrospectorUtils.decapitalize( methodName.startsWith( "with" ) ? methodName.substring(  4 ) : methodName );
+    }
+}
+----
+====
+`CustomAccessorNamingStrategy` 使用了 `DefaultAccessorNamingStrategy` （也可以通过mapstruct-processor获取），并且
+
+The `CustomAccessorNamingStrategy` makes use of the `DefaultAccessorNamingStrategy` (also available in mapstruct-processor) and relies on that class to leave most of the default behaviour unchanged.
+
+[TIP]
+Fore more details: The example above is present in our examples repository (https://github.com/mapstruct/mapstruct-examples).
+
+[[mapping-exclusion-provider]]
+=== Mapping Exclusion Provider
+
+SPI name: `org.mapstruct.ap.spi.MappingExclusionProvider`
+
+MapStruct offers the possibility to override the `MappingExclusionProvider` via the Service Provider Interface (SPI).
+A nice example is to not allow MapStruct to create an automatic sub-mapping for a certain type,
+i.e. MapStruct will not try to generate an automatic sub-mapping method for an excluded type.
+
+[NOTE]
+====
+The `DefaultMappingExclusionProvider` will exclude all types under the `java` or `javax` packages.
+This means that MapStruct will not try to generate an automatic sub-mapping method between some custom type and some type declared in the Java class library.
+====
+
+.Source object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Source.java[tag=documentation]
+----
+====
+
+.Target object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Target.java[tag=documentation]
+----
+====
+
+.Mapper definition
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/ErroneousCustomExclusionMapper.java[tag=documentation]
+----
+====
+
+We want to exclude the `NestedTarget` from the automatic sub-mapping method generation.
+
+.CustomMappingExclusionProvider
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/CustomMappingExclusionProvider.java[tag=documentation]
+----
+====
+
+
+[[custom-builder-provider]]
+=== Custom Builder Provider
+
+SPI name: org.mapstruct.ap.spi.BuilderProvider
+
+MapStruct offers the possibility to override the `DefaultProvider` via the Service Provider Interface (SPI).
+A nice example is to provide support for a custom builder strategy.
+
+.Custom Builder Provider which disables Builder support
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
+----
+====
+
+[[custom-enum-naming-strategy]]
+=== Custom Enum Naming Strategy
+
+SPI name: `org.mapstruct.ap.spi.EnumMappingStrategy`
+
+MapStruct offers the possibility to override the `EnumMappingStrategy` via the Service Provider Interface (SPI).
+This can be used when you have certain enums that follow some conventions within your organization.
+For example all enums which implement an interface named `CustomEnumMarker` are prefixed with `CUSTOM_`
+and the default value for them when mapping from `null` is `UNSPECIFIED`
+
+.Normal Enum
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public enum CheeseType {
+    BRIE,
+    ROQUEFORT;
+}
+----
+====
+
+.Custom marker enum
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public enum CustomCheeseType implements CustomEnumMarker {
+
+    UNSPECIFIED,
+    CUSTOM_BRIE,
+    CUSTOM_ROQUEFORT;
+}
+----
+====
+
+We want `CheeseType` and `CustomCheeseType` to be mapped without the need to manually define the value mappings:
+
+.Custom enum mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CheeseTypeMapper {
+
+    CheeseType map(CustomCheeseType cheese);
+
+    CustomCheeseType map(CheeseType cheese);
+}
+----
+====
+
+This can be achieved with implementing the SPI `org.mapstruct.ap.spi.EnumMappingStrategy` as in the following example.
+Here’s an implemented `org.mapstruct.ap.spi.EnumMappingStrategy`:
+
+.Custom enum naming strategy
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class CustomEnumMappingStrategy extends DefaultEnumMappingStrategy {
+
+    @Override
+    public String getDefaultNullEnumConstant(TypeElement enumType) {
+        if ( isCustomEnum( enumType ) ) {
+            return "UNSPECIFIED";
+        }
+
+        return super.getDefaultNullEnumConstant( enumType );
+    }
+
+    @Override
+    public String getEnumConstant(TypeElement enumType, String enumConstant) {
+        if ( isCustomEnum( enumType ) ) {
+            return getCustomEnumConstant( enumConstant );
+        }
+        return super.getEnumConstant( enumType, enumConstant );
+    }
+     protected String getCustomEnumConstant(String enumConstant) {
+        if ( "UNSPECIFIED".equals( enumConstant ) ) {
+            return MappingConstantsGem.NULL;
+        }
+         return enumConstant.replace( "CUSTOM_", "" );
+    }
+     protected boolean isCustomEnum(TypeElement enumType) {
+        for ( TypeMirror enumTypeInterface : enumType.getInterfaces() ) {
+            if ( typeUtils.asElement( enumTypeInterface ).getSimpleName().contentEquals( "CustomEnumMarker" ) ) {
+                return true;
+            }
+        }
+         return false;
+    }
+}
+----
+====
+
+The generated code then for the `CheeseMapper` looks like:
+
+.Generated CheeseTypeMapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class CheeseTypeMapperImpl implements CheeseTypeMapper {
+
+    @Override
+    public CheeseType map(CustomCheeseType cheese) {
+        if ( cheese == null ) {
+            return null;
+        }
+
+        CheeseType cheeseType;
+
+        switch ( cheese ) {
+            case UNRECOGNIZED: cheeseType = null;
+            break;
+            case CUSTOM_BRIE: cheeseType = CheeseType.BRIE;
+            break;
+            case CUSTOM_ROQUEFORT: cheeseType = CheeseType.ROQUEFORT;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return cheeseType;
+    }
+
+    @Override
+    public CustomCheeseType map(CheeseType cheese) {
+        if ( cheese == null ) {
+            return CustomCheeseType.UNSPECIFIED;
+        }
+
+        CustomCheeseType customCheeseType;
+
+        switch ( cheese ) {
+            case BRIE: customCheeseType = CustomCheeseType.CUSTOM_BRIE;
+            break;
+            case ROQUEFORT: customCheeseType = CustomCheeseType.CUSTOM_ROQUEFORT;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return customCheeseType;
+    }
+}
+----
+====
+
+[[custom-enum-transformation-strategy]]
+=== Custom Enum Transformation Strategy
+
+SPI name: `org.mapstruct.ap.spi.EnumTransformationStrategy`
+
+MapStruct offers the possibility to other transformations strategies by implementing `EnumTransformationStrategy` via the Service Provider Interface (SPI).
+A nice example is to provide support for a custom transformation strategy.
+
+.Custom Enum Transformation Strategy which lower-cases the value and applies a suffix
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/value/nametransformation/CustomEnumTransformationStrategy.java[tag=documentation]
+----
+====
