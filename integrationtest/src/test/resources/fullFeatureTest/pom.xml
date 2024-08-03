@@ -42,6 +42,7 @@
                         <exclude>**/*Test.java</exclude>
                         <exclude>**/testutil/**/*.java</exclude>
                         <exclude>**/spi/**/*.java</exclude>
+                        <exclude>**/collection/defaultimplementation/*.java</exclude>
                         <exclude>${additionalExclude0}</exclude>
                         <exclude>${additionalExclude1}</exclude>
                         <exclude>${additionalExclude2}</exclude>
