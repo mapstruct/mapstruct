@@ -137,6 +137,7 @@ from the root of the project directory. To skip the distribution module, run
     ./mvnw clean install -DskipDistribution=true
 
 _*Java21 SequencedSet/Map types are referenced in processor module test, which requires JDK21 at testCompileTime._
+_No dependency > Java8 should be added in compile scope to remain Java8 compatible._
 
 ## Importing into IDE
 
