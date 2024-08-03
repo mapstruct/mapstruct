@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [EA]
+        java: [23, 24]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +20,6 @@ jobs:
         uses: oracle-actions/setup-java@v1
         with:
           website: jdk.java.net
-          release: EA
+          release: ${{ matrix.java }}
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=true install -DskipDistribution=true
