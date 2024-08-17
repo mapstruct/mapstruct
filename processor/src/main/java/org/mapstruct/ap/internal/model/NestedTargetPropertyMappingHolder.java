@@ -362,7 +362,13 @@ public class NestedTargetPropertyMappingHolder {
             Map<String, Set<MappingReference>> singleTargetReferences = new LinkedHashMap<>();
             for ( MappingReference mapping : mappingReferences.getMappingReferences() )  {
                 TargetReference targetReference = mapping.getTargetReference();
-                String property = first( targetReference.getPropertyEntries() );
+                List<String> propertyEntries = targetReference.getPropertyEntries();
+                if ( propertyEntries.isEmpty() ) {
+                    // This can happen if the target property is target = ".",
+                    // this usually happens when doing a reverse mapping
+                    continue;
+                }
+                String property = first( propertyEntries );
                 MappingReference newMapping = mapping.popTargetReference();
                 if ( newMapping != null ) {
                     // group properties on current name.
