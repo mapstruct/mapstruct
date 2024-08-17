@@ -6,9 +6,6 @@
 
 package org.mapstruct.ap.test.bugs._3652;
 
-import java.text.ParseException;
-
-import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -16,7 +13,6 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("3652")
-@DefaultLocale("en")
 public class Issue3652Test {
 
     @WithClasses({
@@ -26,7 +22,7 @@ public class Issue3652Test {
         FooBarMapper.class,
     })
     @ProcessorTest
-    void ignoreMappingsWithoutSourceShouldBeInvertible() throws ParseException {
+    void ignoreMappingsWithoutSourceShouldBeInvertible() {
         Bar bar = new Bar();
         bar.setSecret( 123 );
         bar.setDoesNotExistInFoo( 6 );
