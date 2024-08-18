@@ -295,7 +295,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
-            boolean applyImplicitMappings = !mappingReferences.isRestrictToDefinedMappings();
+            // If defined mappings should not be handled then we should not apply implicit mappings
+            boolean applyImplicitMappings =
+                shouldHandledDefinedMappings && !mappingReferences.isRestrictToDefinedMappings();
             if ( applyImplicitMappings ) {
                 applyImplicitMappings = beanMapping == null || !beanMapping.isignoreByDefault();
             }
