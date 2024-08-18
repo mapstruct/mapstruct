@@ -71,7 +71,37 @@ public class MappingReference {
             return false;
         }
         MappingReference that = (MappingReference) o;
-        return mapping.equals( that.mapping );
+        if ( ".".equals( that.mapping.getTargetName() ) ) {
+            // target this will never be equal to any other target this or any other.
+            return false;
+        }
+
+        if (!Objects.equals( mapping.getTargetName(), that.mapping.getTargetName() ) ) {
+            return false;
+        }
+
+        if ( !Objects.equals( mapping.getConstant(), that.mapping.getConstant() ) ) {
+            return false;
+        }
+
+        if ( !Objects.equals( mapping.getJavaExpression(), that.mapping.getJavaExpression() ) ) {
+            return false;
+        }
+
+        if ( sourceReference == null ) {
+            return that.sourceReference == null;
+        }
+
+        if ( that.sourceReference == null ) {
+            return false;
+        }
+
+
+        if (!Objects.equals( sourceReference.getPropertyEntries(), that.sourceReference.getPropertyEntries() ) ) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
