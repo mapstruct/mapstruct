@@ -479,7 +479,7 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     /**
-     *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property
+     *  Mapping can only be inversed if the source was not a constant nor an expression
      *
      * @return true when the above applies
      */
