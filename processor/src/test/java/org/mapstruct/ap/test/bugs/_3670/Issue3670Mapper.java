@@ -34,7 +34,6 @@ public interface Issue3670Mapper {
         return nested != null ? nested.getNestedName() : null;
     }
 
-
     class Target {
 
         private String name;
