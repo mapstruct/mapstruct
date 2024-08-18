@@ -479,13 +479,12 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     /**
-     *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property
-     *  and the mapping is not a 'target-source-ignore' mapping
+     *  Mapping can only be inversed if the source was not a constant nor an expression
      *
      * @return true when the above applies
      */
     public boolean canInverse() {
-        return constant == null && javaExpression == null && !( isIgnored && sourceName == null );
+        return constant == null && javaExpression == null;
     }
 
     public MappingOptions copyForInverseInheritance(SourceMethod templateMethod,
