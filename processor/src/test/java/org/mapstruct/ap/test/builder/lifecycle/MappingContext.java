@@ -26,6 +26,11 @@ public class MappingContext {
     }
 
     @BeforeMapping
+    public void beforeWithSource(OrderDto source) {
+        invokedMethods.add( "beforeWithSource" );
+    }
+
+    @BeforeMapping
     public void beforeWithTargetType(OrderDto source, @TargetType Class<Order> orderClass) {
         invokedMethods.add( "beforeWithTargetType" );
     }
@@ -48,6 +53,11 @@ public class MappingContext {
     @AfterMapping
     public void afterWithoutParameters() {
         invokedMethods.add( "afterWithoutParameters" );
+    }
+
+    @AfterMapping
+    public void afterWithSource(OrderDto source) {
+        invokedMethods.add( "afterWithSource" );
     }
 
     @AfterMapping

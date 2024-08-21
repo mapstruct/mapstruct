@@ -7,9 +7,11 @@ package org.mapstruct.ap.test.builder.lifecycle;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 public class BuilderLifecycleCallbacksTest {
 
+    @RegisterExtension
+    final GeneratedSource source = new GeneratedSource().addComparisonToFixtureFor( OrderMapper.class );
+
     @ProcessorTest
     public void lifecycleMethodsShouldBeInvoked() {
         OrderDto source = new OrderDto();
@@ -43,6 +48,7 @@ public class BuilderLifecycleCallbacksTest {
         assertThat( context.getInvokedMethods() )
             .contains(
                 "beforeWithoutParameters",
+                "beforeWithSource",
                 "beforeWithTargetType",
                 "beforeWithBuilderTargetType",
                 "beforeWithBuilderTarget",
@@ -50,6 +56,7 @@ public class BuilderLifecycleCallbacksTest {
                 "afterWithBuilderTargetType",
                 "afterWithBuilderTarget",
                 "afterWithBuilderTargetReturningTarget",
+                "afterWithSource",
                 "afterWithTargetType",
                 "afterWithTarget",
                 "afterWithTargetReturningTarget"
