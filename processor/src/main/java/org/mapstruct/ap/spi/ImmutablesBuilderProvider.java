@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -30,7 +31,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
     private static final String IMMUTABLE_FQN = "org.immutables.value.Value.Immutable";
 
     @Override
-    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
+    protected BuilderInfo findBuilderInfo( TypeElement typeElement, Set<TypeElement> processedTypeElements ) {
         Name name = typeElement.getQualifiedName();
         if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
             return null;
@@ -38,24 +39,26 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         TypeElement immutableAnnotation = elementUtils.getTypeElement( IMMUTABLE_FQN );
         if ( immutableAnnotation != null ) {
             BuilderInfo info = findBuilderInfoForImmutables(
-                typeElement,
-                immutableAnnotation
+                    typeElement,
+                    immutableAnnotation,
+                    processedTypeElements
             );
             if ( info != null ) {
                 return info;
             }
         }
 
-        return super.findBuilderInfo( typeElement );
+        return super.findBuilderInfo( typeElement, processedTypeElements );
     }
 
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement,
-                                                       TypeElement immutableAnnotation) {
+                                                       TypeElement immutableAnnotation,
+                                                       Set<TypeElement> processedTypeElements) {
         for ( AnnotationMirror annotationMirror : elementUtils.getAllAnnotationMirrors( typeElement ) ) {
             if ( typeUtils.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
                 TypeElement immutableElement = asImmutableElement( typeElement );
                 if ( immutableElement != null ) {
-                    return super.findBuilderInfo( immutableElement );
+                    return super.findBuilderInfo( immutableElement, processedTypeElements );
                 }
                 else {
                     // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct

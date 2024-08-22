@@ -12,25 +12,27 @@ import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 
+import java.util.Set;
+
 public class Issue1569BuilderProvider extends ImmutablesBuilderProvider implements BuilderProvider {
 
     @Override
-    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
+    protected BuilderInfo findBuilderInfo( TypeElement typeElement, Set<TypeElement> processedTypeElements) {
         Name name = typeElement.getQualifiedName();
         if ( name.toString().endsWith( ".Item" ) ) {
-            BuilderInfo info = findBuilderInfoForImmutables( typeElement );
+            BuilderInfo info = findBuilderInfoForImmutables( typeElement, processedTypeElements );
             if ( info != null ) {
                 return info;
             }
         }
 
-        return super.findBuilderInfo( typeElement );
+        return super.findBuilderInfo( typeElement, processedTypeElements );
     }
 
-    protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement) {
+    protected BuilderInfo findBuilderInfoForImmutables( TypeElement typeElement,  Set<TypeElement> typeElementSet ) {
         TypeElement immutableElement = asImmutableElement( typeElement );
         if ( immutableElement != null ) {
-            return super.findBuilderInfo( immutableElement );
+            return super.findBuilderInfo( immutableElement, typeElementSet );
         }
         return null;
     }

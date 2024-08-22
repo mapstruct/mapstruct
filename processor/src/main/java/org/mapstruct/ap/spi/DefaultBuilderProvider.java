@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -88,13 +89,12 @@ public class DefaultBuilderProvider implements BuilderProvider {
     }
 
     @Override
-    public BuilderInfo findBuilderInfo(TypeMirror type) {
+    public BuilderInfo findBuilderInfo(TypeMirror type, Set<TypeElement> processedTypeElementSet) {
         TypeElement typeElement = getTypeElement( type );
         if ( typeElement == null ) {
             return null;
         }
-
-        return findBuilderInfo( typeElement );
+        return findBuilderInfo( typeElement, processedTypeElementSet );
     }
 
     /**
@@ -172,11 +172,11 @@ public class DefaultBuilderProvider implements BuilderProvider {
      *
      * @param typeElement the type element for which a builder searched
      * @return the {@link BuilderInfo} or {@code null} if no builder was found for the type
-     * {@link DefaultBuilderProvider#findBuildMethods(TypeElement, TypeElement)}
+     * {@link DefaultBuilderProvider#findBuildMethods( TypeElement, TypeElement )}
      * @throws MoreThanOneBuilderCreationMethodException if there are multiple builder creation methods
      */
-    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
-        if ( shouldIgnore( typeElement ) ) {
+    protected BuilderInfo findBuilderInfo( TypeElement typeElement, Set<TypeElement> processedTypeElements ) {
+        if ( shouldIgnore( typeElement ) || processedTypeElements.contains( typeElement ) ) {
             return null;
         }
 
@@ -195,7 +195,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
                 }
             }
         }
-
+        processedTypeElements.add( typeElement );
         if ( builderInfo.size() == 1 ) {
             return builderInfo.get( 0 );
         }
@@ -203,7 +203,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
             throw new MoreThanOneBuilderCreationMethodException( typeElement.asType(), builderInfo );
         }
 
-        return findBuilderInfo( typeElement.getSuperclass() );
+        return findBuilderInfo( typeElement.getSuperclass(), processedTypeElements );
     }
 
     /**
