@@ -5,7 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._3678;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mapstruct.AfterMapping;
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -14,15 +18,20 @@ public abstract class Issue3678Mapper {
 
     abstract SimpleDestination sourceToDestination(SimpleSource source);
 
-    int afterMappingInvocationCount = 0;
+    List<String> invocations = new ArrayList<>();
+
+    @BeforeMapping
+    void beforeMapping(SimpleSource simpleSource) {
+        invocations.add( "beforeMapping" );
+    }
 
     @AfterMapping
     void afterMapping(SimpleSource simpleSource) {
-        afterMappingInvocationCount++;
+        invocations.add( "afterMapping" );
     }
 
-    public int getAfterMappingInvocationCount() {
-        return afterMappingInvocationCount;
+    public List<String> getInvocations() {
+        return invocations;
     }
 
     public static class SimpleSource {

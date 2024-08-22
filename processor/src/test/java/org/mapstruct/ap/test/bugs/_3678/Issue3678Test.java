@@ -26,8 +26,9 @@ public class Issue3678Test {
         Issue3678Mapper.SimpleSource source = new Issue3678Mapper.SimpleSource( "name", "description" );
         Issue3678Mapper.SimpleDestination simpleDestination = mapper.sourceToDestination( source );
 
-        assertThat( mapper.getAfterMappingInvocationCount() )
-            .isOne();
+        assertThat( mapper.getInvocations() )
+            .containsExactly( "beforeMapping", "afterMapping" )
+            .doesNotHaveDuplicates();
     }
 
 }
