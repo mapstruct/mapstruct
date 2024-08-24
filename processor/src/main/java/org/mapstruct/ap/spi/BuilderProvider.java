@@ -5,9 +5,7 @@
  */
 package org.mapstruct.ap.spi;
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import java.util.Set;
 
 /**
  * A service provider interface that is used to detect types that require a builder for mapping.  This interface could
@@ -38,5 +36,5 @@ public interface BuilderProvider {
      * @throws MoreThanOneBuilderCreationMethodException if {@code type} has more than one method that can create the
      * builder
      */
-    BuilderInfo findBuilderInfo( TypeMirror type, Set<TypeElement> processedTypeElementSet );
+    BuilderInfo findBuilderInfo(TypeMirror type);
 }

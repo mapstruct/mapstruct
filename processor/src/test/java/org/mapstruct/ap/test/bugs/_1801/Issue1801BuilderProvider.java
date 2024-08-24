@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.bugs._1801;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
@@ -24,7 +23,7 @@ import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 public class Issue1801BuilderProvider extends ImmutablesBuilderProvider implements BuilderProvider {
 
     @Override
-    protected BuilderInfo findBuilderInfo( TypeElement typeElement, Set<TypeElement> processedTypeElements) {
+    protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
         Name name = typeElement.getQualifiedName();
         if ( name.toString().endsWith( ".Item" ) ) {
             BuilderInfo info = findBuilderInfoFromInnerBuilderClass( typeElement );
@@ -32,7 +31,7 @@ public class Issue1801BuilderProvider extends ImmutablesBuilderProvider implemen
                 return info;
             }
         }
-        return super.findBuilderInfo( typeElement, processedTypeElements );
+        return super.findBuilderInfo( typeElement );
     }
 
     /**

@@ -575,7 +575,7 @@ public class TypeFactory {
         try {
             return roundContext.getAnnotationProcessorContext()
                 .getBuilderProvider()
-                    .findBuilderInfo( type, new HashSet<>() );
+                .findBuilderInfo( type );
         }
         catch ( MoreThanOneBuilderCreationMethodException ex ) {
             if ( report ) {

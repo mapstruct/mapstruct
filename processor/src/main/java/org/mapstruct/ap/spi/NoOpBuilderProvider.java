@@ -7,9 +7,7 @@ package org.mapstruct.ap.spi;
 
 // tag::documentation[]
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import java.util.Set;
 
 // end::documentation[]
 
@@ -22,8 +20,9 @@ import java.util.Set;
 public class NoOpBuilderProvider implements BuilderProvider {
 
     @Override
-    public BuilderInfo findBuilderInfo( TypeMirror type, Set<TypeElement> processedTypeElementSet) {
+    public BuilderInfo findBuilderInfo(TypeMirror type) {
         return null;
     }
+
 }
 // end::documentation[]
