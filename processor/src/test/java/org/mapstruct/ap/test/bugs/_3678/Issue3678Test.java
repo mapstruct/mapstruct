@@ -14,21 +14,38 @@ import org.mapstruct.factory.Mappers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IssueKey("3678")
+@WithClasses(Issue3678Mapper.class)
 public class Issue3678Test {
 
-    @WithClasses({
-        Issue3678Mapper.class,
-    })
     @ProcessorTest
-    void ignoreMappingsWithoutSourceShouldBeInvertible() {
+    void beforeAndAfterMappingOnlyCalledOnceForTwoSources() {
 
         Issue3678Mapper mapper = Mappers.getMapper( Issue3678Mapper.class );
-        Issue3678Mapper.SimpleSource source = new Issue3678Mapper.SimpleSource( "name", "description" );
-        Issue3678Mapper.SimpleDestination simpleDestination = mapper.sourceToDestination( source );
+        Issue3678Mapper.SourceA sourceA = new Issue3678Mapper.SourceA( "name" );
+        Issue3678Mapper.SourceB sourceB = new Issue3678Mapper.SourceB( "description" );
+        Issue3678Mapper.Target target = mapper.mapTwoSources( sourceA, sourceB );
 
         assertThat( mapper.getInvocations() )
-            .containsExactly( "beforeMapping", "afterMapping" )
-            .doesNotHaveDuplicates();
+            .containsExactly(
+                "beforeMappingSourceA",
+                "beforeMappingSourceB",
+                "afterMappingSourceA",
+                "afterMappingSourceB"
+            );
+    }
+
+    @ProcessorTest
+    void beforeAndAfterMappingOnlyCalledOnceForSingleSource() {
+
+        Issue3678Mapper mapper = Mappers.getMapper( Issue3678Mapper.class );
+        Issue3678Mapper.SourceA sourceA = new Issue3678Mapper.SourceA( "name" );
+        Issue3678Mapper.Target target = mapper.mapSingleSource( sourceA );
+
+        assertThat( mapper.getInvocations() )
+            .containsExactly(
+                "beforeMappingSourceA",
+                "afterMappingSourceA"
+            );
     }
 
 }

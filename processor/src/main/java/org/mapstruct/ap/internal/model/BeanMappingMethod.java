@@ -407,10 +407,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ) );
 
                 // remove methods that are already being invoked
-                removeMappingReferencesWithoutSourceParameters( beforeMappingReferencesWithFinalizedReturnType );
-                removeMappingReferencesWithoutSourceParameters( afterMappingReferencesWithFinalizedReturnType );
-                removeMappingReferencesWithSingleSourceParameter( beforeMappingReferencesWithFinalizedReturnType );
-                removeMappingReferencesWithSingleSourceParameter( afterMappingReferencesWithFinalizedReturnType );
+                beforeMappingReferencesWithFinalizedReturnType.removeAll( beforeMappingMethods );
+                afterMappingReferencesWithFinalizedReturnType.removeAll( afterMappingMethods );
             }
 
             Map<String, PresenceCheck> presenceChecksByParameter = new LinkedHashMap<>();
@@ -451,21 +449,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 subclasses,
                 presenceChecksByParameter
             );
-        }
-
-        private void removeMappingReferencesWithoutSourceParameters(List<LifecycleCallbackMethodReference> references) {
-            references.removeIf( r -> r.getSourceParameters().isEmpty() && r.getReturnType().isVoid() );
-        }
-
-        private void removeMappingReferencesWithSingleSourceParameter(
-            List<LifecycleCallbackMethodReference> references) {
-            references.removeIf( Builder::isSingleSourceParameter );
-        }
-
-        private static boolean isSingleSourceParameter(LifecycleCallbackMethodReference reference) {
-            return reference.getParameterBindings().size() == 1
-                && reference.getParameterBindings().stream().allMatch( ParameterBinding::isSourceParameter )
-                && reference.getReturnType().isVoid();
         }
 
         private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {

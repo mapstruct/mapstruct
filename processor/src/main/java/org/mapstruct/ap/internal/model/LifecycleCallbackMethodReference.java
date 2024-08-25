@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -117,5 +118,37 @@ public class LifecycleCallbackMethodReference extends MethodReference {
             null,
             containingMethod,
             existingVariableNames );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( !super.equals( obj ) ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        LifecycleCallbackMethodReference other = (LifecycleCallbackMethodReference) obj;
+        if ( !Objects.equals( declaringType, other.declaringType )) {
+            return false;
+        }
+        if ( !Objects.equals( methodReturnType, other.methodReturnType )) {
+            return false;
+        }
+        if ( !Objects.equals( methodResultType, other.methodResultType )) {
+            return false;
+        }
+        if ( !Objects.equals( targetVariableName, other.targetVariableName )) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( super.hashCode(), declaringType, methodReturnType, methodResultType, targetVariableName );
     }
 }

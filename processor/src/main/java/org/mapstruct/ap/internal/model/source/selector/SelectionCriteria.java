@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -116,7 +115,7 @@ public class SelectionCriteria {
         this.type = preferUpdateMapping ? Type.PREFER_UPDATE_MAPPING : null;
     }
 
-    public boolean hasQualfiers() {
+    public boolean hasQualifiers() {
         return !qualifyingInfo.qualifiedByNames().isEmpty() || !qualifyingInfo.qualifiers().isEmpty();
     }
 

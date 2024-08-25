@@ -11,41 +11,63 @@ import java.util.List;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.ERROR)
+@Mapper
 public abstract class Issue3678Mapper {
 
-    abstract SimpleDestination sourceToDestination(SimpleSource source);
+    @Mapping( target = "name", source = "sourceA.name")
+    @Mapping( target = "description", source = "sourceB.description")
+    abstract Target mapTwoSources(SourceA sourceA, SourceB sourceB);
+
+    @Mapping( target = "description", constant = "some description")
+    abstract Target mapSingleSource(SourceA sourceA);
 
     List<String> invocations = new ArrayList<>();
 
     @BeforeMapping
-    void beforeMapping(SimpleSource simpleSource) {
-        invocations.add( "beforeMapping" );
+    void beforeMappingSourceA(SourceA sourceA) {
+        invocations.add( "beforeMappingSourceA" );
     }
 
     @AfterMapping
-    void afterMapping(SimpleSource simpleSource) {
-        invocations.add( "afterMapping" );
+    void afterMappingSourceB(SourceA sourceA) {
+        invocations.add( "afterMappingSourceA" );
+    }
+
+    @BeforeMapping
+    void beforeMappingSourceB(SourceB sourceB) {
+        invocations.add( "beforeMappingSourceB" );
+    }
+
+    @AfterMapping
+    void afterMappingSourceB(SourceB sourceB) {
+        invocations.add( "afterMappingSourceB" );
     }
 
     public List<String> getInvocations() {
         return invocations;
     }
 
-    public static class SimpleSource {
+    public static class SourceA {
 
         private final String name;
-        private final String description;
 
-        public SimpleSource(String name, String description) {
+        public SourceA(String name) {
             this.name = name;
-            this.description = description;
         }
 
         public String getName() {
             return name;
+        }
+    }
+
+    public static class SourceB {
+
+        private final String description;
+
+        public SourceB(String description) {
+            this.description = description;
         }
 
         public String getDescription() {
@@ -53,12 +75,12 @@ public abstract class Issue3678Mapper {
         }
     }
 
-    public static final class SimpleDestination {
+    public static final class Target {
 
         private final String name;
         private final String description;
 
-        private SimpleDestination(String name, String description) {
+        private Target(String name, String description) {
             this.name = name;
             this.description = description;
         }
@@ -93,8 +115,8 @@ public abstract class Issue3678Mapper {
                 return this;
             }
 
-            public SimpleDestination build() {
-                return new SimpleDestination( this.name, this.description );
+            public Target build() {
+                return new Target( this.name, this.description );
             }
         }
     }

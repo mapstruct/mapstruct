@@ -5,10 +5,6 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.firstKey;
-import static org.mapstruct.ap.internal.util.Collections.firstValue;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,7 +16,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -66,6 +61,10 @@ import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.firstKey;
+import static org.mapstruct.ap.internal.util.Collections.firstValue;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -335,7 +334,7 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private boolean hasQualfiers() {
-            return selectionCriteria != null && selectionCriteria.hasQualfiers();
+            return selectionCriteria != null && selectionCriteria.hasQualifiers();
         }
 
         private void printQualifierMessage(SelectionCriteria selectionCriteria ) {

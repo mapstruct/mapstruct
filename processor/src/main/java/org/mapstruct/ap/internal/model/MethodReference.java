@@ -387,9 +387,6 @@ public class MethodReference extends ModelElement implements Assignment {
         if ( this == obj ) {
             return true;
         }
-        if ( !super.equals( obj ) ) {
-            return false;
-        }
         if ( getClass() != obj.getClass() ) {
             return false;
         }
@@ -398,6 +395,9 @@ public class MethodReference extends ModelElement implements Assignment {
             return false;
         }
         if ( !Objects.equals( providingParameter, other.providingParameter ) ) {
+            return false;
+        }
+        if ( !Objects.equals( name, other.name ) ) {
             return false;
         }
 
