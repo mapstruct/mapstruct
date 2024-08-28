@@ -1,14 +1,11 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.5.Final-blue.svg)](https://search.maven.org/search?q=g:org.mapstruct%20AND%20v:1.*.Final)
-[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://search.maven.org/search?q=g:org.mapstruct)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.6.0-blue.svg)](https://central.sonatype.com/search?q=g:org.mapstruct%20v:1.6.0)
+[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://central.sonatype.com/search?q=g:org.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/main/LICENSE.txt)
 
 [![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=main)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amain+workflow%3ACI)
 [![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct/tree/main)
-[![Gitter](https://img.shields.io/gitter/room/mapstruct/mapstruct.svg)](https://gitter.im/mapstruct/mapstruct-users)
-[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/context:java)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/alerts)
 
 * [What is MapStruct?](#what-is-mapstruct)
 * [Requirements](#requirements)
@@ -68,7 +65,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.6.0</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -84,10 +81,10 @@ For Maven-based projects, add the following to your POM file in order to use Map
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>3.13.0</version>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <source>17</source>
+                <target>1<7/target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -114,10 +111,10 @@ plugins {
 
 dependencies {
     ...
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.mapstruct:mapstruct:1.6.0'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0' // if you are using mapstruct in test code
 }
 ...
 ```
