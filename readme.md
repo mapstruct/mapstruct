@@ -84,7 +84,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
             <version>3.13.0</version>
             <configuration>
                 <source>17</source>
-                <target>1<7/target>
+                <target>17</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
