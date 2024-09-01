@@ -12,5 +12,5 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 interface DefaultSourceTargetMapperIfc {
-    Target implicitlyPublicSoureToTarget(Source source);
+    Target implicitlyPublicSourceToTarget(Source source);
 }

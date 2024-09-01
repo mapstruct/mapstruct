@@ -122,7 +122,7 @@ public class NativeTypesTest {
             .isNotNull();
 
         // most negative int: dec / octal / int / binary
-        // NOTE parseInt should be changed to parseUnsignedInt in Java, than the - sign can disssapear (java8)
+        // NOTE parseInt should be changed to parseUnsignedInt in Java, than the - sign can dissapear (java8)
         // and the function will be true to what the compiler shows.
         assertThat( getLiteral( int.class.getCanonicalName(), "-2147483648" ) ).isNotNull();
         assertThat( getLiteral( int.class.getCanonicalName(), "0x8000_0000" ) ).isNotNull();
@@ -177,7 +177,7 @@ public class NativeTypesTest {
      * The following example shows other ways you can use the underscore in numeric literals:
      */
     @Test
-    public void testFloatingPoingLiteralFromJLS() {
+    public void testFloatingPointLiteralFromJLS() {
 
         // The largest positive finite literal of type float is 3.4028235e38f.
         assertThat( getLiteral( float.class.getCanonicalName(), "3.4028235e38f" ) ).isNotNull();
