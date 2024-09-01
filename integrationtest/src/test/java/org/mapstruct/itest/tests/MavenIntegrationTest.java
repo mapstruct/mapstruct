@@ -131,6 +131,13 @@ public class MavenIntegrationTest {
     void recordsCrossModuleTest() {
     }
 
+    @ProcessorTest(baseDir = "recordsCrossModuleInterfaceTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    @EnabledForJreRange(min = JRE.JAVA_17)
+    void recordsCrossModuleInterfaceTest() {
+    }
+
     @ProcessorTest(baseDir = "expressionTextBlocksTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })

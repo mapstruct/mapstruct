@@ -50,7 +50,7 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
-import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
@@ -1047,7 +1047,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields(), FieldElementAccessor::new ) );
+            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.
