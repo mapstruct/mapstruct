@@ -130,7 +130,7 @@ To learn more about MapStruct, refer to the [project homepage](https://mapstruct
 
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
+MapStruct uses Maven for its build. Java 17 is required for building MapStruct from source. To build the complete project, run
 
     ./mvnw clean install
 
