@@ -44,12 +44,15 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      */
     private ThreadLocal<String> sourceOutputDir = new ThreadLocal<>();
 
+    private Compiler compiler;
+
     private List<Class<?>> fixturesFor = new ArrayList<>();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         CompilationRequest compilationRequest = context.getStore( NAMESPACE )
             .get( context.getUniqueId() + "-compilationRequest", CompilationRequest.class );
+        this.compiler = compilationRequest.getCompiler();
         setSourceOutputDir( context.getStore( NAMESPACE )
             .get( compilationRequest, CompilationCache.class )
             .getLastSourceOutputDir() );
@@ -118,13 +121,13 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
 
     private void handleFixtureComparison() throws UnsupportedEncodingException {
         for ( Class<?> fixture : fixturesFor ) {
-            String expectedFixture = FIXTURES_ROOT + getMapperName( fixture );
-            URL expectedFile = getClass().getClassLoader().getResource( expectedFixture );
+            String fixtureName = getMapperName( fixture );
+            URL expectedFile = getExpectedResource( fixtureName );
             if ( expectedFile == null ) {
                 fail( String.format(
                     "No reference file could be found for Mapper %s. You should create a file %s",
                     fixture.getName(),
-                    expectedFixture
+                    FIXTURES_ROOT + fixtureName
                 ) );
             }
             else {
@@ -134,5 +137,17 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
             fixture.getPackage().getName();
         }
 
+    }
+
+    private URL getExpectedResource( String fixtureName ) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        for ( int version = Runtime.version().feature(); version >= 11 && compiler != Compiler.ECLIPSE; version-- ) {
+            URL resource = classLoader.getResource( FIXTURES_ROOT + "/" + version + "/" + fixtureName );
+            if ( resource != null ) {
+                return resource;
+            }
+        }
+
+        return classLoader.getResource( FIXTURES_ROOT + fixtureName );
     }
 }

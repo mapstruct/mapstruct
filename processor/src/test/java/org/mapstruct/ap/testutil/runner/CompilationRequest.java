@@ -76,4 +76,8 @@ public class CompilationRequest {
     public Collection<String> getTestDependencies() {
         return testDependencies;
     }
+
+    public Compiler getCompiler() {
+        return compiler;
+    }
 }

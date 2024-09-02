@@ -38,12 +38,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
@@ -51,13 +50,16 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withFactoryMethod;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
 
@@ -82,6 +84,8 @@ public class TypeFactory {
             sb.append( ')' );
             return sb.toString();
         };
+    private static final String LINKED_HASH_SET_FACTORY_METHOD_NAME = "newLinkedHashSet";
+    private static final String LINKED_HASH_MAP_FACTORY_METHOD_NAME = "newLinkedHashMap";
 
     private final ElementUtils elementUtils;
     private final TypeUtils typeUtils;
@@ -100,7 +104,8 @@ public class TypeFactory {
     private final boolean loggingVerbose;
 
     public TypeFactory(ElementUtils elementUtils, TypeUtils typeUtils, FormattingMessager messager,
-                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose) {
+                       RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose,
+                       VersionInformation versionInformation) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -118,11 +123,22 @@ public class TypeFactory {
         implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
         implementationTypes.put( List.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
 
-        implementationTypes.put( Set.class.getName(), withLoadFactorAdjustment( getType( LinkedHashSet.class ) ) );
+        boolean sourceVersionAtLeast19 = versionInformation.isSourceVersionAtLeast19();
+        implementationTypes.put(
+            Set.class.getName(),
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
+        );
         implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
         implementationTypes.put( NavigableSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
 
-        implementationTypes.put( Map.class.getName(), withLoadFactorAdjustment( getType( LinkedHashMap.class ) ) );
+        implementationTypes.put(
+            Map.class.getName(),
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
+        );
         implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put( NavigableMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
         implementationTypes.put(

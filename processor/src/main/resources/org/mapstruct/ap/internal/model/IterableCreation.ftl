@@ -11,13 +11,15 @@
         <@includeModel object=factoryMethod targetType=resultType/>
     <#elseif enumSet>
         EnumSet.noneOf( <@includeModel object=enumSetElementType raw=true/>.class )
-    <#else>
-    new
-        <#if resultType.implementationType??>
-            <@includeModel object=resultType.implementationType/><#if ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>( <@sizeForCreation /> )<#else>()</#if>
+    <#elseif resultType.implementation??>
+        <#if resultType.implementation.factoryMethodName?? && ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>
+            <@includeModel object=resultType.implementationType raw=true />.${resultType.implementation.factoryMethodName}( <@sizeForCreation /> )
         <#else>
-            <@includeModel object=resultType/>()</#if>
+            new <@includeModel object=resultType.implementationType/><#if ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>( <@sizeForCreation /> )<#else>()</#if>
         </#if>
+    <#else>
+    new <@includeModel object=resultType/>()
+    </#if>
 </@compress>
 <#macro sizeForCreation>
     <@compress single_line=true>
