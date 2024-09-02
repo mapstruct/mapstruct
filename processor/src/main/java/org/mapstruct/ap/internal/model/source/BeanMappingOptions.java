@@ -223,7 +223,7 @@ public class BeanMappingOptions extends DelegatingOptions {
         return selectionParameters;
     }
 
-    public boolean isignoreByDefault() {
+    public boolean isIgnoredByDefault() {
         return Optional.ofNullable( beanMapping ).map( BeanMappingGem::ignoreByDefault )
             .map( GemValue::get )
             .orElse( false );

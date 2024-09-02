@@ -299,7 +299,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             boolean applyImplicitMappings =
                 shouldHandledDefinedMappings && !mappingReferences.isRestrictToDefinedMappings();
             if ( applyImplicitMappings ) {
-                applyImplicitMappings = beanMapping == null || !beanMapping.isignoreByDefault();
+                applyImplicitMappings = beanMapping == null || !beanMapping.isIgnoredByDefault();
             }
             if ( applyImplicitMappings ) {
 
@@ -1699,7 +1699,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return ReportingPolicyGem.IGNORE;
             }
             // If we have ignoreByDefault = true, unprocessed target properties are not an issue.
-            if ( method.getOptions().getBeanMapping().isignoreByDefault() ) {
+            if ( method.getOptions().getBeanMapping().isIgnoredByDefault() ) {
                 return ReportingPolicyGem.IGNORE;
             }
             if ( method.getOptions().getBeanMapping() != null ) {
