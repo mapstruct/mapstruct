@@ -91,7 +91,6 @@ public class TypeFactory {
     private final TypeUtils typeUtils;
     private final FormattingMessager messager;
     private final RoundContext roundContext;
-    private final VersionInformation versionInformation;
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
@@ -111,7 +110,6 @@ public class TypeFactory {
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.roundContext = roundContext;
-        this.versionInformation = versionInformation;
         this.notToBeImportedTypes = notToBeImportedTypes;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
@@ -125,9 +123,10 @@ public class TypeFactory {
         implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
         implementationTypes.put( List.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
 
+        boolean sourceVersionAtLeast19 = versionInformation.isSourceVersionAtLeast19();
         implementationTypes.put(
             Set.class.getName(),
-            isSourceVersionAtLeast19() ?
+            sourceVersionAtLeast19 ?
                 withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
                 withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
         );
@@ -136,7 +135,7 @@ public class TypeFactory {
 
         implementationTypes.put(
             Map.class.getName(),
-            isSourceVersionAtLeast19() ?
+            sourceVersionAtLeast19 ?
                 withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
                 withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
         );
@@ -478,10 +477,6 @@ public class TypeFactory {
 
     private boolean isExecutableType(TypeMirror accessorType) {
         return accessorType.getKind() == TypeKind.EXECUTABLE;
-    }
-
-    private boolean isSourceVersionAtLeast19() {
-        return versionInformation != null && versionInformation.isSourceVersionAtLeast19();
     }
 
     public Type getReturnType(ExecutableType method) {

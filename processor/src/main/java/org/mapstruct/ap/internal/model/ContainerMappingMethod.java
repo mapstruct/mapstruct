@@ -47,6 +47,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         this.elementAssignment = parameterAssignment;
         this.loopVariableName = loopVariableName;
         this.selectionParameters = selectionParameters != null ? selectionParameters : SelectionParameters.empty();
+
         this.index1Name = Strings.getSafeVariableName( "i", existingVariables );
         this.index2Name = Strings.getSafeVariableName( "j", existingVariables );
 
