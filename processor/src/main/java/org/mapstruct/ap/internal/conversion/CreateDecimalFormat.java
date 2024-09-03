@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.conversion;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.HelperMethod;
@@ -33,7 +34,11 @@ public class CreateDecimalFormat extends HelperMethod {
     public CreateDecimalFormat(TypeFactory typeFactory) {
         this.parameter = new Parameter( "numberFormat", typeFactory.getType( String.class ) );
         this.returnType = typeFactory.getType( DecimalFormat.class );
-        this.importTypes = asSet( parameter.getType(), returnType );
+        this.importTypes = asSet(
+            parameter.getType(),
+            returnType,
+            typeFactory.getType( DecimalFormatSymbols.class )
+        );
     }
 
     @Override

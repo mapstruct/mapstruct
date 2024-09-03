@@ -9,5 +9,6 @@ private DecimalFormat ${name}( String numberFormat ) {
 
     DecimalFormat df = new DecimalFormat( numberFormat );
     df.setParseBigDecimal( true );
+    df.setDecimalFormatSymbols( DecimalFormatSymbols.getInstance() );
     return df;
 }
