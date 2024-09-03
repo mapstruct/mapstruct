@@ -80,6 +80,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "jsr330Test")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void jsr330Test() {
     }
 
@@ -163,6 +164,7 @@ public class MavenIntegrationTest {
     }
 
     @ProcessorTest(baseDir = "springTest")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void springTest() {
     }
 
