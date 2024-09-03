@@ -31,7 +31,7 @@ public class NumberFormatConversionTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource()
-        .addComparisonToFixtureFor(SourceTargetMapper.class );
+        .addComparisonToFixtureFor( SourceTargetMapper.class );
 
     @ProcessorTest
     public void shouldApplyStringConversions() {
