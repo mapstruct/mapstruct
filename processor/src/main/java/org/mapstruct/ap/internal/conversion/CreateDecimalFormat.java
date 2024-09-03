@@ -9,6 +9,8 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -56,11 +58,6 @@ public class CreateDecimalFormat extends HelperMethod {
     }
 
     @Override
-    public Parameter getLocaleParameter() {
-        return localePparameter;
-    }
-
-    @Override
     public Type getReturnType() {
         return returnType;
     }
@@ -73,5 +70,10 @@ public class CreateDecimalFormat extends HelperMethod {
     @Override
     public String describe() {
         return null;
+    }
+
+    @Override
+    public List<Parameter> getParameters() {
+        return Arrays.asList( getParameter(), localePparameter );
     }
 }
