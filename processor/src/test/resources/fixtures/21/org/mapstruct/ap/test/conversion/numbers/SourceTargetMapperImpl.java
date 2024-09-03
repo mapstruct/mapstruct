@@ -268,9 +268,8 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
     private DecimalFormat createDecimalFormat( String numberFormat, Locale locale ) {
 
-        DecimalFormat df = new DecimalFormat( numberFormat );
+        DecimalFormat df = new DecimalFormat( numberFormat, DecimalFormatSymbols.getInstance( locale ) );
         df.setParseBigDecimal( true );
-        df.setDecimalFormatSymbols( DecimalFormatSymbols.getInstance( locale ) );
         return df;
     }
 }

@@ -85,7 +85,7 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
             sb.append( "\"" );
         }
         if ( conversionContext.getLocale() != null ) {
-            sb.append( ", new Locale( \"" );
+            sb.append( ", Locale.forLanguageTag( \"" );
             sb.append( conversionContext.getLocale() );
             sb.append( "\" )" );
         }

@@ -133,7 +133,7 @@ public class MappingOptions extends DelegatingOptions {
             mapping.mirror(),
             mapping.dateFormat().getAnnotationValue(),
             method,
-            locale != null ? new Locale(locale) : null
+            locale != null ? Locale.forLanguageTag( locale ) : null
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),
