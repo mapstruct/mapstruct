@@ -55,7 +55,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getStrings() != null ) {
                 List<String> list = source.getStrings();
                 if ( list != null ) {
-                    target.getStrings().clear();
+                    target.getStrings().retainAll( list );
                     target.getStrings().addAll( list );
                 }
                 else {
@@ -71,7 +71,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getLongs() != null ) {
                 Set<Long> set = stringListToLongSet( source.getStrings() );
                 if ( set != null ) {
-                    target.getLongs().clear();
+                    target.getLongs().retainAll( set );
                     target.getLongs().addAll( set );
                 }
                 else {
@@ -87,7 +87,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getStringsInitialized() != null ) {
                 List<String> list1 = source.getStringsInitialized();
                 if ( list1 != null ) {
-                    target.getStringsInitialized().clear();
+                    target.getStringsInitialized().retainAll( list1 );
                     target.getStringsInitialized().addAll( list1 );
                 }
                 else {
@@ -103,7 +103,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getLongsInitialized() != null ) {
                 Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
                 if ( set1 != null ) {
-                    target.getLongsInitialized().clear();
+                    target.getLongsInitialized().retainAll( set1 );
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {
@@ -145,7 +145,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getStrings() != null ) {
                 List<String> list = source.getStrings();
                 if ( list != null ) {
-                    target.getStrings().clear();
+                    target.getStrings().retainAll( list );
                     target.getStrings().addAll( list );
                 }
                 else {
@@ -161,7 +161,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getLongs() != null ) {
                 Set<Long> set = stringListToLongSet( source.getStrings() );
                 if ( set != null ) {
-                    target.getLongs().clear();
+                    target.getLongs().retainAll( set );
                     target.getLongs().addAll( set );
                 }
                 else {
@@ -177,7 +177,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getStringsInitialized() != null ) {
                 List<String> list1 = source.getStringsInitialized();
                 if ( list1 != null ) {
-                    target.getStringsInitialized().clear();
+                    target.getStringsInitialized().retainAll( list1 );
                     target.getStringsInitialized().addAll( list1 );
                 }
                 else {
@@ -193,7 +193,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( target.getLongsInitialized() != null ) {
                 Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
                 if ( set1 != null ) {
-                    target.getLongsInitialized().clear();
+                    target.getLongsInitialized().retainAll( set1 );
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {

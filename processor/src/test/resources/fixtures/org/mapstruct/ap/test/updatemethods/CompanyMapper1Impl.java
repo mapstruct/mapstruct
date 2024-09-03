@@ -103,7 +103,7 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
         if ( mappingTarget.getSecretaryToEmployee() != null ) {
             Map<SecretaryEntity, EmployeeEntity> map = secretaryDtoEmployeeDtoMapToSecretaryEntityEmployeeEntityMap( unmappableDepartmentDto.getSecretaryToEmployee() );
             if ( map != null ) {
-                mappingTarget.getSecretaryToEmployee().clear();
+                mappingTarget.getSecretaryToEmployee().entrySet().retainAll( map.entrySet() );
                 mappingTarget.getSecretaryToEmployee().putAll( map );
             }
             else {

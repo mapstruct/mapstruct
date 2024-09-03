@@ -58,28 +58,34 @@
            requires: caller to implement String:getNullCheckLocalVarName()
                      caller to implement Type:getNullCheckLocalVarType()
 -->
-<#macro handleLocalVarNullCheck needs_explicit_local_var>
+<#macro handleLocalVarNullCheck needs_explicit_local_var cleanBefore>
   <#if sourcePresenceCheckerReference??>
     if ( <@includeModel object=sourcePresenceCheckerReference
            targetType=ext.targetType
            sourcePropertyName=ext.sourcePropertyName
            targetPropertyName=ext.targetPropertyName /> ) {
       <#if needs_explicit_local_var>
-        <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
-        <#nested>
-      <#else>
-        <#nested>
+          <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
       </#if>
+      <#if cleanBefore><#nested true></#if>
+      <#nested>
     }
   <#else>
-    <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
+      <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
     if ( ${nullCheckLocalVarName} != null ) {
+      <#if cleanBefore><#nested true></#if>
       <#nested>
     }
   </#if>
+  <#local nestedContent><#nested false></#local>
   <#if ext.defaultValueAssignment?? >
   else {
+    <#if cleanBefore><#nested false></#if>
     <@handeDefaultAssigment/>
+  }
+  <#elseif cleanBefore && nestedContent?trim?has_content>
+  else {
+    <#nested false>
   }
   </#if>
 </#macro>
