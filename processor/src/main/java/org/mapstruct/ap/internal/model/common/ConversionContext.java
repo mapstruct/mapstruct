@@ -32,6 +32,8 @@ public interface ConversionContext {
 
     String getNumberFormat();
 
+    String getLocale();
+
     TypeFactory getTypeFactory();
 
 }

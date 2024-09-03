@@ -76,6 +76,13 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
             sb.append( conversionContext.getNumberFormat() );
             sb.append( "\"" );
         }
+        if ( conversionContext.getLocale() != null ) {
+            sb.append( ", new Locale( \"" );
+            sb.append( conversionContext.getLocale() );
+            sb.append( "\" )" );
+        } else {
+            sb.append( ", Locale.getDefault() " );
+        }
 
         sb.append( " )" );
     }

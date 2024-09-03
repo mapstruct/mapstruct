@@ -188,6 +188,8 @@ public @interface Mapping {
      */
     String numberFormat() default "";
 
+    String locale() default "";
+
     /**
      * A constant {@link String} based on which the specified target property is to be set.
      * <p>

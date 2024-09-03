@@ -95,7 +95,7 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public List<Parameter> getParameters() {
-        return Arrays.asList( getParameter() );
+        return Arrays.asList( getParameter(), getLocaleParameter() );
     }
 
     /**
@@ -188,6 +188,8 @@ public abstract class HelperMethod implements Method {
      * @return the parameter
      */
     public abstract Parameter getParameter();
+
+    public abstract Parameter getLocaleParameter();
 
     @Override
     public Accessibility getAccessibility() {

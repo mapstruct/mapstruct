@@ -66,7 +66,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.keyNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.keyDateFormat().getAnnotationValue(),
-            method
+            method,
+            null
         );
 
         FormattingParameters valueFormatting = new FormattingParameters(
@@ -74,7 +75,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.valueNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.valueDateFormat().getAnnotationValue(),
-            method
+            method,
+            null
         );
 
         MapMappingOptions options = new MapMappingOptions(
