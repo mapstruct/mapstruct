@@ -22,8 +22,14 @@ public interface SourceTargetMapper {
     @Mapping(target = "date", dateFormat = "dd.MM.yyyy")
     Target sourceToTarget(Source source);
 
-    @InheritInverseConfiguration
+    @Mapping(target = "date", dateFormat = "MMMM dd, yyyy", locale = "fr")
+    Target sourceToTargetWithCustomLocale(Source source);
+
+    @InheritInverseConfiguration(name = "sourceToTarget")
     Source targetToSource(Target target);
+
+    @InheritInverseConfiguration(name = "sourceToTargetWithCustomLocale")
+    Source targetToSourceWithCustomLocale(Target target);
 
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     List<String> stringListToDateList(List<Date> dates);

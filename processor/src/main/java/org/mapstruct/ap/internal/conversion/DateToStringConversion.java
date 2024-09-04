@@ -10,13 +10,15 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.Locale;
 
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 
-import static java.util.Arrays.asList;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.simpleDateFormat;
 
@@ -29,7 +31,7 @@ public class DateToStringConversion implements ConversionProvider {
 
     @Override
     public Assignment to(ConversionContext conversionContext) {
-        return new TypeConversion( asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
+        return new TypeConversion( getImportTypes( conversionContext ),
             Collections.emptyList(),
             getConversionExpression( conversionContext, "format" )
         );
@@ -37,8 +39,8 @@ public class DateToStringConversion implements ConversionProvider {
 
     @Override
     public Assignment from(ConversionContext conversionContext) {
-        return new TypeConversion( asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
+        return new TypeConversion( getImportTypes( conversionContext ),
+            Collections.singletonList(conversionContext.getTypeFactory().getType(ParseException.class)),
             getConversionExpression( conversionContext, "parse" )
         );
     }
@@ -46,6 +48,13 @@ public class DateToStringConversion implements ConversionProvider {
     @Override
     public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
         return Collections.emptyList();
+    }
+
+    private Set<Type> getImportTypes(ConversionContext conversionContext) {
+        return asSet(
+            conversionContext.getTypeFactory().getType( SimpleDateFormat.class ),
+            conversionContext.getTypeFactory().getType( Locale.class )
+        );
     }
 
     private String getConversionExpression(ConversionContext conversionContext, String method) {
@@ -56,7 +65,16 @@ public class DateToStringConversion implements ConversionProvider {
         if ( conversionContext.getDateFormat() != null ) {
             conversionString.append( " \"" );
             conversionString.append( conversionContext.getDateFormat() );
-            conversionString.append( "\" " );
+            conversionString.append( "\", " );
+
+            if ( conversionContext.getLocale() != null ) {
+                conversionString.append( "Locale.forLanguageTag( \"" );
+                conversionString.append( conversionContext.getLocale() );
+                conversionString.append( "\" ) ");
+            }
+            else {
+                conversionString.append( "Locale.getDefault() " );
+            }
         }
 
         conversionString.append( ")." );
