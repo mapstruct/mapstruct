@@ -18,7 +18,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-04T13:19:45+0300",
+    date = "2024-09-04T13:59:05+0300",
     comments = "version: , compiler: javac, environment: Java 21.0.2 (Amazon.com Inc.)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
@@ -57,7 +57,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             target.setBigDecimal1( createDecimalFormat( "#0.#E0", java.util.Locale.getDefault() ).format( source.getBigDecimal1() ) );
         }
         if ( source.getBigInteger1() != null ) {
-            target.setBigInteger1( createDecimalFormat( "0.#############E0", java.util.Locale.getDefault() ).format( source.getBigInteger1() ) );
+            target.setBigInteger1( createDecimalFormat( "0.#############E0", Locale.getDefault() ).format( source.getBigInteger1() ) );
         }
 
         return target;
@@ -97,7 +97,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             target.setBigDecimal1( createDecimalFormat( "#0.#E0", java.util.Locale.forLanguageTag( "ru" ) ).format( source.getBigDecimal1() ) );
         }
         if ( source.getBigInteger1() != null ) {
-            target.setBigInteger1( createDecimalFormat( "0.#############E0", java.util.Locale.forLanguageTag( "ru" ) ).format( source.getBigInteger1() ) );
+            target.setBigInteger1( createDecimalFormat( "0.#############E0", Locale.forLanguageTag( "ru" ) ).format( source.getBigInteger1() ) );
         }
 
         return target;
@@ -217,7 +217,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         try {
             if ( target.getBigInteger1() != null ) {
-                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", java.util.Locale.getDefault() ).parse( target.getBigInteger1() ) ).toBigInteger() );
+                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", Locale.getDefault() ).parse( target.getBigInteger1() ) ).toBigInteger() );
             }
         }
         catch ( ParseException e ) {
@@ -341,7 +341,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         try {
             if ( target.getBigInteger1() != null ) {
-                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", java.util.Locale.forLanguageTag( "ru" ) ).parse( target.getBigInteger1() ) ).toBigInteger() );
+                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", Locale.forLanguageTag( "ru" ) ).parse( target.getBigInteger1() ) ).toBigInteger() );
             }
         }
         catch ( ParseException e ) {
