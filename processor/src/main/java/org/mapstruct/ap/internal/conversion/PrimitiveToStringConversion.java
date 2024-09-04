@@ -99,12 +99,12 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
             sb.append( "\"" );
 
             if ( conversionContext.getLocale() != null ) {
-                sb.append( ", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( \"" );
+                sb.append( ", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.forLanguageTag( \"" );
                 sb.append( conversionContext.getLocale() );
                 sb.append( " \" ) )" );
             }
             else {
-                sb.append( ", DecimalFormatSymbols.getInstance( Locale.getDefault() )" );
+                sb.append( ", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.getDefault() )" );
             }
         }
 

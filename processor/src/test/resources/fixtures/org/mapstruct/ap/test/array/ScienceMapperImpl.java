@@ -9,14 +9,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-05-03T23:47:43+0200",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
+    date = "2024-09-04T13:21:54+0300",
+    comments = "version: , compiler: javac, environment: Java 17.0.10 (Private Build)"
 )
 public class ScienceMapperImpl implements ScienceMapper {
 
@@ -284,7 +284,7 @@ public class ScienceMapperImpl implements ScienceMapper {
             if ( ( i >= target.length ) || ( i >= source.length ) ) {
                 break;
             }
-            target[i] = new DecimalFormat( "" ).format( int1 );
+            target[i] = new DecimalFormat( "", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.getDefault() ) ).format( int1 );
             i++;
         }
 
