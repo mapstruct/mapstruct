@@ -182,6 +182,20 @@ public class DateConversionTest {
     }
 
     @ProcessorTest
+    public void shouldApplyStringConversionForIterableMethodWithCustomLocale() {
+        List<Date> dates = Arrays.asList(
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
+        );
+
+        List<String> stringDates = SourceTargetMapper.INSTANCE.stringListToDateListWithCustomLocale( dates );
+
+        assertThat( stringDates ).isNotNull();
+        assertThat( stringDates ).containsExactly( "juillet 06, 2013", "février 14, 2013", "avril 11, 2013" );
+    }
+
+    @ProcessorTest
     public void shouldApplyStringConversionForArrayMethod() {
         List<Date> dates = Arrays.asList(
             new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
@@ -193,6 +207,20 @@ public class DateConversionTest {
 
         assertThat( stringDates ).isNotNull();
         assertThat( stringDates ).isEqualTo( new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" } );
+    }
+
+    @ProcessorTest
+    public void shouldApplyStringConversionForArrayMethodWithCustomLocale() {
+        List<Date> dates = Arrays.asList(
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
+        );
+
+        String[] stringDates = SourceTargetMapper.INSTANCE.stringListToDateArrayWithCustomLocale( dates );
+
+        assertThat( stringDates ).isNotNull();
+        assertThat( stringDates ).isEqualTo( new String[]{ "juillet 06, 2013", "février 14, 2013", "avril 11, 2013" } );
     }
 
     @ProcessorTest
@@ -210,10 +238,38 @@ public class DateConversionTest {
     }
 
     @ProcessorTest
+    public void shouldApplyStringConversionForReverseIterableMethodWithCustomLocale() {
+        List<String> stringDates = Arrays.asList( "juillet 06, 2013", "février 14, 2013", "avril 11, 2013" );
+
+        List<Date> dates = SourceTargetMapper.INSTANCE.dateListToStringListWithCustomLocale( stringDates );
+
+        assertThat( dates ).isNotNull();
+        assertThat( dates ).containsExactly(
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
+        );
+    }
+
+    @ProcessorTest
     public void shouldApplyStringConversionForReverseArrayMethod() {
         String[] stringDates = new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" };
 
         List<Date> dates = SourceTargetMapper.INSTANCE.stringArrayToDateList( stringDates );
+
+        assertThat( dates ).isNotNull();
+        assertThat( dates ).containsExactly(
+            new GregorianCalendar( 2013, Calendar.JULY, 6 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.FEBRUARY, 14 ).getTime(),
+            new GregorianCalendar( 2013, Calendar.APRIL, 11 ).getTime()
+        );
+    }
+
+    @ProcessorTest
+    public void shouldApplyStringConversionForReverseArrayMethodWithCustomLocale() {
+        String[] stringDates = new String[]{ "juillet 06, 2013", "février 14, 2013", "avril 11, 2013" };
+
+        List<Date> dates = SourceTargetMapper.INSTANCE.stringArrayToDateListWithCustomLocale( stringDates );
 
         assertThat( dates ).isNotNull();
         assertThat( dates ).containsExactly(

@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.conversion.numbers;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,14 +199,29 @@ public class NumberFormatConversionTest {
     @ProcessorTest
     public void shouldApplyStringConversionsToIterables() {
 
-        List<String> target = SourceTargetMapper.INSTANCE.sourceToTarget( Arrays.asList( 2f ) );
+        List<String> target = SourceTargetMapper.INSTANCE.sourceToTarget( List.of( 2f ) );
 
         assertThat( target ).hasSize( 1 );
-        assertThat( target ).isEqualTo( Arrays.asList( "2.00" ) );
+        assertThat( target ).isEqualTo( List.of( "2.00" ) );
 
         List<Float> source = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( source  ).hasSize( 1 );
-        assertThat( source ).isEqualTo( Arrays.asList( 2.00f ) );
+        assertThat( source ).isEqualTo( List.of( 2.00f ) );
+    }
+
+    @ProcessorTest
+    public void shouldApplyStringConversionsToIterablesWithCustomLocale() {
+
+        List<String> target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustomLocale(
+            List.of( new BigDecimal("987E-20") )
+        );
+
+        assertThat( target ).hasSize( 1 );
+        assertThat( target ).isEqualTo( List.of( "9,87E-18" ) );
+
+        List<BigDecimal> source = SourceTargetMapper.INSTANCE.targetToSourceWithCustomLocale( target );
+        assertThat( source  ).hasSize( 1 );
+        assertThat( source ).isEqualTo( List.of( new BigDecimal("987E-20") ) );
     }
 
     @ProcessorTest
@@ -223,6 +237,22 @@ public class NumberFormatConversionTest {
         Map<Float, Float> source2 = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( source2  ).hasSize( 1 );
         assertThat( source2 ).contains( entry( 1.00f, 2f ) );
+
+    }
+
+    @ProcessorTest
+    public void shouldApplyStringConversionsToMapsWithCustomLocale() {
+
+        Map<BigDecimal, BigDecimal> source1 = new HashMap<>();
+        source1.put( new BigDecimal( "987E-20" ), new BigDecimal( "97E-10" ) );
+
+        Map<String, String> target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustomLocale( source1 );
+        assertThat( target  ).hasSize( 1 );
+        assertThat( target ).contains( entry( "9,87E-18", "9,7E-9" ) );
+
+        Map<BigDecimal, BigDecimal> source2 = SourceTargetMapper.INSTANCE.targetToSourceWithCustomLocale( target );
+        assertThat( source2  ).hasSize( 1 );
+        assertThat( source2 ).contains( entry( new BigDecimal( "987E-20" ), new BigDecimal( "97E-10" ) ) );
 
     }
 }

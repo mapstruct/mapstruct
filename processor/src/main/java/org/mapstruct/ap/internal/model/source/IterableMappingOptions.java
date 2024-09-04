@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Locale;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -43,6 +44,10 @@ public class IterableMappingOptions extends DelegatingOptions {
             return options;
         }
 
+        Locale locale = iterableMapping.locale().getValue() != null
+            ? Locale.forLanguageTag( iterableMapping.locale().getValue() )
+            : null;
+
         SelectionParameters selection = new SelectionParameters(
             iterableMapping.qualifiedBy().get(),
             iterableMapping.qualifiedByName().get(),
@@ -56,7 +61,7 @@ public class IterableMappingOptions extends DelegatingOptions {
             iterableMapping.mirror(),
             iterableMapping.dateFormat().getAnnotationValue(),
             method,
-            null
+            locale
         );
 
         IterableMappingOptions options =

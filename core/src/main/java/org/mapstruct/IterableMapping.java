@@ -79,6 +79,8 @@ public @interface IterableMapping {
      */
     String numberFormat() default "";
 
+    String locale() default "";
+
     /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
      * mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.

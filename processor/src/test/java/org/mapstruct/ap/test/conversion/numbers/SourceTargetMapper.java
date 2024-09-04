@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import org.mapstruct.InheritInverseConfiguration;
@@ -72,11 +73,23 @@ public interface SourceTargetMapper {
     @InheritInverseConfiguration( name = "sourceToTarget" )
     List<Float> targetToSource(List<String> source);
 
+    @IterableMapping( numberFormat = "#0.#E0", locale = "fr" )
+    List<String> sourceToTargetWithCustomLocale(List<BigDecimal> source);
+
+    @InheritInverseConfiguration( name = "sourceToTargetWithCustomLocale" )
+    List<BigDecimal> targetToSourceWithCustomLocale(List<String> source);
+
     @MapMapping( keyNumberFormat = NUMBER_FORMAT, valueNumberFormat = "##" )
     Map<String, String> sourceToTarget(Map<Float, Float> source);
 
+    @MapMapping( keyNumberFormat = "#0.#E0", valueNumberFormat = "0.#############E0", locale = "fr" )
+    Map<String, String> sourceToTargetWithCustomLocale(Map<BigDecimal, BigDecimal> source);
+
     @InheritInverseConfiguration( name = "sourceToTarget" )
     Map<Float, Float> targetToSource(Map<String, String> source);
+
+    @InheritInverseConfiguration( name = "sourceToTargetWithCustomLocale" )
+    Map<BigDecimal, BigDecimal> targetToSourceWithCustomLocale(Map<String, String> source);
 
 }
 

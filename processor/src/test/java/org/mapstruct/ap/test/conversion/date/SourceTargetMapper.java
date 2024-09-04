@@ -34,14 +34,26 @@ public interface SourceTargetMapper {
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     List<String> stringListToDateList(List<Date> dates);
 
+    @IterableMapping(dateFormat = "MMMM dd, yyyy", locale = "fr")
+    List<String> stringListToDateListWithCustomLocale(List<Date> dates);
+
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     String[] stringListToDateArray(List<Date> dates);
 
-    @InheritInverseConfiguration
+    @IterableMapping(dateFormat = "MMMM dd, yyyy", locale = "fr")
+    String[] stringListToDateArrayWithCustomLocale(List<Date> dates);
+
+    @InheritInverseConfiguration(name = "stringListToDateList")
     List<Date> dateListToStringList(List<String> strings);
 
-    @InheritInverseConfiguration
+    @InheritInverseConfiguration(name = "stringListToDateListWithCustomLocale")
+    List<Date> dateListToStringListWithCustomLocale(List<String> strings);
+
+    @InheritInverseConfiguration(name = "stringListToDateArray")
     List<Date> stringArrayToDateList(String[] dates);
+
+    @InheritInverseConfiguration(name = "stringListToDateArrayWithCustomLocale")
+    List<Date> stringArrayToDateListWithCustomLocale(String[] dates);
 
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     String[] dateArrayToStringArray(Date[] dates);
