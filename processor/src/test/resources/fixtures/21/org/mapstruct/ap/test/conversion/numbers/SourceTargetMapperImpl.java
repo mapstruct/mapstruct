@@ -18,7 +18,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-03T14:41:26+0300",
+    date = "2024-09-04T08:40:35+0300",
     comments = "version: , compiler: javac, environment: Java 21.0.2 (Amazon.com Inc.)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
@@ -58,6 +58,46 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getBigInteger1() != null ) {
             target.setBigInteger1( createDecimalFormat( "0.#############E0", Locale.getDefault() ).format( source.getBigInteger1() ) );
+        }
+
+        return target;
+    }
+
+    @Override
+    public Target sourceToTargetWithCustomLocale(Source source) {
+        if ( source == null ) {
+            return null;
+        }
+
+        Target target = new Target();
+
+        target.setI( new DecimalFormat( "##.00" ).format( source.getI() ) );
+        if ( source.getIi() != null ) {
+            target.setIi( new DecimalFormat( "##.00" ).format( source.getIi() ) );
+        }
+        target.setD( new DecimalFormat( "##.00" ).format( source.getD() ) );
+        if ( source.getDd() != null ) {
+            target.setDd( new DecimalFormat( "##.00" ).format( source.getDd() ) );
+        }
+        target.setF( new DecimalFormat( "##.00" ).format( source.getF() ) );
+        if ( source.getFf() != null ) {
+            target.setFf( new DecimalFormat( "##.00" ).format( source.getFf() ) );
+        }
+        target.setL( new DecimalFormat( "##.00" ).format( source.getL() ) );
+        if ( source.getLl() != null ) {
+            target.setLl( new DecimalFormat( "##.00" ).format( source.getLl() ) );
+        }
+        target.setB( new DecimalFormat( "##.00" ).format( source.getB() ) );
+        if ( source.getBb() != null ) {
+            target.setBb( new DecimalFormat( "##.00" ).format( source.getBb() ) );
+        }
+        target.setComplex1( new DecimalFormat( "##0.##E0" ).format( source.getComplex1() ) );
+        target.setComplex2( new DecimalFormat( "$#.00" ).format( source.getComplex2() ) );
+        if ( source.getBigDecimal1() != null ) {
+            target.setBigDecimal1( createDecimalFormat( "#0.#E0", Locale.forLanguageTag( "ru" ) ).format( source.getBigDecimal1() ) );
+        }
+        if ( source.getBigInteger1() != null ) {
+            target.setBigInteger1( createDecimalFormat( "0.#############E0", Locale.forLanguageTag( "ru" ) ).format( source.getBigInteger1() ) );
         }
 
         return target;
@@ -178,6 +218,130 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         try {
             if ( target.getBigInteger1() != null ) {
                 source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", Locale.getDefault() ).parse( target.getBigInteger1() ) ).toBigInteger() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return source;
+    }
+
+    @Override
+    public Source targetToSourceWithCustomLocale(Target target) {
+        if ( target == null ) {
+            return null;
+        }
+
+        Source source = new Source();
+
+        try {
+            if ( target.getI() != null ) {
+                source.setI( new DecimalFormat( "##.00" ).parse( target.getI() ).intValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getIi() != null ) {
+                source.setIi( new DecimalFormat( "##.00" ).parse( target.getIi() ).intValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getD() != null ) {
+                source.setD( new DecimalFormat( "##.00" ).parse( target.getD() ).doubleValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getDd() != null ) {
+                source.setDd( new DecimalFormat( "##.00" ).parse( target.getDd() ).doubleValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getF() != null ) {
+                source.setF( new DecimalFormat( "##.00" ).parse( target.getF() ).floatValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getFf() != null ) {
+                source.setFf( new DecimalFormat( "##.00" ).parse( target.getFf() ).floatValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getL() != null ) {
+                source.setL( new DecimalFormat( "##.00" ).parse( target.getL() ).longValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getLl() != null ) {
+                source.setLl( new DecimalFormat( "##.00" ).parse( target.getLl() ).longValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getB() != null ) {
+                source.setB( new DecimalFormat( "##.00" ).parse( target.getB() ).byteValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getBb() != null ) {
+                source.setBb( new DecimalFormat( "##.00" ).parse( target.getBb() ).byteValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getComplex1() != null ) {
+                source.setComplex1( new DecimalFormat( "##0.##E0" ).parse( target.getComplex1() ).doubleValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getComplex2() != null ) {
+                source.setComplex2( new DecimalFormat( "$#.00" ).parse( target.getComplex2() ).doubleValue() );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getBigDecimal1() != null ) {
+                source.setBigDecimal1( (BigDecimal) createDecimalFormat( "#0.#E0", Locale.forLanguageTag( "ru" ) ).parse( target.getBigDecimal1() ) );
+            }
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+        try {
+            if ( target.getBigInteger1() != null ) {
+                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0", Locale.forLanguageTag( "ru" ) ).parse( target.getBigInteger1() ) ).toBigInteger() );
             }
         }
         catch ( ParseException e ) {
