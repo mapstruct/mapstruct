@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -95,7 +94,7 @@ public abstract class HelperMethod implements Method {
 
     @Override
     public List<Parameter> getParameters() {
-        return Collections.singletonList(getParameter());
+        return Collections.singletonList( getParameter() );
     }
 
     /**

@@ -40,7 +40,7 @@ public class DateToStringConversion implements ConversionProvider {
     @Override
     public Assignment from(ConversionContext conversionContext) {
         return new TypeConversion( getImportTypes( conversionContext ),
-            Collections.singletonList(conversionContext.getTypeFactory().getType(ParseException.class)),
+            Collections.singletonList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
             getConversionExpression( conversionContext, "parse" )
         );
     }
@@ -70,7 +70,7 @@ public class DateToStringConversion implements ConversionProvider {
             if ( conversionContext.getLocale() != null ) {
                 conversionString.append( "Locale.forLanguageTag( \"" );
                 conversionString.append( conversionContext.getLocale() );
-                conversionString.append( "\" ) ");
+                conversionString.append( "\" ) " );
             }
             else {
                 conversionString.append( "Locale.getDefault() " );
