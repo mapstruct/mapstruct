@@ -73,4 +73,15 @@ public class CanonicalConstructor extends ModelElement implements Constructor {
         return importTypes;
     }
 
+    public List<ConstructorParameter> getSuperParameters() {
+        return parameters.stream()
+            .filter( ConstructorParameter::isSuperParameter )
+            .collect( Collectors.toList() );
+    }
+
+    public List<ConstructorParameter> getClassParameters() {
+        return parameters.stream()
+            .filter( param -> !param.isSuperParameter() )
+            .collect( Collectors.toList() );
+    }
 }

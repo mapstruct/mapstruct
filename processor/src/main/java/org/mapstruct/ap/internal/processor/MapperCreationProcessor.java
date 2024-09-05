@@ -854,10 +854,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             ExecutableElement superConstructor = constructorsIn( element.getEnclosedElements() ).get( 0 );
             mapper.setConstructor( new CanonicalConstructor(
                 mapper.getName(),
-                getParameters( superConstructor ),
+                getParameters( superConstructor, mapper.getFields() ),
                 true,
                 typeFactory
             ) );
+            mapper.getFields().forEach( field -> {
+                if ( field instanceof DefaultMapperReference ) {
+                    ( (DefaultMapperReference) field ).setConstructorInjected( true );
+                }
+            } );
         }
     }
 
@@ -866,12 +871,30 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return constructors.size() == 1 && !constructors.get( 0 ).getParameters().isEmpty();
     }
 
-    private List<ConstructorParameter> getParameters(ExecutableElement superConstructor) {
+    private List<ConstructorParameter> getParameters(ExecutableElement superConstructor, List<Field> fields) {
+        List<ConstructorParameter> constructorParameters = getSuperConstructorParameters( superConstructor );
+        constructorParameters.addAll( mapFieldsToConstructorParameters( fields ) );
+        return constructorParameters;
+    }
+
+    private List<ConstructorParameter> getSuperConstructorParameters(ExecutableElement superConstructor) {
         return superConstructor.getParameters().stream()
             .map( param -> new ConstructorParameter(
                 typeFactory.getType( param.asType() ),
                 param.getSimpleName().toString(),
-                isAnnotatedMapper( param.asType() )
+                isAnnotatedMapper( param.asType() ),
+                true
+            ) )
+            .collect( Collectors.toList() );
+    }
+
+    private List<ConstructorParameter> mapFieldsToConstructorParameters(List<Field> fields) {
+        return fields.stream()
+            .map( field -> new ConstructorParameter(
+                field.getType(),
+                field.getVariableName(),
+                isAnnotatedMapper( field.getType().getTypeMirror() ),
+                false
             ) )
             .collect( Collectors.toList() );
     }

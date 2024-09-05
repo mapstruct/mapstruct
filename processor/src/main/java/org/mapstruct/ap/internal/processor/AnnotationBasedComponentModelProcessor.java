@@ -158,7 +158,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         if ( !toMapperReferences( mapper.getFields() ).isEmpty() ) {
             AnnotatedConstructor annotatedConstructor = buildAnnotatedConstructorForMapper( mapper );
 
-            if ( !annotatedConstructor.getMapperReferences().isEmpty() ) {
+            if ( !annotatedConstructor.getMapperReferences().isEmpty() &&
+                !( mapper.getConstructor() instanceof CanonicalConstructor ) ) {
                 mapper.setConstructor( annotatedConstructor );
             }
         }

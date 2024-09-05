@@ -10,11 +10,17 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 public ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
-    super( <#list parameters as param>${param.name}<#if param_has_next>, </#if></#list> );
+    super( <#list superParameters as param>${param.name}<#if param_has_next>, </#if></#list> );
+    <#list classParameters as param>
+        this.${param.name} = ${param.name};
+    </#list>
 }
 
 <#if shouldIncludeNoArgConstructor()>
 public ${name}() {
-    super( <#list parameters as param><#if param.annotatedMapper>Mappers.getMapper( <@includeModel object=param.type/>.class )<#else>new <@includeModel object=param.type/>()</#if><#if param_has_next>, </#if></#list> );
+    super( <#list superParameters as param><#if param.annotatedMapper>Mappers.getMapper( <@includeModel object=param.type/>.class )<#else>new <@includeModel object=param.type/>()</#if><#if param_has_next>, </#if></#list> );
+    <#list classParameters as param>
+        this.${param.name} = <#if param.annotatedMapper>Mappers.getMapper( <@includeModel object=param.type/>.class )<#else>new <@includeModel object=param.type/>()</#if>;
+    </#list>
 }
 </#if>
