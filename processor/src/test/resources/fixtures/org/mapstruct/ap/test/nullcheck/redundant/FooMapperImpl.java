@@ -33,26 +33,6 @@ public class FooMapperImpl implements FooMapper {
     }
 
     @Override
-    public void updateFoo(FooSource input, FooTarget toUpdate) {
-        if ( input == null ) {
-            return;
-        }
-
-        toUpdate.setBar( input.getBar() );
-    }
-
-    @Override
-    public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate) {
-        if ( input == null ) {
-            return toUpdate;
-        }
-
-        toUpdate.setBar( input.getBar() );
-
-        return toUpdate;
-    }
-
-    @Override
     public FooTarget getUpdatedFooTarget(FooSource input, FooTarget toUpdate, boolean baz) {
         if ( input == null ) {
             return toUpdate;
@@ -61,32 +41,6 @@ public class FooMapperImpl implements FooMapper {
         toUpdate.setBar( input.getBar() );
 
         return toUpdate;
-    }
-
-    @Override
-    public FooTarget map(FooSource source) {
-        if ( source == null ) {
-            return null;
-        }
-
-        FooTarget fooTarget = new FooTarget();
-
-        fooTarget.setBar( source.getBar() );
-
-        return fooTarget;
-    }
-
-    @Override
-    public FooTarget map(FooSourceNested source) {
-        if ( source == null ) {
-            return null;
-        }
-
-        FooTarget fooTarget = new FooTarget();
-
-        fooTarget.setBar( source.getBar() );
-
-        return fooTarget;
     }
 
     @Override
