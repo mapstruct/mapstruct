@@ -2118,8 +2118,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         boolean isUpdateMethod = getReturnTypeToConstruct() == null && isMapNullToDefault();
         return !isUpdateMethod
             && presenceChecksByParameter.size() == 1
-            && presenceChecksByParameter.containsKey( mapping.getSourceBeanName() )
-            && mapping.getAssignment().getSourcePresenceCheckerReference() == null;
+            && presenceChecksByParameter.containsKey( mapping.getSourceBeanName() );
     }
 
     @Override
