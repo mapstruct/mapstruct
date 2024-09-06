@@ -152,7 +152,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             method( forgedMethod );
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
-            for ( MappingReference mappingReference : mappingReferences.getMappingReferences() ) {
+            for ( MappingReference mappingReference: mappingReferences.getMappingReferences() ) {
                 SourceReference sourceReference = mappingReference.getSourceReference();
                 if ( sourceReference != null ) {
                     mappingReference.setSourceReference( new SourceReference.BuilderFromSourceReference()
