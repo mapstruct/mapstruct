@@ -1778,8 +1778,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             ctx.getMessager().printMessage(
                 method.getExecutable(),
                 Message.PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES,
-                method.getReturnType().describe(),
-                method.describe()
+                method.getReturnType().describe()
             );
         }
 

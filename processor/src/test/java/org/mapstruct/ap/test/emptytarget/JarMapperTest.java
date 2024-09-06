@@ -19,7 +19,8 @@ class JarMapperTest {
         diagnostics = {
             @Diagnostic(type = JarToJarMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                message = "Target \"EmptyJar\" has no target properties, targeted by this mapping method: \"EmptyJar mapToEmptyJar(FilledJar filledJar)\"")
+                line = 16,
+                message = "No target property found for target \"EmptyJar\".")
         })
     @WithClasses({ FilledJar.class, EmptyJar.class, JarToJarMapper.class })
     void targetHasNoProperties() {
@@ -31,7 +32,8 @@ class JarMapperTest {
         diagnostics = {
             @Diagnostic(type = JarToAirplaneMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                message = "Target \"AirplaneWithNoAccessors\" has no target properties, targeted by this mapping method: \"AirplaneWithNoAccessors mapToAirplaneWithNoAccessors(FilledJar jar)\"")
+                line = 16,
+                message = "No target property found for target \"AirplaneWithNoAccessors\".")
         })
     @WithClasses({ FilledJar.class, AirplaneWithNoAccessors.class, JarToAirplaneMapper.class })
     void targetHasNoAccessibleProperties() {
