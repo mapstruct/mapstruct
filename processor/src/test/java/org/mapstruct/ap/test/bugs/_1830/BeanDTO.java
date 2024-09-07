@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.bugs._1830;
 import java.util.Collection;
 
 public class BeanDTO {
-    private String id;
 
     private Collection<String> list;
 
