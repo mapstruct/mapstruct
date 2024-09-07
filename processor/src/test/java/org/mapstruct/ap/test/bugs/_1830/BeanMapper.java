@@ -16,10 +16,14 @@ public interface BeanMapper {
 
     BeanMapper INSTANCE = Mappers.getMapper( BeanMapper.class );
 
-    @Mapping(source = "list", target = "list", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
+    @Mapping(target = "list",
+            source = "list",
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
     BeanDTO map(Bean source, @MappingTarget BeanDTO target);
 
-    @Mapping(source = "bean.list", target = "list", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
+    @Mapping(target = "list",
+            source = "bean.list",
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
     BeanDTO map(NestedBean source, @MappingTarget BeanDTO target);
 
 }

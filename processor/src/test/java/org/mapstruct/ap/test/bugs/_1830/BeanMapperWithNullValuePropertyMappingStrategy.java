@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR)
-public interface BeanMapperWithStrategyDefinedInConfig {
+public interface BeanMapperWithNullValuePropertyMappingStrategy {
 
     @Mapping(source = "list", target = "list")
     BeanDTO map(Bean source, @MappingTarget BeanDTO target);
