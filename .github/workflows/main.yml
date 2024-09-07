@@ -28,8 +28,12 @@ jobs:
       - name: 'Publish Snapshots'
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
-  linux-jdk-8:
-    name: 'Linux JDK 8'
+  linux-jdk-compatibility:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 8, 11, 17, 19 ]
+    name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -41,11 +45,11 @@ jobs:
           java-version: 21
       - name: 'Install Processor'
         run: ./mvnw ${MAVEN_ARGS} -DskipTests install -pl processor -am
-      - name: 'Set up JDK 8 for running integration tests'
+      - name: 'Set up JDK ${{ matrix.java }} for running integration tests'
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: ${{ matrix.java }}
       - name: 'Run integration tests'
         run: ./mvnw ${MAVEN_ARGS} verify -pl integrationtest
   windows:
