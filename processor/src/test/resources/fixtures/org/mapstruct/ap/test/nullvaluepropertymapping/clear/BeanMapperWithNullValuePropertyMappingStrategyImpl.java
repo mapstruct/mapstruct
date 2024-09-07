@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._1830;
+package org.mapstruct.ap.test.nullvaluepropertymapping.clear;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,10 +11,10 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-05-03T08:15:14+0200",
+    date = "2024-05-19T09:34:23+0200",
     comments = "version: , compiler: javac, environment: Java 21.0.2 (Azul Systems, Inc.)"
 )
-public class BeanMapperImpl implements BeanMapper {
+public class BeanMapperWithNullValuePropertyMappingStrategyImpl implements BeanMapperWithNullValuePropertyMappingStrategy {
 
     @Override
     public BeanDTO map(Bean source, BeanDTO target) {
