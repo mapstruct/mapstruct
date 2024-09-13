@@ -39,22 +39,16 @@ import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
 public class Filters {
 
     private static final Method RECORD_COMPONENTS_METHOD;
-    private static final Method RECORD_COMPONENT_ACCESSOR_METHOD;
 
     static {
         Method recordComponentsMethod;
-        Method recordComponentAccessorMethod;
         try {
             recordComponentsMethod = TypeElement.class.getMethod( "getRecordComponents" );
-            recordComponentAccessorMethod = Class.forName( "javax.lang.model.element.RecordComponentElement" )
-                .getMethod( "getAccessor" );
         }
-        catch ( NoSuchMethodException | ClassNotFoundException e ) {
+        catch ( NoSuchMethodException e ) {
             recordComponentsMethod = null;
-            recordComponentAccessorMethod = null;
         }
         RECORD_COMPONENTS_METHOD = recordComponentsMethod;
-        RECORD_COMPONENT_ACCESSOR_METHOD = recordComponentAccessorMethod;
     }
 
     private final AccessorNamingUtils accessorNaming;
@@ -89,25 +83,18 @@ public class Filters {
     }
 
     public Map<String, ReadAccessor> recordAccessorsIn(Collection<Element> recordComponents) {
-        if ( RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
+        if ( recordComponents.isEmpty() ) {
             return java.util.Collections.emptyMap();
         }
-        try {
-            Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
-            for ( Element recordComponent : recordComponents ) {
-                ExecutableElement recordExecutableElement =
-                    (ExecutableElement) RECORD_COMPONENT_ACCESSOR_METHOD.invoke( recordComponent );
-                recordAccessors.put(
-                    recordComponent.getSimpleName().toString(),
-                    ReadAccessor.fromGetter( recordExecutableElement, getReturnType( recordExecutableElement ) )
-                );
-            }
+        Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
+        for ( Element recordComponent : recordComponents ) {
+            recordAccessors.put(
+                recordComponent.getSimpleName().toString(),
+                ReadAccessor.fromRecordComponent( recordComponent )
+            );
+        }
 
-            return recordAccessors;
-        }
-        catch ( IllegalAccessException | InvocationTargetException e ) {
-            return java.util.Collections.emptyMap();
-        }
+        return recordAccessors;
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {

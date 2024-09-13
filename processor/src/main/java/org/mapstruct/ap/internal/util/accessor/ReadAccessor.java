@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -17,10 +18,19 @@ public interface ReadAccessor extends Accessor {
     String getReadValueSource();
 
     static ReadAccessor fromField(VariableElement variableElement) {
-        return new ReadDelegateAccessor( new FieldElementAccessor( variableElement ) ) {
+        return new ReadDelegateAccessor( new ElementAccessor( variableElement ) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName();
+            }
+        };
+    }
+
+    static ReadAccessor fromRecordComponent(Element element) {
+        return new ReadDelegateAccessor( new ElementAccessor( element, AccessorType.GETTER ) ) {
+            @Override
+            public String getReadValueSource() {
+                return getSimpleName() + "()";
             }
         };
     }
