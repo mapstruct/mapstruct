@@ -6,12 +6,13 @@
 package org.mapstruct.ap.test.emptytarget;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface JarToJarMapper {
+public interface EmptyTargetMapper {
 
-    JarToJarMapper INSTANCE = Mappers.getMapper( JarToJarMapper.class );
+    TargetWithNoSetters mapToTargetWithSetters(Source source);
 
-    EmptyJar mapToEmptyJar(FilledJar filledJar);
+    EmptyTarget mapToEmptyTarget(Source source);
+
+    Target mapToTarget(Source source);
 }

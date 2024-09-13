@@ -5,37 +5,35 @@
  */
 package org.mapstruct.ap.test.emptytarget;
 
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
-
-class JarMapperTest {
-
-    @ProcessorTest
-    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
-        diagnostics = {
-            @Diagnostic(type = JarToJarMapper.class,
-                kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 16,
-                message = "No target property found for target \"EmptyJar\".")
-        })
-    @WithClasses({ FilledJar.class, EmptyJar.class, JarToJarMapper.class })
-    void targetHasNoProperties() {
-    }
-
+@IssueKey("1140")
+@WithClasses({
+    EmptyTarget.class,
+    EmptyTargetMapper.class,
+    Source.class,
+    Target.class,
+    TargetWithNoSetters.class,
+})
+class EmptyTargetTest {
 
     @ProcessorTest
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
-            @Diagnostic(type = JarToAirplaneMapper.class,
+            @Diagnostic(type = EmptyTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 16,
-                message = "No target property found for target \"AirplaneWithNoAccessors\".")
+                line = 13,
+                message = "No target property found for target \"TargetWithNoSetters\"."),
+            @Diagnostic(type = EmptyTargetMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 15,
+                message = "No target property found for target \"EmptyTarget\".")
         })
-    @WithClasses({ FilledJar.class, AirplaneWithNoAccessors.class, JarToAirplaneMapper.class })
-    void targetHasNoAccessibleProperties() {
+    void shouldProvideWarnings() {
     }
 }

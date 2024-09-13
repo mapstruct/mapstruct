@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.test.emptytarget;
 
-public class FilledJar {
+public class Source {
     private String label;
     private double weight;
     private Object content;

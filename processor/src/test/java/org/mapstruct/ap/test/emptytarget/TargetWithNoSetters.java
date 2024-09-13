@@ -5,7 +5,11 @@
  */
 package org.mapstruct.ap.test.emptytarget;
 
-public class AirplaneWithNoAccessors {
+public class TargetWithNoSetters {
     private int flightNumber;
     private String airplaneName;
+
+    public String getAirplaneName() {
+        return airplaneName;
+    }
 }
