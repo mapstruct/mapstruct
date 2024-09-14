@@ -232,10 +232,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
             this.targetProperties = new LinkedHashSet<>( accessors.keySet() );
-            if ( targetProperties.isEmpty() ) {
-                reportWarningForTargetWithoutTargetProperties();
-            }
-
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
 
             if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
@@ -255,6 +251,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
 
                 this.targetProperties.addAll( this.unprocessedConstructorProperties.keySet() );
+                if ( targetProperties.isEmpty() ) {
+                    reportWarningForTargetWithoutTargetProperties();
+                }
+
                 this.unprocessedTargetProperties.putAll( this.unprocessedConstructorProperties );
             }
             else {
