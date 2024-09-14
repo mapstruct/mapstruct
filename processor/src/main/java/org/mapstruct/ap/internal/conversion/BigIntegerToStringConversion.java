@@ -15,9 +15,8 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.*;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.
@@ -85,12 +84,12 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
             sb.append( "\"" );
         }
         if ( conversionContext.getLocale() != null ) {
-            sb.append( ", Locale.forLanguageTag( \"" );
+            sb.append( ", " ).append( locale(conversionContext) ).append( ".forLanguageTag( \"" );
             sb.append( conversionContext.getLocale() );
             sb.append( "\" )" );
         }
         else {
-            sb.append( ", Locale.getDefault() " );
+            sb.append( ", " ).append( locale(conversionContext) ).append( ".getDefault() " );
         }
 
         sb.append( " )" );

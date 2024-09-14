@@ -6,7 +6,10 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
@@ -14,7 +17,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.*;
 
 /**
  * Conversion between wrapper types such as {@link Integer} and {@link String}.
@@ -52,9 +55,15 @@ public class WrapperToStringConversion extends AbstractNumberToStringConversion 
     @Override
     public Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            return Collections.singleton(
-                conversionContext.getTypeFactory().getType( DecimalFormat.class )
-            );
+            Set<Type> importTypes = new HashSet<>();
+            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
+
+            if ( conversionContext.getNumberFormat() != null ) {
+                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
+                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            }
+
+            return importTypes;
         }
 
         return Collections.emptySet();
@@ -79,9 +88,15 @@ public class WrapperToStringConversion extends AbstractNumberToStringConversion 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            return Collections.singleton(
-                conversionContext.getTypeFactory().getType( DecimalFormat.class )
-            );
+            Set<Type> importTypes = new HashSet<>();
+            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
+
+            if ( conversionContext.getNumberFormat() != null ) {
+                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
+                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            }
+
+            return importTypes;
         }
 
         return Collections.emptySet();
@@ -98,12 +113,20 @@ public class WrapperToStringConversion extends AbstractNumberToStringConversion 
             sb.append( "\"" );
 
             if ( conversionContext.getLocale() != null ) {
-                sb.append( ", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.forLanguageTag( \"" );
-                sb.append( conversionContext.getLocale() );
-                sb.append( " \" ) )" );
+                sb.append( ", " )
+                    .append( decimalFormatSymbols(conversionContext) )
+                    .append( ".getInstance( " )
+                    .append( locale(conversionContext) )
+                    .append( ".forLanguageTag( \"" )
+                    .append( conversionContext.getLocale() )
+                    .append( " \" ) )" );
             }
             else {
-                sb.append( ", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.getDefault() )" );
+                sb.append( ", " )
+                    .append( decimalFormatSymbols(conversionContext) )
+                    .append( ".getInstance( " )
+                    .append( locale(conversionContext) )
+                    .append( ".getDefault() )" );
             }
         }
 

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Locale;
 
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.TypeConversion;
@@ -18,7 +20,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.simpleDateFormat;
 
 /**
@@ -50,7 +52,14 @@ public class DateToStringConversion implements ConversionProvider {
     }
 
     private Set<Type> getImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) );
+        Set<Type> importTypes = new HashSet<>();
+        importTypes.add( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) );
+
+        if ( conversionContext.getDateFormat() != null ) {
+            importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+        }
+
+        return importTypes;
     }
 
     private String getConversionExpression(ConversionContext conversionContext, String method) {
@@ -64,12 +73,12 @@ public class DateToStringConversion implements ConversionProvider {
             conversionString.append( "\", " );
 
             if ( conversionContext.getLocale() != null ) {
-                conversionString.append( "java.util.Locale.forLanguageTag( \"" );
+                conversionString.append( locale(conversionContext) ).append( ".forLanguageTag( \"" );
                 conversionString.append( conversionContext.getLocale() );
                 conversionString.append( "\" ) " );
             }
             else {
-                conversionString.append( "java.util.Locale.getDefault() " );
+                conversionString.append( locale(conversionContext) ).append( ".getDefault() " );
             }
         }
 

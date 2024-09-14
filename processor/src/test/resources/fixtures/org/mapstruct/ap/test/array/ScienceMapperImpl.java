@@ -6,16 +6,18 @@
 package org.mapstruct.ap.test.array;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.processing.Generated;
 import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-04T13:21:54+0300",
+    date = "2024-09-14T11:34:37+0300",
     comments = "version: , compiler: javac, environment: Java 17.0.10 (Private Build)"
 )
 public class ScienceMapperImpl implements ScienceMapper {
@@ -284,7 +286,7 @@ public class ScienceMapperImpl implements ScienceMapper {
             if ( ( i >= target.length ) || ( i >= source.length ) ) {
                 break;
             }
-            target[i] = new DecimalFormat( "", java.text.DecimalFormatSymbols.getInstance( java.util.Locale.getDefault() ) ).format( int1 );
+            target[i] = new DecimalFormat( "", DecimalFormatSymbols.getInstance( Locale.getDefault() ) ).format( int1 );
             i++;
         }
 

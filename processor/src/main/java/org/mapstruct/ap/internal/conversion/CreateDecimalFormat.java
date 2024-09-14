@@ -31,13 +31,13 @@ import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 public class CreateDecimalFormat extends HelperMethod {
 
     private final Parameter parameter;
-    private final Parameter localePparameter;
+    private final Parameter localeParameter;
     private final Type returnType;
     private final Set<Type> importTypes;
 
     public CreateDecimalFormat(TypeFactory typeFactory) {
         this.parameter = new Parameter( "numberFormat", typeFactory.getType( String.class ) );
-        this.localePparameter = new Parameter( "locale", typeFactory.getType( Locale.class ) );
+        this.localeParameter = new Parameter( "locale", typeFactory.getType( Locale.class ) );
         this.returnType = typeFactory.getType( DecimalFormat.class );
         this.importTypes = asSet(
             parameter.getType(),
@@ -74,6 +74,6 @@ public class CreateDecimalFormat extends HelperMethod {
 
     @Override
     public List<Parameter> getParameters() {
-        return Arrays.asList( getParameter(), localePparameter );
+        return Arrays.asList( getParameter(), localeParameter );
     }
 }
