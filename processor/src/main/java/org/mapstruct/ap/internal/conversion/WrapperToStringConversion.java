@@ -17,7 +17,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.*;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormatSymbols;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
 
 /**
  * Conversion between wrapper types such as {@link Integer} and {@link String}.
@@ -114,18 +116,18 @@ public class WrapperToStringConversion extends AbstractNumberToStringConversion 
 
             if ( conversionContext.getLocale() != null ) {
                 sb.append( ", " )
-                    .append( decimalFormatSymbols(conversionContext) )
+                    .append( decimalFormatSymbols( conversionContext) )
                     .append( ".getInstance( " )
-                    .append( locale(conversionContext) )
+                    .append( locale( conversionContext) )
                     .append( ".forLanguageTag( \"" )
                     .append( conversionContext.getLocale() )
                     .append( " \" ) )" );
             }
             else {
                 sb.append( ", " )
-                    .append( decimalFormatSymbols(conversionContext) )
+                    .append( decimalFormatSymbols( conversionContext) )
                     .append( ".getInstance( " )
-                    .append( locale(conversionContext) )
+                    .append( locale( conversionContext) )
                     .append( ".getDefault() )" );
             }
         }

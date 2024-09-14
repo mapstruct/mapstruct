@@ -73,12 +73,12 @@ public class DateToStringConversion implements ConversionProvider {
             conversionString.append( "\", " );
 
             if ( conversionContext.getLocale() != null ) {
-                conversionString.append( locale(conversionContext) ).append( ".forLanguageTag( \"" );
+                conversionString.append( locale( conversionContext ) ).append( ".forLanguageTag( \"" );
                 conversionString.append( conversionContext.getLocale() );
                 conversionString.append( "\" ) " );
             }
             else {
-                conversionString.append( locale(conversionContext) ).append( ".getDefault() " );
+                conversionString.append( locale( conversionContext ) ).append( ".getDefault() " );
             }
         }
 
