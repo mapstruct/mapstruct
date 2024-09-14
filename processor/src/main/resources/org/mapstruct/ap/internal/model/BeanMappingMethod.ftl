@@ -136,7 +136,7 @@
 
     <#if finalizerMethod??>
         <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
-            ${returnType.name} ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
+            <@includeModel object=returnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
 
             <#list afterMappingReferencesWithFinalizedReturnType as callback>
                 <#if callback_index = 0>
