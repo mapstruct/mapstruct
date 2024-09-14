@@ -116,18 +116,18 @@ public class WrapperToStringConversion extends AbstractNumberToStringConversion 
 
             if ( conversionContext.getLocale() != null ) {
                 sb.append( ", " )
-                    .append( decimalFormatSymbols( conversionContext) )
+                    .append( decimalFormatSymbols( conversionContext ) )
                     .append( ".getInstance( " )
-                    .append( locale( conversionContext) )
+                    .append( locale( conversionContext ) )
                     .append( ".forLanguageTag( \"" )
                     .append( conversionContext.getLocale() )
                     .append( " \" ) )" );
             }
             else {
                 sb.append( ", " )
-                    .append( decimalFormatSymbols( conversionContext) )
+                    .append( decimalFormatSymbols( conversionContext ) )
                     .append( ".getInstance( " )
-                    .append( locale( conversionContext) )
+                    .append( locale( conversionContext ) )
                     .append( ".getDefault() )" );
             }
         }
