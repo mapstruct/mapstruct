@@ -491,7 +491,11 @@ public class TypeFactory {
         if (accessor.getAccessorType().isFieldAssignment()) {
             return new ArrayList<>();
         }
-        return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );
+        Element element = accessor.getElement();
+        if ( element instanceof ExecutableElement ) {
+            return extractTypes( ( (ExecutableElement) element ).getThrownTypes() );
+        }
+        return new ArrayList<>();
     }
 
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {
