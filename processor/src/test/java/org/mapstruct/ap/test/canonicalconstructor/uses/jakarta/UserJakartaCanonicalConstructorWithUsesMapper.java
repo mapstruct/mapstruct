@@ -13,13 +13,20 @@ import org.mapstruct.ap.test.canonicalconstructor.shared.AddressEntity;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserDto;
 import org.mapstruct.ap.test.canonicalconstructor.shared.UserEntity;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA, uses = ExampleMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(
+    componentModel = MappingConstants.ComponentModel.JAKARTA,
+    uses = ExampleMapper.class,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public abstract class UserJakartaCanonicalConstructorWithUsesMapper {
 
     private final ContactRepository contactRepository;
     private final AddressMapper addressMapper;
 
-    public UserJakartaCanonicalConstructorWithUsesMapper(ContactRepository contactRepository, AddressMapper addressMapper) {
+    public UserJakartaCanonicalConstructorWithUsesMapper(
+        ContactRepository contactRepository,
+        AddressMapper addressMapper
+    ) {
         this.contactRepository = contactRepository;
         this.addressMapper = addressMapper;
     }
