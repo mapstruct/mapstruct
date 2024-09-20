@@ -20,4 +20,8 @@ public enum ConditionStrategy {
      * The condition method should be applied to check if a source parameters should be mapped.
      */
     SOURCE_PARAMETERS,
+    /**
+     * The condition method should be applied whether an element should be added to the iterable target.
+     */
+    ITERABLE_ELEMENTS,
 }

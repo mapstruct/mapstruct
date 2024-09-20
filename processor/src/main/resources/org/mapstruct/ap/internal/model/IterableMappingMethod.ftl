@@ -24,7 +24,7 @@
             <#if resultType.arrayType>
                 <#if existingInstanceMapping>
                     <#-- we can't clear an existing array, so we've got to clear by setting values to default -->
-                    for (int ${index2Name} = 0; ${index2Name} < ${resultName}.length; ${index2Name}++ ) {
+                    // test
                         ${resultName}[${index2Name}] = ${resultElementType.null};
                     }
                     return<#if returnType.name != "void"> ${resultName}</#if>;
@@ -74,7 +74,9 @@
         }
     <#else>
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
-            <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            if ( countryIsNotNull( employeeDto ) ) {
+                <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            }
         }
     </#if>
     <#list afterMappingReferences as callback>

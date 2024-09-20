@@ -93,6 +93,9 @@ public class ConditionOptions {
         else if ( strategy == ConditionStrategyGem.PROPERTIES ) {
             return hasValidStrategyForProperties( condition, method, parameters, messager );
         }
+        else if ( strategy == ConditionStrategyGem.ITERABLE_ELEMENTS ) {
+            return true;
+        }
         else {
             throw new IllegalStateException( "Invalid condition strategy: " + strategy );
         }

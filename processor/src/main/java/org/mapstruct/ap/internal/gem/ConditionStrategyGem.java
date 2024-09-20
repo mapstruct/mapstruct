@@ -11,5 +11,6 @@ package org.mapstruct.ap.internal.gem;
 public enum ConditionStrategyGem {
 
     PROPERTIES,
-    SOURCE_PARAMETERS
+    SOURCE_PARAMETERS,
+    ITERABLE_ELEMENTS
 }
