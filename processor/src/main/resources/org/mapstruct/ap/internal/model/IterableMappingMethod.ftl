@@ -11,7 +11,7 @@
 </#list>
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
-    <#list beforeMappingReferencesWithoutMappingTarget as callback>
+<#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
 
@@ -41,19 +41,19 @@
         </#if>
     }
 
-    <#if resultType.arrayType>
-        <#if !existingInstanceMapping>
-            <#assign elementTypeString><@includeModel object=resultElementType/></#assign>
-            ${elementTypeString}[] ${resultName} = new ${elementTypeString?keep_before('[]')}[<@iterableSize/>]${elementTypeString?replace('[^\\[\\]]+', '', 'r')};
-        </#if>
-    <#else>
+<#--    <#if resultType.arrayType>-->
+<#--        <#if !existingInstanceMapping>-->
+<#--            <#assign elementTypeString><@includeModel object=resultElementType/></#assign>-->
+<#--            ${elementTypeString}[] ${resultName} = new ${elementTypeString?keep_before('[]')}[<@iterableSize/>]${elementTypeString?replace('[^\\[\\]]+', '', 'r')};-->
+<#--        </#if>-->
+<#--    <#else>-->
         <#if existingInstanceMapping>
             ${resultName}.clear();
         <#else>
             <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
             <@iterableLocalVarDef/> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
         </#if>
-    </#if>
+<#--    </#if>-->
     <#list beforeMappingReferencesWithMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
@@ -61,17 +61,32 @@
     	</#if>
     </#list>
     <#if resultType.arrayType>
-        int ${index1Name} = 0;
-        for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
-            <#if existingInstanceMapping>
-            if ( ( ${index1Name} >= ${resultName}.length ) || ( ${index1Name} >= <@iterableSize/> ) ) {
-                break;
-            }
-            </#if>
-            <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
-            ${index1Name}++;
-        }
-    <#else>
+
+    </#if>
+    <#if true>
+<#--    <#if resultType.arrayType>-->
+<#--        int ${index1Name} = 0;-->
+<#--        for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {-->
+<#--            <#if existingInstanceMapping>-->
+<#--            if ( ( ${index1Name} >= ${resultName}.length ) || ( ${index1Name} >= <@iterableSize/> ) ) {-->
+<#--                break;-->
+<#--            }-->
+<#--            </#if>-->
+<#--            <#if hasIterableConditionMethod()>-->
+<#--                if ( <@includeModel object=iterableConditionMethodReference /> ) {-->
+<#--                    <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>-->
+<#--                    ${index1Name}++;-->
+<#--                }-->
+<#--            <#else>-->
+<#--                <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>-->
+<#--                ${index1Name}++;-->
+<#--            </#if>-->
+<#--        }-->
+<#--        Employee[] employeeTmp = employees.stream()-->
+<#--        .filter(this::countryIsNotNull)-->
+<#--        .map(this::map)-->
+<#--        .toArray(Employee[]::new);-->
+<#--    <#else>-->
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
             <#if hasIterableConditionMethod()>
                 if ( <@includeModel object=iterableConditionMethodReference /> ) {
@@ -90,7 +105,11 @@
     </#list>
 
     <#if returnType.name != "void">
-        return ${resultName};
+        <#if hasIterableConditionMethod() && resultType.arrayType>
+            ${resultName}.toArray( new <@includeModel object=resultElementType/>[0] );
+        <#else>
+            return ${resultName};
+        </#if>
     </#if>
 }
 <#macro throws>

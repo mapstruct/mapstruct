@@ -83,11 +83,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
     }
 
     public boolean hasIterableConditionMethod() {
-        return getIterableConditionMethod() != null;
-    }
-
-    public Method getIterableConditionMethod() {
-        return iterableConditionMethod;
+        return iterableConditionMethod != null;
     }
 
     public MethodReference getIterableConditionMethodReference() {
@@ -101,10 +97,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             )
         );
 
-        return MethodReference.forForgedMethod(
-            iterableConditionMethod,
-            parameterBindings
-        );
+        return MethodReference.forForgedMethod( iterableConditionMethod, parameterBindings );
     }
 
     private IterableMappingMethod(Method method, List<Annotation> annotations,

@@ -27,7 +27,14 @@ public interface IterableElementConditionMapper {
     @Mapping(target = "ssid", source = "uniqueIdNumber")
     Employee map(EmployeeDto employee);
 
-    List<Employee> map(List<EmployeeDto> employees);
+    List<Employee> mapListToList(List<EmployeeDto> employees);
+
+    List<Employee> mapArrayToList(EmployeeDto[] employees);
+
+//    Employee[] mapListToArray(List<EmployeeDto> employees);
+//
+//    Employee[] mapArrayToArray(EmployeeDto[] employees);
+
 
     @IterableElementCondition
     default boolean countryIsNotNull(EmployeeDto value) {
