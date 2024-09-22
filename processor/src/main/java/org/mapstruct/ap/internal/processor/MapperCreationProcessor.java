@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
 import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
@@ -340,10 +341,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 this.messager.note( 1, Message.ITERABLEMAPPING_CREATE_NOTE, method );
 
 
+                Method iterableConditionMethod = methods.stream()
+                    .filter( m -> m.getConditionOptions()
+                        .isStrategyApplicable( ConditionStrategyGem.ITERABLE_ELEMENTS ) )
+                    .findFirst()
+                    .orElse( null );
+
+                // TODO here are all methods - select them via MethodResolver (like PresenceCheckMethodResolver) and add it to the builder
                 IterableMappingMethod iterableMappingMethod = createWithElementMappingMethod(
                     method,
                     mappingOptions,
                     new IterableMappingMethod.Builder()
+                        .iterableConditionMethod( iterableConditionMethod )
                 );
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;

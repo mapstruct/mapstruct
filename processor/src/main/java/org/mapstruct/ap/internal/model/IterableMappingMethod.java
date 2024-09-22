@@ -5,8 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -14,9 +13,12 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -26,10 +28,19 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
  */
 public class IterableMappingMethod extends ContainerMappingMethod {
 
+    private Method iterableConditionMethod;
+
     public static class Builder extends ContainerMappingMethodBuilder<Builder, IterableMappingMethod> {
+
+        private Method iterableConditionMethod;
 
         public Builder() {
             super( Builder.class, "collection element" );
+        }
+
+        public Builder iterableConditionMethod(Method iterableConditionMethod) {
+            this.iterableConditionMethod = iterableConditionMethod;
+            return this;
         }
 
         @Override
@@ -65,9 +76,35 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
-                selectionParameters
+                selectionParameters,
+                iterableConditionMethod
             );
         }
+    }
+
+    public boolean hasIterableConditionMethod() {
+        return getIterableConditionMethod() != null;
+    }
+
+    public Method getIterableConditionMethod() {
+        return iterableConditionMethod;
+    }
+
+    public MethodReference getIterableConditionMethodReference() {
+
+        ArrayList<ParameterBinding> parameterBindings = new ArrayList<>();
+
+        parameterBindings.add(
+            ParameterBinding.fromTypeAndName(
+                iterableConditionMethod.getParameters().get( 0 ).getType(),
+                getLoopVariableName()
+            )
+        );
+
+        return MethodReference.forForgedMethod(
+            iterableConditionMethod,
+            parameterBindings
+        );
     }
 
     private IterableMappingMethod(Method method, List<Annotation> annotations,
@@ -75,7 +112,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters, Method iterableConditionMethod) {
         super(
             method,
             annotations,
@@ -88,6 +125,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             afterMappingReferences,
             selectionParameters
         );
+        this.iterableConditionMethod = iterableConditionMethod;
     }
 
     @Override
