@@ -11,6 +11,7 @@ import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -277,6 +278,17 @@ public final class ConversionUtils {
      */
     public static String url(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, URL.class );
+    }
+
+    /**
+     * Name for {@link java.text.DecimalFormatSymbols}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String decimalFormatSymbols(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, DecimalFormatSymbols.class );
     }
 
 }

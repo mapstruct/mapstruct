@@ -56,8 +56,12 @@ public @interface MapMapping {
     /**
      * A format string as processable by {@link SimpleDateFormat} if the annotated method maps from a map with key type
      * {@code String} to an map with key type {@link Date} or vice-versa. Will be ignored for all other key types.
+     * <p>
+     * If the {@link #locale()} is specified, the format will consider the specified locale when processing the date.
+     * Otherwise, the system's default locale will be used.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
+     * @see #locale()
      */
     String keyDateFormat() default "";
 
@@ -65,26 +69,49 @@ public @interface MapMapping {
      * A format string as processable by {@link SimpleDateFormat} if the annotated method maps from a map with value
      * type {@code String} to an map with value type {@link Date} or vice-versa. Will be ignored for all other value
      * types.
+     * <p>
+     * If the {@link #locale()} is specified, the format will consider the specified locale when processing the date.
+     * Otherwise, the system's default locale will be used.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
+     * @see #locale()
      */
     String valueDateFormat() default "";
 
     /**
      * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other key types.
+     * <p>
+     * If the {@link #locale()} is specified, the number format will be applied in the context of the given locale.
+     * Otherwise, the system's default locale will be used.
      *
      * @return A decimal format string as processable by {@link DecimalFormat}.
+     * @see #locale()
      */
     String keyNumberFormat() default "";
 
     /**
      * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other value types.
+     * <p>
+     * If the {@link #locale()} is specified, the number format will be applied in the context of the given locale.
+     * Otherwise, the system's default locale will be used.
      *
      * @return A decimal format string as processable by {@link DecimalFormat}.
+     * @see #locale()
      */
     String valueNumberFormat() default "";
+
+    /**
+     * Specifies the locale to be used when processing {@link SimpleDateFormat} or {@link DecimalFormat} for key or
+     * value mappings in maps. The locale should be a plain tag representing the language, such as "en" for English,
+     * "de" for German, etc.
+     * <p>
+     * If no locale is specified, the system's default locale will be used.
+     *
+     * @return A string representing the locale to be used when formatting dates or numbers in maps.
+     */
+    String locale() default "";
 
     /**
      * A key value qualifier can be specified to aid the selection process of a suitable mapper. This is useful in

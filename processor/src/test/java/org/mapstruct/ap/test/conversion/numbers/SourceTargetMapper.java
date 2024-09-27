@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import org.mapstruct.InheritInverseConfiguration;
@@ -41,20 +42,54 @@ public interface SourceTargetMapper {
     } )
     Target sourceToTarget(Source source);
 
-    @InheritInverseConfiguration
+    @Mappings( {
+        @Mapping( target = "i", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "ii", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "d", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "dd", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "f", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "ff", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "l", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "ll", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "b", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "bb", numberFormat = NUMBER_FORMAT, locale = "ru" ),
+        @Mapping( target = "complex1", numberFormat = "##0.##E0", locale = "ru" ),
+        @Mapping( target = "complex2", numberFormat = "$#.00", locale = "ru" ),
+        @Mapping( target = "bigDecimal1", numberFormat = "#0.#E0", locale = "ru" ),
+        @Mapping( target = "bigInteger1", numberFormat = "0.#############E0", locale = "ru" )
+
+    } )
+    Target sourceToTargetWithCustomLocale(Source source);
+
+    @InheritInverseConfiguration( name = "sourceToTarget" )
     Source targetToSource(Target target);
+
+    @InheritInverseConfiguration( name = "sourceToTargetWithCustomLocale" )
+    Source targetToSourceWithCustomLocale(Target target);
 
     @IterableMapping( numberFormat = NUMBER_FORMAT )
     List<String> sourceToTarget(List<Float> source);
 
-    @InheritInverseConfiguration
+    @InheritInverseConfiguration( name = "sourceToTarget" )
     List<Float> targetToSource(List<String> source);
+
+    @IterableMapping( numberFormat = "#0.#E0", locale = "fr" )
+    List<String> sourceToTargetWithCustomLocale(List<BigDecimal> source);
+
+    @InheritInverseConfiguration( name = "sourceToTargetWithCustomLocale" )
+    List<BigDecimal> targetToSourceWithCustomLocale(List<String> source);
 
     @MapMapping( keyNumberFormat = NUMBER_FORMAT, valueNumberFormat = "##" )
     Map<String, String> sourceToTarget(Map<Float, Float> source);
 
-    @InheritInverseConfiguration
+    @MapMapping( keyNumberFormat = "#0.#E0", valueNumberFormat = "0.#############E0", locale = "fr" )
+    Map<String, String> sourceToTargetWithCustomLocale(Map<BigDecimal, BigDecimal> source);
+
+    @InheritInverseConfiguration( name = "sourceToTarget" )
     Map<Float, Float> targetToSource(Map<String, String> source);
+
+    @InheritInverseConfiguration( name = "sourceToTargetWithCustomLocale" )
+    Map<BigDecimal, BigDecimal> targetToSourceWithCustomLocale(Map<String, String> source);
 
 }
 

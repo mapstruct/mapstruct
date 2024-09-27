@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,6 +119,8 @@ public class MappingOptions extends DelegatingOptions {
         String conditionExpression = getConditionExpression( mapping, method, messager );
         String dateFormat = mapping.dateFormat().getValue();
         String numberFormat = mapping.numberFormat().getValue();
+        String locale = mapping.locale().getValue();
+
         String defaultValue = mapping.defaultValue().getValue();
 
         Set<String> dependsOn = mapping.dependsOn().hasValue() ?
@@ -129,7 +132,8 @@ public class MappingOptions extends DelegatingOptions {
             numberFormat,
             mapping.mirror(),
             mapping.dateFormat().getAnnotationValue(),
-            method
+            method,
+            locale != null ? Locale.forLanguageTag( locale ) : null
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),

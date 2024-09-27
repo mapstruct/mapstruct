@@ -14,6 +14,7 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
 
@@ -75,6 +76,14 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
             sb.append( "\"" );
             sb.append( conversionContext.getNumberFormat() );
             sb.append( "\"" );
+        }
+        if ( conversionContext.getLocale() != null ) {
+            sb.append( ", " ).append( locale( conversionContext ) ).append( ".forLanguageTag( \"" );
+            sb.append( conversionContext.getLocale() );
+            sb.append( "\" )" );
+        }
+        else {
+            sb.append( ", " ).append( locale( conversionContext ) ).append( ".getDefault() " );
         }
 
         sb.append( " )" );
