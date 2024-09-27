@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.builder.simple;
+package org.mapstruct.ap.test.builder.simple.innerclass;
 
 import java.util.Arrays;
 
@@ -20,16 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     SimpleMutablePerson.class,
-    SimpleImmutablePerson.class
+    SimpleImmutablePersonWithInnerClassBuilder.class
 })
-public class SimpleImmutableBuilderTest {
+public class SimpleImmutableBuilderThroughInnerClassConstructorTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
     @WithClasses({ SimpleBuilderMapper.class })
-    public void testSimpleImmutableBuilderHappyPath() {
+    public void testSimpleImmutableBuilderThroughInnerClassConstructorHappyPath() {
         SimpleBuilderMapper mapper = Mappers.getMapper( SimpleBuilderMapper.class );
         SimpleMutablePerson source = new SimpleMutablePerson();
         source.setAge( 3 );
@@ -37,7 +37,7 @@ public class SimpleImmutableBuilderTest {
         source.setChildren( Arrays.asList( "Alice", "Tom" ) );
         source.setAddress( "Plaza 1" );
 
-        SimpleImmutablePerson targetObject = mapper.toImmutable( source );
+        SimpleImmutablePersonWithInnerClassBuilder targetObject = mapper.toImmutable( source );
 
         assertThat( targetObject.getAge() ).isEqualTo( 3 );
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
@@ -55,6 +55,6 @@ public class SimpleImmutableBuilderTest {
             type = ErroneousSimpleBuilderMapper.class,
             line = 21,
             message = "Unmapped target property: \"name\"."))
-    public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
+    public void testSimpleImmutableBuilderThroughInnerClassConstructorMissingPropertyFailsToCompile() {
     }
 }
