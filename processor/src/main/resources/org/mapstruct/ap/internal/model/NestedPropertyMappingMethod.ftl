@@ -21,7 +21,11 @@
     <#if !entry.presenceChecker?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
-        return ${returnType.null};
+        <#if returnType.isOptionalType()>
+            return Optional.empty();
+        <#else>
+            return ${returnType.null};
+        </#if>
     }
     </#if>
     </#if>
