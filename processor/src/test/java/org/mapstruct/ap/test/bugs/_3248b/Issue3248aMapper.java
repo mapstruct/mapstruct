@@ -16,78 +16,70 @@ import org.mapstruct.ReportingPolicy;
  *
  * Adding inheritance to issue 3248
  *
- * Unmapped source properties of the parent do not propagate to the subclass:
+ * ignoreUnmappedSourceProperties of the parent does not propagate to the subclass via  @InheritConfiguration
  *
- * Diagnostics: [DiagnosticDescriptor: ERROR Issue3248aMapper.java:30 Unmapped source property: "otherValue".,
- * DiagnosticDescriptor: ERROR Issue3248aMapper.java:33 Unmapped source property: "otherValue".]]
+ * Diagnostics: [DiagnosticDescriptor: ERROR Issue3248aMapper.java:34
+ * Unmapped source property: "value1Ignore".]]  expected: SUCCEEDED but was: FAILED]
  */
 @Mapper(unmappedSourcePolicy = ReportingPolicy.ERROR)
 public interface Issue3248aMapper {
 
-    @BeanMapping(ignoreUnmappedSourceProperties = "otherValue")
-    Target map1(Source source);
+    @Mapping( target = "value1", source = "value1")
+    @BeanMapping(ignoreUnmappedSourceProperties = "value1Ignore")
+    Target1 map1(Source1 source);
 
-    @InheritConfiguration(name = "map1")
-    Target secondMap(Source source);
-
+    @InheritConfiguration
     @Mapping( target = "value2", source = "value2")
-    @BeanMapping(ignoreUnmappedSourceProperties = "otherValue2")
-    Target2 map2(Source2 source2); // fails to ignore "otherValue"
+    @BeanMapping(ignoreUnmappedSourceProperties = "value2Ignore")
+    Target2 map2(Source2 source2); // fails to ignore "value1Ignore"
 
-    @InheritConfiguration(name = "map2")
-    Target2 secondMap2(Source2 source2);
+    class Target1 {
+      private String value1;
 
-    class Target {
-        protected final String value;
-
-        public Target(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    class Source {
-      protected final String value;
-
-        public Source(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getOtherValue() {
-            return value;
-        }
-    }
-
-    class Target2 extends Target {
-
-      public Target2(String value, String value2) {
-          super( value );
+      public String getValue1() {
+         return value1;
       }
+
+      public void setValue1(String value1) {
+         this.value1 = value1;
+      }
+    }
+
+    class Source1 {
+      private String value1;
+      private String value1Ignore;
+
+      public String getValue1() {
+         return value1;
+      }
+
+      public String getValue1Ignore() {
+         return value1Ignore;
+      }
+    }
+
+    class Target2 extends Target1 {
+      private String value2;
 
       public String getValue2() {
-          return value;
+         return value2;
       }
-  }
 
-    class Source2 extends Source {
+      public void setValue2(String value2) {
+         this.value2 = value2;
+      }
+    }
 
-        public Source2(String value) {
-          super( value );
-        }
+    class Source2 extends Source1 {
+      private String value2;
+      private String value2Ignore;
 
-        public String getValue2() {
-            return value;
-        }
+      public String getValue2() {
+         return value2;
+      }
 
-        public String getOtherValue2() {
-            return value;
-        }
+      public String getValue2Ignore() {
+         return value2Ignore;
+      }
     }
 }
