@@ -1,0 +1,793 @@
+[[datatype-conversions]]
+== 数据类型转换
+
+source字段和target字段的类型并不总是一致。比如原生类型的转换，一个字段在source bean中是int型，但在target中需要是Long型。再比如引用类型的转换，假设Car类中有一个Person类型的字段driver，在target中要转换为PersonDto类型。
+
+在本节中，您将学到如何使用MapStruct来进行类型转换。
+
+[[implicit-type-conversions]]
+=== 隐式类型转换
+
+MapStruct会自动处理很多种类型转换。
+
+比如，有一个字段，在source bean中为 `int` 类型，在target中则为 `String` 类型。生成的实现中会自动调用 `String#valueOf(int)`  ，反之则会调用 `Integer#parseInt(String)`。
+
+目前，会自动执行的类型转换如下：
+
+* 所有的java原生数据类型和对应的包装类之间的转换。比如 `int` 和 `Integer` ，`boolean` 和 `Boolean` 等。生成的代码是 `null` 敏感的。比如把一个包装类转换为对应的原生类型时，会先有一个 `null` 值校验。
+* 所有的java原生数字类型和数字包装类之间的转换。比如 `int`、`long`、`byte` 和 `Integer` 之间的转换。
+
+[WARNING]
+====
+
+较长型转换为较短型时（比如 `long` 型转化为 `int` 型）会导致精度损失。`Mapper` 和 `MapperConfig` 注解中有一个方法 `typeConversionPolicy`，该方法可以控制此种情况下是打warning还是error。因为要保持向后兼容，所以目前的默认值是 `ReportingPolicy.IGNORE`。
+
+====
+
+* 所有的java原生数据类型和对应的包装类之间。比如 `int` 和 `Integer` ，`boolean` 和 `Boolean` 等。生成的代码是 `null` 敏感的。比如把一个包装类转换为对应的原生类型时，会先有一个 `null` 值校验。
+* 所有的java原生数字类型和数字包装类之间。比如 `int`、`long`、`byte` 和 `Integer` 之间的转换。
+
+[WARNING]
+====
+
+较长型转换为较短型时（比如 `long` 型转化为 `int` 型）会导致精度损失。`Mapper` 和 `MapperConfig` 注解中有一个方法 `typeConversionPolicy`，该方法可以控制此种情况下是打warning还是error。因为要保持向后兼容，所以目前的默认值是 `ReportingPolicy.IGNORE`。
+
+====
+
+* 所有的java原生类型（及其包装类）与 `String` 之间。比如 `int` 和 `String` 之间 或者 `Boolean` 和 `String` 之间。可以指定为符合 `java.text.DecimalFormat` 格式的格式化字符串。
+
+.Conversion from int to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "price", numberFormat = "$#.00")
+    CarDto carToCarDto(Car car);
+
+    @IterableMapping(numberFormat = "$#.00")
+    List<String> prices(List<Integer> prices);
+}
+----
+====
+* `enum` 类型和 `String` 之间。
+
+* `enum` 类型和 `Integer` 之间，遵循`enum.ordinal()`。
+** 当 `Integer` 映射到 `enum` 时 , source值需要在enum对应的值范围内，不然会抛出 `ArrayOutOfBoundsException` 异常。
+
+* 大数类型（`java.math.BigInteger`, `java.math.BigDecimal`）、java原生类型（及其包装类）和String之间。可以通过 `java.text.DecimalFormat` 指定字符串。
+
+.Conversion from BigDecimal to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "power", numberFormat = "#.##E0")
+    CarDto carToCarDto(Car car);
+
+}
+----
+====
+
+* `JAXBElement<T>` 和 `T` 之间，`List<JAXBElement<T>>` 和 `List<T>` 之间。
+
+* `java.util.Calendar`/`java.util.Date` 和 JAXB的 `XMLGregorianCalendar` 之间。
+
+* `java.util.Date`/`XMLGregorianCalendar` 和 `String` 之间。可以通过 `dateFormat` 选项，来指定符合 `java.text.SimpleDateFormat` 格式的字符串。
+
+.Conversion from Date to String
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Mapping(source = "manufacturingDate", dateFormat = "dd.MM.yyyy")
+    CarDto carToCarDto(Car car);
+
+    @IterableMapping(dateFormat = "dd.MM.yyyy")
+    List<String> stringListToDateList(List<Date> dates);
+}
+----
+====
+
+* Jodas的 `org.joda.time.DateTime`, `org.joda.time.LocalDateTime`, `org.joda.time.LocalDate`, `org.joda.time.LocalTime` 与 `String` 之间。可以通过 `dateFormat` 选项，来指定符合 `java.text.SimpleDateFormat` 格式的字符串，例子同上。
+
+* Jodas `org.joda.time.DateTime` 和 `javax.xml.datatype.XMLGregorianCalendar`, `java.util.Calendar` 之间。
+
+* Jodas `org.joda.time.LocalDateTime`, `org.joda.time.LocalDate` 和 `javax.xml.datatype.XMLGregorianCalendar`, `java.util.Date` 之间。
+
+* `java.time.LocalDate`, `java.time.LocalDateTime` 和 `javax.xml.datatype.XMLGregorianCalendar` 之间。
+
+* Java 8 Date-Time包的 `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime` 和 `String` 之间。可以通过 `dateFormat` 选项，来指定符合 `java.text.SimpleDateFormat` 格式的字符串，例子同上。
+
+* Java 8 Date-Time包的 `java.time.Instant`, `java.time.Duration`, `java.time.Period` 和 `String` 之间。 转换成 `String` 时使用 `toString` 方法，从 `String` 解析时用  `parse`  方法。
+
+* Java 8 Date-Time包的 `java.time.ZonedDateTime` 和 `java.util.Date` 之间, 当把 `Date` 映射为 `ZonedDateTime` 时，会使用系统默认时区。
+
+* Java 8 Date-Time包的  `java.time.LocalDateTime` 和 `java.util.Date` 之间，转换时会使用UTC作为当前时区。
+
+* Java 8 Date-Time包的 `java.time.LocalDate` 和 `java.util.Date` / `java.sql.Date` 之间，转换时会使用UTC作为当前时区。
+
+* Java 8 Date-Time包的 `java.time.Instant` 和 `java.util.Date` 之间.
+
+* Java 8 Date-Time包的 `java.time.ZonedDateTime` 和 `java.util.Calendar` 之间.
+
+* `java.sql.Date` 和 `java.util.Date` 之间。
+
+* `java.sql.Time` 和 `java.util.Date` 之间。
+
+* `java.sql.Timestamp` 和 `java.util.Date` 之间。
+
+* When converting from a `String`, omitting `Mapping#dateFormat`, it leads to usage of the default pattern and date format symbols for the default locale. An exception to this rule is `XmlGregorianCalendar` which results in parsing the `String` according to http://www.w3.org/TR/xmlschema-2/#dateTime[XML Schema 1.0 Part 2, Section 3.2.7-14.1, Lexical Representation].
+
+* 当把 `String` 映射为其他值时，请忽略 `Mapping#dateFormat`，该选项会导致默认模式和数据格式符号会应用到默认区域环境（locale）中。该规则导致的一个异常是 `XmlGregorianCalendar` 依据 http://www.w3.org/TR/xmlschema-2/#dateTime[XML Schema 1.0 Part 2, Section 3.2.7-14.1, Lexical Representation] 解析 `String` 而导致。
+
+* `java.util.Currency` 和 `String` 之间。
+** 当 `String` 转化为 `java.util.Currency` 时，值要符合 https://en.wikipedia.org/wiki/ISO_4217[ISO-4217] 标准，否则会抛出 `IllegalArgumentException` 异常。
+
+* `java.util.UUID` 和 `String` 之间。
+** 当 `String` 转化为 `java.util.UUID` 时，值要符合 https://en.wikipedia.org/wiki/Universally_unique_identifier[UUID] 的标准，否则会抛出 `IllegalArgumentException` 异常。
+
+* `String` 和 `StringBuilder` 之间。
+
+* `java.net.URL` 和 `String` 之间。
+** 当 `String` 转化为`java.net.URL`时, 值要符合 https://en.wikipedia.org/wiki/URL[URL] 的标准，否则会抛出 `MalformedURLException` 异常。
+
+[[mapping-object-references]]
+=== 对象引用的映射
+
+通常，一个对象不会只包含原生类型，还有引用其他对象，比如 `Car` 类中可能会引用一个 `Person` 实例（即这辆车的司机）。那么在 `Car` -> `CarDto` 的映射过程中，还需要把一个 `Person` 对象映射为 `PersonDto` 对应。
+
+这种情况下，您仅需添加一个映射方法，为引用的类型之间也做个映射：
+
+.Mapper with one mapping method using another
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+
+    PersonDto personToPersonDto(Person person);
+}
+----
+====
+生成的 `carToCarDto()` 方法会调用 `personToPersonDto()` 方法来映射 `driver` 字段，生成的 `personToPersonDto()` 方法则会实现人员对象之间的映射。
+
+这种方法可以映射任意深度的对象图（object graphs）。当把Entity映射为DTO时，您可能经常需要把引用指向别的对象。您可以通过自定义映射（见下节）实现这一点，比如把一个entity映射为它的id。
+
+当生成映射方法的实现时，对于每一对对应的source和target字段，MapStruct会依次执行以下操作：
+
+When generating the implementation of a mapping method, MapStruct will apply the following routine for each attribute pair in the source and target object:
+
+. 如果source字段和target字段是相同的类型，则MapStruct就会简单地把值从source *直接* 复制到target上。如果source字段是一个集合(比如 `List`)，那么target字段会被设置为该集合的一个拷贝(译注：集合本身是深拷贝，里面的元素为浅拷贝)。
+. 如果source字段和target字段是不同的类型，则检查是否已经存在一个 以source字段类型作为入参 并且 以target字段类型作为出参的 *映射方法*。如果存在，则调用该方法完成映射。
+. 如果没有这种方法，则MapStruct会检查是否存在一个 以source字段类型作为入参 并且 以target字段类型作为出参的 *内建类型转换*。如果存在，则生成的代码会应用该转换。
+. 如果没有这种方法，则MapStruct会进行 *复杂* 的转换：
+.. 先映射方法，结果再由映射方法得到，如：`target = method1( method2( source ) )`
+.. 先内建转换，结果再由映射方法得到，如：`target = method( conversion( source ) )`
+.. 先映射方法，结果再由内建转换得到，如：`target = conversion( method( source ) )`
+. 如果没有该种方法，则MapStruct会试着自动生成一个子映射，来完成source和target字段的映射。
+. 如果MapStruct创建不了一个基于名字的映射方法，则在构建期间会报错，错误中会指明无法映射的字段和该字段的路径。
+
+映射控制(`MappingControl`)可以在所有层级定义（`@MapperConfig`, `@Mapper`, `@BeanMapping`, `@Mapping` 优先级依次升高）。举个例子：
+`@Mapper( mappingControl = NoComplexMapping.class )` 比 `@MapperConfig( mappingControl = DeepClone.class )` 的优先级高。
+`@IterableMapping` 和 `@MapMapping` 与 `@Mapping` 类似。
+
+MappingControl是一个自MapStruct 1.4开始的实验性功能。`MappingControl` 有一个枚举，对应上文前四条选项：`MappingControl.Use#DIRECT`, `MappingControl.Use#MAPPING_METHOD`, `MappingControl.Use#BUILT_IN_CONVERSION` 和 `MappingControl.Use#COMPLEX_MAPPING`。如果某个枚举值存在，代表 *开启* 该选项，如果某个枚举值不存在，代表 *关闭* 该映射选项。默认情况下，所有枚举值都存在，即所有的映射选项都开启。
+
+[NOTE]
+====
+
+对于上面的第五条，如果不想让MapStruct自动生成子映射方法，您可以使用 `@Mapper( disableSubMappingMethodsGeneration = true )`。
+
+====
+
+[TIP]
+====
+用户可以通过元注解完全控制映射。一些方便的注解已经被定义，比如 `@DeepClone` ，该注解仅允许直接映射（译注：即规则中的第一条），这会使得scourse和target的类型是一致的，MapStruct会对source进行深克隆。此时必须保证“子映射方法”是开启的（默认开启）。
+====
+
+[NOTE]
+====
+在子映射方法的自动生成过程中，共享配置（详见 <<shared-configurations>>）目前还不会生效。请关注issue https://github.com/mapstruct/mapstruct/issues/1086[#1086] 获得更多信息。
+====
+
+[NOTE]
+====
+target对象的构造器属性也会被认为是target属性，您可以 <<mapping-with-constructors>> 获得更多信息。
+====
+
+[[controlling-nested-bean-mappings]]
+=== 控制嵌套bean的映射
+
+如前文所述，MapStruct 会基于source和target字段的名字来生成方法实现。但不幸的是，名字不匹配的情况很多。
+
+当名称不匹配时，可以用 `@Mapping` 注解source或target中的 ‘.’ 符号来控制字段如何映射。
+
+我们的样例代码库中，有一个详尽的 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-nested-bean-mappings[例子] 来展示如何解决这个问题。
+
+在最简单的场景中，需要改一个在嵌套内部的字段。比如 `FishTankDto` 和 `FishTank` 中，有一个名称相同的字段 `fish` 。
+那么对于该字段，MapStruct会自动生成映射实现：`FishDto fishToFishDto(Fish fish)`。
+但是MapStruct不能识别 `kind` 和 `type`。
+因此，您可以用下面的规则完成映射: `@Mapping(target="fish.kind", source="fish.type")`。
+这会让MapStruct在该层上把一个叫 `kind` 的字段映射为 `type`。
+
+.Mapper controlling nested beans mappings I
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapper {
+
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", ignore = true)
+    @Mapping(target = "ornament", source = "interior.ornament")
+    @Mapping(target = "material.materialType", source = "material")
+    @Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")
+    FishTankDto map( FishTank source );
+}
+----
+====
+
+您也可以用相同的结构来忽略嵌套层级上的某一字段，比如上面例子中第二行的 `@Mapping` 规则
+
+MapStruct可以对source和target中的字段进行“挑选”，即source和target可以不用在统一嵌套层级，
+这同样是通过指定@Mapping中的source类型和target类型完成，比如：`@Mapping(target="ornament", source="interior.ornament")` 和 `@Mapping(target="material.materialType", source="material")`。
+
+当映射有公共路径时，这一样能被映射完成。
+比如：`Quality` 映射到 `QualityDto` 的过程中，所有名字相同的字段都会被映射过去。
+同样地，`Report` 中的所有字段也会被映射到 `ReportDto` 中，除了一个例外：`OrganisationDto` 中的 `organisation`（因为source层级中没有 organization ）。
+只有 `name` 字段，会由 `Report` 的 `organisationName` 映射得来。
+在上面的例子中，这对应规则 `@Mapping(target="quality.report.organisation.name", source="quality.report.organisationName")`。
+
+回到一开始的例子：如果 `kind` 和 `type` 本身就是bean会怎么样？此时，MapStruct会再生成一个方法来继续映射，比如：
+
+.Mapper controlling nested beans mappings II
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapperWithDocument {
+
+    @Mapping(target = "fish.kind", source = "fish.type")
+    @Mapping(target = "fish.name", expression = "java(\"Jaws\")")
+    @Mapping(target = "plant", ignore = true )
+    @Mapping(target = "ornament", ignore = true )
+    @Mapping(target = "material", ignore = true)
+    @Mapping(target = "quality.document", source = "quality.report")
+    @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
+    FishTankWithNestedDocumentDto map( FishTank source );
+
+}
+----
+====
+
+请注意 `@Mapping(target="quality.document", source="quality.report")`。
+`DocumentDto` 在target侧不存在 ，它是由 `Report` 映射得来。
+MapStruct会继续生成映射。该映射会被导向其他名称。
+映射规则中甚至可以包括常量和表达式，上例中最后一个规则：`@Mapping(target="quality.document.organisation.name", constant="NoIdeaInc")`。
+
+MapStruct会对source中的每个嵌套字段加一个null判断。
+
+[TIP]
+====
+我们鼓励用户显式地写自己的嵌套方法，而不是通过父方法来配置一切。
+手写嵌套映射可以把映射过程保留下来（也就是一个方法），这样就能在多个地方复用该方法，
+不然用户就需要在每个需要嵌套映射的上层方法里重复配置相同的东西。
+====
+
+[NOTE]
+====
+在一些场景中，`ReportingPolicy` 会被设定为 `IGNORE`，这条策略会在生成嵌套方法时使用。
+
+这意味着MapStruct在嵌套映射中找不到对应的target字段时，可能不会有任何日志报警。
+====
+
+
+[[invoking-custom-mapping-method]]
+=== 调用自定义映射方法
+
+有时候，并不是直接映射就可以，有一些字段需要经过自定义的逻辑计算得到。
+
+下例展示了 `FishTank` 的 `length`， `width` 和 `height` 字段如何映射为 `FishTankWithVolumeDto` 中的 `VolumeDto` 字段。`VolumeDto` 包含 `volume` 和 `description` 字段。您可以定义一个方法来实现自定义逻辑，该方法以 `FishTank` 为入参，以 `VolumeDto` 为出参。MapStruct生成的代码会调用自定义方法 `mapVolume`，来完成 `FishTank` 对象到target字段 `volume` 的映射。
+
+其余的字段的映射可以用常规的方式完成：使用 `@Mapping` 注释。
+
+.Manually implemented mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class FishTank {
+    Fish fish;
+    String material;
+    Quality quality;
+    int length;
+    int width;
+    int height;
+}
+
+public class FishTankWithVolumeDto {
+    FishDto fish;
+    MaterialDto material;
+    QualityDto quality;
+    VolumeDto volume;
+}
+
+public class VolumeDto {
+    int volume;
+    String description;
+}
+
+@Mapper
+public abstract class FishTankMapperWithVolume {
+
+    @Mapping(target = "fish.kind", source = "source.fish.type")
+    @Mapping(target = "material.materialType", source = "source.material")
+    @Mapping(target = "quality.document", source = "source.quality.report")
+    @Mapping(target = "volume", source = "source")
+    abstract FishTankWithVolumeDto map(FishTank source);
+
+    VolumeDto mapVolume(FishTank source) {
+        int volume = source.length * source.width * source.height;
+        String desc = volume < 100 ? "Small" : "Large";
+        return new VolumeDto(volume, desc);
+    }
+}
+----
+====
+
+请注意，`@Mapping` 注解中 `source` 字段就是 `"source"`，这是指 `map(FishTank source)` 方法中名为 `source` 的参数 ，而不是指 `FishTank` 中的一个字段。
+
+[[invoking-other-mappers]]
+=== 调用其他mapper
+
+除了调用本身就在mapper类中定义的方法外，MapStruct还能调用定义在其他类中的方法（MapStruct生成的其他mapper的方法，或者手写的映射方法）。这个功能十分有用，比如您可能想在几个不同类间构造映射代码（比如应用中每个模块都有一个mapper），或者您想实现MapStruct无法生成的自定义映射逻辑。
+
+比如，`Car` 类有一个 `manufacturingDate` 字段，相应DTO类中对应的字段是String类型。您可能会实现一个如下的Mapper类：
+
+.Manually implemented mapper class
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class DateMapper {
+
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy-MM-dd" )
+            .format( date ) : null;
+    }
+
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy-MM-dd" )
+                .parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+}
+----
+====
+
+`CarMapper` 接口中的 `@Mapper` 注解引用了`DateMapper`类，就想这样
+
+.Referencing another mapper class
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses=DateMapper.class)
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+当生成 `carToCarDto()` 的方法实现时，MapStruct会寻找一个把 `Date` 对象映射为String的方法，MapStruct最后会在 `DateMapper` 类中找到，并且调用 `asString()` 来完成 `manufacturingDate` 的映射。
+
+生成的mapper会通过配置的组件模式来检索被引用的mapper。比如：如果 `CarMapper` 采用CDI作为组件模式，`DateMapper` 就必须是一个CDI bean。当使用默认的组件模式时，所有需要被MapStruct检索的手写mapper类都必须有一个public的无参数构造器，以此来完成实例化。
+
+[[passing-target-type]]
+=== 把映射target类型传递给自定义mappers
+
+当使用 `@Mapper#uses()` 把自定义的mapper加载到生成的mapper中时，自定义映射方法里的mapper方法可以加一个`Class` 类型（或者其父类）的参数，该参数可以对具体的target对象类型做自定义的通用映射。该参数必须加上 `@TargetType` 注解，这样MapStruct才能把target bean中对应的 `Class` 实例传进去。
+
+举个例子，`CarDto` 有一个 `Reference` 类型的字段 `owner`，该字段包含 `Person` 实体的主键。您可以创建一个通用的自定义映射，来把所有 `Reference` 类型的对象映射为他们对应的JPA实体的实例：
+
+.Mapping method expecting mapping target type as parameter
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@ApplicationScoped // CDI component model
+public class ReferenceMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public <T extends BaseEntity> T resolve(Reference reference, @TargetType Class<T> entityClass) {
+        return reference != null ? entityManager.find( entityClass, reference.getPk() ) : null;
+    }
+
+    public Reference toReference(BaseEntity entity) {
+        return entity != null ? new Reference( entity.getPk() ) : null;
+    }
+}
+
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI, uses = ReferenceMapper.class )
+public interface CarMapper {
+
+    Car carDtoToCar(CarDto carDto);
+}
+----
+====
+
+MapStruct会生成如下代码：
+
+.Generated code
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@ApplicationScoped
+public class CarMapperImpl implements CarMapper {
+
+    @Inject
+    private ReferenceMapper referenceMapper;
+
+    @Override
+    public Car carDtoToCar(CarDto carDto) {
+        if ( carDto == null ) {
+            return null;
+        }
+
+        Car car = new Car();
+
+        car.setOwner( referenceMapper.resolve( carDto.getOwner(), Owner.class ) );
+        // ...
+
+        return car;
+    }
+}
+----
+====
+
+[[passing-context]]
+=== 把上下文或者状态传给自定义方法
+
+额外的 _context_ 或者 _state_ 信息可以通过 `@Context` 参数从生成的映射方法传进自定义方法中。
+当适用的时候，其他映射方法也能用这种参数，如 `@ObjectFactory` 方法(see <<object-factories>>)或者`@BeforeMapping` / `@AfterMapping` 方法(see <<customizing-mappings-with-before-and-after>>)。
+
+带 `@ObjectFactory` 方法会使MapStruct搜索 `@Context` 参数，如果适用，将调用它们提供的上下文参数值。
+
+带 `@BeforeMapping` / `@AfterMapping` 的方法也会使MapStruct搜索 `@Context` 参数，如果适用，将调用它们提供的上下文参数值。
+
+*Note:* 上下文参数在映射方法执行前后处调用时，不会有 `null` 值校验。请调用者自己确保上下文参数不为 `null` 值。
+
+为了能让生成的代码能调用带 `@Context` 参数的方法，映射方法的定义中也需要有 `@Context` 参数。如果没传 `@Context` 参数，生成的代码不会创建缺失 `@Context` 参数的新实例，也不会传 `null`。
+
+.Using `@Context` parameters for passing data down to hand-written property mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract CarDto toCar(Car car, @Context Locale translationLocale);
+
+protected OwnerManualDto translateOwnerManual(OwnerManual ownerManual, @Context Locale locale) {
+    // manually implemented logic to translate the OwnerManual with the given Locale
+}
+----
+====
+
+MapStruct会生成如下代码：
+
+.Generated code
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+public CarDto toCar(Car car, Locale translationLocale) {
+    if ( car == null ) {
+        return null;
+    }
+
+    CarDto carDto = new CarDto();
+
+    carDto.setOwnerManual( translateOwnerManual( car.getOwnerManual(), translationLocale );
+    // more generated mapping code
+
+    return carDto;
+}
+----
+====
+
+
+[[mapping-method-resolution]]
+=== 映射方法的解析
+
+当把一个字段从一种类型映射为另一种类型时，MapStruct会找最特化的方法，也就是source type和target type都符合的方法。 这个方法可以在当前的mapper类中声明，也可以在其他mapper类中声明后由 `@Mapper#uses()` 注册到当前mapper类中。这同样适合工厂方法（参见 <<object-factories>>）。
+
+查找映射或工厂方法的算法与Java的方法解析算法十分相似。source类型更特化的方法优先级更高(如果有两个方法，一个方法以source类型本身做参数，另一个以source类型的父类做参数)。如果有多个最特化的方法，MapStruct会抛出错误异常。
+
+[TIP]
+====
+当使用JAXB时，比如把 `String` 映射为对应的 `JAXBElement<String>`，MapStruct在寻找映射方法时，会参考 `@XmlElementDecl` 注解中的 `scope` 和 `name` 属性。这保证了创建的 `JAXBElement` 实例会有正确的QNAME值。您可以在找到JAXB对象的映射测试例子。 https://github.com/mapstruct/mapstruct/blob/{mapstructVersion}/integrationtest/src/test/resources/jaxbTest/src/test/java/org/mapstruct/itest/jaxb/JaxbBasedMapperTest.java[这里] 
+====
+
+[[selection-based-on-qualifiers]]
+=== 通过qualifier选择映射方法
+
+在很多场合中，您需要多个方法签名相同但是行为不同（由名称区分）的映射方法。
+MapStruct有一种手动机制来处理这种情况：@Qualifier(`org.mapstruct.Qualifier`)。
+‘qualifier’ 是一个用户写的自定义注解，会 ‘挂载‘ 在mapper类中的映射方法上，并且可以在bean属性映射、迭代映射和map映射中被引用。多个qualifer可以 ‘挂载‘ 在一个方法和映射上。
+
+假设有一个手写的映射方法，这个方法的参数是String类型，返回值也是String类型，同时，有一个mapper引用了一些mappers，这些mappers中除了这个手写映射，还有很多其他String-String型的方法：
+
+.Several mapping methods with identical source and target types
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Titles {
+
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+继而，有一个mapper会使用这个手写mapper，并且source和target中都有一个 'title' 字段要映射：
+
+.Mapper causing an ambiguous mapping method error
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+如果不用qualifier，您会得到一个映射方法模糊的报错，因为MapStruct找到了两个满足条件的映射方法(`translateTitleEG`, `translateTitleGE`)，MapStruct在没有提示的情况下不知道到底选择哪一个。
+
+让我们看看qualifier方法：
+
+.Declaring a qualifier type
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface TitleTranslator {
+}
+----
+====
+
+继而，定义一些qualifier来指定映射中该如何完成翻译：
+
+.Declaring qualifier types for mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+public @interface EnglishToGerman {
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+import org.mapstruct.Qualifier;
+
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
+public @interface GermanToEnglish {
+}
+----
+====
+
+请注意，`TitleTranslator` 是TYPE级别的，而 `EnglishToGerman`, `GermanToEnglish` 是METHOD级别的！
+
+使用了这些qualifier的映射例子如下：
+
+.Mapper using qualifiers
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+.Custom mapper qualifying the methods it provides
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@TitleTranslator
+public class Titles {
+
+    @EnglishToGerman
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @GermanToEnglish
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+[WARNING]
+====
+请确保@Retention策略是`CLASS`（即@Retention(`@Retention(RetentionPolicy.CLASS)`)
+====
+
+[WARNING]
+====
+您必须在mapping中使用qualifiedBy元素，才能让有qualifier注解的类/方法生效。
+====
+
+[TIP]
+====
+同样的机制也适用于beam映射: `@BeanMapping#qualifiedBy`: 您可以通过指定qualifier选择工厂方法。
+====
+
+在许多场合中，用户想完成的事情相对简答，而声明一个新注解无疑是很重的一个方式。这种情况下，您可以使用MapStruct的 `@Named` 注解。该注解是一个预定义的qualifier（本身包含 `@Qualifier` ），可以用来给Mapper类或者映射方法命名。请看下面的例子：
+
+.Custom mapper, annotating the methods to qualify by means of `@Named`
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Named("TitleTranslator")
+public class Titles {
+
+    @Named("EnglishToGerman")
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @Named("GermanToEnglish")
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+.Mapper using named
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+[WARNING]
+====
+尽管使用方式是一样的，但是用户应该更小心一点。对于改名的需求，如果用qualifier的方式，您可以用IDE整洁地把代码里所有该注解出现的地方一并都改了，但是用@Named的方式显然做不到这一点。
+
+====
+
+=== Combining qualifiers with defaults
+
+请注意，`Mapping#defaultValue` 本质上是一个 `String`，需要被转换为 `Mapping#target`。提供`Mapping#qualifiedByName` 或者 `Mapping#qualifiedBy` 会强制让MapStruct使用该方法。如果您希望 `Mapping#defaultValue` 有不同的行为，请提供合适的映射方法。该映射方法需要把 `String` 转换为 `Mapping#target` 期望的类型，同时也需要加上注解以使得 `Mapping#qualifiedByName` 或者 `Mapping#qualifiedBy` 注解能够发现它。
+
+.Mapper using defaultValue
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultValue = "DEFAULT" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
+}
+----
+====
+
+在上面的例子中，如果category是null，MapStruct会调用 `CategoryToString( Enum.valueOf( Category.class, "DEFAULT" ) )` 方法，并且将结果塞到category字段中。
+
+.Mapper using defaultValue and default method.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultValue = "Unknown" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(String value) {
+         return value;
+     }
+}
+----
+====
+
+在上面的例子中，如果category是null，MapStruct会调用 `defaultValueForQualifier( "Unknown" )` 方法，并且将结果塞到category字段中。
+
+如果上述方法没起作用，您还可以选择使用 `defaultExpression` 来设置默认值，
+
+.Mapper using defaultExpression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface MovieMapper {
+
+     @Mapping( target = "category", qualifiedByName = "CategoryToString", defaultExpression = "java(\"Unknown\")" )
+     GermanRelease toGerman( OriginalRelease movies );
+
+     @Named("CategoryToString")
+     default String defaultValueForQualifier(Category cat) {
+         // some mapping logic
+     }
+}
+----
+====
