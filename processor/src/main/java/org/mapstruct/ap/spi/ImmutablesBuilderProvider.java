@@ -35,18 +35,29 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
             return null;
         }
+
+        BuilderInfo info = findBuilderInfo( typeElement, false );
+        if ( info != null ) {
+            return info;
+        }
+
+        BuilderInfo immutableInfo = findBuilderInfoForImmutables( typeElement );
+        if ( immutableInfo != null ) {
+            return immutableInfo;
+        }
+
+        return super.findBuilderInfo( typeElement.getSuperclass() );
+    }
+
+    protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement) {
         TypeElement immutableAnnotation = elementUtils.getTypeElement( IMMUTABLE_FQN );
         if ( immutableAnnotation != null ) {
-            BuilderInfo info = findBuilderInfoForImmutables(
+            return findBuilderInfoForImmutables(
                 typeElement,
                 immutableAnnotation
             );
-            if ( info != null ) {
-                return info;
-            }
         }
-
-        return super.findBuilderInfo( typeElement );
+        return null;
     }
 
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement,
