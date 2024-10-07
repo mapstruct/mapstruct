@@ -176,6 +176,10 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * @throws MoreThanOneBuilderCreationMethodException if there are multiple builder creation methods
      */
     protected BuilderInfo findBuilderInfo(TypeElement typeElement) {
+        return findBuilderInfo( typeElement, true );
+    }
+
+    protected BuilderInfo findBuilderInfo(TypeElement typeElement, boolean checkParent) {
         if ( shouldIgnore( typeElement ) ) {
             return null;
         }
@@ -203,7 +207,10 @@ public class DefaultBuilderProvider implements BuilderProvider {
             throw new MoreThanOneBuilderCreationMethodException( typeElement.asType(), builderInfo );
         }
 
-        return findBuilderInfo( typeElement.getSuperclass() );
+        if ( checkParent ) {
+            return findBuilderInfo( typeElement.getSuperclass() );
+        }
+        return null;
     }
 
     /**
