@@ -66,7 +66,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
             if ( typeUtils.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
                 TypeElement immutableElement = asImmutableElement( typeElement );
                 if ( immutableElement != null ) {
-                    return super.findBuilderInfo( immutableElement );
+                    return super.findBuilderInfo( immutableElement, false );
                 }
                 else {
                     // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
