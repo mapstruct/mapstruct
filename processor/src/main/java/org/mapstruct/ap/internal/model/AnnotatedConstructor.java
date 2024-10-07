@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -20,11 +21,11 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public class AnnotatedConstructor extends ModelElement implements Constructor {
 
-    private String name;
+    private final String name;
     private final List<AnnotationMapperReference> mapperReferences;
     private final List<Annotation> annotations;
     private final NoArgumentConstructor noArgumentConstructor;
-    private final Set<SupportingConstructorFragment> fragments;
+    private final Set<ConstructorFragment> fragments;
 
     public static AnnotatedConstructor forComponentModels(String name,
                                                           List<AnnotationMapperReference> mapperReferences,
@@ -37,7 +38,7 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
             noArgumentConstructor = (NoArgumentConstructor) constructor;
         }
         NoArgumentConstructor noArgConstructorToInBecluded = null;
-        Set<SupportingConstructorFragment> fragmentsToBeIncluded = Collections.emptySet();
+        Set<ConstructorFragment> fragmentsToBeIncluded = Collections.emptySet();
         if ( includeNoArgConstructor ) {
             if ( noArgumentConstructor != null ) {
                 noArgConstructorToInBecluded = noArgumentConstructor;
@@ -60,7 +61,7 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
 
     private AnnotatedConstructor(String name, List<AnnotationMapperReference> mapperReferences,
                                  List<Annotation> annotations, NoArgumentConstructor noArgumentConstructor,
-                                 Set<SupportingConstructorFragment> fragments) {
+                                 Set<ConstructorFragment> fragments) {
         this.name = name;
         this.mapperReferences = mapperReferences;
         this.annotations = annotations;
@@ -100,7 +101,7 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
         return noArgumentConstructor;
     }
 
-    public Set<SupportingConstructorFragment> getFragments() {
+    public Set<ConstructorFragment> getFragments() {
         return fragments;
     }
 }
