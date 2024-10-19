@@ -7,6 +7,7 @@ package org.mapstruct.ap.spi;
 
 import java.util.regex.Pattern;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -102,10 +103,14 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
     protected boolean isFluentSetter(ExecutableElement method) {
+        TypeMirror returnType = method.getReturnType();
+        Element enclosingType = method.getEnclosingElement();
+        boolean isGenericReturnType = returnType.getKind() == TypeKind.TYPEVAR;
+
         return method.getParameters().size() == 1 &&
-            !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
+            !JAVA_JAVAX_PACKAGE.matcher( enclosingType.asType().toString() ).matches() &&
             !isAdderWithUpperCase4thCharacter( method ) &&
-            typeUtils.isAssignable( method.getReturnType(), method.getEnclosingElement().asType() );
+            ( isGenericReturnType || typeUtils.isAssignable( returnType, enclosingType.asType() ) );
     }
 
     /**
