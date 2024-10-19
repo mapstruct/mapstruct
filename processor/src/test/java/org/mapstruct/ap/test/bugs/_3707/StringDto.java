@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.bugs._3707;
 
 public class StringDto extends AbstractDto {
     private final String value;
+
     public static class Builder extends AbstractDto.Builder<Builder> {
 
         private String value;
@@ -22,21 +23,21 @@ public class StringDto extends AbstractDto {
         }
 
         public Builder name(String value) {
-            return super.name(value);
+            return super.name( value );
         }
 
         public Builder id(Integer value) {
-            return super.id(value);
+            return super.id( value );
         }
 
         @Override
         public StringDto build() {
-            return new StringDto(this);
+            return new StringDto( this );
         }
     }
 
     private StringDto(Builder builder) {
-        super(builder);
+        super( builder );
         value = builder.value;
     }
 

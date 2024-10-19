@@ -26,12 +26,12 @@ public class BigIntegerDto extends AbstractDto {
 
         @Override
         public BigIntegerDto build() {
-            return new BigIntegerDto(this);
+            return new BigIntegerDto( this );
         }
     }
 
     private BigIntegerDto(Builder builder) {
-        super(builder);
+        super( builder );
         value = builder.value;
     }
 
