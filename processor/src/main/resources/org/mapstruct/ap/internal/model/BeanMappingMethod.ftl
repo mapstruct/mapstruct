@@ -99,30 +99,32 @@
 
     	</#if>
     </#list>
-    <#if (sourceParameters?size > 1)>
-        <#list sourceParametersNeedingPresenceCheck as sourceParam>
-            <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
-                if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
-                    <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
-                        <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
-                    </#list>
-                }
-            </#if>
-        </#list>
-        <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
-            <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
-                <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+        <#if hasPropertyMappingsByParameter()>
+            <#if (sourceParameters?size > 1)>
+                <#list sourceParametersNeedingPresenceCheck as sourceParam>
+                    <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
+                        if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
+                            <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+                                <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                            </#list>
+                        }
+                    </#if>
+                </#list>
+                <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
+                    <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
+                        <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+                            <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
+                        </#list>
+                    </#if>
+                </#list>
+            <#else>
+                <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
+                <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
                     <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
+                <#if mapNullToDefault>}</#if>
             </#if>
-        </#list>
-    <#else>
-        <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
-        <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
-            <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
-        </#list>
-        <#if mapNullToDefault>}</#if>
-    </#if>
+        </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
     </#list>

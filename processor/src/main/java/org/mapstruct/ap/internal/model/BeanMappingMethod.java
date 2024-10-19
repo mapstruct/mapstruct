@@ -2048,6 +2048,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return !constructorMappingsByParameter.isEmpty() || !constructorConstantMappings.isEmpty();
     }
 
+    public boolean hasPropertyMappingsByParameter() {
+        return !mappingsByParameter.isEmpty();
+    }
+
     public MethodReference getFinalizerMethod() {
         return finalizerMethod;
     }
