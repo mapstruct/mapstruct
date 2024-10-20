@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -13,10 +14,17 @@ import javax.lang.model.type.TypeMirror;
  *
  * @author Filip Hrisafov
  */
-public class FieldElementAccessor extends AbstractAccessor<VariableElement> {
+public class ElementAccessor extends AbstractAccessor<Element> {
 
-    public FieldElementAccessor(VariableElement element) {
+    private final AccessorType accessorType;
+
+    public ElementAccessor(VariableElement variableElement) {
+        this( variableElement, AccessorType.FIELD );
+    }
+
+    public ElementAccessor(Element element, AccessorType accessorType) {
         super( element );
+        this.accessorType = accessorType;
     }
 
     @Override
@@ -31,7 +39,7 @@ public class FieldElementAccessor extends AbstractAccessor<VariableElement> {
 
     @Override
     public AccessorType getAccessorType() {
-        return AccessorType.FIELD;
+        return accessorType;
     }
 
 }

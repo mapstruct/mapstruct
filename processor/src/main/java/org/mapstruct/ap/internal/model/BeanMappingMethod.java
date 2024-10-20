@@ -408,9 +408,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     existingVariableNames
                 ) );
 
-                // remove methods without parameters as they are already being invoked
-                removeMappingReferencesWithoutSourceParameters( beforeMappingReferencesWithFinalizedReturnType );
-                removeMappingReferencesWithoutSourceParameters( afterMappingReferencesWithFinalizedReturnType );
+                keepMappingReferencesUsingTarget( beforeMappingReferencesWithFinalizedReturnType, actualReturnType );
+                keepMappingReferencesUsingTarget( afterMappingReferencesWithFinalizedReturnType, actualReturnType );
             }
 
             Map<String, PresenceCheck> presenceChecksByParameter = new LinkedHashMap<>();
@@ -453,8 +452,32 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
         }
 
-        private void removeMappingReferencesWithoutSourceParameters(List<LifecycleCallbackMethodReference> references) {
-            references.removeIf( r -> r.getSourceParameters().isEmpty() && r.getReturnType().isVoid() );
+        private void keepMappingReferencesUsingTarget(List<LifecycleCallbackMethodReference> references, Type type) {
+            references.removeIf( reference -> {
+                List<ParameterBinding> bindings = reference.getParameterBindings();
+                if ( bindings.isEmpty() ) {
+                    return true;
+                }
+                for ( ParameterBinding binding : bindings ) {
+                    if ( binding.isMappingTarget() ) {
+                        if ( type.isAssignableTo( binding.getType() ) ) {
+                            // If the mapping target matches the type then we need to keep this
+                            return false;
+                        }
+                    }
+                    else if ( binding.isTargetType() ) {
+                        Type targetType = binding.getType();
+                        List<Type> targetTypeTypeParameters = targetType.getTypeParameters();
+                        if ( targetTypeTypeParameters.size() == 1 ) {
+                            if ( type.isAssignableTo( targetTypeTypeParameters.get( 0 ) ) ) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            } );
         }
 
         private boolean doesNotAllowAbstractReturnTypeAndCanBeConstructed(Type returnTypeImpl) {
