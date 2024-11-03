@@ -10,6 +10,7 @@ public abstract class AbstractDto {
     private final Integer id;
 
     public abstract static class Builder<T> {
+//    public abstract static class Builder<T extends Builder<T>> {
         private String name;
         private Integer id;
 
