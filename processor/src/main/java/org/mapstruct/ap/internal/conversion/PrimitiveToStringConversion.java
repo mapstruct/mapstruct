@@ -6,7 +6,10 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
@@ -14,6 +17,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormatSymbols;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
 
 /**
@@ -53,9 +58,15 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
     @Override
     public Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            return Collections.singleton(
-                conversionContext.getTypeFactory().getType( DecimalFormat.class )
-            );
+            Set<Type> importTypes = new HashSet<>();
+            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
+
+            if ( conversionContext.getNumberFormat() != null ) {
+                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
+                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            }
+
+            return importTypes;
         }
 
         return Collections.emptySet();
@@ -80,9 +91,15 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            return Collections.singleton(
-                conversionContext.getTypeFactory().getType( DecimalFormat.class )
-            );
+            Set<Type> importTypes = new HashSet<>();
+            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
+
+            if ( conversionContext.getNumberFormat() != null ) {
+                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
+                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            }
+
+            return importTypes;
         }
 
         return Collections.emptySet();
@@ -97,6 +114,23 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
             sb.append( "\"" );
             sb.append( conversionContext.getNumberFormat() );
             sb.append( "\"" );
+
+            if ( conversionContext.getLocale() != null ) {
+                sb.append( ", " )
+                    .append( decimalFormatSymbols( conversionContext ) )
+                    .append( ".getInstance( " )
+                    .append( locale( conversionContext ) )
+                    .append( ".forLanguageTag( \"" )
+                    .append( conversionContext.getLocale() )
+                    .append( " \" ) )" );
+            }
+            else {
+                sb.append( ", " )
+                    .append( decimalFormatSymbols( conversionContext ) )
+                    .append( ".getInstance( " )
+                    .append( locale( conversionContext ) )
+                    .append( ".getDefault() )" );
+            }
         }
 
         sb.append( " )" );

@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Locale;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -47,6 +48,10 @@ public class MapMappingOptions extends DelegatingOptions {
             return options;
         }
 
+        Locale locale = mapMapping.locale().getValue() != null
+            ? Locale.forLanguageTag( mapMapping.locale().getValue() )
+            : null;
+
         SelectionParameters keySelection = new SelectionParameters(
             mapMapping.keyQualifiedBy().get(),
             mapMapping.keyQualifiedByName().get(),
@@ -66,7 +71,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.keyNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.keyDateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
 
         FormattingParameters valueFormatting = new FormattingParameters(
@@ -74,7 +80,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.valueNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.valueDateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
 
         MapMappingOptions options = new MapMappingOptions(
