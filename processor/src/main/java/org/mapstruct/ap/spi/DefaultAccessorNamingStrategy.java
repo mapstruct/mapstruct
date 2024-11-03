@@ -150,7 +150,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return false;
     }
 
-
     /**
      * Checks that the method is an adder with an upper case 4th character. The reason for this is that methods such
      * as {@code address(String address)} are considered as setter and {@code addName(String name)} too. We need to
