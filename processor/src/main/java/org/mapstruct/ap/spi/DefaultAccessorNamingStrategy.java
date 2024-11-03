@@ -122,7 +122,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
             typeUtils.isAssignable( returnType, enclosingElement.asType() );
     }
 
-
     private boolean isTypeVariableRepresentingBuilder(TypeMirror typeVariable, TypeElement builderElement) {
         if ( typeVariable.getKind() != TypeKind.TYPEVAR ) {
             return false;
