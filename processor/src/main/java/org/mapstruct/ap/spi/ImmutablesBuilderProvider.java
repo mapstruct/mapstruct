@@ -36,11 +36,13 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
             return null;
         }
 
+        // First look if there is a builder defined in my own type
         BuilderInfo info = findBuilderInfo( typeElement, false );
         if ( info != null ) {
             return info;
         }
 
+        // Check for a builder in the generated immutable type
         BuilderInfo immutableInfo = findBuilderInfoForImmutables( typeElement );
         if ( immutableInfo != null ) {
             return immutableInfo;

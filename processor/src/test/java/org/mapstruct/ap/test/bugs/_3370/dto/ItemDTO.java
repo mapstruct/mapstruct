@@ -7,19 +7,20 @@ package org.mapstruct.ap.test.bugs._3370.dto;
 
 import java.util.Map;
 
-public abstract class ItemDTO {
-    public abstract String getId();
+public class ItemDTO {
+    private final String id;
+    private final Map<String, String> attributes;
 
-    public abstract Map<String, String> getAttributes();
-
-    public static ImmutableItemDTO.Builder builder() {
-        return new Builder();
+    public ItemDTO(String id, Map<String, String> attributes) {
+        this.id = id;
+        this.attributes = attributes;
     }
 
-    public static class Builder extends ImmutableItemDTO.Builder {
-        public ImmutableItemDTO.Builder addSomeData(String key, String data) {
-            return super.attributes( Map.of( key, data ) );
-        }
+    public String getId() {
+        return id;
     }
 
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
 }

@@ -13,7 +13,6 @@ import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.mapstruct.ap.test.bugs._3370.domain.ImmutableItem;
 import org.mapstruct.ap.test.bugs._3370.domain.Item;
-import org.mapstruct.ap.test.bugs._3370.dto.ImmutableItemDTO;
 import org.mapstruct.ap.test.bugs._3370.dto.ItemDTO;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -28,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     Item.class,
     ImmutableItem.class,
     ItemDTO.class,
-    ImmutableItemDTO.class
 })
 @IssueKey("3370")
 @WithServiceImplementations({
@@ -45,10 +43,7 @@ public class Issue3370Test {
         attributesMap.put( "a", "b" );
         attributesMap.put( "c", "d" );
 
-        ItemDTO item = ItemDTO.builder()
-            .id( "test" )
-            .attributes( attributesMap )
-            .build();
+        ItemDTO item = new ItemDTO( "test", attributesMap );
 
         Item target = ItemMapper.INSTANCE.map( item );
 

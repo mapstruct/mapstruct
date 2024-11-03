@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._3370.domain;
 
+import java.util.Collections;
 import java.util.Map;
 
 public abstract class Item {
@@ -20,7 +21,7 @@ public abstract class Item {
     public static class Builder extends ImmutableItem.Builder {
 
         public ImmutableItem.Builder addSomeData(String key, String data) {
-            return super.attributes( Map.of( key, data ) );
+            return super.attributes( Collections.singletonMap( key, data ) );
         }
     }
 }
