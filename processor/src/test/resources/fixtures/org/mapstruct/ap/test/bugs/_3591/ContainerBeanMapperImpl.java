@@ -26,7 +26,7 @@ public class ContainerBeanMapperImpl implements ContainerBeanMapper {
         if ( containerBeanDto.getBeanMap() != null ) {
             Map<String, ContainerBeanDto> map = stringContainerBeanMapToStringContainerBeanDtoMap( containerBean.getBeanMap() );
             if ( map != null ) {
-                containerBeanDto.getBeanMap().clear();
+                containerBeanDto.getBeanMap().entrySet().retainAll( map.entrySet() );
                 containerBeanDto.getBeanMap().putAll( map );
             }
             else {
