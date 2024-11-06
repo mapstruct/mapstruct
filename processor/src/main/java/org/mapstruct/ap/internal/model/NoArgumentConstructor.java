@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model;
 import java.util.Collections;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.ConstructorFragment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -19,9 +20,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class NoArgumentConstructor extends ModelElement implements Constructor {
 
     private final String name;
-    private final Set<SupportingConstructorFragment> fragments;
+    private final Set<ConstructorFragment> fragments;
 
-    public NoArgumentConstructor(String name, Set<SupportingConstructorFragment> fragments) {
+    public NoArgumentConstructor(String name, Set<ConstructorFragment> fragments) {
         this.name = name;
         this.fragments = fragments;
     }
@@ -36,7 +37,7 @@ public class NoArgumentConstructor extends ModelElement implements Constructor {
         return name;
     }
 
-    public Set<SupportingConstructorFragment> getFragments() {
+    public Set<ConstructorFragment> getFragments() {
         return fragments;
     }
 }

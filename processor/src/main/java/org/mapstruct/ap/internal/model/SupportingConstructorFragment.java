@@ -18,7 +18,7 @@ import org.mapstruct.ap.internal.model.common.Type;
  *
  * @author Sjaak Derksen
  */
-public class SupportingConstructorFragment extends ModelElement {
+public class SupportingConstructorFragment extends ModelElement implements ConstructorFragment {
 
     private final String variableName;
     private final String templateName;
@@ -81,7 +81,7 @@ public class SupportingConstructorFragment extends ModelElement {
     }
 
     public static void addAllFragmentsIn(Set<SupportingMappingMethod> supportingMappingMethods,
-                                         Set<SupportingConstructorFragment> targets) {
+                                         Set<ConstructorFragment> targets) {
         for ( SupportingMappingMethod supportingMappingMethod : supportingMappingMethods ) {
             SupportingConstructorFragment fragment = supportingMappingMethod.getSupportingConstructorFragment();
             if ( fragment != null ) {
