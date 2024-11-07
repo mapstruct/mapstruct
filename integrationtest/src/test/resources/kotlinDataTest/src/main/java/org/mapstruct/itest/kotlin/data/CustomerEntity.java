@@ -11,7 +11,9 @@ package org.mapstruct.itest.kotlin.data;
 public class CustomerEntity {
 
     private String name;
+    private int age;
     private String mail;
+    private String job;
 
     public String getName() {
         return name;
@@ -21,11 +23,27 @@ public class CustomerEntity {
         this.name = name;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     public String getMail() {
         return mail;
     }
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
     }
 }
