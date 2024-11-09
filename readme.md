@@ -19,7 +19,10 @@
 
 ## What is MapStruct?
 
-MapStruct is a Java [annotation processor](https://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe and performant mappers for Java bean classes. It saves you from writing mapping code by hand, which is a tedious and error-prone task. The generator comes with sensible defaults and many built-in type conversions, but it steps out of your way when it comes to configuring or implementing special behavior.
+MapStruct is a Java [annotation processor](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html#annotation-processing) designed to generate type-safe and high-performance mappers for Java bean classes, including support for Java 16+ records.
+By automating the creation of mappings, MapStruct eliminates the need for tedious and error-prone manual coding. 
+The generator provides sensible defaults and built-in type conversions, allowing it to handle standard mappings effortlessly, while also offering flexibility for custom configurations or specialized mapping behaviors.
+With seamless integration into modern Java projects, MapStruct can map between conventional beans, records, and even complex hierarchies, making it an adaptable tool for diverse Java applications.
 
 Compared to mapping frameworks working at runtime, MapStruct offers the following advantages:
 
