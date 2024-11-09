@@ -10,9 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.TypeConversion;
@@ -22,6 +21,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.simpleDateFormat;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -52,14 +52,14 @@ public class DateToStringConversion implements ConversionProvider {
     }
 
     private Set<Type> getImportTypes(ConversionContext conversionContext) {
-        Set<Type> importTypes = new HashSet<>();
-        importTypes.add( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) );
-
-        if ( conversionContext.getDateFormat() != null ) {
-            importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+        if ( conversionContext.getLocale() == null ) {
+            return Collections.singleton( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) );
         }
 
-        return importTypes;
+        return asSet(
+            conversionContext.getTypeFactory().getType( SimpleDateFormat.class ),
+            conversionContext.getTypeFactory().getType( Locale.class )
+        );
     }
 
     private String getConversionExpression(ConversionContext conversionContext, String method) {
@@ -70,15 +70,15 @@ public class DateToStringConversion implements ConversionProvider {
         if ( conversionContext.getDateFormat() != null ) {
             conversionString.append( " \"" );
             conversionString.append( conversionContext.getDateFormat() );
-            conversionString.append( "\", " );
+            conversionString.append( "\"" );
 
             if ( conversionContext.getLocale() != null ) {
-                conversionString.append( locale( conversionContext ) ).append( ".forLanguageTag( \"" );
+                conversionString.append( ", " ).append( locale( conversionContext ) ).append( ".forLanguageTag( \"" );
                 conversionString.append( conversionContext.getLocale() );
                 conversionString.append( "\" ) " );
             }
             else {
-                conversionString.append( locale( conversionContext ) ).append( ".getDefault() " );
+                conversionString.append( " " );
             }
         }
 

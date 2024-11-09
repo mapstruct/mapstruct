@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,16 +18,16 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -133,7 +132,7 @@ public class MappingOptions extends DelegatingOptions {
             mapping.mirror(),
             mapping.dateFormat().getAnnotationValue(),
             method,
-            locale != null ? Locale.forLanguageTag( locale ) : null
+            locale
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),

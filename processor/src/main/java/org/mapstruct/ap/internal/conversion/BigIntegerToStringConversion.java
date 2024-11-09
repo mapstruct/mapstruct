@@ -73,25 +73,30 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
     public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
         List<HelperMethod> helpers = new ArrayList<>();
         if ( conversionContext.getNumberFormat() != null ) {
-            helpers.add( new CreateDecimalFormat( conversionContext.getTypeFactory() ) );
+            helpers.add( new CreateDecimalFormat(
+                conversionContext.getTypeFactory(),
+                conversionContext.getLocale() != null
+            ) );
         }
         return helpers;
     }
 
     private void appendDecimalFormatter(StringBuilder sb, ConversionContext conversionContext) {
-        sb.append( "createDecimalFormat( " );
+        boolean withLocale = conversionContext.getLocale() != null;
+        sb.append( "createDecimalFormat" );
+        if ( withLocale ) {
+            sb.append( "WithLocale" );
+        }
+        sb.append( "( " );
         if ( conversionContext.getNumberFormat() != null ) {
             sb.append( "\"" );
             sb.append( conversionContext.getNumberFormat() );
             sb.append( "\"" );
         }
-        if ( conversionContext.getLocale() != null ) {
+        if ( withLocale ) {
             sb.append( ", " ).append( locale( conversionContext ) ).append( ".forLanguageTag( \"" );
             sb.append( conversionContext.getLocale() );
             sb.append( "\" )" );
-        }
-        else {
-            sb.append( ", " ).append( locale( conversionContext ) ).append( ".getDefault() " );
         }
 
         sb.append( " )" );

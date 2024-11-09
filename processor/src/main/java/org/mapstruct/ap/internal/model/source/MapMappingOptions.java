@@ -5,18 +5,17 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.Locale;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -48,9 +47,7 @@ public class MapMappingOptions extends DelegatingOptions {
             return options;
         }
 
-        Locale locale = mapMapping.locale().getValue() != null
-            ? Locale.forLanguageTag( mapMapping.locale().getValue() )
-            : null;
+        String locale = mapMapping.locale().getValue();
 
         SelectionParameters keySelection = new SelectionParameters(
             mapMapping.keyQualifiedBy().get(),

@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.common;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import java.util.Locale;
 
 /**
  *
@@ -23,10 +22,10 @@ public class FormattingParameters {
     private final AnnotationMirror mirror;
     private final AnnotationValue dateAnnotationValue;
     private final Element element;
-    private final Locale locale;
+    private final String locale;
 
     public FormattingParameters(String date, String number, AnnotationMirror mirror,
-        AnnotationValue dateAnnotationValue, Element element, Locale locale) {
+        AnnotationValue dateAnnotationValue, Element element, String locale) {
         this.date = date;
         this.number = number;
         this.mirror = mirror;
@@ -55,7 +54,7 @@ public class FormattingParameters {
         return element;
     }
 
-    public Locale getLocale() {
+    public String getLocale() {
         return locale;
     }
 }

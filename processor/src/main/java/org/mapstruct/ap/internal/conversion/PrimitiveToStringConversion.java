@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.conversion;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -17,9 +16,10 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormatSymbols;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormatSymbols;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between primitive types such as {@code byte} or {@code long} and
@@ -58,15 +58,15 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
     @Override
     public Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            Set<Type> importTypes = new HashSet<>();
-            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
-
-            if ( conversionContext.getNumberFormat() != null ) {
-                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
-                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            if ( conversionContext.getLocale() != null ) {
+                return asSet(
+                    conversionContext.getTypeFactory().getType( DecimalFormat.class ),
+                    conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ),
+                    conversionContext.getTypeFactory().getType( Locale.class )
+                );
             }
 
-            return importTypes;
+            return Collections.singleton( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
         }
 
         return Collections.emptySet();
@@ -91,15 +91,15 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            Set<Type> importTypes = new HashSet<>();
-            importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
-
-            if ( conversionContext.getNumberFormat() != null ) {
-                importTypes.add( conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ) );
-                importTypes.add( conversionContext.getTypeFactory().getType( Locale.class ) );
+            if ( conversionContext.getLocale() != null ) {
+                return asSet(
+                    conversionContext.getTypeFactory().getType( DecimalFormat.class ),
+                    conversionContext.getTypeFactory().getType( DecimalFormatSymbols.class ),
+                    conversionContext.getTypeFactory().getType( Locale.class )
+                );
             }
 
-            return importTypes;
+            return Collections.singleton( conversionContext.getTypeFactory().getType( DecimalFormat.class ) );
         }
 
         return Collections.emptySet();
@@ -123,13 +123,6 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
                     .append( ".forLanguageTag( \"" )
                     .append( conversionContext.getLocale() )
                     .append( " \" ) )" );
-            }
-            else {
-                sb.append( ", " )
-                    .append( decimalFormatSymbols( conversionContext ) )
-                    .append( ".getInstance( " )
-                    .append( locale( conversionContext ) )
-                    .append( ".getDefault() )" );
             }
         }
 
