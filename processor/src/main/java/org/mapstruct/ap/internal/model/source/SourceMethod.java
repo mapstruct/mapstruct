@@ -186,7 +186,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setDefininingType(Type definingType) {
+        public Builder setDefiningType(Type definingType) {
             this.definingType = definingType;
             return this;
         }
