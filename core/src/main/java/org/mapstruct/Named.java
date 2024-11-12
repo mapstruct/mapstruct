@@ -70,6 +70,10 @@ import java.lang.annotation.Target;
  * </code>
  * </pre>
  *
+ * Please note, that {@code @Named} cannot be placed on private methods in case of abstract classes usage. 
+ * This is due to the fact that mapstruct generates the subclass, and the sublcass won't have access to the 
+ * parent's private methods.
+ *
  * @author Sjaak Derksen
  * @see org.mapstruct.Mapping#qualifiedByName()
  * @see IterableMapping#qualifiedByName()
