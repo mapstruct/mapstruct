@@ -389,7 +389,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         return new SourceMethod.Builder()
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
-            .setDefininingType( definingType )
+            .setDefiningType( definingType )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )
