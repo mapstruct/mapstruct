@@ -259,7 +259,7 @@ public class MappingBuilderContext {
     }
 
     /**
-     * @param type that MapStruct wants to use to genrate an autoamtic sub-mapping for/from
+     * @param type that MapStruct wants to use to generate an automatic sub-mapping for/from
      *
      * @return {@code true} if the type is not excluded from the {@link MappingExclusionProvider}
      */
