@@ -1364,7 +1364,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetPropertyName );
             }
 
-            // its a constant
+            // it's a constant
             // if we have an unprocessed target that means that it most probably is nested and we should
             // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getConstant() != null ) {
@@ -1384,7 +1384,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetPropertyName );
             }
 
-            // its an expression
+            // it's an expression
             // if we have an unprocessed target that means that it most probably is nested and we should
             // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getJavaExpression() != null ) {
@@ -1400,7 +1400,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .build();
                 handledTargets.add( targetPropertyName );
             }
-            // its a plain-old property mapping
+            // it's a plain-old property mapping
             else  {
 
                 SourceReference sourceRef = mappingRef.getSourceReference();

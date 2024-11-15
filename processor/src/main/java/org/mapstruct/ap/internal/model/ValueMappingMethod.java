@@ -274,7 +274,7 @@ public class ValueMappingMethod extends MappingMethod {
                 return mappings;
             }
 
-            // Start to fill the mappings with the defined valuemappings
+            // Start to fill the mappings with the defined valueMappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
@@ -305,7 +305,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
             Set<String> mappedSources = new LinkedHashSet<>();
 
-            // Start to fill the mappings with the defined valuemappings
+            // Start to fill the mappings with the defined value mappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 mappedSources.add( valueMapping.getSource() );
                 mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );

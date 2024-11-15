@@ -226,7 +226,7 @@ public class NestedTargetPropertyMappingHolder {
                         handledTargets.add( entryByTP.getKey() );
                     }
 
-                    // For the nonNested mappings (assymetric) Mappings we also forge mappings
+                    // For the nonNested mappings (asymmetric) Mappings we also forge mappings
                     // However, here we do not forge name based mappings and we only
                     // do update on the defined Mappings.
                     if ( !groupedSourceReferences.nonNested.isEmpty() ) {
@@ -755,7 +755,7 @@ public class NestedTargetPropertyMappingHolder {
     }
 
     /**
-     * This class is used to group Source references in respected to the nestings that they have.
+     * This class is used to group Source references in respected to the nesting that they have.
      *
      * This class contains all groupings by Property Entries if they are nested, or a list of all the other options
      * that could not have been popped.
