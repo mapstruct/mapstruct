@@ -8,14 +8,14 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -47,6 +47,8 @@ public class MapMappingOptions extends DelegatingOptions {
             return options;
         }
 
+        String locale = mapMapping.locale().getValue();
+
         SelectionParameters keySelection = new SelectionParameters(
             mapMapping.keyQualifiedBy().get(),
             mapMapping.keyQualifiedByName().get(),
@@ -66,7 +68,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.keyNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.keyDateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
 
         FormattingParameters valueFormatting = new FormattingParameters(
@@ -74,7 +77,8 @@ public class MapMappingOptions extends DelegatingOptions {
             mapMapping.valueNumberFormat().get(),
             mapMapping.mirror(),
             mapMapping.valueDateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
 
         MapMappingOptions options = new MapMappingOptions(

@@ -18,16 +18,16 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -118,6 +118,8 @@ public class MappingOptions extends DelegatingOptions {
         String conditionExpression = getConditionExpression( mapping, method, messager );
         String dateFormat = mapping.dateFormat().getValue();
         String numberFormat = mapping.numberFormat().getValue();
+        String locale = mapping.locale().getValue();
+
         String defaultValue = mapping.defaultValue().getValue();
 
         Set<String> dependsOn = mapping.dependsOn().hasValue() ?
@@ -129,7 +131,8 @@ public class MappingOptions extends DelegatingOptions {
             numberFormat,
             mapping.mirror(),
             mapping.dateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),
