@@ -390,7 +390,7 @@ public class Conversions {
                 return false;
             }
 
-            return Objects.equals(targetType, other.targetType);
+            return Objects.equals( targetType, other.targetType );
         }
     }
 }
