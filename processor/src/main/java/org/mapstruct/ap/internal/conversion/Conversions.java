@@ -268,10 +268,10 @@ public class Conversions {
         if ( sourceType.isPrimitive() && targetType.isPrimitive() ) {
             register( sourceType, targetType, new PrimitiveToPrimitiveConversion( sourceType ) );
         }
-        else if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
+        else if ( sourceType.isPrimitive() ) {
             register( sourceType, targetType, new PrimitiveToWrapperConversion( sourceType, targetType ) );
         }
-        else if ( !sourceType.isPrimitive() && targetType.isPrimitive() ) {
+        else if ( targetType.isPrimitive() ) {
             register( sourceType, targetType, inverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
         }
         else {
@@ -390,11 +390,7 @@ public class Conversions {
                 return false;
             }
 
-            if ( !Objects.equals( targetType, other.targetType ) ) {
-                return false;
-            }
-
-            return true;
+            return Objects.equals( targetType, other.targetType );
         }
     }
 }
