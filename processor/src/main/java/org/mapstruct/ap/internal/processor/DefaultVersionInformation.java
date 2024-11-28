@@ -135,17 +135,17 @@ public class DefaultVersionInformation implements VersionInformation {
             className = processingEnv.getClass().getName();
         }
 
-        if ( className.equals( JAVAC_PE_CLASS ) ) {
+        if ( JAVAC_PE_CLASS.equals (className ) ) {
             return COMPILER_NAME_JAVAC;
         }
 
-        if ( className.equals( JDT_IDE_PE_CLASS ) ) {
+        if ( JDT_IDE_PE_CLASS.equals (className ) ) {
             // the processing environment for the IDE integrated APT is in a different bundle than the APT classes
             return COMPILER_NAME_ECLIPSE_JDT + " (IDE) "
                 + getLibraryName( processingEnv.getTypeUtils().getClass(), true );
         }
 
-        if ( className.equals( JDT_BATCH_PE_CLASS ) ) {
+        if ( JDT_BATCH_PE_CLASS.equals (className ) ) {
             return COMPILER_NAME_ECLIPSE_JDT + " (Batch) " + getLibraryName( processingEnv.getClass(), true );
         }
 

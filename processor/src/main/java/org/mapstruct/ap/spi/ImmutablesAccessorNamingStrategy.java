@@ -22,7 +22,7 @@ public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrat
     @Override
     protected boolean isFluentSetter(ExecutableElement method) {
         return super.isFluentSetter( method ) &&
-            !method.getSimpleName().toString().equals( "from" ) &&
+            !"from".equals (method.getSimpleName().toString() ) &&
             !isPutterWithUpperCase4thCharacter( method );
     }
 
