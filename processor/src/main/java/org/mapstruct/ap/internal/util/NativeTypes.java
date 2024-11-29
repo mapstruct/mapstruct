@@ -174,7 +174,7 @@ public class NativeTypes {
             boolean endsWithDSuffix = PTRN_DOUBLE.matcher( val ).find();
             // error handling
             if ( isFloat && endsWithDSuffix ) {
-                throw new NumberFormatException( "Assiging double to a float" );
+                throw new NumberFormatException( "Assigning double to a float" );
             }
             // remove suffix
             if ( endsWithLSuffix || endsWithFSuffix || endsWithDSuffix ) {

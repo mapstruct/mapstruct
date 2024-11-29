@@ -64,7 +64,7 @@ public class NestedTargetPropertyMappingHolder {
     }
 
     /**
-     * @return all the targets that were hanled
+     * @return all the targets that were handled
      */
     public Set<String> getHandledTargets() {
         return handledTargets;
