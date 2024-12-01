@@ -6,12 +6,12 @@
 package org.mapstruct.ap.test.accessibility.referenced;
 
 /**
+ *
  * @author Sjaak Derksen
  */
-public class SourceTargetmapperPrivateBase {
+public class SourceTargetMapperProtectedBase {
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
+    protected ReferencedTarget sourceToTarget( ReferencedSource source ) {
         ReferencedTarget target = new ReferencedTarget();
         target.setBar( source.getFoo() );
         return target;
