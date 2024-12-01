@@ -66,18 +66,37 @@ public @interface IterableMapping {
     /**
      * A format string as processable by {@link SimpleDateFormat} if the annotated method maps from an iterable of
      * {@code String} to an iterable {@link Date} or vice-versa. Will be ignored for all other element types.
+     * <p>
+     * If the {@link #locale()} is also specified, the format will consider the specified locale when processing
+     * the date. Otherwise, the system's default locale will be used.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
+     * @see #locale()
      */
     String dateFormat() default "";
 
     /**
      * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
+     * <p>
+     * If the {@link #locale()} is also specified, the number format will be applied in the context of the given locale.
+     * Otherwise, the system's default locale will be used to process the number format.
      *
      * @return A decimal format string as processable by {@link DecimalFormat}.
+     * @see #locale()
      */
     String numberFormat() default "";
+
+    /**
+     * Specifies the locale to be used when processing {@link #dateFormat()} or {@link #numberFormat()}.
+     * <p>
+     * The locale should be a plain tag representing the language, such as "en" for English, "de" for German, etc.
+     * <p>
+     * If no locale is specified, the system's default locale will be used.
+     *
+     * @return A string representing the locale to be used when formatting dates or numbers.
+     */
+    String locale() default "";
 
     /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple

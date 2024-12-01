@@ -21,6 +21,7 @@ public class DefaultConversionContext implements ConversionContext {
     private final FormattingParameters formattingParameters;
     private final String dateFormat;
     private final String numberFormat;
+    private final String locale;
     private final TypeFactory typeFactory;
 
     public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
@@ -32,6 +33,7 @@ public class DefaultConversionContext implements ConversionContext {
         this.formattingParameters = formattingParameters;
         this.dateFormat = this.formattingParameters.getDate();
         this.numberFormat = this.formattingParameters.getNumber();
+        this.locale = this.formattingParameters.getLocale();
         validateDateFormat();
     }
 
@@ -62,6 +64,11 @@ public class DefaultConversionContext implements ConversionContext {
     @Override
     public String getNumberFormat() {
         return numberFormat;
+    }
+
+    @Override
+    public String getLocale() {
+        return locale != null ? locale.toString() : null;
     }
 
     @Override
