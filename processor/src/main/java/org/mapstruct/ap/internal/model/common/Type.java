@@ -380,7 +380,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isRecord() {
-        return typeElement.getKind().name().equals( "RECORD" );
+        return "RECORD".equals (typeElement.getKind().name() );
     }
 
     /**

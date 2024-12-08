@@ -28,7 +28,7 @@ public class CustomMappingExclusionProvider implements MappingExclusionProvider 
         // tag::documentation[]
         Name name = typeElement.getQualifiedName();
         return name.length() != 0 && ( JAVA_JAVAX_PACKAGE.matcher( name ).matches() ||
-            name.toString().equals( "org.mapstruct.ap.test.nestedbeans.exclusions.custom.Target.NestedTarget" ) );
+            "org.mapstruct.ap.test.nestedbeans.exclusions.custom.Target.NestedTarget".equals (name.toString() ) );
     }
 }
 // end::documentation[]

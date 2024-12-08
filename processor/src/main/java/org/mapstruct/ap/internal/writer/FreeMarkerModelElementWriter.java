@@ -53,7 +53,7 @@ public class FreeMarkerModelElementWriter {
 
         @Override
         public TemplateModel get(String key) throws TemplateModelException {
-            if ( key.equals( "ext" ) ) {
+            if ( "ext".equals (key ) ) {
                 return extParams;
             }
             else {

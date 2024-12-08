@@ -300,7 +300,7 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
         }
 
         return element.getSuperclass().getKind() == TypeKind.DECLARED
-            && !asTypeElement( element.getSuperclass() ).getQualifiedName().toString().equals( "java.lang.Object" );
+            && !"java.lang.Object".equals (asTypeElement( element.getSuperclass() ).getQualifiedName().toString() );
     }
 
     /**
