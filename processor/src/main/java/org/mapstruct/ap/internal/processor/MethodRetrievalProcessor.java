@@ -21,6 +21,7 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
+import org.mapstruct.ap.internal.gem.IgnoredGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -76,6 +77,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
     private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
     private static final String CONDITION_FQN = "org.mapstruct.Condition";
+    private static final String IGNORED_FQN = "org.mapstruct.Ignored";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -619,7 +621,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
+        Set<MappingOptions> processedAnnotations = new RepeatableMappings( beanMapping )
+                .getProcessedAnnotations( method );
+        processedAnnotations.addAll( new IgnoredConditions().getProcessedAnnotations( method ) );
+        return processedAnnotations;
     }
 
     /**
@@ -818,4 +823,25 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
     }
+
+    private class IgnoredConditions extends MetaAnnotations<IgnoredGem, MappingOptions> {
+
+        protected IgnoredConditions() {
+            super( elementUtils, IGNORED_FQN );
+        }
+
+        @Override
+        protected IgnoredGem instanceOn(Element element) {
+            return IgnoredGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(IgnoredGem gem, Element source, Set<MappingOptions> values) {
+            IgnoredGem mapping = IgnoredGem.instanceOn( source );
+            for ( String target : mapping.value().get() ) {
+                values.add( MappingOptions.forIgnore( target ) );
+            }
+        }
+    }
+
 }
