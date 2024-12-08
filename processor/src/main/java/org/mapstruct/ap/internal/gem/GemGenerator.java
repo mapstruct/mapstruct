@@ -26,6 +26,7 @@ import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
+import org.mapstruct.Ignored;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
@@ -53,6 +54,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(AnnotateWiths.class)
 @GemDefinition(Mapper.class)
 @GemDefinition(Mapping.class)
+@GemDefinition(Ignored.class)
 @GemDefinition(Mappings.class)
 @GemDefinition(IterableMapping.class)
 @GemDefinition(BeanMapping.class)
