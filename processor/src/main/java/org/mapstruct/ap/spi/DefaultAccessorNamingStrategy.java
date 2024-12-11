@@ -105,6 +105,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return method.getParameters().size() == 1 &&
             !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
             !isAdderWithUpperCase4thCharacter( method ) &&
+            !isRemoverWithUpperCase7thCharacter( method ) &&
             typeUtils.isAssignable( method.getReturnType(), method.getEnclosingElement().asType() );
     }
 
@@ -138,6 +139,38 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         String methodName = method.getSimpleName().toString();
 
         return methodName.startsWith( "add" ) && methodName.length() > 3;
+    }
+
+    /**
+     * Checks that the method is a remover with an upper case 7th character. The reason for this is that methods such
+     * as {@code removed(boolean removed)} are considered as setter and {@code removeName(String name)} too. We need to
+     * make sure that {@code removeName} is considered as a remover and {@code removed} is considered as a setter.
+     *
+     * @param method the method that needs to be checked
+     *
+     * @return {@code true} if the method is a remover with an upper case 7th character, {@code false} otherwise
+     */
+    private boolean isRemoverWithUpperCase7thCharacter(ExecutableElement method) {
+        return isRemoverMethod( method ) && Character.isUpperCase( method.getSimpleName().toString().charAt( 6 ) );
+    }
+
+    /**
+     * Returns {@code true} when the {@link ExecutableElement} is a remover method. A remover method starts with
+     * 'remove'. The remainder of the name is supposed to reflect the <em>singular</em> property name (as opposed to
+     * plural) of its corresponding property. For example: property "children", but "removeChild". See also
+     * {@link #getElementName(ExecutableElement) }.
+     * <p>
+     * The calling MapStruct code guarantees there's only one argument.
+     * <p>
+     *
+     * @param method to be analyzed
+     *
+     * @return {@code true} when the method is a remover method.
+     */
+    public boolean isRemoverMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+
+        return methodName.startsWith( "remove" ) && methodName.length() > 6;
     }
 
     /**
