@@ -8,6 +8,7 @@ package org.mapstruct.factory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -75,14 +76,21 @@ public class Mappers {
         throw new ClassNotFoundException("Cannot find implementation for " + mapperType.getName() );
     }
 
-    private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) throws NoSuchMethodException {
+    private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) {
         try {
             @SuppressWarnings( "unchecked" )
             Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
-            Constructor<T> constructor = implementation.getDeclaredConstructor();
-            constructor.setAccessible( true );
 
-            return constructor.newInstance();
+            Constructor<?>[] constructors = implementation.getDeclaredConstructors();
+            Constructor<T> constructor = (Constructor<T>) constructors[0];
+            constructor.setAccessible(true);
+            // the parameters are mappers
+            Class<?>[] parameters = constructor.getParameterTypes();
+            Object[] args = Arrays.stream(parameters)
+                .map(paramClass -> doGetMapper(paramClass, classLoader))
+                .toArray();
+
+            return constructor.newInstance(args);
         }
         catch (ClassNotFoundException e) {
             return getMapperFromServiceLoader( clazz, classLoader );
