@@ -278,6 +278,14 @@ public class Type extends ModelElement implements Comparable<Type> {
         return typeMirror.getKind().isPrimitive();
     }
 
+    public boolean isPrimitiveArray() {
+        TypeMirror currentType = typeMirror;
+        while(currentType.getKind() == TypeKind.ARRAY) {
+            currentType = ((ArrayType) currentType).getComponentType();
+        }
+        return typeMirror.getKind() == TypeKind.ARRAY && currentType.getKind().isPrimitive();
+    }
+
     public boolean isInterface() {
         return isInterface;
     }
@@ -380,7 +388,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isRecord() {
-        return typeElement.getKind().name().equals( "RECORD" );
+        return typeElement != null && typeElement.getKind().name().equals( "RECORD" );
     }
 
     /**

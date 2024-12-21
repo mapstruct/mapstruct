@@ -177,6 +177,7 @@ public enum Message {
     RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type from java stdlib." ),
     RETRIEVAL_PRIMITIVE_PARAMETER( "Can't generate mapping method with primitive parameter type." ),
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
+    RETRIEVAL_PRIMITIVE_ARRAY_RETURN( "Can't generate mapping method with primitive array return type." ),
     RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),
     RETRIEVAL_TYPE_VAR_RESULT( "Can't generate mapping method for a generic type variable target." ),
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
