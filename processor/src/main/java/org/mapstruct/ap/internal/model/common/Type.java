@@ -1339,7 +1339,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( hasAccessibleConstructor == null ) {
             hasAccessibleConstructor = false;
             if ( typeElement != null ) {
-                List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+                List<ExecutableElement> constructors =
+                    ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
                 for ( ExecutableElement constructor : constructors ) {
                     if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
                         hasAccessibleConstructor = true;
