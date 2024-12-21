@@ -27,7 +27,7 @@ public class Issue3786Test {
                 type = ByteArrayMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 12,
-                message = "Can't generate mapping method with primitive array return type."
+                message = "byte[] does not have an accessible constructor."
             )
         }
     )

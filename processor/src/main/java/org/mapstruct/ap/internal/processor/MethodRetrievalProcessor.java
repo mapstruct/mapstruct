@@ -583,11 +583,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( resultType.isPrimitiveArray() ) {
-            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_ARRAY_RETURN );
-            return false;
-        }
-
         for ( Type typeParameter : resultType.getTypeParameters() ) {
             if ( typeParameter.isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
