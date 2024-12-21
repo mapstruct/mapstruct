@@ -18,13 +18,13 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 @IssueKey( "3786" )
 public class Issue3786Test {
 
-    @WithClasses( ByteArrayMapper.class )
+    @WithClasses( ErroneousByteArrayMapper.class )
     @ProcessorTest
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(
-                type = ByteArrayMapper.class,
+                type = ErroneousByteArrayMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 12,
                 message = "byte[] does not have an accessible constructor."

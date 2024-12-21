@@ -8,6 +8,6 @@ package org.mapstruct.ap.test.bugs._3786;
 import org.mapstruct.Mapper;
 
 @Mapper
-public interface ByteArrayMapper {
+public interface ErroneousByteArrayMapper {
     byte[] map( String something );
 }
