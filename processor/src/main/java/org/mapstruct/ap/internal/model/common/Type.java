@@ -380,7 +380,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isRecord() {
-        return typeElement.getKind().name().equals( "RECORD" );
+        return typeElement != null && typeElement.getKind().name().equals( "RECORD" );
     }
 
     /**
@@ -1338,11 +1338,14 @@ public class Type extends ModelElement implements Comparable<Type> {
     public boolean hasAccessibleConstructor() {
         if ( hasAccessibleConstructor == null ) {
             hasAccessibleConstructor = false;
-            List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
-            for ( ExecutableElement constructor : constructors ) {
-                if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
-                    hasAccessibleConstructor = true;
-                    break;
+            if ( typeElement != null ) {
+                List<ExecutableElement> constructors =
+                    ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+                for ( ExecutableElement constructor : constructors ) {
+                    if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                        hasAccessibleConstructor = true;
+                        break;
+                    }
                 }
             }
         }

@@ -175,6 +175,7 @@ public enum Message {
     RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type from java stdlib to non-iterable type." ),
     RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER( "Can't generate mapping method that has a parameter annotated with @TargetType." ),
     RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type from java stdlib." ),
+    RETRIEVAL_NON_ITERABLE_TO_ARRAY( "Can't generate mapping method from non-iterable type to array." ),
     RETRIEVAL_PRIMITIVE_PARAMETER( "Can't generate mapping method with primitive parameter type." ),
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
     RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),
