@@ -27,7 +27,7 @@ public class Issue3786Test {
                 type = ErroneousByteArrayMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 12,
-                message = "byte[] does not have an accessible constructor."
+                message = "Can't generate mapping method from non-iterable type to array."
             )
         }
     )
