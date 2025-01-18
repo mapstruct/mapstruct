@@ -302,7 +302,7 @@ If you don't want explicitly name all properties from nested source bean, you ca
 The generated code will map every property from `CustomerDto.record` to `Customer` directly, without need to manually name any of them.
 The same goes for `Customer.account`.
 
-When there are conflicts, these can be resolved by explicitely defining the mapping. For instance in the example above. `name` occurs in `CustomerDto.record` and in `CustomerDto.account`. The mapping `@Mapping( target = "name", source = "record.name" )` resolves this conflict.
+When there are conflicts, these can be resolved by explicitly defining the mapping. For instance in the example above. `name` occurs in `CustomerDto.record` and in `CustomerDto.account`. The mapping `@Mapping( target = "name", source = "record.name" )` resolves this conflict.
 
 
 This "target this" notation can be very useful when mapping hierarchical objects to flat objects and vice versa (`@InheritInverseConfiguration`).
