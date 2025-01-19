@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._1395;
+package org.mapstruct.ap.test.bugs._1395.spring;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
