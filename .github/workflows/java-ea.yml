@@ -7,11 +7,7 @@ env:
 
 jobs:
   test_jdk_ea:
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [19-ea]
-    name: 'Linux JDK ${{ matrix.java }}'
+    name: 'Linux JDK EA'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
