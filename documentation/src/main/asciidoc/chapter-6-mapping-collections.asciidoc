@@ -212,11 +212,15 @@ When an iterable or map mapping method declares an interface type as return type
 
 |`Set`|`LinkedHashSet`
 
+|`SequencedSet`|`LinkedHashSet`
+
 |`SortedSet`|`TreeSet`
 
 |`NavigableSet`|`TreeSet`
 
 |`Map`|`LinkedHashMap`
+
+|`SequencedMap`|`LinkedHashMap`
 
 |`SortedMap`|`TreeMap`
 
