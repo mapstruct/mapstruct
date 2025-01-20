@@ -30,6 +30,7 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
 
         switch ( currentJreVersion ) {
             case JAVA_8:
+                additionalExcludes.add( "org/mapstruct/ap/test/**/spring/**/*.java" );
                 additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/cdi/**/*.java" );
                 additionalExcludes.add( "org/mapstruct/ap/test/injectionstrategy/jakarta_cdi/**/*.java" );
                 additionalExcludes.add( "org/mapstruct/ap/test/annotatewith/deprecated/jdk11/*.java" );
@@ -42,6 +43,8 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
                 // TODO find out why this fails:
                 additionalExcludes.add( "org/mapstruct/ap/test/collection/wildcard/BeanMapper.java" );
                 break;
+            case JAVA_11:
+                additionalExcludes.add( "org/mapstruct/ap/test/**/spring/**/*.java" );
             default:
         }
 
