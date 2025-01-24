@@ -555,6 +555,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
+            if ( !parameterType.isIterableOrStreamType() && resultType.isArrayType() ) {
+                messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ARRAY );
+                return false;
+            }
+
             if ( parameterType.isPrimitive() ) {
                 messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
                 return false;
