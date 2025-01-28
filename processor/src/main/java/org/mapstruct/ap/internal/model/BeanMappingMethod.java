@@ -232,7 +232,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
             this.targetProperties = new LinkedHashSet<>( accessors.keySet() );
-
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
 
             if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
@@ -252,6 +251,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
 
                 this.targetProperties.addAll( this.unprocessedConstructorProperties.keySet() );
+                if ( targetProperties.isEmpty() ) {
+                    reportWarningForTargetWithoutTargetProperties();
+                }
+
                 this.unprocessedTargetProperties.putAll( this.unprocessedConstructorProperties );
             }
             else {
@@ -1790,6 +1793,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return ReportingPolicyGem.IGNORE;
             }
             return method.getOptions().getBeanMapping().unmappedSourcePolicy();
+        }
+
+        private void reportWarningForTargetWithoutTargetProperties() {
+            ctx.getMessager().printMessage(
+                method.getExecutable(),
+                Message.PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES,
+                method.getReturnType().describe()
+            );
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {
