@@ -49,7 +49,11 @@
         </#if>
     <#else>
         <#if existingInstanceMapping>
-            ${resultName}.clear();
+            <#if resultType.setType>
+                ${resultName}.retainAll( java.util.stream.StreamSupport.stream( ${sourceParameter.name}.spliterator(), false ).collect( java.util.stream.Collectors.toSet() ) );
+            <#else>
+                ${resultName}.clear();
+            </#if>
         <#else>
             <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
             <@iterableLocalVarDef/> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
