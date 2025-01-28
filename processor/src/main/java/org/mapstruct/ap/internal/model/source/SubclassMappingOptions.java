@@ -24,7 +24,6 @@ import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_ILLEGAL_SUBCLASS;
 import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_NO_VALID_SUPERCLASS;
-import static org.mapstruct.ap.internal.util.Message.SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED;
 
 /**
  * Represents a subclass mapping as configured via {@code @SubclassMapping}.
@@ -57,11 +56,6 @@ public class SubclassMappingOptions extends DelegatingOptions {
     private static boolean isConsistent(SubclassMappingGem gem, ExecutableElement method, FormattingMessager messager,
                                         TypeUtils typeUtils, List<Parameter> sourceParameters, Type resultType,
                                         SubclassValidator subclassValidator) {
-
-        if ( resultType == null ) {
-            messager.printMessage( method, gem.mirror(), SUBCLASSMAPPING_UPDATE_METHODS_NOT_SUPPORTED );
-            return false;
-        }
 
         TypeMirror sourceSubclass = gem.source().getValue();
         TypeMirror targetSubclass = gem.target().getValue();

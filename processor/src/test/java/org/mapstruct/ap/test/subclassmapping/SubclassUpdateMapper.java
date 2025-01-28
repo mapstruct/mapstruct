@@ -11,18 +11,15 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.ap.test.subclassmapping.mappables.Car;
 import org.mapstruct.ap.test.subclassmapping.mappables.CarDto;
+import org.mapstruct.ap.test.subclassmapping.mappables.Vehicle;
 import org.mapstruct.ap.test.subclassmapping.mappables.VehicleDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ErroneousSubclassUpdateMapper {
-    ErroneousSubclassUpdateMapper INSTANCE = Mappers.getMapper( ErroneousSubclassUpdateMapper.class );
+public interface SubclassUpdateMapper {
+    SubclassUpdateMapper INSTANCE = Mappers.getMapper( SubclassUpdateMapper.class );
 
     @SubclassMapping( source = Car.class, target = CarDto.class )
     @Mapping( source = "vehicleManufacturingCompany", target = "maker" )
-    void map(@MappingTarget VehicleDto target, Car vehicle);
-
-    @SubclassMapping( source = Car.class, target = CarDto.class )
-    @Mapping( source = "vehicleManufacturingCompany", target = "maker" )
-    VehicleDto mapWithReturnType(@MappingTarget VehicleDto target, Car vehicle);
+    VehicleDto map(@MappingTarget VehicleDto target, Vehicle vehicle);
 }
