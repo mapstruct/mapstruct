@@ -301,7 +301,7 @@ public class TargetPropertyNameTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousNonStringTargetPropertyNameParameter.class,
                 line = 23,
-                message = "@TargetPropertyName can only by applied to a String parameter."
+                message = "@TargetPropertyName can only be applied to a String parameter."
             )
         }
     )

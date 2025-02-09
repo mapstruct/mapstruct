@@ -5,13 +5,10 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.annotation.Annotation;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -24,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.testutil.IssueKey;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Testing DefaultConversionContext for dateFormat
@@ -116,6 +115,7 @@ public class DefaultConversionContextTest {
                         null,
                         null,
                         fullQualifiedName,
+                        false,
                         false,
                         false,
                         false,

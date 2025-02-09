@@ -9,7 +9,7 @@
 <#lt>private <@includeModel object=returnType.typeBound/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
 <#list propertyEntries as entry>
     <#if entry.presenceChecker?? >
-    if ( <#if entry_index != 0>${entry.previousPropertyName} == null || </#if>!<@includeModel object=entry.presenceChecker /> ) {
+    if ( <#if entry_index != 0>${entry.previousPropertyName} == null || </#if><@includeModel object=entry.presenceChecker.negate() /> ) {
         return ${returnType.null};
     }
     </#if>
