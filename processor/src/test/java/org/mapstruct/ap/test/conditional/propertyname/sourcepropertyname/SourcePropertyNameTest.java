@@ -302,7 +302,7 @@ public class SourcePropertyNameTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousNonStringSourcePropertyNameParameter.class,
                 line = 23,
-                message = "@SourcePropertyName can only by applied to a String parameter."
+                message = "@SourcePropertyName can only be applied to a String parameter."
             )
         }
     )

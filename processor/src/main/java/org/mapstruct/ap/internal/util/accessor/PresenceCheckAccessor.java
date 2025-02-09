@@ -22,6 +22,10 @@ public interface PresenceCheckAccessor {
         return suffix( ".containsKey( \"" + propertyName + "\" )" );
     }
 
+    static PresenceCheckAccessor listSizeGreaterThan(ReadAccessor listAccessor, int index) {
+        return suffix( "." + listAccessor.getSimpleName() + "().size() > " + index );
+    }
+
     static PresenceCheckAccessor suffix(String suffix) {
         return () -> suffix;
     }

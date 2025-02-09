@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.annotation.Annotation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +12,6 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -23,6 +20,8 @@ import javax.lang.model.type.TypeVisitor;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.testutil.IssueKey;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link org.mapstruct.ap.internal.model.common.DateFormatValidatorFactory}.
@@ -168,6 +167,7 @@ public class DateFormatValidatorFactoryTest {
                         null,
                         null,
                         fullQualifiedName,
+                        false,
                         false,
                         false,
                         false,

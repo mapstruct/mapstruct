@@ -21,13 +21,13 @@ import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
 import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -663,6 +663,15 @@ public class NestedTargetPropertyMappingHolder {
                         .getPathProperties() );
                     if ( !pathProperties.isEmpty() ) {
                         pathProperties.set( pathProperties.size() - 1, mostSimilarProperty );
+                    }
+
+                    boolean reverseInheritedListElementAccessor = mapping.getInheritContext() != null
+                        && mapping.getInheritContext().isReversed()
+                        && targetPropertyName.contains( "[" );
+                    if ( reverseInheritedListElementAccessor ) {
+                        // ignore reverse inherited source properties with index accessor like "names[0]"
+                        errorOccurred = false;
+                        return null;
                     }
 
                     mappingContext.getMessager()
