@@ -50,9 +50,9 @@ target字段 `stringConstant` 则会被设置为 `"Constant Value"`。 `"3001"` 
 
 表达式使得调用多语言的构造器成为可能。
 
-目前，MapStruct仅支持Java。在表达式中，您可以调用构造器，也可以使用整个source对象。请注意，务必使用有效的Java代码，在生成代码时，MapStruct不会对表达式进行校验，如果生成的类中有错误，编译器会直接报错。下面的例子展示了如何把两个属性映射为一个属性：
+目前，MapStruct仅支持Java。在表达式中，您可以调用构造器，也可以使用整个source对象。请注意，务必使用有效的Java代码，在生成代码时，MapStruct不会对表达式进行校验，如果生成的类中有错误，编译器会直接报错。
 
-下例展示了两个source属性如何映射为target属性：
+下面的例子展示了如何把两个属性映射为一个属性：
 
 .Mapping method using an expression
 ====
@@ -119,7 +119,7 @@ public interface SourceTargetMapper {
 ----
 ====
 
-该例中，当source中 `ID` 字段为null的时候，默认表达式会将其填充，也就是如果source对象中 `sourceId` 字段有值，就设置为既存的值，如果没有，就会给 `Id` 创建一个新值。 请注意，如果您在默认表达式中必须使用UUID的包全称（除非您在 `SourceTargetMapper` 中已经显式引入该类），因为MapStruct不会自动引入该类。您也可以在@Mapper注解上定义引入，该规则和10.2节中的相关规则一致。
+该例中，当source中 `ID` 字段为null的时候，默认表达式会将其填充，也就是如果source对象中 `sourceId` 字段有值，就设置为既存的值，如果没有，就会给 `Id` 创建一个新值。 请注意，您在默认表达式中必须使用UUID的包全称（除非您在 `SourceTargetMapper` 中已经显式引入该类），因为MapStruct不会自动引入该类。 您也可以在@Mapper注解中引入类(see <<expressions>>)
 
 [[sub-class-mappings]]
 === 映射子类
