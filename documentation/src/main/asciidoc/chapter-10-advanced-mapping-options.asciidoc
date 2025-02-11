@@ -308,7 +308,7 @@ Conditional mapping can also be used to check if a source parameter should be ma
 A custom condition method for properties is a method that is annotated with `org.mapstruct.Condition` and returns `boolean`.
 A custom condition method for source parameters is annotated with `org.mapstruct.SourceParameterCondition`, `org.mapstruct.Condition(appliesTo = org.mapstruct.ConditionStrategy#SOURCE_PARAMETERS)` or meta-annotated with `Condition(appliesTo = ConditionStrategy#SOURCE_PARAMETERS)`
 
-e.g. if you only want to map a String property when it is not `null`, and it is not empty then you can do something like:
+e.g. if you only want to map a String property when it is not `null` and not empty then you can do something like:
 
 .Mapper using custom condition check method
 ====
