@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
  * Example:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * &#64;AfterMapping
  * public void calledWithoutArgs() {
  *     // ...

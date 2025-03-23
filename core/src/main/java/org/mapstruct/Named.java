@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * the qualifiers in {@code @Mapping}:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * &#64;Named("TitleTranslator")
  * public class Titles {
  *
@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
  * The following implementation of {@code MovieMapper} will be generated:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  *
  * public class MovieMapperImpl implements MovieMapper {
  *     private final Titles titles = new Titles();

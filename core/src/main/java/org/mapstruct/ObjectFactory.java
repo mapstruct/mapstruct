@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * EntityManager and then returns the managed instance:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * &#64;ApplicationScoped // CDI component model
  * public class ReferenceMapper {
  *

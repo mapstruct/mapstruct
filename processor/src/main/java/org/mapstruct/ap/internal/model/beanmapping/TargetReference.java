@@ -235,11 +235,11 @@ public class TargetReference {
          * Needed when we are building from inverse mapping. It is needed, so we can remove the first level if it is
          * needed.
          * E.g. If we have a mapping like:
-         * <code>
+         * <code class='java'>
          * {@literal @}Mapping( target = "letterSignature", source = "dto.signature" )
          * </code>
          * When it is inversed it will look like:
-         * <code>
+         * <code class='java'>
          * {@literal @}Mapping( target = "dto.signature", source = "letterSignature" )
          * </code>
          * The {@code dto} needs to be considered as a possibility for a target name only if a Target Reference for

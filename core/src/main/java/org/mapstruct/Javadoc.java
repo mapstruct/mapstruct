@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * <p>
  * For instance, the following definition;
  * </p>
- * <pre><code class='java'>
+ * <pre><code>
  * &#64;Javadoc(
  *     value = "This is the description",
  *     authors = { "author1", "author2" },
@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
  * will generate:
  * </p>
  *
- * <pre><code class='java'>
+ * <pre><code>
  * /**
  * * This is the description
  * *
@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
  * <p>
  * The entire Javadoc comment block can be passed directly:
  * </p>
- * <pre><code class='java'>
+ * <pre><code>
  * &#64;Javadoc("This is the description\n"
  *            + "\n"
  *            + "&#64;author author1\n"
@@ -60,7 +60,7 @@ import java.lang.annotation.Target;
  * )
  * </code></pre>
  *
- * <pre><code class='java'>
+ * <pre><code>
  * // or using Text Blocks
  * &#64;Javadoc(
  *     """
