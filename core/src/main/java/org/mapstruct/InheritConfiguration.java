@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * method:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * &#64;Mappings({
  *     &#64;Mapping(target="make", source="brand"),
  *     &#64;Mapping(target="seatCount", source="numberOfSeats")

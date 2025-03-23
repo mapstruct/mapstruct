@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  * methods and {@code @}{@link BeforeMapping} methods:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * // multiple &#64;Context parameters can be added
  * public abstract CarDto toCar(Car car, &#64;Context VehicleRegistration context, &#64;Context Locale localeToUse);
  *
@@ -73,7 +73,7 @@ import java.lang.annotation.Target;
  * {@link BeforeMapping} methods to handle cycles in Graph structures:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * // type of the context parameter
  * public class CyclicGraphContext {
  *     private Map&lt;Object, Object&gt; knownInstances = new IdentityHashMap&lt;&gt;();
@@ -128,7 +128,7 @@ import java.lang.annotation.Target;
  * {@code @}{@link ObjectFactory} methods:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * // type of the context parameter
  * public class ContextObjectFactory {
  *     &#64;PersistenceContext(unitName = "my-unit")

@@ -31,7 +31,7 @@ import javax.lang.model.util.Types;
  * of the method if there exists a method that returns the initial {@link TypeMirror} if such a combination is found
  * the {@link BuilderInfo} is created with those 2 methods.
  * Example:
- * <pre><code>
+ * <pre><code class='java'>
  * public class Person {
  *
  *     private final String firstName;

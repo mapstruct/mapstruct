@@ -70,7 +70,7 @@ public class SupportingMappingMethod extends MappingMethod {
      *
      * @param name Fully-qualified or simple name of the type.
      *
-     * @return Found type, never <code>null</code>.
+     * @return Found type, never <code class='java'>null</code>.
      *
      * @throws IllegalArgumentException In case no {@link Type} was found for given name.
      */

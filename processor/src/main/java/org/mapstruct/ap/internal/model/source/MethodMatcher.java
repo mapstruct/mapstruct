@@ -316,7 +316,7 @@ public class MethodMatcher {
 
         /**
          * Checks whether all found candidates are within the bounds of the method type var. For instance
-         * @<code><T, U extends Callable<T> U map( T in )</code>. Note that only the relation between the
+         * * <code class='java'>&lt;T, U extends Callable&lt;T> U map( T in )</code>. Note that only the relation between the
          * match for U and Callable are checked. Not the correct parameter.
          *
          * @param methodParCandidates

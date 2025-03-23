@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  * Example:
  *
  * <pre>
- * <code>
+ * <code class='java'>
  * &#64;BeforeMapping
  * public void calledWithoutArgs() {
  *     // ...
