@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
@@ -180,6 +181,14 @@ public class BeanMappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( SubclassExhaustiveStrategyGem::valueOf )
             .orElse( next().getSubclassExhaustiveStrategy() );
+    }
+
+    @Override
+    public TypeMirror getSubclassExhaustiveException() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::subclassExhaustiveException )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .orElse( next().getSubclassExhaustiveException() );
     }
 
     @Override
