@@ -92,6 +92,8 @@ public enum Message {
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
+    PROPERTYMAPPING_INDEX_ACCESSORS_ONLY_ON_LIST( "Can't access element with index because \"%s\" is not of type List." ),
+    PROPERTYMAPPING_INDEX_NOT_A_NUMBER( "Index accessor must be an integer but was: \"%s\"." ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
@@ -186,8 +188,8 @@ public enum Message {
     RETRIEVAL_MAPPER_USES_CYCLE( "The mapper %s is referenced itself in Mapper#uses.", Diagnostic.Kind.WARNING ),
     RETRIEVAL_AFTER_METHOD_NOT_IMPLEMENTED( "@AfterMapping can only be applied to an implemented method." ),
     RETRIEVAL_BEFORE_METHOD_NOT_IMPLEMENTED( "@BeforeMapping can only be applied to an implemented method." ),
-    RETRIEVAL_SOURCE_PROPERTY_NAME_WRONG_TYPE( "@SourcePropertyName can only by applied to a String parameter." ),
-    RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE( "@TargetPropertyName can only by applied to a String parameter." ),
+    RETRIEVAL_SOURCE_PROPERTY_NAME_WRONG_TYPE( "@SourcePropertyName can only be applied to a String parameter." ),
+    RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE( "@TargetPropertyName can only be applied to a String parameter." ),
 
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),

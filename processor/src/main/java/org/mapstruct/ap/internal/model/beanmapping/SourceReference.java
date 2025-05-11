@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.ListElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
@@ -322,29 +323,80 @@ public class SourceReference extends AbstractReference {
                                                                  boolean allowedMapToBean) {
             List<PropertyEntry> sourceEntries = new ArrayList<>();
             Type newType = type;
-            for ( int i = 0; i < entryNames.length; i++ ) {
+            for (int i = 0; i < entryNames.length; i++) {
                 boolean matchFound = false;
-                Type noBoundsType = newType.withoutBounds();
-                ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i], i > 0 || allowedMapToBean );
-                if ( readAccessor != null ) {
-                    PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
-                    newType = typeFactory.getReturnType(
-                        (DeclaredType) noBoundsType.getTypeMirror(),
-                        readAccessor
-                    );
-                    sourceEntries.add( forSourceReference(
-                        Arrays.copyOf( entryNames, i + 1 ),
-                        readAccessor,
-                        presenceChecker,
-                        newType
-                    ) );
-                    matchFound = true;
+
+                String entryName = entryNames[i];
+                int bracketIndex = entryName.indexOf( '[' );
+                boolean containsIndex = bracketIndex != -1 && entryName.endsWith( "]" );
+                if ( containsIndex ) {
+                    String baseName = entryName.substring( 0, bracketIndex );
+                    String rawIndex = entryName.substring( bracketIndex + 1, entryName.length() - 1 );
+
+                    ReadAccessor listAccessor = newType.withoutBounds()
+                        .getReadAccessor( baseName, i > 0 || allowedMapToBean );
+                    if ( listAccessor != null ) {
+
+                        newType = typeFactory.getReturnType(
+                            (DeclaredType) newType.withoutBounds().getTypeMirror(),
+                            listAccessor
+                        );
+
+                        if ( !newType.isListType() ) {
+                            reportMappingError( Message.PROPERTYMAPPING_INDEX_ACCESSORS_ONLY_ON_LIST, baseName );
+                            continue;
+                        }
+
+                        Type elementType = newType.getTypeParameters().get( 0 );
+                        int index = tryParseIndex( rawIndex );
+                        ReadAccessor listElementAccessor =
+                            new ListElementAccessor( listAccessor, elementType.getTypeMirror(), index );
+
+                        sourceEntries.add( forSourceReference(
+                            Arrays.copyOf( entryNames, i + 1 ),
+                            listElementAccessor,
+                            PresenceCheckAccessor.listSizeGreaterThan( listAccessor, index ),
+                            elementType
+                        ) );
+                        newType = elementType;
+                        matchFound = true;
+                    }
+
+                }
+                else {
+                    Type noBoundsType = newType.withoutBounds();
+                    ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryName, i > 0 || allowedMapToBean );
+                    if (readAccessor != null) {
+                        PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryName );
+                        newType = typeFactory.getReturnType(
+                            (DeclaredType) noBoundsType.getTypeMirror(),
+                            readAccessor
+                        );
+                        sourceEntries.add( forSourceReference(
+                            Arrays.copyOf( entryNames, i + 1 ),
+                            readAccessor,
+                            presenceChecker,
+                            newType
+                        ) );
+                        matchFound = true;
+                    }
                 }
                 if ( !matchFound ) {
                     break;
                 }
             }
             return sourceEntries;
+        }
+
+        private int tryParseIndex(String rawIndex) {
+
+            try {
+                return Integer.parseInt( rawIndex );
+            }
+            catch ( NumberFormatException e ) {
+                reportMappingError( Message.PROPERTYMAPPING_INDEX_NOT_A_NUMBER, rawIndex );
+                return 0;
+            }
         }
 
         private void reportMappingError(Message msg, Object... objects) {

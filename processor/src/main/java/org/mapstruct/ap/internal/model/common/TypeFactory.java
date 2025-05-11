@@ -95,6 +95,7 @@ public class TypeFactory {
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
+    private final TypeMirror listType;
     private final TypeMirror mapType;
     private final TypeMirror streamType;
 
@@ -116,6 +117,8 @@ public class TypeFactory {
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
         collectionType =
             typeUtils.erasure( elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
+        listType =
+            typeUtils.erasure( elementUtils.getTypeElement( List.class.getCanonicalName() ).asType() );
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
@@ -248,6 +251,7 @@ public class TypeFactory {
 
         boolean isIterableType = typeUtils.isSubtypeErased( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtypeErased( mirror, collectionType );
+        boolean isListType = typeUtils.isSubtypeErased( mirror, listType );
         boolean isMapType = typeUtils.isSubtypeErased( mirror, mapType );
         boolean isStreamType = streamType != null && typeUtils.isSubtypeErased( mirror, streamType );
 
@@ -357,6 +361,7 @@ public class TypeFactory {
             isEnumType,
             isIterableType,
             isCollectionType,
+            isListType,
             isMapType,
             isStreamType,
             toBeImportedTypes,
@@ -587,6 +592,7 @@ public class TypeFactory {
                 implementationType.isEnumType(),
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
+                implementationType.isListType(),
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
                 toBeImportedTypes,
