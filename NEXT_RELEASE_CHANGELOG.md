@@ -6,6 +6,9 @@
 ### Enhancements
 
 * Add support for locale parameter for numberFormat and dateFormat (#3628)
+* Detect Builder without a factory method (#3729) - With this if there is an inner class that ends with `Builder` and has a constructor with parameters, 
+it will be treated as a potential builder. 
+Builders through static methods on the type have a precedence.
 * Behaviour change: Warning when the target has no target properties (#1140)
 
 
