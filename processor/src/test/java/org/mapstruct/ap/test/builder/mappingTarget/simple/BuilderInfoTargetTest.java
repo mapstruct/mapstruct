@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,6 +83,17 @@ public class BuilderInfoTargetTest {
     }
 
     @ProcessorTest
+    @WithClasses( {
+        SimpleImmutableUpdateMapper.class
+    } )
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = SimpleImmutableUpdateMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 18,
+                message = "No target property found for target \"SimpleImmutableTarget\"."),
+        })
+
     public void updatingTargetWithNoSettersShouldNotFail() {
 
         SimpleMutableSource source = new SimpleMutableSource();
@@ -90,7 +104,7 @@ public class BuilderInfoTargetTest {
             .build();
 
         assertThat( target.getAge() ).isEqualTo( 20 );
-        SimpleBuilderMapper.INSTANCE.toImmutable( source, target );
+        SimpleImmutableUpdateMapper.INSTANCE.toImmutable( source, target );
         assertThat( target.getAge() ).isEqualTo( 20 );
     }
 }

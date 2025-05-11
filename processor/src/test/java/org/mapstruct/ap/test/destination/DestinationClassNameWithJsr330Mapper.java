@@ -13,5 +13,5 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(implementationName = "<CLASS_NAME>Jsr330Impl", componentModel = MappingConstants.ComponentModel.JSR330)
 public interface DestinationClassNameWithJsr330Mapper {
-    String intToString(Integer source);
+    Target map(Integer source);
 }

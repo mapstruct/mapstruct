@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.versioninfo;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
+import org.mapstruct.ap.test.WithProperties;
 
 /**
  * @author Filip Hrisafov
  */
 @Mapper(config = SuppressTimestampViaMapperConfig.Config.class)
 public interface SuppressTimestampViaMapperConfig {
-    Object toObject(Object object);
+    WithProperties toObject(WithProperties object);
 
     @MapperConfig(suppressTimestampInGenerated = true)
     interface Config {

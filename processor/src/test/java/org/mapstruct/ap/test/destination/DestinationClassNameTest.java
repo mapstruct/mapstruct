@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.fail;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
+@WithClasses( Target.class )
 public class DestinationClassNameTest {
     @ProcessorTest
     @WithClasses({ DestinationClassNameMapper.class })

@@ -27,7 +27,16 @@ public interface Issue1345Mapper {
 
     class A {
 
+        private String value;
         private String readOnlyProperty;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
 
         public String getReadOnlyProperty() {
             return readOnlyProperty;
@@ -36,7 +45,16 @@ public interface Issue1345Mapper {
 
     class B {
 
+        private String value;
         private String property;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
 
         public String getProperty() {
             return property;

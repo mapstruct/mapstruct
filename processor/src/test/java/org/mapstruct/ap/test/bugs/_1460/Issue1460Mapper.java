@@ -18,13 +18,13 @@ public abstract class Issue1460Mapper {
 
     public abstract Target map(Source source);
 
-    public abstract String forceUsageOfIssue1460Enum(Issue1460Enum source);
+    public abstract Value<Issue1460Enum> forceUsageOfIssue1460Enum(Issue1460Enum source);
 
-    public abstract String forceUsageOfLocale(Locale source);
+    public abstract Value<Locale> forceUsageOfLocale(Locale source);
 
-    public abstract String forceUsageOfLocalDate(LocalDate source);
+    public abstract Value<LocalDate> forceUsageOfLocalDate(LocalDate source);
 
-    public abstract String forceUsageOfDateTime(DateTime source);
+    public abstract Value<DateTime> forceUsageOfDateTime(DateTime source);
 
     public static class Issue1460Enum {
     }
@@ -36,5 +36,18 @@ public abstract class Issue1460Mapper {
     }
 
     public static class DateTime {
+    }
+
+    public static class Value<T> {
+
+        private final T source;
+
+        public Value(T source) {
+            this.source = source;
+        }
+
+        public T getSource() {
+            return source;
+        }
     }
 }

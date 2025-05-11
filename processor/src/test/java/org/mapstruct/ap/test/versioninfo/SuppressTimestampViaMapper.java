@@ -6,11 +6,12 @@
 package org.mapstruct.ap.test.versioninfo;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.WithProperties;
 
 /**
  * @author Filip Hrisafov
  */
 @Mapper(suppressTimestampInGenerated = true)
 public interface SuppressTimestampViaMapper {
-    Object toObject(Object object);
+    WithProperties toObject(WithProperties object);
 }
