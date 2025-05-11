@@ -25,7 +25,7 @@ public interface SourceTargetMapper {
     ParseException sourceToTarget(Named source);
 
     //custom types
-    Map listToMap(List list);
+    Value<Map> listToMap(List list);
 
     java.util.List<ParseException> namedsToExceptions(java.util.List<Named> source);
 
@@ -36,4 +36,12 @@ public interface SourceTargetMapper {
     java.util.Map<Date, Date> stringsToDates(java.util.Map<String, String> stringDates);
 
     Target sourceToTarget(Source target);
+
+    class Value<T> {
+        private T value;
+
+        public Value(List list) {
+
+        }
+    }
 }

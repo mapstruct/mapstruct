@@ -54,7 +54,7 @@ public class Issue1242Test {
         diagnostics = {
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 20,
+                line = 21,
                 message = "Ambiguous factory methods found for creating TargetB: " +
                     "TargetB anotherTargetBCreator(SourceB source), " +
                     "TargetB TargetFactories.createTargetB(SourceB source, @TargetType Class<TargetB> clazz), " +
