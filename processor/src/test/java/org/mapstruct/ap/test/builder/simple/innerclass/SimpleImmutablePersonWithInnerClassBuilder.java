@@ -3,12 +3,12 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.builder.simple;
+package org.mapstruct.ap.test.builder.simple.innerclass;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleImmutablePerson {
+public class SimpleImmutablePersonWithInnerClassBuilder {
     private final String name;
     private final int age;
     private final String job;
@@ -16,17 +16,13 @@ public class SimpleImmutablePerson {
     private final String address;
     private final List<String> children;
 
-    SimpleImmutablePerson(Builder builder) {
+    SimpleImmutablePersonWithInnerClassBuilder(Builder builder) {
         this.name = builder.name;
         this.age = builder.age;
         this.job = builder.job;
         this.city = builder.city;
         this.address = builder.address;
         this.children = new ArrayList<>(builder.children);
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public int getAge() {
@@ -66,8 +62,8 @@ public class SimpleImmutablePerson {
             return this;
         }
 
-        public SimpleImmutablePerson build() {
-            return new SimpleImmutablePerson( this );
+        public SimpleImmutablePersonWithInnerClassBuilder build() {
+            return new SimpleImmutablePersonWithInnerClassBuilder( this );
         }
 
         public Builder name(String name) {

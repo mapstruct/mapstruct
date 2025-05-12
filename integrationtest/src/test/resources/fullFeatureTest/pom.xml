@@ -59,6 +59,8 @@
                         <exclude>${additionalExclude9}</exclude>
                         <exclude>${additionalExclude10}</exclude>
                         <exclude>${additionalExclude11}</exclude>
+                        <exclude>${additionalExclude12}</exclude>
+                        <exclude>${additionalExclude13}</exclude>
                     </excludes>
                 </configuration>
             </plugin>

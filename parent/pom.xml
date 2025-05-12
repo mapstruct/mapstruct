@@ -47,10 +47,10 @@
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <!--
             The minimum Java Version that is needed to build a module in MapStruct.
-            The processor module needs at least Java 17.
+            The processor module needs at least Java 21.
          -->
         <minimum.java.version>1.8</minimum.java.version>
-        <protobuf.version>3.21.7</protobuf.version>
+        <protobuf.version>3.25.5</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
     </properties>
 

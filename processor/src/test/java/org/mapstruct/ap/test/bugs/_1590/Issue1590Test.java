@@ -28,7 +28,7 @@ public class Issue1590Test {
     @ProcessorTest
     public void shouldTestMappingLocalDates() {
         BookShelf source = new BookShelf();
-        source.setBooks( Arrays.asList( new Book() ) );
+        source.setBooks( Arrays.asList( new Book("Test") ) );
 
         BookShelf target = BookShelfMapper.INSTANCE.map( source );
 

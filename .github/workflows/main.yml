@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [17, 21]
+        java: [21]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
@@ -24,31 +24,31 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
       - name: 'Test'
-        run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=${{ matrix.java != 17 }} install -DskipDistribution=${{ matrix.java != 17 }}
+        run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=${{ matrix.java != 21 }} install -DskipDistribution=${{ matrix.java != 21 }}
       - name: 'Generate coverage report'
-        if: matrix.java == 17
+        if: matrix.java == 21
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
-        if: matrix.java == 17
+        if: matrix.java == 21
         uses: codecov/codecov-action@v2
       - name: 'Publish Snapshots'
-        if: matrix.java == 17 && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
+        if: matrix.java == 21 && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
   integration_test_jdk:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11 ]
+        java: [ 8, 11, 17 ]
     name: 'Linux JDK ${{ matrix.java }}'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
-      - name: 'Set up JDK 17 for building everything'
+      - name: 'Set up JDK 21 for building everything'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 21
       - name: 'Install Processor'
         run: ./mvnw ${MAVEN_ARGS} -DskipTests install -pl processor -am
       - name: 'Set up JDK ${{ matrix.java }} for running integration tests'
@@ -63,11 +63,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: 'Set up JDK 17'
+      - name: 'Set up JDK 21'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 21
       - name: 'Test'
         run: ./mvnw %MAVEN_ARGS% install
   mac:
@@ -75,10 +75,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: 'Set up JDK 17'
+      - name: 'Set up JDK 21'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 21
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} install

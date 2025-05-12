@@ -24,8 +24,29 @@ public interface Issue1111Mapper {
 
     List<List<Target>> listList(List<List<Source>> in);
 
-    class Source { }
+    class Source {
+        private final String value;
 
-    class Target { }
+        public Source(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    class Target {
+
+        private final String value;
+
+        public Target(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
 }
