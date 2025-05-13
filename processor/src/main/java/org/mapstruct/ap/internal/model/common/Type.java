@@ -1167,7 +1167,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * FTL.
      */
     public String getNull() {
-        if ( !isPrimitive() || isOptionalType() ) {
+        if ( isOptionalType() ) {
             return "Optional.empty()";
         }
 
