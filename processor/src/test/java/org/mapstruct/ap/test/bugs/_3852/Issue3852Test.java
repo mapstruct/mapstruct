@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._3852;
 
+import java.util.Optional;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -32,5 +34,21 @@ public class Issue3852Test {
         assertThat( target.getSomeInteger() ).isEmpty();
         assertThat( target.getSomeDouble() ).isEmpty();
         assertThat( target.getSomeBoolean() ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapOptional() {
+        Source source = new Source(
+            Optional.of( "someString" ),
+            Optional.of( 10 ),
+            Optional.of( 11D ),
+            Optional.of( Boolean.TRUE )
+        );
+        Target target = Issue3852Mapper.INSTANCE.map( source );
+
+        assertThat( target.getSomeString() ).contains( "someString" );
+        assertThat( target.getSomeInteger() ).contains( 10 );
+        assertThat( target.getSomeDouble() ).contains( 11D );
+        assertThat( target.getSomeBoolean() ).contains( Boolean.TRUE );
     }
 }
