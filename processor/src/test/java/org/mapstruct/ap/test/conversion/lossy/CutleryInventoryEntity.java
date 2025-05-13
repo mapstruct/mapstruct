@@ -10,6 +10,7 @@ public class CutleryInventoryEntity {
     private int numberOfKnifes;
     private Long numberOfForks;
     private short numberOfSpoons;
+    private String drawerId;
 
     private double approximateKnifeLength;
 
@@ -43,5 +44,13 @@ public class CutleryInventoryEntity {
 
     public void setApproximateKnifeLength(double approximateKnifeLength) {
         this.approximateKnifeLength = approximateKnifeLength;
+    }
+
+    public String getDrawerId() {
+        return drawerId;
+    }
+
+    public void setDrawerId(String drawerId) {
+        this.drawerId = drawerId;
     }
 }
