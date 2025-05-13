@@ -139,7 +139,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder returnTypeBuilder(BuilderType returnTypeBuilder) {
+        public Builder returnTypeBuilder( BuilderType returnTypeBuilder ) {
             this.returnTypeBuilder = returnTypeBuilder;
             return this;
         }
@@ -343,18 +343,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // before / after mappings
             List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
-                method,
-                resultTypeToMap,
-                selectionParameters,
-                ctx,
-                existingVariableNames
+                            method,
+                            resultTypeToMap,
+                            selectionParameters,
+                            ctx,
+                            existingVariableNames
             );
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
-                method,
-                resultTypeToMap,
-                selectionParameters,
-                ctx,
-                existingVariableNames
+                            method,
+                            resultTypeToMap,
+                            selectionParameters,
+                            ctx,
+                            existingVariableNames
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -379,12 +379,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             }
 
-            Type subclassExhaustiveExceptionType = ctx.getTypeFactory().getType( IllegalArgumentException.class );
-            TypeMirror subclassExhaustiveException =
-                beanMapping != null ? beanMapping.getSubclassExhaustiveException() : null;
-            if ( subclassExhaustiveException != null ) {
-                subclassExhaustiveExceptionType = ctx.getTypeFactory().getType( subclassExhaustiveException );
-            }
+            TypeMirror subclassExhaustiveException = method.getOptions()
+                .getBeanMapping()
+                .getSubclassExhaustiveException();
+            Type subclassExhaustiveExceptionType = ctx.getTypeFactory().getType( subclassExhaustiveException );
 
             List<SubclassMapping> subclasses = new ArrayList<>();
             for ( SubclassMappingOptions subclassMappingOptions : method.getOptions().getSubclassMappings() ) {
@@ -511,8 +509,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "subclassMapping",
                 sourceType,
                 Collections.emptySet(),
-                "SubclassMapping for " + sourceType.getFullyQualifiedName()
-            );
+                "SubclassMapping for " + sourceType.getFullyQualifiedName() );
             SelectionCriteria criteria =
                 SelectionCriteria
                     .forSubclassMappingMethods(
@@ -520,22 +517,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         subclassMappingOptions.getMappingControl( ctx.getElementUtils() )
                     );
             Assignment assignment = ctx
-                .getMappingResolver()
-                .getTargetAssignment(
-                    method,
-                    null,
-                    targetType,
-                    FormattingParameters.EMPTY,
-                    criteria,
-                    rightHandSide,
-                    subclassMappingOptions.getMirror(),
-                    () -> forgeSubclassMapping(
-                        rightHandSide,
-                        sourceType,
-                        targetType,
-                        mappingReferences
-                    )
-                );
+                                   .getMappingResolver()
+                                   .getTargetAssignment(
+                                       method,
+                                       null,
+                                       targetType,
+                                       FormattingParameters.EMPTY,
+                                       criteria,
+                                       rightHandSide,
+                                       subclassMappingOptions.getMirror(),
+                                           () -> forgeSubclassMapping(
+                                               rightHandSide,
+                                               sourceType,
+                                               targetType,
+                                               mappingReferences ) );
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
@@ -554,7 +549,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private boolean isAbstractReturnTypeAllowed() {
             return !method.getOptions().getSubclassMappings().isEmpty()
                 && ( method.getOptions().getBeanMapping().getSubclassExhaustiveStrategy().isAbstractReturnTypeAllowed()
-                || isCorrectlySealed() );
+                    || isCorrectlySealed() );
         }
 
         private boolean isCorrectlySealed() {
@@ -567,15 +562,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<? extends TypeMirror> unusedPermittedSubclasses =
                     new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
                 method.getOptions().getSubclassMappings().forEach( subClassOption -> {
-                    for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
-                          iterator.hasNext(); ) {
+                    for (Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                         iterator.hasNext(); ) {
                         if ( ctx.getTypeUtils().isSameType( iterator.next(), subClassOption.getSource() ) ) {
                             iterator.remove();
                         }
                     }
                 } );
                 for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
-                      iterator.hasNext(); ) {
+                                iterator.hasNext(); ) {
                     TypeMirror typeMirror = iterator.next();
                     Type type = ctx.getTypeFactory().getType( typeMirror );
                     if ( type.isAbstract() && isCorrectlySealed( type ) ) {
@@ -608,10 +603,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          */
         private boolean isBuilderRequired() {
             return returnTypeBuilder != null
-                && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
+                    && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
         }
 
-        private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct) {
+        private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct ) {
             if ( returnTypeToConstruct == null ) {
                 return false;
             }
@@ -798,12 +793,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             boolean error = true;
             if ( !returnType.isAbstract() && !returnType.hasAccessibleConstructor() ) {
                 ctx
-                    .getMessager()
-                    .printMessage(
-                        method.getExecutable(),
-                        Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                        returnType.describe()
-                    );
+                   .getMessager()
+                   .printMessage(
+                       method.getExecutable(),
+                       Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                       returnType.describe() );
                 error = false;
             }
             return error;
@@ -811,8 +805,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         /**
          * Find a factory method for a return type or for a builder.
-         *
-         * @param returnTypeImpl       the return type implementation to construct
+         * @param returnTypeImpl the return type implementation to construct
          * @param @selectionParameters
          */
         private void initializeFactoryMethod(Type returnTypeImpl, SelectionParameters selectionParameters) {
@@ -916,7 +909,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             ExecutableElement defaultAnnotatedConstructor = null;
             ExecutableElement parameterLessConstructor = null;
             List<ExecutableElement> accessibleConstructors = new ArrayList<>( constructors.size() );
-            List<ExecutableElement> publicConstructors = new ArrayList<>();
+            List<ExecutableElement> publicConstructors = new ArrayList<>( );
 
             for ( ExecutableElement constructor : constructors ) {
                 if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
@@ -1221,7 +1214,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             handledTargets.addAll( holder.getHandledTargets() );
             // Store all the unprocessed defined targets.
             for ( Entry<String, Set<MappingReference>> entry : holder.getUnprocessedDefinedTarget()
-                .entrySet() ) {
+                                                                            .entrySet() ) {
                 if ( entry.getValue().isEmpty() ) {
                     continue;
                 }
@@ -1231,7 +1224,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean handleDefinedMapping(MappingReference mappingRef, Type resultTypeToMap,
-                                             Set<String> handledTargets) {
+            Set<String> handledTargets) {
             boolean errorOccured = false;
 
             PropertyMapping propertyMapping = null;
@@ -1418,7 +1411,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 handledTargets.add( targetPropertyName );
             }
             // it's a plain-old property mapping
-            else {
+            else  {
 
                 SourceReference sourceRef = mappingRef.getSourceReference();
                 // sourceRef is not defined, check if a source property has the same name
@@ -1609,11 +1602,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( targetPropertyWriteAccessor == null ) {
                     // TODO improve error message
                     ctx.getMessager()
-                        .printMessage(
-                            method.getExecutable(),
-                            Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                            targetPropertyName
-                        );
+                       .printMessage( method.getExecutable(),
+                           Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                           targetPropertyName
+                       );
                     continue;
                 }
 
@@ -1718,11 +1710,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
                 sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
-                    .type( returnType )
-                    .readAccessor( sourceReadAccessor )
-                    .presenceChecker( sourcePresenceChecker )
-                    .name( targetPropertyName )
-                    .build();
+                                                                     .type( returnType )
+                                                                     .readAccessor( sourceReadAccessor )
+                                                                     .presenceChecker( sourcePresenceChecker )
+                                                                     .name( targetPropertyName )
+                                                                     .build();
             }
             return sourceRef;
         }
@@ -1837,14 +1829,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 reportErrorForUnmappedProperties(
                     unprocessedSourceProperties,
                     unmappedPropertiesMsg,
-                    unmappedForgedPropertiesMsg
-                );
+                    unmappedForgedPropertiesMsg );
             }
         }
 
         private void reportErrorForUnmappedProperties(Map<String, Accessor> unmappedProperties,
-                                                      Message unmappedPropertiesMsg,
-                                                      Message unmappedForgedPropertiesMsg) {
+                                                                Message unmappedPropertiesMsg,
+                                                                Message unmappedForgedPropertiesMsg) {
             if ( !( method instanceof ForgedMethod ) ) {
                 Object[] args = new Object[] {
                     MessageFormat.format(
@@ -1892,11 +1883,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private void reportErrorForMissingIgnoredSourceProperties() {
             if ( !missingIgnoredSourceProperties.isEmpty() ) {
                 Object[] args = new Object[] {
-                    MessageFormat.format(
-                        "{0,choice,1#property|1<properties}: \"{1}\"",
-                        missingIgnoredSourceProperties.size(),
-                        Strings.join( missingIgnoredSourceProperties, ", " )
-                    )
+                        MessageFormat.format(
+                                "{0,choice,1#property|1<properties}: \"{1}\"",
+                                missingIgnoredSourceProperties.size(),
+                                Strings.join( missingIgnoredSourceProperties, ", " )
+                        )
                 };
 
                 ctx.getMessager().printMessage(
@@ -2109,7 +2100,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( subclassMapping.getImportTypes() );
         }
 
-        if ( returnTypeToConstruct != null ) {
+        if ( returnTypeToConstruct != null  ) {
             types.addAll( returnTypeToConstruct.getImportTypes() );
         }
         if ( returnTypeBuilder != null ) {
@@ -2139,14 +2130,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public List<Parameter> getSourceParametersNeedingPresenceCheck() {
         return getSourceParameters().stream()
-            .filter( this::needsPresenceCheck )
-            .collect( Collectors.toList() );
+                            .filter( this::needsPresenceCheck )
+                            .collect( Collectors.toList() );
     }
 
     public List<Parameter> getSourceParametersNotNeedingPresenceCheck() {
         return getSourceParameters().stream()
-            .filter( parameter -> !needsPresenceCheck( parameter ) )
-            .collect( Collectors.toList() );
+                            .filter( parameter -> !needsPresenceCheck( parameter ) )
+                            .collect( Collectors.toList() );
     }
 
     private boolean needsPresenceCheck(Parameter parameter) {
