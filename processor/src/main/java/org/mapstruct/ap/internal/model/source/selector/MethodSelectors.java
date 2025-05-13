@@ -33,6 +33,7 @@ public class MethodSelectors {
             new JavaxXmlElementDeclSelector( typeUtils ),
             new JakartaXmlElementDeclSelector( typeUtils ),
             new InheritanceSelector(),
+            new LifecycleOverloadDeduplicateSelector(),
             new CreateOrUpdateSelector(),
             new SourceRhsSelector(),
             new FactoryParameterSelector(),
