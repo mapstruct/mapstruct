@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -368,7 +369,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isOptionalType() {
-        return "java.util.Optional".equals( getFullyQualifiedName() );
+        return Optional.class.getName().equals( getFullyQualifiedName() );
     }
 
     public boolean isTypeVar() {
