@@ -368,7 +368,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isOptionalType() {
-        return !isPrimitive() || "java.util.Optional".equals( getFullyQualifiedName() );
+        return "java.util.Optional".equals( getFullyQualifiedName() );
     }
 
     public boolean isTypeVar() {
