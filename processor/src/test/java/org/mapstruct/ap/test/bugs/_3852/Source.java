@@ -41,5 +41,4 @@ public class Source {
         return someBoolean;
     }
 
-
 }
