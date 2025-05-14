@@ -920,7 +920,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Tries to find an addMethod in this type for given collection property in this type.
-     * <p>
+     *
      * Matching occurs on:
      * <ol>
      * <li>The generic type parameter type of the collection should match the adder method argument</li>
