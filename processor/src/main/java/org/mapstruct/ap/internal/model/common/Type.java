@@ -232,7 +232,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Returns a String that could be used in generated code to reference to this {@link Type}.<br>
-     * <p>
+     *  <p>
      * The first time a name is referred-to it will be marked as to be imported. For instance
      * {@code LocalDateTime} can be one of {@code java.time.LocalDateTime} and {@code org.joda.LocalDateTime})
      * <p>
@@ -373,7 +373,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isTypeVar() {
-        return ( typeMirror.getKind() == TypeKind.TYPEVAR );
+        return (typeMirror.getKind() == TypeKind.TYPEVAR);
     }
 
     public boolean isIntersection() {
@@ -427,7 +427,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
-     * <p>
+     *
      * Note that its use is only permitted on a definition (not on the place where its used). For instance:
      * {@code<T super Number> T map( T in)}
      *
@@ -444,7 +444,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * A type variable type can have two types of bounds (mutual exclusive): lower and upper.
-     * <p>
+     *
      * Note that its use is only permitted on a definition  (not on the place where its used). For instance:
      * {@code><T extends Number> T map( T in)}
      *
@@ -630,6 +630,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * as well.
      *
      * @param other The other type.
+     *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
     public boolean isAssignableTo(Type other) {
@@ -648,6 +649,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * they need to be resolved first.
      *
      * @param other The other type.
+     *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
     public boolean isRawAssignableTo(Type other) {
@@ -662,7 +664,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * removes any bounds from this type.
-     *
      * @return the raw type
      */
     public Type asRawType() {
@@ -708,7 +709,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( readAccessors == null ) {
 
             Map<String, ReadAccessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
-            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>( recordAccessors );
+            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>(recordAccessors);
 
             List<ReadAccessor> getterList = filters.getterMethodsIn( getAllMethods() );
             for ( ReadAccessor getter : getterList ) {
@@ -786,7 +787,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, Accessor> getPropertyWriteAccessors(CollectionMappingStrategyGem cmStrategy) {
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -826,7 +827,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
 
             }
-            else if ( candidate.getAccessorType() == AccessorType.FIELD && ( Executables.isFinal( candidate ) ||
+            else if ( candidate.getAccessorType() == AccessorType.FIELD  && ( Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
                 // if the candidate is a field and a mapping already exists, then use that one, skip it.
                 continue;
@@ -873,7 +874,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return parameter.getType();
         }
         else if ( candidate.getAccessorType() == AccessorType.GETTER
-            || candidate.getAccessorType().isFieldAssignment() ) {
+                        || candidate.getAccessorType().isFieldAssignment() ) {
             return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
         }
         return null;
@@ -903,7 +904,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         return Collections.emptyList();
     }
 
-    private String getPropertyName(Accessor accessor) {
+    private String getPropertyName(Accessor accessor ) {
         Element accessorElement = accessor.getElement();
         if ( accessorElement instanceof ExecutableElement ) {
             return getPropertyName( (ExecutableElement) accessorElement );
@@ -931,6 +932,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @param collectionProperty property type (assumed collection) to find  the adder method for
      * @param pluralPropertyName the property name (assumed plural)
+     *
      * @return corresponding adder method for getter when present
      */
     private Accessor getAdderForType(Type collectionProperty, String pluralPropertyName) {
@@ -969,8 +971,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      * Returns all accessor candidates that start with "add" and have exactly one argument
      * whose type matches the collection or stream property's type argument.
      *
-     * @param property   the collection or stream property
+     * @param property the collection or stream property
      * @param superclass the superclass to use for type argument lookup
+     *
      * @return accessor candidates
      */
     private List<Accessor> getAccessorCandidates(Type property, Class<?> superclass) {
@@ -1029,7 +1032,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * Alternative accessors could be a getter for a collection. By means of the
      * {@link java.util.Collection#addAll(java.util.Collection) } this getter can still
      * be used as targetAccessor. JAXB XJC tool generates such constructs.
-     * <p>
+     *
      * This method can be extended when new cases come along.
      *
      * @return an unmodifiable list of alternative target accessors.
@@ -1115,6 +1118,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * the other type. Returns {@code 1}, if the other type is a direct super type of this type, and so on.
      *
      * @param assignableOther the other type
+     *
      * @return the length of the shortest path in the type hierarchy between this type and the specified other type
      */
     public int distanceTo(Type assignableOther) {
@@ -1143,7 +1147,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * @param type   the type declaring the method
+     * @param type the type declaring the method
      * @param method the method to check
      * @return Whether this type can access the given method declared on the given type.
      */
@@ -1164,7 +1168,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * @return A valid Java expression most suitable for representing null - useful for dealing with primitives from
-     * FTL.
+     *         FTL.
      */
     public String getNull() {
         if ( isOptionalType() ) {
@@ -1182,7 +1186,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         if ( "char".equals( getName() ) ) {
             //"'\u0000'" would have been better, but depends on platform encoding
-            return "0";
+                return "0";
         }
         if ( "double".equals( getName() ) ) {
             return "0.0d";
@@ -1225,8 +1229,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         // are in another jar than the mapper. So the qualfiedName is a better candidate.
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-        result = prime * result + ( ( packageName == null ) ? 0 : packageName.hashCode() );
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((packageName == null) ? 0 : packageName.hashCode());
         return result;
     }
 
@@ -1244,7 +1248,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         Type other = (Type) obj;
 
         if ( this.isWildCardBoundByTypeVar() && other.isWildCardBoundByTypeVar() ) {
-            return ( this.hasExtendsBound() == this.hasExtendsBound()
+            return  ( this.hasExtendsBound() == this.hasExtendsBound()
                 || this.hasSuperBound() == this.hasSuperBound() )
                 && typeUtils.isSameType( getTypeBound().getTypeMirror(), other.getTypeBound().getTypeMirror() );
         }
@@ -1285,6 +1289,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     *
      * @return an identification that can be used as part in a forged method name.
      */
     public String getIdentification() {
@@ -1304,7 +1309,6 @@ public class Type extends ModelElement implements Comparable<Type> {
      * <li>{@code <?>}, returns Object</li>
      * <li>{@code <T extends Number>, returns Number}</li>
      * </ol>
-     *
      * @return the bound for this parameter
      */
     public Type getTypeBound() {
@@ -1392,7 +1396,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * All primitive types and their corresponding boxed types are considered native.
-     *
      * @return true when native.
      */
     public boolean isNative() {
@@ -1422,11 +1425,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * }
      * </pre>
      *
-     * @param declared      the type
+     * @param declared the type
      * @param parameterized the parameterized type
+     *
      * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)<br>
-     * - the matching parameter in the parameterized type when this is a type var when found<br>
-     * - null in all other cases
+     *         - the matching parameter in the parameterized type when this is a type var when found<br>
+     *         - null in all other cases
      */
     public ResolvedPair resolveParameterToType(Type declared, Type parameterized) {
         if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
@@ -1485,7 +1489,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * result: Map<String, BigDecimal>
      * }
      * </pre>
-     * <p>
+     *
      * Mismatch result examples:
      * <pre>
      * {@code
@@ -1501,11 +1505,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * }
      * </pre>
      *
-     * @param declared      the type
+     * @param declared the type
      * @param parameterized the parameterized type
+     *
      * @return - the result of {@link #resolveParameterToType(Type, Type)} when this type itself is a type var.<br>
-     * - the type but then with the matching type parameters replaced.<br>
-     * - the same type when this type does not contain matching type parameters.
+     *         - the type but then with the matching type parameters replaced.<br>
+     *         - the same type when this type does not contain matching type parameters.
      */
     public Type resolveGenericTypeParameters(Type declared, Type parameterized) {
         if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
@@ -1530,7 +1535,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isArrayTypeVar() {
-        return isArrayType() && getComponentType().isTypeVar();
+        return  isArrayType() && getComponentType().isTypeVar();
     }
 
     private static class TypeVarMatcher extends SimpleTypeVisitor8<ResolvedPair, Type> {
@@ -1541,7 +1546,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         /**
          * @param typeFactory factory
-         * @param types       type utils
+         * @param types type utils
          * @param typeToMatch the typeVar or wildcard with typeVar bound
          */
         TypeVarMatcher(TypeFactory typeFactory, TypeUtils types, Type typeToMatch) {
@@ -1554,7 +1559,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         @Override
         public ResolvedPair visitTypeVariable(TypeVariable parameterized, Type declared) {
             if ( typeToMatch.isTypeVar() && types.isSameType( parameterized, typeToMatch.getTypeMirror() ) ) {
-                return new ResolvedPair( typeFactory.getType( parameterized ), declared );
+                return new ResolvedPair(  typeFactory.getType( parameterized ), declared );
             }
             return super.DEFAULT_VALUE;
         }
@@ -1562,16 +1567,16 @@ public class Type extends ModelElement implements Comparable<Type> {
         /**
          * If ? extends SomeTime equals the boundary set in typeVarToMatch (NOTE: you can't compare the wildcard itself)
          * then return a result;
-         */
+          */
         @Override
         public ResolvedPair visitWildcard(WildcardType parameterized, Type declared) {
             if ( typeToMatch.hasExtendsBound() && parameterized.getExtendsBound() != null
                 && types.isSameType( typeToMatch.getTypeBound().getTypeMirror(), parameterized.getExtendsBound() ) ) {
-                return new ResolvedPair( typeToMatch, declared );
+                return new ResolvedPair( typeToMatch, declared);
             }
             else if ( typeToMatch.hasSuperBound() && parameterized.getSuperBound() != null
                 && types.isSameType( typeToMatch.getTypeBound().getTypeMirror(), parameterized.getSuperBound() ) ) {
-                return new ResolvedPair( typeToMatch, declared );
+                return new ResolvedPair( typeToMatch, declared);
             }
             if ( parameterized.getExtendsBound() != null ) {
                 ResolvedPair match = visit( parameterized.getExtendsBound(), declared );
@@ -1579,7 +1584,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
                 }
             }
-            else if ( parameterized.getSuperBound() != null ) {
+            else if (parameterized.getSuperBound() != null ) {
                 ResolvedPair match = visit( parameterized.getSuperBound(), declared );
                 if ( match.match != null ) {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
@@ -1603,7 +1608,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         @Override
         public ResolvedPair visitDeclared(DeclaredType parameterized, Type declared) {
 
-            List<ResolvedPair> results = new ArrayList<>();
+            List<ResolvedPair> results = new ArrayList<>(  );
             if ( parameterized.getTypeArguments().isEmpty() ) {
                 return super.DEFAULT_VALUE;
             }
@@ -1631,7 +1636,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                         continue;
                     }
                     ResolvedPair result = visitDeclared( parameterized, declaredSuperType );
-                    if ( result != super.DEFAULT_VALUE ) {
+                    if ( result != super.DEFAULT_VALUE  ) {
                         results.add( result );
                     }
                 }
@@ -1641,7 +1646,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                         continue;
                     }
                     ResolvedPair result = visitDeclared( (DeclaredType) parameterizedSuper, declared );
-                    if ( result != super.DEFAULT_VALUE ) {
+                    if ( result != super.DEFAULT_VALUE  ) {
                         results.add( result );
                     }
                 }
@@ -1657,7 +1662,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         private boolean isJavaLangObject(TypeMirror type) {
             if ( type instanceof DeclaredType ) {
                 return ( (TypeElement) ( (DeclaredType) type ).asElement() ).getQualifiedName()
-                    .contentEquals( Object.class.getName() );
+                                                                            .contentEquals( Object.class.getName() );
             }
             return false;
         }
@@ -1730,7 +1735,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * It strips all the {@code []} from the {@code className}.
-     * <p>
+     *
      * E.g.
      * <pre>
      *     trimSimpleClassName("String[][][]") -> "String"
@@ -1738,6 +1743,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * </pre>
      *
      * @param className that needs to be trimmed
+     *
      * @return the trimmed {@code className}, or {@code null} if the {@code className} was {@code null}
      */
     private String trimSimpleClassName(String className) {
@@ -1800,9 +1806,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     /**
      * return the list of permitted TypeMirrors for the java 17+ sealed class
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public List<? extends TypeMirror> getPermittedSubclasses() {
-        if ( SEALED_PERMITTED_SUBCLASSES_METHOD == null ) {
+        if (SEALED_PERMITTED_SUBCLASSES_METHOD == null) {
             return emptyList();
         }
         try {
