@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.WithSpring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@WithSpring
 @IssueKey("3852")
 public class Issue3852Test {
 
