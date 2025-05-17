@@ -116,7 +116,8 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String VERBOSE = "mapstruct.verbose";
     protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = "mapstruct.nullValueIterableMappingStrategy";
     protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = "mapstruct.nullValueMapMappingStrategy";
-    protected static final String DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR = "mapstruct.disableLifecycleOverloadDeduplicateSelector";
+    protected static final String DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR =
+        "mapstruct.disableLifecycleOverloadDeduplicateSelector";
 
     private final Set<String> additionalSupportedOptions;
     private final String additionalSupportedOptionsError;

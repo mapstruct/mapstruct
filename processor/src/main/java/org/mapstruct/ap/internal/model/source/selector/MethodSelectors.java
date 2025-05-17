@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.source.Method;
@@ -25,7 +26,7 @@ public class MethodSelectors {
 
     public MethodSelectors(TypeUtils typeUtils, ElementUtils elementUtils,
                            FormattingMessager messager, Options options) {
-        List<MethodSelector> selectorList = new ArrayList<>( List.of(
+        List<MethodSelector> selectorList = new ArrayList<>( Arrays.asList(
             new MethodFamilySelector(),
             new TypeSelector( messager ),
             new QualifierSelector( typeUtils, elementUtils ),
@@ -38,7 +39,7 @@ public class MethodSelectors {
             selectorList.add( new LifecycleOverloadDeduplicateSelector() );
         }
 
-        selectorList.addAll( List.of(
+        selectorList.addAll( Arrays.asList(
             new CreateOrUpdateSelector(),
             new SourceRhsSelector(),
             new FactoryParameterSelector(),

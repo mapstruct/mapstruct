@@ -29,7 +29,8 @@ public class Issue3849Test {
         Child child = new Child();
         Parent parent = new Parent();
 
-        DeduplicateForCompileArgsMapper.MappingContext mappingContext = new DeduplicateForCompileArgsMapper.MappingContext();
+        DeduplicateForCompileArgsMapper.MappingContext mappingContext =
+            new DeduplicateForCompileArgsMapper.MappingContext();
         ParentDto parentDto = DeduplicateForCompileArgsMapper.INSTANCE.mapParent( parent, mappingContext );
         assertThat( DeduplicateForCompileArgsMapper.INVOKED_METHODS )
             .containsExactly(
@@ -57,7 +58,6 @@ public class Issue3849Test {
 
         DeduplicateForCompileArgsMapper.INVOKED_METHODS.clear();
     }
-
 
     @ProcessorTest()
     @WithClasses( DeduplicateByTargetMapper.class )

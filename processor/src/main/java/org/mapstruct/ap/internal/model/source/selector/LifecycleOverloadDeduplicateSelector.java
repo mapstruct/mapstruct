@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +33,12 @@ import org.mapstruct.ap.internal.model.source.Method;
  * <p>
  * <b>Example (see Issue3849Test):</b>
  *
- * @AfterMapping default void afterMapping(Parent source, @MappingTarget ParentDto target) { ... }
- * @AfterMapping default void afterMapping(Parent source, @MappingTarget ChildDto target) { ... }
- * </pre>
+ * <pre>{@code
+ * @AfterMapping
+ * default void afterMapping(Parent source, @MappingTarget ParentDto target) { ... }
+ * @AfterMapping
+ * default void afterMapping(Parent source, @MappingTarget ChildDto target) { ... }
+ * }</pre>
  * When mapping a Child to a ChildDto,
  * only the method with ChildDto is selected, even though both methods match by signature
  * except for the target type's inheritance relationship.
@@ -43,19 +47,18 @@ public class LifecycleOverloadDeduplicateSelector implements MethodSelector {
     @Override
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
                                                                          SelectionContext context) {
-        if ( !context.getSelectionCriteria().isLifecycleCallbackRequired() ) {
+        if ( !context.getSelectionCriteria().isLifecycleCallbackRequired() || methods.size() <= 1 ) {
             return methods;
         }
-        List<List<SelectedMethod<T>>> methodSignatureGroups = new ArrayList<>(
+        Collection<List<SelectedMethod<T>>> methodSignatureGroups =
             methods.stream()
                 .collect( Collectors.groupingBy(
                     LifecycleOverloadDeduplicateSelector::buildSignatureKey,
                     LinkedHashMap::new,
                     Collectors.toList()
                 ) )
-                .values()
-        );
-        List<SelectedMethod<T>> deduplicatedMethods = new ArrayList<>();
+                .values();
+        List<SelectedMethod<T>> deduplicatedMethods = new ArrayList<>( methods.size() );
         for ( List<SelectedMethod<T>> signatureGroup : methodSignatureGroups ) {
             if ( signatureGroup.size() == 1 ) {
                 deduplicatedMethods.add( signatureGroup.get( 0 ) );
@@ -93,11 +96,6 @@ public class LifecycleOverloadDeduplicateSelector implements MethodSelector {
         for ( ParameterBinding binding : method.getParameterBindings() ) {
             key.add( binding.getType() );
             key.add( binding.getVariableName() );
-            key.add( binding.isMappingTarget() );
-            key.add( binding.isMappingContext() );
-            key.add( binding.isTargetType() );
-            key.add( binding.isSourcePropertyName() );
-            key.add( binding.isTargetPropertyName() );
         }
         return key;
     }
