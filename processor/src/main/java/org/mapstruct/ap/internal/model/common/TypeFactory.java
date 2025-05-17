@@ -96,6 +96,7 @@ public class TypeFactory {
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
     private final TypeMirror mapType;
+    private final TypeMirror setType;
     private final TypeMirror streamType;
 
     private final Map<String, ImplementationType> implementationTypes = new HashMap<>();
@@ -117,6 +118,7 @@ public class TypeFactory {
         collectionType =
             typeUtils.erasure( elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
+        setType = typeUtils.erasure( elementUtils.getTypeElement( Set.class.getCanonicalName() ).asType() );
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
 
@@ -249,6 +251,7 @@ public class TypeFactory {
         boolean isIterableType = typeUtils.isSubtypeErased( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtypeErased( mirror, collectionType );
         boolean isMapType = typeUtils.isSubtypeErased( mirror, mapType );
+        boolean isSetType = typeUtils.isSubtypeErased( mirror, setType );
         boolean isStreamType = streamType != null && typeUtils.isSubtypeErased( mirror, streamType );
 
         boolean isEnumType;
@@ -358,6 +361,7 @@ public class TypeFactory {
             isIterableType,
             isCollectionType,
             isMapType,
+            isSetType,
             isStreamType,
             toBeImportedTypes,
             notToBeImportedTypes,
@@ -588,6 +592,7 @@ public class TypeFactory {
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
+                implementationType.isSetType(),
                 implementationType.isStreamType(),
                 toBeImportedTypes,
                 notToBeImportedTypes,
