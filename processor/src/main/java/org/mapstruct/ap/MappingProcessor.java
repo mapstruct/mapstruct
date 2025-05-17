@@ -95,6 +95,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
     MappingProcessor.VERBOSE,
     MappingProcessor.NULL_VALUE_ITERABLE_MAPPING_STRATEGY,
     MappingProcessor.NULL_VALUE_MAP_MAPPING_STRATEGY,
+    MappingProcessor.DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR,
 })
 public class MappingProcessor extends AbstractProcessor {
 
@@ -115,6 +116,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String VERBOSE = "mapstruct.verbose";
     protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = "mapstruct.nullValueIterableMappingStrategy";
     protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = "mapstruct.nullValueMapMappingStrategy";
+    protected static final String DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR = "mapstruct.disableLifecycleOverloadDeduplicateSelector";
 
     private final Set<String> additionalSupportedOptions;
     private final String additionalSupportedOptionsError;
@@ -174,6 +176,8 @@ public class MappingProcessor extends AbstractProcessor {
         String nullValueIterableMappingStrategy = processingEnv.getOptions()
             .get( NULL_VALUE_ITERABLE_MAPPING_STRATEGY );
         String nullValueMapMappingStrategy = processingEnv.getOptions().get( NULL_VALUE_MAP_MAPPING_STRATEGY );
+        String disableLifecycleOverloadDeduplicateSelector = processingEnv.getOptions()
+            .get( DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR );
 
         return new Options(
             Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
@@ -189,7 +193,8 @@ public class MappingProcessor extends AbstractProcessor {
                 NullValueMappingStrategyGem.valueOf( nullValueIterableMappingStrategy.toUpperCase( Locale.ROOT ) ) :
                 null,
             nullValueMapMappingStrategy != null ?
-                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null
+                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null,
+            Boolean.parseBoolean( disableLifecycleOverloadDeduplicateSelector )
         );
     }
 

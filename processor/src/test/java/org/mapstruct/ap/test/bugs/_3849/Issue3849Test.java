@@ -9,6 +9,7 @@ package org.mapstruct.ap.test.bugs._3849;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,9 +22,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue3849Test {
 
+    @ProcessorOption(name = "mapstruct.disableLifecycleOverloadDeduplicateSelector", value = "true")
+    @ProcessorTest()
+    @WithClasses(DeduplicateForCompileArgsMapper.class)
+    void lifecycleMappingOverloadSelectorDisableCompileArgs() {
+        Child child = new Child();
+        Parent parent = new Parent();
+
+        DeduplicateForCompileArgsMapper.MappingContext mappingContext = new DeduplicateForCompileArgsMapper.MappingContext();
+        ParentDto parentDto = DeduplicateForCompileArgsMapper.INSTANCE.mapParent( parent, mappingContext );
+        assertThat( DeduplicateForCompileArgsMapper.INVOKED_METHODS )
+            .containsExactly(
+                "beforeMappingParentTargetInOtherClass",
+                "beforeMappingParentTarget",
+                "afterMappingParentTargetInOtherClass",
+                "afterMappingParentTarget"
+            );
+
+        DeduplicateForCompileArgsMapper.INVOKED_METHODS.clear();
+
+        ParentDto childDto = DeduplicateForCompileArgsMapper.INSTANCE.mapChild( child, mappingContext );
+
+        assertThat( DeduplicateForCompileArgsMapper.INVOKED_METHODS )
+            .containsExactly(
+                "beforeMappingChildTargetInOtherClass",
+                "beforeMappingChildTargetInOtherClass",
+                "beforeMappingChildTarget",
+                "beforeMappingChildTarget",
+                "afterMappingChildTargetInOtherClass",
+                "afterMappingChildTargetInOtherClass",
+                "afterMappingChildTarget",
+                "afterMappingChildTarget"
+            );
+
+        DeduplicateForCompileArgsMapper.INVOKED_METHODS.clear();
+    }
+
+
     @ProcessorTest()
     @WithClasses( DeduplicateByTargetMapper.class )
-    void afterMappingOverloadByTarget() {
+    void lifecycleMappingOverloadByTarget() {
         Child child = new Child();
         Parent parent = new Parent();
 
@@ -54,7 +92,7 @@ public class Issue3849Test {
 
     @ProcessorTest
     @WithClasses( DeduplicateBySourceMapper.class )
-    void afterMappingOverloadBySource() {
+    void lifecycleMappingOverloadBySource() {
         Child child = new Child();
         Parent parent = new Parent();
 
@@ -81,6 +119,32 @@ public class Issue3849Test {
             );
 
         DeduplicateBySourceMapper.INVOKED_METHODS.clear();
+    }
+
+    @ProcessorTest
+    @WithClasses(DeduplicateGenericMapper.class)
+    void lifecycleMappingOverloadForGeneric() {
+        Child child = new Child();
+        Parent parent = new Parent();
+
+        ParentDto parentDto = DeduplicateGenericMapper.INSTANCE.mapParent( parent );
+        assertThat( DeduplicateGenericMapper.INVOKED_METHODS )
+            .containsExactly(
+                "beforeMappingParentGeneric",
+                "afterMappingParent"
+            );
+
+        DeduplicateGenericMapper.INVOKED_METHODS.clear();
+
+        ParentDto childDto = DeduplicateGenericMapper.INSTANCE.mapChild( child );
+
+        assertThat( DeduplicateGenericMapper.INVOKED_METHODS )
+            .containsExactly(
+                "beforeMappingChild",
+                "afterMappingChild"
+            );
+
+        DeduplicateGenericMapper.INVOKED_METHODS.clear();
     }
 }
 

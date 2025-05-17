@@ -6,10 +6,10 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.TypeUtils;
@@ -24,21 +24,27 @@ public class MethodSelectors {
     private final List<MethodSelector> selectors;
 
     public MethodSelectors(TypeUtils typeUtils, ElementUtils elementUtils,
-                           FormattingMessager messager) {
-        selectors = Arrays.asList(
+                           FormattingMessager messager, Options options) {
+        List<MethodSelector> selectorList = new ArrayList<>( List.of(
             new MethodFamilySelector(),
             new TypeSelector( messager ),
             new QualifierSelector( typeUtils, elementUtils ),
             new TargetTypeSelector( typeUtils ),
             new JavaxXmlElementDeclSelector( typeUtils ),
             new JakartaXmlElementDeclSelector( typeUtils ),
-            new InheritanceSelector(),
-            new LifecycleOverloadDeduplicateSelector(),
+            new InheritanceSelector()
+        ) );
+        if ( options != null && !options.isDisableLifecycleOverloadDeduplicateSelector() ) {
+            selectorList.add( new LifecycleOverloadDeduplicateSelector() );
+        }
+
+        selectorList.addAll( List.of(
             new CreateOrUpdateSelector(),
             new SourceRhsSelector(),
             new FactoryParameterSelector(),
             new MostSpecificResultTypeSelector()
-        );
+        ) );
+        this.selectors = selectorList;
     }
 
     /**
