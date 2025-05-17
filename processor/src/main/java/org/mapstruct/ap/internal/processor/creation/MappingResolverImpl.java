@@ -116,7 +116,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         this.conversions = new Conversions( typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
-        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, messager );
+        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, messager, null );
 
         this.verboseLogging = verboseLogging;
     }

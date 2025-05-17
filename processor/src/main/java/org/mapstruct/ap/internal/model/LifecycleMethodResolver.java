@@ -133,7 +133,7 @@ public final class LifecycleMethodResolver {
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager(), ctx.getOptions() );
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             callbackMethods,

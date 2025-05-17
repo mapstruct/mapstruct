@@ -119,7 +119,8 @@ public final class PresenceCheckMethodResolver {
         MethodSelectors selectors = new MethodSelectors(
             ctx.getTypeUtils(),
             ctx.getElementUtils(),
-            ctx.getMessager()
+            ctx.getMessager(),
+            null
         );
 
         return selectors.getMatchingMethods(
