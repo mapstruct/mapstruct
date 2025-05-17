@@ -100,6 +100,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final String finalizedResultName;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType;
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
+    private final Type subclassExhaustiveException;
 
     private final MappingReferences mappingReferences;
 
@@ -378,6 +379,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             }
 
+            TypeMirror subclassExhaustiveException = method.getOptions()
+                .getBeanMapping()
+                .getSubclassExhaustiveException();
+            Type subclassExhaustiveExceptionType = ctx.getTypeFactory().getType( subclassExhaustiveException );
+
             List<SubclassMapping> subclasses = new ArrayList<>();
             for ( SubclassMappingOptions subclassMappingOptions : method.getOptions().getSubclassMappings() ) {
                 subclasses.add( createSubclassMapping( subclassMappingOptions ) );
@@ -451,7 +457,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 finalizeMethod,
                 mappingReferences,
                 subclasses,
-                presenceChecksByParameter
+                presenceChecksByParameter,
+                subclassExhaustiveExceptionType
             );
         }
 
@@ -1954,7 +1961,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings,
-                              Map<String, PresenceCheck> presenceChecksByParameter) {
+                              Map<String, PresenceCheck> presenceChecksByParameter,
+                              Type subclassExhaustiveException) {
         super(
             method,
             annotations,
@@ -1969,6 +1977,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         this.propertyMappings = propertyMappings;
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
+        this.subclassExhaustiveException = subclassExhaustiveException;
         if ( this.finalizerMethod != null ) {
             this.finalizedResultName =
                 Strings.getSafeVariableName( getResultName() + "Result", existingVariableNames );
@@ -2015,6 +2024,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
         this.subclassMappings = subclassMappings;
+    }
+
+    public Type getSubclassExhaustiveException() {
+        return subclassExhaustiveException;
     }
 
     public List<PropertyMapping> getConstantMappings() {

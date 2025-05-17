@@ -42,7 +42,7 @@
         else {
     </#if>
     <#if isAbstractReturnType()>
-        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
+        throw new <@includeModel object=subclassExhaustiveException />("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
     <#else>
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>

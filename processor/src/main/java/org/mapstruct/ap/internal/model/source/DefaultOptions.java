@@ -131,6 +131,10 @@ public class DefaultOptions extends DelegatingOptions {
         return SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().getDefaultValue() );
     }
 
+    public TypeMirror getSubclassExhaustiveException() {
+        return mapper.subclassExhaustiveException().getDefaultValue();
+    }
+
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
         NullValueMappingStrategyGem nullValueIterableMappingStrategy = options.getNullValueIterableMappingStrategy();
         if ( nullValueIterableMappingStrategy != null ) {
