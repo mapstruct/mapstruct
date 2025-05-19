@@ -21,6 +21,8 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
+import org.mapstruct.ap.internal.gem.IgnoredGem;
+import org.mapstruct.ap.internal.gem.IgnoredsGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -76,6 +78,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
     private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
     private static final String CONDITION_FQN = "org.mapstruct.Condition";
+    private static final String IGNORED_FQN = "org.mapstruct.Ignored";
+    private static final String IGNOREDS_FQN = "org.mapstruct.Ignoreds";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -624,7 +628,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
+        Set<MappingOptions> processedAnnotations = new RepeatableMappings( beanMapping )
+                .getProcessedAnnotations( method );
+        processedAnnotations.addAll( new IgnoredConditions( processedAnnotations )
+                .getProcessedAnnotations( method ) );
+        return processedAnnotations;
     }
 
     /**
@@ -823,4 +831,55 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
     }
+
+    private class IgnoredConditions extends RepeatableAnnotations<IgnoredGem, IgnoredsGem, MappingOptions> {
+
+        protected final Set<MappingOptions> processedAnnotations;
+
+        protected IgnoredConditions( Set<MappingOptions> processedAnnotations ) {
+            super( elementUtils, IGNORED_FQN, IGNOREDS_FQN );
+            this.processedAnnotations = processedAnnotations;
+        }
+
+        @Override
+        protected IgnoredGem singularInstanceOn(Element element) {
+            return IgnoredGem.instanceOn( element );
+        }
+
+        @Override
+        protected IgnoredsGem multipleInstanceOn(Element element) {
+            return IgnoredsGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(IgnoredGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredGem ignoredGem = IgnoredGem.instanceOn( method );
+            if ( ignoredGem == null ) {
+                ignoredGem = gem;
+            }
+            String prefix = ignoredGem.prefix().get();
+            for ( String target : ignoredGem.targets().get() ) {
+                String realTarget = target;
+                if ( !prefix.isEmpty() ) {
+                    realTarget = prefix + "." + target;
+                }
+                MappingOptions mappingOptions = MappingOptions.forIgnore( realTarget );
+                if ( processedAnnotations.contains( mappingOptions ) || mappings.contains( mappingOptions ) ) {
+                    messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, realTarget );
+                }
+                else {
+                    mappings.add( mappingOptions );
+                }
+            }
+        }
+
+        @Override
+        protected void addInstances(IgnoredsGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredsGem ignoredsGem = IgnoredsGem.instanceOn( method );
+            for ( IgnoredGem ignoredGem : ignoredsGem.value().get() ) {
+                addInstance( ignoredGem, method, mappings );
+            }
+        }
+    }
+
 }
