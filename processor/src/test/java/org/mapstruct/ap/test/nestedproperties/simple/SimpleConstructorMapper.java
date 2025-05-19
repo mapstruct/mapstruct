@@ -20,10 +20,10 @@ import org.mapstruct.factory.Mappers;
     nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-public interface SimpleConstructorMapper{
+public interface SimpleConstructorMapper {
 
     SimpleConstructorMapper MAPPER = Mappers.getMapper( SimpleConstructorMapper.class );
 
     TargetObject toTargetObject(SourceRoot sourceRoot);
-    
+
 }

@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({ SourceRoot.class, SourceProps.class, TargetObject.class })
 @IssueKey("3852")
 public class SimpleMapperTest {
-    
+
 
     @ProcessorTest
     @WithClasses({ SimpleConstructorMapper.class })
@@ -44,9 +44,11 @@ public class SimpleMapperTest {
     @ProcessorTest
     @WithClasses({ SimpleConstructorMapper.class })
     public void shouldMapOptional() {
-        SourceRoot sourceRoot = new SourceRoot( Optional.of( "someString" ), Optional.of( 10 ),
-            Optional.of( 11D ), Optional.of( Boolean.TRUE), OptionalInt.of( 10 ),
-            OptionalDouble.of( 100D ), OptionalLong.of( 200 ) );
+        SourceRoot sourceRoot = new SourceRoot(
+            Optional.of( "someString" ), Optional.of( 10 ),
+            Optional.of( 11D ), Optional.of( Boolean.TRUE ), OptionalInt.of( 10 ),
+            OptionalDouble.of( 100D ), OptionalLong.of( 200 )
+        );
         TargetObject target = SimpleConstructorMapper.MAPPER.toTargetObject( sourceRoot );
 
         assertThat( target.getSomeString() ).contains( "someString" );
@@ -54,8 +56,8 @@ public class SimpleMapperTest {
         assertThat( target.getSomeDouble() ).contains( 11D );
         assertThat( target.getSomeBoolean() ).contains( Boolean.TRUE );
         assertThat( target.getSomeIntValue() ).hasValue( 10 );
-        assertThat( target.getSomeDoubleValue() ).hasValue(100);
-        assertThat( target.getSomeLongValue() ).hasValue(200);
+        assertThat( target.getSomeDoubleValue() ).hasValue( 100 );
+        assertThat( target.getSomeLongValue() ).hasValue( 200 );
     }
 
 }

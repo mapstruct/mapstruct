@@ -263,7 +263,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null) {
             return nameWithTopLevelTypeName;
         }
 
