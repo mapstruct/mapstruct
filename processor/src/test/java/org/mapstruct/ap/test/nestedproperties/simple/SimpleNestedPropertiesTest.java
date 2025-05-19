@@ -5,6 +5,11 @@
  */
 package org.mapstruct.ap.test.nestedproperties.simple;
 
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+
 import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
@@ -37,8 +42,8 @@ public class SimpleNestedPropertiesTest {
     @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testViaNull() {
-        SourceRoot sourceRoot = new SourceRoot();
-        // sourceRoot.getProps() is null
+        SourceRoot sourceRoot = new SourceRoot(Optional.empty(), Optional.empty(), Optional.empty(),
+            Optional.empty(), OptionalInt.empty(), OptionalDouble.empty(), OptionalLong.empty());
 
         TargetObject targetObject = SimpleMapper.MAPPER.toTargetObject( sourceRoot );
 
@@ -58,7 +63,8 @@ public class SimpleNestedPropertiesTest {
     @ProcessorTest
     @WithClasses({ SimpleMapper.class })
     public void testFilled() {
-        SourceRoot sourceRoot = new SourceRoot();
+        SourceRoot sourceRoot = new SourceRoot(Optional.empty(), Optional.empty(), Optional.empty(),
+            Optional.empty(), OptionalInt.empty(), OptionalDouble.empty(), OptionalLong.empty());
         SourceProps sourceProps = new SourceProps();
         sourceRoot.setProps( sourceProps );
         sourceProps.publicLongValue = Long.MAX_VALUE;
