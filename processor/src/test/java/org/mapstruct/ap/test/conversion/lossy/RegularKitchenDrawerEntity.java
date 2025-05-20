@@ -17,6 +17,7 @@ public class RegularKitchenDrawerEntity {
     private float depth;
     private Float length;
     private VerySpecialNumber height;
+    private int drawerId;
 
     public int getNumberOfForks() {
         return numberOfForks;
@@ -66,4 +67,11 @@ public class RegularKitchenDrawerEntity {
         this.height = height;
     }
 
+    public int getDrawerId() {
+        return drawerId;
+    }
+
+    public void setDrawerId(int drawerId) {
+        this.drawerId = drawerId;
+    }
 }
