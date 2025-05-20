@@ -31,7 +31,7 @@
     }
 
     <#if existingInstanceMapping>
-        ${resultName}.clear();
+        ${resultName}.entrySet().retainAll( ${sourceParameter.name}.entrySet() );
     <#else>
         <@includeModel object=resultType /> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
     </#if>

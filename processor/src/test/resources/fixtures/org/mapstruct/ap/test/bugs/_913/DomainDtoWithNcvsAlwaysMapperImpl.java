@@ -61,7 +61,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
 
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
-                target.getStrings().clear();
+                target.getStrings().retainAll( source.getStrings() );
                 target.getStrings().addAll( source.getStrings() );
             }
         }
@@ -73,7 +73,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
-                target.getLongs().clear();
+                target.getLongs().retainAll( stringListToLongSet( source.getStrings() ) );
                 target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
             }
         }
@@ -84,7 +84,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                target.getStringsInitialized().clear();
+                target.getStringsInitialized().retainAll( source.getStringsInitialized() );
                 target.getStringsInitialized().addAll( source.getStringsInitialized() );
             }
         }
@@ -96,7 +96,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                target.getLongsInitialized().clear();
+                target.getLongsInitialized().retainAll( stringListToLongSet( source.getStringsInitialized() ) );
                 target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
@@ -133,7 +133,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
 
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
-                target.getStrings().clear();
+                target.getStrings().retainAll( source.getStrings() );
                 target.getStrings().addAll( source.getStrings() );
             }
         }
@@ -145,7 +145,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
-                target.getLongs().clear();
+                target.getLongs().retainAll( stringListToLongSet( source.getStrings() ) );
                 target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
             }
         }
@@ -156,7 +156,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                target.getStringsInitialized().clear();
+                target.getStringsInitialized().retainAll( source.getStringsInitialized() );
                 target.getStringsInitialized().addAll( source.getStringsInitialized() );
             }
         }
@@ -168,7 +168,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                target.getLongsInitialized().clear();
+                target.getLongsInitialized().retainAll( stringListToLongSet( source.getStringsInitialized() ) );
                 target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
