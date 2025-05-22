@@ -737,7 +737,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            List<ReadAccessor> fieldsList = filters.fieldsIn( getAllFields(), ReadAccessor::fromField );
+            List<ReadAccessor> fieldsList = filters.fieldsIn(
+                getAllFields(),
+                variableElement -> ReadAccessor.fromField(
+                    variableElement,
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, variableElement )
+                )
+            );
             for ( ReadAccessor field : fieldsList ) {
                 String propertyName = getPropertyName( field );
                 // If there was no getter or is method for booleans, then resort to the field.
@@ -1047,7 +1053,13 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new ) );
+            readAccessors.addAll( filters.fieldsIn(
+                getAllFields(),
+                variableElement -> new ElementAccessor(
+                    variableElement,
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, variableElement )
+                )
+            ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.

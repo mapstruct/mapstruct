@@ -23,7 +23,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -64,7 +64,7 @@ public class Filters {
     public List<ReadAccessor> getterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isGetterMethod )
-            .map( method ->  ReadAccessor.fromGetter( method, getReturnType( method ) ) )
+            .map( method -> ReadAccessor.fromGetter( method, getReturnType( method ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -90,7 +90,10 @@ public class Filters {
         for ( Element recordComponent : recordComponents ) {
             recordAccessors.put(
                 recordComponent.getSimpleName().toString(),
-                ReadAccessor.fromRecordComponent( recordComponent )
+                ReadAccessor.fromRecordComponent(
+                    recordComponent,
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, recordComponent )
+                )
             );
         }
 
@@ -117,7 +120,7 @@ public class Filters {
     public List<Accessor> setterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isSetterMethod )
-            .map( method ->  new ExecutableElementAccessor( method, getFirstParameter( method ), SETTER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), SETTER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -132,7 +135,7 @@ public class Filters {
     public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isAdderMethod )
-            .map( method -> new ExecutableElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }

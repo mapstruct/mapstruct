@@ -10,26 +10,43 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * An {@link Accessor} that wraps a {@link VariableElement}.
- *
+ * An {@link Accessor} that wraps a {@link Element}.
+ * Used for getter, setter, filed, constructor, record-class, etc.
  * @author Filip Hrisafov
+ * @author Tang Yang
  */
 public class ElementAccessor extends AbstractAccessor<Element> {
 
+    private final String name;
     private final AccessorType accessorType;
+    private final TypeMirror accessedType;
 
-    public ElementAccessor(VariableElement variableElement) {
-        this( variableElement, AccessorType.FIELD );
+    public ElementAccessor(VariableElement variableElement, TypeMirror accessedType) {
+        this( variableElement, accessedType, AccessorType.FIELD );
     }
 
-    public ElementAccessor(Element element, AccessorType accessorType) {
+    public ElementAccessor(Element element, TypeMirror accessedType, String name) {
         super( element );
+        this.name = name;
+        this.accessedType = accessedType;
+        this.accessorType = AccessorType.PARAMETER;
+    }
+
+    public ElementAccessor(Element element, TypeMirror accessedType, AccessorType accessorType) {
+        super( element );
+        this.accessedType = accessedType;
         this.accessorType = accessorType;
+        this.name = null;
     }
 
     @Override
     public TypeMirror getAccessedType() {
-        return element.asType();
+        return accessedType;
+    }
+
+    @Override
+    public String getSimpleName() {
+        return name != null ? name : super.getSimpleName();
     }
 
     @Override
