@@ -240,6 +240,7 @@ public class CollectionAssignmentBuilder {
                 result,
                 method.getThrownTypes(),
                 targetType,
+                nvpms,
                 targetAccessorType.isFieldAssignment()
             );
         }
