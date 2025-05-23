@@ -110,7 +110,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperTypeElement, mapperOptions );
-        return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperOptions, prototypeMethods );
+        return retrieveMethods(
+            typeFactory.getType( mapperTypeElement.asType() ),
+            mapperTypeElement,
+            mapperOptions,
+            prototypeMethods
+        );
     }
 
     @Override
@@ -162,19 +167,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     /**
      * Retrieves the mapping methods declared by the given mapper type.
      *
-     * @param usedMapper The type of interest (either the mapper to implement or a used mapper via @uses annotation)
+     * @param usedMapperType The type of interest (either the mapper to implement, a used mapper via @uses annotation,
+     *                   or a parameter type annotated with @Context)
      * @param mapperToImplement the top level type (mapper) that requires implementation
      * @param mapperOptions the mapper config
      * @param prototypeMethods prototype methods defined in mapper config type
      * @return All mapping methods declared by the given type
      */
-    private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
+    private List<SourceMethod> retrieveMethods(Type usedMapperType, TypeElement mapperToImplement,
                                                MapperOptions mapperOptions, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
+        TypeElement usedMapper = usedMapperType.getTypeElement();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
-                usedMapper,
+                usedMapperType,
                 executable,
                 mapperToImplement,
                 mapperOptions,
@@ -191,10 +198,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 TypeElement usesMapperElement = asTypeElement( mapper );
                 if ( !mapperToImplement.equals( usesMapperElement ) ) {
                     methods.addAll( retrieveMethods(
-                        usesMapperElement,
+                        typeFactory.getType( mapper ),
                         mapperToImplement,
                         mapperOptions,
-                        prototypeMethods ) );
+                        prototypeMethods
+                    ) );
                 }
                 else {
                     messager.printMessage(
@@ -214,13 +222,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return (TypeElement) type.asElement();
     }
 
-    private SourceMethod getMethod(TypeElement usedMapper,
+    private SourceMethod getMethod(Type usedMapperType,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement,
                                    MapperOptions mapperOptions,
                                    List<SourceMethod> prototypeMethods) {
-
-        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
+        TypeElement usedMapper = usedMapperType.getTypeElement();
+        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapperType.getTypeMirror(), method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         Type returnType = typeFactory.getReturnType( methodType );
 
@@ -353,7 +361,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 continue;
             }
             List<SourceMethod> contextParamMethods = retrieveMethods(
-                contextParam.getType().getTypeElement(),
+                contextParam.getType(),
                 mapperToImplement,
                 mapperConfig,
                 Collections.emptyList() );
