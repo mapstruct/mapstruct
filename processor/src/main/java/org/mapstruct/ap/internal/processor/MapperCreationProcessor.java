@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -526,9 +527,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
         if ( forwardTemplateMethod != null ) {
             mappingOptions.applyInheritedOptions( method, forwardTemplateMethod, false, annotationMirror );
+            method.setForwardInheritedFromMethod( forwardTemplateMethod );
         }
         if ( inverseTemplateMethod != null ) {
             mappingOptions.applyInheritedOptions( method, inverseTemplateMethod, true, annotationMirror );
+            method.setInverseInheritedFromMethod( inverseTemplateMethod );
         }
 
         // apply auto inherited options
@@ -538,8 +541,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // but.. there should not be an @InheritedConfiguration
             if ( forwardTemplateMethod == null && inheritanceStrategy.isApplyForward() ) {
                 if ( applicablePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( method, first( applicablePrototypeMethods ), false,
-                        annotationMirror );
+                    SourceMethod prototypeMethod = first( applicablePrototypeMethods );
+                    mappingOptions.applyInheritedOptions( method, prototypeMethod, false, annotationMirror );
+                    method.setForwardInheritedFromMethod( prototypeMethod );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -552,8 +556,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // or no @InheritInverseConfiguration
             if ( inverseTemplateMethod == null && inheritanceStrategy.isApplyReverse() ) {
                 if ( applicableReversePrototypeMethods.size() == 1 ) {
-                    mappingOptions.applyInheritedOptions( method, first( applicableReversePrototypeMethods ), true,
-                        annotationMirror );
+                    SourceMethod prototypeMethod = first( applicableReversePrototypeMethods );
+                    mappingOptions.applyInheritedOptions( method, prototypeMethod, true, annotationMirror );
+                    method.setInverseInheritedFromMethod( prototypeMethod );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -629,10 +634,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = nameFilteredcandidates.get( 0 );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
+                    resultMethod = selectMostSpecificMethod( nameFilteredcandidates, true );
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inverseConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbiguousReverseMapping( candidates, method, inverseConfiguration );
+                    resultMethod = selectMostSpecificMethod( candidates, true );
+                    if ( resultMethod == null ) {
+                        reportErrorWhenAmbiguousReverseMapping( candidates, method, inverseConfiguration );
+                    }
                 }
             }
         }
@@ -713,9 +722,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     resultMethod = first( nameFilteredCandidates );
                 }
                 else if ( nameFilteredCandidates.size() > 1 ) {
+                    resultMethod = selectMostSpecificMethod( nameFilteredCandidates, false );
                     reportErrorWhenSeveralNamesMatch( nameFilteredCandidates, method, inheritConfiguration );
                 }
                 else {
+                    resultMethod = selectMostSpecificMethod( candidates, false );
                     reportErrorWhenAmbiguousMapping( candidates, method, inheritConfiguration );
                 }
             }
@@ -829,6 +840,36 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             gem.name().get(),
             onlyCandidate.getName()
         );
+    }
+
+    /**
+     * Select the most specific method from the candidate methods
+     * The most specific method is the method that is not inherited by other candidate methods
+     * (i.e. the leaf node of the inheritance tree)
+     *
+     * @param candidates candidate method list
+     * @param isInverse  whether to check the reverse inheritance relationship
+     *                   (true means check reverse inheritance, false means check forward inheritance)
+     * @return the most specific method, if there are multiple leaf nodes, return null
+     */
+    private SourceMethod selectMostSpecificMethod(List<SourceMethod> candidates, boolean isInverse) {
+        if ( candidates.isEmpty() ) {
+            return null;
+        }
+        if ( candidates.size() == 1 ) {
+            return first( candidates );
+        }
+
+        Set<SourceMethod> parentMethods = candidates
+            .stream()
+            .map( candidate -> candidate.getInheritedFromMethod( isInverse ) )
+            .collect( Collectors.toSet() );
+        List<SourceMethod> leafMethods = candidates
+            .stream()
+            .filter( candidate -> !parentMethods.contains( candidate ) )
+            .collect( Collectors.toList() );
+
+        return leafMethods.size() == 1 ? first( leafMethods ) : null;
     }
 
     private boolean isConsistent( JavadocGem gem, TypeElement element, FormattingMessager messager ) {

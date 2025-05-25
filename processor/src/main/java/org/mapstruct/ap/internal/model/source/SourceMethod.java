@@ -67,6 +67,9 @@ public class SourceMethod implements Method {
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
 
+    private SourceMethod forwardInheritedFromMethod;
+    private SourceMethod inverseInheritedFromMethod;
+
     private Boolean isValueMapping;
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
@@ -611,5 +614,17 @@ public class SourceMethod implements Method {
                 .collect( Collectors.joining( ", " ) );
             return getResultType().describe() + " " + mapper + getName() + "(" + sourceTypes + ")";
         }
+    }
+
+    public void setForwardInheritedFromMethod(SourceMethod sourceMethod) {
+        this.forwardInheritedFromMethod = sourceMethod;
+    }
+
+    public void setInverseInheritedFromMethod(SourceMethod sourceMethod) {
+        this.inverseInheritedFromMethod = sourceMethod;
+    }
+
+    public SourceMethod getInheritedFromMethod(boolean isInverse) {
+        return isInverse ? forwardInheritedFromMethod : inverseInheritedFromMethod;
     }
 }

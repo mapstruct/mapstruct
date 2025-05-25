@@ -16,11 +16,15 @@ import java.lang.annotation.Target;
  * type or indicated through a parameter annotated with {@link MappingTarget}) and the annotated method's target type as
  * source type.
  * <p>
+ * If multiple candidate methods are obtained based on the source type and target type matching,
+ * and there is an inheritance relationship between them,
+ * the most specific method (leaf node of the inheritance tree) will be selected.
+ * If there are still multiple candidate methods after selection,
+ * the name of the method to inherit the configuration from must be specified via {@link #name()}
+ * <p>
  * Any mappings given on the annotated method itself are added to those mappings inherited from the inverse method. In
  * case of a conflict local mappings take precedence over inherited mappings.
  * <p>
- * If more than one matching inverse method exists, the name of the method to inherit the configuration from must be
- * specified via {@link #name()}
  * <p>
  * {@link Mapping#expression()}, {@link Mapping#constant()}, {@link Mapping#defaultExpression()} and
  * {@link Mapping#defaultValue()} are not inverse inherited

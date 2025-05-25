@@ -15,6 +15,11 @@ import java.lang.annotation.Target;
  * from another mapping method (declared on the same mapper type) or prototype method (declared on a mapper config class
  * referenced via {@link Mapper#config()}) to the annotated method as well.
  * <p>
+ * If multiple candidate methods are obtained based on the source type and target type matching,
+ * and there is an inheritance relationship between them,
+ * the most specific method (leaf node of the inheritance tree) will be selected.
+ * If there are still multiple candidate methods after selection, it is considered ambiguous.
+ * <p>
  * If no method can be identified unambiguously as configuration source (i.e. several candidate methods with matching
  * source and target type exist), the name of the method to inherit from must be specified via {@link #name()}.
  * <p>
