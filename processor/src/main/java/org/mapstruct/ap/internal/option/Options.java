@@ -26,6 +26,7 @@ public class Options {
     private final boolean verbose;
     private final NullValueMappingStrategyGem nullValueIterableMappingStrategy;
     private final NullValueMappingStrategyGem nullValueMapMappingStrategy;
+    private final boolean disableLifecycleOverloadDeduplicateSelector;
 
     //CHECKSTYLE:OFF
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
@@ -36,7 +37,8 @@ public class Options {
                    boolean disableBuilders,
                    boolean verbose,
                    NullValueMappingStrategyGem nullValueIterableMappingStrategy,
-                   NullValueMappingStrategyGem nullValueMapMappingStrategy
+                   NullValueMappingStrategyGem nullValueMapMappingStrategy,
+                   boolean disableLifecycleOverloadDeduplicateSelector
                    ) {
         //CHECKSTYLE:ON
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
@@ -50,6 +52,7 @@ public class Options {
         this.verbose = verbose;
         this.nullValueIterableMappingStrategy = nullValueIterableMappingStrategy;
         this.nullValueMapMappingStrategy = nullValueMapMappingStrategy;
+        this.disableLifecycleOverloadDeduplicateSelector = disableLifecycleOverloadDeduplicateSelector;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
@@ -94,5 +97,9 @@ public class Options {
 
     public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
         return nullValueMapMappingStrategy;
+    }
+
+    public boolean isDisableLifecycleOverloadDeduplicateSelector() {
+        return disableLifecycleOverloadDeduplicateSelector;
     }
 }
