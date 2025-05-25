@@ -10,8 +10,6 @@ import java.util.Map;
 public interface DestinationType {
     Map<String, String> getNoSetterValue();
 
-//    void setAttributes(Map<String, String> attributes);
-
     Map<String, String> getNormalValue();
 
     void setNormalValue(Map<String, String> normalValue);

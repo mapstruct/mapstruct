@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.bugs._3806;
 
+import java.util.HashMap;
+
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
@@ -18,8 +20,12 @@ public class Issue3806Test {
         DestinationType target = new TargetTypeObj();
 
         SourceType source = new SourceType();
+        HashMap<String, String> map = new HashMap<>();
+        map.put( "key", "value" );
+        source.setNormalValue( map );
         Issue3806Mapper.INSTANCE.update( target, source );
         assertThat( target.getNoSetterValue() ).isNotEqualTo( null );
         assertThat( target.getNormalValue() ).isNotEqualTo( null );
+        assertThat( target.getNormalValue().get( "key" ) ).isEqualTo( "value" );
     }
 }
