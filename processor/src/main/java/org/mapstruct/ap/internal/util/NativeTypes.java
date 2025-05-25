@@ -474,6 +474,7 @@ public class NativeTypes {
         tmp3.put( Double.class.getName(), 6 );
         tmp3.put( BigInteger.class.getName(), 50 );
         tmp3.put( BigDecimal.class.getName(), 51 );
+        tmp3.put( String.class.getName(), 51 );
         NARROWING_LUT = Collections.unmodifiableMap( tmp3 );
     }
 

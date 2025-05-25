@@ -21,6 +21,7 @@ public class OversizedKitchenDrawerDto {
     private Double depth;
     private BigDecimal length;
     private double height;
+    private String drawerId;
 
     public long getNumberOfForks() {
         return numberOfForks;
@@ -70,4 +71,11 @@ public class OversizedKitchenDrawerDto {
         this.height = height;
     }
 
+    public String getDrawerId() {
+        return drawerId;
+    }
+
+    public void setDrawerId(String drawerId) {
+        this.drawerId = drawerId;
+    }
 }
