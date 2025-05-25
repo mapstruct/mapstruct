@@ -17,6 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -365,6 +369,15 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isArrayType() {
         return componentType != null;
+    }
+
+    private boolean isType(Class<?> type) {
+        return type.getName().equals( getFullyQualifiedName() );
+    }
+
+    private boolean isOptionalType() {
+        return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
+            isType( OptionalLong.class );
     }
 
     public boolean isTypeVar() {
@@ -1166,6 +1179,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      *         FTL.
      */
     public String getNull() {
+        if ( isOptionalType() ) {
+            return createReferenceName() + ".empty()";
+        }
+
         if ( !isPrimitive() || isArrayType() ) {
             return "null";
         }
