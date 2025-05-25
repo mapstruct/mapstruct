@@ -42,28 +42,25 @@ import java.lang.annotation.Target;
  *
  * @author Ivashin Aleksey
  */
-@Repeatable(Ignoreds.class)
+@Repeatable(IgnoredList.class)
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Ignored {
 
     /**
-     * Whether the properties specified via {@link #targets()} should be ignored by the generated mapping method.
+     * Whether the specified properties should be ignored by the generated mapping method.
      * This can be useful when certain attributes should not be propagated from source to target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
      * default.
      *
-     * @return The target names of the configured property for ignored
+     * @return The target names of the configured properties that should be ignored
      */
     String[] targets();
 
     /**
-     * Whether the prefix specified via {@link #prefix()} should be ignored by the generated mapping method.
-     * This can be useful when certain attributes should not be propagated from source to target or when properties in
-     * the target object are populated using a decorator and thus would be reported as unmapped target property by
-     * default.
+     * The prefix that should be applied to all the properties specified via {@link #targets()}.
      *
-     * @return The target prefix of the configured properties for ignored
+     * @return The target prefix to be applied to the defined properties
      */
     String prefix() default "";
 

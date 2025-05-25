@@ -306,6 +306,9 @@ public @interface Mapping {
      * This can be useful when certain attributes should not be propagated from source to target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
      * default.
+     * <p>
+     * If you have multiple properties to ignore,
+     * you can use the {@link Ignored} annotation instead and group them all at once.
      *
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */

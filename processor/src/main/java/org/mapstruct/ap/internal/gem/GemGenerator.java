@@ -27,7 +27,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.Ignored;
-import org.mapstruct.Ignoreds;
+import org.mapstruct.IgnoredList;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
@@ -56,7 +56,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(Mapper.class)
 @GemDefinition(Mapping.class)
 @GemDefinition(Ignored.class)
-@GemDefinition(Ignoreds.class)
+@GemDefinition(IgnoredList.class)
 @GemDefinition(Mappings.class)
 @GemDefinition(IterableMapping.class)
 @GemDefinition(BeanMapping.class)

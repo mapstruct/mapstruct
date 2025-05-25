@@ -22,7 +22,7 @@ import javax.lang.model.type.TypeKind;
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.IgnoredGem;
-import org.mapstruct.ap.internal.gem.IgnoredsGem;
+import org.mapstruct.ap.internal.gem.IgnoredListGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -79,7 +79,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
     private static final String CONDITION_FQN = "org.mapstruct.Condition";
     private static final String IGNORED_FQN = "org.mapstruct.Ignored";
-    private static final String IGNOREDS_FQN = "org.mapstruct.Ignoreds";
+    private static final String IGNORED_LIST_FQN = "org.mapstruct.IgnoredList";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -832,12 +832,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
     }
 
-    private class IgnoredConditions extends RepeatableAnnotations<IgnoredGem, IgnoredsGem, MappingOptions> {
+    private class IgnoredConditions extends RepeatableAnnotations<IgnoredGem, IgnoredListGem, MappingOptions> {
 
         protected final Set<MappingOptions> processedAnnotations;
 
         protected IgnoredConditions( Set<MappingOptions> processedAnnotations ) {
-            super( elementUtils, IGNORED_FQN, IGNOREDS_FQN );
+            super( elementUtils, IGNORED_FQN, IGNORED_LIST_FQN );
             this.processedAnnotations = processedAnnotations;
         }
 
@@ -847,8 +847,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         @Override
-        protected IgnoredsGem multipleInstanceOn(Element element) {
-            return IgnoredsGem.instanceOn( element );
+        protected IgnoredListGem multipleInstanceOn(Element element) {
+            return IgnoredListGem.instanceOn( element );
         }
 
         @Override
@@ -874,9 +874,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         @Override
-        protected void addInstances(IgnoredsGem gem, Element method, Set<MappingOptions> mappings) {
-            IgnoredsGem ignoredsGem = IgnoredsGem.instanceOn( method );
-            for ( IgnoredGem ignoredGem : ignoredsGem.value().get() ) {
+        protected void addInstances(IgnoredListGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredListGem ignoredListGem = IgnoredListGem.instanceOn( method );
+            for ( IgnoredGem ignoredGem : ignoredListGem.value().get() ) {
                 addInstance( ignoredGem, method, mappings );
             }
         }
