@@ -3,16 +3,8 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.nestedproperties.simple;
+package org.mapstruct.ap.test.optional.nullvalue;
 
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-
-import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
-import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
-import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -22,15 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Dennis Melzer
  */
-@WithClasses({ SourceRoot.class, SourceProps.class, TargetObject.class })
+@WithClasses({
+    OptionalDefaultMapper.class,
+    Source.class,
+    Target.class
+})
 @IssueKey("3852")
-public class SimpleMapperTest {
-
+public class OptionalDefaultMapperTest {
 
     @ProcessorTest
-    @WithClasses({ SimpleConstructorMapper.class })
     public void shouldOptionalNotNull() {
-        TargetObject target = SimpleConstructorMapper.MAPPER.toTargetObject( null );
+        Source source = new Source( null, null, null, null, null, null, null );
+        Target target = OptionalDefaultMapper.INSTANCE.map( source );
 
         assertThat( target.getSomeString() ).isEmpty();
         assertThat( target.getSomeInteger() ).isEmpty();
@@ -42,14 +37,9 @@ public class SimpleMapperTest {
     }
 
     @ProcessorTest
-    @WithClasses({ SimpleConstructorMapper.class })
     public void shouldMapOptional() {
-        SourceRoot sourceRoot = new SourceRoot(
-            Optional.of( "someString" ), Optional.of( 10 ),
-            Optional.of( 11D ), Optional.of( Boolean.TRUE ), OptionalInt.of( 10 ),
-            OptionalDouble.of( 100D ), OptionalLong.of( 200 )
-        );
-        TargetObject target = SimpleConstructorMapper.MAPPER.toTargetObject( sourceRoot );
+        Source source = new Source( "someString", 10, 11D, Boolean.TRUE, 10, 100D, 200L );
+        Target target = OptionalDefaultMapper.INSTANCE.map( source );
 
         assertThat( target.getSomeString() ).contains( "someString" );
         assertThat( target.getSomeInteger() ).contains( 10 );

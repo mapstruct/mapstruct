@@ -376,21 +376,10 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private boolean isOptionalType() {
-        return isType( Optional.class ) || isOptionalIntType() || isOptionalDoubleType() || isOptionalLongType();
+        return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
+            isType( OptionalLong.class );
     }
 
-    private boolean isOptionalIntType() {
-        return isType( OptionalInt.class );
-    }
-
-    private boolean isOptionalDoubleType() {
-        return isType( OptionalDouble.class );
-    }
-
-    private boolean isOptionalLongType() {
-        return isType( OptionalLong.class );
-    }
-    
     public boolean isTypeVar() {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
     }
