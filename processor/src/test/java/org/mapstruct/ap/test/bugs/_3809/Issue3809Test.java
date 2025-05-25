@@ -9,8 +9,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
+@WithClasses(Issue3809Mapper.class)
 @IssueKey("3809")
-@WithClasses({ClassMapper.class, ClassA.class, ClassB.class, NestedClassA.class, NestedClassB.class})
 public class Issue3809Test {
 
     @ProcessorTest
