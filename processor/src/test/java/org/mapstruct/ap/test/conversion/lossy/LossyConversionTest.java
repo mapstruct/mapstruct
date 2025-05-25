@@ -82,7 +82,7 @@ public class LossyConversionTest {
             diagnostics = {
                     @Diagnostic(type = ErroneousKitchenDrawerMapper6.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 24,
+                            line = 17,
                             message = "Can't map property \"String drawerId\". It has a possibly lossy conversion from "
                                     + "String to int.")
             })
