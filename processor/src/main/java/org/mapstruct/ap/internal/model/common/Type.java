@@ -110,6 +110,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isIterableType;
     private final boolean isCollectionType;
     private final boolean isMapType;
+    private final boolean isSetType;
     private final boolean isVoid;
     private final boolean isStream;
     private final boolean isLiteral;
@@ -149,7 +150,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isStreamType,
+                boolean isCollectionType, boolean isMapType, boolean isSetType, boolean isStreamType,
                 Map<String, String> toBeImportedTypes,
                 Map<String, String> notToBeImportedTypes,
                 Boolean isToBeImported,
@@ -175,6 +176,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isIterableType = isIterableType;
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
+        this.isSetType = isSetType;
         this.isStream = isStreamType;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
         this.isLiteral = isLiteral;
@@ -350,6 +352,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isMapType() {
         return isMapType;
+    }
+
+    public boolean isSetType() {
+        return isSetType;
     }
 
     private boolean hasStringMapSignature() {
@@ -566,6 +572,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isIterableType,
             isCollectionType,
             isMapType,
+            isSetType,
             isStream,
             toBeImportedTypes,
             notToBeImportedTypes,
@@ -609,6 +616,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isIterableType,
             isCollectionType,
             isMapType,
+            isSetType,
             isStream,
             toBeImportedTypes,
             notToBeImportedTypes,

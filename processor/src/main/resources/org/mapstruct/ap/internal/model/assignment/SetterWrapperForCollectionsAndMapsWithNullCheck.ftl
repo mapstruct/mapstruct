@@ -15,7 +15,7 @@
   assigns the target via the regular target write accessor (usually the setter)
 -->
 <#macro callTargetWriteAccessor>
-  <@lib.handleLocalVarNullCheck needs_explicit_local_var=directAssignment>
+  <@lib.handleLocalVarNullCheck needs_explicit_local_var=directAssignment cleanBefore=false>
       <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else><@lib.handleWithAssignmentOrNullCheckVar/></#if></@lib.handleWrite>;
   </@lib.handleLocalVarNullCheck>
 </#macro>
