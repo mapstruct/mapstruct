@@ -11,17 +11,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.mapstruct.ap.internal.gem.MappingConstantsGem;
-import org.mapstruct.ap.internal.model.Annotation;
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
-import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+
+import org.mapstruct.ap.internal.gem.MappingConstantsGem;
+import org.mapstruct.ap.internal.model.Annotation;
+import org.mapstruct.ap.internal.model.Decorator;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
+import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
 
 import static javax.lang.model.element.ElementKind.PACKAGE;
 
@@ -60,6 +60,42 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
             component(),
             primary()
         );
+    }
+
+    /**
+     * Returns the annotations that need to be added to the generated decorator, filtering out any annotations
+     * that are already present or represented as meta-annotations.
+     *
+     * @param decorator the decorator to process
+     * @return A list of annotations that should be added to the generated decorator.
+     */
+    @Override
+    protected List<Annotation> getDecoratorAnnotations(Decorator decorator) {
+        List<Annotation> desiredAnnotations = getDecoratorAnnotations();
+        if ( desiredAnnotations.isEmpty() ) {
+            return Collections.emptyList();
+        }
+
+        List<Annotation> result = new ArrayList<>( desiredAnnotations.size() );
+        for ( Annotation annotation : desiredAnnotations ) {
+            boolean alreadyPresent = false;
+
+            // Check if the annotation or its meta-annotation is already present
+            for ( Annotation existingAnnotation : decorator.getAnnotations() ) {
+                Set<Element> handledElements = new HashSet<>();
+                Element annotationElement = existingAnnotation.getType().getTypeElement();
+                if ( hasAnnotationOrMetaAnnotation( annotationElement, annotation, handledElements ) ) {
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+
+            if ( !alreadyPresent ) {
+                result.add( annotation );
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -106,37 +142,44 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     private boolean isAlreadyAnnotatedAsSpringStereotype(Mapper mapper) {
         Set<Element> handledElements = new HashSet<>();
+        Annotation componentAnnotation = component();
+
         return mapper.getAnnotations()
             .stream()
             .anyMatch(
-                annotation -> isOrIncludesComponentAnnotation( annotation, handledElements )
+                annotation -> hasAnnotationOrMetaAnnotation(
+                    annotation.getType().getTypeElement(),
+                    componentAnnotation,
+                    handledElements
+                )
             );
     }
 
-    private boolean isOrIncludesComponentAnnotation(Annotation annotation, Set<Element> handledElements) {
-        return isOrIncludesComponentAnnotation(
-            annotation.getType().getTypeElement(), handledElements
-        );
-    }
-
-    private boolean isOrIncludesComponentAnnotation(Element element, Set<Element> handledElements) {
-        if ( "org.springframework.stereotype.Component".equals(
-                ( (TypeElement) element ).getQualifiedName().toString()
-        )) {
+    /**
+     * Checks if an element has a specific annotation or meta-annotation.
+     *
+     * @param element         the element to check
+     * @param annotation      the annotation to look for
+     * @param handledElements set of already handled elements to avoid infinite recursion
+     * @return true if the element has the annotation or a meta-annotation
+     */
+    protected boolean hasAnnotationOrMetaAnnotation(Element element, Annotation annotation,
+                                                    Set<Element> handledElements) {
+        if ( element instanceof TypeElement &&
+            annotation.getType().getTypeElement().getQualifiedName().toString().equals(
+                ( (TypeElement) element ).getQualifiedName().toString() ) ) {
             return true;
         }
 
         for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-            Element annotationMirrorElement = annotationMirror.getAnnotationType().asElement();
+            Element annotationElement = annotationMirror.getAnnotationType().asElement();
             // Bypass java lang annotations to improve performance avoiding unnecessary checks
-            if ( !isAnnotationInPackage( annotationMirrorElement, "java.lang.annotation" ) &&
-                 !handledElements.contains( annotationMirrorElement ) ) {
-                handledElements.add( annotationMirrorElement );
-                boolean isOrIncludesComponentAnnotation = isOrIncludesComponentAnnotation(
-                    annotationMirrorElement, handledElements
-                );
-
-                if ( isOrIncludesComponentAnnotation ) {
+            if ( !isAnnotationInPackage( annotationElement, "java.lang.annotation" ) &&
+                !handledElements.contains( annotationElement ) ) {
+                handledElements.add( annotationElement );
+                if ( annotation.getType().getTypeElement().getQualifiedName().toString().equals(
+                    ( (TypeElement) annotationElement ).getQualifiedName().toString() ) ||
+                    hasAnnotationOrMetaAnnotation( annotationElement, annotation, handledElements ) ) {
                     return true;
                 }
             }
@@ -145,7 +188,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         return false;
     }
 
-    private PackageElement getPackageOf( Element element ) {
+    private PackageElement getPackageOf(Element element) {
         while ( element.getKind() != PACKAGE ) {
             element = element.getEnclosingElement();
         }

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.TypeElement;
 
+import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.model.AnnotatedConstructor;
 import org.mapstruct.ap.internal.model.AnnotatedSetter;
 import org.mapstruct.ap.internal.model.Annotation;
@@ -24,7 +25,6 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.model.source.MapperOptions;
 
 /**
@@ -88,7 +88,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected void adjustDecorator(Mapper mapper, InjectionStrategyGem injectionStrategy) {
         Decorator decorator = mapper.getDecorator();
 
-        for ( Annotation typeAnnotation : getDecoratorAnnotations() ) {
+        for ( Annotation typeAnnotation : getDecoratorAnnotations( decorator ) ) {
             decorator.addAnnotation( typeAnnotation );
         }
 
@@ -310,6 +310,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      */
     protected List<Annotation> getDecoratorAnnotations() {
         return Collections.emptyList();
+    }
+
+    protected List<Annotation> getDecoratorAnnotations(Decorator decorator) {
+        return getDecoratorAnnotations();
     }
 
     /**
