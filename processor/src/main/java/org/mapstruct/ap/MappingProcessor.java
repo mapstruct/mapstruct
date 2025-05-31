@@ -13,17 +13,16 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -35,9 +34,8 @@ import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.gem.MapperGem;
-import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
-import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.option.MappingOption;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor;
@@ -84,19 +82,6 @@ import static javax.lang.model.element.ElementKind.CLASS;
  * @author Gunnar Morling
  */
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
-@SupportedOptions({
-    MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
-    MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
-    MappingProcessor.UNMAPPED_TARGET_POLICY,
-    MappingProcessor.UNMAPPED_SOURCE_POLICY,
-    MappingProcessor.DEFAULT_COMPONENT_MODEL,
-    MappingProcessor.DEFAULT_INJECTION_STRATEGY,
-    MappingProcessor.DISABLE_BUILDERS,
-    MappingProcessor.VERBOSE,
-    MappingProcessor.NULL_VALUE_ITERABLE_MAPPING_STRATEGY,
-    MappingProcessor.NULL_VALUE_MAP_MAPPING_STRATEGY,
-    MappingProcessor.DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR,
-})
 public class MappingProcessor extends AbstractProcessor {
 
     /**
@@ -104,20 +89,32 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "mapstruct.suppressGeneratorTimestamp";
-    protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT =
-        "mapstruct.suppressGeneratorVersionInfoComment";
-    protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
-    protected static final String UNMAPPED_SOURCE_POLICY = "mapstruct.unmappedSourcePolicy";
-    protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
-    protected static final String DEFAULT_INJECTION_STRATEGY = "mapstruct.defaultInjectionStrategy";
-    protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
-    protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
-    protected static final String VERBOSE = "mapstruct.verbose";
-    protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = "mapstruct.nullValueIterableMappingStrategy";
-    protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = "mapstruct.nullValueMapMappingStrategy";
-    protected static final String DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR =
-        "mapstruct.disableLifecycleOverloadDeduplicateSelector";
+    // CHECKSTYLE:OFF
+    // Deprecated options, kept for backwards compatibility.
+    // They will be removed in a future release.
+    @Deprecated
+    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = MappingOption.SUPPRESS_GENERATOR_TIMESTAMP.getOptionName();
+    @Deprecated
+    protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT = MappingOption.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT.getOptionName();
+    @Deprecated
+    protected static final String UNMAPPED_TARGET_POLICY = MappingOption.UNMAPPED_TARGET_POLICY.getOptionName();
+    @Deprecated
+    protected static final String UNMAPPED_SOURCE_POLICY = MappingOption.UNMAPPED_SOURCE_POLICY.getOptionName();
+    @Deprecated
+    protected static final String DEFAULT_COMPONENT_MODEL = MappingOption.DEFAULT_COMPONENT_MODEL.getOptionName();
+    @Deprecated
+    protected static final String DEFAULT_INJECTION_STRATEGY = MappingOption.DEFAULT_INJECTION_STRATEGY.getOptionName();
+    @Deprecated
+    protected static final String ALWAYS_GENERATE_SERVICE_FILE = MappingOption.ALWAYS_GENERATE_SERVICE_FILE.getOptionName();
+    @Deprecated
+    protected static final String DISABLE_BUILDERS = MappingOption.DISABLE_BUILDERS.getOptionName();
+    @Deprecated
+    protected static final String VERBOSE = MappingOption.VERBOSE.getOptionName();
+    @Deprecated
+    protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = MappingOption.NULL_VALUE_ITERABLE_MAPPING_STRATEGY.getOptionName();
+    @Deprecated
+    protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = MappingOption.NULL_VALUE_MAP_MAPPING_STRATEGY.getOptionName();
+    // CHECKSTYLE:ON
 
     private final Set<String> additionalSupportedOptions;
     private final String additionalSupportedOptionsError;
@@ -156,7 +153,7 @@ public class MappingProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init( processingEnv );
 
-        options = createOptions();
+        options = new Options( processingEnv.getOptions() );
         annotationProcessorContext = new AnnotationProcessorContext(
             processingEnv.getElementUtils(),
             processingEnv.getTypeUtils(),
@@ -169,34 +166,6 @@ public class MappingProcessor extends AbstractProcessor {
         if ( additionalSupportedOptionsError != null ) {
             processingEnv.getMessager().printMessage( Kind.ERROR, additionalSupportedOptionsError );
         }
-    }
-
-    private Options createOptions() {
-        String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
-        String unmappedSourcePolicy = processingEnv.getOptions().get( UNMAPPED_SOURCE_POLICY );
-        String nullValueIterableMappingStrategy = processingEnv.getOptions()
-            .get( NULL_VALUE_ITERABLE_MAPPING_STRATEGY );
-        String nullValueMapMappingStrategy = processingEnv.getOptions().get( NULL_VALUE_MAP_MAPPING_STRATEGY );
-        String disableLifecycleOverloadDeduplicateSelector = processingEnv.getOptions()
-            .get( DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR );
-
-        return new Options(
-            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
-            unmappedTargetPolicy != null ? ReportingPolicyGem.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
-            unmappedSourcePolicy != null ? ReportingPolicyGem.valueOf( unmappedSourcePolicy.toUpperCase() ) : null,
-            processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
-            processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( DISABLE_BUILDERS ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( VERBOSE ) ),
-            nullValueIterableMappingStrategy != null ?
-                NullValueMappingStrategyGem.valueOf( nullValueIterableMappingStrategy.toUpperCase( Locale.ROOT ) ) :
-                null,
-            nullValueMapMappingStrategy != null ?
-                NullValueMappingStrategyGem.valueOf( nullValueMapMappingStrategy.toUpperCase( Locale.ROOT ) ) : null,
-            Boolean.parseBoolean( disableLifecycleOverloadDeduplicateSelector )
-        );
     }
 
     @Override
@@ -259,13 +228,11 @@ public class MappingProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        Set<String> supportedOptions = super.getSupportedOptions();
-        if ( additionalSupportedOptions.isEmpty() ) {
-            return supportedOptions;
-        }
-        Set<String> allSupportedOptions = new HashSet<>( supportedOptions );
-        allSupportedOptions.addAll( additionalSupportedOptions );
-        return allSupportedOptions;
+        return Stream.concat(
+                Stream.of( MappingOption.values() ).map( MappingOption::getOptionName ),
+                additionalSupportedOptions.stream()
+            )
+            .collect( Collectors.toSet() );
     }
 
     /**
