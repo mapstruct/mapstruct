@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.gem.MappingConstantsGem;
 import org.mapstruct.ap.internal.model.Annotation;
+import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement;
 import org.mapstruct.ap.internal.model.annotation.AnnotationElement.AnnotationElementType;
@@ -42,7 +43,7 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected List<Annotation> getDecoratorAnnotations() {
+    protected List<Annotation> getDecoratorAnnotations(Decorator decorator) {
         return Arrays.asList( singleton(), named() );
     }
 
