@@ -13,19 +13,19 @@ import org.mapstruct.BeforeMapping;
 import org.mapstruct.MappingTarget;
 
 public class JpaContext<T> {
-    private List<String> invokeMethods = new ArrayList<>();
+    private final List<String> invokedMethods = new ArrayList<>();
 
     @BeforeMapping
     void beforeMapping(@MappingTarget T parentEntity) {
-        invokeMethods.add( "beforeMapping" );
+        invokedMethods.add( "beforeMapping" );
     }
 
     @AfterMapping
     void afterMapping(@MappingTarget T parentEntity) {
-        invokeMethods.add( "afterMapping" );
+        invokedMethods.add( "afterMapping" );
     }
 
-    public List<String> getInvokeMethods() {
-        return invokeMethods;
+    public List<String> getInvokedMethods() {
+        return invokedMethods;
     }
 }

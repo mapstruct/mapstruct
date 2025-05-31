@@ -201,8 +201,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         typeFactory.getType( mapper ),
                         mapperToImplement,
                         mapperOptions,
-                        prototypeMethods
-                    ) );
+                        prototypeMethods ) );
                 }
                 else {
                     messager.printMessage(

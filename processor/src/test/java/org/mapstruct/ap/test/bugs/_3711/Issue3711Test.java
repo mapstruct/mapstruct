@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.bugs._3711;
 
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
@@ -17,13 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
     SourceTargetMapper.class,
     BaseMapper.class,
 })
-public class Issue3711Test {
+@IssueKey("3711")
+class Issue3711Test {
     @ProcessorTest
-    public void shouldGenerateContextMethod() {
+    void shouldGenerateContextMethod() {
         JpaContext<ParentEntity> jpaContext = new JpaContext<>();
         SourceTargetMapper.INSTANCE.toEntity( new ParentDto(), jpaContext );
 
-        assertThat( jpaContext.getInvokeMethods() )
+        assertThat( jpaContext.getInvokedMethods() )
             .containsExactly( "beforeMapping", "afterMapping" );
     }
 }

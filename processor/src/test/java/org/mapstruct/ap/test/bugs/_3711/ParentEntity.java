@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.bugs._3711;
 
 public class ParentEntity {
-    String value;
+    private String value;
 
     public String getValue() {
         return value;
