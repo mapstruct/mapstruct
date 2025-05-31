@@ -9,8 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 
 /**
  * This wrapper handles the situation were an assignment must be done via a target getter method because there
@@ -26,6 +29,14 @@ import org.mapstruct.ap.internal.model.common.Type;
  * @author Sjaak Derksen
  */
 public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
+    private final boolean ignoreMapNull;
+
+    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
+                                              List<Type> thrownTypesToExclude,
+                                              Type targetType,
+                                              boolean fieldAssignment) {
+        this( decoratedAssignment, thrownTypesToExclude, targetType, null, fieldAssignment );
+    }
 
     /**
      * @param decoratedAssignment source RHS
@@ -36,6 +47,7 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
     public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
                                               Type targetType,
+                                              NullValuePropertyMappingStrategyGem nvpms,
                                               boolean fieldAssignment) {
 
         super(
@@ -44,6 +56,7 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
             targetType,
             fieldAssignment
         );
+        this.ignoreMapNull = nvpms == IGNORE;
     }
 
     @Override
@@ -53,5 +66,9 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
         return imported;
+    }
+
+    public boolean isIgnoreMapNull() {
+        return ignoreMapNull;
     }
 }
