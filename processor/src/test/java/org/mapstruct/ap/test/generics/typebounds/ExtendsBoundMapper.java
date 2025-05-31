@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._2677;
+package org.mapstruct.ap.test.generics.typebounds;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,9 +13,9 @@ import org.mapstruct.factory.Mappers;
  * @author Filip Hrisafov
  */
 @Mapper
-public interface Issue2677Mapper {
+public interface ExtendsBoundMapper {
 
-    Issue2677Mapper INSTANCE = Mappers.getMapper( Issue2677Mapper.class );
+    ExtendsBoundMapper INSTANCE = Mappers.getMapper( ExtendsBoundMapper.class );
 
     @Mapping(target = "id", source = "value.id")
     Output map(Wrapper<? extends Parent> in);

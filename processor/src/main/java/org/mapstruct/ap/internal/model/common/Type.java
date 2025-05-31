@@ -498,7 +498,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.addAll( parameter.getImportTypes() );
         }
 
-        if ( ( hasExtendsBound() || hasSuperBound() ) && getTypeBound() != null ) {
+        if ( hasTypeBound() ) {
             result.addAll( getTypeBound().getImportTypes() );
         }
 
@@ -871,7 +871,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private Type determinePreferredType(Accessor readAccessor) {
         if ( readAccessor != null ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
+            return typeFactory.getReturnType( readAccessor );
         }
         return null;
     }
@@ -883,7 +883,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else if ( candidate.getAccessorType() == AccessorType.GETTER
                         || candidate.getAccessorType().isFieldAssignment() ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+            return typeFactory.getReturnType( candidate );
         }
         return null;
     }
@@ -1329,6 +1329,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
+    public boolean hasTypeBound() {
+        return (hasExtendsBound() || hasSuperBound()) &&  getTypeBound() != null;
+    }
+
     public List<Type> getTypeBounds() {
         if ( this.boundTypes != null ) {
             return boundTypes;
@@ -1539,7 +1543,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     public boolean isWildCardBoundByTypeVar() {
-        return ( hasExtendsBound() || hasSuperBound() ) && getTypeBound().isTypeVar();
+        return hasTypeBound() && getTypeBound().isTypeVar();
     }
 
     public boolean isArrayTypeVar() {
