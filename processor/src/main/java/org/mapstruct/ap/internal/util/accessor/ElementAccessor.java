@@ -5,7 +5,9 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import java.util.Set;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -15,8 +17,9 @@ import javax.lang.model.type.TypeMirror;
  * @author Filip Hrisafov
  * @author Tang Yang
  */
-public class ElementAccessor extends AbstractAccessor<Element> {
+public class ElementAccessor implements Accessor {
 
+    private final Element element;
     private final String name;
     private final AccessorType accessorType;
     private final TypeMirror accessedType;
@@ -26,14 +29,14 @@ public class ElementAccessor extends AbstractAccessor<Element> {
     }
 
     public ElementAccessor(Element element, TypeMirror accessedType, String name) {
-        super( element );
+        this.element = element;
         this.name = name;
         this.accessedType = accessedType;
         this.accessorType = AccessorType.PARAMETER;
     }
 
     public ElementAccessor(Element element, TypeMirror accessedType, AccessorType accessorType) {
-        super( element );
+        this.element = element;
         this.accessedType = accessedType;
         this.accessorType = accessorType;
         this.name = null;
@@ -41,12 +44,22 @@ public class ElementAccessor extends AbstractAccessor<Element> {
 
     @Override
     public TypeMirror getAccessedType() {
-        return accessedType;
+        return accessedType != null ? accessedType : element.asType();
     }
 
     @Override
     public String getSimpleName() {
-        return name != null ? name : super.getSimpleName();
+        return name != null ? name : element.getSimpleName().toString();
+    }
+
+    @Override
+    public Set<Modifier> getModifiers() {
+        return element.getModifiers();
+    }
+
+    @Override
+    public Element getElement() {
+        return element;
     }
 
     @Override

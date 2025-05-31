@@ -17,14 +17,14 @@ public interface Issue3807Mapper {
     NormalTarget<String> mapNormalSource(Source target);
 
     class Source {
-        private String value;
+        private final String value;
+
+        public Source(String value) {
+            this.value = value;
+        }
 
         public String getValue() {
             return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
         }
     }
 

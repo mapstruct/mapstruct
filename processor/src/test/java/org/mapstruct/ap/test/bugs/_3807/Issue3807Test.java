@@ -5,18 +5,19 @@
  */
 package org.mapstruct.ap.test.bugs._3807;
 
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Issue3807Test {
+@WithClasses(Issue3807Mapper.class)
+@IssueKey("3087")
+class Issue3807Test {
 
     @ProcessorTest
-    @WithClasses({ Issue3807Mapper.class })
-    public void filedAndSetterShouldWorkWithGeneric() {
-        Issue3807Mapper.Source source = new Issue3807Mapper.Source();
-        source.setValue( "value" );
+    void fieldAndSetterShouldWorkWithGeneric() {
+        Issue3807Mapper.Source source = new Issue3807Mapper.Source( "value" );
         Issue3807Mapper.TargetWithoutSetter<String> targetWithoutSetter =
             Issue3807Mapper.INSTANCE.mapNoSetter( source );
 

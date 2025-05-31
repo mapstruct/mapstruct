@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -104,10 +104,10 @@ public class Filters {
         return getWithinContext( executableElement ).getReturnType();
     }
 
-    public <T> List<T> fieldsIn(List<VariableElement> accessors, Function<VariableElement, T> creator) {
+    public <T> List<T> fieldsIn(List<VariableElement> accessors, BiFunction<VariableElement, TypeMirror, T> creator) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( creator )
+            .map( variableElement -> creator.apply( variableElement, getWithinContext( variableElement ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -130,6 +130,10 @@ public class Filters {
 
     private ExecutableType getWithinContext( ExecutableElement executableElement ) {
         return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
+    }
+
+    private TypeMirror getWithinContext( VariableElement variableElement ) {
+        return typeUtils.asMemberOf( (DeclaredType) typeMirror, variableElement );
     }
 
     public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
