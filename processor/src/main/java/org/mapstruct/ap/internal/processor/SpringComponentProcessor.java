@@ -75,7 +75,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         if ( !decoratorAnnotations.isEmpty() ) {
             Set<Element> handledElements = new HashSet<>();
             for ( Annotation annotation : decoratorAnnotations ) {
-                removeMetaPresentAnnotations(
+                removeAnnotationsPresentOnElement(
                     annotation.getType().getTypeElement(),
                     desiredAnnotationNames,
                     handledElements
@@ -142,7 +142,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         if ( !mapperAnnotations.isEmpty() ) {
             Set<Element> handledElements = new HashSet<>();
             for ( Annotation annotation : mapperAnnotations ) {
-                removeMetaPresentAnnotations(
+                removeAnnotationsPresentOnElement(
                     annotation.getType().getTypeElement(),
                     desiredAnnotationNames,
                     handledElements
@@ -164,8 +164,8 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
      * @param annotations     the annotations to check for
      * @param handledElements set of already handled elements to avoid infinite recursion
      */
-    protected void removeMetaPresentAnnotations(Element element, Set<String> annotations,
-                                                Set<Element> handledElements) {
+    private void removeAnnotationsPresentOnElement(Element element, Set<String> annotations,
+                                                   Set<Element> handledElements) {
         if ( annotations.isEmpty() ) {
             return;
         }
@@ -181,7 +181,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
             Element annotationMirrorElement = annotationMirror.getAnnotationType().asElement();
             // Bypass java lang annotations to improve performance avoiding unnecessary checks
             if ( !isAnnotationInPackage( annotationMirrorElement, "java.lang.annotation" ) &&
-                !handledElements.contains( annotationMirrorElement ) ) {
+                 !handledElements.contains( annotationMirrorElement ) ) {
                 handledElements.add( annotationMirrorElement );
                 if ( annotations.remove( ( (TypeElement) annotationMirrorElement ).getQualifiedName().toString() ) ) {
                     if ( annotations.isEmpty() ) {
@@ -190,12 +190,12 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
                     }
                 }
 
-                removeMetaPresentAnnotations( element, annotations, handledElements );
+                removeAnnotationsPresentOnElement( element, annotations, handledElements );
             }
         }
     }
 
-    private PackageElement getPackageOf(Element element) {
+    private PackageElement getPackageOf( Element element ) {
         while ( element.getKind() != PACKAGE ) {
             element = element.getEnclosingElement();
         }
