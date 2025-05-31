@@ -308,12 +308,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     /**
      * @return the annotation(s) to be added at the decorator of the mapper
      */
-    protected List<Annotation> getDecoratorAnnotations() {
-        return Collections.emptyList();
-    }
-
     protected List<Annotation> getDecoratorAnnotations(Decorator decorator) {
-        return getDecoratorAnnotations();
+        return Collections.emptyList();
     }
 
     /**

@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
@@ -35,6 +37,9 @@ import static javax.lang.model.element.ElementKind.PACKAGE;
  */
 public class SpringComponentProcessor extends AnnotationBasedComponentModelProcessor {
 
+    private static final String SPRING_COMPONENT_ANNOTATION = "org.springframework.stereotype.Component";
+    private static final String SPRING_PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
+
     @Override
     protected String getComponentModelIdentifier() {
         return MappingConstantsGem.ComponentModelGem.SPRING;
@@ -54,14 +59,6 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         return typeAnnotations;
     }
 
-    @Override
-    protected List<Annotation> getDecoratorAnnotations() {
-        return Arrays.asList(
-            component(),
-            primary()
-        );
-    }
-
     /**
      * Returns the annotations that need to be added to the generated decorator, filtering out any annotations
      * that are already present or represented as meta-annotations.
@@ -71,31 +68,28 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
      */
     @Override
     protected List<Annotation> getDecoratorAnnotations(Decorator decorator) {
-        List<Annotation> desiredAnnotations = getDecoratorAnnotations();
-        if ( desiredAnnotations.isEmpty() ) {
-            return Collections.emptyList();
-        }
-
-        List<Annotation> result = new ArrayList<>( desiredAnnotations.size() );
-        for ( Annotation annotation : desiredAnnotations ) {
-            boolean alreadyPresent = false;
-
-            // Check if the annotation or its meta-annotation is already present
-            for ( Annotation existingAnnotation : decorator.getAnnotations() ) {
-                Set<Element> handledElements = new HashSet<>();
-                Element annotationElement = existingAnnotation.getType().getTypeElement();
-                if ( hasAnnotationOrMetaAnnotation( annotationElement, annotation, handledElements ) ) {
-                    alreadyPresent = true;
-                    break;
+        Set<String> desiredAnnotationNames = new LinkedHashSet<>();
+        desiredAnnotationNames.add( SPRING_COMPONENT_ANNOTATION );
+        desiredAnnotationNames.add( SPRING_PRIMARY_ANNOTATION );
+        List<Annotation> decoratorAnnotations = decorator.getAnnotations();
+        if ( !decoratorAnnotations.isEmpty() ) {
+            Set<Element> handledElements = new HashSet<>();
+            for ( Annotation annotation : decoratorAnnotations ) {
+                removeMetaPresentAnnotations(
+                    annotation.getType().getTypeElement(),
+                    desiredAnnotationNames,
+                    handledElements
+                );
+                if ( desiredAnnotationNames.isEmpty() ) {
+                    // If all annotations are removed, we can stop further processing
+                    return Collections.emptyList();
                 }
             }
-
-            if ( !alreadyPresent ) {
-                result.add( annotation );
-            }
         }
 
-        return result;
+        return desiredAnnotationNames.stream()
+            .map( this::createAnnotation )
+            .collect( Collectors.toList() );
     }
 
     @Override
@@ -118,8 +112,12 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         return true;
     }
 
+    private Annotation createAnnotation(String canonicalName) {
+        return new Annotation( getTypeFactory().getType( canonicalName ) );
+    }
+
     private Annotation autowired() {
-        return new Annotation( getTypeFactory().getType( "org.springframework.beans.factory.annotation.Autowired" ) );
+        return createAnnotation( "org.springframework.beans.factory.annotation.Autowired" );
     }
 
     private Annotation qualifierDelegate() {
@@ -132,60 +130,69 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
                            ) ) );
     }
 
-    private Annotation primary() {
-        return new Annotation( getTypeFactory().getType( "org.springframework.context.annotation.Primary" ) );
-    }
-
     private Annotation component() {
-        return new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) );
+        return createAnnotation( SPRING_COMPONENT_ANNOTATION );
     }
 
     private boolean isAlreadyAnnotatedAsSpringStereotype(Mapper mapper) {
-        Set<Element> handledElements = new HashSet<>();
-        Annotation componentAnnotation = component();
+        Set<String> desiredAnnotationNames = new LinkedHashSet<>();
+        desiredAnnotationNames.add( SPRING_COMPONENT_ANNOTATION );
 
-        return mapper.getAnnotations()
-            .stream()
-            .anyMatch(
-                annotation -> hasAnnotationOrMetaAnnotation(
+        List<Annotation> mapperAnnotations = mapper.getAnnotations();
+        if ( !mapperAnnotations.isEmpty() ) {
+            Set<Element> handledElements = new HashSet<>();
+            for ( Annotation annotation : mapperAnnotations ) {
+                removeMetaPresentAnnotations(
                     annotation.getType().getTypeElement(),
-                    componentAnnotation,
+                    desiredAnnotationNames,
                     handledElements
-                )
-            );
-    }
-
-    /**
-     * Checks if an element has a specific annotation or meta-annotation.
-     *
-     * @param element         the element to check
-     * @param annotation      the annotation to look for
-     * @param handledElements set of already handled elements to avoid infinite recursion
-     * @return true if the element has the annotation or a meta-annotation
-     */
-    protected boolean hasAnnotationOrMetaAnnotation(Element element, Annotation annotation,
-                                                    Set<Element> handledElements) {
-        if ( element instanceof TypeElement &&
-            annotation.getType().getTypeElement().getQualifiedName().toString().equals(
-                ( (TypeElement) element ).getQualifiedName().toString() ) ) {
-            return true;
-        }
-
-        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-            Element annotationElement = annotationMirror.getAnnotationType().asElement();
-            // Bypass java lang annotations to improve performance avoiding unnecessary checks
-            if ( !isAnnotationInPackage( annotationElement, "java.lang.annotation" ) &&
-                !handledElements.contains( annotationElement ) ) {
-                handledElements.add( annotationElement );
-                if ( annotation.getType().getTypeElement().getQualifiedName().toString().equals(
-                    ( (TypeElement) annotationElement ).getQualifiedName().toString() ) ||
-                    hasAnnotationOrMetaAnnotation( annotationElement, annotation, handledElements ) ) {
+                );
+                if ( desiredAnnotationNames.isEmpty() ) {
+                    // If all annotations are removed, we can stop further processing
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    /**
+     * Removes all the annotations and meta-annotations from {@code annotations} which are on the given element.
+     *
+     * @param element         the element to check
+     * @param annotations     the annotations to check for
+     * @param handledElements set of already handled elements to avoid infinite recursion
+     */
+    protected void removeMetaPresentAnnotations(Element element, Set<String> annotations,
+                                                Set<Element> handledElements) {
+        if ( annotations.isEmpty() ) {
+            return;
+        }
+        if ( element instanceof TypeElement &&
+            annotations.remove( ( (TypeElement) element ).getQualifiedName().toString() ) ) {
+            if ( annotations.isEmpty() ) {
+                // If all annotations are removed, we can stop further processing
+                return;
+            }
+        }
+
+        for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+            Element annotationMirrorElement = annotationMirror.getAnnotationType().asElement();
+            // Bypass java lang annotations to improve performance avoiding unnecessary checks
+            if ( !isAnnotationInPackage( annotationMirrorElement, "java.lang.annotation" ) &&
+                !handledElements.contains( annotationMirrorElement ) ) {
+                handledElements.add( annotationMirrorElement );
+                if ( annotations.remove( ( (TypeElement) annotationMirrorElement ).getQualifiedName().toString() ) ) {
+                    if ( annotations.isEmpty() ) {
+                        // If all annotations are removed, we can stop further processing
+                        return;
+                    }
+                }
+
+                removeMetaPresentAnnotations( element, annotations, handledElements );
+            }
+        }
     }
 
     private PackageElement getPackageOf(Element element) {
