@@ -65,7 +65,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
-import org.mapstruct.ap.internal.util.accessor.ParameterElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
@@ -1067,7 +1067,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 existingVariableNames
             );
             existingVariableNames.add( safeParameterName );
-            return new ParameterElementAccessor( element, accessedType, safeParameterName );
+            return new ElementAccessor( element, accessedType, safeParameterName );
         }
 
         private boolean hasDefaultAnnotationFromAnyPackage(Element element) {
