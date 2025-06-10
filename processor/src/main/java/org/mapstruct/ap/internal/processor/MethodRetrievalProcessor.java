@@ -50,7 +50,6 @@ import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 import org.mapstruct.ap.internal.model.source.SubclassValidator;
 import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
@@ -82,7 +81,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String IGNORED_LIST_FQN = "org.mapstruct.IgnoredList";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
-    private AccessorNamingUtils accessorNaming;
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private TypeUtils typeUtils;
     private ElementUtils elementUtils;
@@ -92,7 +90,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-        this.accessorNaming = context.getAccessorNaming();
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
         this.enumTransformationStrategies = context.getEnumTransformationStrategies();
@@ -360,7 +357,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
         for ( Parameter contextParam : contextParameters ) {
-            if ( contextParam.getType().isPrimitive() || contextParam.getType().isArrayType() ) {
+            if ( contextParam.getType().isPrimitive() || contextParam.getType().isArrayType()
+                || contextParam.getType().isTypeVar() ) {
                 continue;
             }
             List<SourceMethod> contextParamMethods = retrieveMethods(
@@ -533,13 +531,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        for ( Parameter sourceParameter : sourceParameters ) {
-            if ( sourceParameter.getType().isTypeVar() ) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
-                return false;
-            }
-        }
-
         Set<Type> contextParameterTypes = new HashSet<>();
         for ( Parameter contextParameter : contextParameters ) {
             if ( !contextParameterTypes.add( contextParameter.getType() ) ) {
@@ -576,13 +567,19 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
+            if ( parameterType.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+
             for ( Type typeParameter : parameterType.getTypeParameters() ) {
                 if ( typeParameter.hasSuperBound() ) {
                     messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
                     return false;
                 }
 
-                if ( typeParameter.isTypeVar() ) {
+                if ( parameterType.isIterableOrStreamType() && resultType.isIterableOrStreamType()
+                    && typeParameter.isTypeVar() ) {
                     messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                     return false;
                 }
@@ -600,7 +597,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         for ( Type typeParameter : resultType.getTypeParameters() ) {
-            if ( typeParameter.isTypeVar() ) {
+            if ( resultType.isIterableOrStreamType() && typeParameter.isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
                 return false;
             }
