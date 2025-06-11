@@ -15,8 +15,12 @@
       ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
       </@lib.handleLocalVarNullCheck>
       <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && includeElseBranch>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
-      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
-      }
+          <#if mapNullToClear>
+              ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
+          <#else >
+              ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
+          </#if>
+          }
       </#if>
   }
   else {
