@@ -12,7 +12,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses(Issue3807Mapper.class)
-@IssueKey("3087")
+@IssueKey("3807")
 class Issue3807Test {
 
     @ProcessorTest
