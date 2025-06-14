@@ -226,6 +226,7 @@ public class MavenIntegrationTest {
      * For sealed interface, create an impl class with the switch case.
      */
     @ProcessorTest(baseDir = "sealedInterfaceTest")
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void sealedInterfaceSubclassMappingTest() {
     }
 
