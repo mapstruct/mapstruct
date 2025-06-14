@@ -796,6 +796,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
+        if ( isRecord() ) {
+            // Records do not have setters, so we return an empty map
+            return Collections.emptyMap();
+        }
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
