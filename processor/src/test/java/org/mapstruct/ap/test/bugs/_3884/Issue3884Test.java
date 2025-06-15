@@ -3,12 +3,12 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.bugs._3865;
+package org.mapstruct.ap.test.bugs._3884;
 
-import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -17,16 +17,16 @@ import org.mapstruct.ap.testutil.WithClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for issue 3865: NullValuePropertyMappingStrategy.SET_TO_DEFAULT should set target Map/Collection to default
+ * Test for issue 3884: NullValuePropertyMappingStrategy.SET_TO_DEFAULT should set target Map/Collection to default
  * when source and target are all null.
  */
-@IssueKey("3865")
+@IssueKey("3884")
 @WithClasses({
     DestinationType.class,
     SourceType.class,
-    Issue3865Mapper.class
+    Issue3884Mapper.class
 })
-public class Issue3865Test {
+public class Issue3884Test {
 
     @ProcessorTest
     public void shouldSetTargetToDefaultWhenBothSourceAndTargetAreNull() {
@@ -38,7 +38,7 @@ public class Issue3865Test {
         assertThat( source.getItems() ).isNull();
         assertThat( target.getItems() ).isNull();
 
-        Issue3865Mapper.INSTANCE.update( target, source );
+        Issue3884Mapper.INSTANCE.update( target, source );
 
         assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).isEmpty();
@@ -67,7 +67,7 @@ public class Issue3865Test {
         assertThat( source.getItems() ).isNull();
         assertThat( target.getItems() ).isNotNull();
 
-        Issue3865Mapper.INSTANCE.update( target, source );
+        Issue3884Mapper.INSTANCE.update( target, source );
 
         assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).isEmpty();
@@ -93,7 +93,7 @@ public class Issue3865Test {
         assertThat( source.getItems() ).isNotNull();
         assertThat( target.getItems() ).isNull();
 
-        Issue3865Mapper.INSTANCE.update( target, source );
+        Issue3884Mapper.INSTANCE.update( target, source );
 
         assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).containsEntry( "sourceKey", "sourceValue" );
@@ -127,7 +127,7 @@ public class Issue3865Test {
         assertThat( source.getItems() ).isNotNull();
         assertThat( target.getItems() ).isNotNull();
 
-        Issue3865Mapper.INSTANCE.update( target, source );
+        Issue3884Mapper.INSTANCE.update( target, source );
 
         assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).containsEntry( "sourceKey", "sourceValue" );
