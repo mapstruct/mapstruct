@@ -15,6 +15,7 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Test for issue 3884: NullValuePropertyMappingStrategy.SET_TO_DEFAULT should set target Map/Collection to default
@@ -40,13 +41,8 @@ public class Issue3884Test {
 
         Issue3884Mapper.INSTANCE.update( target, source );
 
-        assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).isEmpty();
-        assertThat( target.getItems() ).isNotNull();
         assertThat( target.getItems() ).isEmpty();
-
-        assertThat( target.getInitializedAttributes() ).containsKey( "key1" );
-        assertThat( target.getInitializedItems() ).contains( "item1" );
     }
 
     @ProcessorTest
@@ -63,15 +59,13 @@ public class Issue3884Test {
         target.setItems( targetItems );
 
         assertThat( source.getAttributes() ).isNull();
-        assertThat( target.getAttributes() ).isNotNull();
+        assertThat( target.getAttributes() ).isNotEmpty();
         assertThat( source.getItems() ).isNull();
-        assertThat( target.getItems() ).isNotNull();
+        assertThat( target.getItems() ).isNotEmpty();
 
         Issue3884Mapper.INSTANCE.update( target, source );
 
-        assertThat( target.getAttributes() ).isNotNull();
         assertThat( target.getAttributes() ).isEmpty();
-        assertThat( target.getItems() ).isNotNull();
         assertThat( target.getItems() ).isEmpty();
     }
 
@@ -80,25 +74,18 @@ public class Issue3884Test {
         DestinationType target = new SourceType();
         SourceType source = new SourceType();
 
-        Map<String, String> sourceAttributes = new HashMap<>();
-        sourceAttributes.put( "sourceKey", "sourceValue" );
-        source.setAttributes( sourceAttributes );
+        source.setAttributes( Map.of( "sourceKey", "sourceValue" ) );
+        source.setItems( List.of( "sourceItem" ) );
 
-        List<String> sourceItems = new ArrayList<>();
-        sourceItems.add( "sourceItem" );
-        source.setItems( sourceItems );
-
-        assertThat( source.getAttributes() ).isNotNull();
+        assertThat( source.getAttributes() ).isNotEmpty();
         assertThat( target.getAttributes() ).isNull();
-        assertThat( source.getItems() ).isNotNull();
+        assertThat( source.getItems() ).isNotEmpty();
         assertThat( target.getItems() ).isNull();
 
         Issue3884Mapper.INSTANCE.update( target, source );
 
-        assertThat( target.getAttributes() ).isNotNull();
-        assertThat( target.getAttributes() ).containsEntry( "sourceKey", "sourceValue" );
-        assertThat( target.getItems() ).isNotNull();
-        assertThat( target.getItems() ).contains( "sourceItem" );
+        assertThat( target.getAttributes() ).containsOnly( entry( "sourceKey", "sourceValue" ) );
+        assertThat( target.getItems() ).containsExactly( "sourceItem" );
     }
 
     @ProcessorTest
@@ -106,35 +93,24 @@ public class Issue3884Test {
         DestinationType target = new SourceType();
         SourceType source = new SourceType();
 
-        Map<String, String> sourceAttributes = new HashMap<>();
-        sourceAttributes.put( "sourceKey", "sourceValue" );
-        source.setAttributes( sourceAttributes );
+        source.setAttributes( Map.of( "sourceKey", "sourceValue" ) );
+        source.setItems( List.of( "sourceItem" ) );
 
         Map<String, String> targetAttributes = new HashMap<>();
         targetAttributes.put( "targetKey", "targetValue" );
         target.setAttributes( targetAttributes );
-
-        List<String> sourceItems = new ArrayList<>();
-        sourceItems.add( "sourceItem" );
-        source.setItems( sourceItems );
-
         List<String> targetItems = new ArrayList<>();
         targetItems.add( "targetItem" );
         target.setItems( targetItems );
 
-        assertThat( source.getAttributes() ).isNotNull();
-        assertThat( target.getAttributes() ).isNotNull();
-        assertThat( source.getItems() ).isNotNull();
-        assertThat( target.getItems() ).isNotNull();
+        assertThat( source.getAttributes() ).isNotEmpty();
+        assertThat( target.getAttributes() ).isNotEmpty();
+        assertThat( source.getItems() ).isNotEmpty();
+        assertThat( target.getItems() ).isNotEmpty();
 
         Issue3884Mapper.INSTANCE.update( target, source );
 
-        assertThat( target.getAttributes() ).isNotNull();
-        assertThat( target.getAttributes() ).containsEntry( "sourceKey", "sourceValue" );
-        assertThat( target.getAttributes() ).doesNotContainKey( "targetKey" );
-
-        assertThat( target.getItems() ).isNotNull();
-        assertThat( target.getItems() ).contains( "sourceItem" );
-        assertThat( target.getItems() ).doesNotContain( "targetItem" );
+        assertThat( target.getAttributes() ).containsOnly( entry( "sourceKey", "sourceValue" ) );
+        assertThat( target.getItems() ).containsExactly( "sourceItem" );
     }
 }

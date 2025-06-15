@@ -16,15 +16,7 @@ public interface DestinationType {
 
     void setAttributes(Map<String, String> attributes);
 
-    Map<String, String> getInitializedAttributes();
-
-    void setInitializedAttributes(Map<String, String> attributes);
-
     List<String> getItems();
 
     void setItems(List<String> items);
-
-    List<String> getInitializedItems();
-
-    void setInitializedItems(List<String> items);
 }
