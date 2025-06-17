@@ -13,6 +13,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.gem.ContextGem;
+import org.mapstruct.ap.internal.gem.MappingSourceGem;
 import org.mapstruct.ap.internal.gem.MappingTargetGem;
 import org.mapstruct.ap.internal.gem.SourcePropertyNameGem;
 import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
@@ -35,6 +36,8 @@ public class Parameter extends ModelElement {
     private final boolean mappingContext;
     private final boolean sourcePropertyName;
     private final boolean targetPropertyName;
+    private final boolean mappingSource;
+    private final boolean implicitMapping;
 
     private final boolean varArgs;
 
@@ -48,12 +51,18 @@ public class Parameter extends ModelElement {
         this.mappingContext = ContextGem.instanceOn( element ) != null;
         this.sourcePropertyName = SourcePropertyNameGem.instanceOn( element ) != null;
         this.targetPropertyName = TargetPropertyNameGem.instanceOn( element ) != null;
+
+        // Handle MappingSource annotation
+        MappingSourceGem mappingSourceGem = MappingSourceGem.instanceOn( element );
+        this.mappingSource = mappingSourceGem != null;
+        this.implicitMapping = this.mappingSource && mappingSourceGem.implicitMapping().get();
+
         this.varArgs = varArgs;
     }
 
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
-                      boolean sourcePropertyName, boolean targetPropertyName,
-                      boolean varArgs) {
+                      boolean sourcePropertyName, boolean targetPropertyName, boolean mappingSource,
+                      boolean implicitMapping, boolean varArgs) {
         this.element = null;
         this.name = name;
         this.originalName = name;
@@ -63,11 +72,13 @@ public class Parameter extends ModelElement {
         this.mappingContext = mappingContext;
         this.sourcePropertyName = sourcePropertyName;
         this.targetPropertyName = targetPropertyName;
+        this.mappingSource = mappingSource;
+        this.implicitMapping = implicitMapping;
         this.varArgs = varArgs;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false, false, false, false );
+        this( name, type, false, false, false, false, false, false, false, false );
     }
 
     public Element getElement() {
@@ -105,7 +116,8 @@ public class Parameter extends ModelElement {
             + ( mappingContext ? "@Context " : "" )
             + ( sourcePropertyName ? "@SourcePropertyName " : "" )
             + ( targetPropertyName ? "@TargetPropertyName " : "" )
-            +  "%s " + name;
+            + ( mappingSource ? "@MappingSource " : "" )
+            + "%s " + name;
     }
 
     @Override
@@ -129,6 +141,14 @@ public class Parameter extends ModelElement {
         return sourcePropertyName;
     }
 
+    public boolean isMappingSource() {
+        return mappingSource;
+    }
+
+    public boolean isImplicitMapping() {
+        return implicitMapping;
+    }
+
     public boolean isVarArgs() {
         return varArgs;
     }
@@ -136,9 +156,9 @@ public class Parameter extends ModelElement {
     public boolean isSourceParameter() {
         return !isMappingTarget() &&
             !isTargetType() &&
-            !isMappingContext() &&
             !isSourcePropertyName() &&
-            !isTargetPropertyName();
+            !isTargetPropertyName() &&
+            ( !isMappingContext() || isMappingSource() );
     }
 
     @Override
@@ -179,6 +199,8 @@ public class Parameter extends ModelElement {
             "mappingTarget",
             parameterType,
             true,
+            false,
+            false,
             false,
             false,
             false,

@@ -1696,12 +1696,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             SourceReference sourceRef = null;
 
-            if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
-                return sourceRef;
+            if ( ( sourceParameter.isMappingSource() && !sourceParameter.isImplicitMapping() )
+                || sourceParameter.getType().isPrimitive()
+                || sourceParameter.getType().isArrayType() ) {
+                return null;
             }
 
+            boolean allowedMapToBean =
+                method.getSourceParameters().size() == 1 || ( sourceParameter.isImplicitMapping() );
             ReadAccessor sourceReadAccessor = sourceParameter.getType()
-                .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
+                .getReadAccessor( targetPropertyName, allowedMapToBean );
             if ( sourceReadAccessor != null ) {
                 // property mapping
                 PresenceCheckAccessor sourcePresenceChecker =
