@@ -38,6 +38,7 @@ public class Parameter extends ModelElement {
     private final boolean targetPropertyName;
     private final boolean mappingSource;
     private final boolean implicitMapping;
+    private final boolean primary;
 
     private final boolean varArgs;
 
@@ -56,13 +57,14 @@ public class Parameter extends ModelElement {
         MappingSourceGem mappingSourceGem = MappingSourceGem.instanceOn( element );
         this.mappingSource = mappingSourceGem != null;
         this.implicitMapping = this.mappingSource && mappingSourceGem.implicitMapping().get();
+        this.primary = this.mappingSource && mappingSourceGem.primary().get();
 
         this.varArgs = varArgs;
     }
 
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
-                      boolean sourcePropertyName, boolean targetPropertyName, boolean mappingSource,
-                      boolean implicitMapping, boolean varArgs) {
+                      boolean sourcePropertyName, boolean targetPropertyName,
+                      boolean varArgs) {
         this.element = null;
         this.name = name;
         this.originalName = name;
@@ -72,13 +74,14 @@ public class Parameter extends ModelElement {
         this.mappingContext = mappingContext;
         this.sourcePropertyName = sourcePropertyName;
         this.targetPropertyName = targetPropertyName;
-        this.mappingSource = mappingSource;
-        this.implicitMapping = implicitMapping;
         this.varArgs = varArgs;
+        this.mappingSource = false;
+        this.implicitMapping = false;
+        this.primary = false;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false, false, false, false, false, false );
+        this( name, type, false, false, false, false, false, false );
     }
 
     public Element getElement() {
@@ -149,6 +152,10 @@ public class Parameter extends ModelElement {
         return implicitMapping;
     }
 
+    public boolean isPrimary() {
+        return primary;
+    }
+
     public boolean isVarArgs() {
         return varArgs;
     }
@@ -199,8 +206,6 @@ public class Parameter extends ModelElement {
             "mappingTarget",
             parameterType,
             true,
-            false,
-            false,
             false,
             false,
             false,

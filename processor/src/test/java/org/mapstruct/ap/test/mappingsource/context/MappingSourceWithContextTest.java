@@ -3,14 +3,14 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.mappingsource;
+package org.mapstruct.ap.test.mappingsource.context;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.mapstruct.ap.test.mappingsource.MappingSourceWithContextMapper.Item;
-import org.mapstruct.ap.test.mappingsource.MappingSourceWithContextMapper.ItemDTO;
-import org.mapstruct.ap.test.mappingsource.MappingSourceWithContextMapper.Model;
+import org.mapstruct.ap.test.mappingsource.context.MappingSourceWithContextMapper.Item;
+import org.mapstruct.ap.test.mappingsource.context.MappingSourceWithContextMapper.ItemDTO;
+import org.mapstruct.ap.test.mappingsource.context.MappingSourceWithContextMapper.Model;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

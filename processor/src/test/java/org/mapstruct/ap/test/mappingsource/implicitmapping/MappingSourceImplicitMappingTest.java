@@ -3,14 +3,14 @@
  *
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.mapstruct.ap.test.mappingsource;
+package org.mapstruct.ap.test.mappingsource.implicitmapping;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mapstruct.ap.test.mappingsource.MappingSourceImplicitMappingMapper.BeanSource;
-import org.mapstruct.ap.test.mappingsource.MappingSourceImplicitMappingMapper.BeanTarget;
-import org.mapstruct.ap.test.mappingsource.MappingSourceImplicitMappingMapper.MapTarget;
+import org.mapstruct.ap.test.mappingsource.implicitmapping.MappingSourceImplicitMappingMapper.BeanSource;
+import org.mapstruct.ap.test.mappingsource.implicitmapping.MappingSourceImplicitMappingMapper.BeanTarget;
+import org.mapstruct.ap.test.mappingsource.implicitmapping.MappingSourceImplicitMappingMapper.MapTarget;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
