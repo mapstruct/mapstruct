@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
+import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -287,6 +288,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratedWith.mirror(), Message.DECORATOR_CONSTRUCTOR );
         }
 
+        // Get annotations from the decorator class
+        Set<Annotation> decoratorAnnotations = additionalAnnotationsBuilder.getProcessedAnnotations( decoratorElement );
+
         Decorator decorator = new Decorator.Builder()
             .elementUtils( elementUtils )
             .typeFactory( typeFactory )
@@ -300,6 +304,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperOptions.implementationPackage() )
             .extraImports( getExtraImports( element, mapperOptions ) )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
+            .additionalAnnotations( decoratorAnnotations )
             .build();
 
         return decorator;

@@ -1,0 +1,20 @@
+name: Mac OS CI
+
+on: push
+
+env:
+  MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+
+jobs:
+  mac:
+    name: 'Mac OS'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Set up JDK 21'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Test'
+        run: ./mvnw ${MAVEN_ARGS} install

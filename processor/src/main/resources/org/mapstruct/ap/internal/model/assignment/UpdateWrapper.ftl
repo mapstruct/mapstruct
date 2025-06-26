@@ -10,7 +10,7 @@
 <@lib.handleExceptions>
   <#if includeSourceNullCheck>
     <@lib.sourceLocalVarAssignment/>
-    if ( <#if sourcePresenceCheckerReference?? ><@includeModel object=sourcePresenceCheckerReference /><#else><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null</#if> ) {
+    if ( <@handleSourceReferenceNullCheck/> ) {
       <@assignToExistingTarget/>
       <@lib.handleAssignment/>;
     }
@@ -31,4 +31,17 @@
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} == null ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
     }
+</#macro>
+
+<#macro handleSourceReferenceNullCheck>
+  <@compress single_line=true>
+    <#if sourcePresenceCheckerReference?? >
+      <@includeModel object=sourcePresenceCheckerReference
+        targetPropertyName=ext.targetPropertyName
+        sourcePropertyName=ext.sourcePropertyName
+        targetType=ext.targetType/>
+    <#else>
+      <#if sourceLocalVarName??> ${sourceLocalVarName} <#else> ${sourceReference} </#if> != null
+    </#if>
+  </@compress>
 </#macro>

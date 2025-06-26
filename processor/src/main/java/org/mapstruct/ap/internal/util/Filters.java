@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -23,7 +23,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -64,7 +64,7 @@ public class Filters {
     public List<ReadAccessor> getterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isGetterMethod )
-            .map( method ->  ReadAccessor.fromGetter( method, getReturnType( method ) ) )
+            .map( method -> ReadAccessor.fromGetter( method, getReturnType( method ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -90,7 +90,10 @@ public class Filters {
         for ( Element recordComponent : recordComponents ) {
             recordAccessors.put(
                 recordComponent.getSimpleName().toString(),
-                ReadAccessor.fromRecordComponent( recordComponent )
+                ReadAccessor.fromRecordComponent(
+                    recordComponent,
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, recordComponent )
+                )
             );
         }
 
@@ -101,10 +104,10 @@ public class Filters {
         return getWithinContext( executableElement ).getReturnType();
     }
 
-    public <T> List<T> fieldsIn(List<VariableElement> accessors, Function<VariableElement, T> creator) {
+    public <T> List<T> fieldsIn(List<VariableElement> accessors, BiFunction<VariableElement, TypeMirror, T> creator) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( creator )
+            .map( variableElement -> creator.apply( variableElement, getWithinContext( variableElement ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -117,7 +120,7 @@ public class Filters {
     public List<Accessor> setterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isSetterMethod )
-            .map( method ->  new ExecutableElementAccessor( method, getFirstParameter( method ), SETTER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), SETTER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -129,10 +132,14 @@ public class Filters {
         return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
     }
 
+    private TypeMirror getWithinContext( VariableElement variableElement ) {
+        return typeUtils.asMemberOf( (DeclaredType) typeMirror, variableElement );
+    }
+
     public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isAdderMethod )
-            .map( method -> new ExecutableElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }
