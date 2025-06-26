@@ -718,6 +718,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 else {
                     reportErrorWhenAmbiguousMapping( candidates, method, inheritConfiguration );
                 }
+            } else {
+                messager.printMessage(
+                    method.getExecutable(),
+                    Message.INHERITCONFIGURATION_PARAMETER_MISMATCH,
+                    method.getName(),
+                    resultMethod.getName()
+                );
             }
         }
 
