@@ -42,6 +42,8 @@ public enum Message {
     BEANMAPPING_UNMAPPED_FORGED_SOURCES_WARNING( "Unmapped source %s. Mapping from %s to %s.", Diagnostic.Kind.WARNING ),
     BEANMAPPING_UNMAPPED_FORGED_SOURCES_ERROR( "Unmapped source %s. Mapping from %s to %s." ),
     BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR( "Ignored unknown source %s." ),
+    BEANMAPPING_REDUNDANT_IGNORED_SOURCES_ERROR( "The source %s listed in ignoreUnmappedSourceProperties but are actually mapped and should be removed." ),
+    BEANMAPPING_REDUNDANT_IGNORED_SOURCES_WARNING( "The source %s listed in ignoreUnmappedSourceProperties but are actually mapped and should be removed.", Diagnostic.Kind.WARNING  ),
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
