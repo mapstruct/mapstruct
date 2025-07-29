@@ -31,15 +31,15 @@ public class Issue3902Test {
                             type = Issue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 23,
-                            message = "Unknown property \"foo\" in @Ignored for target type \"Issue3902Mapper.ZooDto\"."
-                                    + " No property named \"foo\" exists in the source or target."
+                            message = "No property named \"foo\" exists in @Ignored for target type " +
+                                    "\"Issue3902Mapper.ZooDto\""
                     ),
                     @Diagnostic(
                             type = Issue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 23,
-                            message = "Unknown property \"bar\" in @Ignored for target type \"Issue3902Mapper.ZooDto\"."
-                                    + " No property named \"bar\" exists in the source or target."
+                            message = "No property named \"bar\" exists in @Ignored for target type " +
+                                    "\"Issue3902Mapper.ZooDto\""
                     ),
 
                     // Test case: mapWithMultipleKnownAndOneUnknown
@@ -47,8 +47,8 @@ public class Issue3902Test {
                             type = Issue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 26,
-                            message = "Unknown property \"foo\" in @Ignored for target type \"Issue3902Mapper.ZooDto\"."
-                                    + " No property named \"foo\" exists in the source or target."
+                            message = "No property named \"foo\" exists in @Ignored for target type " +
+                                    "\"Issue3902Mapper.ZooDto\""
                     )
             }
     )

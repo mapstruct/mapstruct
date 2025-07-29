@@ -1293,8 +1293,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_IGNORED;
                         args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap.describe(),
-                            targetPropertyName
+                            resultTypeToMap.describe()
                         };
                     }
                     else {
