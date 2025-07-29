@@ -27,6 +27,7 @@ public final class FullFeatureCompilationExclusionCliEnhancer implements Process
         additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1596/*.java" );
         additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1801/*.java" );
         additionalExcludes.add( "org/mapstruct/ap/test/bugs/_3089/*.java" );
+        additionalExcludes.add( "org/mapstruct/ap/test/bugs/_3902/*.java" );
 
         switch ( currentJreVersion ) {
             case JAVA_8:
