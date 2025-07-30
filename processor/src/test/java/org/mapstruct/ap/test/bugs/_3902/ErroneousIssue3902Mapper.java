@@ -15,9 +15,9 @@ import org.mapstruct.factory.Mappers;
  * @author znight1020
  */
 @Mapper
-public interface Issue3902Mapper {
+public interface ErroneousIssue3902Mapper {
 
-    Issue3902Mapper INSTANCE = Mappers.getMapper( Issue3902Mapper.class );
+    ErroneousIssue3902Mapper INSTANCE = Mappers.getMapper( ErroneousIssue3902Mapper.class );
 
     @Ignored(targets = {"name", "foo", "bar"})
     ZooDto mapWithOneKnownAndMultipleUnknowns(Zoo source);

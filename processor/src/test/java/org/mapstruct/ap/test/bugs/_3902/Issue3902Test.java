@@ -18,7 +18,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
  *
  * @author znight1020
  */
-@WithClasses({Issue3902Mapper.class})
+@WithClasses({ErroneousIssue3902Mapper.class})
 @IssueKey("3902")
 public class Issue3902Test {
 
@@ -28,27 +28,27 @@ public class Issue3902Test {
             diagnostics = {
                     // Test case: mapWithOneKnownAndMultipleUnknowns
                     @Diagnostic(
-                            type = Issue3902Mapper.class,
+                            type = ErroneousIssue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 23,
                             message = "No property named \"foo\" exists in @Ignored for target type " +
-                                    "\"Issue3902Mapper.ZooDto\""
+                                    "\"ErroneousIssue3902Mapper.ZooDto\""
                     ),
                     @Diagnostic(
-                            type = Issue3902Mapper.class,
+                            type = ErroneousIssue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 23,
                             message = "No property named \"bar\" exists in @Ignored for target type " +
-                                    "\"Issue3902Mapper.ZooDto\""
+                                    "\"ErroneousIssue3902Mapper.ZooDto\""
                     ),
 
                     // Test case: mapWithMultipleKnownAndOneUnknown
                     @Diagnostic(
-                            type = Issue3902Mapper.class,
+                            type = ErroneousIssue3902Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
                             line = 26,
                             message = "No property named \"foo\" exists in @Ignored for target type " +
-                                    "\"Issue3902Mapper.ZooDto\""
+                                    "\"ErroneousIssue3902Mapper.ZooDto\""
                     )
             }
     )
