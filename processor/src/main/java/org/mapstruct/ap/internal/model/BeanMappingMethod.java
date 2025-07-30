@@ -1280,40 +1280,54 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             return false;
                         }
                     }
-                    Set<String> readAccessors = resultTypeToMap.getPropertyReadAccessors().keySet();
-                    String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
 
                     Message msg;
                     String[] args;
 
-                    if ( targetRef.getPathProperties().isEmpty() ) {
-                        msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
+                    Element elementForMessage = mapping.getElement();
+                    if ( elementForMessage == null ) {
+                        elementForMessage = method.getExecutable();
+                    }
+
+                    if ( mapping.isIgnored() && mapping.getElement() == null ) {
+                        msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_IGNORED;
                         args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap.describe(),
-                            mostSimilarProperty
+                            resultTypeToMap.describe()
                         };
                     }
                     else {
-                        List<String> pathProperties = new ArrayList<>( targetRef.getPathProperties() );
-                        pathProperties.add( mostSimilarProperty );
-                        msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE;
-                        args = new String[] {
-                            targetPropertyName,
-                            resultTypeToMap.describe(),
-                            mapping.getTargetName(),
-                            Strings.join( pathProperties, "." )
-                        };
+                        Set<String> readAccessors = resultTypeToMap.getPropertyReadAccessors().keySet();
+                        String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
+
+                        if ( targetRef.getPathProperties().isEmpty() ) {
+                            msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
+                            args = new String[] {
+                                targetPropertyName,
+                                resultTypeToMap.describe(),
+                                mostSimilarProperty
+                            };
+                        }
+                        else {
+                            List<String> pathProperties = new ArrayList<>( targetRef.getPathProperties() );
+                            pathProperties.add( mostSimilarProperty );
+                            msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_TYPE;
+                            args = new String[] {
+                                targetPropertyName,
+                                resultTypeToMap.describe(),
+                                mapping.getTargetName(),
+                                Strings.join( pathProperties, "." )
+                            };
+                        }
                     }
 
-                    ctx.getMessager()
-                        .printMessage(
-                            mapping.getElement(),
-                            mapping.getMirror(),
-                            mapping.getTargetAnnotationValue(),
-                            msg,
-                            args
-                        );
+                    ctx.getMessager().printMessage(
+                        elementForMessage,
+                        mapping.getMirror(),
+                        mapping.getTargetAnnotationValue(),
+                        msg,
+                        args
+                    );
                     return true;
                 }
                 else if ( mapping.getInheritContext() != null && mapping.getInheritContext().isReversed() ) {
