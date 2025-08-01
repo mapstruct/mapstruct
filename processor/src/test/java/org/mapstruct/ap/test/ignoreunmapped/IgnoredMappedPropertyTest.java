@@ -32,7 +32,7 @@ import javax.tools.Diagnostic.Kind;
  */
 @IssueKey("3837")
 @WithClasses({UserEntity.class, UserDto.class})
-public class IgnoredMappedPropertyTest  {
+public class IgnoredMappedPropertyTest {
 
     @ProcessorTest
     @WithClasses({
@@ -60,22 +60,19 @@ public class IgnoredMappedPropertyTest  {
                             type = UserMapperWithErrorSourcePolicy.class,
                             kind = Kind.ERROR,
                             line = 20,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     ),
                     @Diagnostic(
                             type = UserMapperWithErrorSourcePolicyInMapper.class,
                             kind = Kind.ERROR,
                             line = 19,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     ),
                     @Diagnostic(
                             type = UserMapperWithErrorPolicyInMapperConfig.class,
                             kind = Kind.ERROR,
                             line = 23,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     )
             }
     )
@@ -95,22 +92,19 @@ public class IgnoredMappedPropertyTest  {
                             type = UserMapperWithWarnSourcePolicy.class,
                             kind = Kind.WARNING,
                             line = 20,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     ),
                     @Diagnostic(
                             type = UserMapperWithWarnSourcePolicyInMapper.class,
                             kind = Kind.WARNING,
                             line = 19,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     ),
                     @Diagnostic(
                             type = UserMapperWithWarnPolicyInMapperConfig.class,
                             kind = Kind.WARNING,
                             line = 23,
-                            message = "The source property \"email\" is listed in ignoreUnmappedSourceProperties " +
-                                    "but are actually mapped and should be removed."
+                            message = "Source property \"email\" is mapped despite being listed in ignoreUnmappedSourceProperties."
                     )
             }
     )
@@ -126,8 +120,7 @@ public class IgnoredMappedPropertyTest  {
                             type = UserMapperWithMultiMapping.class,
                             kind = Kind.ERROR,
                             line = 21,
-                            message = "The source properties \"email, username\" are listed in " +
-                                    "ignoreUnmappedSourceProperties but are actually mapped and should be removed."
+                            message = "Source properties \"email, username\" are mapped despite being listed in ignoreUnmappedSourceProperties."
                     )
             }
     )
