@@ -15,7 +15,10 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.DefaultImplementationNamingStrategy;
+import org.mapstruct.ap.spi.ImplementationNamingStrategy;
 
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
@@ -29,6 +32,8 @@ public class Mapper extends GeneratedType {
     static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
     static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
     static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
+    public static final ImplementationNamingStrategy IMPLEMENTATION_NAMING_STRATEGY = Services.get( ImplementationNamingStrategy.class,
+            new DefaultImplementationNamingStrategy() );
 
     public static class Builder extends GeneratedTypeBuilder<Builder> {
 
@@ -76,7 +81,6 @@ public class Mapper extends GeneratedType {
 
         public Builder implName(String implName) {
             this.implName = implName;
-            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
             return this;
         }
 
@@ -97,8 +101,8 @@ public class Mapper extends GeneratedType {
         }
 
         public Mapper build() {
-            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
-                ( decorator == null ? "" : "_" );
+            String implementationNameCandidate = generateImplementationNameCandidate();
+            String implementationName = generateImplementationName( implementationNameCandidate );
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
@@ -115,7 +119,7 @@ public class Mapper extends GeneratedType {
                 implementationName,
                 definitionType,
                 customPackage,
-                customName,
+                hasCustomName( implementationName, implementationNameCandidate ),
                 customAnnotations,
                 methods,
                 options,
@@ -129,6 +133,20 @@ public class Mapper extends GeneratedType {
                 javadoc
             );
         }
+
+        private boolean hasCustomName(String implementationName, String implementationNameCandidate) {
+           return !implementationName.equals( implementationNameCandidate ) || !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
+        }
+
+        private String generateImplementationName(String implementationNameCandidate ) {
+            return IMPLEMENTATION_NAMING_STRATEGY.generateImplementationName( getFlatName( element ), implementationNameCandidate );
+        }
+
+        private String generateImplementationNameCandidate() {
+            return implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
+                    (decorator == null ? "" : "_");
+        }
+
 
     }
 
