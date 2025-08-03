@@ -1284,6 +1284,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Message msg;
                     String[] args;
 
+                    Set<String> readAccessors = resultTypeToMap.getPropertyReadAccessors().keySet();
+                    String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
+
                     Element elementForMessage = mapping.getElement();
                     if ( elementForMessage == null ) {
                         elementForMessage = method.getExecutable();
@@ -1293,13 +1296,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_IGNORED;
                         args = new String[] {
                             targetPropertyName,
-                            resultTypeToMap.describe()
+                            resultTypeToMap.describe(),
+                            mostSimilarProperty
                         };
                     }
                     else {
-                        Set<String> readAccessors = resultTypeToMap.getPropertyReadAccessors().keySet();
-                        String mostSimilarProperty = Strings.getMostSimilarWord( targetPropertyName, readAccessors );
-
                         if ( targetRef.getPathProperties().isEmpty() ) {
                             msg = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
                             args = new String[] {
@@ -1321,12 +1322,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         }
                     }
 
-                    ctx.getMessager().printMessage(
-                        elementForMessage,
-                        mapping.getMirror(),
-                        mapping.getTargetAnnotationValue(),
-                        msg,
-                        args
+                    ctx.getMessager()
+                        .printMessage(
+                            elementForMessage,
+                            mapping.getMirror(),
+                            mapping.getTargetAnnotationValue(),
+                            msg,
+                            args
                     );
                     return true;
                 }
