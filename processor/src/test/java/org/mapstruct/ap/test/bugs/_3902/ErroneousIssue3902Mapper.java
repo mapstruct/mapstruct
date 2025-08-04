@@ -25,6 +25,9 @@ public interface ErroneousIssue3902Mapper {
     @Ignored(targets = {"name", "address", "foo"})
     ZooDto mapWithMultipleKnownAndOneUnknown(Zoo source);
 
+    @Ignored(targets = {"name", "addres"})
+    ZooDto mapWithTypo(Zoo source);
+
     class Zoo {
         private String name;
         private String address;
