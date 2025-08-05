@@ -28,16 +28,23 @@ public class SubclassMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final String sourceArgument;
+    private final Type sourceArgumentType;
 
-    public SubclassMapping(Type sourceType, String sourceArgument, Type targetType, Assignment assignment) {
+    public SubclassMapping(Type sourceType, String sourceArgument, Type sourceArgumentType,
+                           Type targetType, Assignment assignment) {
         this.sourceType = sourceType;
         this.sourceArgument = sourceArgument;
+        this.sourceArgumentType = sourceArgumentType;
         this.targetType = targetType;
         this.assignment = assignment;
     }
 
     public Type getSourceType() {
         return sourceType;
+    }
+
+    public Type getSourceArgumentType() {
+        return sourceArgumentType;
     }
 
     @Override
