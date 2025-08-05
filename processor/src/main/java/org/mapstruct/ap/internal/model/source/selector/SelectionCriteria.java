@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -158,6 +157,10 @@ public class SelectionCriteria {
 
     public static SelectionCriteria forLifecycleMethods(SelectionParameters selectionParameters) {
         return new SelectionCriteria( selectionParameters, null, null, Type.LIFECYCLE_CALLBACK );
+    }
+
+    public static SelectionCriteria forDefaultValueMappingMethod(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, null, null );
     }
 
     public static SelectionCriteria forPresenceCheckMethods(SelectionParameters selectionParameters) {
