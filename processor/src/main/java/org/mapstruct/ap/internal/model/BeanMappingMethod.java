@@ -103,6 +103,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Type subclassExhaustiveException;
 
     private final MappingReferences mappingReferences;
+    private List<Type> typeParameters;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
@@ -2040,6 +2041,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
         this.subclassMappings = subclassMappings;
+        this.typeParameters = method.getTypeParameters();
     }
 
     public Type getSubclassExhaustiveException() {
@@ -2099,6 +2101,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public MethodReference getFinalizerMethod() {
         return finalizerMethod;
+    }
+
+    public List<Type> getTypeParameters() {
+        return typeParameters;
     }
 
     @Override
