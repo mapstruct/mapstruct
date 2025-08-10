@@ -6,6 +6,7 @@
 package org.mapstruct.ap.spi;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.util.Experimental;
 
@@ -18,6 +19,17 @@ import org.mapstruct.util.Experimental;
  */
 @Experimental("The Immutables accessor naming strategy might change in a subsequent release")
 public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
+
+    @Override
+    public boolean isGetterMethod(ExecutableElement method) {
+        return super.isGetterMethod( method ) || isFluentGetter( method );
+    }
+
+    private boolean isFluentGetter(ExecutableElement method) {
+        return method.getParameters().isEmpty() &&
+            method.getReturnType().getKind() != TypeKind.VOID &&
+            !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches();
+    }
 
     @Override
     protected boolean isFluentSetter(ExecutableElement method) {
