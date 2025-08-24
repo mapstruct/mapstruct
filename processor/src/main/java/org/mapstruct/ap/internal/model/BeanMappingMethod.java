@@ -114,6 +114,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Map<String, Accessor> unprocessedTargetProperties;
         private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> missingIgnoredSourceProperties;
+        private Set<String> redundantIgnoredSourceProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
@@ -278,10 +279,22 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // get bean mapping (when specified as annotation )
             this.missingIgnoredSourceProperties = new HashSet<>();
-            if ( beanMapping != null ) {
+            this.redundantIgnoredSourceProperties = new HashSet<>();
+            if ( beanMapping != null && !beanMapping.getIgnoreUnmappedSourceProperties().isEmpty() ) {
+                // Get source properties explicitly mapped using @Mapping annotations
+                Set<String> mappedSourceProperties = method.getOptions().getMappings().stream()
+                        .map( MappingOptions::getSourceName )
+                        .filter( Objects::nonNull )
+                        .collect( Collectors.toSet() );
+
                 for ( String ignoreUnmapped : beanMapping.getIgnoreUnmappedSourceProperties() ) {
+                    // Track missing ignored properties (i.e. not in source class)
                     if ( unprocessedSourceProperties.remove( ignoreUnmapped ) == null ) {
                         missingIgnoredSourceProperties.add( ignoreUnmapped );
+                    }
+                    // Track redundant ignored properties (actually mapped despite being ignored)
+                    if ( mappedSourceProperties.contains( ignoreUnmapped ) ) {
+                        redundantIgnoredSourceProperties.add( ignoreUnmapped );
                     }
                 }
             }
@@ -331,6 +344,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
             reportErrorForMissingIgnoredSourceProperties();
             reportErrorForUnusedSourceParameters();
+            reportErrorForRedundantIgnoredSourceProperties();
 
             // mapNullToDefault
             boolean mapNullToDefault = method.getOptions()
@@ -1910,6 +1924,34 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     method.getExecutable(),
                     Message.BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR,
                     args
+                );
+            }
+        }
+
+        private void reportErrorForRedundantIgnoredSourceProperties() {
+            if ( !redundantIgnoredSourceProperties.isEmpty() ) {
+                ReportingPolicyGem unmappedSourcePolicy = getUnmappedSourcePolicy();
+                if ( unmappedSourcePolicy == ReportingPolicyGem.IGNORE ) { //don't show warning
+                    return;
+                }
+
+                Message message = Message.BEANMAPPING_REDUNDANT_IGNORED_SOURCES_WARNING;
+                if ( unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ) {
+                    message = Message.BEANMAPPING_REDUNDANT_IGNORED_SOURCES_ERROR;
+                }
+
+                Object[] args = new Object[] {
+                        MessageFormat.format(
+                                "{0,choice,1#property|1<properties} \"{1}\" {0,choice,1#is|1<are}",
+                                redundantIgnoredSourceProperties.size(),
+                                Strings.join( redundantIgnoredSourceProperties, ", " )
+                        )
+                };
+
+                ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        message,
+                        args
                 );
             }
         }
