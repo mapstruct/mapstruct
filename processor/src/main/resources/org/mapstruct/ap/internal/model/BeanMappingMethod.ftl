@@ -10,7 +10,7 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeTypeParameters/><@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
         <#assign targetType = returnTypeToConstruct />
@@ -166,3 +166,13 @@
         </#list>
     </@compress>
 </#macro>
+<#macro includeTypeParameters>
+<@compress single_line=true>
+    <#if (typeParameters?size > 0)><</#if>
+    <#list typeParameters as typeParameter>
+        <@includeModel object=typeParameter/>
+    	<#if typeParameter_has_next>, </#if><#t>
+    </#list>
+    <#if (typeParameters?size > 0)>></#if>
+</@compress>
+<#if (typeParameters?size > 0)> </#if></#macro>
