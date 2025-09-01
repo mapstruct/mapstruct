@@ -20,7 +20,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
@@ -101,7 +104,24 @@ public class Filters {
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
-        return getWithinContext( executableElement ).getReturnType();
+        TypeMirror returnType = getMethodAsMemberOfDefiningClass( executableElement ).getReturnType();
+        if ( returnType.getKind() == TypeKind.WILDCARD ) {
+            // we got 2 versions of wildcards: '?' or '? extends ...'
+            if ( ( (WildcardType) returnType ).getExtendsBound() != null ) {
+                // in case of '? extends ...' we want to return the '...' part.
+                return ( (WildcardType) returnType ).getExtendsBound();
+            }
+            // in case of just '?', we want to look at the original methods return type and see if that one has an
+            // upperbound, for example: <T extends ...> in that case we want to return the '...' here. The
+            // getUpperBound() method handles this for us, in case of no extends it will return the TypeMirror for the
+            // Object class.
+            return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
+        }
+        if ( returnType.getKind() == TypeKind.TYPEVAR ) {
+            // using <TYPEVAR extends ...> directly is not supported yet.
+            return ( (TypeVariable) executableElement.getReturnType() ).getUpperBound();
+        }
+        return returnType;
     }
 
     public <T> List<T> fieldsIn(List<VariableElement> accessors, BiFunction<VariableElement, TypeMirror, T> creator) {
@@ -125,10 +145,10 @@ public class Filters {
     }
 
     private TypeMirror getFirstParameter(ExecutableElement executableElement) {
-        return first( getWithinContext( executableElement ).getParameterTypes() );
+        return first( getMethodAsMemberOfDefiningClass( executableElement ).getParameterTypes() );
     }
 
-    private ExecutableType getWithinContext( ExecutableElement executableElement ) {
+    private ExecutableType getMethodAsMemberOfDefiningClass( ExecutableElement executableElement ) {
         return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
     }
 
