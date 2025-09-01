@@ -546,18 +546,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                targetType,
                                                mappingReferences ) );
             String sourceArgument = null;
+            Type sourceArgumentType = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
                     .getTypeUtils()
                     .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
                     sourceArgument = parameter.getName();
+                    sourceArgumentType = parameter.getType();
                     if ( assignment != null ) {
                         assignment.setSourceLocalVarName(
                             "(" + sourceType.createReferenceName() + ") " + sourceArgument );
                     }
                 }
             }
-            return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
+            return new SubclassMapping( sourceType, sourceArgument, sourceArgumentType, targetType, assignment );
         }
 
         private boolean isAbstractReturnTypeAllowed() {
