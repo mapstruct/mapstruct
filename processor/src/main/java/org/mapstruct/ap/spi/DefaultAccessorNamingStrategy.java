@@ -6,7 +6,6 @@
 package org.mapstruct.ap.spi;
 
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -26,7 +25,7 @@ import org.mapstruct.ap.spi.util.IntrospectorUtils;
  */
 public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
-    private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
+    protected static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
 
     protected Elements elementUtils;
     protected Types typeUtils;
