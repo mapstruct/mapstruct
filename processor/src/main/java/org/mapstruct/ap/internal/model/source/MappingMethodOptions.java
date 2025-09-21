@@ -320,7 +320,7 @@ public class MappingMethodOptions {
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory,
                                FormattingMessager messager) {
-        CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+        CollectionMappingStrategyGem cms = method.getOptions().getBeanMapping().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
