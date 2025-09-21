@@ -229,7 +229,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             existingVariableNames.addAll( method.getParameterNames() );
 
-            CollectionMappingStrategyGem cms = this.method.getOptions().getMapper().getCollectionMappingStrategy();
+            CollectionMappingStrategyGem cms = this.method.getOptions().getBeanMapping().getCollectionMappingStrategy();
 
             // determine accessors
             Map<String, Accessor> accessors = resultTypeToMap.getPropertyWriteAccessors( cms );
