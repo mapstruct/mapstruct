@@ -380,6 +380,17 @@ public class MappingMethodOptions {
         return getPropertyEntries( mapping )[0];
     }
 
+    public CollectionMappingStrategyGem getCollectionMappingStrategyFor(String targetProperty) {
+        if ( targetProperty != null && mappings != null ) {
+            for ( MappingOptions m : mappings ) {
+                if ( targetProperty.equals( m.getTargetName() ) && m.getCollectionMappingStrategy() != null ) {
+                    return CollectionMappingStrategyGem.valueOf( m.getCollectionMappingStrategy().name() );
+                }
+            }
+        }
+        return getBeanMapping().getCollectionMappingStrategy();
+    }
+
     /**
      * SubclassMappingOptions are not inherited to forged methods. They would result in an infinite loop if they were.
      *

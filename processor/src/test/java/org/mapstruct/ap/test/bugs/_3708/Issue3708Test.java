@@ -55,6 +55,18 @@ public class Issue3708Test {
     }
 
     @ProcessorTest
+    void mappingTargetImmutableShouldReplaceWhenUpdatesImmutableTarget() {
+        Partner entity = new Partner();
+        entity.setTypes( Set.of( "A" ) );
+        PartnerDto dto = new PartnerDto();
+        dto.setTypes( new LinkedHashSet<>( Set.of( "B", "C" ) ) );
+
+        Issue3708TargetImmutableMapper.INSTANCE.partialUpdateMapping( entity, dto );
+
+        assertThat( entity.getTypes() ).containsExactlyInAnyOrder( "B", "C" );
+    }
+
+    @ProcessorTest
     void clearAndAddAllShouldNotGenerateWhenTargetImmutable() {
         generated.forMapper( Issue3708TargetImmutableMapper.class )
             .content()

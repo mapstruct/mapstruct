@@ -143,6 +143,7 @@ public @interface BeanMapping {
      * A property-level {@link Mapping#collectionMappingStrategy()} may still override this for a specific target.
      *
      * @return collection mapping strategy for this method
+     *
      * @since 1.7
      */
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.ACCESSOR_ONLY;

@@ -16,11 +16,17 @@ import org.mapstruct.ap.test.bugs._3708.entity.Partner;
 import org.mapstruct.factory.Mappers;
 
 /**
- * BeanMapping TARGET_IMMUTABLE
+ * Mapping, BeanMapping TARGET_IMMUTABLE
  */
 @Mapper
 public interface Issue3708TargetImmutableMapper {
     Issue3708TargetImmutableMapper INSTANCE = Mappers.getMapper( Issue3708TargetImmutableMapper.class );
+
+    @Mapping(target = "types",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE
+    )
+    void partialUpdateMapping(@MappingTarget Partner entity, PartnerDto dto);
 
     @BeanMapping(
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
