@@ -5,19 +5,20 @@
  */
 package org.mapstruct.ap.testutil.assertions;
 
-import org.assertj.core.api.FileAssert;
-import org.assertj.core.error.ShouldHaveSameContent;
-import org.assertj.core.internal.Diff;
-import org.assertj.core.internal.Failures;
-import org.assertj.core.util.diff.Delta;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.regex.Pattern;
+
+import org.assertj.core.api.FileAssert;
+import org.assertj.core.error.ShouldBeEqual;
+import org.assertj.core.internal.Failures;
 
 import static java.lang.String.format;
 
@@ -30,13 +31,16 @@ public class JavaFileAssert extends FileAssert {
 
     private static final String FIRST_LINE_LICENSE_REGEX = ".*Copyright MapStruct Authors.*";
     private static final String GENERATED_DATE_REGEX = "\\s+date = " +
-        "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}\",";
+        "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[\\+\\-]\\d{4}\",";
     private static final String GENERATED_COMMENTS_REGEX = "\\s+comments = \"version: , compiler: .*, environment: " +
         ".*\"";
     private static final String IMPORT_GENERATED_ANNOTATION_REGEX = "import javax\\.annotation\\.(processing\\.)?" +
         "Generated;";
 
-    private final Diff diff = new Diff();
+    private static final Pattern LICENSE_PATTERN = Pattern.compile( FIRST_LINE_LICENSE_REGEX );
+    private static final Pattern GENERATED_DATE_PATTERN = Pattern.compile( GENERATED_DATE_REGEX );
+    private static final Pattern GENERATED_COMMENTS_PATTERN = Pattern.compile( GENERATED_COMMENTS_REGEX );
+    private static final Pattern IMPORT_GENERATED_PATTERN = Pattern.compile( IMPORT_GENERATED_ANNOTATION_REGEX );
 
     /**
      * @param actual the actual file
@@ -71,18 +75,65 @@ public class JavaFileAssert extends FileAssert {
      * @param expected the file that should be matched
      */
     public void hasSameMapperContent(File expected) {
-        Charset charset = StandardCharsets.UTF_8;
         try {
-            List<Delta<String>> diffs = new ArrayList<>( this.diff.diff(
-                actual,
-                charset,
-                expected,
-                charset
-            ) );
-            diffs.removeIf( this::ignoreDelta );
-            if ( !diffs.isEmpty() ) {
-                throw Failures.instance()
-                    .failure( info, ShouldHaveSameContent.shouldHaveSameContent( actual, expected, diffs ) );
+            Path actualPath = actual.toPath();
+            Path expectedPath = expected.toPath();
+
+            String formatterRegex = ".*private final DateTimeFormatter dateTimeFormatter_.*";
+
+            List<String> expectedLines = Files.readAllLines( expectedPath, StandardCharsets.UTF_8 );
+            List<String> actualLines = Files.readAllLines( actualPath, StandardCharsets.UTF_8 );
+
+            List<String> expectedFormatters = new ArrayList<>();
+            List<String> expectedOtherLines = new ArrayList<>();
+
+            for ( String line : expectedLines ) {
+                if ( line.matches( formatterRegex ) ) {
+                    expectedFormatters.add( line );
+                }
+                else if ( isIgnorableLine( line ) ) {
+                    expectedOtherLines.add( line );
+                }
+            }
+
+            List<String> actualFormatters = new ArrayList<>();
+            List<String> actualOtherLines = new ArrayList<>();
+
+            for ( String line : actualLines ) {
+                if ( line.matches( formatterRegex ) ) {
+                    actualFormatters.add( line );
+                }
+                else if ( isIgnorableLine( line ) ) {
+                    actualOtherLines.add( line );
+                }
+            }
+
+            // Sort the formatter lines to make the order deterministic
+            Collections.sort( expectedFormatters );
+            Collections.sort( actualFormatters );
+
+            String expectedOtherContent = String.join( "\n", expectedOtherLines ).replaceAll( "\\r\\n", "\n" );
+            String actualOtherContent = String.join( "\n", actualOtherLines ).replaceAll( "\\r\\n", "\n" );
+
+            String expectedFormatterContent = String.join( "\n", expectedFormatters ).replaceAll( "\\r\\n", "\n" );
+            String actualFormatterContent = String.join( "\n", actualFormatters ).replaceAll( "\\r\\n", "\n" );
+
+            if ( !expectedOtherContent.equals( actualOtherContent ) ) {
+                throw Failures.instance().failure(
+                    info,
+                    ShouldBeEqual.shouldBeEqual( actualOtherContent, expectedOtherContent, info.representation() )
+                );
+            }
+
+            if ( !expectedFormatterContent.equals( actualFormatterContent ) ) {
+                throw Failures.instance().failure(
+                    info,
+                    ShouldBeEqual.shouldBeEqual(
+                        actualFormatterContent,
+                        expectedFormatterContent,
+                        info.representation()
+                    )
+                );
             }
         }
         catch ( IOException e ) {
@@ -95,30 +146,22 @@ public class JavaFileAssert extends FileAssert {
     }
 
     /**
-     * Checks if the delta should be ignored. The delta is ignored if it is a deletion type for the license header
+     * Checks if the line should be ignored. The line is ignored if it is a deletion type for the license header
      * or if it is a change delta for the date/comments part of a {@code @Generated} annotation.
      *
-     * @param delta that needs to be checked
-     * @return {@code true} if this delta should be ignored, {@code false} otherwise
+     * @param line that needs to be checked
+     * @return {@code true} if this line should be ignored, {@code false} otherwise
      */
-    private boolean ignoreDelta(Delta<String> delta) {
-        if ( delta.getType() == Delta.TYPE.DELETE ) {
-            List<String> lines = delta.getOriginal().getLines();
-            return lines.size() > 2 && lines.get( 1 ).matches( FIRST_LINE_LICENSE_REGEX );
-        }
-        else if ( delta.getType() == Delta.TYPE.CHANGE ) {
-            List<String> lines = delta.getOriginal().getLines();
-            if ( lines.size() == 1 ) {
-                return lines.get( 0 ).matches( GENERATED_DATE_REGEX ) ||
-                    lines.get( 0 ).matches( IMPORT_GENERATED_ANNOTATION_REGEX );
-            }
-            else if ( lines.size() == 2 ) {
-                return lines.get( 0 ).matches( GENERATED_DATE_REGEX ) &&
-                    lines.get( 1 ).matches( GENERATED_COMMENTS_REGEX );
-            }
-        }
+    private boolean isIgnorableLine(String line) {
+        String trimmedLine = line.trim();
 
-        return false;
+        // Ignore blank lines and lines that are part of a standard Javadoc/license header
+        if ( trimmedLine.isEmpty() || trimmedLine.startsWith( "/*" ) || trimmedLine.startsWith( "*" ) ) {
+            return false;
+        }
+        return !LICENSE_PATTERN.matcher( line ).matches() && !GENERATED_DATE_PATTERN.matcher( line ).matches() &&
+            !GENERATED_COMMENTS_PATTERN.matcher( line ).matches() &&
+            !IMPORT_GENERATED_PATTERN.matcher( line ).matches();
     }
 
     /**
