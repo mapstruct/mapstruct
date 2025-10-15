@@ -21,6 +21,8 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
+import org.mapstruct.ap.internal.gem.IgnoredGem;
+import org.mapstruct.ap.internal.gem.IgnoredListGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
@@ -76,6 +78,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
     private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
     private static final String CONDITION_FQN = "org.mapstruct.Condition";
+    private static final String IGNORED_FQN = "org.mapstruct.Ignored";
+    private static final String IGNORED_LIST_FQN = "org.mapstruct.IgnoredList";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -110,7 +114,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperTypeElement, mapperOptions );
-        return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperOptions, prototypeMethods );
+        return retrieveMethods(
+            typeFactory.getType( mapperTypeElement.asType() ),
+            mapperTypeElement,
+            mapperOptions,
+            prototypeMethods
+        );
     }
 
     @Override
@@ -162,19 +171,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     /**
      * Retrieves the mapping methods declared by the given mapper type.
      *
-     * @param usedMapper The type of interest (either the mapper to implement or a used mapper via @uses annotation)
+     * @param usedMapperType The type of interest (either the mapper to implement, a used mapper via @uses annotation,
+     *                   or a parameter type annotated with @Context)
      * @param mapperToImplement the top level type (mapper) that requires implementation
      * @param mapperOptions the mapper config
      * @param prototypeMethods prototype methods defined in mapper config type
      * @return All mapping methods declared by the given type
      */
-    private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
+    private List<SourceMethod> retrieveMethods(Type usedMapperType, TypeElement mapperToImplement,
                                                MapperOptions mapperOptions, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
+        TypeElement usedMapper = usedMapperType.getTypeElement();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
-                usedMapper,
+                usedMapperType,
                 executable,
                 mapperToImplement,
                 mapperOptions,
@@ -191,7 +202,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 TypeElement usesMapperElement = asTypeElement( mapper );
                 if ( !mapperToImplement.equals( usesMapperElement ) ) {
                     methods.addAll( retrieveMethods(
-                        usesMapperElement,
+                        typeFactory.getType( mapper ),
                         mapperToImplement,
                         mapperOptions,
                         prototypeMethods ) );
@@ -214,13 +225,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return (TypeElement) type.asElement();
     }
 
-    private SourceMethod getMethod(TypeElement usedMapper,
+    private SourceMethod getMethod(Type usedMapperType,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement,
                                    MapperOptions mapperOptions,
                                    List<SourceMethod> prototypeMethods) {
-
-        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
+        TypeElement usedMapper = usedMapperType.getTypeElement();
+        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapperType.getTypeMirror(), method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         Type returnType = typeFactory.getReturnType( methodType );
 
@@ -353,7 +364,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 continue;
             }
             List<SourceMethod> contextParamMethods = retrieveMethods(
-                contextParam.getType().getTypeElement(),
+                contextParam.getType(),
                 mapperToImplement,
                 mapperConfig,
                 Collections.emptyList() );
@@ -389,7 +400,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         return new SourceMethod.Builder()
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
-            .setDefininingType( definingType )
+            .setDefiningType( definingType )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )
@@ -555,6 +566,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
+            if ( !parameterType.isIterableOrStreamType() && resultType.isArrayType() ) {
+                messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ARRAY );
+                return false;
+            }
+
             for ( Type typeParameter : parameterType.getTypeParameters() ) {
                 if ( typeParameter.hasSuperBound() ) {
                     messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
@@ -614,7 +630,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
+        Set<MappingOptions> processedAnnotations = new RepeatableMappings( beanMapping )
+                .getProcessedAnnotations( method );
+        processedAnnotations.addAll( new IgnoredConditions( processedAnnotations )
+                .getProcessedAnnotations( method ) );
+        return processedAnnotations;
     }
 
     /**
@@ -813,4 +833,55 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
     }
+
+    private class IgnoredConditions extends RepeatableAnnotations<IgnoredGem, IgnoredListGem, MappingOptions> {
+
+        protected final Set<MappingOptions> processedAnnotations;
+
+        protected IgnoredConditions( Set<MappingOptions> processedAnnotations ) {
+            super( elementUtils, IGNORED_FQN, IGNORED_LIST_FQN );
+            this.processedAnnotations = processedAnnotations;
+        }
+
+        @Override
+        protected IgnoredGem singularInstanceOn(Element element) {
+            return IgnoredGem.instanceOn( element );
+        }
+
+        @Override
+        protected IgnoredListGem multipleInstanceOn(Element element) {
+            return IgnoredListGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(IgnoredGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredGem ignoredGem = IgnoredGem.instanceOn( method );
+            if ( ignoredGem == null ) {
+                ignoredGem = gem;
+            }
+            String prefix = ignoredGem.prefix().get();
+            for ( String target : ignoredGem.targets().get() ) {
+                String realTarget = target;
+                if ( !prefix.isEmpty() ) {
+                    realTarget = prefix + "." + target;
+                }
+                MappingOptions mappingOptions = MappingOptions.forIgnore( realTarget );
+                if ( processedAnnotations.contains( mappingOptions ) || mappings.contains( mappingOptions ) ) {
+                    messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, realTarget );
+                }
+                else {
+                    mappings.add( mappingOptions );
+                }
+            }
+        }
+
+        @Override
+        protected void addInstances(IgnoredListGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredListGem ignoredListGem = IgnoredListGem.instanceOn( method );
+            for ( IgnoredGem ignoredGem : ignoredListGem.value().get() ) {
+                addInstance( ignoredGem, method, mappings );
+            }
+        }
+    }
+
 }

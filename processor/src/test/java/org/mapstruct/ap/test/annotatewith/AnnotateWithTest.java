@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.annotatewith;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -176,12 +177,12 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithClassOnMethod.class,
-                line = 17,
+                line = 18,
                 message = "Annotation \"CustomClassOnlyAnnotation\" is not allowed on methods."
             )
         }
     )
-    @WithClasses({ ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class })
+    @WithClasses({ ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class, WithProperties.class })
     public void erroneousMapperWithClassOnMethod() {
     }
 

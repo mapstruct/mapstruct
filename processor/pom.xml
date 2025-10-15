@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-parent</artifactId>
-        <version>1.6.3</version>
+        <version>1.7.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -24,7 +24,7 @@
         <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
             Therefore we set this empty property here-->
         <jacocoArgLine />
-        <minimum.java.version>11</minimum.java.version>
+        <minimum.java.version>21</minimum.java.version>
     </properties>
 
     <dependencies>
@@ -286,6 +286,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <testRelease>${minimum.java.version}</testRelease>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct.tools.gem</groupId>

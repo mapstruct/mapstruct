@@ -10,7 +10,7 @@ package org.mapstruct;
  * {@link NullValuePropertyMappingStrategy} can be defined on {@link MapperConfig}, {@link Mapper}, {@link BeanMapping}
  * and {@link Mapping}.
  * Precedence is arranged  in the reverse order. So {@link Mapping} will override {@link BeanMapping}, will
- * overide {@link Mapper}
+ * override {@link Mapper}
  *
  * The enum <b>only applies to update methods</b>: methods that update a pre-existing target (annotated with
  * {@code @}{@link MappingTarget}).

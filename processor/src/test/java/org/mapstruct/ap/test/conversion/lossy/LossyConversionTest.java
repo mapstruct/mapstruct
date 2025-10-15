@@ -40,12 +40,14 @@ public class LossyConversionTest {
         dto.setNumberOfKnifes( (short) 7 );
         dto.setNumberOfSpoons( (byte) 3 );
         dto.setApproximateKnifeLength( 3.7f );
+        dto.setDrawerId( 1 );
 
         CutleryInventoryEntity entity = CutleryInventoryMapper.INSTANCE.map( dto );
         assertThat( entity.getNumberOfForks() ).isEqualTo( 5L );
         assertThat( entity.getNumberOfKnifes() ).isEqualTo( 7 );
         assertThat( entity.getNumberOfSpoons() ).isEqualTo( (short) 3 );
         assertThat( entity.getApproximateKnifeLength() ).isCloseTo( 3.7d, withinPercentage( 0.0001d ) );
+        assertThat( entity.getDrawerId() ).isEqualTo( "1" );
     }
 
     @ProcessorTest
@@ -72,6 +74,19 @@ public class LossyConversionTest {
                     + "from BigInteger to Integer.")
         })
     public void testConversionFromBigIntegerToInteger() {
+    }
+
+    @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerMapper6.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+            diagnostics = {
+                    @Diagnostic(type = ErroneousKitchenDrawerMapper6.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 17,
+                            message = "Can't map property \"String drawerId\". It has a possibly lossy conversion from "
+                                    + "String to int.")
+            })
+    public void testConversionFromStringToInt() {
     }
 
     @ProcessorTest

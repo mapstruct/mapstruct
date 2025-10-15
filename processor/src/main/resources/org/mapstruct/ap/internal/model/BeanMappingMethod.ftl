@@ -9,7 +9,6 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
@@ -42,7 +41,7 @@
         else {
     </#if>
     <#if isAbstractReturnType()>
-        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
+        throw new <@includeModel object=subclassExhaustiveException />("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
     <#else>
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>

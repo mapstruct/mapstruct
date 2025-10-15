@@ -41,7 +41,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     }
 
     /**
-     * Checks if MapStruct is allowed to generate an automatic sub-mapping between {@code sourceType} and @{code
+     * Checks if MapStruct is allowed to generate an automatic sub-mapping between {@code sourceType} and {@code
      * targetType}.
      * This will evaluate to {@code true}, when:
      * <li>
@@ -66,7 +66,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
 
     /**
      * Creates a forged assignment from the provided {@code sourceRHS} and {@code forgedMethod}. If a mapping method
-     * for the {@code forgedMethod} already exists, then this method used for the assignment.
+     * for the {@code forgedMethod} already exists, this method will be used for the assignment.
      *
      * @param sourceRHS that needs to be used for the assignment
      * @param forgedMethod the forged method for which we want to create an {@link Assignment}

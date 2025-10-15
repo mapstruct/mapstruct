@@ -11,11 +11,14 @@ import javax.inject.Named;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
+import org.mapstruct.ap.test.decorator.jsr330.annotatewith.Jsr330DecoratorAnnotateWithTest;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -25,6 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 
 import static java.lang.System.lineSeparator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,9 +47,16 @@ import static org.assertj.core.api.Assertions.assertThat;
     PersonMapperDecorator.class
 })
 @IssueKey("592")
-@ComponentScan(basePackageClasses = Jsr330DecoratorTest.class)
+@ComponentScan(
+    basePackageClasses = Jsr330DecoratorTest.class,
+    excludeFilters = @ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE,
+        classes = { Jsr330DecoratorAnnotateWithTest.class }
+    )
+)
 @Configuration
 @WithJavaxInject
+@DisabledOnJre(JRE.OTHER)
 public class Jsr330DecoratorTest {
 
     @RegisterExtension

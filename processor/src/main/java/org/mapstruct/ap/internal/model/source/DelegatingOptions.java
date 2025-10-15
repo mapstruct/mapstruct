@@ -106,6 +106,10 @@ public abstract class DelegatingOptions {
         return next.getSubclassExhaustiveStrategy();
     }
 
+    public TypeMirror getSubclassExhaustiveException() {
+        return next.getSubclassExhaustiveException();
+    }
+
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
         return next.getNullValueIterableMappingStrategy();
     }

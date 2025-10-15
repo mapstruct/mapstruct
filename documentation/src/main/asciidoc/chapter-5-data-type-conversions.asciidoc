@@ -280,6 +280,13 @@ This puts the configuration of the nested mapping into one place (method) where 
 instead of re-configuring the same things on all of those upper methods.
 ====
 
+[TIP]
+====
+When ignoring multiple properties instead of defining multiple `@Mapping` annotations, you can use the `@Ignored` annotation to group them together.
+e.g. for the `FishTankMapperWithDocument` example above, you could write:
+`@Ignored(targets = { "plant", "ornament", "material" })`
+====
+
 [NOTE]
 ====
 In some cases the `ReportingPolicy` that is going to be used for the generated nested method would be `IGNORE`.

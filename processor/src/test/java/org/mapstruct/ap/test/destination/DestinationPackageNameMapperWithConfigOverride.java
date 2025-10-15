@@ -16,5 +16,5 @@ public interface DestinationPackageNameMapperWithConfigOverride {
     DestinationPackageNameMapperWithConfigOverride INSTANCE =
             Mappers.getMapper( DestinationPackageNameMapperWithConfigOverride.class );
 
-    String intToString(Integer source);
+    Target map(Integer source);
 }

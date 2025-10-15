@@ -55,7 +55,8 @@ public class IterableMappingOptions extends DelegatingOptions {
             iterableMapping.numberFormat().get(),
             iterableMapping.mirror(),
             iterableMapping.dateFormat().getAnnotationValue(),
-            method
+            method,
+            iterableMapping.locale().getValue()
         );
 
         IterableMappingOptions options =

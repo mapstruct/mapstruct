@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.bugs._1242;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Test mapper for properly resolving the best fitting factory method
  *
  * @author Andreas Gudian
  */
-@Mapper(uses = TargetFactories.class)
+@Mapper(uses = TargetFactories.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class Issue1242Mapper {
     abstract TargetA toTargetA(SourceA source);
 

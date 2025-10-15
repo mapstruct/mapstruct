@@ -5,6 +5,9 @@
  */
 package org.mapstruct.ap.internal.option;
 
+import java.util.Locale;
+import java.util.Map;
+
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 
@@ -13,86 +16,79 @@ import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
  *
  * @author Andreas Gudian
  * @author Gunnar Morling
+ * @author Filip Hrisafov
  */
 public class Options {
-    private final boolean suppressGeneratorTimestamp;
-    private final boolean suppressGeneratorVersionComment;
-    private final ReportingPolicyGem unmappedTargetPolicy;
-    private final ReportingPolicyGem unmappedSourcePolicy;
-    private final boolean alwaysGenerateSpi;
-    private final String defaultComponentModel;
-    private final String defaultInjectionStrategy;
-    private final boolean disableBuilders;
-    private final boolean verbose;
-    private final NullValueMappingStrategyGem nullValueIterableMappingStrategy;
-    private final NullValueMappingStrategyGem nullValueMapMappingStrategy;
 
-    //CHECKSTYLE:OFF
-    public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
-                   ReportingPolicyGem unmappedTargetPolicy,
-                   ReportingPolicyGem unmappedSourcePolicy,
-                   String defaultComponentModel, String defaultInjectionStrategy,
-                   boolean alwaysGenerateSpi,
-                   boolean disableBuilders,
-                   boolean verbose,
-                   NullValueMappingStrategyGem nullValueIterableMappingStrategy,
-                   NullValueMappingStrategyGem nullValueMapMappingStrategy
-                   ) {
-        //CHECKSTYLE:ON
-        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
-        this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
-        this.unmappedTargetPolicy = unmappedTargetPolicy;
-        this.unmappedSourcePolicy = unmappedSourcePolicy;
-        this.defaultComponentModel = defaultComponentModel;
-        this.defaultInjectionStrategy = defaultInjectionStrategy;
-        this.alwaysGenerateSpi = alwaysGenerateSpi;
-        this.disableBuilders = disableBuilders;
-        this.verbose = verbose;
-        this.nullValueIterableMappingStrategy = nullValueIterableMappingStrategy;
-        this.nullValueMapMappingStrategy = nullValueMapMappingStrategy;
+    private final Map<String, String> options;
+
+    public Options(Map<String, String> options) {
+        this.options = options;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
-        return suppressGeneratorTimestamp;
+        return parseBoolean( MappingOption.SUPPRESS_GENERATOR_TIMESTAMP );
     }
 
     public boolean isSuppressGeneratorVersionComment() {
-        return suppressGeneratorVersionComment;
+        return parseBoolean( MappingOption.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT );
     }
 
     public ReportingPolicyGem getUnmappedTargetPolicy() {
-        return unmappedTargetPolicy;
+        return parseEnum( MappingOption.UNMAPPED_TARGET_POLICY, ReportingPolicyGem.class );
     }
 
     public ReportingPolicyGem getUnmappedSourcePolicy() {
-        return unmappedSourcePolicy;
+        return parseEnum( MappingOption.UNMAPPED_SOURCE_POLICY, ReportingPolicyGem.class );
     }
 
     public String getDefaultComponentModel() {
-        return defaultComponentModel;
+        return options.get( MappingOption.DEFAULT_COMPONENT_MODEL.getOptionName() );
     }
 
     public String getDefaultInjectionStrategy() {
-        return defaultInjectionStrategy;
+        return options.get( MappingOption.DEFAULT_INJECTION_STRATEGY.getOptionName() );
     }
 
     public boolean isAlwaysGenerateSpi() {
-        return alwaysGenerateSpi;
+        return parseBoolean( MappingOption.ALWAYS_GENERATE_SERVICE_FILE );
     }
 
     public boolean isDisableBuilders() {
-        return disableBuilders;
+        return parseBoolean( MappingOption.DISABLE_BUILDERS );
     }
 
     public boolean isVerbose() {
-        return verbose;
+        return parseBoolean( MappingOption.VERBOSE );
     }
 
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
-        return nullValueIterableMappingStrategy;
+        return parseEnum( MappingOption.NULL_VALUE_ITERABLE_MAPPING_STRATEGY, NullValueMappingStrategyGem.class );
     }
 
     public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
-        return nullValueMapMappingStrategy;
+        return parseEnum( MappingOption.NULL_VALUE_MAP_MAPPING_STRATEGY, NullValueMappingStrategyGem.class );
+    }
+
+    public boolean isDisableLifecycleOverloadDeduplicateSelector() {
+        return parseBoolean( MappingOption.DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR );
+    }
+
+    private boolean parseBoolean(MappingOption option) {
+        if ( options.isEmpty() ) {
+            return false;
+        }
+        return Boolean.parseBoolean( options.get( option.getOptionName() ) );
+    }
+
+    private <E extends Enum<E>> E parseEnum(MappingOption option, Class<E> enumType) {
+        if ( options.isEmpty() ) {
+            return null;
+        }
+        String value = options.get( option.getOptionName() );
+        if ( value == null ) {
+            return null;
+        }
+        return Enum.valueOf( enumType, value.toUpperCase( Locale.ROOT ) );
     }
 }

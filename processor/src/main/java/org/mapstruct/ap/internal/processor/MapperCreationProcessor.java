@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
+import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -195,7 +196,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 
-        // handle constructorfragments
+        // handle constructor fragments
         Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
@@ -287,6 +288,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratedWith.mirror(), Message.DECORATOR_CONSTRUCTOR );
         }
 
+        // Get annotations from the decorator class
+        Set<Annotation> decoratorAnnotations = additionalAnnotationsBuilder.getProcessedAnnotations( decoratorElement );
+
         Decorator decorator = new Decorator.Builder()
             .elementUtils( elementUtils )
             .typeFactory( typeFactory )
@@ -300,6 +304,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperOptions.implementationPackage() )
             .extraImports( getExtraImports( element, mapperOptions ) )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
+            .additionalAnnotations( decoratorAnnotations )
             .build();
 
         return decorator;
@@ -632,7 +637,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inverseConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousReverseMapping( candidates, method, inverseConfiguration );
+                    reportErrorWhenAmbiguousReverseMapping( candidates, method, inverseConfiguration );
                 }
             }
         }
@@ -702,21 +707,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( candidates.size() > 1 ) {
                 // ambiguity: find a matching method that matches configuredBy
 
-                List<SourceMethod> nameFilteredcandidates = new ArrayList<>();
+                List<SourceMethod> nameFilteredCandidates = new ArrayList<>();
                 for ( SourceMethod candidate : candidates ) {
                     if ( candidate.getName().equals( name ) ) {
-                        nameFilteredcandidates.add( candidate );
+                        nameFilteredCandidates.add( candidate );
                     }
                 }
 
-                if ( nameFilteredcandidates.size() == 1 ) {
-                    resultMethod = first( nameFilteredcandidates );
+                if ( nameFilteredCandidates.size() == 1 ) {
+                    resultMethod = first( nameFilteredCandidates );
                 }
-                else if ( nameFilteredcandidates.size() > 1 ) {
-                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inheritConfiguration );
+                else if ( nameFilteredCandidates.size() > 1 ) {
+                    reportErrorWhenSeveralNamesMatch( nameFilteredCandidates, method, inheritConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousMapping( candidates, method, inheritConfiguration );
+                    reportErrorWhenAmbiguousMapping( candidates, method, inheritConfiguration );
                 }
             }
         }
@@ -729,8 +734,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return inheritConfiguration == null ? null : inheritConfiguration.mirror();
     }
 
-    private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
-                   InheritInverseConfigurationGem inverseGem) {
+    private void reportErrorWhenAmbiguousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                        InheritInverseConfigurationGem inverseGem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
@@ -780,8 +785,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
     }
 
-    private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
-                                                InheritConfigurationGem gem) {
+    private void reportErrorWhenAmbiguousMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                 InheritConfigurationGem gem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {

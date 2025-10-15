@@ -56,16 +56,18 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public ReportingPolicyGem unmappedTargetPolicy() {
-        if ( options.getUnmappedTargetPolicy() != null ) {
-            return options.getUnmappedTargetPolicy();
+        ReportingPolicyGem unmappedTargetPolicy = options.getUnmappedTargetPolicy();
+        if ( unmappedTargetPolicy != null ) {
+            return unmappedTargetPolicy;
         }
         return ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().getDefaultValue() );
     }
 
     @Override
     public ReportingPolicyGem unmappedSourcePolicy() {
-        if ( options.getUnmappedSourcePolicy() != null ) {
-            return options.getUnmappedSourcePolicy();
+        ReportingPolicyGem unmappedSourcePolicy = options.getUnmappedSourcePolicy();
+        if ( unmappedSourcePolicy != null ) {
+            return unmappedSourcePolicy;
         }
         return ReportingPolicyGem.valueOf( mapper.unmappedSourcePolicy().getDefaultValue() );
     }
@@ -77,8 +79,9 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public String componentModel() {
-        if ( options.getDefaultComponentModel() != null ) {
-            return options.getDefaultComponentModel();
+        String defaultComponentModel = options.getDefaultComponentModel();
+        if ( defaultComponentModel != null ) {
+            return defaultComponentModel;
         }
         return mapper.componentModel().getDefaultValue();
     }
@@ -97,8 +100,9 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public InjectionStrategyGem getInjectionStrategy() {
-        if ( options.getDefaultInjectionStrategy() != null ) {
-            return InjectionStrategyGem.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
+        String defaultInjectionStrategy = options.getDefaultInjectionStrategy();
+        if ( defaultInjectionStrategy != null ) {
+            return InjectionStrategyGem.valueOf( defaultInjectionStrategy.toUpperCase() );
         }
         return InjectionStrategyGem.valueOf( mapper.injectionStrategy().getDefaultValue() );
     }
@@ -129,6 +133,10 @@ public class DefaultOptions extends DelegatingOptions {
 
     public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
         return SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().getDefaultValue() );
+    }
+
+    public TypeMirror getSubclassExhaustiveException() {
+        return mapper.subclassExhaustiveException().getDefaultValue();
     }
 
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {

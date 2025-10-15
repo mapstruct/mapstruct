@@ -141,6 +141,12 @@ public class MapperConfigOptions extends DelegatingOptions {
             next().getSubclassExhaustiveStrategy();
     }
 
+    public TypeMirror getSubclassExhaustiveException() {
+        return mapperConfig.subclassExhaustiveException().hasValue() ?
+            mapperConfig.subclassExhaustiveException().get() :
+            next().getSubclassExhaustiveException();
+    }
+
     @Override
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
         if ( mapperConfig.nullValueIterableMappingStrategy().hasValue() ) {

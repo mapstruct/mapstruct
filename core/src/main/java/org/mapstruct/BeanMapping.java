@@ -133,6 +133,18 @@ public @interface BeanMapping {
     SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
+     * Specifies the exception type to be thrown when a missing subclass implementation is detected
+     * in combination with {@link SubclassMappings}, based on the {@link #subclassExhaustiveStrategy()}.
+     * <p>
+     * This exception will only be thrown when the {@code subclassExhaustiveStrategy} is set to
+     * {@link SubclassExhaustiveStrategy#RUNTIME_EXCEPTION}.
+     *
+     * @return the exception class to throw when missing implementations are found.
+     *         Defaults to {@link IllegalArgumentException}.
+     */
+    Class<? extends Exception> subclassExhaustiveException() default IllegalArgumentException.class;
+
+    /**
      * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No
      * warning will be issued on missing source or target properties.
      *

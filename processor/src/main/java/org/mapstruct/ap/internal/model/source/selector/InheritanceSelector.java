@@ -33,7 +33,7 @@ public class InheritanceSelector implements MethodSelector {
         List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
 
-        // find the methods with the minimum distance regarding getParameter getParameter type
+        // Find methods with the minimum inheritance distance from the source parameter type
         for ( SelectedMethod<T> method : methods ) {
             Parameter singleSourceParam = first( method.getMethod().getSourceParameters() );
 
@@ -49,17 +49,17 @@ public class InheritanceSelector implements MethodSelector {
         return candidatesWithBestMatchingSourceType;
     }
 
-    private <T extends Method> int addToCandidateListIfMinimal(List<SelectedMethod<T>> candidatesWithBestMathingType,
+    private <T extends Method> int addToCandidateListIfMinimal(List<SelectedMethod<T>> candidatesWithBestMatchingType,
                                                                int bestMatchingTypeDistance, SelectedMethod<T> method,
                                                                int currentTypeDistance) {
         if ( currentTypeDistance == bestMatchingTypeDistance ) {
-            candidatesWithBestMathingType.add( method );
+            candidatesWithBestMatchingType.add( method );
         }
         else if ( currentTypeDistance < bestMatchingTypeDistance ) {
             bestMatchingTypeDistance = currentTypeDistance;
 
-            candidatesWithBestMathingType.clear();
-            candidatesWithBestMathingType.add( method );
+            candidatesWithBestMatchingType.clear();
+            candidatesWithBestMatchingType.add( method );
         }
         return bestMatchingTypeDistance;
     }
