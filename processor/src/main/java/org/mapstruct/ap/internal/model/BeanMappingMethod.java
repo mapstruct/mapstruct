@@ -1628,30 +1628,41 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
                 Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
-                unprocessedConstructorProperties.remove( targetPropertyName );
-                if ( targetPropertyWriteAccessor != null ) {
-                    ReadAccessor targetPropertyReadAccessor =
-                            method.getResultType()
-                                    .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
-                    MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
-                    PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
-                            .sourceMethod( method )
-                            .sourcePropertyName( targetPropertyName )
-                            .target( targetPropertyName, targetPropertyReadAccessor, targetPropertyWriteAccessor )
-                            .sourceReference( sourceRef )
-                            .existingVariableNames( existingVariableNames )
-                            .forgeMethodWithMappingReferences( mappingRefs )
-                            .options( method.getOptions().getBeanMapping() )
-                            .build();
-
-                    unprocessedSourceParameters.remove( sourceRef.getParameter() );
-
-                    if ( propertyMapping != null ) {
-                        propertyMappings.add( propertyMapping );
-                    }
-                    unprocessedDefinedTargets.remove( targetPropertyName );
-                    unprocessedSourceProperties.remove( targetPropertyName );
+                Accessor result = unprocessedConstructorProperties.remove( targetPropertyName );
+                if (result == null && sourceRef.getParameter().isExplicitlyDefinedChildren()) {
+                    continue;
                 }
+                if ( targetPropertyWriteAccessor == null ) {
+                    // TODO improve error message
+                    ctx.getMessager()
+                            .printMessage( method.getExecutable(),
+                                    Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                                    targetPropertyName
+                            );
+                    continue;
+                }
+
+                ReadAccessor targetPropertyReadAccessor =
+                        method.getResultType()
+                                .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
+                MappingReferences mappingRefs = extractMappingReferences( targetPropertyName, false );
+                PropertyMapping propertyMapping = new PropertyMappingBuilder().mappingContext( ctx )
+                        .sourceMethod( method )
+                        .sourcePropertyName( targetPropertyName )
+                        .target( targetPropertyName, targetPropertyReadAccessor, targetPropertyWriteAccessor )
+                        .sourceReference( sourceRef )
+                        .existingVariableNames( existingVariableNames )
+                        .forgeMethodWithMappingReferences( mappingRefs )
+                        .options( method.getOptions().getBeanMapping() )
+                        .build();
+
+                unprocessedSourceParameters.remove( sourceRef.getParameter() );
+
+                if ( propertyMapping != null ) {
+                    propertyMappings.add( propertyMapping );
+                }
+                unprocessedDefinedTargets.remove( targetPropertyName );
+                unprocessedSourceProperties.remove( targetPropertyName );
             }
         }
 
