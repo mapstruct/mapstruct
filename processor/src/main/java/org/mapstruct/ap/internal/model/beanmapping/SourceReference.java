@@ -242,8 +242,8 @@ public class SourceReference extends AbstractReference {
                         Strings.join( method.getSourceParameters(), ", ", Parameter::getName )
                     );
                 }
-                else if (segments.length > 1) {
-                    parameter.setExplicitlyDefinedChildren(true);
+                else if ( segments.length > 1 ) {
+                    parameter.setExplicitlyDefinedChildren( true );
                 }
             }
             return parameter;
