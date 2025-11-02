@@ -1628,13 +1628,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
                 Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
-//                TODO run tests with condition without unprocessedConstructorProperties to check if it's necessary in condition
-                if ( unprocessedConstructorProperties.remove( targetPropertyName ) == null &&
-                    targetPropertyWriteAccessor == null &&
-                    sourceRef.getParameter().isExplicitlyDefinedChildren() ) {
-                    continue;
-                }
+                unprocessedConstructorProperties.remove( targetPropertyName );
                 if ( targetPropertyWriteAccessor == null ) {
+                    if ( sourceRef.getParameter().isExplicitlyDefinedChildren() ) {
+                        continue;
+                    }
                     // TODO improve error message
                     ctx.getMessager()
                         .printMessage(
