@@ -18,7 +18,6 @@ import org.mapstruct.ap.internal.util.Collections;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.date;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.localDateTime;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneId;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneOffset;
 
 /**
  * SimpleConversion for mapping {@link java.time.LocalDateTime} to
@@ -29,9 +28,9 @@ public class JavaLocalDateTimeToDateConversion extends SimpleConversion {
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
         return date( conversionContext )
-            + ".from( <SOURCE>.toInstant( "
-            + zoneOffset( conversionContext )
-            + ".UTC ) )";
+            + ".from( <SOURCE>.atZone( "
+            + zoneId( conversionContext )
+            + ".systemDefault() ).toInstant() )";
     }
 
     @Override
@@ -47,7 +46,7 @@ public class JavaLocalDateTimeToDateConversion extends SimpleConversion {
         return localDateTime( conversionContext )
             + ".ofInstant( <SOURCE>.toInstant(), "
             + zoneId( conversionContext )
-            + ".of( \"UTC\" ) )";
+            + ".systemDefault() )";
     }
 
     @Override
