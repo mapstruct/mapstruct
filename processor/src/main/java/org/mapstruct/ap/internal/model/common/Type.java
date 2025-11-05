@@ -132,7 +132,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
-    private List<Accessor> putters = null;
     private List<Accessor> alternativeTargetAccessors = null;
 
     private Type boundingBase = null;
@@ -818,41 +817,26 @@ public class Type extends ModelElement implements Comparable<Type> {
 
             // A target access is in general a setter method on the target object. However, in case of collections,
             // the current target accessor can also be a getter method.
-            // The following if block, checks if the target accessor should be overruled by an add method or putter.
+            // The following if block, checks if the target accessor should be overruled by an add method.
             if ( cmStrategy == CollectionMappingStrategyGem.SETTER_PREFERRED
                 || cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED
                 || cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ) {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;
-                Accessor putterMethod = null;
-
                 if ( candidate.getAccessorType() == AccessorType.SETTER
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     && cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED ) {
-                    // For collections, try to find an adder
                     adderMethod = getAdderForType( targetType, targetPropertyName );
-                    // For maps, try to find a putter
-                    if ( adderMethod == null ) {
-                        putterMethod = getPutterForType( targetType, targetPropertyName );
-                    }
                 }
                 else if ( candidate.getAccessorType() == AccessorType.GETTER ) {
-                    // the current accessor is a getter (no setter available). But still, an add/put method is according
+                    // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
                     adderMethod = getAdderForType( targetType, targetPropertyName );
-                    if ( adderMethod == null ) {
-                        putterMethod = getPutterForType( targetType, targetPropertyName );
-                    }
                 }
-
                 if ( adderMethod != null ) {
                     // an adder has been found (according strategy) so overrule current choice.
                     candidate = adderMethod;
-                }
-                else if ( putterMethod != null ) {
-                    // a putter has been found (according strategy) so overrule current choice.
-                    candidate = putterMethod;
                 }
 
             }
@@ -974,6 +958,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         else if ( collectionProperty.isStreamType() ) {
             candidates = getAccessorCandidates( collectionProperty, Stream.class );
         }
+        else if ( collectionProperty.isMapType() ) {
+            // For maps, look for putter methods (2 parameter adders)
+            candidates = getMapPutterCandidates( collectionProperty, pluralPropertyName );
+        }
         else {
             return null;
         }
@@ -1013,11 +1001,57 @@ public class Type extends ModelElement implements Comparable<Type> {
         List<Accessor> adderList = getAdders();
         List<Accessor> candidateList = new ArrayList<>();
         for ( Accessor adder : adderList ) {
-            TypeMirror adderParameterType = determineTargetType( adder ).getTypeMirror();
-            if ( typeUtils.isSameType( boxed( adderParameterType ), boxed( typeArg ) ) ) {
-                candidateList.add( adder );
+            ExecutableElement adderElement = (ExecutableElement) adder.getElement();
+            // Only consider single-parameter adders for collections
+            if ( adderElement.getParameters().size() == 1 ) {
+                TypeMirror adderParameterType = determineTargetType( adder ).getTypeMirror();
+                if ( typeUtils.isSameType( boxed( adderParameterType ), boxed( typeArg ) ) ) {
+                    candidateList.add( adder );
+                }
             }
         }
+        return candidateList;
+    }
+
+    /**
+     * Returns all putter candidates (2-parameter adders) for map properties.
+     * These are methods that take key and value parameters matching the map's type arguments.
+     *
+     * @param mapProperty the map property
+     * @param propertyName the property name
+     *
+     * @return putter candidates
+     */
+    private List<Accessor> getMapPutterCandidates(Type mapProperty, String propertyName) {
+        List<Type> typeArguments = mapProperty.determineTypeArguments( Map.class );
+        if ( typeArguments.size() != 2 ) {
+            return Collections.emptyList();
+        }
+
+        TypeMirror keyType = typeArguments.get( 0 ).getTypeBound().getTypeMirror();
+        TypeMirror valueType = typeArguments.get( 1 ).getTypeBound().getTypeMirror();
+
+        List<Accessor> adderList = getAdders();
+        List<Accessor> candidateList = new ArrayList<>();
+
+        for ( Accessor adder : adderList ) {
+            ExecutableElement adderElement = (ExecutableElement) adder.getElement();
+            // Only consider 2-parameter adders for maps (putters)
+            if ( adderElement.getParameters().size() == 2 ) {
+                ExecutableType adderType = (ExecutableType) typeUtils.asMemberOf(
+                    (DeclaredType) typeMirror,
+                    adderElement
+                );
+                TypeMirror firstParamType = adderType.getParameterTypes().get( 0 );
+                TypeMirror secondParamType = adderType.getParameterTypes().get( 1 );
+
+                if ( typeUtils.isSameType( boxed( firstParamType ), boxed( keyType ) )
+                    && typeUtils.isSameType( boxed( secondParamType ), boxed( valueType ) ) ) {
+                    candidateList.add( adder );
+                }
+            }
+        }
+
         return candidateList;
     }
 
@@ -1028,76 +1062,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         else {
             return possiblePrimitive;
         }
-    }
-
-    /**
-     * Tries to find a putter method in this type for a given map property.
-     *
-     * Matching occurs on:
-     * <ol>
-     * <li>The property must be a map type</li>
-     * <li>The putter method's two parameters must match the map's key and value types</li>
-     * <li>When there are multiple candidates, the property name is used to find the best match</li>
-     * </ol>
-     *
-     * @param mapProperty property type (assumed map) to find the putter method for
-     * @param propertyName the property name
-     *
-     * @return corresponding putter method when present
-     */
-    private Accessor getPutterForType(Type mapProperty, String propertyName) {
-        if ( !mapProperty.isMapType() ) {
-            return null;
-        }
-
-        List<Type> typeArguments = mapProperty.determineTypeArguments( Map.class );
-        if ( typeArguments.size() != 2 ) {
-            return null;
-        }
-
-        TypeMirror keyType = typeArguments.get( 0 ).getTypeBound().getTypeMirror();
-        TypeMirror valueType = typeArguments.get( 1 ).getTypeBound().getTypeMirror();
-
-        List<Accessor> putterList = getPutters();
-        List<Accessor> candidateList = new ArrayList<>();
-
-        for ( Accessor putter : putterList ) {
-            ExecutableElement putterElement = (ExecutableElement) putter.getElement();
-            if ( putterElement.getParameters().size() != 2 ) {
-                continue;
-            }
-
-            ExecutableType putterType = (ExecutableType) typeUtils.asMemberOf(
-                (DeclaredType) typeMirror,
-                putterElement
-            );
-            TypeMirror firstParamType = putterType.getParameterTypes().get( 0 );
-            TypeMirror secondParamType = putterType.getParameterTypes().get( 1 );
-
-            if ( typeUtils.isSameType( boxed( firstParamType ), boxed( keyType ) )
-                && typeUtils.isSameType( boxed( secondParamType ), boxed( valueType ) ) ) {
-                candidateList.add( putter );
-            }
-        }
-
-        if ( candidateList.isEmpty() ) {
-            return null;
-        }
-
-        if ( candidateList.size() == 1 ) {
-            return candidateList.get( 0 );
-        }
-
-        // If multiple candidates, try to match by property name
-        for ( Accessor candidate : candidateList ) {
-            String elementName = accessorNaming.getElementNameForPutter( candidate );
-            if ( elementName != null && elementName.equals( propertyName ) ) {
-                return candidate;
-            }
-        }
-
-        // If no exact match, return the first candidate
-        return candidateList.get( 0 );
     }
 
     /**
@@ -1118,25 +1082,13 @@ public class Type extends ModelElement implements Comparable<Type> {
      * targetAccessor. JAXB XJC tool generates such constructs. This method can be extended when new cases come along.
      * getAdders
      *
-     * @return an unmodifiable list of all adders
+     * @return an unmodifiable list of all adders (including map putters with 2 parameters)
      */
     private List<Accessor> getAdders() {
         if ( adders == null ) {
             adders = Collections.unmodifiableList( filters.adderMethodsIn( getAllMethods() ) );
         }
         return adders;
-    }
-
-    /**
-     * getPutters
-     *
-     * @return an unmodifiable list of all putters (for protobuf map fields)
-     */
-    private List<Accessor> getPutters() {
-        if ( putters == null ) {
-            putters = Collections.unmodifiableList( filters.putterMethodsIn( getAllMethods() ) );
-        }
-        return putters;
     }
 
     /**

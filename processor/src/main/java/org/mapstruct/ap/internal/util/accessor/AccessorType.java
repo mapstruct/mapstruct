@@ -11,8 +11,7 @@ public enum AccessorType {
     FIELD,
     GETTER,
     SETTER,
-    ADDER,
-    PUTTER;
+    ADDER;
 
     public boolean isFieldAssignment() {
         return this == FIELD || this == PARAMETER;

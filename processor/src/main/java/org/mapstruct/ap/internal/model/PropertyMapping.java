@@ -235,11 +235,11 @@ public class PropertyMapping extends ModelElement {
             ctx.getMessager().note( 2, Message.PROPERTYMAPPING_MAPPING_NOTE, rightHandSide, targetWriteAccessor );
 
             rightHandSide.setUseElementAsSourceTypeForMatching(
-                targetWriteAccessorType == AccessorType.ADDER || targetWriteAccessorType == AccessorType.PUTTER );
+                targetWriteAccessorType == AccessorType.ADDER );
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
-            if ( targetWriteAccessorType == AccessorType.ADDER || targetWriteAccessorType == AccessorType.PUTTER ) {
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
                 preferUpdateMethods = false;
             }
             else {
@@ -403,14 +403,7 @@ public class PropertyMapping extends ModelElement {
             if ( targetAccessorType == AccessorType.SETTER || targetAccessorType.isFieldAssignment() ) {
                 result = assignToPlainViaSetter( targetType, rightHandSide );
             }
-            else if ( targetAccessorType == AccessorType.ADDER ) {
-                result = assignToPlainViaAdder( rightHandSide );
-            }
-            else if ( targetAccessorType == AccessorType.PUTTER ) {
-                result = assignToPlainViaPutter( rightHandSide );
-            }
             else {
-                // Fallback to adder logic for unknown types
                 result = assignToPlainViaAdder( rightHandSide );
             }
             return result;
@@ -546,30 +539,13 @@ public class PropertyMapping extends ModelElement {
                 result = new StreamAdderWrapper(
                     result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
+            else if ( result.getSourceType().isMapType() ) {
+                // For maps, use PutterWrapper for putter methods (map entry iteration)
+                result = new PutterWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
+            }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
                 // TODO: what triggers this else branch? Should nvcs, nvpms be applied?
-                result = new SetterWrapper( result,
-                    method.getThrownTypes(),
-                    isFieldAssignment(),
-                    true,
-                    nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
-                );
-            }
-            return result;
-        }
-
-        private Assignment assignToPlainViaPutter( Assignment rightHandSide) {
-
-            Assignment result = rightHandSide;
-
-            String putterPropertyName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
-            if ( result.getSourceType().isMapType() ) {
-                result = new PutterWrapper( result, method.getThrownTypes(), isFieldAssignment(), putterPropertyName );
-            }
-            else {
-                // If source is not a map, wrap in a setter
                 result = new SetterWrapper( result,
                     method.getThrownTypes(),
                     isFieldAssignment(),
@@ -812,7 +788,7 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
             Type sourceType;
-            if ( targetWriteAccessorType == AccessorType.ADDER || targetWriteAccessorType == AccessorType.PUTTER ) {
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
                 sourceType = sourceRHS.getSourceTypeForMatching();
             }
             else {
@@ -842,7 +818,7 @@ public class PropertyMapping extends ModelElement {
             // because we are forging a Mapping for a method with multiple source parameters.
             // If the target type is enum, then we can't create an update method
             if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod )
-                && targetWriteAccessorType != AccessorType.ADDER && targetWriteAccessorType != AccessorType.PUTTER) {
+                && targetWriteAccessorType != AccessorType.ADDER) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }

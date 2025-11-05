@@ -87,9 +87,9 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
                 return MethodType.GETTER;
             }
 
-            // Handle putXxx(K, V) -> PUTTER for map entries
+            // Handle putXxx(K, V) -> ADDER for map entries (treated same as collection adders)
             if (isPutterMethod(method)) {
-                return MethodType.PUTTER;
+                return MethodType.ADDER;
             }
 
             // Handle putAllXxx(Map) -> SETTER for bulk map operations

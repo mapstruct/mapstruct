@@ -24,17 +24,12 @@ public enum MethodType {
 
     /**
      * An adder method, e.g. {@code public void addItem(String item)}.
+     * Also includes map putter methods, e.g. {@code public void putAttribute(String key, String value)}.
      */
     ADDER,
 
     /**
-     * A putter method for map entries, e.g. {@code public void putAttribute(String key, String value)}.
-     * This is commonly used in Protocol Buffers generated code for map fields.
-     */
-    PUTTER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter, adder, putter nor a presence checker method.
+     * Any method which is neither a JavaBeans getter, setter, adder nor a presence checker method.
      */
     OTHER,
 
