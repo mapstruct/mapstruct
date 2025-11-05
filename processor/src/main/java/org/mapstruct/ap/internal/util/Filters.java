@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.accessor.AccessorType.ADDER;
+import static org.mapstruct.ap.internal.util.accessor.AccessorType.PUTTER;
 import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
 
 /**
@@ -140,6 +141,13 @@ public class Filters {
         return elements.stream()
             .filter( accessorNaming::isAdderMethod )
             .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .collect( Collectors.toCollection( LinkedList::new ) );
+    }
+
+    public List<Accessor> putterMethodsIn(List<ExecutableElement> elements) {
+        return elements.stream()
+            .filter( accessorNaming::isPutterMethod )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), PUTTER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }

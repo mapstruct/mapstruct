@@ -34,6 +34,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.IntersectionType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
@@ -131,6 +132,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
+    private List<Accessor> putters = null;
     private List<Accessor> alternativeTargetAccessors = null;
 
     private Type boundingBase = null;
@@ -816,26 +818,41 @@ public class Type extends ModelElement implements Comparable<Type> {
 
             // A target access is in general a setter method on the target object. However, in case of collections,
             // the current target accessor can also be a getter method.
-            // The following if block, checks if the target accessor should be overruled by an add method.
+            // The following if block, checks if the target accessor should be overruled by an add method or putter.
             if ( cmStrategy == CollectionMappingStrategyGem.SETTER_PREFERRED
                 || cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED
                 || cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ) {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;
+                Accessor putterMethod = null;
+
                 if ( candidate.getAccessorType() == AccessorType.SETTER
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     && cmStrategy == CollectionMappingStrategyGem.ADDER_PREFERRED ) {
+                    // For collections, try to find an adder
                     adderMethod = getAdderForType( targetType, targetPropertyName );
+                    // For maps, try to find a putter
+                    if ( adderMethod == null ) {
+                        putterMethod = getPutterForType( targetType, targetPropertyName );
+                    }
                 }
                 else if ( candidate.getAccessorType() == AccessorType.GETTER ) {
-                    // the current accessor is a getter (no setter available). But still, an add method is according
+                    // the current accessor is a getter (no setter available). But still, an add/put method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
                     adderMethod = getAdderForType( targetType, targetPropertyName );
+                    if ( adderMethod == null ) {
+                        putterMethod = getPutterForType( targetType, targetPropertyName );
+                    }
                 }
+
                 if ( adderMethod != null ) {
                     // an adder has been found (according strategy) so overrule current choice.
                     candidate = adderMethod;
+                }
+                else if ( putterMethod != null ) {
+                    // a putter has been found (according strategy) so overrule current choice.
+                    candidate = putterMethod;
                 }
 
             }
@@ -1014,6 +1031,76 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * Tries to find a putter method in this type for a given map property.
+     *
+     * Matching occurs on:
+     * <ol>
+     * <li>The property must be a map type</li>
+     * <li>The putter method's two parameters must match the map's key and value types</li>
+     * <li>When there are multiple candidates, the property name is used to find the best match</li>
+     * </ol>
+     *
+     * @param mapProperty property type (assumed map) to find the putter method for
+     * @param propertyName the property name
+     *
+     * @return corresponding putter method when present
+     */
+    private Accessor getPutterForType(Type mapProperty, String propertyName) {
+        if ( !mapProperty.isMapType() ) {
+            return null;
+        }
+
+        List<Type> typeArguments = mapProperty.determineTypeArguments( Map.class );
+        if ( typeArguments.size() != 2 ) {
+            return null;
+        }
+
+        TypeMirror keyType = typeArguments.get( 0 ).getTypeBound().getTypeMirror();
+        TypeMirror valueType = typeArguments.get( 1 ).getTypeBound().getTypeMirror();
+
+        List<Accessor> putterList = getPutters();
+        List<Accessor> candidateList = new ArrayList<>();
+
+        for ( Accessor putter : putterList ) {
+            ExecutableElement putterElement = (ExecutableElement) putter.getElement();
+            if ( putterElement.getParameters().size() != 2 ) {
+                continue;
+            }
+
+            ExecutableType putterType = (ExecutableType) typeUtils.asMemberOf(
+                (DeclaredType) typeMirror,
+                putterElement
+            );
+            TypeMirror firstParamType = putterType.getParameterTypes().get( 0 );
+            TypeMirror secondParamType = putterType.getParameterTypes().get( 1 );
+
+            if ( typeUtils.isSameType( boxed( firstParamType ), boxed( keyType ) )
+                && typeUtils.isSameType( boxed( secondParamType ), boxed( valueType ) ) ) {
+                candidateList.add( putter );
+            }
+        }
+
+        if ( candidateList.isEmpty() ) {
+            return null;
+        }
+
+        if ( candidateList.size() == 1 ) {
+            return candidateList.get( 0 );
+        }
+
+        // If multiple candidates, try to match by property name
+        for ( Accessor candidate : candidateList ) {
+            String elementName = accessorNaming.getElementNameForPutter( candidate );
+            if ( elementName != null && elementName.equals( propertyName ) ) {
+                return candidate;
+            }
+        }
+
+        // If no exact match, return the first candidate
+        return candidateList.get( 0 );
+    }
+
+    /**
      * getSetters
      *
      * @return an unmodifiable list of all setters
@@ -1038,6 +1125,18 @@ public class Type extends ModelElement implements Comparable<Type> {
             adders = Collections.unmodifiableList( filters.adderMethodsIn( getAllMethods() ) );
         }
         return adders;
+    }
+
+    /**
+     * getPutters
+     *
+     * @return an unmodifiable list of all putters (for protobuf map fields)
+     */
+    private List<Accessor> getPutters() {
+        if ( putters == null ) {
+            putters = Collections.unmodifiableList( filters.putterMethodsIn( getAllMethods() ) );
+        }
+        return putters;
     }
 
     /**

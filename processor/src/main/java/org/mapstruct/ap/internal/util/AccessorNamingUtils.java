@@ -63,6 +63,13 @@ public final class AccessorNamingUtils {
             && accessorNamingStrategy.getMethodType( executable ) == MethodType.ADDER;
     }
 
+    public boolean isPutterMethod(ExecutableElement executable) {
+        return executable != null
+            && isPublicNotStatic( executable )
+            && executable.getParameters().size() == 2
+            && accessorNamingStrategy.getMethodType( executable ) == MethodType.PUTTER;
+    }
+
     public String getPropertyName(ExecutableElement executable) {
         return accessorNamingStrategy.getPropertyName( executable );
     }
@@ -76,6 +83,21 @@ public final class AccessorNamingUtils {
     public String getElementNameForAdder(Accessor adderMethod) {
         if ( adderMethod.getAccessorType() == AccessorType.ADDER ) {
             return accessorNamingStrategy.getElementName( (ExecutableElement) adderMethod.getElement() );
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * @param putterMethod the putter method
+     *
+     * @return the 'element name' to which a putter method applies. If e.g. a putter method is named
+     * {@code putAttribute(String key, String value)}, the element name would be 'Attribute'.
+     */
+    public String getElementNameForPutter(Accessor putterMethod) {
+        if ( putterMethod.getAccessorType() == AccessorType.PUTTER ) {
+            return accessorNamingStrategy.getElementName( (ExecutableElement) putterMethod.getElement() );
         }
         else {
             return null;
