@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package itest.protobuf;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/timeofday.proto";
+import "google/type/date.proto";
+import "google/type/dayofweek.proto";
+import "google/type/month.proto";
+
+option java_package = "org.mapstruct.itest.protobuf";
+option java_multiple_files = true;
+option java_outer_classname = "EverythingProto3Proto";
+
+message EverythingProto3 {
+  int32 int32 = 1;
+  int64 int64 = 3;
+  float float = 11;
+  double double = 12;
+  bool bool = 13;
+  string string = 14;
+  bytes bytes = 15;
+  repeated int32 repeated_int32 = 16;
+  repeated int64 repeated_int64 = 18;
+  repeated float repeated_float = 26;
+  repeated double repeated_double = 27;
+  repeated bool repeated_bool = 28;
+  repeated string repeated_string = 29;
+  repeated bytes repeated_bytes = 30;
+
+  google.protobuf.Int32Value int32_value = 20;
+  google.protobuf.Int64Value int64_value = 21;
+  google.protobuf.FloatValue float_value = 22;
+  google.protobuf.DoubleValue double_value = 23;
+  google.protobuf.BoolValue bool_value = 24;
+  google.protobuf.StringValue string_value = 25;
+  google.protobuf.BytesValue bytes_value = 31;
+
+  map<int32, string> map_int32_string = 32;
+  map<int64, string> map_int64_string = 34;
+  map<bool, string> map_bool_string = 44;
+  map<string, string> map_string_string = 45;
+
+  map<string, bytes> map_string_bytes = 46;
+
+  Message message = 50;
+  repeated Message repeated_message = 51;
+  map<string, Message> map_string_message = 52;
+
+  Enum enum = 60;
+  optional Enum optional_enum = 62;
+  repeated Enum repeated_enum = 61;
+  map<string, Enum> map_string_enum = 63;
+
+  // wellknown
+  google.protobuf.Timestamp timestamp = 65;
+  google.protobuf.Duration duration = 66;
+
+  // google/type package
+  google.type.TimeOfDay time_of_day = 70;
+  google.type.Date date = 71;
+  google.type.DayOfWeek day_of_week = 73;
+  google.type.Month month = 74;
+
+  // oneof field
+  oneof oneof {
+    int32 oneof_int32 = 80;
+    string oneof_string = 81;
+    Enum oneof_enum = 82;
+    Message oneof_message = 83;
+  }
+
+  message Message {
+    int64 id = 1;
+    string name = 2;
+  }
+
+  enum Enum {
+    ENUM_UNSPECIFIED = 0;
+    ENUM_VALUE_1 = 1;
+    ENUM_VALUE_2 = 2;
+  }
+}

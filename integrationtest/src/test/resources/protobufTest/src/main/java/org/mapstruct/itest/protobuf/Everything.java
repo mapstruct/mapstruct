@@ -20,7 +20,6 @@ import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.StringValue;
-import org.mapstruct.itest.protobuf.EverythingModel;
 
 public class Everything {
     // Primitive types
@@ -58,12 +57,12 @@ public class Everything {
     private Map<String, BytesValue> mapStringBytes;
 
     // message
-    private EverythingModel.Message message;
+    private Message message;
     private List<Message> repeatedMessage;
     private Map<StringValue, Message> mapStringMessage;
 
     // enum
-    private EverythingModel.Enum enum_;
+    private Integer enum_;
     private int optionalEnum;
     private List<String> repeatedEnum;
     private Map<String, Integer> mapStringEnum;
@@ -188,7 +187,7 @@ public class Everything {
         return this.mapStringBytes;
     }
 
-    public EverythingModel.Message getMessage() {
+    public Message getMessage() {
         return this.message;
     }
 
@@ -200,7 +199,7 @@ public class Everything {
         return this.mapStringMessage;
     }
 
-    public EverythingModel.Enum getEnum_() {
+    public Integer getEnum_() {
         return this.enum_;
     }
 
@@ -344,7 +343,7 @@ public class Everything {
         this.mapStringBytes = mapStringBytes;
     }
 
-    public void setMessage(EverythingModel.Message message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 
@@ -356,7 +355,7 @@ public class Everything {
         this.mapStringMessage = mapStringMessage;
     }
 
-    public void setEnum_(EverythingModel.Enum enum_) {
+    public void setEnum_(Integer enum_) {
         this.enum_ = enum_;
     }
 

@@ -129,10 +129,10 @@ public class ProtobufMapperTest {
         original.setMapStringBytes( mapStringBytes );
 
         // Message fields
-        original.setMessage( EverythingModel.Message.newBuilder()
-            .setId( 999L )
-            .setName( "test message" )
-            .build() );
+        Everything.Message message = new Everything.Message();
+        message.setId( 999L );
+        message.setName( "test message" );
+        original.setMessage( message );
 
         Everything.Message msg1 = new Everything.Message();
         msg1.setId( 1L );
@@ -150,13 +150,13 @@ public class ProtobufMapperTest {
         original.setMapStringMessage( mapStringMessage );
 
         // Enum fields
-        original.setEnum_( EverythingModel.Enum.ENUM_VALUE_1 );
-        original.setOptionalEnum( EverythingModel.Enum.ENUM_VALUE_2.getNumber() );
+        original.setEnum_( 1 );
+        original.setOptionalEnum( 2 );
         original.setRepeatedEnum( Arrays.asList( "ENUM_VALUE_1", "ENUM_VALUE_2" ) );
 
         Map<String, Integer> mapStringEnum = new HashMap<>();
-        mapStringEnum.put( "enum1", EverythingModel.Enum.ENUM_VALUE_1.getNumber() );
-        mapStringEnum.put( "enum2", EverythingModel.Enum.ENUM_VALUE_2.getNumber() );
+        mapStringEnum.put( "enum1", 1 );
+        mapStringEnum.put( "enum2", 2 );
         original.setMapStringEnum( mapStringEnum );
 
         // Well-known types
@@ -169,10 +169,22 @@ public class ProtobufMapperTest {
         original.setDayOfWeek( DayOfWeek.MONDAY );
         original.setMonth( Month.JANUARY );
 
-        // Convert to Protobuf and back, verify equality
-        EverythingModel model = EverythingMapper.INSTANCE.entityToModel( original );
-        Everything result = EverythingMapper.INSTANCE.modelToEntity( model );
+        // Oneof
+        original.setOneofInt32( 12345 );
 
-        assertThat( result ).usingRecursiveComparison().isEqualTo( original );
+        // Convert
+        EverythingProto2 proto2Message = EverythingMapper.INSTANCE.javaBeanToProto2( original );
+        Everything proto2Result = EverythingMapper.INSTANCE.proto2ToJavaBean( proto2Message );
+
+        EverythingProto3 proto3Message = EverythingMapper.INSTANCE.javaBeanToProto3( original );
+        Everything proto3Result = EverythingMapper.INSTANCE.proto3ToJavaBean( proto3Message );
+
+        EverythingEdition2023 edition2023Message = EverythingMapper.INSTANCE.javaBeanToEdition2023( original );
+        Everything edition2023Result = EverythingMapper.INSTANCE.edition2023ToJavaBean( edition2023Message );
+
+        // Use AssertJ recursive comparison to verify equality
+        assertThat( proto3Result ).usingRecursiveComparison().isEqualTo( original );
+        assertThat( proto2Result ).usingRecursiveComparison().isEqualTo( original );
+        assertThat( edition2023Result ).usingRecursiveComparison().isEqualTo( original );
     }
 }
