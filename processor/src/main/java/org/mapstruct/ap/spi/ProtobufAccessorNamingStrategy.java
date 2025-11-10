@@ -6,6 +6,7 @@
 package org.mapstruct.ap.spi;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -188,7 +189,7 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             MESSAGE_LITE_BUILDER,
         };
 
-        Map<String, Set<MethodSignature>> methodsMap = new java.util.HashMap<>();
+        Map<String, Set<MethodSignature>> methodsMap = new HashMap<>();
         for ( String className : internalClasses ) {
             TypeElement typeElement = elementUtils.getTypeElement( className );
             if ( typeElement != null ) {
@@ -331,6 +332,14 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
                         && isMapType( m.getReturnType() )
                 );
             }
+        ) );
+
+        // oneof field generates extra 'getXxxCase()'
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).endsWith( "Case" )
+                && isEnumType( method.getReturnType() )
+                && !isProtobufEnumType( method.getReturnType() ),
+            (method, methods) -> true
         ) );
 
         return rules;
@@ -483,6 +492,14 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
 
         TypeMirror protobufEnumType = protobufEnumElement.asType();
         return typeUtils.isSubtype( t, protobufEnumType );
+    }
+
+    private boolean isEnumType(TypeMirror t) {
+        if ( t.getKind() != TypeKind.DECLARED ) {
+            return false;
+        }
+        Element element = ( (DeclaredType) t ).asElement();
+        return element.getKind() == ElementKind.ENUM;
     }
 
     private boolean isGetList(ExecutableElement element) {

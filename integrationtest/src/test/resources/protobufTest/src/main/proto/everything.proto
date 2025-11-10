@@ -69,6 +69,14 @@ message EverythingModel {
   google.type.DayOfWeek day_of_week = 73;
   google.type.Month month = 74;
 
+  // oneof field
+  oneof oneof {
+    int32 oneof_int32 = 80;
+    string oneof_string = 81;
+    Enum oneof_enum = 82;
+    Message oneof_message = 83;
+  }
+
   message Message {
     int64 id = 1;
     string name = 2;

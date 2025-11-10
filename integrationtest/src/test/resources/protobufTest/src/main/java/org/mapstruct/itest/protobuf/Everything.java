@@ -78,6 +78,12 @@ public class Everything {
     private DayOfWeek dayOfWeek;
     private Month month;
 
+    // oneof
+    private int oneofInt32;
+    private String oneofString;
+    private Integer oneofEnum;
+    private Message oneofMessage;
+
     public Integer getInt32() {
         return this.int32;
     }
@@ -388,6 +394,38 @@ public class Everything {
 
     public void setMonth(Month month) {
         this.month = month;
+    }
+
+    public int getOneofInt32() {
+        return oneofInt32;
+    }
+
+    public void setOneofInt32(int oneofInt32) {
+        this.oneofInt32 = oneofInt32;
+    }
+
+    public String getOneofString() {
+        return oneofString;
+    }
+
+    public void setOneofString(String oneofString) {
+        this.oneofString = oneofString;
+    }
+
+    public Integer getOneofEnum() {
+        return oneofEnum;
+    }
+
+    public void setOneofEnum(Integer oneofEnum) {
+        this.oneofEnum = oneofEnum;
+    }
+
+    public Message getOneofMessage() {
+        return oneofMessage;
+    }
+
+    public void setOneofMessage(Message oneofMessage) {
+        this.oneofMessage = oneofMessage;
     }
 
     public static class Message {
