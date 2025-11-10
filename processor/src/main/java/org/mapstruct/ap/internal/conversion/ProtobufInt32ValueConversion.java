@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.Int32Value} and {@link Integer}.
+ * Conversion between {@code com.google.protobuf.Int32Value} and {@link Integer}.
  *
  * @author Freeman
  */

@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.StringValue} and {@link String}.
+ * Conversion between {@code com.google.protobuf.StringValue} and {@link String}.
  *
  * @author Freeman
  */

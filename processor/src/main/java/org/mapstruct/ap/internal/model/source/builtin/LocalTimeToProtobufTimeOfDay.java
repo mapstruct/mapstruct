@@ -16,7 +16,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link LocalTime} to {@link com.google.type.TimeOfDay}.
+ * Converts {@link LocalTime} to {@code com.google.type.TimeOfDay}.
  *
  * @author Freeman
  */

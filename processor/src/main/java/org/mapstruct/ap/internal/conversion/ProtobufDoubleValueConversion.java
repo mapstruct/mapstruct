@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.DoubleValue} and {@link Double}.
+ * Conversion between {@code com.google.protobuf.DoubleValue} and {@link Double}.
  *
  * @author Freeman
  */

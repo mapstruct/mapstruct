@@ -16,7 +16,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link Duration} to {@link com.google.protobuf.Duration}.
+ * Converts {@link Duration} to {@code com.google.protobuf.Duration}.
  *
  * @author Freeman
  */

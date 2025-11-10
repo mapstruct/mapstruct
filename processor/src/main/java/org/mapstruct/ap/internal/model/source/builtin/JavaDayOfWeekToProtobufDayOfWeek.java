@@ -17,7 +17,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link DayOfWeek} to {@link com.google.type.DayOfWeek}.
+ * Converts {@link DayOfWeek} to {@code com.google.type.DayOfWeek}.
  *
  * @author Freeman
  */

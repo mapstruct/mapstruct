@@ -17,7 +17,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link Month} to {@link com.google.type.Month}.
+ * Converts {@link Month} to {@code com.google.type.Month}.
  *
  * @author Freeman
  */

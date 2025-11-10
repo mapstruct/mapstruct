@@ -14,7 +14,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Conversion between {@link com.google.protobuf.ProtocolMessageEnum} and {@link Integer} types.
+ * Conversion between {@code com.google.protobuf.ProtocolMessageEnum} and {@link Integer} types.
  * <p>
  * Protobuf enums have {@code getNumber()} method to convert to int and static {@code forNumber(int)}
  * method to convert from int.

@@ -16,7 +16,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link Instant} to {@link com.google.protobuf.Timestamp}.
+ * Converts {@link Instant} to {@code com.google.protobuf.Timestamp}.
  *
  * @author Freeman
  */

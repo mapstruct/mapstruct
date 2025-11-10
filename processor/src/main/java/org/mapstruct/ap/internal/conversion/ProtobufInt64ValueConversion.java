@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.Int64Value} and {@link Long}.
+ * Conversion between {@code com.google.protobuf.Int64Value} and {@link Long}.
  *
  * @author Freeman
  */

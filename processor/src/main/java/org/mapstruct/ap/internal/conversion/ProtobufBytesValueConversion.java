@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.BytesValue} and {@link com.google.protobuf.ByteString}.
+ * Conversion between {@code com.google.protobuf.BytesValue} and {@code com.google.protobuf.ByteString}.
  *
  * @author Freeman
  */

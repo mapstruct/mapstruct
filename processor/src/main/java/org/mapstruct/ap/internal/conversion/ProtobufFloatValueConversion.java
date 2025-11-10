@@ -13,7 +13,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 /**
- * Conversion between {@link com.google.protobuf.FloatValue} and {@link Float}.
+ * Conversion between {@code com.google.protobuf.FloatValue} and {@link Float}.
  *
  * @author Freeman
  */

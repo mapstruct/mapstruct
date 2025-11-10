@@ -16,7 +16,7 @@ import org.mapstruct.ap.internal.util.ProtobufConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
- * Converts {@link LocalDate} to {@link com.google.type.Date}.
+ * Converts {@link LocalDate} to {@code com.google.type.Date}.
  *
  * @author Freeman
  */
