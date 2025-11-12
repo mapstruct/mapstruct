@@ -93,8 +93,7 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         return hasPrefixWithUpperCaseNext( method, "get" )
             && method.getParameters().isEmpty()
             && !isInternalMethod( method )
-            && !isDeprecated( method )
-            && !isSpecialGetMethod( method );
+            && !isSpecialGetterMethod( method );
     }
 
     @Override
@@ -125,7 +124,7 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         return hasPrefixWithUpperCaseNext( method, "set" )
             && method.getParameters().size() == 1
             && !isInternalMethod( method )
-            && !isSpecialSetMethod( method );
+            && !isSpecialSetterMethod( method );
     }
 
     @Override
@@ -159,12 +158,12 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         String methodName = getterOrSetterMethod.getSimpleName().toString();
 
         // 'get...Map'
-        if ( isGetMap( getterOrSetterMethod ) ) {
+        if ( isMapGetter( getterOrSetterMethod ) ) {
             return IntrospectorUtils.decapitalize( methodName.substring( 3, methodName.length() - 3 ) );
         }
 
         // 'get...List'
-        if ( isGetList( getterOrSetterMethod ) ) {
+        if ( isRepeatedGetter( getterOrSetterMethod ) ) {
             return IntrospectorUtils.decapitalize( methodName.substring( 3, methodName.length() - 4 ) );
         }
 
@@ -203,6 +202,17 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
 
     private List<SpecialMethodRule> getSpecialGetterRules() {
         List<SpecialMethodRule> rules = new ArrayList<>();
+        rules.addAll( stringGetterSpecialMethodRules() );
+        rules.addAll( messageGetterGetterMethodRules() );
+        rules.addAll( enumGetterSpecialMethodRules() );
+        rules.addAll( repeatedGetterSpecialMethodRules() );
+        rules.addAll( mapGetterSpecialMethodRules() );
+        rules.addAll( oneofGetterSpecialMethodRules() );
+        return rules;
+    }
+
+    private List<SpecialMethodRule> stringGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
 
         // string field generates extra getXxxBytes() method
         rules.add( new SpecialMethodRule(
@@ -217,29 +227,11 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
-        // repeated and map field generates extra getXxxCount() method
-        rules.add( new SpecialMethodRule(
-            method -> getMethodName( method ).endsWith( "Count" ),
-            (method, methods) -> {
-                String methodName = getMethodName( method );
-                String withoutSuffix = methodName.substring( 0, methodName.length() - "Count".length() );
-                // map field generates getXxxMap() getter (getXxx() is deprecated)
-                boolean hasMapGetter = methods.stream()
-                    .anyMatch( m -> ( getMethodName( m ).equals( withoutSuffix + "Map" ) ||
-                        getMethodName( m ).equals( withoutSuffix ) )
-                        && isMapType( m.getReturnType() )
-                    );
-                if ( hasMapGetter ) {
-                    return true;
-                }
-                // repeated field generates getXxxList() getter
-                return methods.stream()
-                    .anyMatch( m ->
-                        getMethodName( m ).equals( withoutSuffix + "List" )
-                            && isListType( m.getReturnType() )
-                    );
-            }
-        ) );
+        return rules;
+    }
+
+    private List<SpecialMethodRule> messageGetterGetterMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
 
         // message field generates extra getXxxBuilder() method
         rules.add( new SpecialMethodRule(
@@ -293,6 +285,12 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
+        return rules;
+    }
+
+    private List<SpecialMethodRule> enumGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
         // enum field generates extra 'int getXxxValue()' method
         rules.add( new SpecialMethodRule(
             method -> getMethodName( method ).endsWith( "Value" ),
@@ -334,6 +332,74 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
+        return rules;
+    }
+
+    private List<SpecialMethodRule> repeatedGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
+        // repeated field generates 'getXxxCount()' method
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).endsWith( "Count" ),
+            (method, methods) -> {
+                String methodName = getMethodName( method );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "Count".length() );
+                return methods.stream().anyMatch( m ->
+                    getMethodName( m ).equals( withoutSuffix + "List" )
+                        && isListType( m.getReturnType() )
+                );
+            }
+        ) );
+
+        return rules;
+    }
+
+    private List<SpecialMethodRule> mapGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
+        // map field generates 'getXxxCount()' method
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).endsWith( "Count" ),
+            (method, methods) -> {
+                String methodName = getMethodName( method );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "Count".length() );
+                return methods.stream().anyMatch( m ->
+                    getMethodName( m ).equals( withoutSuffix + "Map" )
+                        && isMapType( m.getReturnType() )
+                );
+            }
+        ) );
+
+        // map field generates deprecated 'getXxx()' and 'getMutableXxx()' methods
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).startsWith( "get" )
+                && !getMethodName( method ).endsWith( "Map" )
+                && isMapType( method.getReturnType() ),
+            (method, methods) -> {
+                String methodName = getMethodName( method );
+                if ( methodName.startsWith( "getMutable" ) ) {
+                    String withoutPrefix = methodName.substring( "getMutable".length() );
+                    return methods.stream().anyMatch( m ->
+                        getMethodName( m ).equals( "get" + withoutPrefix + "Map" )
+                            && isMapType( m.getReturnType() )
+                    );
+                }
+                else {
+                    String withoutPrefix = methodName.substring( "get".length() );
+                    return methods.stream().anyMatch( m ->
+                        getMethodName( m ).equals( "get" + withoutPrefix + "Map" )
+                            && isMapType( m.getReturnType() )
+                    );
+                }
+            }
+        ) );
+
+        return rules;
+    }
+
+    private List<SpecialMethodRule> oneofGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
         // oneof field generates extra 'getXxxCase()'
         rules.add( new SpecialMethodRule(
             method -> getMethodName( method ).endsWith( "Case" )
@@ -346,6 +412,14 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
     }
 
     private List<SpecialMethodRule> getSpecialSetterRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+        rules.addAll( stringSetterSpecialMethodRules() );
+        rules.addAll( enumSetterSpecialMethodRules() );
+        rules.addAll( messageSetterSpecialMethodRules() );
+        return rules;
+    }
+
+    private List<SpecialMethodRule> stringSetterSpecialMethodRules() {
         List<SpecialMethodRule> rules = new ArrayList<>();
 
         // string field generates extra setXxxBytes() method
@@ -362,7 +436,13 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
-        // enum field generates extra 'setXxxValue(int value)' method
+        return rules;
+    }
+
+    private List<SpecialMethodRule> enumSetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
+        // enum field generates extra 'setXxxValue(int)' method
         rules.add( new SpecialMethodRule(
             method -> hasPrefixWithUpperCaseNext( method, "set" )
                 && getMethodName( method ).endsWith( "Value" )
@@ -410,6 +490,12 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
+        return rules;
+    }
+
+    private List<SpecialMethodRule> messageSetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
         // message field generates extra setXxx(Message.Builder builder) method
         rules.add( new SpecialMethodRule(
             method -> hasPrefixWithUpperCaseNext( method, "set" )
@@ -440,7 +526,7 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         return isFirstParameterTargetClass( method, targetClass.getCanonicalName() );
     }
 
-    private boolean isSpecialGetMethod(ExecutableElement method) {
+    private boolean isSpecialGetterMethod(ExecutableElement method) {
         List<ExecutableElement> allMethods = getPublicNonStaticMethods( method.getEnclosingElement() );
         for ( SpecialMethodRule rule : specialGetterRules ) {
             if ( rule.matches( method, allMethods ) ) {
@@ -450,7 +536,7 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         return false;
     }
 
-    private boolean isSpecialSetMethod(ExecutableElement method) {
+    private boolean isSpecialSetterMethod(ExecutableElement method) {
         List<ExecutableElement> allMethods = getPublicNonStaticMethods( method.getEnclosingElement() );
         for ( SpecialMethodRule rule : specialSetterRules ) {
             if ( rule.matches( method, allMethods ) ) {
@@ -463,13 +549,13 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
     private boolean isAddAllMethod(ExecutableElement method) {
         return hasPrefixWithUpperCaseNext( method, "addAll" )
             && isFirstParameterTargetClass( method, Iterable.class )
-            && !isSpecialSetMethod( method );
+            && !isSpecialSetterMethod( method );
     }
 
     private boolean isPutAllMethod(ExecutableElement method) {
         return hasPrefixWithUpperCaseNext( method, "putAll" )
             && isFirstParameterTargetClass( method, Map.class )
-            && !isSpecialSetMethod( method );
+            && !isSpecialSetterMethod( method );
     }
 
     private static boolean isTargetClass(TypeMirror paramType, Class<?> targetType) {
@@ -502,28 +588,35 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         return element.getKind() == ElementKind.ENUM;
     }
 
-    private boolean isGetList(ExecutableElement element) {
+    private boolean isRepeatedGetter(ExecutableElement element) {
         // repeated fields getter: getXxxList()
         return hasPrefixWithUpperCaseNext( element, "get" )
+            && getMethodName( element ).endsWith( "List" )
             && isListType( element.getReturnType() );
     }
 
-    private boolean isGetMap(ExecutableElement element) {
+    private boolean isMapGetter(ExecutableElement element) {
         // There are many getter methods for map in protobuf generated code, only one is the real getter:
         // - getXxx deprecated
         // - getMutableXxx deprecated
         // - getXxxMap the real getter
-        return hasPrefixWithUpperCaseNext( element, "get" )
-            && isMapType( element.getReturnType() )
-            && !isDeprecated( element );
+        if ( hasPrefixWithUpperCaseNext( element, "get" )
+            && getMethodName( element ).endsWith( "Map" )
+            && isMapType( element.getReturnType() ) ) {
+            List<ExecutableElement> allMethods = getPublicNonStaticMethods( element.getEnclosingElement() );
+            for ( SpecialMethodRule rule : mapGetterSpecialMethodRules() ) {
+                if ( rule.matches( element, allMethods ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     private static String getMethodName(ExecutableElement element) {
         return element.getSimpleName().toString();
-    }
-
-    private static boolean isDeprecated(ExecutableElement element) {
-        return element.getAnnotation( Deprecated.class ) != null;
     }
 
     private static boolean isListType(TypeMirror t) {
@@ -687,6 +780,11 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         }
 
         public boolean matches(ExecutableElement method, List<ExecutableElement> allMethods) {
+            return quickCheck.test( method ) && fullCheck.test( method, allMethods );
+        }
+
+        public boolean matches(ExecutableElement method) {
+            List<ExecutableElement> allMethods = getPublicNonStaticMethods( method.getEnclosingElement() );
             return quickCheck.test( method ) && fullCheck.test( method, allMethods );
         }
     }
