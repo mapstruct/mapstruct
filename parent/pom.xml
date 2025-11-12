@@ -458,7 +458,7 @@
                     <configuration>
                         <quiet>true</quiet>
                         <excludePackageNames>org.mapstruct.ap.internal.gem;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
-                        <source>8</source>
+                        <source>17</source>
                     </configuration>
                 </plugin>
                 <plugin>
