@@ -259,32 +259,6 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
-        // repeated message field generates extra getXxxBuilderList() method
-        rules.add( new SpecialMethodRule(
-            method -> getMethodName( method ).endsWith( "BuilderList" ),
-            (method, methods) -> {
-                String methodName = getMethodName( method );
-                String withoutSuffix = methodName.substring( 0, methodName.length() - "BuilderList".length() );
-                return methods.stream().anyMatch( m ->
-                    getMethodName( m ).equals( withoutSuffix + "List" )
-                        && isListType( m.getReturnType() )
-                );
-            }
-        ) );
-
-        // repeated message field generates extra getXxxOrBuilderList() method
-        rules.add( new SpecialMethodRule(
-            method -> getMethodName( method ).endsWith( "OrBuilderList" ),
-            (method, methods) -> {
-                String methodName = getMethodName( method );
-                String withoutSuffix = methodName.substring( 0, methodName.length() - "OrBuilderList".length() );
-                return methods.stream().anyMatch( m ->
-                    getMethodName( m ).equals( withoutSuffix + "List" )
-                        && isListType( m.getReturnType() )
-                );
-            }
-        ) );
-
         return rules;
     }
 
@@ -304,6 +278,25 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
+        return rules;
+    }
+
+    private List<SpecialMethodRule> repeatedGetterSpecialMethodRules() {
+        List<SpecialMethodRule> rules = new ArrayList<>();
+
+        // repeated field generates 'getXxxCount()' method
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).endsWith( "Count" ),
+            (method, methods) -> {
+                String methodName = getMethodName( method );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "Count".length() );
+                return methods.stream().anyMatch( m ->
+                    getMethodName( m ).equals( withoutSuffix + "List" )
+                        && isListType( m.getReturnType() )
+                );
+            }
+        ) );
+
         // repeated enum field generates extra 'List<Integer> getXxxValueList()' method
         rules.add( new SpecialMethodRule(
             method -> getMethodName( method ).endsWith( "ValueList" )
@@ -318,32 +311,25 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
         ) );
 
-        // map<string, enum> field generates extra 'Map<String, Integer> getXxxValueMap()' method
+        // repeated message field generates extra getXxxBuilderList() method
         rules.add( new SpecialMethodRule(
-            method -> getMethodName( method ).endsWith( "ValueMap" )
-                && isMapType( method.getReturnType() ),
+            method -> getMethodName( method ).endsWith( "BuilderList" ),
             (method, methods) -> {
                 String methodName = getMethodName( method );
-                String withoutSuffix = methodName.substring( 0, methodName.length() - "ValueMap".length() );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "BuilderList".length() );
                 return methods.stream().anyMatch( m ->
-                    ( getMethodName( m ).equals( withoutSuffix + "Map" ) || getMethodName( m ).equals( withoutSuffix ) )
-                        && isMapType( m.getReturnType() )
+                    getMethodName( m ).equals( withoutSuffix + "List" )
+                        && isListType( m.getReturnType() )
                 );
             }
         ) );
 
-        return rules;
-    }
-
-    private List<SpecialMethodRule> repeatedGetterSpecialMethodRules() {
-        List<SpecialMethodRule> rules = new ArrayList<>();
-
-        // repeated field generates 'getXxxCount()' method
+        // repeated message field generates extra getXxxOrBuilderList() method
         rules.add( new SpecialMethodRule(
-            method -> getMethodName( method ).endsWith( "Count" ),
+            method -> getMethodName( method ).endsWith( "OrBuilderList" ),
             (method, methods) -> {
                 String methodName = getMethodName( method );
-                String withoutSuffix = methodName.substring( 0, methodName.length() - "Count".length() );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "OrBuilderList".length() );
                 return methods.stream().anyMatch( m ->
                     getMethodName( m ).equals( withoutSuffix + "List" )
                         && isListType( m.getReturnType() )
@@ -391,6 +377,20 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
                             && isMapType( m.getReturnType() )
                     );
                 }
+            }
+        ) );
+
+        // map<string, enum> field generates extra 'Map<String, Integer> getXxxValueMap()' method
+        rules.add( new SpecialMethodRule(
+            method -> getMethodName( method ).endsWith( "ValueMap" )
+                && isMapType( method.getReturnType() ),
+            (method, methods) -> {
+                String methodName = getMethodName( method );
+                String withoutSuffix = methodName.substring( 0, methodName.length() - "ValueMap".length() );
+                return methods.stream().anyMatch( m ->
+                    ( getMethodName( m ).equals( withoutSuffix + "Map" ) || getMethodName( m ).equals( withoutSuffix ) )
+                        && isMapType( m.getReturnType() )
+                );
             }
         ) );
 
@@ -780,11 +780,6 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         }
 
         public boolean matches(ExecutableElement method, List<ExecutableElement> allMethods) {
-            return quickCheck.test( method ) && fullCheck.test( method, allMethods );
-        }
-
-        public boolean matches(ExecutableElement method) {
-            List<ExecutableElement> allMethods = getPublicNonStaticMethods( method.getEnclosingElement() );
             return quickCheck.test( method ) && fullCheck.test( method, allMethods );
         }
     }
