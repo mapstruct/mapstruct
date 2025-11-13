@@ -7,6 +7,7 @@
  */
 package org.mapstruct.ksp.adapter
 
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import javax.annotation.processing.Filer
@@ -29,33 +30,29 @@ import java.util.*
  */
 class KspProcessingEnvironmentAdapter(
     private val environment: SymbolProcessorEnvironment,
-    private val resolver: Resolver
+    private val resolver: Resolver,
+     private val logger: KSPLogger
 ) : ProcessingEnvironment {
 
-    private val messagerAdapter by lazy { KspMessagerAdapter(environment.logger) }
-    private val filerAdapter by lazy { KspFilerAdapter(environment.codeGenerator) }
-    private val elementsAdapter by lazy { KspElementsAdapter(resolver) }
-    private val typesAdapter by lazy { KspTypesAdapter(resolver) }
+//    private val messagerAdapter by lazy { KspMessagerAdapter(environment.logger) }
+//    private val filerAdapter by lazy { KspFilerAdapter(environment.codeGenerator) }
+//    private val elementsAdapter by lazy { KspElementsAdapter(resolver) }
+//    private val typesAdapter by lazy { KspTypesAdapter(resolver) }
 
     override fun getOptions(): Map<String, String> {
         return environment.options
     }
 
-    override fun getMessager(): Messager {
-        return messagerAdapter
-    }
+    override fun getMessager(): Messager = KspMessager(logger)
 
     override fun getFiler(): Filer {
-        return filerAdapter
+        TODO()
+//        return filerAdapter
     }
 
-    override fun getElementUtils(): Elements {
-        return elementsAdapter
-    }
+    override fun getElementUtils(): Elements = KspElements(environment, resolver, logger)
 
-    override fun getTypeUtils(): Types {
-        return typesAdapter
-    }
+    override fun getTypeUtils(): Types = KspTypes(environment, resolver, logger)
 
     override fun getSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()

@@ -56,7 +56,8 @@ data class KspProcessorContext(
         // Create adapter that bridges KSP environment to ProcessingEnvironment
         val processingEnvironment = KspProcessingEnvironmentAdapter(
             environment = environment,
-            resolver = resolver
+            resolver = resolver,
+            logger = logger,
         )
 
         // Create options instance

@@ -15,8 +15,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import org.mapstruct.ksp.adapter.KspProcessingEnvironmentAdapter
+import org.mapstruct.ksp.adapter.KspClassTypeElement
 import org.mapstruct.ksp.internal.processor.KspProcessorContext
-import org.mapstruct.ksp.util.toElement
 
 /**
  * KSP symbol processor for MapStruct that generates mapper implementations.
@@ -50,7 +50,8 @@ class MapStructSymbolProcessor(
         if (!::processingEnvironmentAdapter.isInitialized) {
             processingEnvironmentAdapter = KspProcessingEnvironmentAdapter(
                 environment = environment,
-                resolver = resolver
+                resolver = resolver,
+                logger = logger,
             )
         }
 
@@ -80,9 +81,9 @@ class MapStructSymbolProcessor(
             for (mapper in deferredMappers) {
                 logger.error(
                     "No implementation was created for ${mapper.simpleName.asString()} " +
-                        "due to unresolved dependencies. " +
-                        "Hint: this often means that some other processor was supposed to " +
-                        "process the erroneous element.",
+                            "due to unresolved dependencies. " +
+                            "Hint: this often means that some other processor was supposed to " +
+                            "process the erroneous element.",
                     mapper
                 )
             }
@@ -140,7 +141,10 @@ class MapStructSymbolProcessor(
                 if (isTypeHierarchyError(e)) {
                     stillDeferred.add(mapper)
                 } else {
-                    logger.error("Error processing deferred mapper ${mapper.simpleName.asString()}: ${e.message}", mapper)
+                    logger.error(
+                        "Error processing deferred mapper ${mapper.simpleName.asString()}: ${e.message}",
+                        mapper
+                    )
                 }
             }
         }
@@ -170,11 +174,11 @@ class MapStructSymbolProcessor(
             environment = environment,
             resolver = resolver,
             mapper = mapper,
-            options = options
+            options = options,
         )
 
         // Convert KSP symbol to TypeElement adapter
-        val mapperTypeElement = mapper.toElement() as javax.lang.model.element.TypeElement
+        val mapperTypeElement = KspClassTypeElement(mapper, resolver, logger)
 
         // Create ProcessorContext compatible with existing processors
         val processorContext = context.createProcessorContext(mapperTypeElement)
@@ -204,6 +208,7 @@ class MapStructSymbolProcessor(
             } catch (e: Exception) {
                 logger.error("Error in processor ${processor.javaClass.simpleName}: ${e.message}", mapper)
                 logger.exception(e)
+                logger.error(e.stackTraceToString())
                 throw e
             }
         }
@@ -234,6 +239,6 @@ class MapStructSymbolProcessor(
      */
     private fun isTypeHierarchyError(e: Exception): Boolean {
         return e.message?.contains("type hierarchy", ignoreCase = true) == true ||
-               e.message?.contains("unresolved", ignoreCase = true) == true
+                e.message?.contains("unresolved", ignoreCase = true) == true
     }
 }
