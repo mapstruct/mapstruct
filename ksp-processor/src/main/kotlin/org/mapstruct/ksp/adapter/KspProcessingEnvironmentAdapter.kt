@@ -34,25 +34,17 @@ class KspProcessingEnvironmentAdapter(
      private val logger: KSPLogger
 ) : ProcessingEnvironment {
 
-//    private val messagerAdapter by lazy { KspMessagerAdapter(environment.logger) }
-//    private val filerAdapter by lazy { KspFilerAdapter(environment.codeGenerator) }
-//    private val elementsAdapter by lazy { KspElementsAdapter(resolver) }
-//    private val typesAdapter by lazy { KspTypesAdapter(resolver) }
-
     override fun getOptions(): Map<String, String> {
         return environment.options
     }
 
     override fun getMessager(): Messager = KspMessager(logger)
 
-    override fun getFiler(): Filer {
-        TODO()
-//        return filerAdapter
-    }
+    override fun getFiler(): Filer = KspFiler(environment.codeGenerator)
 
-    override fun getElementUtils(): Elements = KspElements(environment, resolver, logger)
+    override fun getElementUtils(): Elements = KspElements(environment, resolver)
 
-    override fun getTypeUtils(): Types = KspTypes(environment, resolver, logger)
+    override fun getTypeUtils(): Types = KspTypes(environment, resolver)
 
     override fun getSourceVersion(): SourceVersion {
         return SourceVersion.latestSupported()

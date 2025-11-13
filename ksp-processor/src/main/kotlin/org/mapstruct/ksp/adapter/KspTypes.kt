@@ -17,33 +17,70 @@ import javax.lang.model.type.WildcardType
 import javax.lang.model.util.Types
 
 class KspTypes(
-    environment: SymbolProcessorEnvironment,
+    private val environment: SymbolProcessorEnvironment,
     private val resolver: Resolver,
-    private val logger: KSPLogger
 ) : Types {
+    private val logger: KSPLogger = environment.logger
     override fun asElement(t: TypeMirror): Element {
-        TODO("Not yet implemented")
+        return when (t) {
+            is KspTypeMirror -> t.element
+            is KspTypeVar -> throw IllegalArgumentException("Cannot get element from type variable")
+            else -> error("Unsupported TypeMirror type: ${t::class.simpleName}")
+        }
     }
 
     override fun isSameType(
         t1: TypeMirror,
         t2: TypeMirror
     ): Boolean = when {
-        else -> TODO()
+        t1 === t2 -> true
+        t1 is KspTypeMirror && t2 is KspTypeMirror -> {
+            val qn1 = t1.element.qualifiedName?.toString()
+            val qn2 = t2.element.qualifiedName?.toString()
+            qn1 != null && qn2 != null && qn1 == qn2
+        }
+        t1 is KspTypeVar && t2 is KspTypeVar -> {
+            t1.param.name.asString() == t2.param.name.asString()
+        }
+        else -> false
     }
 
     override fun isSubtype(
         t1: TypeMirror,
         t2: TypeMirror
     ): Boolean = when {
+        isSameType(t1, t2) -> true
+        t1 is KspPrimitiveType || t2 is KspPrimitiveType -> {
+            // Primitive types are only subtypes of themselves (handled by isSameType above)
+            false
+        }
         t1 is KspTypeMirror && t2 is KspTypeMirror -> {
             t2.element.declaration.asStarProjectedType().isAssignableFrom(t1.element.declaration.asStarProjectedType())
         }
         t1 is KspTypeVar && t2 is KspTypeVar -> {
-            TODO("TypeVar comparison not yet implemented")
+            isSameType(t1, t2)
         }
         t1 is KspTypeVar && t2 is KspTypeMirror -> {
-            TODO()
+            val upperBound = t1.param.bounds.firstOrNull()
+            when {
+                upperBound != null -> {
+                    val qualifiedName = upperBound.resolve().declaration.qualifiedName?.asString()
+                    when {
+                        qualifiedName != null -> {
+                            val upperBoundElement = resolver.getClassDeclarationByName(resolver.getKSNameFromString(qualifiedName))
+                            when {
+                                upperBoundElement != null -> {
+                                    val upperBoundMirror = KspTypeMirror(KspClassTypeElement(upperBoundElement, resolver, logger), resolver, logger)
+                                    isSubtype(upperBoundMirror, t2)
+                                }
+                                else -> false
+                            }
+                        }
+                        else -> false
+                    }
+                }
+                else -> false
+            }
         }
         else -> {
             error("Unsupported type subtype: ${t1::class.simpleName}:$t1 vs ${t2::class.simpleName}:$t2")
@@ -54,75 +91,138 @@ class KspTypes(
         t1: TypeMirror,
         t2: TypeMirror
     ): Boolean {
-        TODO("Not yet implemented")
+        return when {
+            isSameType(t1, t2) -> true
+            t1 is KspTypeMirror && t2 is KspTypeMirror -> {
+                t2.element.declaration.asStarProjectedType().isAssignableFrom(t1.element.declaration.asStarProjectedType())
+            }
+            else -> isSubtype(t1, t2)
+        }
     }
 
     override fun contains(
         t1: TypeMirror,
         t2: TypeMirror
     ): Boolean {
-        TODO("Not yet implemented")
+        return isSameType(t1, t2) || isSubtype(t2, t1)
     }
 
     override fun isSubsignature(
         m1: ExecutableType,
         m2: ExecutableType
     ): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun directSupertypes(t: TypeMirror): List<TypeMirror> {
-        TODO("Not yet implemented")
+        return when (t) {
+            is KspTypeMirror -> {
+                val supertypes = mutableListOf<TypeMirror>()
+                val declaration = t.element.declaration
+
+                declaration.superTypes.forEach { superTypeRef ->
+                    val superType = superTypeRef.resolve()
+                    val superDeclaration = superType.declaration
+                    if (superDeclaration is com.google.devtools.ksp.symbol.KSClassDeclaration) {
+                        supertypes.add(
+                            KspTypeMirror(
+                                KspClassTypeElement(superDeclaration, resolver, logger),
+                                resolver,
+                                logger
+                            )
+                        )
+                    }
+                }
+                supertypes
+            }
+            else -> emptyList()
+        }
     }
 
     override fun erasure(t: TypeMirror): TypeMirror {
         return when (t) {
             is KspTypeMirror -> t
             is KspTypeVar -> t
+            is KspPrimitiveType -> t
+            is KspArrayType -> t
+            is KspNullType -> t
+            is KspNoType -> t
+            is KspWildcardType -> t
             else -> error("TypeMirror is not a KspTypeMirror: $t")
         }
     }
 
     override fun boxedClass(p: PrimitiveType): TypeElement {
-        TODO("Not yet implemented")
+        val boxedClassName = when (p.kind) {
+            TypeKind.BOOLEAN -> "java.lang.Boolean"
+            TypeKind.BYTE -> "java.lang.Byte"
+            TypeKind.SHORT -> "java.lang.Short"
+            TypeKind.INT -> "java.lang.Integer"
+            TypeKind.LONG -> "java.lang.Long"
+            TypeKind.CHAR -> "java.lang.Character"
+            TypeKind.FLOAT -> "java.lang.Float"
+            TypeKind.DOUBLE -> "java.lang.Double"
+            else -> error("Not a primitive type: ${p.kind}")
+        }
+        val boxedDeclaration = resolver.getClassDeclarationByName(resolver.getKSNameFromString(boxedClassName))
+            ?: error("Could not find boxed class for $boxedClassName")
+        return KspClassTypeElement(boxedDeclaration, resolver, logger)
     }
 
     override fun unboxedType(t: TypeMirror): PrimitiveType {
-        TODO("Not yet implemented")
+        if (t !is KspTypeMirror) {
+            error("Cannot unbox non-KspTypeMirror: ${t::class.simpleName}")
+        }
+        val qualifiedName = t.element.qualifiedName?.toString()
+        val primitiveKind = when (qualifiedName) {
+            "java.lang.Boolean" -> TypeKind.BOOLEAN
+            "java.lang.Byte" -> TypeKind.BYTE
+            "java.lang.Short" -> TypeKind.SHORT
+            "java.lang.Integer" -> TypeKind.INT
+            "java.lang.Long" -> TypeKind.LONG
+            "java.lang.Character" -> TypeKind.CHAR
+            "java.lang.Float" -> TypeKind.FLOAT
+            "java.lang.Double" -> TypeKind.DOUBLE
+            else -> error("Not a boxed type: $qualifiedName")
+        }
+        return getPrimitiveType(primitiveKind)
     }
 
     override fun capture(t: TypeMirror): TypeMirror {
-        TODO("Not yet implemented")
+        return t
     }
 
     override fun getPrimitiveType(kind: TypeKind): PrimitiveType {
-        TODO("Not yet implemented")
+        return KspPrimitiveType(kind)
     }
 
     override fun getNullType(): NullType {
-        TODO("Not yet implemented")
+        return KspNullType()
     }
 
     override fun getNoType(kind: TypeKind): NoType {
-        TODO("Not yet implemented")
+        return KspNoType(kind)
     }
 
     override fun getArrayType(componentType: TypeMirror): ArrayType {
-        TODO("Not yet implemented")
+        return KspArrayType(componentType)
     }
 
     override fun getWildcardType(
-        extendsBound: TypeMirror,
-        superBound: TypeMirror
+        extendsBound: TypeMirror?,
+        superBound: TypeMirror?
     ): WildcardType {
-        TODO("Not yet implemented")
+        return KspWildcardType(extendsBound, superBound)
     }
 
     override fun getDeclaredType(
         typeElem: TypeElement,
         vararg typeArgs: TypeMirror
     ): DeclaredType {
-        TODO("Not yet implemented")
+        if (typeElem !is KspClassTypeElement) {
+            error("TypeElement must be KspClassTypeElement")
+        }
+        return KspTypeMirror(typeElem, resolver, logger)
     }
 
     override fun getDeclaredType(
@@ -130,14 +230,25 @@ class KspTypes(
         typeElem: TypeElement,
         vararg typeArgs: TypeMirror
     ): DeclaredType {
-        TODO("Not yet implemented")
+        return getDeclaredType(typeElem, *typeArgs)
     }
 
     override fun asMemberOf(
         containing: DeclaredType,
         element: Element
     ): TypeMirror {
-        TODO("Not yet implemented")
+        return when (element) {
+            is KspClassTypeElement -> element.asType()
+            is KspExecutableElement -> {
+                // For ExecutableElement, return an ExecutableType representing the method signature
+                KspExecutableType(element, resolver, logger)
+            }
+            is KspVariableElement -> {
+                // For VariableElement (fields/parameters), return the variable's type
+                element.asType()
+            }
+            else -> error("asMemberOf not implemented for element type: ${element::class.simpleName}")
+        }
     }
 
 }

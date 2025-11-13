@@ -12,8 +12,9 @@ import javax.lang.model.util.Elements
 class KspElements(
     private val environment: SymbolProcessorEnvironment,
     private val resolver: Resolver,
-    private val logger: KSPLogger
 ) : Elements {
+    private val logger = environment.logger
+
     override fun getPackageElement(name: CharSequence): PackageElement {
         TODO("Not yet implemented")
     }
@@ -65,7 +66,92 @@ class KspElements(
         overridden: ExecutableElement,
         type: TypeElement
     ): Boolean {
-        TODO("Not yet implemented")
+        // Extract KSP function declarations from the executable elements
+        val overriderFunc = (overrider as? KspExecutableElement)?.declaration
+        val overriddenFunc = (overridden as? KspExecutableElement)?.declaration
+
+        // If either is not a KspExecutableElement, we can't determine override relationship
+        if (overriderFunc == null || overriddenFunc == null) {
+            return false
+        }
+
+        // Methods must have the same name
+        if (overriderFunc.simpleName.asString() != overriddenFunc.simpleName.asString()) {
+            return false
+        }
+
+        // Methods must have the same number of parameters
+        if (overriderFunc.parameters.size != overriddenFunc.parameters.size) {
+            return false
+        }
+
+        // Check that parameter types match
+        for (i in overriderFunc.parameters.indices) {
+            val overriderParam = overriderFunc.parameters[i]
+            val overriddenParam = overriddenFunc.parameters[i]
+
+            val overriderType = overriderParam.type.resolve()
+            val overriddenType = overriddenParam.type.resolve()
+
+            // Compare qualified names of the types
+            val overriderTypeName = overriderType.declaration.qualifiedName?.asString()
+            val overriddenTypeName = overriddenType.declaration.qualifiedName?.asString()
+
+            if (overriderTypeName != overriddenTypeName) {
+                return false
+            }
+
+            // Also check type arguments if present
+            if (overriderType.arguments.size != overriddenType.arguments.size) {
+                return false
+            }
+        }
+
+        // Check that the overrider's declaring class is a subclass of or is the same as
+        // the overridden's declaring class
+        val overriderDeclaringClass = overriderFunc.parentDeclaration as? KSClassDeclaration
+        val overriddenDeclaringClass = overriddenFunc.parentDeclaration as? KSClassDeclaration
+
+        if (overriderDeclaringClass == null || overriddenDeclaringClass == null) {
+            return false
+        }
+
+        // If they're in the same class, check if it's the same method (not an override)
+        if (overriderDeclaringClass.qualifiedName?.asString() ==
+            overriddenDeclaringClass.qualifiedName?.asString()) {
+            // Same class - only counts as override if it's literally the same method
+            return overriderFunc == overriddenFunc
+        }
+
+        // Check if overriderDeclaringClass is a subclass of overriddenDeclaringClass
+        return isSubclass(overriderDeclaringClass, overriddenDeclaringClass)
+    }
+
+    private fun isSubclass(
+        potentialSubclass: KSClassDeclaration,
+        potentialSuperclass: KSClassDeclaration
+    ): Boolean {
+        val superclassQName = potentialSuperclass.qualifiedName?.asString() ?: return false
+
+        // Check all supertypes recursively
+        fun checkSuperTypes(classDecl: KSClassDeclaration): Boolean {
+            for (superTypeRef in classDecl.superTypes) {
+                val superType = superTypeRef.resolve()
+                val superDecl = superType.declaration as? KSClassDeclaration ?: continue
+
+                if (superDecl.qualifiedName?.asString() == superclassQName) {
+                    return true
+                }
+
+                // Recursively check the supertypes
+                if (checkSuperTypes(superDecl)) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        return checkSuperTypes(potentialSubclass)
     }
 
     override fun getConstantExpression(value: Any): String {

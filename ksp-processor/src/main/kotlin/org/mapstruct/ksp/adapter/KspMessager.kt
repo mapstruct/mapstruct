@@ -7,9 +7,9 @@ import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.tools.Diagnostic
 
-class KspMessager(logger: KSPLogger) : Messager {
+class KspMessager(private val logger: KSPLogger) : Messager {
     override fun printMessage(kind: Diagnostic.Kind, msg: CharSequence) {
-        TODO("Not yet implemented")
+        printMessage(kind, msg.toString())
     }
 
     override fun printMessage(
@@ -17,7 +17,13 @@ class KspMessager(logger: KSPLogger) : Messager {
         msg: CharSequence,
         e: Element
     ) {
-        TODO("Not yet implemented")
+        val message = buildString {
+            append(msg)
+            append(" [element: ")
+            append(e.toString())
+            append("]")
+        }
+        printMessage(kind, message)
     }
 
     override fun printMessage(
@@ -26,7 +32,15 @@ class KspMessager(logger: KSPLogger) : Messager {
         e: Element,
         a: AnnotationMirror
     ) {
-        TODO("Not yet implemented")
+        val message = buildString {
+            append(msg)
+            append(" [element: ")
+            append(e.toString())
+            append(", annotation: ")
+            append(a.toString())
+            append("]")
+        }
+        printMessage(kind, message)
     }
 
     override fun printMessage(
@@ -36,7 +50,25 @@ class KspMessager(logger: KSPLogger) : Messager {
         a: AnnotationMirror,
         v: AnnotationValue
     ) {
-        TODO("Not yet implemented")
+        val message = buildString {
+            append(msg)
+            append(" [element: ")
+            append(e.toString())
+            append(", annotation: ")
+            append(a.toString())
+            append(", value: ")
+            append(v.toString())
+            append("]")
+        }
+        printMessage(kind, message)
+    }
+
+    private fun printMessage(kind: Diagnostic.Kind, message: String) {
+        when (kind) {
+            Diagnostic.Kind.ERROR -> logger.error(message)
+            Diagnostic.Kind.WARNING, Diagnostic.Kind.MANDATORY_WARNING -> logger.warn(message)
+            Diagnostic.Kind.NOTE, Diagnostic.Kind.OTHER -> logger.info(message)
+        }
     }
 
 }

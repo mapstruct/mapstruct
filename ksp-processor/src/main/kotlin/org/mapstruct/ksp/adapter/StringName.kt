@@ -13,4 +13,6 @@ class StringName(val name: String) : Name {
 
     override fun subSequence(startIndex: Int, endIndex: Int): CharSequence =
         name.subSequence(startIndex, endIndex)
+
+    override fun toString(): String = name
 }

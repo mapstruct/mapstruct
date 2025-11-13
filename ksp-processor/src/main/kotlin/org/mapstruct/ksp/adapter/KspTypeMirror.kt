@@ -39,7 +39,7 @@ class KspTypeMirror(val element: KspClassTypeElement, private val resolver: Reso
 
     override fun getTypeArguments(): List<TypeMirror> {
         return element.declaration.typeParameters.map { typeParameter: KSTypeParameter ->
-            KspTypeVar(typeParameter)
+            KspTypeVar(typeParameter, resolver, logger)
         }
     }
 
