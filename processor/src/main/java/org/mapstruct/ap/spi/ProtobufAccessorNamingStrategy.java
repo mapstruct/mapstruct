@@ -589,9 +589,20 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
 
     private boolean isRepeatedGetter(ExecutableElement element) {
         // repeated fields getter: getXxxList()
-        return hasPrefixWithUpperCaseNext( element, "get" )
+        if ( hasPrefixWithUpperCaseNext( element, "get" )
             && getMethodName( element ).endsWith( "List" )
-            && isListType( element.getReturnType() );
+            && isListType( element.getReturnType() ) ) {
+            List<ExecutableElement> allMethods = getPublicNonStaticMethods( element.getEnclosingElement() );
+            for ( SpecialMethodRule rule : repeatedGetterSpecialMethodRules() ) {
+                if ( rule.matches( element, allMethods ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private boolean isMapGetter(ExecutableElement element) {
@@ -610,8 +621,9 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
             }
             return true;
         }
-
-        return false;
+        else {
+            return false;
+        }
     }
 
     private static String getMethodName(ExecutableElement element) {
