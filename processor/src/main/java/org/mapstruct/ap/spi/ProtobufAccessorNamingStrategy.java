@@ -359,7 +359,6 @@ public class ProtobufAccessorNamingStrategy extends DefaultAccessorNamingStrateg
         // map field generates deprecated 'getXxx()' and 'getMutableXxx()' methods
         rules.add( new SpecialMethodRule(
             method -> getMethodName( method ).startsWith( "get" )
-                && !getMethodName( method ).endsWith( "Map" )
                 && isMapType( method.getReturnType() ),
             (method, methods) -> {
                 String methodName = getMethodName( method );
