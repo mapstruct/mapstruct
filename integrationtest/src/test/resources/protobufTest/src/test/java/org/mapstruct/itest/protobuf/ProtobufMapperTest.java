@@ -23,6 +23,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
 import com.google.protobuf.FloatValue;
+import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import org.junit.Test;
 import org.mapstruct.itest.protobuf.EverythingMapper;
@@ -53,7 +54,11 @@ public class ProtobufMapperTest {
 
     @Test
     public void testLombokToImmutable() {
-        PersonProtos.Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
+        PersonProtos.Person person = PersonMapper.INSTANCE.fromDto( new PersonDto(
+            "Bob",
+            33,
+            new AddressDto( "Wild Drive" )
+        ) );
 
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );
@@ -170,21 +175,67 @@ public class ProtobufMapperTest {
         original.setMonth( Month.JANUARY );
 
         // Oneof
-        original.setOneofInt32( 12345 );
+        original.setOneofInt32( Int32Value.of( 12345 ) );
 
-        // Convert
-        EverythingProto2 proto2Message = EverythingMapper.INSTANCE.javaBeanToProto2( original );
-        Everything proto2Result = EverythingMapper.INSTANCE.proto2ToJavaBean( proto2Message );
+        // Deprecated
+        original.setDeprecatedInt32( 111 );
+        original.setDeprecatedString( "deprecated" );
+        original.setDeprecatedRepeatedString( Arrays.asList( "dep1", "dep2" ) );
+        Map<String, Integer> deprecatedMap = new HashMap<>();
+        deprecatedMap.put( "depKey1", 1 );
+        deprecatedMap.put( "depKey2", 2 );
+        original.setDeprecatedMapStringInt32( deprecatedMap );
+        original.setDeprecatedEnum( 1 );
 
+        // Special naming
+        original.setStrBytes( "string bytes" );
+        original.setEnValue( 1 );
+        original.setReStringList( Arrays.asList( "reStr1", "reStr2" ) );
+        original.setReEnumValueList( Arrays.asList( 1 ) );
+        Map<String, String> maStringStringMap = new HashMap<>();
+        maStringStringMap.put( "mapStrKey1", "mapStrValue1" );
+        original.setMaStringStringMap( maStringStringMap );
+        Map<String, String> maStringEnumMap = new HashMap<>();
+        maStringEnumMap.put( "mapEnumKey1", "ENUM_VALUE_1" );
+        original.setMaStringEnumMap( maStringEnumMap );
+        Everything.Message msgBuilder = new Everything.Message();
+        msgBuilder.setId( 555L );
+        msgBuilder.setName( "msg builder" );
+        original.setMsgBuilder( msgBuilder );
+        Everything.Message msgOrBuilder = new Everything.Message();
+        msgOrBuilder.setId( 666L );
+        msgOrBuilder.setName( "msg or builder" );
+        original.setMsgOrBuilder( msgOrBuilder );
+
+        // Convert to Proto3, Proto2, and Edition2023 and back
         EverythingProto3 proto3Message = EverythingMapper.INSTANCE.javaBeanToProto3( original );
         Everything proto3Result = EverythingMapper.INSTANCE.proto3ToJavaBean( proto3Message );
+
+        EverythingProto2 proto2Message = EverythingMapper.INSTANCE.javaBeanToProto2( original );
+        Everything proto2Result = EverythingMapper.INSTANCE.proto2ToJavaBean( proto2Message );
 
         EverythingEdition2023 edition2023Message = EverythingMapper.INSTANCE.javaBeanToEdition2023( original );
         Everything edition2023Result = EverythingMapper.INSTANCE.edition2023ToJavaBean( edition2023Message );
 
+        // Update existing Proto messages from Java bean and back
+        EverythingProto2.Builder proto2Builder = EverythingProto2.newBuilder();
+        EverythingMapper.INSTANCE.updateProto2FromJavaBean( proto2Builder, original );
+        Everything proto2Updated = EverythingMapper.INSTANCE.proto2ToJavaBean( proto2Builder.build() );
+
+        EverythingProto3.Builder proto3Builder = EverythingProto3.newBuilder();
+        EverythingMapper.INSTANCE.updateProto3FromJavaBean( proto3Builder, original );
+        Everything proto3Updated = EverythingMapper.INSTANCE.proto3ToJavaBean( proto3Builder.build() );
+
+        EverythingEdition2023.Builder edition2023Builder = EverythingEdition2023.newBuilder();
+        EverythingMapper.INSTANCE.updateEdition2023FromJavaBean( edition2023Builder, original );
+        Everything edition2023Updated = EverythingMapper.INSTANCE.edition2023ToJavaBean( edition2023Builder.build() );
+
         // Use AssertJ recursive comparison to verify equality
-        assertThat( proto3Result ).usingRecursiveComparison().isEqualTo( original );
-        assertThat( proto2Result ).usingRecursiveComparison().isEqualTo( original );
-        assertThat( edition2023Result ).usingRecursiveComparison().isEqualTo( original );
+        assertThat( proto3Result ).isEqualTo( original );
+        assertThat( proto2Result ).isEqualTo( original );
+        assertThat( edition2023Result ).isEqualTo( original );
+        assertThat( proto2Updated ).isEqualTo( original );
+        assertThat( proto3Updated ).isEqualTo( original );
+        assertThat( edition2023Updated ).isEqualTo( original );
     }
 }

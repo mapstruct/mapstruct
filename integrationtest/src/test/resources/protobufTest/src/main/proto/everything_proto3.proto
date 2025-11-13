@@ -77,6 +77,23 @@ message EverythingProto3 {
     Message oneof_message = 83;
   }
 
+  // deprecated field
+  int32 deprecated_int32 = 90 [deprecated = true];
+  string deprecated_string = 91 [deprecated = true];
+  repeated string deprecated_repeated_string = 92 [deprecated = true];
+  map<string, int32> deprecated_map_string_int32 = 93 [deprecated = true];
+  Enum deprecated_enum = 94 [deprecated = true];
+
+  // special naming
+  string str_bytes = 100;
+  Enum en_value = 101;
+  repeated string re_string_list = 102;
+  repeated Enum re_enum_value_list = 107;
+  map<string, string> ma_string_string_map = 103;
+  map<string, Enum> ma_string_enum_map = 104;
+  Message msg_builder = 105;
+  Message msg_or_builder = 106;
+
   message Message {
     int64 id = 1;
     string name = 2;
