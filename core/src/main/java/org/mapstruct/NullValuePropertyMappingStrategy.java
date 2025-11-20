@@ -5,6 +5,8 @@
  */
 package org.mapstruct;
 
+import java.util.Collection;
+
 /**
  * Strategy for dealing with {@code null} or not present properties in the source bean. The
  * {@link NullValuePropertyMappingStrategy} can be defined on {@link MapperConfig}, {@link Mapper}, {@link BeanMapping}
@@ -53,5 +55,12 @@ public enum NullValuePropertyMappingStrategy {
      * If a source bean property equals {@code null} the target bean property will be ignored and retain its
      * existing value.
      */
-    IGNORE;
+    IGNORE,
+
+    /**
+     * This strategy is applicable only to update methods that annotate with {@code @}{@link MappingTarget}.
+     * If a source bean property, of type {@link Collection} equals {@code null},
+     * the target bean property will be cleared {@link Collection#clear()}.
+     */
+    CLEAR;
 }
