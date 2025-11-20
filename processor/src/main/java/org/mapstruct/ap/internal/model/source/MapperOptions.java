@@ -13,7 +13,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.option.Options;
@@ -28,7 +27,6 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
-import org.mapstruct.ap.internal.util.Message;
 
 public class MapperOptions extends DelegatingOptions {
 
