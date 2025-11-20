@@ -42,9 +42,12 @@ public enum Message {
     BEANMAPPING_UNMAPPED_FORGED_SOURCES_WARNING( "Unmapped source %s. Mapping from %s to %s.", Diagnostic.Kind.WARNING ),
     BEANMAPPING_UNMAPPED_FORGED_SOURCES_ERROR( "Unmapped source %s. Mapping from %s to %s." ),
     BEANMAPPING_MISSING_IGNORED_SOURCES_ERROR( "Ignored unknown source %s." ),
+    BEANMAPPING_REDUNDANT_IGNORED_SOURCES_ERROR( "Source %s mapped despite being listed in ignoreUnmappedSourceProperties." ),
+    BEANMAPPING_REDUNDANT_IGNORED_SOURCES_WARNING( "Source %s mapped despite being listed in ignoreUnmappedSourceProperties.", Diagnostic.Kind.WARNING  ),
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
     BEANMAPPING_IGNORE_BY_DEFAULT_WITH_MAPPING_TARGET_THIS( "Using @BeanMapping( ignoreByDefault = true ) with @Mapping( target = \".\", ... ) is not allowed. You'll need to explicitly ignore the target properties that should be ignored instead." ),
+    BEANMAPPING_UNKNOWN_PROPERTY_IN_IGNORED("No property named \"%s\" exists in @Ignored for target type \"%s\". Did you mean \"%s\"?"),
 
     CONDITION_MISSING_APPLIES_TO_STRATEGY("'appliesTo' has to have at least one value in @Condition" ),
     CONDITION_SOURCE_PARAMETERS_INVALID_PARAMETER("Parameter \"%s\" cannot be used with the ConditionStrategy#SOURCE_PARAMETERS. Only source and @Context parameters are allowed for conditions applicable to source parameters." ),
@@ -92,6 +95,7 @@ public enum Message {
     PROPERTYMAPPING_CANNOT_DETERMINE_SOURCE_PARAMETER_FROM_TARGET("No property named \"%s\" exists in source parameter(s). Please define the source explicitly."),
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
+    PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES( "No target property found for target \"%s\".", Diagnostic.Kind.WARNING ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),
@@ -175,6 +179,7 @@ public enum Message {
     RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type from java stdlib to non-iterable type." ),
     RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER( "Can't generate mapping method that has a parameter annotated with @TargetType." ),
     RETRIEVAL_NON_ITERABLE_TO_ITERABLE( "Can't generate mapping method from non-iterable type to iterable type from java stdlib." ),
+    RETRIEVAL_NON_ITERABLE_TO_ARRAY( "Can't generate mapping method from non-iterable type to array." ),
     RETRIEVAL_PRIMITIVE_PARAMETER( "Can't generate mapping method with primitive parameter type." ),
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
     RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),

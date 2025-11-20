@@ -58,6 +58,8 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
 
         SubTarget subTarget = new SubTarget();
 
+        subTarget.setParentValue( subSource.getParentValue() );
+        subTarget.setImplementedParentValue( subSource.getImplementedParentValue() );
         subTarget.setValue( subSource.getValue() );
 
         return subTarget;
@@ -74,6 +76,9 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
 
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
 
+        subTargetOther.setParentValue( subSourceOther.getParentValue() );
+        subTargetOther.setImplementedParentValue( subSourceOther.getImplementedParentValue() );
+
         return subTargetOther;
     }
 
@@ -87,6 +92,9 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
         separateValue = subTargetSeparate.getSeparateValue();
 
         SubSourceSeparate subSourceSeparate = new SubSourceSeparate( separateValue );
+
+        subSourceSeparate.setParentValue( subTargetSeparate.getParentValue() );
+        subSourceSeparate.setImplementedParentValue( subTargetSeparate.getImplementedParentValue() );
 
         return subSourceSeparate;
     }
@@ -102,6 +110,9 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
 
         SubSourceOverride subSourceOverride = new SubSourceOverride( finalValue );
 
+        subSourceOverride.setParentValue( subTargetOther.getParentValue() );
+        subSourceOverride.setImplementedParentValue( subTargetOther.getImplementedParentValue() );
+
         return subSourceOverride;
     }
 
@@ -112,6 +123,8 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
 
         SubSource subSource = new SubSource();
 
+        subSource.setParentValue( subTarget.getParentValue() );
+        subSource.setImplementedParentValue( subTarget.getImplementedParentValue() );
         subSource.setValue( subTarget.getValue() );
 
         return subSource;

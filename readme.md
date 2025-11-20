@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.6.0-blue.svg)](https://central.sonatype.com/search?q=g:org.mapstruct%20v:1.6.0)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.6.3-blue.svg)](https://central.sonatype.com/search?q=g:org.mapstruct%20v:1.6.3)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://central.sonatype.com/search?q=g:org.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/main/LICENSE.txt)
 
@@ -19,7 +19,10 @@
 
 ## What is MapStruct?
 
-MapStruct is a Java [annotation processor](https://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe and performant mappers for Java bean classes. It saves you from writing mapping code by hand, which is a tedious and error-prone task. The generator comes with sensible defaults and many built-in type conversions, but it steps out of your way when it comes to configuring or implementing special behavior.
+MapStruct is a Java [annotation processor](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html#annotation-processing) designed to generate type-safe and high-performance mappers for Java bean classes, including support for Java 16+ records.
+By automating the creation of mappings, MapStruct eliminates the need for tedious and error-prone manual coding. 
+The generator provides sensible defaults and built-in type conversions, allowing it to handle standard mappings effortlessly, while also offering flexibility for custom configurations or specialized mapping behaviors.
+With seamless integration into modern Java projects, MapStruct can map between conventional beans, records, and even complex hierarchies, making it an adaptable tool for diverse Java applications.
 
 Compared to mapping frameworks working at runtime, MapStruct offers the following advantages:
 
@@ -65,7 +68,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.6.0</org.mapstruct.version>
+    <org.mapstruct.version>1.6.3</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -111,10 +114,10 @@ plugins {
 
 dependencies {
     ...
-    implementation 'org.mapstruct:mapstruct:1.6.0'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3' // if you are using mapstruct in test code
 }
 ...
 ```
@@ -127,7 +130,8 @@ To learn more about MapStruct, refer to the [project homepage](https://mapstruct
 
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
+MapStruct uses Maven for its build. Java 21 is required for building MapStruct from source.
+To build the complete project, run
 
     ./mvnw clean install
 

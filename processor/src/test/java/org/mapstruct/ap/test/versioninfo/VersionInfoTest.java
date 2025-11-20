@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.versioninfo;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -18,7 +19,7 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  *
  */
 @IssueKey( "424" )
-@WithClasses( SimpleMapper.class )
+@WithClasses( { SimpleMapper.class, WithProperties.class } )
 public class VersionInfoTest {
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

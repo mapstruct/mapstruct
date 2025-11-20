@@ -29,6 +29,9 @@ public class SubclassImplementedMapperImpl implements SubclassImplementedMapper 
         else {
             ImplementedParentTarget implementedParentTarget = new ImplementedParentTarget();
 
+            implementedParentTarget.setParentValue( item.getParentValue() );
+            implementedParentTarget.setImplementedParentValue( item.getImplementedParentValue() );
+
             return implementedParentTarget;
         }
     }
@@ -40,6 +43,8 @@ public class SubclassImplementedMapperImpl implements SubclassImplementedMapper 
 
         SubTarget subTarget = new SubTarget();
 
+        subTarget.setParentValue( subSource.getParentValue() );
+        subTarget.setImplementedParentValue( subSource.getImplementedParentValue() );
         subTarget.setValue( subSource.getValue() );
 
         return subTarget;
@@ -55,6 +60,9 @@ public class SubclassImplementedMapperImpl implements SubclassImplementedMapper 
         finalValue = subSourceOther.getFinalValue();
 
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
+
+        subTargetOther.setParentValue( subSourceOther.getParentValue() );
+        subTargetOther.setImplementedParentValue( subSourceOther.getImplementedParentValue() );
 
         return subTargetOther;
     }

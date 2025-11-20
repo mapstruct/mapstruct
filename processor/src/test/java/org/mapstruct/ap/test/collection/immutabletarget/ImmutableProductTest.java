@@ -11,6 +11,9 @@ import java.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,6 +44,13 @@ public class ImmutableProductTest {
         CupboardNoSetterMapper.class,
         CupboardEntityOnlyGetter.class
     })
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = CupboardNoSetterMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 22,
+                message = "No target property found for target \"CupboardEntityOnlyGetter\"."),
+        })
     public void shouldIgnoreImmutableTarget() {
         CupboardDto in = new CupboardDto();
         in.setContent( Arrays.asList( "flour", "peas" ) );

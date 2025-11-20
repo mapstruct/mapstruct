@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public abstract class AbstractSourceTargetMapperProtected extends SourceTargetmapperProtectedBase {
+public abstract class AbstractSourceTargetMapperProtected extends SourceTargetMapperProtectedBase {
 
     public static final AbstractSourceTargetMapperProtected INSTANCE =
             Mappers.getMapper( AbstractSourceTargetMapperProtected.class );

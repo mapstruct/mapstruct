@@ -10,6 +10,8 @@ import javax.inject.Named;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -46,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ComponentScan(basePackageClasses = CustomerJsr330FieldMapper.class)
 @Configuration
 @WithJavaxInject
+@DisabledOnJre(JRE.OTHER)
 public class Jsr330FieldMapperTest {
 
     @RegisterExtension

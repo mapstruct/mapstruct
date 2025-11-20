@@ -9,7 +9,6 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#assign targetType = resultType />
     <#if !existingInstanceMapping>
@@ -42,7 +41,7 @@
         else {
     </#if>
     <#if isAbstractReturnType()>
-        throw new IllegalArgumentException("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
+        throw new <@includeModel object=subclassExhaustiveException />("Not all subclasses are supported for this mapping. Missing for " + ${subclassMappings[0].sourceArgument}.getClass());
     <#else>
     <#if !existingInstanceMapping>
         <#if hasConstructorMappings()>
@@ -116,7 +115,7 @@
                 </#list>
             </#if>
         </#list>
-    <#else>
+    <#elseif !propertyMappingsByParameter(sourceParameters[0]).empty>
         <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
@@ -136,7 +135,7 @@
 
     <#if finalizerMethod??>
         <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
-            ${returnType.name} ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
+            <@includeModel object=returnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
 
             <#list afterMappingReferencesWithFinalizedReturnType as callback>
                 <#if callback_index = 0>

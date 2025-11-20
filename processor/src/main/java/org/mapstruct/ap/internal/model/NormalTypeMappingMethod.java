@@ -21,7 +21,6 @@ import org.mapstruct.ap.internal.model.source.Method;
  */
 public abstract class NormalTypeMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
-    private final boolean overridden;
     private final boolean mapNullToDefault;
 
     private final List<Annotation> annotations;
@@ -33,7 +32,6 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
         List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.factoryMethod = factoryMethod;
-        this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
         this.annotations = annotations;
     }
@@ -57,10 +55,6 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
 
     public boolean isMapNullToDefault() {
         return mapNullToDefault;
-    }
-
-    public boolean isOverridden() {
-        return overridden;
     }
 
     public MethodReference getFactoryMethod() {

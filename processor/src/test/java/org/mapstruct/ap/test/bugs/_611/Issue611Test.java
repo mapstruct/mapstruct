@@ -43,8 +43,8 @@ public class Issue611Test {
      */
     @ProcessorTest
     public void rightMapperIsFound() {
-        SomeClass.InnerMapper.Source source1 = new SomeClass.InnerMapper.Source();
-        SomeOtherClass.InnerMapper.Source source2 = new SomeOtherClass.InnerMapper.Source();
+        SomeClass.InnerMapper.Source source1 = new SomeClass.InnerMapper.Source( "test" );
+        SomeOtherClass.InnerMapper.Source source2 = new SomeOtherClass.InnerMapper.Source( "test2" );
 
         SomeClass.InnerMapper.Target target1 = SomeClass.InnerMapper.INSTANCE.toTarget( source1 );
         SomeOtherClass.InnerMapper.Target target2 = SomeOtherClass.InnerMapper.INSTANCE.toTarget( source2 );

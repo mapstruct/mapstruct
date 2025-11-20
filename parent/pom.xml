@@ -34,7 +34,7 @@
         <org.apache.maven.plugins.enforcer.version>3.4.1</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
-        <org.springframework.version>5.3.31</org.springframework.version>
+        <org.springframework.version>6.2.7</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
         <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
         <org.junit.jupiter.version>5.10.1</org.junit.jupiter.version>
@@ -47,10 +47,10 @@
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <!--
             The minimum Java Version that is needed to build a module in MapStruct.
-            The processor module needs at least Java 11.
+            The processor module needs at least Java 21.
          -->
         <minimum.java.version>1.8</minimum.java.version>
-        <protobuf.version>3.21.7</protobuf.version>
+        <protobuf.version>3.25.5</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
     </properties>
 
@@ -87,12 +87,12 @@
         <repository>
             <id>sonatype-nexus-staging</id>
             <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -400,7 +400,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.13.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

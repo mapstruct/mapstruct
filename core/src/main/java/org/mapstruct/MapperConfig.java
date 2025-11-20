@@ -250,6 +250,18 @@ public @interface MapperConfig {
     SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
+     * Specifies the exception type to be thrown when a missing subclass implementation is detected
+     * in combination with {@link SubclassMappings}, based on the {@link #subclassExhaustiveStrategy()}.
+     * <p>
+     * This exception will only be thrown when the {@code subclassExhaustiveStrategy} is set to
+     * {@link SubclassExhaustiveStrategy#RUNTIME_EXCEPTION}.
+     *
+     * @return the exception class to throw when missing implementations are found.
+     *         Defaults to {@link IllegalArgumentException}.
+     */
+    Class<? extends Exception> subclassExhaustiveException() default IllegalArgumentException.class;
+
+    /**
      * Determines whether to use field or constructor injection. This is only used on annotated based component models
      * such as CDI, Spring and JSR 330.
      *

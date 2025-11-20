@@ -45,6 +45,7 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.JavaCollectionConstants;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
@@ -148,6 +149,18 @@ public class TypeFactory {
         implementationTypes.put(
             ConcurrentNavigableMap.class.getName(),
             withDefaultConstructor( getType( ConcurrentSkipListMap.class ) )
+        );
+        implementationTypes.put(
+            JavaCollectionConstants.SEQUENCED_SET_FQN,
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
+        );
+        implementationTypes.put(
+            JavaCollectionConstants.SEQUENCED_MAP_FQN,
+            sourceVersionAtLeast19 ?
+                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
+                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
         );
 
         this.loggingVerbose = loggingVerbose;
@@ -491,7 +504,11 @@ public class TypeFactory {
         if (accessor.getAccessorType().isFieldAssignment()) {
             return new ArrayList<>();
         }
-        return extractTypes( ( (ExecutableElement) accessor.getElement() ).getThrownTypes() );
+        Element element = accessor.getElement();
+        if ( element instanceof ExecutableElement ) {
+            return extractTypes( ( (ExecutableElement) element ).getThrownTypes() );
+        }
+        return new ArrayList<>();
     }
 
     private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {

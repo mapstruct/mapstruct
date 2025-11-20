@@ -174,7 +174,7 @@ public class NativeTypes {
             boolean endsWithDSuffix = PTRN_DOUBLE.matcher( val ).find();
             // error handling
             if ( isFloat && endsWithDSuffix ) {
-                throw new NumberFormatException( "Assiging double to a float" );
+                throw new NumberFormatException( "Assigning double to a float" );
             }
             // remove suffix
             if ( endsWithLSuffix || endsWithFSuffix || endsWithDSuffix ) {
@@ -474,6 +474,7 @@ public class NativeTypes {
         tmp3.put( Double.class.getName(), 6 );
         tmp3.put( BigInteger.class.getName(), 50 );
         tmp3.put( BigDecimal.class.getName(), 51 );
+        tmp3.put( String.class.getName(), 51 );
         NARROWING_LUT = Collections.unmodifiableMap( tmp3 );
     }
 

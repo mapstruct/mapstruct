@@ -17,6 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,7 +54,7 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
-import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
@@ -365,6 +369,15 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isArrayType() {
         return componentType != null;
+    }
+
+    private boolean isType(Class<?> type) {
+        return type.getName().equals( getFullyQualifiedName() );
+    }
+
+    private boolean isOptionalType() {
+        return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
+            isType( OptionalLong.class );
     }
 
     public boolean isTypeVar() {
@@ -783,6 +796,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
+        if ( isRecord() ) {
+            // Records do not have setters, so we return an empty map
+            return Collections.emptyMap();
+        }
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -1047,7 +1064,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields(), FieldElementAccessor::new ) );
+            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.
@@ -1166,6 +1183,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      *         FTL.
      */
     public String getNull() {
+        if ( isOptionalType() ) {
+            return createReferenceName() + ".empty()";
+        }
+
         if ( !isPrimitive() || isArrayType() ) {
             return "null";
         }

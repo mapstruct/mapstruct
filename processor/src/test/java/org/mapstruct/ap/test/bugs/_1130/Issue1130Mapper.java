@@ -30,6 +30,16 @@ public abstract class Issue1130Mapper {
     }
 
     static class BEntity {
+
+        private String id;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
     }
 
     static class ADto {
@@ -46,6 +56,7 @@ public abstract class Issue1130Mapper {
 
     class BDto {
         private final String passedViaConstructor;
+        private String id;
 
         BDto(String passedViaConstructor) {
             this.passedViaConstructor = passedViaConstructor;
@@ -53,6 +64,14 @@ public abstract class Issue1130Mapper {
 
         String getPassedViaConstructor() {
             return passedViaConstructor;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
     }
 

@@ -35,18 +35,31 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
             return null;
         }
+
+        // First look if there is a builder defined in my own type
+        BuilderInfo info = findBuilderInfo( typeElement, false );
+        if ( info != null ) {
+            return info;
+        }
+
+        // Check for a builder in the generated immutable type
+        BuilderInfo immutableInfo = findBuilderInfoForImmutables( typeElement );
+        if ( immutableInfo != null ) {
+            return immutableInfo;
+        }
+
+        return super.findBuilderInfo( typeElement.getSuperclass() );
+    }
+
+    protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement) {
         TypeElement immutableAnnotation = elementUtils.getTypeElement( IMMUTABLE_FQN );
         if ( immutableAnnotation != null ) {
-            BuilderInfo info = findBuilderInfoForImmutables(
+            return findBuilderInfoForImmutables(
                 typeElement,
                 immutableAnnotation
             );
-            if ( info != null ) {
-                return info;
-            }
         }
-
-        return super.findBuilderInfo( typeElement );
+        return null;
     }
 
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement,
@@ -55,7 +68,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
             if ( typeUtils.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
                 TypeElement immutableElement = asImmutableElement( typeElement );
                 if ( immutableElement != null ) {
-                    return super.findBuilderInfo( immutableElement );
+                    return super.findBuilderInfo( immutableElement, false );
                 }
                 else {
                     // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct

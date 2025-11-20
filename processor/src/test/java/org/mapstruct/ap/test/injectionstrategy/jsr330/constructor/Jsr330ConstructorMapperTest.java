@@ -7,6 +7,8 @@ package org.mapstruct.ap.test.injectionstrategy.jsr330.constructor;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
 import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ComponentScan(basePackageClasses = CustomerJsr330ConstructorMapper.class)
 @Configuration
 @WithJavaxInject
+@DisabledOnJre(JRE.OTHER)
 public class Jsr330ConstructorMapperTest {
 
     @RegisterExtension

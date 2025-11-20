@@ -12,7 +12,7 @@ import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
- * Selector that tries to resolve an ambiquity between methods that contain source parameters and
+ * Selector that tries to resolve an ambiguity between methods that contain source parameters and
  * {@link org.mapstruct.ap.internal.model.common.SourceRHS SourceRHS} type parameters.
  * @author Filip Hrisafov
  */

@@ -130,7 +130,7 @@
                     <!--
                         There is a bug in JDK 11 (https://bugs.openjdk.java.net/browse/JDK-8215291) which doesn't work correctly when searching and adds undefined.
                         It has been fixed since JDK 12, but not yet backported to JDK 11 (https://bugs.openjdk.java.net/browse/JDK-8244171).
-                        One workardound is https://stackoverflow.com/a/57284322/1115491.
+                        One workaround is https://stackoverflow.com/a/57284322/1115491.
                          -->
                     <bottom>
                         <![CDATA[

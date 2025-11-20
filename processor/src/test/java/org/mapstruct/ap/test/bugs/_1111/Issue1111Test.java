@@ -27,7 +27,7 @@ public class Issue1111Test {
     @ProcessorTest
     public void shouldCompile() {
 
-        List<List<Source>> source = Arrays.asList( Arrays.asList( new Source() ) );
+        List<List<Source>> source = Arrays.asList( Arrays.asList( new Source( "test" ) ) );
 
         List<List<Issue1111Mapper.Target>> target = Issue1111Mapper.INSTANCE.listList( source );
 

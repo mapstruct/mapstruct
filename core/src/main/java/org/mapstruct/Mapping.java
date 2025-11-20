@@ -175,18 +175,37 @@ public @interface Mapping {
     /**
      * A format string as processable by {@link SimpleDateFormat} if the attribute is mapped from {@code String} to
      * {@link Date} or vice-versa. Will be ignored for all other attribute types and when mapping enum constants.
+     * <p>
+     * If the {@link #locale()} is also specified, the format will consider the specified locale when processing
+     * the date. Otherwise, the system's default locale will be used.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
+     * @see #locale()
      */
     String dateFormat() default "";
 
     /**
      * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
+     * <p>
+     * If the {@link #locale()} is also specified, the number format will be applied in the context of the given locale.
+     * Otherwise, the system's default locale will be used to process the number format.
      *
      * @return A decimal format string as processable by {@link DecimalFormat}.
+     * @see #locale()
      */
     String numberFormat() default "";
+
+    /**
+     * Specifies the locale to be used when processing {@link #dateFormat()} or {@link #numberFormat()}.
+     * <p>
+     * The locale should be a plain tag representing the language, such as "en" for English, "de" for German, etc.
+     * <p>
+     * If no locale is specified, the system's default locale will be used.
+     *
+     * @return A string representing the locale to be used when formatting dates or numbers.
+     */
+    String locale() default "";
 
     /**
      * A constant {@link String} based on which the specified target property is to be set.
@@ -287,6 +306,9 @@ public @interface Mapping {
      * This can be useful when certain attributes should not be propagated from source to target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
      * default.
+     * <p>
+     * If you have multiple properties to ignore,
+     * you can use the {@link Ignored} annotation instead and group them all at once.
      *
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */
