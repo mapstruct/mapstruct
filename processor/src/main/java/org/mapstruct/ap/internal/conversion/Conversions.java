@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
+import org.mapstruct.ap.internal.util.ProtobufConstants;
 
 import static org.mapstruct.ap.internal.conversion.ReverseConversion.inverse;
 
@@ -202,6 +203,8 @@ public class Conversions {
         register( Locale.class, String.class, new LocaleToStringConversion() );
 
         registerURLConversion();
+
+        registerProtobufConversions();
     }
 
     private void registerJodaConversions() {
@@ -312,6 +315,58 @@ public class Conversions {
         }
     }
 
+    private void registerProtobufConversions() {
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.BYTE_STRING_FQN ) ) {
+            register( ProtobufConstants.BYTE_STRING_FQN, String.class, new ProtobufByteStringConversion() );
+        }
+
+        // enum types, use ordinal() for protobuf enums is a mistake
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.PROTOCOL_MESSAGE_ENUM_FQN ) ) {
+            register( ProtobufConstants.PROTOCOL_MESSAGE_ENUM_FQN, Integer.class, new ProtobufEnumConversion() );
+            register( ProtobufConstants.PROTOCOL_MESSAGE_ENUM_FQN, int.class, new ProtobufEnumConversion() );
+        }
+
+        // wrapped types
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.DOUBLE_VALUE_FQN ) ) {
+            register( ProtobufConstants.DOUBLE_VALUE_FQN, Double.class, new ProtobufDoubleValueConversion() );
+            register( ProtobufConstants.DOUBLE_VALUE_FQN, double.class, new ProtobufDoubleValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.FLOAT_VALUE_FQN ) ) {
+            register( ProtobufConstants.FLOAT_VALUE_FQN, Float.class, new ProtobufFloatValueConversion() );
+            register( ProtobufConstants.FLOAT_VALUE_FQN, float.class, new ProtobufFloatValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.INT32_VALUE_FQN ) ) {
+            register( ProtobufConstants.INT32_VALUE_FQN, Integer.class, new ProtobufInt32ValueConversion() );
+            register( ProtobufConstants.INT32_VALUE_FQN, int.class, new ProtobufInt32ValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.UINT32_VALUE_FQN ) ) {
+            register( ProtobufConstants.UINT32_VALUE_FQN, Integer.class, new ProtobufUInt32ValueConversion() );
+            register( ProtobufConstants.UINT32_VALUE_FQN, int.class, new ProtobufUInt32ValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.INT64_VALUE_FQN ) ) {
+            register( ProtobufConstants.INT64_VALUE_FQN, Long.class, new ProtobufInt64ValueConversion() );
+            register( ProtobufConstants.INT64_VALUE_FQN, long.class, new ProtobufInt64ValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.UINT64_VALUE_FQN ) ) {
+            register( ProtobufConstants.UINT64_VALUE_FQN, Long.class, new ProtobufUInt64ValueConversion() );
+            register( ProtobufConstants.UINT64_VALUE_FQN, long.class, new ProtobufUInt64ValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.BOOL_VALUE_FQN ) ) {
+            register( ProtobufConstants.BOOL_VALUE_FQN, Boolean.class, new ProtobufBoolValueConversion() );
+            register( ProtobufConstants.BOOL_VALUE_FQN, boolean.class, new ProtobufBoolValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.STRING_VALUE_FQN ) ) {
+            register( ProtobufConstants.STRING_VALUE_FQN, String.class, new ProtobufStringValueConversion() );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.BYTES_VALUE_FQN ) ) {
+            register(
+                ProtobufConstants.BYTES_VALUE_FQN,
+                ProtobufConstants.BYTE_STRING_FQN,
+                new ProtobufBytesValueConversion()
+            );
+        }
+    }
+
     private boolean isJavaURLAvailable() {
         return typeFactory.isTypeAvailable( "java.net.URL" );
     }
@@ -332,21 +387,51 @@ public class Conversions {
         conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
     }
 
+    private void register(String sourceTypeName, String targetTypeName, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceTypeName );
+        Type targetType = typeFactory.getType( targetTypeName );
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
+        conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
+    }
+
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() &&
                 ( targetType.equals( stringType ) ||
                   targetType.getBoxedEquivalent().equals( integerType ) )
         ) {
-            sourceType = enumType;
+            sourceType = getEnumType( sourceType, targetType );
         }
         else if ( targetType.isEnumType() &&
                 ( sourceType.equals( stringType ) ||
                   sourceType.getBoxedEquivalent().equals( integerType ) )
         ) {
-            targetType = enumType;
+            targetType = getEnumType( sourceType, targetType );
         }
 
         return conversions.get( new Key( sourceType, targetType ) );
+    }
+
+    private Type getEnumType(Type sourceType, Type targetType) {
+        Type protobufEnumType = getProtobufEnumType();
+        if ( protobufEnumType != null ) {
+            if ( sourceType.isAssignableTo( protobufEnumType )
+                && targetType.getBoxedEquivalent().equals( integerType ) ) {
+                return protobufEnumType;
+            }
+            if ( targetType.isAssignableTo( protobufEnumType )
+                && sourceType.getBoxedEquivalent().equals( integerType ) ) {
+                return protobufEnumType;
+            }
+        }
+
+        return enumType;
+    }
+
+    private Type getProtobufEnumType() {
+        return typeFactory.isTypeAvailable( ProtobufConstants.PROTOCOL_MESSAGE_ENUM_FQN )
+            ? typeFactory.getType( ProtobufConstants.PROTOCOL_MESSAGE_ENUM_FQN )
+            : null;
     }
 
     private static class Key {
