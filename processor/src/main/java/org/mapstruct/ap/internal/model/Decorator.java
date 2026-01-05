@@ -16,7 +16,10 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.DefaultImplementationNamingStrategy;
+import org.mapstruct.ap.spi.ImplementationNamingStrategy;
 
 /**
  * Represents a decorator applied to a generated mapper type.
@@ -24,6 +27,9 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  * @author Gunnar Morling
  */
 public class Decorator extends GeneratedType {
+
+    static final ImplementationNamingStrategy IMPLEMENTATION_NAMING_STRATEGY =
+            Services.get( ImplementationNamingStrategy.class, new DefaultImplementationNamingStrategy() );
 
     public static class Builder extends GeneratedTypeBuilder<Builder> {
 
@@ -76,13 +82,12 @@ public class Decorator extends GeneratedType {
         }
 
         public Decorator build() {
-            String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
-                Mapper.getFlatName( mapperElement ) );
-
+            String decoratorImplementationName = generateDecoratorImplementationName();
+            String mapperImplementationName = generateMapperImplementationName();
             Type decoratorType = typeFactory.getType( decorator.value().get() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
-                implementationName,
-                implementationName + "_",
+                decoratorImplementationName,
+                    mapperImplementationName,
                 hasDelegateConstructor );
 
 
@@ -93,7 +98,7 @@ public class Decorator extends GeneratedType {
             return new Decorator(
                 typeFactory,
                 packageName,
-                implementationName,
+                decoratorImplementationName,
                 decoratorType,
                 mapperType,
                 methods,
@@ -106,6 +111,23 @@ public class Decorator extends GeneratedType {
                 customAnnotations
             );
         }
+
+        private String generateMapperImplementationName() {
+            String flatName = Mapper.getFlatName( mapperElement );
+            String implementationNameCandidate =
+                    Mapper.generateDelegateImplementationNameFromExpression( implName, mapperElement );
+            return IMPLEMENTATION_NAMING_STRATEGY
+                    .generateMapperImplementationName( flatName, implementationNameCandidate );
+        }
+
+        private String generateDecoratorImplementationName() {
+            String flatName = Mapper.getFlatName( mapperElement );
+            String implementationNameCandidate =
+                    Mapper.generateImplementationNameFromExpression( implName, mapperElement );
+            return IMPLEMENTATION_NAMING_STRATEGY
+                    .generateDecoratorImplementationName( flatName, implementationNameCandidate );
+        }
+
     }
 
     private final Type decoratorType;
