@@ -320,7 +320,7 @@ public class MappingMethodOptions {
 
     public void applyIgnoreAll(SourceMethod method, TypeFactory typeFactory,
                                FormattingMessager messager) {
-        CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+        CollectionMappingStrategyGem cms = method.getOptions().getBeanMapping().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
             writeType = typeFactory.effectiveResultTypeFor(
@@ -378,6 +378,17 @@ public class MappingMethodOptions {
         }
 
         return getPropertyEntries( mapping )[0];
+    }
+
+    public CollectionMappingStrategyGem getCollectionMappingStrategyFor(String targetProperty) {
+        if ( targetProperty != null && mappings != null ) {
+            for ( MappingOptions m : mappings ) {
+                if ( targetProperty.equals( m.getTargetName() ) && m.getCollectionMappingStrategy() != null ) {
+                    return CollectionMappingStrategyGem.valueOf( m.getCollectionMappingStrategy().name() );
+                }
+            }
+        }
+        return getBeanMapping().getCollectionMappingStrategy();
     }
 
     /**

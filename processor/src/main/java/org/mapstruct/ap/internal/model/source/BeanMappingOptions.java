@@ -15,6 +15,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
@@ -124,6 +125,7 @@ public class BeanMappingOptions extends DelegatingOptions {
             && !gem.nullValuePropertyMappingStrategy().hasValue()
             && !gem.nullValueMappingStrategy().hasValue()
             && !gem.subclassExhaustiveStrategy().hasValue()
+            && !gem.collectionMappingStrategy().hasValue()
             && !gem.unmappedTargetPolicy().hasValue()
             && !gem.unmappedSourcePolicy().hasValue()
             && !gem.ignoreByDefault().hasValue()
@@ -189,6 +191,15 @@ public class BeanMappingOptions extends DelegatingOptions {
                 .filter( GemValue::hasValue )
                 .map( GemValue::getValue )
                 .orElse( next().getSubclassExhaustiveException() );
+    }
+
+    @Override
+    public CollectionMappingStrategyGem getCollectionMappingStrategy() {
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::collectionMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( CollectionMappingStrategyGem::valueOf )
+            .orElse( next().getCollectionMappingStrategy() );
     }
 
     @Override
