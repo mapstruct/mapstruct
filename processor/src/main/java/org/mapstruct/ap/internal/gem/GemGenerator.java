@@ -18,6 +18,8 @@ import org.mapstruct.Condition;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.EnumMapping;
+import org.mapstruct.Ignored;
+import org.mapstruct.IgnoredList;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
@@ -26,8 +28,7 @@ import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
-import org.mapstruct.Ignored;
-import org.mapstruct.IgnoredList;
+import org.mapstruct.MappingSource;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
@@ -68,6 +69,7 @@ import org.mapstruct.tools.gem.GemDefinition;
 @GemDefinition(TargetType.class)
 @GemDefinition(TargetPropertyName.class)
 @GemDefinition(MappingTarget.class)
+@GemDefinition(MappingSource.class)
 @GemDefinition(DecoratedWith.class)
 @GemDefinition(MapperConfig.class)
 @GemDefinition(InheritConfiguration.class)
