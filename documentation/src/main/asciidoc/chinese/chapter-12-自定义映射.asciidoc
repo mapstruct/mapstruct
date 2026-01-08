@@ -1,0 +1,267 @@
+== 自定义映射
+
+有时候，需要在映射方法之前/之后添加自定义逻辑。这在MapStruct中有两种方式：
+
+1. 装饰器。允许实现类型安全的映射方法的自定义。
+2. before-mapping/after-mapping 生命周期方法。允许给定source/target类型下的泛型的自定义。
+
+[[customizing-mappers-using-decorators]]
+=== 使用装饰器的映射自定义
+
+有些特定场景中，需要对生成的映射方法进行自定义操作。比如target对象中，有一个不可能由生成的映射方法赋值的值，要额外给该值赋值。MapStruct通过运用装饰器来支持此种需求。
+
+[TIP]
+当使用 `cdi` 组件模式时，应在MapStruct的mapper中使用 https://docs.jboss.org/cdi/spec/1.0/html/decorators.html[CDI 装饰器]，而不是此处说的 `@DecoratedWith` 注解。
+
+为了给mapper类使用装饰器，请在该类上加上 `@DecoratedWith` 注解。
+
+.Applying a decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
+
+    PersonDto personToPersonDto(Person person);
+
+    AddressDto addressToAddressDto(Address address);
+}
+----
+====
+
+装饰器必须是被装饰的mapper类型的子类型。您可以将其定义为抽象类，这样您就可以只实现您想进行自定义的mapper接口。对于所有未实现的方法，MapStruct会使用默认的生成路径代理给原来的mapper。
+
+下面的 `PersonMapperDecorator` 对 `personToPersonDto()` 进行了定制化，向target塞进了一个source类型中没有的额外字段。而 `addressToAddressDto()` 则没有进行定制化。
+
+.Implementing a decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    private final PersonMapper delegate;
+
+    public PersonMapperDecorator(PersonMapper delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setFullName( person.getFirstName() + " " + person.getLastName() );
+        return dto;
+    }
+}
+----
+====
+
+上例展示了您可以在装饰器中注入一个默认实现的代理，并且在自定义方法中使用该代理。
+
+对于 `componentModel = "default"` 的mapper，请定义一个入参为目标mapper的单参构造器作为装饰器的构造器。
+
+当mapper的组件模式为 `spring` 或者 `jsr330` ，则需要用不同的方法来处理。
+
+[[decorators-with-spring]]
+==== Spring组件模式下的装饰器
+
+当组件模式是 `spring` 时，对mapper使用 `@DecoratedWith` 会使得生成的mapper实现会带有Spring的注解@Qualifier("delegate")。为了在装饰器中注入该bean，请在您的装饰器中同样添加该qualifier注解。
+
+.Spring-based decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+     @Autowired
+     @Qualifier("delegate")
+     private PersonMapper delegate;
+
+     @Override
+     public PersonDto personToPersonDto(Person person) {
+         PersonDto dto = delegate.personToPersonDto( person );
+         dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+         return dto;
+     }
+ }
+----
+====
+
+自动生成的类继承该装饰器，并有spring的 `@Primary` 注解。您什么额外的事情都不需要做就可以在应用中注入这个被装饰的mapper。
+
+.Using a decorated mapper
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Autowired
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+====
+
+[[decorators-with-jsr-330]]
+==== JSR 330组件模式下的装饰器
+
+JSR 330不会指定qualifiers，只能通过名字指定bean。因此，原mapper的生成实现会带有 `@Named("fully-qualified-name-of-generated-implementation")` （请注意，当使用装饰器的时候，mapper实现的类名结尾会带一个下划线）。为了把其注入到装饰器里，请把相同的注释添加到装饰器字段中（比如，可以从生成的类中复制/粘贴过去）：
+
+.JSR 330 based decorator
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract class PersonMapperDecorator implements PersonMapper {
+
+    @Inject
+    @Named("org.examples.PersonMapperImpl_")
+    private PersonMapper delegate;
+
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+        return dto;
+    }
+}
+----
+====
+
+不像其他组件模式，该方式使用时必须知道mapper是不是被装饰的，如果是，则需要加一个 `@Named` 注解来选择注入的装饰器。
+
+.Using a decorated mapper with JSR 330
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Inject
+@Named
+private PersonMapper personMapper; // injects the decorator, with the injected original mapper
+----
+====
+
+[[customizing-mappings-with-before-and-after]]
+=== 带before-mapping和after-mapping方法的映射自定义
+
+装饰器模式无法满足全部的自定义mapper需求。比如，如果您不仅想对某几个方法进行自定义，而是要对所有具有某种特征的方法进行自定义。此时，您可以使用 *回调* 方法，回调方法会在映射开始前/结束后被调用。
+
+您可以在抽象mapper自身中实现回调方法，也可以 `Mapper#uses` 中的类型接口里实现回调方法，还可以在 `@Context` 参数的类中实现回调方法。
+
+.Mapper with @BeforeMapping and @AfterMapping hooks
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @BeforeMapping
+    protected void flushEntity(AbstractVehicle vehicle) {
+        // I would call my entity manager's flush() method here to make sure my entity
+        // is populated with the right @Version before I let it map into the DTO
+    }
+
+    @AfterMapping
+    protected void fillTank(AbstractVehicle vehicle, @MappingTarget AbstractVehicleDto result) {
+        result.fuelUp( new Fuel( vehicle.getTankCapacity(), vehicle.getFuelType() ) );
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        flushEntity( car );
+
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        fillTank( car, carDto );
+
+        return carDto;
+    }
+}
+----
+====
+
+如果 `@BeforeMapping` / `@AfterMapping` 方法有参数，只有如下情况才会生成对回调方法的方法调用：方法的返回值类型（如果非void的话）是映射方法返回值类型的父类，且所有参数都得是该映射方法source/target参数的 *子* 类，具体情况见下：
+
+* 带有 `@MappingTarget` 注解的参数，会被映射的target实例填充
+* 带有 `@TargetType` 的参数，会被该映射的target类型填充
+* 带有 `@Context` 的参数，会被该映射的上下文参数填充
+* 所有其他参数，都会被该映射方法的source参数填充
+
+对于non-`void` 方法，方法调用的返回值如果不为 `null`，则作为映射方法的结果返回。
+
+与映射方法一样，可以为before-mapping/after-mapping方法指定类型参数。
+
+.Mapper with @AfterMapping hook that returns a non-null value
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @AfterMapping
+    protected <T> T attachEntity(@MappingTarget T entity) {
+        return entityManager.merge(entity);
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        CarDto target = attachEntity( carDto );
+        if ( target != null ) {
+            return target;
+        }
+
+        return carDto;
+    }
+}
+----
+====
+
+在生成映射方法实例时，所有 *能够* 用到的before/after-mapping方法 *都会* 使用到，<<selection-based-on-qualifiers>> 中展示了如何选择用哪个方法、不用哪个方法。为了能选择方法，需要在before/after-method上添加qualifier注解，并且在 `BeanMapping#qualifiedBy` 或 `IterableMapping#qualifiedBy` 中指明。
+
+方法调用的顺序主要由变量决定：
+
+1. 没有 `@MappingTarget` 参数的 `@BeforeMapping` 方法的调用顺序在所有source参数的null校验前和构造新的target bean之前。
+2. 有 `@MappingTarget` 参数的 `@BeforeMapping` 方法的调用顺序在构造一个新的target bean之后。
+3. `@AfterMapping` 方法的调用顺序在映射方法结尾处的return语句之前。
+
+而在这些分组内部，方法调用的顺序则取决于定义的位置：
+
+1. 带有 `@Context` 参数的方法，会按参数顺序排序。
+2. mapper内部定义的方法。
+3. `Mapper#uses()` 所引用的方法，会按照注解中类型声明的顺序排序。
+4. 参数越特化的方法顺序越靠后。
+
+*重要:* 单参数方法的执行顺序不能保证，这取决于编译器和系统。
+
+*重要:* 当使用builder时，`@AfterMapping` 方法必须将该builder作为带 `@MappingTarget` 的参数使用，这样该方法才能修改要构建的方法。其 `build` 方法会在 `@AfterMapping` 方法结束时调用。当真正的target被用作带 `@MappingTarget` 的参数时，MapStruct不会调用 `@AfterMapping` 方法。
