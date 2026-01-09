@@ -118,7 +118,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * // we can use {@link #defaultValue()} or {@link #defaultExpression()} for it
  * &#64;Mapper
  * public interface HumanMapper {
- *    &#64;Mapping(source="name", target="name", defaultValue="Somebody")
+ *    &#64;Mapping(source="name", target="fullName", defaultValue="Somebody")
  *    HumanDto toHumanDto(Human human)
  * }
  * </code></pre>
