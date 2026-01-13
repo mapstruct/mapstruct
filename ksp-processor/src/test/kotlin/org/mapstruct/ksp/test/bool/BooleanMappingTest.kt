@@ -14,19 +14,27 @@ class BooleanMappingTest {
     fun shouldMapBooleanPropertyWithIsPrefixedGetter() = pluginTest("""
         import org.mapstruct.Mapper
 
-        data class Person(
-            var married: Boolean? = null,
-            var engaged: Boolean? = null,
-            var divorced: YesNo? = null,
-            var widowed: YesNo? = null
-        ) {
-            fun isMarried(): Boolean? = married
+        class Person {
+            private var _married: Boolean? = null
+            private var _engaged: Boolean? = null
+            private var _divorced: YesNo? = null
+            private var _widowed: YesNo? = null
+
+            fun isMarried(): Boolean? = _married
+            fun setMarried(value: Boolean?) { _married = value }
 
             // START: please note: deliberately ordered, first getEngaged, then isEngaged.
-            fun getEngaged(): Boolean? = engaged
+            fun getEngaged(): Boolean? = _engaged
 
-            fun isEngaged(): Boolean = engaged?.let { !it } ?: false
+            fun isEngaged(): Boolean = _engaged?.let { !it } ?: false
             // END
+            fun setEngaged(value: Boolean?) { _engaged = value }
+
+            fun getDivorced(): YesNo? = _divorced
+            fun setDivorced(value: YesNo?) { _divorced = value }
+
+            fun getWidowed(): YesNo? = _widowed
+            fun setWidowed(value: YesNo?) { _widowed = value }
         }
 
         data class PersonDto(
@@ -38,7 +46,7 @@ class BooleanMappingTest {
 
         data class YesNo(val yes: Boolean)
 
-        object YesNoMapper {
+        class YesNoMapper {
             fun toString(yesNo: YesNo?): String =
                 if (yesNo?.yes == true) "yes" else "no"
 
@@ -52,7 +60,8 @@ class BooleanMappingTest {
         }
 
         fun test() {
-            val person = Person(married = true)
+            val person = Person()
+            person.setMarried(true)
             val personDto = PersonMapperImpl().personToDto(person)
 
             assert(personDto.married == "true") {
@@ -65,17 +74,25 @@ class BooleanMappingTest {
     fun shouldMapBooleanPropertyPreferringGetPrefixedGetterOverIsPrefixedGetter() = pluginTest("""
         import org.mapstruct.Mapper
 
-        data class Person(
-            var married: Boolean? = null,
-            var engaged: Boolean? = null,
-            var divorced: YesNo? = null,
-            var widowed: YesNo? = null
-        ) {
-            fun isMarried(): Boolean? = married
+        class Person {
+            private var _married: Boolean? = null
+            private var _engaged: Boolean? = null
+            private var _divorced: YesNo? = null
+            private var _widowed: YesNo? = null
 
-            fun getEngaged(): Boolean? = engaged
+            fun isMarried(): Boolean? = _married
+            fun setMarried(value: Boolean?) { _married = value }
 
-            fun isEngaged(): Boolean = engaged?.let { !it } ?: false
+            fun getEngaged(): Boolean? = _engaged
+
+            fun isEngaged(): Boolean = _engaged?.let { !it } ?: false
+            fun setEngaged(value: Boolean?) { _engaged = value }
+
+            fun getDivorced(): YesNo? = _divorced
+            fun setDivorced(value: YesNo?) { _divorced = value }
+
+            fun getWidowed(): YesNo? = _widowed
+            fun setWidowed(value: YesNo?) { _widowed = value }
         }
 
         data class PersonDto(
@@ -87,7 +104,7 @@ class BooleanMappingTest {
 
         data class YesNo(val yes: Boolean)
 
-        object YesNoMapper {
+        class YesNoMapper {
             fun toString(yesNo: YesNo?): String =
                 if (yesNo?.yes == true) "yes" else "no"
 
@@ -101,7 +118,8 @@ class BooleanMappingTest {
         }
 
         fun test() {
-            val person = Person(engaged = true)
+            val person = Person()
+            person.setEngaged(true)
             val personDto = PersonMapperImpl().personToDto(person)
 
             assert(personDto.engaged == "true") {
@@ -114,17 +132,25 @@ class BooleanMappingTest {
     fun shouldMapBooleanPropertyWithPropertyMappingMethod() = pluginTest("""
         import org.mapstruct.Mapper
 
-        data class Person(
-            var married: Boolean? = null,
-            var engaged: Boolean? = null,
-            var divorced: YesNo? = null,
-            var widowed: YesNo? = null
-        ) {
-            fun isMarried(): Boolean? = married
+        class Person {
+            private var _married: Boolean? = null
+            private var _engaged: Boolean? = null
+            private var _divorced: YesNo? = null
+            private var _widowed: YesNo? = null
 
-            fun getEngaged(): Boolean? = engaged
+            fun isMarried(): Boolean? = _married
+            fun setMarried(value: Boolean?) { _married = value }
 
-            fun isEngaged(): Boolean = engaged?.let { !it } ?: false
+            fun getEngaged(): Boolean? = _engaged
+
+            fun isEngaged(): Boolean = _engaged?.let { !it } ?: false
+            fun setEngaged(value: Boolean?) { _engaged = value }
+
+            fun getDivorced(): YesNo? = _divorced
+            fun setDivorced(value: YesNo?) { _divorced = value }
+
+            fun getWidowed(): YesNo? = _widowed
+            fun setWidowed(value: YesNo?) { _widowed = value }
         }
 
         data class PersonDto(
@@ -136,7 +162,7 @@ class BooleanMappingTest {
 
         data class YesNo(val yes: Boolean)
 
-        object YesNoMapper {
+        class YesNoMapper {
             fun toString(yesNo: YesNo?): String =
                 if (yesNo?.yes == true) "yes" else "no"
 
@@ -150,10 +176,9 @@ class BooleanMappingTest {
         }
 
         fun test() {
-            val person = Person(
-                divorced = YesNo(true),
-                widowed = YesNo(true)
-            )
+            val person = Person()
+            person.setDivorced(YesNo(true))
+            person.setWidowed(YesNo(true))
             val personDto = PersonMapperImpl().personToDto(person)
 
             assert(personDto.divorced == "yes") {

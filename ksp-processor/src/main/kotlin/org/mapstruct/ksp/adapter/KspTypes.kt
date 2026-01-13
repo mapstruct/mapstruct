@@ -130,6 +130,36 @@ class KspTypes(
     ): Boolean {
         return when {
             isSameType(t1, t2) -> true
+            // Handle primitive-to-boxed assignability (auto-boxing)
+            t1 is KspPrimitiveType && t2 is KspTypeMirror -> {
+                val boxedQualifiedName = when (t1.kind) {
+                    TypeKind.BOOLEAN -> "java.lang.Boolean"
+                    TypeKind.BYTE -> "java.lang.Byte"
+                    TypeKind.SHORT -> "java.lang.Short"
+                    TypeKind.INT -> "java.lang.Integer"
+                    TypeKind.LONG -> "java.lang.Long"
+                    TypeKind.CHAR -> "java.lang.Character"
+                    TypeKind.FLOAT -> "java.lang.Float"
+                    TypeKind.DOUBLE -> "java.lang.Double"
+                    else -> null
+                }
+                boxedQualifiedName != null && t2.element.qualifiedName?.toString() == boxedQualifiedName
+            }
+            // Handle boxed-to-primitive assignability (auto-unboxing)
+            t1 is KspTypeMirror && t2 is KspPrimitiveType -> {
+                val boxedQualifiedName = when (t2.kind) {
+                    TypeKind.BOOLEAN -> "java.lang.Boolean"
+                    TypeKind.BYTE -> "java.lang.Byte"
+                    TypeKind.SHORT -> "java.lang.Short"
+                    TypeKind.INT -> "java.lang.Integer"
+                    TypeKind.LONG -> "java.lang.Long"
+                    TypeKind.CHAR -> "java.lang.Character"
+                    TypeKind.FLOAT -> "java.lang.Float"
+                    TypeKind.DOUBLE -> "java.lang.Double"
+                    else -> null
+                }
+                boxedQualifiedName != null && t1.element.qualifiedName?.toString() == boxedQualifiedName
+            }
             t1 is KspTypeMirror && t2 is KspTypeMirror -> {
                 t2.element.declaration.asStarProjectedType().isAssignableFrom(t1.element.declaration.asStarProjectedType())
             }

@@ -52,12 +52,23 @@ class KspElements(
 
     private val packageCache = mutableMapOf<String, PackageElement>()
     override fun getPackageOf(e: Element): PackageElement {
-        check(e is KspClassTypeElement) { "Element is not a KspClassTypeElement: $e "}
-        if (e.declaration.packageName.asString() in packageCache) {
-            return packageCache[e.declaration.packageName.asString()]!!
+        check(e is KspClassTypeElement) { "Element is not a KspClassTypeElement: $e" }
+
+        // Get the mapped qualified name (Kotlin types are mapped to Java equivalents)
+        val qualifiedName = e.qualifiedName?.toString() ?: e.declaration.packageName.asString()
+
+        // Extract package from qualified name
+        val packageName = if (qualifiedName.contains('.')) {
+            qualifiedName.substringBeforeLast('.')
+        } else {
+            ""
         }
-        val result = KspPackageElement(e.declaration.packageName.asString(), resolver, logger)
-        packageCache[e.declaration.packageName.asString()] = result
+
+        if (packageName in packageCache) {
+            return packageCache[packageName]!!
+        }
+        val result = KspPackageElement(packageName, resolver, logger)
+        packageCache[packageName] = result
         return result
     }
 
