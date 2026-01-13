@@ -295,6 +295,8 @@
                         </path>
                         <!-- other annotation processors -->
                     </annotationProcessorPaths>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>

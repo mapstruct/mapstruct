@@ -27,6 +27,7 @@
         <module>core</module>
         <module>core-jdk8</module>
         <module>processor</module>
+        <module>ksp-processor</module>
     </modules>
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
