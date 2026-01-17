@@ -475,21 +475,8 @@ public class TypeFactory {
         return result;
     }
 
-    public Type getReturnType(DeclaredType includingType, Accessor accessor) {
-        Type type;
-        TypeMirror accessorType = getMethodType( includingType, accessor.getElement() );
-        if ( isExecutableType( accessorType ) ) {
-            type = getType( ( (ExecutableType) accessorType ).getReturnType() );
-        }
-        else {
-            type = getType( accessorType );
-        }
-
-        return type;
-    }
-
-    private boolean isExecutableType(TypeMirror accessorType) {
-        return accessorType.getKind() == TypeKind.EXECUTABLE;
+    public Type getReturnType(Accessor accessor) {
+        return getType( accessor.getAccessedType() );
     }
 
     public Type getReturnType(ExecutableType method) {
