@@ -829,7 +829,7 @@ public class PropertyMapping extends ModelElement {
                 forgeMethodWithMappingReferences,
                 forgedNamedBased
             );
-            return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
+            return createForgedAssignment( sourceRHS, forgedMethod );
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {

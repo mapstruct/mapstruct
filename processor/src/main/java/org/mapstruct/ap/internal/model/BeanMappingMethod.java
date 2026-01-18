@@ -32,6 +32,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
@@ -52,7 +53,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
-import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -106,8 +106,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, BeanMappingMethod> {
 
-        private Type userDefinedReturnType;
-
         /* returnType to construct can have a builder */
         private BuilderType returnTypeBuilder;
         private Map<String, Accessor> unprocessedConstructorProperties;
@@ -133,16 +131,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         @Override
         protected boolean shouldUsePropertyNamesInHistory() {
             return true;
-        }
-
-        public Builder userDefinedReturnType(Type userDefinedReturnType) {
-            this.userDefinedReturnType = userDefinedReturnType;
-            return this;
-        }
-
-        public Builder returnTypeBuilder( BuilderType returnTypeBuilder ) {
-            this.returnTypeBuilder = returnTypeBuilder;
-            return this;
         }
 
         public Builder sourceMethod(SourceMethod sourceMethod) {
@@ -181,7 +169,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // determine which return type to construct
             boolean cannotConstructReturnType = false;
             if ( !method.getReturnType().isVoid() ) {
-                Type returnTypeImpl = null;
+                BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
+                Type returnTypeImpl;
+                Type userDefinedReturnType = null;
+                if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
+                    // This is a user-defined return type, which means we need to do some extra checks for it
+                    userDefinedReturnType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    returnTypeBuilder = ctx.getTypeFactory().builderTypeFor( userDefinedReturnType, builder );
+                }
+                else {
+                    returnTypeBuilder = ctx.getTypeFactory().builderTypeFor( method.getReturnType(), builder );
+                }
                 if ( isBuilderRequired() ) {
                     // the userDefinedReturn type can also require a builder. That buildertype is already set
                     returnTypeImpl = returnTypeBuilder.getBuilder();
