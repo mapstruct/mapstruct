@@ -444,12 +444,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( parameterPresenceCheck != null ) {
                     presenceChecksByParameter.put( sourceParameter.getName(), parameterPresenceCheck );
                 }
-                else if ( !sourceParameter.getType().isPrimitive() ) {
-                    presenceChecksByParameter.put(
-                        sourceParameter.getName(),
-                        new NullPresenceCheck( sourceParameter.getName() )
-                    );
-                }
             }
 
 
