@@ -6,14 +6,12 @@
 package org.mapstruct.ap.test.optional.sametype;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION)
+@Mapper
 public interface OptionalSameTypeMapper {
 
-    OptionalSameTypeMapper INSTANCE = Mappers.getMapper(
-        OptionalSameTypeMapper.class );
+    OptionalSameTypeMapper INSTANCE = Mappers.getMapper( OptionalSameTypeMapper.class );
 
     Target toTarget(Source source);
 

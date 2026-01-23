@@ -120,8 +120,7 @@ public class SourceReference extends AbstractReference {
                 );
             }
 
-            // Split by "." but also include "?" as a separate segment for optionals
-            String[] segments = sourceNameTrimmed.split( "\\.|(?=\\?)" );
+            String[] segments = sourceNameTrimmed.split( "\\." );
 
             // start with an invalid source reference
             SourceReference result = new SourceReference( null, new ArrayList<>(  ), false );
@@ -326,6 +325,9 @@ public class SourceReference extends AbstractReference {
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
                 Type noBoundsType = newType.withoutBounds();
+                if ( noBoundsType.isOptionalType() ) {
+                    noBoundsType = noBoundsType.getOptionalBaseType();
+                }
                 ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i], i > 0 || allowedMapToBean );
                 if ( readAccessor != null ) {
                     PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );

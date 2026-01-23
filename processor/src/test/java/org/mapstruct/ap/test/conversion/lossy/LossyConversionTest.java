@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.withinPercentage;
  */
 @WithClasses({
     OversizedKitchenDrawerDto.class,
+    OversizedKitchenDrawerOptionalDto.class,
     RegularKitchenDrawerEntity.class,
     VerySpecialNumber.class,
     VerySpecialNumberMapper.class,
@@ -64,6 +65,19 @@ public class LossyConversionTest {
     }
 
     @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerOptionalMapper1.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousKitchenDrawerOptionalMapper1.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message = "Can't map property \"OptionalLong numberOfForks\". It has a possibly lossy conversion from "
+                    + "OptionalLong to int.")
+        })
+    public void testConversionFromOptionalLongToInt() {
+    }
+
+    @ProcessorTest
     @WithClasses(KitchenDrawerMapper2.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -74,6 +88,19 @@ public class LossyConversionTest {
                     + "from BigInteger to Integer.")
         })
     public void testConversionFromBigIntegerToInteger() {
+    }
+
+    @ProcessorTest
+    @WithClasses(KitchenDrawerOptionalMapper2.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = KitchenDrawerOptionalMapper2.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 20,
+                message = "property \"Optional<BigInteger> numberOfKnifes\" has a possibly lossy conversion "
+                    + "from Optional<BigInteger> to Integer.")
+        })
+    public void testConversionFromOptionalBigIntegerToInteger() {
     }
 
     @ProcessorTest
@@ -90,6 +117,19 @@ public class LossyConversionTest {
     }
 
     @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerOptionalMapper6.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousKitchenDrawerOptionalMapper6.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 17,
+                message = "Can't map property \"Optional<String> drawerId\". It has a possibly lossy conversion from "
+                    + "Optional<String> to int.")
+        })
+    public void testConversionFromOptionalStringToInt() {
+    }
+
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper3.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -100,6 +140,19 @@ public class LossyConversionTest {
                     "It has a possibly lossy conversion from BigInteger to Long.")
         })
     public void test2StepConversionFromBigIntegerToLong() {
+    }
+
+    @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerOptionalMapper3.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousKitchenDrawerOptionalMapper3.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message = "Can't map property \"Optional<VerySpecialNumber> numberOfSpoons\". " +
+                    "It has a possibly lossy conversion from BigInteger to Long.")
+        })
+    public void test2StepConversionFromOptionalBigIntegerToLong() {
     }
 
     @ProcessorTest
@@ -116,6 +169,20 @@ public class LossyConversionTest {
     }
 
     @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerOptionalMapper4.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousKitchenDrawerOptionalMapper4.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message =
+                    "Can't map property \"Optional<Double> depth\". " +
+                        "It has a possibly lossy conversion from Optional<Double> to float.")
+        })
+    public void testConversionFromOptionalDoubleToFloat() {
+    }
+
+    @ProcessorTest
     @WithClasses(ErroneousKitchenDrawerMapper5.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
@@ -129,6 +196,20 @@ public class LossyConversionTest {
     }
 
     @ProcessorTest
+    @WithClasses(ErroneousKitchenDrawerOptionalMapper5.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousKitchenDrawerOptionalMapper5.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message =
+            "Can't map property \"Optional<BigDecimal> length\". " +
+                "It has a possibly lossy conversion from Optional<BigDecimal> to Float.")
+        })
+    public void testConversionFromOptionalBigDecimalToFloat() {
+    }
+
+    @ProcessorTest
     @WithClasses(KitchenDrawerMapper6.class)
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -138,6 +219,19 @@ public class LossyConversionTest {
                 message = "property \"double height\" has a possibly lossy conversion from double to float.")
         })
     public void test2StepConversionFromDoubleToFloat() {
+    }
+
+    @ProcessorTest
+    @WithClasses(KitchenDrawerOptionalMapper6.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = KitchenDrawerOptionalMapper6.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 20,
+                message = "property \"OptionalDouble height\" has a possibly lossy conversion from " +
+                    "OptionalDouble to float.")
+        })
+    public void test2StepConversionFromOptionalDoubleToFloat() {
     }
 
     @ProcessorTest

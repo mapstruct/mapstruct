@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-20T21:40:58-0500",
-    comments = "version: , compiler: javac, environment: Java 11.0.19 (Homebrew)"
+    date = "2026-01-23T10:02:54+0100",
+    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
 )
 public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesMapper {
 
@@ -41,9 +41,41 @@ public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesM
         return target;
     }
 
-    protected Target.SubType subTypeToSubType(Source.SubType subType) {
-        if ( subType == null ) {
+    protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
+        if ( optional.isEmpty() ) {
+            return Optional.empty();
+        }
+
+        String value = null;
+
+        Source.SubType optionalValue = optional.get();
+
+        value = optionalValue.getValue();
+
+        Target.SubType subType = new Target.SubType( value );
+
+        return Optional.of( subType );
+    }
+
+    protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
+        if ( optional.isEmpty() ) {
             return null;
+        }
+
+        String value = null;
+
+        Source.SubType optionalValue = optional.get();
+
+        value = optionalValue.getValue();
+
+        Target.SubType subType = new Target.SubType( value );
+
+        return subType;
+    }
+
+    protected Optional<Target.SubType> subTypeToSubTypeOptional(Source.SubType subType) {
+        if ( subType == null ) {
+            return Optional.empty();
         }
 
         String value = null;
@@ -52,37 +84,6 @@ public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesM
 
         Target.SubType subType1 = new Target.SubType( value );
 
-        return subType1;
-    }
-
-    protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
-        if ( optional == null ) {
-            return Optional.empty();
-        }
-
-        Optional<Target.SubType> optional1 = optional.map( subType -> subTypeToSubType( subType ) );
-
-        return optional1;
-    }
-
-    protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
-        if ( optional == null ) {
-            return null;
-        }
-
-        Target.SubType subType1 = optional.map( subType -> subTypeToSubType( subType ) ).orElse( null );
-
-        return subType1;
-    }
-
-    protected Optional<Target.SubType> subTypeToSubTypeOptional(Source.SubType subType) {
-        if ( subType == null ) {
-            return Optional.empty();
-        }
-
-        Source.SubType subType1 = subType;
-        Optional<Target.SubType> optional = Optional.ofNullable( subTypeToSubType( subType1 ) );
-
-        return optional;
+        return Optional.of( subType1 );
     }
 }

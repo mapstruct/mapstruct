@@ -29,23 +29,17 @@ class OptionalDifferentTypesTest {
 
     @ProcessorTest
     void constructorOptionalToOptionalWhenPresent() {
-        Source source = new Source( Optional.of( new Source.SubType( "some value" ) ), null, null );
+        Source source = new Source( Optional.of( new Source.SubType( "some value" ) ), Optional.empty(), null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToOptional() ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.getConstructorOptionalToOptional() )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void constructorOptionalToOptionalWhenEmpty() {
-        Source source = new Source( Optional.empty(), null, null );
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToOptional() ).isEmpty();
-    }
-
-    @ProcessorTest
-    void constructorOptionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
         assertThat( target.getConstructorOptionalToOptional() ).isEmpty();
@@ -53,23 +47,17 @@ class OptionalDifferentTypesTest {
 
     @ProcessorTest
     void constructorOptionalToNonOptionalWhenPresent() {
-        Source source = new Source( null, Optional.of( new Source.SubType( "some value" ) ), null );
+        Source source = new Source( Optional.empty(), Optional.of( new Source.SubType( "some value" ) ), null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToNonOptional() ).isEqualTo( new Target.SubType( "some value" ) );
+        Target.SubType subType = target.getConstructorOptionalToNonOptional();
+        assertThat( subType ).isNotNull();
+        assertThat( subType.getValue() ).isEqualTo( "some value" );
     }
 
     @ProcessorTest
     void constructorOptionalToNonOptionalWhenEmpty() {
-        Source source = new Source( null, Optional.empty(), null );
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorOptionalToNonOptional() ).isNull();
-    }
-
-    @ProcessorTest
-    void constructorOptionalToNonOptionalWhenNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
         assertThat( target.getConstructorOptionalToNonOptional() ).isNull();
@@ -77,15 +65,17 @@ class OptionalDifferentTypesTest {
 
     @ProcessorTest
     void constructorNonOptionalToOptionalWhenNotNull() {
-        Source source = new Source( null, null, new Source.SubType( "some value" ) );
+        Source source = new Source( Optional.empty(), Optional.empty(), new Source.SubType( "some value" ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getConstructorNonOptionalToOptional() ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.getConstructorNonOptionalToOptional() )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void constructorNonOptionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
         assertThat( target.getConstructorNonOptionalToOptional() ).isEmpty();
@@ -93,16 +83,18 @@ class OptionalDifferentTypesTest {
 
     @ProcessorTest
     void optionalToOptionalWhenPresent() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setOptionalToOptional( Optional.of( new Source.SubType( "some value" ) ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.getOptionalToOptional() )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void optionalToOptionalWhenEmpty() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setOptionalToOptional( Optional.empty() );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -110,26 +102,19 @@ class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    void optionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
-        source.setOptionalToOptional( null );
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToOptional() ).isEmpty();
-    }
-
-    @ProcessorTest
     void optionalToNonOptionalWhenPresent() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setOptionalToNonOptional( Optional.of( new Source.SubType( "some value" ) ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToNonOptional() ).isEqualTo( new Target.SubType( "some value" ) );
+        Target.SubType subType = target.getOptionalToNonOptional();
+        assertThat( subType ).isNotNull();
+        assertThat( subType.getValue() ).isEqualTo( "some value" );
     }
 
     @ProcessorTest
     void optionalToNonOptionalWhenEmpty() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setOptionalToNonOptional( Optional.empty() );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -137,26 +122,19 @@ class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    void optionalToNonOptionalWhenNull() {
-        Source source = new Source( null, null, null );
-        source.setOptionalToNonOptional( null );
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getOptionalToNonOptional() ).isNull();
-    }
-
-    @ProcessorTest
     void nonOptionalToOptionalWhenNotNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setNonOptionalToOptional( new Source.SubType( "some value" ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.getNonOptionalToOptional() ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.getNonOptionalToOptional() )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void nonOptionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.setNonOptionalToOptional( null );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -165,16 +143,18 @@ class OptionalDifferentTypesTest {
 
     @ProcessorTest
     void publicOptionalToOptionalWhenPresent() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicOptionalToOptional = Optional.of( new Source.SubType( "some value" ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToOptional ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.publicOptionalToOptional )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void publicOptionalToOptionalWhenEmpty() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicOptionalToOptional = Optional.empty();
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -182,26 +162,19 @@ class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    void publicOptionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
-        source.publicOptionalToOptional = null;
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToOptional ).isEmpty();
-    }
-
-    @ProcessorTest
     void publicOptionalToNonOptionalWhenPresent() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicOptionalToNonOptional = Optional.of( new Source.SubType( "some value" ) );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToNonOptional ).isEqualTo( new Target.SubType( "some value" ) );
+        Target.SubType subType = target.publicOptionalToNonOptional;
+        assertThat( subType ).isNotNull();
+        assertThat( subType.getValue() ).isEqualTo( "some value" );
     }
 
     @ProcessorTest
     void publicOptionalToNonOptionalWhenEmpty() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicOptionalToNonOptional = Optional.empty();
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
@@ -209,26 +182,19 @@ class OptionalDifferentTypesTest {
     }
 
     @ProcessorTest
-    void publicOptionalToNonOptionalWhenNull() {
-        Source source = new Source( null, null, null );
-        source.publicOptionalToNonOptional = null;
-
-        Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicOptionalToNonOptional ).isNull();
-    }
-
-    @ProcessorTest
     void publicNonOptionalToOptionalWhenNotNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicNonOptionalToOptional = new Source.SubType( "some value" );
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );
-        assertThat( target.publicNonOptionalToOptional ).contains( new Target.SubType( "some value" ) );
+        assertThat( target.publicNonOptionalToOptional )
+            .hasValueSatisfying( subType ->
+                assertThat( subType.getValue() ).isEqualTo( "some value" ) );
     }
 
     @ProcessorTest
     void publicNonOptionalToOptionalWhenNull() {
-        Source source = new Source( null, null, null );
+        Source source = new Source();
         source.publicNonOptionalToOptional = null;
 
         Target target = OptionalDifferentTypesMapper.INSTANCE.toTarget( source );

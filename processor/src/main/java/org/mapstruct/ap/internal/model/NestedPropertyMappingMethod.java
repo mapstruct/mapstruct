@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AnyPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
@@ -71,21 +72,58 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             }
 
             String previousPropertyName = sourceParameter.getName();
+            Type previousPropertyType = sourceParameter.getType();
             for ( int i = 0; i < propertyEntries.size(); i++ ) {
                 PropertyEntry propertyEntry = propertyEntries.get( i );
-                PresenceCheck presenceCheck = getPresenceCheck( propertyEntry, previousPropertyName );
+                PresenceCheck presenceCheck;
 
-                if ( i > 0 ) {
-                    // If this is not the first property entry,
-                    // then we might need to combine the presence check with a null check of the previous property
-                    if ( presenceCheck != null ) {
-                        presenceCheck = new AnyPresenceChecksPresenceCheck( Arrays.asList(
-                            new NullPresenceCheck( previousPropertyName, true ),
-                            presenceCheck
-                        ) );
+                if ( previousPropertyType.isOptionalType() ) {
+                    String optionalValueSafeName = Strings.getSafeVariableName(
+                        previousPropertyName + "Value",
+                        existingVariableNames
+                    );
+                    existingVariableNames.add( optionalValueSafeName );
+
+                    presenceCheck = getPresenceCheck( propertyEntry, optionalValueSafeName );
+
+                    String optionalValueSource = previousPropertyName + ".get()";
+                    boolean doesNotNeedFollowUpProperty = false;
+                    if ( i == propertyEntries.size() - 1 ) {
+                        // If this is the last property, and we do not have a presence check,
+                        // then we do not need to assign the optional value
+                        // e.g., we need to generate <sourceOptional>.get().getXxx();
+                        doesNotNeedFollowUpProperty = presenceCheck == null;
+                        if ( doesNotNeedFollowUpProperty ) {
+                            optionalValueSource += "." + propertyEntry.getReadAccessor().getReadValueSource();
+                        }
                     }
-                    else {
-                        presenceCheck = new NullPresenceCheck( previousPropertyName, true );
+                    Type optionalBaseType = previousPropertyType.getOptionalBaseType();
+                    safePropertyEntries.add( new SafePropertyEntry(
+                        optionalBaseType,
+                        optionalValueSafeName,
+                        optionalValueSource,
+                        new OptionalPresenceCheck( previousPropertyName, ctx.getVersionInformation(), true )
+                    ) );
+                    if ( doesNotNeedFollowUpProperty ) {
+                        break;
+                    }
+                    previousPropertyName = optionalValueSafeName;
+
+                }
+                else {
+                    presenceCheck = getPresenceCheck( propertyEntry, previousPropertyName );
+                    if ( i > 0 ) {
+                        // If this is not the first property entry,
+                        // then we might need to combine the presence check with a null check of the previous property
+                        if ( presenceCheck != null ) {
+                            presenceCheck = new AnyPresenceChecksPresenceCheck( Arrays.asList(
+                                new NullPresenceCheck( previousPropertyName, true ),
+                                presenceCheck
+                            ) );
+                        }
+                        else {
+                            presenceCheck = new NullPresenceCheck( previousPropertyName, true );
+                        }
                     }
                 }
 
@@ -101,6 +139,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                 thrownTypes.addAll( ctx.getTypeFactory().getThrownTypes(
                         propertyEntry.getReadAccessor() ) );
                 previousPropertyName = safeName;
+                previousPropertyType = propertyEntry.getType();
             }
             method.addThrownTypes( thrownTypes );
             return new NestedPropertyMappingMethod( method, safePropertyEntries );

@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-20T21:40:54-0500",
-    comments = "version: , compiler: javac, environment: Java 11.0.19 (Homebrew)"
+    date = "2026-01-23T10:02:41+0100",
+    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
 )
 public class OptionalNestedMapperImpl implements OptionalNestedMapper {
 
@@ -23,74 +23,49 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
 
         Target target = new Target();
 
-        target.setOptionalToNonOptional( sourceOptionalToNonOptional_Value_( source ) );
-        target.setOptionalToOptional( sourceOptionalToOptional_Value( source ) );
-        target.setNonOptionalToNonOptional( sourceNonOptionalToNonOptional_Value( source ) );
-        target.setNonOptionalToOptional( stringToStringOptional( sourceNonOptionalToOptional_Value( source ) ) );
+        Optional<String> value = sourceOptionalToNonOptionalValue( source );
+        if ( value.isPresent() ) {
+            target.setOptionalToNonOptional( value.get() );
+        }
+        target.setOptionalToOptional( sourceOptionalToOptionalValue( source ) );
+        target.setNonOptionalToNonOptional( sourceNonOptionalToNonOptionalValue( source ) );
+        String value3 = sourceNonOptionalToOptionalValue( source );
+        if ( value3 != null ) {
+            target.setNonOptionalToOptional( Optional.of( value3 ) );
+        }
 
         return target;
     }
 
-    private String sourceOptionalToNonOptional_Value_(Source source) {
+    private Optional<String> sourceOptionalToNonOptionalValue(Source source) {
         Optional<Source.NestedOptional> optionalToNonOptional = source.getOptionalToNonOptional();
-        if ( optionalToNonOptional == null ) {
-            return null;
+        if ( optionalToNonOptional.isEmpty() ) {
+            return Optional.empty();
         }
-        Source.NestedOptional optionalValue = optionalToNonOptional.orElse( null );
-        if ( optionalValue == null ) {
-            return null;
-        }
-        Optional<String> value = optionalValue.getValue();
-        if ( value == null ) {
-            return null;
-        }
-        return value.orElse( null );
+        return optionalToNonOptional.get().getValue();
     }
 
-    private Optional<String> sourceOptionalToOptional_Value(Source source) {
+    private Optional<String> sourceOptionalToOptionalValue(Source source) {
         Optional<Source.NestedOptional> optionalToOptional = source.getOptionalToOptional();
-        if ( optionalToOptional == null ) {
+        if ( optionalToOptional.isEmpty() ) {
             return Optional.empty();
         }
-        Source.NestedOptional optionalValue = optionalToOptional.orElse( null );
-        if ( optionalValue == null ) {
-            return Optional.empty();
-        }
-        return optionalValue.getValue();
+        return optionalToOptional.get().getValue();
     }
 
-    private String sourceNonOptionalToNonOptional_Value(Source source) {
+    private String sourceNonOptionalToNonOptionalValue(Source source) {
         Optional<Source.NestedNonOptional> nonOptionalToNonOptional = source.getNonOptionalToNonOptional();
-        if ( nonOptionalToNonOptional == null ) {
+        if ( nonOptionalToNonOptional.isEmpty() ) {
             return null;
         }
-        Source.NestedNonOptional optionalValue = nonOptionalToNonOptional.orElse( null );
-        if ( optionalValue == null ) {
-            return null;
-        }
-        return optionalValue.getValue();
+        return nonOptionalToNonOptional.get().getValue();
     }
 
-    private String sourceNonOptionalToOptional_Value(Source source) {
+    private String sourceNonOptionalToOptionalValue(Source source) {
         Optional<Source.NestedNonOptional> nonOptionalToOptional = source.getNonOptionalToOptional();
-        if ( nonOptionalToOptional == null ) {
+        if ( nonOptionalToOptional.isEmpty() ) {
             return null;
         }
-        Source.NestedNonOptional optionalValue = nonOptionalToOptional.orElse( null );
-        if ( optionalValue == null ) {
-            return null;
-        }
-        return optionalValue.getValue();
-    }
-
-    protected Optional<String> stringToStringOptional(String string) {
-        if ( string == null ) {
-            return Optional.empty();
-        }
-
-        String string1 = string;
-        Optional<String> optional = Optional.ofNullable( string1 );
-
-        return optional;
+        return nonOptionalToOptional.get().getValue();
     }
 }

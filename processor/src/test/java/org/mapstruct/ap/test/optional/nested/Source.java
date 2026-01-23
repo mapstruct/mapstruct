@@ -10,10 +10,10 @@ import java.util.Optional;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Source {
 
-    private Optional<NestedOptional> optionalToNonOptional;
-    private Optional<NestedOptional> optionalToOptional;
-    private Optional<NestedNonOptional> nonOptionalToNonOptional;
-    private Optional<NestedNonOptional> nonOptionalToOptional;
+    private Optional<NestedOptional> optionalToNonOptional = Optional.empty();
+    private Optional<NestedOptional> optionalToOptional = Optional.empty();
+    private Optional<NestedNonOptional> nonOptionalToNonOptional = Optional.empty();
+    private Optional<NestedNonOptional> nonOptionalToOptional = Optional.empty();
 
     public Optional<NestedOptional> getOptionalToNonOptional() {
         return optionalToNonOptional;

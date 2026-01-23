@@ -10,8 +10,8 @@ import java.util.Optional;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Source {
 
-    private Optional<String> optionalToOptional;
-    private Optional<String> optionalToNonOptional;
+    private Optional<String> optionalToOptional = Optional.empty();
+    private Optional<String> optionalToNonOptional = Optional.empty();
     private String nonOptionalToOptional;
 
     public Optional<String> getOptionalToOptional() {

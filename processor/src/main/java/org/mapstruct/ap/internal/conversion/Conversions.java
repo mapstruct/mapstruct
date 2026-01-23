@@ -345,6 +345,36 @@ public class Conversions {
         ) {
             targetType = enumType;
         }
+        else if ( sourceType.isOptionalType() ) {
+            if ( targetType.isOptionalType() ) {
+                // We cannot convert optional to optional
+                return null;
+            }
+            Type sourceBaseType = sourceType.getOptionalBaseType();
+            if ( sourceBaseType.equals( targetType ) ) {
+                // Optional<Type> -> Type
+                return TypeToOptionalConversion.OPTIONAL_TO_TYPE_CONVERSION;
+            }
+
+            ConversionProvider conversionProvider = conversions.get( new Key( sourceBaseType, targetType ) );
+            if ( conversionProvider != null ) {
+                return inverse( new OptionalWrapperConversionProvider( conversionProvider ) );
+            }
+
+        }
+        else if ( targetType.isOptionalType() ) {
+            // Type -> Optional<Type>
+            Type targetBaseType = targetType.getOptionalBaseType();
+            if ( targetBaseType.equals( sourceType )) {
+                return TypeToOptionalConversion.TYPE_TO_OPTIONAL_CONVERSION;
+            }
+            ConversionProvider conversionProvider = conversions.get( new Key( sourceType, targetBaseType ) );
+            if ( conversionProvider != null ) {
+                return new OptionalWrapperConversionProvider( conversionProvider );
+            }
+            return null;
+
+        }
 
         return conversions.get( new Key( sourceType, targetType ) );
     }
