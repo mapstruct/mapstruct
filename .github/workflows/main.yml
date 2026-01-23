@@ -30,7 +30,10 @@ jobs:
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
         if: matrix.java == 21 && github.repository == 'mapstruct/mapstruct'
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: 'Publish Snapshots'
         if: matrix.java == 21 && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
