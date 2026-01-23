@@ -12,6 +12,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * Presence checker for {@link java.util.Optional} types.
@@ -21,20 +22,25 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class OptionalPresenceCheck extends ModelElement implements PresenceCheck {
 
     private final String sourceReference;
+    private final VersionInformation versionInformation;
     private final boolean negate;
 
-    public OptionalPresenceCheck(String sourceReference) {
-        this.sourceReference = sourceReference;
-        this.negate = false;
+    public OptionalPresenceCheck(String sourceReference, VersionInformation versionInformation) {
+        this( sourceReference, versionInformation, false );
     }
 
-    public OptionalPresenceCheck(String sourceReference, boolean negate) {
+    public OptionalPresenceCheck(String sourceReference, VersionInformation versionInformation, boolean negate) {
         this.sourceReference = sourceReference;
+        this.versionInformation = versionInformation;
         this.negate = negate;
     }
 
     public String getSourceReference() {
         return sourceReference;
+    }
+
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 
     @Override
@@ -48,7 +54,7 @@ public class OptionalPresenceCheck extends ModelElement implements PresenceCheck
 
     @Override
     public PresenceCheck negate() {
-        return new OptionalPresenceCheck( sourceReference, !negate );
+        return new OptionalPresenceCheck( sourceReference, versionInformation, !negate );
     }
 
     @Override

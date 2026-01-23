@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-20T21:40:52-0500",
-    comments = "version: , compiler: javac, environment: Java 11.0.19 (Homebrew)"
+    date = "2026-01-23T10:02:54+0100",
+    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
 )
 public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
 
@@ -26,39 +26,30 @@ public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
         Optional<String> constructorNonOptionalToOptional = Optional.empty();
 
         constructorOptionalToOptional = source.getConstructorOptionalToOptional();
-        constructorOptionalToNonOptional = stringOptionalToString( source.getConstructorOptionalToNonOptional() );
-        constructorNonOptionalToOptional = stringToStringOptional( source.getConstructorNonOptionalToOptional() );
+        if ( source.getConstructorOptionalToNonOptional().isPresent() ) {
+            constructorOptionalToNonOptional = source.getConstructorOptionalToNonOptional().get();
+        }
+        if ( source.getConstructorNonOptionalToOptional() != null ) {
+            constructorNonOptionalToOptional = Optional.of( source.getConstructorNonOptionalToOptional() );
+        }
 
         Target target = new Target( constructorOptionalToOptional, constructorOptionalToNonOptional, constructorNonOptionalToOptional );
 
         target.setOptionalToOptional( source.getOptionalToOptional() );
-        target.setOptionalToNonOptional( stringOptionalToString( source.getOptionalToNonOptional() ) );
-        target.setNonOptionalToOptional( stringToStringOptional( source.getNonOptionalToOptional() ) );
+        if ( source.getOptionalToNonOptional().isPresent() ) {
+            target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
+        }
+        if ( source.getNonOptionalToOptional() != null ) {
+            target.setNonOptionalToOptional( Optional.of( source.getNonOptionalToOptional() ) );
+        }
         target.publicOptionalToOptional = source.publicOptionalToOptional;
-        target.publicOptionalToNonOptional = stringOptionalToString( source.publicOptionalToNonOptional );
-        target.publicNonOptionalToOptional = stringToStringOptional( source.publicNonOptionalToOptional );
+        if ( source.publicOptionalToNonOptional.isPresent() ) {
+            target.publicOptionalToNonOptional = source.publicOptionalToNonOptional.get();
+        }
+        if ( source.publicNonOptionalToOptional != null ) {
+            target.publicNonOptionalToOptional = Optional.of( source.publicNonOptionalToOptional );
+        }
 
         return target;
-    }
-
-    protected String stringOptionalToString(Optional<String> optional) {
-        if ( optional == null ) {
-            return null;
-        }
-
-        String string1 = optional.map( string -> string ).orElse( null );
-
-        return string1;
-    }
-
-    protected Optional<String> stringToStringOptional(String string) {
-        if ( string == null ) {
-            return Optional.empty();
-        }
-
-        String string1 = string;
-        Optional<String> optional = Optional.ofNullable( string1 );
-
-        return optional;
     }
 }

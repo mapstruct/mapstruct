@@ -51,12 +51,13 @@ public class Parameter extends ModelElement {
         this.varArgs = varArgs;
     }
 
-    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
+    private Parameter(String name, String originalName, Type type, boolean mappingTarget, boolean targetType,
+                      boolean mappingContext,
                       boolean sourcePropertyName, boolean targetPropertyName,
                       boolean varArgs) {
         this.element = null;
         this.name = name;
-        this.originalName = name;
+        this.originalName = originalName;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
@@ -67,7 +68,7 @@ public class Parameter extends ModelElement {
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false, false, false, false );
+        this( name, name, type, false, false, false, false, false, false );
     }
 
     public Element getElement() {
@@ -141,6 +142,20 @@ public class Parameter extends ModelElement {
             !isTargetPropertyName();
     }
 
+    public Parameter withName(String name) {
+        return new Parameter(
+            name,
+            this.name,
+            type,
+            mappingTarget,
+            targetType,
+            mappingContext,
+            sourcePropertyName,
+            targetPropertyName,
+            varArgs
+        );
+    }
+
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
@@ -176,6 +191,7 @@ public class Parameter extends ModelElement {
 
     public static Parameter forForgedMappingTarget(Type parameterType) {
         return new Parameter(
+            "mappingTarget",
             "mappingTarget",
             parameterType,
             true,

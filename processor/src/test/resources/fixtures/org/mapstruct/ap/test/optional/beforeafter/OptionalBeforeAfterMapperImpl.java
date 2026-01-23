@@ -32,17 +32,65 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
         deepOptionalToNonOptional = subTypeOptionalToSubType( source.getDeepOptionalToNonOptional() );
         deepNonOptionalToOptional = subTypeToSubTypeOptional( source.getDeepNonOptionalToOptional() );
         shallowOptionalToOptional = source.getShallowOptionalToOptional();
-        shallowOptionalToNonOptional = stringOptionalToString( source.getShallowOptionalToNonOptional() );
-        shallowNonOptionalToOptional = stringToStringOptional( source.getShallowNonOptionalToOptional() );
+        if ( source.getShallowOptionalToNonOptional().isPresent() ) {
+            shallowOptionalToNonOptional = source.getShallowOptionalToNonOptional().get();
+        }
+        if ( source.getShallowNonOptionalToOptional() != null ) {
+            shallowNonOptionalToOptional = Optional.of( source.getShallowNonOptionalToOptional() );
+        }
 
         Target target = new Target( deepOptionalToOptional, deepOptionalToNonOptional, deepNonOptionalToOptional, shallowOptionalToOptional, shallowOptionalToNonOptional, shallowNonOptionalToOptional );
 
         return target;
     }
 
-    protected Target.SubType subTypeToSubType(Source.SubType subType) {
-        if ( subType == null ) {
+    protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
+        beforeDeepOptionalSourceWithNoTargetType( optional );
+        beforeDeepOptionalSourceWithNonOptionalTargetType( Target.SubType.class, optional );
+
+        if ( optional.isEmpty() ) {
+            return Optional.empty();
+        }
+
+        String value = null;
+
+        Source.SubType optionalValue = optional.get();
+
+        value = optionalValue.getValue();
+
+        Target.SubType subType = new Target.SubType( value );
+
+        afterDeepOptionalSourceWithNoTarget( optional );
+        afterDeepOptionalSourceWithNonOptionalTarget( subType, optional );
+
+        return Optional.of( subType );
+    }
+
+    protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
+        beforeDeepOptionalSourceWithNoTargetType( optional );
+        beforeDeepOptionalSourceWithNonOptionalTargetType( Target.SubType.class, optional );
+
+        if ( optional.isEmpty() ) {
             return null;
+        }
+
+        String value = null;
+
+        Source.SubType optionalValue = optional.get();
+
+        value = optionalValue.getValue();
+
+        Target.SubType subType = new Target.SubType( value );
+
+        afterDeepOptionalSourceWithNoTarget( optional );
+        afterDeepOptionalSourceWithNonOptionalTarget( subType, optional );
+
+        return subType;
+    }
+
+    protected Optional<Target.SubType> subTypeToSubTypeOptional(Source.SubType subType) {
+        if ( subType == null ) {
+            return Optional.empty();
         }
 
         String value = null;
@@ -51,79 +99,6 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
 
         Target.SubType subType1 = new Target.SubType( value );
 
-        return subType1;
-    }
-
-    protected Optional<Target.SubType> subTypeOptionalToSubTypeOptional(Optional<Source.SubType> optional) {
-        beforeDeepOptionalSourceWithNoTargetType( optional );
-
-        if ( optional == null ) {
-            return Optional.empty();
-        }
-
-        Optional<Target.SubType> optional1 = optional.map( subType -> subTypeToSubType( subType ) );
-
-        afterDeepOptionalSourceWithNoTarget( optional );
-        afterDeepOptionalSourceWithOptionalTarget( optional1, optional );
-
-        return optional1;
-    }
-
-    protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
-        beforeDeepOptionalSourceWithNoTargetType( optional );
-        beforeDeepOptionalSourceWithNonOptionalTargetType( Target.SubType.class, optional );
-
-        if ( optional == null ) {
-            return null;
-        }
-
-        Target.SubType subType1 = optional.map( subType -> subTypeToSubType( subType ) ).orElse( null );
-
-        afterDeepOptionalSourceWithNoTarget( optional );
-        afterDeepOptionalSourceWithNonOptionalTarget( subType1, optional );
-
-        return subType1;
-    }
-
-    protected Optional<Target.SubType> subTypeToSubTypeOptional(Source.SubType subType) {
-        if ( subType == null ) {
-            return Optional.empty();
-        }
-
-        Source.SubType subType1 = subType;
-        Optional<Target.SubType> optional = Optional.ofNullable( subTypeToSubType( subType1 ) );
-
-        afterDeepNonOptionalSourceOptionalTarget( optional, subType );
-
-        return optional;
-    }
-
-    protected String stringOptionalToString(Optional<String> optional) {
-        beforeShallowOptionalSourceWithNoTargetType( optional );
-        beforeShallowOptionalSourceWithNonOptionalTargetType( String.class, optional );
-
-        if ( optional == null ) {
-            return null;
-        }
-
-        String string1 = optional.map( string -> string ).orElse( null );
-
-        afterShallowOptionalSourceWithNoTarget( optional );
-        afterShallowOptionalSourceWithNonOptionalTarget( string1, optional );
-
-        return string1;
-    }
-
-    protected Optional<String> stringToStringOptional(String string) {
-        if ( string == null ) {
-            return Optional.empty();
-        }
-
-        String string1 = string;
-        Optional<String> optional = Optional.ofNullable( string1 );
-
-        afterShallowNonOptionalSourceOptionalTarget( optional, string );
-
-        return optional;
+        return Optional.of( subType1 );
     }
 }

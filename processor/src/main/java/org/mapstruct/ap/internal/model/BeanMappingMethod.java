@@ -102,6 +102,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType;
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
     private final Type subclassExhaustiveException;
+    private final Map<String, Reassignment> sourceParametersReassignments;
 
     private final MappingReferences mappingReferences;
 
@@ -119,6 +120,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
         private final Set<String> existingVariableNames = new HashSet<>();
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
+        private final Map<String, Reassignment> sourceParametersReassignments = new HashMap<>();
 
         private MappingReferences mappingReferences;
         private List<MappingReference> targetThisReferences;
@@ -176,10 +178,18 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
                     // This is a user-defined return type, which means we need to do some extra checks for it
                     userDefinedReturnType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    returnTypeImpl = userDefinedReturnType;
                     returnTypeBuilder = ctx.getTypeFactory().builderTypeFor( userDefinedReturnType, builder );
                 }
                 else {
-                    returnTypeBuilder = ctx.getTypeFactory().builderTypeFor( method.getReturnType(), builder );
+                    Type methodReturnType = method.getReturnType();
+                    if ( methodReturnType.isOptionalType() ) {
+                        returnTypeImpl = methodReturnType.getOptionalBaseType();
+                    }
+                    else {
+                        returnTypeImpl = methodReturnType;
+                    }
+                    returnTypeBuilder = ctx.getTypeFactory().builderTypeFor( returnTypeImpl, builder );
                 }
                 if ( isBuilderRequired() ) {
                     // the userDefinedReturn type can also require a builder. That buildertype is already set
@@ -195,7 +205,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
                 else if ( userDefinedReturnType != null ) {
-                    returnTypeImpl = userDefinedReturnType;
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null || canResultTypeFromBeanMappingBeConstructed( returnTypeImpl ) ) {
                         returnTypeToConstruct = returnTypeImpl;
@@ -205,7 +214,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
                 else if ( !method.isUpdateMethod() ) {
-                    returnTypeImpl = method.getReturnType();
                     initializeFactoryMethod( returnTypeImpl, selectionParameters );
                     if ( factoryMethod != null
                         || allowsAbstractReturnTypeAndIsEitherAbstractOrCanBeConstructed( returnTypeImpl )
@@ -266,12 +274,25 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
 
-                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ||
-                    sourceParameter.getType().isMapType() ) {
+                Type sourceParameterType = sourceParameter.getType();
+                if ( sourceParameterType.isOptionalType() ) {
+                    String sourceParameterValueName = Strings.getSafeVariableName(
+                        sourceParameter.getName() + "Value",
+                        existingVariableNames
+                    );
+                    existingVariableNames.add( sourceParameterValueName );
+                    sourceParameterType = sourceParameterType.getOptionalBaseType();
+                    sourceParametersReassignments.put(
+                        sourceParameter.getName(),
+                        new Reassignment( sourceParameterValueName, sourceParameterType )
+                    );
+                }
+                if ( sourceParameterType.isPrimitive() || sourceParameterType.isArrayType() ||
+                    sourceParameterType.isMapType() ) {
                     continue;
                 }
 
-                Map<String, ReadAccessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                Map<String, ReadAccessor> readAccessors = sourceParameterType.getPropertyReadAccessors();
 
                 unprocessedSourceProperties.putAll( readAccessors );
             }
@@ -465,7 +486,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 mappingReferences,
                 subclasses,
                 presenceChecksByParameter,
-                subclassExhaustiveExceptionType
+                subclassExhaustiveExceptionType,
+                sourceParametersReassignments
             );
         }
 
@@ -609,8 +631,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
          * builder is not assignable to the return type (so without building).
          */
         private boolean isBuilderRequired() {
-            return returnTypeBuilder != null
-                    && ( !method.isUpdateMethod() || !method.isMappingTargetAssignableToReturnType() );
+            if ( returnTypeBuilder == null ) {
+                return false;
+            }
+            if ( method.isUpdateMethod() ) {
+                // when @MappingTarget annotated parameter is the same type as the return type.
+                return !method.getResultType().isAssignableTo( method.getReturnType() );
+            }
+            else {
+                // For non-update methods a builder is required when returnTypeBuilder is set
+                return true;
+            }
         }
 
         private boolean shouldCallFinalizerMethod(Type returnTypeToConstruct ) {
@@ -1743,20 +1774,27 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             SourceReference sourceRef = null;
 
-            if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
+            Type sourceParameterType = sourceParameter.getType();
+            Parameter sourceParameterToUse = sourceParameter;
+            if ( sourceParameterType.isOptionalType() ) {
+                sourceParameterType = sourceParameterType.getOptionalBaseType();
+                sourceParameterToUse = sourceParameterToUse
+                    .withName( sourceParametersReassignments.get( sourceParameter.getName() ).getName() );
+            }
+            if ( sourceParameterType.isPrimitive() || sourceParameterType.isArrayType() ) {
                 return sourceRef;
             }
 
-            ReadAccessor sourceReadAccessor = sourceParameter.getType()
+            ReadAccessor sourceReadAccessor = sourceParameterType
                 .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
             if ( sourceReadAccessor != null ) {
                 // property mapping
                 PresenceCheckAccessor sourcePresenceChecker =
-                    sourceParameter.getType().getPresenceChecker( targetPropertyName );
+                    sourceParameterType.getPresenceChecker( targetPropertyName );
 
-                DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
+                DeclaredType declaredSourceType = (DeclaredType) sourceParameterType.getTypeMirror();
                 Type returnType = ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor );
-                sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameter )
+                sourceRef = new SourceReference.BuilderFromProperty().sourceParameter( sourceParameterToUse )
                                                                      .type( returnType )
                                                                      .readAccessor( sourceReadAccessor )
                                                                      .presenceChecker( sourcePresenceChecker )
@@ -2037,7 +2075,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings,
                               Map<String, PresenceCheck> presenceChecksByParameter,
-                              Type subclassExhaustiveException) {
+                              Type subclassExhaustiveException,
+                              Map<String, Reassignment> sourceParametersReassignments
+    ) {
         super(
             method,
             annotations,
@@ -2099,6 +2139,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
         this.subclassMappings = subclassMappings;
+        this.sourceParametersReassignments = sourceParametersReassignments;
     }
 
     public Type getSubclassExhaustiveException() {
@@ -2215,6 +2256,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .collect( Collectors.toList() );
     }
 
+    public Reassignment getSourceParameterReassignment(Parameter parameter) {
+        return sourceParametersReassignments.get( parameter.getName() );
+    }
+
     private boolean needsPresenceCheck(Parameter parameter) {
         if ( !presenceChecksByParameter.containsKey( parameter.getName() ) ) {
             return false;
@@ -2276,6 +2321,25 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
 
         return true;
+    }
+
+    public static class Reassignment {
+
+        private final String name;
+        private final Type type;
+
+        public Reassignment(String name, Type type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Type getType() {
+            return type;
+        }
     }
 
 }

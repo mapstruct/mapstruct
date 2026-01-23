@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.conversion.bignumbers;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Optional;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -101,6 +102,79 @@ public class BigNumbersConversionTest {
     }
 
     @ProcessorTest
+    @WithClasses({ BigIntegerOptionalSource.class, BigIntegerTarget.class, BigIntegerOptionalMapper.class })
+    public void shouldApplyOptionalBigIntegerConversions() {
+        BigIntegerOptionalSource source = new BigIntegerOptionalSource();
+        source.setB( Optional.of( new BigInteger( "1" ) ) );
+        source.setBb( Optional.of( new BigInteger( "2" ) ) );
+        source.setS( Optional.of( new BigInteger( "3" ) ) );
+        source.setSs( Optional.of( new BigInteger( "4" ) ) );
+        source.setI( Optional.of( new BigInteger( "5" ) ) );
+        source.setIi( Optional.of( new BigInteger( "6" ) ) );
+        source.setL( Optional.of( new BigInteger( "7" ) ) );
+        source.setLl( Optional.of( new BigInteger( "8" ) ) );
+        source.setF( Optional.of( new BigInteger( "9" ) ) );
+        source.setFf( Optional.of( new BigInteger( "10" ) ) );
+        source.setD( Optional.of( new BigInteger( "11" ) ) );
+        source.setDd( Optional.of( new BigInteger( "12" ) ) );
+        source.setString( Optional.of( new BigInteger( "13" ) ) );
+
+        BigIntegerTarget target = BigIntegerOptionalMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getB() ).isEqualTo( (byte) 1 );
+        assertThat( target.getBb() ).isEqualTo( (byte) 2 );
+        assertThat( target.getS() ).isEqualTo( (short) 3 );
+        assertThat( target.getSs() ).isEqualTo( (short) 4 );
+        assertThat( target.getI() ).isEqualTo( 5 );
+        assertThat( target.getIi() ).isEqualTo( 6 );
+        assertThat( target.getL() ).isEqualTo( 7 );
+        assertThat( target.getLl() ).isEqualTo( 8 );
+        assertThat( target.getF() ).isEqualTo( 9.0f );
+        assertThat( target.getFf() ).isEqualTo( 10.0f );
+        assertThat( target.getD() ).isEqualTo( 11.0d );
+        assertThat( target.getDd() ).isEqualTo( 12.0d );
+        assertThat( target.getString() ).isEqualTo( "13" );
+    }
+
+    @ProcessorTest
+    @IssueKey("21")
+    @WithClasses({ BigIntegerOptionalSource.class, BigIntegerTarget.class, BigIntegerOptionalMapper.class })
+    public void shouldApplyReverseOptionalBigIntegerConversions() {
+        BigIntegerTarget target = new BigIntegerTarget();
+        target.setB( (byte) 1 );
+        target.setBb( (byte) 2 );
+        target.setS( (short) 3 );
+        target.setSs( (short) 4 );
+        target.setI( 5 );
+        target.setIi( 6 );
+        target.setL( 7 );
+        target.setLl( 8L );
+        target.setF( 9.0f );
+        target.setFf( 10.0f );
+        target.setD( 11.0d );
+        target.setDd( 12.0d );
+        target.setString( "13" );
+
+        BigIntegerOptionalSource source = BigIntegerOptionalMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getB() ).contains( new BigInteger( "1" ) );
+        assertThat( source.getBb() ).contains( new BigInteger( "2" ) );
+        assertThat( source.getS() ).contains( new BigInteger( "3" ) );
+        assertThat( source.getSs() ).contains( new BigInteger( "4" ) );
+        assertThat( source.getI() ).contains( new BigInteger( "5" ) );
+        assertThat( source.getIi() ).contains( new BigInteger( "6" ) );
+        assertThat( source.getL() ).contains( new BigInteger( "7" ) );
+        assertThat( source.getLl() ).contains( new BigInteger( "8" ) );
+        assertThat( source.getF() ).contains( new BigInteger( "9" ) );
+        assertThat( source.getFf() ).contains( new BigInteger( "10" ) );
+        assertThat( source.getD() ).contains( new BigInteger( "11" ) );
+        assertThat( source.getDd() ).contains( new BigInteger( "12" ) );
+        assertThat( source.getString() ).contains( new BigInteger( "13" ) );
+    }
+
+    @ProcessorTest
     @IssueKey("21")
     @WithClasses({ BigDecimalSource.class, BigDecimalTarget.class, BigDecimalMapper.class })
     public void shouldApplyBigDecimalConversions() {
@@ -176,6 +250,82 @@ public class BigNumbersConversionTest {
         assertThat( source.getDd() ).isEqualTo( new BigDecimal( "12.0" ) );
         assertThat( source.getString() ).isEqualTo( new BigDecimal( "13.45" ) );
         assertThat( source.getBigInteger() ).isEqualTo( new BigDecimal( "14" ) );
+    }
+
+    @ProcessorTest
+    @WithClasses({ BigDecimalOptionalSource.class, BigDecimalTarget.class, BigDecimalOptionalMapper.class })
+    public void shouldApplyOptionalBigDecimalConversions() {
+        BigDecimalOptionalSource source = new BigDecimalOptionalSource();
+        source.setB( Optional.of( new BigDecimal( "1.45" ) ) );
+        source.setBb( Optional.of( new BigDecimal( "2.45" ) ) );
+        source.setS( Optional.of( new BigDecimal( "3.45" ) ) );
+        source.setSs( Optional.of( new BigDecimal( "4.45" ) ) );
+        source.setI( Optional.of( new BigDecimal( "5.45" ) ) );
+        source.setIi( Optional.of( new BigDecimal( "6.45" ) ) );
+        source.setL( Optional.of( new BigDecimal( "7.45" ) ) );
+        source.setLl( Optional.of( new BigDecimal( "8.45" ) ) );
+        source.setF( Optional.of( new BigDecimal( "9.45" ) ) );
+        source.setFf( Optional.of( new BigDecimal( "10.45" ) ) );
+        source.setD( Optional.of( new BigDecimal( "11.45" ) ) );
+        source.setDd( Optional.of( new BigDecimal( "12.45" ) ) );
+        source.setString( Optional.of( new BigDecimal( "13.45" ) ) );
+        source.setBigInteger( Optional.of( new BigDecimal( "14.45" ) ) );
+
+        BigDecimalTarget target = BigDecimalOptionalMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getB() ).isEqualTo( (byte) 1 );
+        assertThat( target.getBb() ).isEqualTo( (byte) 2 );
+        assertThat( target.getS() ).isEqualTo( (short) 3 );
+        assertThat( target.getSs() ).isEqualTo( (short) 4 );
+        assertThat( target.getI() ).isEqualTo( 5 );
+        assertThat( target.getIi() ).isEqualTo( 6 );
+        assertThat( target.getL() ).isEqualTo( 7 );
+        assertThat( target.getLl() ).isEqualTo( 8 );
+        assertThat( target.getF() ).isEqualTo( 9.45f );
+        assertThat( target.getFf() ).isEqualTo( 10.45f );
+        assertThat( target.getD() ).isEqualTo( 11.45d );
+        assertThat( target.getDd() ).isEqualTo( 12.45d );
+        assertThat( target.getString() ).isEqualTo( "13.45" );
+        assertThat( target.getBigInteger() ).isEqualTo( new BigInteger( "14" ) );
+    }
+
+    @ProcessorTest
+    @WithClasses({ BigDecimalOptionalSource.class, BigDecimalTarget.class, BigDecimalOptionalMapper.class })
+    public void shouldApplyReverseOptionalBigDecimalConversions() {
+        BigDecimalTarget target = new BigDecimalTarget();
+        target.setB( (byte) 1 );
+        target.setBb( (byte) 2 );
+        target.setS( (short) 3 );
+        target.setSs( (short) 4 );
+        target.setI( 5 );
+        target.setIi( 6 );
+        target.setL( 7 );
+        target.setLl( 8L );
+        target.setF( 9.0f );
+        target.setFf( 10.0f );
+        target.setD( 11.0d );
+        target.setDd( 12.0d );
+        target.setString( "13.45" );
+        target.setBigInteger( new BigInteger( "14" ) );
+
+        BigDecimalOptionalSource source = BigDecimalOptionalMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getB() ).contains( new BigDecimal( "1" ) );
+        assertThat( source.getBb() ).contains( new BigDecimal( "2" ) );
+        assertThat( source.getS() ).contains( new BigDecimal( "3" ) );
+        assertThat( source.getSs() ).contains( new BigDecimal( "4" ) );
+        assertThat( source.getI() ).contains( new BigDecimal( "5" ) );
+        assertThat( source.getIi() ).contains( new BigDecimal( "6" ) );
+        assertThat( source.getL() ).contains( new BigDecimal( "7" ) );
+        assertThat( source.getLl() ).contains( new BigDecimal( "8" ) );
+        assertThat( source.getF() ).contains( new BigDecimal( "9.0" ) );
+        assertThat( source.getFf() ).contains( new BigDecimal( "10.0" ) );
+        assertThat( source.getD() ).contains( new BigDecimal( "11.0" ) );
+        assertThat( source.getDd() ).contains( new BigDecimal( "12.0" ) );
+        assertThat( source.getString() ).contains( new BigDecimal( "13.45" ) );
+        assertThat( source.getBigInteger() ).contains( new BigDecimal( "14" ) );
     }
 
     @ProcessorTest

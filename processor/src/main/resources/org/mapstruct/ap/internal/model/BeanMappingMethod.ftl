@@ -28,7 +28,15 @@
     </#list>
     <#if !mapNullToDefault && !sourcePresenceChecks.empty>
     if ( <#list sourcePresenceChecks as sourcePresenceCheck><@includeModel object=sourcePresenceCheck.negate() /><#if sourcePresenceCheck_has_next> && </#if></#list> ) {
-        return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if><#else>null</#if></#if>;
+        <#if returnType.name == "void">
+            return;
+        <#else>
+            <#if existingInstanceMapping>
+                <@createReturn>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if></@createReturn>
+            <#else>
+                return ${returnType.null};
+            </#if>
+        </#if>
     }
     </#if>
 
@@ -52,6 +60,11 @@
                             <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                         </#list>
                         if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
+                        <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParam)!'' />
+                        <#if sourceParamReassignment?has_content>
+                            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.get();
+
+                        </#if>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
@@ -71,6 +84,11 @@
                     <@includeModel object=propertyMapping.targetType /> ${propertyMapping.targetWriteAccessorName} = ${propertyMapping.targetType.null};
                 </#list>
                 <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
+                <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParameters[0])!'' />
+                <#if sourceParamReassignment?has_content>
+                    <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.get();
+
+                </#if>
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
                     <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
@@ -102,6 +120,11 @@
         <#list sourceParametersNeedingPresenceCheck as sourceParam>
             <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
+                    <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParam)!'' />
+                    <#if sourceParamReassignment?has_content>
+                        <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.get();
+
+                    </#if>
                     <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                     </#list>
@@ -116,12 +139,16 @@
             </#if>
         </#list>
     <#elseif !propertyMappingsByParameter(sourceParameters[0]).empty>
-        <#assign propertyMappings = propertyMappingsByParameter(sourceParameters[0])/>
-        <#if mapNullToDefault && (propertyMappings?size > 0)>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
+        <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
+        <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParameters[0])!'' />
+        <#if sourceParamReassignment?has_content>
+            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.get();
+
+        </#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>
-        <#if mapNullToDefault && (propertyMappings?size > 0)>}</#if>
+        <#if mapNullToDefault>}</#if>
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
@@ -134,24 +161,24 @@
     </#list>
     <#if returnType.name != "void">
 
-    <#if finalizerMethod??>
-        <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
-            <@includeModel object=returnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
+        <#if finalizerMethod??>
+            <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
+                <@includeModel object=returnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
 
-            <#list afterMappingReferencesWithFinalizedReturnType as callback>
-                <#if callback_index = 0>
+                <#list afterMappingReferencesWithFinalizedReturnType as callback>
+                    <#if callback_index = 0>
 
-                </#if>
-                <@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
-            </#list>
+                    </#if>
+                    <@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
+                </#list>
 
-            return ${finalizedResultName};
+                <@createReturn>${finalizedResultName}</@createReturn>
+            <#else>
+                <@createReturn>${resultName}.<@includeModel object=finalizerMethod /></@createReturn>
+            </#if>
         <#else>
-            return ${resultName}.<@includeModel object=finalizerMethod />;
+            <@createReturn>${resultName}</@createReturn>
         </#if>
-    <#else>
-        return ${resultName};
-    </#if>
     </#if>
     </#if>
     <#if hasSubclassMappings()>
@@ -165,4 +192,14 @@
             <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
+</#macro>
+<#macro createReturn>
+    <@compress single_line=true>
+        <#if returnType.optionalType>
+            return <@includeModel object=returnType.asRawType()/>.of( <#nested/> );
+        <#else>
+            return <#nested/>;
+        </#if>
+    </@compress>
+
 </#macro>

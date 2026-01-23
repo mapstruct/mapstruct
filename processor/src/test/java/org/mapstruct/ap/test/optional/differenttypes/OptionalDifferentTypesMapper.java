@@ -11,8 +11,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface OptionalDifferentTypesMapper {
 
-    OptionalDifferentTypesMapper INSTANCE = Mappers.getMapper(
-        OptionalDifferentTypesMapper.class );
+    OptionalDifferentTypesMapper INSTANCE = Mappers.getMapper( OptionalDifferentTypesMapper.class );
 
     Target toTarget(Source source);
 

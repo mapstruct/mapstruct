@@ -14,16 +14,16 @@ public class Target {
     private final String constructorOptionalToNonOptional;
     private final Optional<String> constructorNonOptionalToOptional;
 
-    private Optional<String> optionalToOptional;
+    private Optional<String> optionalToOptional = Optional.of( "initial" );
     private String optionalToNonOptional;
-    private Optional<String> nonOptionalToOptional;
+    private Optional<String> nonOptionalToOptional = Optional.of( "initial" );
 
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<String> publicOptionalToOptional;
+    public Optional<String> publicOptionalToOptional = Optional.of( "initial" );
     @SuppressWarnings( "VisibilityModifier" )
     public String publicOptionalToNonOptional;
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<String> publicNonOptionalToOptional;
+    public Optional<String> publicNonOptionalToOptional = Optional.of( "initial" );
 
     public Target(Optional<String> constructorOptionalToOptional, String constructorOptionalToNonOptional,
                   Optional<String> constructorNonOptionalToOptional) {

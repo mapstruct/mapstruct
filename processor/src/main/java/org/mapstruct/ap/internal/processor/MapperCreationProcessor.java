@@ -119,6 +119,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             elementUtils,
             typeUtils,
             messager,
+            versionInformation,
             accessorNaming,
             context.getEnumMappingStrategy(),
             context.getEnumTransformationStrategies(),

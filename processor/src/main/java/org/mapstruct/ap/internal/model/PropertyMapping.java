@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
@@ -290,7 +291,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 sourcePropertyName,
                 targetPropertyName,
-                rightHandSide.getSourceParameterName(),
+                sourceReference.getParameter().getOriginalName(),
                 targetWriteAccessor.getSimpleName(),
                 targetReadAccessor,
                 targetType,
@@ -318,9 +319,6 @@ public class PropertyMapping extends ModelElement {
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
                 assignment = forgeStreamMapping( sourceType, targetType, rightHandSide );
-            }
-            else if ( sourceType.isOptionalType() || targetType.isOptionalType() ) {
-                assignment = forgeOptionalMapping( sourceType, targetType, rightHandSide );
             }
             else {
                 assignment = forgeMapping( rightHandSide );
@@ -706,15 +704,26 @@ public class PropertyMapping extends ModelElement {
 
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getReadValueSource();
+                    Type variableType = propertyEntry.getType();
                     for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
                         if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
-                            presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            if ( variableType.isOptionalType() ) {
+                                presenceChecks.add( new OptionalPresenceCheck(
+                                    variableName,
+                                    ctx.getVersionInformation()
+                                ) );
+                                variableName = variableName + ".get()";
+                            }
+                            else {
+                                presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            }
                             presenceChecks.add( new SuffixPresenceCheck(
                                 variableName,
                                 entry.getPresenceChecker().getPresenceCheckSuffix()
                             ) );
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                            variableType = entry.getType();
                         }
                         else {
                             break;
@@ -759,24 +768,6 @@ public class PropertyMapping extends ModelElement {
                 .build();
 
             return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreator );
-        }
-
-        private Assignment forgeOptionalMapping(Type sourceType, Type targetType, SourceRHS source) {
-
-            targetType = targetType.withoutBounds();
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "?" );
-
-            OptionalMappingMethod.Builder builder = new OptionalMappingMethod.Builder();
-
-            ContainerMappingMethod optionalMappingMethod = builder
-                    .mappingContext( ctx )
-                    .method( methodRef )
-                    .selectionParameters( selectionParameters )
-                    .callingContextTargetPropertyName( targetPropertyName )
-                    .positionHint( positionHint )
-                    .build();
-
-            return createForgedAssignment( source, methodRef, optionalMappingMethod );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {

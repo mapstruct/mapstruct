@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.optional.differenttypes;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -15,16 +14,16 @@ public class Target {
     private final SubType constructorOptionalToNonOptional;
     private final Optional<SubType> constructorNonOptionalToOptional;
 
-    private Optional<SubType> optionalToOptional;
+    private Optional<SubType> optionalToOptional = Optional.of( new SubType( "initial" ) );
     private SubType optionalToNonOptional;
-    private Optional<SubType> nonOptionalToOptional;
+    private Optional<SubType> nonOptionalToOptional = Optional.of( new SubType( "initial" ) );
 
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<SubType> publicOptionalToOptional;
+    public Optional<SubType> publicOptionalToOptional = Optional.of( new SubType( "initial" ) );
     @SuppressWarnings( "VisibilityModifier" )
     public SubType publicOptionalToNonOptional;
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<SubType> publicNonOptionalToOptional;
+    public Optional<SubType> publicNonOptionalToOptional = Optional.of( new SubType( "initial" ) );
 
     public Target(Optional<SubType> constructorOptionalToOptional, SubType constructorOptionalToNonOptional,
                   Optional<SubType> constructorNonOptionalToOptional) {
@@ -81,21 +80,5 @@ public class Target {
             return value;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if ( this == o ) {
-                return true;
-            }
-            if ( o == null || getClass() != o.getClass() ) {
-                return false;
-            }
-            Target.SubType subType = (Target.SubType) o;
-            return Objects.equals( value, subType.value );
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash( value );
-        }
     }
 }

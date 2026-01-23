@@ -148,7 +148,6 @@ public class Strings {
      * any Java keyword; starting with a lower-case letter
      */
     public static String getSafeVariableName(String name, Collection<String> existingVariableNames) {
-        name = name.equals( "?" ) ? "optionalValue" : name;
         name = decapitalize( sanitizeIdentifierName( name ) );
         name = joinAndCamelize( extractParts( name ) );
 

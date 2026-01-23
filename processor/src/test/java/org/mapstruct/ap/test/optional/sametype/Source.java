@@ -14,16 +14,20 @@ public class Source {
     private final Optional<String> constructorOptionalToNonOptional;
     private final String constructorNonOptionalToOptional;
 
-    private Optional<String> optionalToOptional;
-    private Optional<String> optionalToNonOptional;
+    private Optional<String> optionalToOptional = Optional.empty();
+    private Optional<String> optionalToNonOptional = Optional.empty();
     private String nonOptionalToOptional;
 
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<String> publicOptionalToOptional;
+    public Optional<String> publicOptionalToOptional = Optional.empty();
     @SuppressWarnings( "VisibilityModifier" )
-    public Optional<String> publicOptionalToNonOptional;
+    public Optional<String> publicOptionalToNonOptional = Optional.empty();
     @SuppressWarnings( "VisibilityModifier" )
     public String publicNonOptionalToOptional;
+
+    public Source() {
+        this( Optional.empty(), Optional.empty(), null );
+    }
 
     public Source(Optional<String> constructorOptionalToOptional, Optional<String> constructorOptionalToNonOptional,
                   String constructorNonOptionalToOptional) {

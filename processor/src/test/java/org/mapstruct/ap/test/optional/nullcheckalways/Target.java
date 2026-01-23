@@ -14,15 +14,15 @@ public class Target {
     private boolean optionalToNonOptionalCalled;
     private boolean nonOptionalToOptionalCalled;
 
-    public void setOptionalToOptional(Optional<String> optionalToOptional) {
+    public void setOptionalToOptional(Optional<String> ignored) {
         this.optionalToOptionalCalled = true;
     }
 
-    public void setOptionalToNonOptional(String optionalToNonOptional) {
+    public void setOptionalToNonOptional(String ignored) {
         this.optionalToNonOptionalCalled = true;
     }
 
-    public void setNonOptionalToOptional(Optional<String> nonOptionalToOptional) {
+    public void setNonOptionalToOptional(Optional<String> ignored) {
         this.nonOptionalToOptionalCalled = true;
     }
 
