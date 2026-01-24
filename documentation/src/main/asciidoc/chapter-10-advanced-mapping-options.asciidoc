@@ -204,7 +204,8 @@ The mechanism is also present on iterable mapping and map mapping. `@IterableMap
 [[mapping-result-for-null-arguments]]
 === Controlling mapping result for 'null' arguments
 
-MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
+MapStruct offers control over the object to create when the source argument of the mapping method equals `null`.
+By default `null` will be returned, or `Optional.empty()` if the return type is `Optional`.
 
 However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MapperConfig`, the mapping result can be altered to return empty *default* values. This means for:
 
@@ -243,7 +244,7 @@ How the value of the `NullValueMappingStrategy` is applied is the same as in <<m
 
 MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method results in 'absent'.
 
-By default the target property will be set to null.
+By default the target property will be set to `null`, or `Optional.empty()` if the target property is `Optional`.
 
 However:
 
@@ -264,6 +265,18 @@ null check, regardless of the value of the `NullValuePropertyMappingStrategy`, t
 [TIP]
 ====
 `NullValuePropertyMappingStrategy` also applies when the presence checker returns `not present`.
+====
+
+[NOTE]
+====
+When working with `java.util.Optional` types, `NullValuePropertyMappingStrategy` applies to empty Optionals in the same way it applies to null values.
+An empty `Optional` (i.e., `Optional.isEmpty()` returns `true`) is treated similarly to a `null` value for the purposes of this strategy. For example:
+
+* With `IGNORE` strategy: an empty `Optional` source property will not update the target property
+* With `SET_TO_NULL` strategy: an empty `Optional` source will set the target to `null` (for non-`Optional` targets) or `Optional.empty()` (for Optional targets)
+* With `SET_TO_DEFAULT` strategy: an empty Optional source will set the target to its default value
+
+See <<optional-null-value-strategies>> for detailed examples and behavior with Optional types.
 ====
 
 [[checking-source-property-for-null-arguments]]
