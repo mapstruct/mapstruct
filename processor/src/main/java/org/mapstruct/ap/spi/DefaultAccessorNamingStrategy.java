@@ -5,13 +5,17 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
@@ -102,10 +106,48 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
     protected boolean isFluentSetter(ExecutableElement method) {
+        TypeMirror returnType = method.getReturnType();
+        Element enclosingElement = method.getEnclosingElement();
+
+        TypeElement enclosingTypeElement = (TypeElement) enclosingElement;
+
+        if ( returnType.getKind() == TypeKind.TYPEVAR
+            && isTypeVariableRepresentingBuilder( returnType, enclosingTypeElement ) ) {
+            returnType = enclosingTypeElement.asType();
+        }
+
         return method.getParameters().size() == 1 &&
-            !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
+            !JAVA_JAVAX_PACKAGE.matcher( enclosingElement.asType().toString() ).matches() &&
             !isAdderWithUpperCase4thCharacter( method ) &&
-            typeUtils.isAssignable( method.getReturnType(), method.getEnclosingElement().asType() );
+            typeUtils.isAssignable( returnType, enclosingElement.asType() );
+    }
+
+    private boolean isTypeVariableRepresentingBuilder(TypeMirror typeVariable, TypeElement builderElement) {
+        if ( typeVariable.getKind() != TypeKind.TYPEVAR ) {
+            return false;
+        }
+
+        String typeVarName = ((TypeVariable) typeVariable).asElement().getSimpleName().toString();
+
+        TypeElement currentElement = builderElement;
+        while ( currentElement != null ) {
+            List<? extends TypeParameterElement> typeParameters = currentElement.getTypeParameters();
+
+            for ( TypeParameterElement typeParam : typeParameters ) {
+                if ( typeParam.getSimpleName().contentEquals( typeVarName ) ) {
+                    return true;
+                }
+            }
+
+            TypeMirror superclass = currentElement.getSuperclass();
+            if ( superclass.getKind() == TypeKind.NONE
+                || superclass.toString().equals( Object.class.getCanonicalName() ) ) {
+                break;
+            }
+            currentElement = (TypeElement) ( (DeclaredType) superclass ).asElement();
+        }
+
+        return false;
     }
 
     /**
