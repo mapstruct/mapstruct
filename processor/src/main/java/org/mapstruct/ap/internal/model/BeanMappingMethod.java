@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -99,10 +100,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
     private final String finalizedResultName;
+    private final String optionalResultName;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType;
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
+    private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithOptionalReturnType;
     private final Type subclassExhaustiveException;
-    private final Map<String, Reassignment> sourceParametersReassignments;
+    private final Map<String, Parameter> sourceParametersReassignments;
 
     private final MappingReferences mappingReferences;
 
@@ -120,7 +123,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<>();
         private final Set<String> existingVariableNames = new HashSet<>();
         private final Map<String, Set<MappingReference>> unprocessedDefinedTargets = new LinkedHashMap<>();
-        private final Map<String, Reassignment> sourceParametersReassignments = new HashMap<>();
+        private final Map<String, Parameter> sourceParametersReassignments = new HashMap<>();
 
         private MappingReferences mappingReferences;
         private List<MappingReference> targetThisReferences;
@@ -284,7 +287,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     sourceParameterType = sourceParameterType.getOptionalBaseType();
                     sourceParametersReassignments.put(
                         sourceParameter.getName(),
-                        new Reassignment( sourceParameterValueName, sourceParameterType )
+                        new Parameter( sourceParameterValueName, sourceParameter.getName(), sourceParameterType )
                     );
                 }
                 if ( sourceParameterType.isPrimitive() || sourceParameterType.isArrayType() ||
@@ -383,12 +386,24 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             ctx,
                             existingVariableNames
             );
+
+            Supplier<List<ParameterBinding>> additionalAfterMappingParameterBindingsProvider = () ->
+                sourceParametersReassignments.values()
+                    .stream()
+                    .map( parameter -> method.getSourceParameters().size() == 1 ?
+                        ParameterBinding.fromParameter( parameter ) :
+                        ParameterBinding.fromTypeAndName(
+                            parameter.getType(),
+                            parameter.getOriginalName() + ".get()"
+                        ) )
+                    .collect( Collectors.toList() );
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
                             method,
                             resultTypeToMap,
                             selectionParameters,
                             ctx,
-                            existingVariableNames
+                existingVariableNames,
+                Collections::emptyList
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -430,12 +445,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( shouldCallFinalizerMethod( returnTypeToConstruct ) ) {
                 finalizeMethod = getFinalizerMethod();
 
-                Type actualReturnType = method.getReturnType();
+                Type finalizerReturnType = method.getReturnType();
+                if ( finalizerReturnType.isOptionalType() ) {
+                    finalizerReturnType = finalizerReturnType.getOptionalBaseType();
+                }
 
                 beforeMappingReferencesWithFinalizedReturnType.addAll( filterMappingTarget(
                     LifecycleMethodResolver.beforeMappingMethods(
                         method,
-                        actualReturnType,
+                        finalizerReturnType,
                         selectionParameters,
                         ctx,
                         existingVariableNames
@@ -445,14 +463,33 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                 afterMappingReferencesWithFinalizedReturnType.addAll( LifecycleMethodResolver.afterMappingMethods(
                     method,
-                    actualReturnType,
+                    finalizerReturnType,
                     selectionParameters,
                     ctx,
-                    existingVariableNames
+                    existingVariableNames,
+                    additionalAfterMappingParameterBindingsProvider
                 ) );
 
-                keepMappingReferencesUsingTarget( beforeMappingReferencesWithFinalizedReturnType, actualReturnType );
-                keepMappingReferencesUsingTarget( afterMappingReferencesWithFinalizedReturnType, actualReturnType );
+                keepMappingReferencesUsingTarget( beforeMappingReferencesWithFinalizedReturnType, finalizerReturnType );
+                keepMappingReferencesUsingTarget( afterMappingReferencesWithFinalizedReturnType, finalizerReturnType );
+            }
+
+            List<LifecycleCallbackMethodReference> afterMappingReferencesWithOptionalReturnType = new ArrayList<>();
+            if ( method.getReturnType().isOptionalType() ) {
+                afterMappingReferencesWithOptionalReturnType.addAll( LifecycleMethodResolver.afterMappingMethods(
+                    method,
+                    method.getReturnType(),
+                    selectionParameters,
+                    ctx,
+                    existingVariableNames,
+                    additionalAfterMappingParameterBindingsProvider
+                ) );
+
+                keepMappingReferencesUsingTarget(
+                    afterMappingReferencesWithOptionalReturnType,
+                    method.getReturnType()
+                );
+
             }
 
             Map<String, PresenceCheck> presenceChecksByParameter = new LinkedHashMap<>();
@@ -482,6 +519,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 afterMappingMethods,
                 beforeMappingReferencesWithFinalizedReturnType,
                 afterMappingReferencesWithFinalizedReturnType,
+                afterMappingReferencesWithOptionalReturnType,
                 finalizeMethod,
                 mappingReferences,
                 subclasses,
@@ -1541,6 +1579,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 if ( sourceRef != null ) {
                     // sourceRef == null is not considered an error here
                     if ( sourceRef.isValid() ) {
+                        Parameter sourceParameter = sourceRef.getParameter();
 
                         // targetProperty == null can occur: we arrived here because we want as many errors
                         // as possible before we stop analysing
@@ -1549,7 +1588,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .sourceMethod( method )
                             .target( targetPropertyName, targetReadAccessor, targetWriteAccessor )
                             .sourcePropertyName( mapping.getSourceName() )
-                            .sourceReference( sourceRef )
+                            .sourceReference( sourceRef.withParameter(
+                                sourceParametersReassignments.get( sourceParameter.getName() ) ) )
                             .selectionParameters( mapping.getSelectionParameters() )
                             .formattingParameters( mapping.getFormattingParameters() )
                             .existingVariableNames( existingVariableNames )
@@ -1561,7 +1601,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .options( mapping )
                             .build();
                         handledTargets.add( targetPropertyName );
-                        Parameter sourceParameter = sourceRef.getParameter();
                         unprocessedSourceParameters.remove( sourceParameter );
                         // If the source parameter was directly mapped
                         if ( sourceRef.getPropertyEntries().isEmpty() ) {
@@ -1778,8 +1817,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Parameter sourceParameterToUse = sourceParameter;
             if ( sourceParameterType.isOptionalType() ) {
                 sourceParameterType = sourceParameterType.getOptionalBaseType();
-                sourceParameterToUse = sourceParameterToUse
-                    .withName( sourceParametersReassignments.get( sourceParameter.getName() ).getName() );
+                sourceParameterToUse = sourceParametersReassignments.get( sourceParameter.getName() );
             }
             if ( sourceParameterType.isPrimitive() || sourceParameterType.isArrayType() ) {
                 return sourceRef;
@@ -2071,12 +2109,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
                               List<LifecycleCallbackMethodReference> beforeMappingReferencesWithFinalizedReturnType,
                               List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType,
+                              List<LifecycleCallbackMethodReference> afterMappingReferencesWithOptionalReturnType,
                               MethodReference finalizerMethod,
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings,
                               Map<String, PresenceCheck> presenceChecksByParameter,
                               Type subclassExhaustiveException,
-                              Map<String, Reassignment> sourceParametersReassignments
+                              Map<String, Parameter> sourceParametersReassignments
     ) {
         super(
             method,
@@ -2097,14 +2136,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.finalizedResultName =
                 Strings.getSafeVariableName( getResultName() + "Result", existingVariableNames );
             existingVariableNames.add( this.finalizedResultName );
+            this.optionalResultName =
+                Strings.getSafeVariableName( getResultName() + "ResultOptional", existingVariableNames );
+            existingVariableNames.add( this.optionalResultName );
         }
         else {
             this.finalizedResultName = null;
+            this.optionalResultName =
+                Strings.getSafeVariableName( getResultName() + "Optional", existingVariableNames );
+            existingVariableNames.add( this.optionalResultName );
         }
         this.mappingReferences = mappingReferences;
 
         this.beforeMappingReferencesWithFinalizedReturnType = beforeMappingReferencesWithFinalizedReturnType;
         this.afterMappingReferencesWithFinalizedReturnType = afterMappingReferencesWithFinalizedReturnType;
+        this.afterMappingReferencesWithOptionalReturnType = afterMappingReferencesWithOptionalReturnType;
 
         // initialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -2162,12 +2208,28 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return finalizedResultName;
     }
 
+    public Type getFinalizedReturnType() {
+        Type returnType = getReturnType();
+        if ( returnType.isOptionalType() ) {
+            return returnType.getOptionalBaseType();
+        }
+        return returnType;
+    }
+
+    public String getOptionalResultName() {
+        return optionalResultName;
+    }
+
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithFinalizedReturnType() {
         return beforeMappingReferencesWithFinalizedReturnType;
     }
 
     public List<LifecycleCallbackMethodReference> getAfterMappingReferencesWithFinalizedReturnType() {
         return afterMappingReferencesWithFinalizedReturnType;
+    }
+
+    public List<LifecycleCallbackMethodReference> getAfterMappingReferencesWithOptionalReturnType() {
+        return afterMappingReferencesWithOptionalReturnType;
     }
 
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
@@ -2229,6 +2291,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( reference.getImportTypes() );
         }
 
+        for ( LifecycleCallbackMethodReference reference : afterMappingReferencesWithOptionalReturnType ) {
+            types.addAll( reference.getImportTypes() );
+        }
+
         return types;
     }
 
@@ -2256,7 +2322,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .collect( Collectors.toList() );
     }
 
-    public Reassignment getSourceParameterReassignment(Parameter parameter) {
+    public Parameter getSourceParameterReassignment(Parameter parameter) {
         return sourceParametersReassignments.get( parameter.getName() );
     }
 
@@ -2322,24 +2388,4 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         return true;
     }
-
-    public static class Reassignment {
-
-        private final String name;
-        private final Type type;
-
-        public Reassignment(String name, Type type) {
-            this.name = name;
-            this.type = type;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Type getType() {
-            return type;
-        }
-    }
-
 }

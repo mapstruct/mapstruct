@@ -333,19 +333,7 @@ public class Conversions {
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
-        if ( sourceType.isEnumType() &&
-                ( targetType.equals( stringType ) ||
-                  targetType.getBoxedEquivalent().equals( integerType ) )
-        ) {
-            sourceType = enumType;
-        }
-        else if ( targetType.isEnumType() &&
-                ( sourceType.equals( stringType ) ||
-                  sourceType.getBoxedEquivalent().equals( integerType ) )
-        ) {
-            targetType = enumType;
-        }
-        else if ( sourceType.isOptionalType() ) {
+        if ( sourceType.isOptionalType() ) {
             if ( targetType.isOptionalType() ) {
                 // We cannot convert optional to optional
                 return null;
@@ -356,7 +344,7 @@ public class Conversions {
                 return TypeToOptionalConversion.OPTIONAL_TO_TYPE_CONVERSION;
             }
 
-            ConversionProvider conversionProvider = conversions.get( new Key( sourceBaseType, targetType ) );
+            ConversionProvider conversionProvider = getInternalConversion( sourceBaseType, targetType );
             if ( conversionProvider != null ) {
                 return inverse( new OptionalWrapperConversionProvider( conversionProvider ) );
             }
@@ -368,12 +356,29 @@ public class Conversions {
             if ( targetBaseType.equals( sourceType )) {
                 return TypeToOptionalConversion.TYPE_TO_OPTIONAL_CONVERSION;
             }
-            ConversionProvider conversionProvider = conversions.get( new Key( sourceType, targetBaseType ) );
+            ConversionProvider conversionProvider = getInternalConversion( sourceType, targetBaseType );
             if ( conversionProvider != null ) {
                 return new OptionalWrapperConversionProvider( conversionProvider );
             }
             return null;
 
+        }
+
+        return getInternalConversion( sourceType, targetType );
+    }
+
+    private ConversionProvider getInternalConversion(Type sourceType, Type targetType) {
+        if ( sourceType.isEnumType() &&
+                ( targetType.equals( stringType ) ||
+                  targetType.getBoxedEquivalent().equals( integerType ) )
+        ) {
+            sourceType = enumType;
+        }
+        else if ( targetType.isEnumType() &&
+                ( sourceType.equals( stringType ) ||
+                  sourceType.getBoxedEquivalent().equals( integerType ) )
+        ) {
+            targetType = enumType;
         }
 
         return conversions.get( new Key( sourceType, targetType ) );
