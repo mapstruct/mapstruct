@@ -468,4 +468,11 @@ public class SourceReference extends AbstractReference {
         return result;
     }
 
+    public SourceReference withParameter(Parameter parameter) {
+        if ( parameter == null || getParameter() == parameter ) {
+            return this;
+        }
+        return new SourceReference( parameter, getPropertyEntries(), isValid() );
+    }
+
 }

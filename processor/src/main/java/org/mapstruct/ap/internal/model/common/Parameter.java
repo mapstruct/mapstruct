@@ -68,7 +68,11 @@ public class Parameter extends ModelElement {
     }
 
     public Parameter(String name, Type type) {
-        this( name, name, type, false, false, false, false, false, false );
+        this( name, name, type );
+    }
+
+    public Parameter(String name, String originalName, Type type) {
+        this( name, originalName, type, false, false, false, false, false, false );
     }
 
     public Element getElement() {

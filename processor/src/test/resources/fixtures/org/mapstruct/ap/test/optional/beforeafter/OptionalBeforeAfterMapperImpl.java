@@ -63,7 +63,12 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
         afterDeepOptionalSourceWithNoTarget( optional );
         afterDeepOptionalSourceWithNonOptionalTarget( subType, optional );
 
-        return Optional.of( subType );
+        Optional<Target.SubType> subTypeOptional = Optional.of( subType );
+
+        afterDeepOptionalSourceWithOptionalTarget( subTypeOptional, optional );
+        afterDeepNonOptionalSourceOptionalTarget( subTypeOptional, optionalValue );
+
+        return subTypeOptional;
     }
 
     protected Target.SubType subTypeOptionalToSubType(Optional<Source.SubType> optional) {
@@ -99,6 +104,10 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
 
         Target.SubType subType1 = new Target.SubType( value );
 
-        return Optional.of( subType1 );
+        Optional<Target.SubType> subType1Optional = Optional.of( subType1 );
+
+        afterDeepNonOptionalSourceOptionalTarget( subType1Optional, subType );
+
+        return subType1Optional;
     }
 }

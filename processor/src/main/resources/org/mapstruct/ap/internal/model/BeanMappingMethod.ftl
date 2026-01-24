@@ -21,7 +21,7 @@
     	</#if>
     </#list>
     <#list beforeMappingReferencesWithFinalizedReturnType as callback>
-    	<@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
+    	<@includeModel object=callback targetBeanName=finalizedResultName targetType=finalizedReturnType/>
     	<#if !callback_has_next>
 
     	</#if>
@@ -32,7 +32,7 @@
             return;
         <#else>
             <#if existingInstanceMapping>
-                <@createReturn>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if></@createReturn>
+                <@createReturn applyOptionalAfterMapping=false>${resultName}<#if finalizerMethod??>.<@includeModel object=finalizerMethod /></#if></@createReturn>
             <#else>
                 return ${returnType.null};
             </#if>
@@ -163,13 +163,13 @@
 
         <#if finalizerMethod??>
             <#if (afterMappingReferencesWithFinalizedReturnType?size > 0)>
-                <@includeModel object=returnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
+                <@includeModel object=finalizedReturnType /> ${finalizedResultName} = ${resultName}.<@includeModel object=finalizerMethod />;
 
                 <#list afterMappingReferencesWithFinalizedReturnType as callback>
                     <#if callback_index = 0>
 
                     </#if>
-                    <@includeModel object=callback targetBeanName=finalizedResultName targetType=returnType/>
+                    <@includeModel object=callback targetBeanName=finalizedResultName targetType=finalizedReturnType/>
                 </#list>
 
                 <@createReturn>${finalizedResultName}</@createReturn>
@@ -193,13 +193,26 @@
         </#list>
     </@compress>
 </#macro>
-<#macro createReturn>
-    <@compress single_line=true>
+<#macro createReturn applyOptionalAfterMapping=true>
+<#--    <@compress single_line=true>-->
         <#if returnType.optionalType>
-            return <@includeModel object=returnType.asRawType()/>.of( <#nested/> );
+             <#if (afterMappingReferencesWithOptionalReturnType?size > 0)>
+                <@includeModel object=returnType /> ${optionalResultName} = <@includeModel object=returnType.asRawType()/>.of( <#nested/> );
+
+                <#list afterMappingReferencesWithOptionalReturnType as callback>
+                    <#if callback_index = 0>
+
+                    </#if>
+                    <@includeModel object=callback targetBeanName=optionalResultName targetType=returnType/>
+                </#list>
+
+                return ${optionalResultName};
+            <#else>
+                return <@includeModel object=returnType.asRawType()/>.of( <#nested/> );
+            </#if>
         <#else>
             return <#nested/>;
         </#if>
-    </@compress>
+<#--    </@compress>-->
 
 </#macro>

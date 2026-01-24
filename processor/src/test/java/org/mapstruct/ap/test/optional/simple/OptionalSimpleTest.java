@@ -68,6 +68,19 @@ class OptionalSimpleTest {
     }
 
     @ProcessorTest
+    @WithClasses(OptionalToTypeWithMappingMapper.class)
+    void optionalToTypeWithMapping() {
+        OptionalToTypeWithMappingMapper.Target target = OptionalToTypeWithMappingMapper.INSTANCE
+            .map( Optional.empty() );
+        assertThat( target ).isNull();
+
+        OptionalToTypeWithMappingMapper.Source source = new OptionalToTypeWithMappingMapper.Source( "Tester", "Test" );
+        target = OptionalToTypeWithMappingMapper.INSTANCE.map( Optional.of( source ) );
+        assertThat( target.getName() ).isEqualTo( "Tester" );
+        assertThat( target.getValue() ).isEqualTo( "Test" );
+    }
+
+    @ProcessorTest
     @WithClasses(OptionalToTypeNullValueDefaultMapper.class)
     void optionalToTypeNullValueDefault() {
         Target target = OptionalToTypeNullValueDefaultMapper.INSTANCE.map( Optional.empty() );
