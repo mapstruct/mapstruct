@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -94,12 +93,8 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
         ForgedMethod forgedMethod =
             forgeMethodCreator.createMethod( name, sourceType, targetType, method, description, true );
-        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
 
-        return createForgedAssignment(
-            sourceRHS,
-            ctx.getTypeFactory().builderTypeFor( targetType, builder ),
-            forgedMethod );
+        return createForgedAssignment( sourceRHS, forgedMethod );
     }
 
     private String getName(Type sourceType, Type targetType) {

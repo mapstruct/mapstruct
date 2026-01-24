@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -14,6 +15,8 @@ import org.mapstruct.ap.internal.model.beanmapping.PropertyEntry;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.presence.AnyPresenceChecksPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
@@ -68,9 +71,32 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             }
 
             String previousPropertyName = sourceParameter.getName();
-            for ( PropertyEntry propertyEntry : propertyEntries ) {
+            for ( int i = 0; i < propertyEntries.size(); i++ ) {
+                PropertyEntry propertyEntry = propertyEntries.get( i );
+                PresenceCheck presenceCheck = getPresenceCheck( propertyEntry, previousPropertyName );
+
+                if ( i > 0 ) {
+                    // If this is not the first property entry,
+                    // then we might need to combine the presence check with a null check of the previous property
+                    if ( presenceCheck != null ) {
+                        presenceCheck = new AnyPresenceChecksPresenceCheck( Arrays.asList(
+                            new NullPresenceCheck( previousPropertyName, true ),
+                            presenceCheck
+                        ) );
+                    }
+                    else {
+                        presenceCheck = new NullPresenceCheck( previousPropertyName, true );
+                    }
+                }
+
                 String safeName = Strings.getSafeVariableName( propertyEntry.getName(), existingVariableNames );
-                safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName, previousPropertyName ) );
+                String source = previousPropertyName + "." + propertyEntry.getReadAccessor().getReadValueSource();
+                safePropertyEntries.add( new SafePropertyEntry(
+                    propertyEntry.getType(),
+                    safeName,
+                    source,
+                    presenceCheck
+                ) );
                 existingVariableNames.add( safeName );
                 thrownTypes.addAll( ctx.getTypeFactory().getThrownTypes(
                         propertyEntry.getReadAccessor() ) );
@@ -78,6 +104,18 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             }
             method.addThrownTypes( thrownTypes );
             return new NestedPropertyMappingMethod( method, safePropertyEntries );
+        }
+
+        private PresenceCheck getPresenceCheck(PropertyEntry propertyEntry, String previousPropertyName) {
+            PresenceCheckAccessor propertyPresenceChecker = propertyEntry.getPresenceChecker();
+            if ( propertyPresenceChecker != null ) {
+                return new SuffixPresenceCheck(
+                    previousPropertyName,
+                    propertyPresenceChecker.getPresenceCheckSuffix(),
+                    true
+                );
+            }
+            return null;
         }
     }
 
@@ -157,42 +195,27 @@ public class NestedPropertyMappingMethod extends MappingMethod {
     public static class SafePropertyEntry {
 
         private final String safeName;
-        private final String readAccessorName;
+        private final String source;
         private final PresenceCheck presenceChecker;
-        private final String previousPropertyName;
         private final Type type;
 
-        public SafePropertyEntry(PropertyEntry entry, String safeName, String previousPropertyName) {
+        public SafePropertyEntry(Type type, String safeName, String source, PresenceCheck presenceCheck) {
             this.safeName = safeName;
-            this.readAccessorName = entry.getReadAccessor().getReadValueSource();
-            PresenceCheckAccessor presenceChecker = entry.getPresenceChecker();
-            if ( presenceChecker != null ) {
-                this.presenceChecker = new SuffixPresenceCheck(
-                    previousPropertyName,
-                    presenceChecker.getPresenceCheckSuffix()
-                );
-            }
-            else {
-                this.presenceChecker = null;
-            }
-            this.previousPropertyName = previousPropertyName;
-            this.type = entry.getType();
+            this.source = source;
+            this.presenceChecker = presenceCheck;
+            this.type = type;
         }
 
         public String getName() {
             return safeName;
         }
 
-        public String getAccessorName() {
-            return readAccessorName;
+        public String getSource() {
+            return source;
         }
 
         public PresenceCheck getPresenceChecker() {
             return presenceChecker;
-        }
-
-        public String getPreviousPropertyName() {
-            return previousPropertyName;
         }
 
         public Type getType() {
@@ -210,15 +233,11 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
             SafePropertyEntry that = (SafePropertyEntry) o;
 
-            if ( !Objects.equals( readAccessorName, that.readAccessorName ) ) {
+            if ( !Objects.equals( source, that.source ) ) {
                 return false;
             }
 
             if ( !Objects.equals( presenceChecker, that.presenceChecker ) ) {
-                return false;
-            }
-
-            if ( !Objects.equals( previousPropertyName, that.previousPropertyName ) ) {
                 return false;
             }
 
@@ -231,7 +250,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         @Override
         public int hashCode() {
-            int result = readAccessorName != null ? readAccessorName.hashCode() : 0;
+            int result = source != null ? source.hashCode() : 0;
             result = 31 * result + ( presenceChecker != null ? presenceChecker.hashCode() : 0 );
             result = 31 * result + ( type != null ? type.hashCode() : 0 );
             return result;

@@ -24,7 +24,6 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
 import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
@@ -420,15 +419,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
-                Type userDefinedReturnType = getUserDesiredReturnType( method );
-                Type builderBaseType = userDefinedReturnType != null ? userDefinedReturnType : method.getReturnType();
                 BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .userDefinedReturnType( userDefinedReturnType )
-                    .returnTypeBuilder( typeFactory.builderTypeFor( builderBaseType, builder ) )
                     .build();
 
                 // We can consider that the bean mapping method can always be constructed. If there is a problem
@@ -464,14 +458,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 .build();
 
         return javadoc;
-    }
-
-    private Type getUserDesiredReturnType(SourceMethod method) {
-        SelectionParameters selectionParameters = method.getOptions().getBeanMapping().getSelectionParameters();
-        if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-            return typeFactory.getType( selectionParameters.getResultType() );
-        }
-        return null;
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
