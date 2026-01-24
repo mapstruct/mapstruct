@@ -188,6 +188,9 @@ public class ForgedMethod implements Method {
         Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
         this.parameters.add( sourceParameter );
         this.parameters.addAll( additionalParameters );
+        if ( basedOn.isUpdateMethod() ) {
+            this.parameters.add( Parameter.forForgedMappingTarget( returnType ) );
+        }
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
