@@ -17,6 +17,7 @@ import org.mapstruct.factory.Mappers;
  * @author Filip Hrisafov
  */
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@SuppressWarnings("OptionalAssignedToNull")
 public interface CustomOptionalMapper {
 
     CustomOptionalMapper INSTANCE = Mappers.getMapper( CustomOptionalMapper.class );
