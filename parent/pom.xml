@@ -41,7 +41,7 @@
         <junit-pioneer.version>2.2.0</junit-pioneer.version>
         <jreleaser.plugin.version>1.12.0</jreleaser.plugin.version>
         <forkCount>1</forkCount>
-        <assertj.version>3.24.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the gem tools processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
