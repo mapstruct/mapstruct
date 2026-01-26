@@ -23,6 +23,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          mirrors: '[{"id": "block-plexus-snapshots", "name": "Block Plexus Snapshots", "mirrorOf": "plexus.snapshots", "url": "http://localhost"}]'
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=${{ matrix.java != 21 }} install -DskipDistribution=${{ matrix.java != 21 }}
       - name: 'Generate coverage report'
@@ -59,5 +62,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          mirrors: '[{"id": "block-plexus-snapshots", "name": "Block Plexus Snapshots", "mirrorOf": "plexus.snapshots", "url": "http://localhost"}]'
       - name: 'Run integration tests'
         run: ./mvnw ${MAVEN_ARGS} verify -pl integrationtest
