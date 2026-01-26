@@ -274,7 +274,7 @@ An empty `Optional` (i.e., `Optional.isEmpty()` returns `true`) is treated simil
 
 * With `IGNORE` strategy: an empty `Optional` source property will not update the target property
 * With `SET_TO_NULL` strategy: an empty `Optional` source will set the target to `null` (for non-`Optional` targets) or `Optional.empty()` (for Optional targets)
-* With `SET_TO_DEFAULT` strategy: an empty Optional source will set the target to its default value
+* With `SET_TO_DEFAULT` strategy: an empty `Optional` source will set the target to its default value
 
 See <<optional-null-value-strategies>> for detailed examples and behavior with Optional types.
 ====
