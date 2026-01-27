@@ -20,7 +20,8 @@ class CustomOptionalTest {
 
     @ProcessorTest
     void shouldUseCustomMethodsWhenMapping() {
-        CustomOptionalMapper.Target target = CustomOptionalMapper.INSTANCE.map( new CustomOptionalMapper.Source( null ) );
+        CustomOptionalMapper.Target target = CustomOptionalMapper.INSTANCE.
+            map( new CustomOptionalMapper.Source( null ) );
 
         assertThat( target ).isNotNull();
         assertThat( target.getValue() ).isEqualTo( "initial" );
