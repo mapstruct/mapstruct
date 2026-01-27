@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-it-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>kotlinFullFeatureTest</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <kotlin.version>2.3.0</kotlin.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>generate-via-compiler-plugin-with-annotation-processor-paths</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>filter-kotlin-patterns</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>\${project.build.directory}/kotlin-sources</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../../../../../processor/src/test/java</directory>
+                                            <includes>
+                                                <include>**/kotlin/**/*.kt</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <overwrite>true</overwrite>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>kotlin-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirs>
+                                        <sourceDirectory>\${project.build.directory}/kotlin-sources</sourceDirectory>
+                                    </sourceDirs>
+                                    <annotationProcessorPaths>
+                                        <annotationProcessorPath>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>mapstruct-processor</artifactId>
+                                            <version>${mapstruct.version}</version>
+                                        </annotationProcessorPath>
+                                    </annotationProcessorPaths>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                        </configuration>
+                        <executions>
+                            <!-- Disable default executions -->
+                            <execution>
+                                <id>default-compile</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <!-- Define custom executions -->
+                            <execution>
+                                <id>java-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <compileSourceRoots>
+                                        <sourceRoot>../../../../../processor/src/test/java</sourceRoot>
+                                    </compileSourceRoots>
+                                    <includes>
+                                        <include>**/kotlin/**/*.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/erroneous/**/*.java</exclude>
+                                        <exclude>**/*Erroneous*.java</exclude>
+                                        <exclude>**/*Test.java</exclude>
+                                        <exclude>**/testutil/**/*.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>java-test-compile</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

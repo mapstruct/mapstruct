@@ -159,6 +159,12 @@ public class MavenIntegrationTest {
     void kotlinDataTest() {
     }
 
+    @ProcessorTest(baseDir = "kotlinFullFeatureTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
+    })
+    void kotlinFullFeatureTest() {
+    }
+
     @ProcessorTest(baseDir = "simpleTest")
     void simpleTest() {
     }

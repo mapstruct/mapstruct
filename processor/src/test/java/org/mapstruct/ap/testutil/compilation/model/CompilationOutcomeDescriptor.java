@@ -18,6 +18,8 @@ import javax.tools.JavaFileObject;
 
 import org.codehaus.plexus.compiler.CompilerMessage;
 import org.codehaus.plexus.compiler.CompilerResult;
+import org.jetbrains.kotlin.cli.common.ExitCode;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollectorImpl;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedNote;
@@ -104,6 +106,25 @@ public class CompilationOutcomeDescriptor {
         return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors, Collections.emptyList() );
     }
 
+    public static CompilationOutcomeDescriptor forResult(String sourceDir, ExitCode exitCode,
+                                                         List<MessageCollectorImpl.Message> messages) {
+        List<String> notes = new ArrayList<>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<>( messages.size() );
+        for ( MessageCollectorImpl.Message message : messages ) {
+            //ignore notes created by the compiler
+            DiagnosticDescriptor descriptor = DiagnosticDescriptor.forCompilerMessage( sourceDir, message );
+            if ( descriptor.getKind() != Kind.NOTE ) {
+                diagnosticDescriptors.add( descriptor );
+            }
+            else {
+                notes.add( descriptor.getMessage() );
+            }
+        }
+        CompilationResult compilationResult =
+            exitCode == ExitCode.OK ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
+        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors, notes );
+    }
+
     public CompilationResult getCompilationResult() {
         return compilationResult;
     }
@@ -114,6 +135,16 @@ public class CompilationOutcomeDescriptor {
 
     public List<String> getNotes() {
         return notes;
+    }
+
+    public CompilationOutcomeDescriptor merge(CompilationOutcomeDescriptor other) {
+        CompilationResult compilationResult =
+            this.compilationResult == CompilationResult.SUCCEEDED ? other.compilationResult : this.compilationResult;
+        List<DiagnosticDescriptor> diagnostics = new ArrayList<>( this.diagnostics );
+        diagnostics.addAll( other.diagnostics );
+        List<String> notes = new ArrayList<>( this.notes );
+        notes.addAll( other.notes );
+        return new CompilationOutcomeDescriptor( compilationResult, diagnostics, notes );
     }
 
     @Override
