@@ -291,8 +291,24 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <!--suppress KotlinMavenPluginPhase -->
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
+                <configuration>
+                    <useDaemon>false</useDaemon>
+                </configuration>
                 <executions>
+                    <execution>
+                        <id>kotlin-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>src/main/kotlin</sourceDir>
+                                <!-- Ensure Kotlin code can reference Java code -->
+                                <sourceDir>src/main/java</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>kotlin-test-compile</id>
                         <phase>test-compile</phase>
@@ -322,13 +338,24 @@
                     </annotationProcessorPaths>
                 </configuration>
                 <executions>
-                    <!-- Disable default test compile executions -->
+                    <!-- Disable default executions -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
                     <execution>
                         <id>default-testCompile</id>
                         <phase>none</phase>
                     </execution>
 
-                    <!-- Define custom test executions -->
+                    <!-- Define custom executions -->
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>java-test-compile</id>
                         <phase>test-compile</phase>

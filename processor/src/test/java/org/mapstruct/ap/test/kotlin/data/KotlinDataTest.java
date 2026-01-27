@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.kotlin.data;
 
+import org.junit.jupiter.api.Nested;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithKotlinSources;
@@ -14,32 +15,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Filip Hrisafov
  */
-@WithClasses({
-    CustomerEntity.class,
-    CustomerMapper.class
-})
-@WithKotlinSources("CustomerDto.kt")
 class KotlinDataTest {
 
-    @ProcessorTest
-    void shouldMapData() {
-        CustomerEntity customer = CustomerMapper.INSTANCE.fromData( new CustomerDto( "Kermit", "kermit@test.com" ) );
+    @Nested
+    @WithClasses({
+        CustomerEntity.class,
+        CustomerMapper.class
+    })
+    @WithKotlinSources("CustomerDto.kt")
+    class Standard {
 
-        assertThat( customer ).isNotNull();
-        assertThat( customer.getName() ).isEqualTo( "Kermit" );
-        assertThat( customer.getMail() ).isEqualTo( "kermit@test.com" );
-    }
+        @ProcessorTest
+        void shouldMapData() {
+            CustomerEntity customer = CustomerMapper.INSTANCE.fromData( new CustomerDto( "Kermit", "kermit@test.com" ) );
 
-    @ProcessorTest
-    void shouldMapIntoData() {
-        CustomerEntity entity = new CustomerEntity();
-        entity.setName( "Kermit" );
-        entity.setMail( "kermit@test.com" );
+            assertThat( customer ).isNotNull();
+            assertThat( customer.getName() ).isEqualTo( "Kermit" );
+            assertThat( customer.getMail() ).isEqualTo( "kermit@test.com" );
+        }
 
-        CustomerDto customer = CustomerMapper.INSTANCE.toData( entity );
+        @ProcessorTest
+        void shouldMapIntoData() {
+            CustomerEntity entity = new CustomerEntity();
+            entity.setName( "Kermit" );
+            entity.setMail( "kermit@test.com" );
 
-        assertThat( customer ).isNotNull();
-        assertThat( customer.getName() ).isEqualTo( "Kermit" );
-        assertThat( customer.getEmail() ).isEqualTo( "kermit@test.com" );
+            CustomerDto customer = CustomerMapper.INSTANCE.toData( entity );
+
+            assertThat( customer ).isNotNull();
+            assertThat( customer.getName() ).isEqualTo( "Kermit" );
+            assertThat( customer.getEmail() ).isEqualTo( "kermit@test.com" );
+        }
+
     }
 }

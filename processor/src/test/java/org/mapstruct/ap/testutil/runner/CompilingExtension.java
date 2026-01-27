@@ -578,7 +578,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
             String packageName = context.getRequiredTestClass()
                 .getPackageName();
             String sourcePrefix =
-                SOURCE_DIR + File.separator + packageName.replaceAll( "\\.", File.separator ) + File.separator;
+                SOURCE_DIR + File.separator + packageName.replace( ".", File.separator ) + File.separator;
             k2JvmArguments.setFreeArgs( Arrays.asList(
                 compilationRequest.getKotlinSources()
                     .stream()
