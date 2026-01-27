@@ -27,7 +27,10 @@ class KotlinDataTest {
 
         @ProcessorTest
         void shouldMapData() {
-            CustomerEntity customer = CustomerMapper.INSTANCE.fromData( new CustomerDto( "Kermit", "kermit@test.com" ) );
+            CustomerEntity customer = CustomerMapper.INSTANCE.fromData( new CustomerDto(
+                "Kermit",
+                "kermit@test.com"
+            ) );
 
             assertThat( customer ).isNotNull();
             assertThat( customer.getName() ).isEqualTo( "Kermit" );
