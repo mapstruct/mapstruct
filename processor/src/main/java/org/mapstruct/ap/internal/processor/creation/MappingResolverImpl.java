@@ -464,7 +464,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             Assignment conversion = conversionProvider.to( ctx );
             if ( conversion != null ) {
-                return new ConversionAssignment( sourceType, targetType, conversionProvider.to( ctx ) );
+                return new ConversionAssignment( sourceType, targetType, conversion );
             }
             return null;
         }
@@ -673,7 +673,16 @@ public class MappingResolverImpl implements MappingResolver {
 
         void reportMessageWhenNarrowing(FormattingMessager messager, ResolvingAttempt attempt) {
 
-            if ( NativeTypes.isNarrowing( sourceType.getFullyQualifiedName(), targetType.getFullyQualifiedName() ) ) {
+            Type source = sourceType;
+            if ( sourceType.isOptionalType() ) {
+                source = sourceType.getOptionalBaseType();
+            }
+
+            Type target = targetType;
+            if ( targetType.isOptionalType() ) {
+                target = targetType.getOptionalBaseType();
+            }
+            if ( NativeTypes.isNarrowing( source.getFullyQualifiedName(), target.getFullyQualifiedName() ) ) {
                 ReportingPolicyGem policy = attempt.mappingMethod.getOptions().getMapper().typeConversionPolicy();
                 if ( policy == ReportingPolicyGem.WARN ) {
                     report( messager, attempt, Message.CONVERSION_LOSSY_WARNING );

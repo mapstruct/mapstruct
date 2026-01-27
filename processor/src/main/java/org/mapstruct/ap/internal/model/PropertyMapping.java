@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
@@ -290,7 +291,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 sourcePropertyName,
                 targetPropertyName,
-                rightHandSide.getSourceParameterName(),
+                sourceReference.getParameter().getOriginalName(),
                 targetWriteAccessor.getSimpleName(),
                 targetReadAccessor,
                 targetType,
@@ -703,15 +704,26 @@ public class PropertyMapping extends ModelElement {
 
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getReadValueSource();
+                    Type variableType = propertyEntry.getType();
                     for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
                         if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
-                            presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            if ( variableType.isOptionalType() ) {
+                                presenceChecks.add( new OptionalPresenceCheck(
+                                    variableName,
+                                    ctx.getVersionInformation()
+                                ) );
+                                variableName = variableName + ".get()";
+                            }
+                            else {
+                                presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            }
                             presenceChecks.add( new SuffixPresenceCheck(
                                 variableName,
                                 entry.getPresenceChecker().getPresenceCheckSuffix()
                             ) );
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                            variableType = entry.getType();
                         }
                         else {
                             break;
