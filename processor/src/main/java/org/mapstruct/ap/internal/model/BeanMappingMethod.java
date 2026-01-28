@@ -1622,12 +1622,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
                 unprocessedConstructorProperties.remove( targetPropertyName );
                 if ( targetPropertyWriteAccessor == null ) {
+                    if ( sourceRef.getParameter().isExplicitlyDefinedChildren() ) {
+                        continue;
+                    }
                     // TODO improve error message
                     ctx.getMessager()
-                       .printMessage( method.getExecutable(),
-                           Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                           targetPropertyName
-                       );
+                        .printMessage(
+                            method.getExecutable(),
+                            Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                            targetPropertyName
+                        );
                     continue;
                 }
 

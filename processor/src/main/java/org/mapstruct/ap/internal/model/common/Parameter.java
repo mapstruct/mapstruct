@@ -35,6 +35,7 @@ public class Parameter extends ModelElement {
     private final boolean mappingContext;
     private final boolean sourcePropertyName;
     private final boolean targetPropertyName;
+    private boolean explicitlyDefinedChildren;
 
     private final boolean varArgs;
 
@@ -88,6 +89,14 @@ public class Parameter extends ModelElement {
 
     public boolean isMappingTarget() {
         return mappingTarget;
+    }
+
+    public boolean isExplicitlyDefinedChildren() {
+        return explicitlyDefinedChildren;
+    }
+
+    public void setExplicitlyDefinedChildren(boolean explicitlyDefinedChildren) {
+        this.explicitlyDefinedChildren = explicitlyDefinedChildren;
     }
 
     @Override
