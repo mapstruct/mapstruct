@@ -47,6 +47,7 @@ import kotlin.Metadata;
 import kotlin.metadata.Attributes;
 import kotlin.metadata.KmClass;
 import kotlin.metadata.KmConstructor;
+import kotlin.metadata.Modality;
 import kotlin.metadata.jvm.JvmExtensionsKt;
 import kotlin.metadata.jvm.JvmMethodSignature;
 import kotlin.metadata.jvm.KotlinClassMetadata;
@@ -1850,6 +1851,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      * return true if this type is a java 17+ sealed class
      */
     public boolean isSealed() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.isSealedClass();
+        }
         return typeElement.getModifiers().stream().map( Modifier::name ).anyMatch( "SEALED"::equals );
     }
 
@@ -1858,6 +1863,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     @SuppressWarnings( "unchecked" )
     public List<? extends TypeMirror> getPermittedSubclasses() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.getPermittedSubclasses();
+        }
         if (SEALED_PERMITTED_SUBCLASSES_METHOD == null) {
             return emptyList();
         }
@@ -1880,6 +1889,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         @Override
         public boolean isDataClass() {
             return Attributes.isData( kotlinClassMetadata.getKmClass() );
+        }
+
+        @Override
+        public boolean isSealedClass() {
+            return Attributes.getModality( kotlinClassMetadata.getKmClass() ) == Modality.SEALED;
         }
 
         @Override
@@ -1926,6 +1940,18 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
 
             return null;
+        }
+
+        @Override
+        public List<? extends TypeMirror> getPermittedSubclasses() {
+            List<String> sealedSubclassNames = kotlinClassMetadata.getKmClass().getSealedSubclasses();
+            List<TypeMirror> permittedSubclasses = new ArrayList<>( sealedSubclassNames.size() );
+            for ( String sealedSubclassName : sealedSubclassNames ) {
+                Type subclassType = typeFactory.getType( sealedSubclassName.replace( '/', '.' ) );
+                permittedSubclasses.add( subclassType.getTypeMirror() );
+            }
+
+            return permittedSubclasses;
         }
 
         private String buildJvmConstructorDescriptor(ExecutableElement constructor) {

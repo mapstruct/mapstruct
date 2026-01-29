@@ -7,6 +7,7 @@
     - Proper primary constructor detection
       - Data classes with multiple constructors
       - Data classes with all default parameters
+  - Sealed Classes (#3404) - Subclass exhaustiveness is now checked for Kotlin sealed classes
 
 
 ### Enhancements

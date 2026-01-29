@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.util.kotlin;
 
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Information about a type in case it's a Kotlin type.
@@ -17,5 +18,9 @@ public interface KotlinMetadata {
 
     boolean isDataClass();
 
+    boolean isSealedClass();
+
     ExecutableElement determinePrimaryConstructor(List<ExecutableElement> constructors);
+
+    List<? extends TypeMirror> getPermittedSubclasses();
 }
