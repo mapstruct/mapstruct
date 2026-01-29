@@ -47,8 +47,12 @@ class EclipseCompilingExtension extends CompilingExtension {
                                                                        String sourceOutputDir,
                                                                        String classOutputDir,
                                                                        String additionalCompilerClasspath) {
+        Collection<String> processorClassPaths = getProcessorClasspathDependencies(
+            compilationRequest,
+            additionalCompilerClasspath
+        );
         ClassLoader compilerClassloader;
-        if ( additionalCompilerClasspath == null ) {
+        if ( processorClassPaths.isEmpty() ) {
             compilerClassloader = DEFAULT_ECLIPSE_COMPILER_CLASSLOADER;
         }
         else {
@@ -59,7 +63,7 @@ class EclipseCompilingExtension extends CompilingExtension {
             compilerClassloader = loader.withPaths( ECLIPSE_COMPILER_CLASSPATH )
                   .withPaths( PROCESSOR_CLASSPATH )
                   .withOriginOf( ClassLoaderExecutor.class )
-                  .withPath( additionalCompilerClasspath )
+                  .withPaths( processorClassPaths )
                   .withOriginsOf( compilationRequest.getServices().values() );
         }
 
@@ -77,16 +81,19 @@ class EclipseCompilingExtension extends CompilingExtension {
 
     private static List<String> getTestCompilationClasspath(CompilationRequest request, String classOutputDir) {
         Collection<String> testDependencies = request.getTestDependencies();
-        if ( testDependencies.isEmpty() && request.getKotlinSources().isEmpty() ) {
+        Collection<String> processorDependencies = request.getProcessorDependencies();
+        Collection<String> kotlinSources = request.getKotlinSources();
+        if ( testDependencies.isEmpty() && processorDependencies.isEmpty() && kotlinSources.isEmpty() ) {
             return TEST_COMPILATION_CLASSPATH;
         }
 
         List<String> testCompilationPaths = new ArrayList<>(
-            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() + 1 );
+            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() + processorDependencies.size() + 1 );
 
         testCompilationPaths.addAll( TEST_COMPILATION_CLASSPATH );
         testCompilationPaths.addAll( filterBootClassPath( testDependencies ) );
-        if ( !request.getKotlinSources().isEmpty() ) {
+        testCompilationPaths.addAll( filterBootClassPath( processorDependencies ) );
+        if ( !kotlinSources.isEmpty() ) {
             testCompilationPaths.add( classOutputDir );
         }
         return testCompilationPaths;
@@ -96,6 +103,7 @@ class EclipseCompilingExtension extends CompilingExtension {
         return new FilteringParentClassLoader(
             // reload eclipse compiler classes
             "org.eclipse.",
+            "kotlin.",
             // reload mapstruct processor classes
             "org.mapstruct.ap.internal.",
             "org.mapstruct.ap.spi.",

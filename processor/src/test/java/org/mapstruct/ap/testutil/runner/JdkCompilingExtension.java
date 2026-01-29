@@ -39,7 +39,7 @@ class JdkCompilingExtension extends CompilingExtension {
     private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( TEST_COMPILATION_CLASSPATH );
 
     private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER =
-        new ModifiableURLClassLoader( new FilteringParentClassLoader( "org.mapstruct." ) )
+        new ModifiableURLClassLoader( newFilteringClassLoaderForJdk() )
                 .withPaths( PROCESSOR_CLASSPATH );
 
     JdkCompilingExtension() {
@@ -70,15 +70,21 @@ class JdkCompilingExtension extends CompilingExtension {
             throw new RuntimeException( e );
         }
 
+        Collection<String> processorClassPaths = getProcessorClasspathDependencies(
+            compilationRequest,
+            additionalCompilerClasspath
+        );
         ClassLoader processorClassloader;
-        if ( additionalCompilerClasspath == null ) {
+        if ( processorClassPaths.isEmpty() ) {
             processorClassloader = DEFAULT_PROCESSOR_CLASSLOADER;
         }
         else {
             processorClassloader = new ModifiableURLClassLoader(
-                new FilteringParentClassLoader( "org.mapstruct." ) )
+                newFilteringClassLoaderForJdk()
+                    .hidingClasses( compilationRequest.getServices().values() )
+            )
                     .withPaths( PROCESSOR_CLASSPATH )
-                    .withPath( additionalCompilerClasspath )
+                    .withPaths( processorClassPaths )
                     .withOriginsOf( compilationRequest.getServices().values() );
         }
 
@@ -104,19 +110,21 @@ class JdkCompilingExtension extends CompilingExtension {
 
     private static List<File> getCompilerClasspathFiles(CompilationRequest request, String classOutputDir) {
         Collection<String> testDependencies = request.getTestDependencies();
-        if ( testDependencies.isEmpty() && request.getKotlinSources().isEmpty() ) {
+        Collection<String> processorDependencies = request.getProcessorDependencies();
+        Collection<String> kotlinSources = request.getKotlinSources();
+        if ( testDependencies.isEmpty() && processorDependencies.isEmpty() && kotlinSources.isEmpty() ) {
             return COMPILER_CLASSPATH_FILES;
         }
 
         List<File> compilerClasspathFiles = new ArrayList<>(
-            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() + 1 );
+            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() + processorDependencies.size() + 1 );
 
         compilerClasspathFiles.addAll( COMPILER_CLASSPATH_FILES );
         for ( String testDependencyPath : filterBootClassPath( testDependencies ) ) {
             compilerClasspathFiles.add( new File( testDependencyPath ) );
         }
 
-        if ( !request.getKotlinSources().isEmpty() ) {
+        if ( !kotlinSources.isEmpty() ) {
             compilerClasspathFiles.add( new File( classOutputDir ) );
         }
 
@@ -161,4 +169,13 @@ class JdkCompilingExtension extends CompilingExtension {
         return filtered;
     }
 
+    private static FilteringParentClassLoader newFilteringClassLoaderForJdk() {
+        return new FilteringParentClassLoader(
+            "kotlin.",
+            // reload mapstruct processor classes
+            "org.mapstruct.ap.internal.",
+            "org.mapstruct.ap.spi.",
+            "org.mapstruct.ap.MappingProcessor"
+        );
+    }
 }

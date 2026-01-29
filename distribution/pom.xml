@@ -39,6 +39,11 @@
             <groupId>org.mapstruct.tools.gem</groupId>
             <artifactId>gem-api</artifactId>
         </dependency>
+        <!-- Needed here so references to Kotlin classes can be resolved during JavaDoc generation -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-metadata-jvm</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>

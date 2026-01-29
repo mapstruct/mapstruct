@@ -1,6 +1,12 @@
 ### Features
 
 * Support for Java 21 Sequenced Collections (#3240)
+* Improved support for Kotlin. Requires use of `org.jetbrains.kotlin:kotlin-metadata-jvm`.
+  - Data Classes (#2281, #2577, #3031) - MapStruct now properly handles:
+    - Single field data classes
+    - Proper primary constructor detection
+      - Data classes with multiple constructors
+      - Data classes with all default parameters
 
 
 ### Enhancements

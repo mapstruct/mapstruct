@@ -40,6 +40,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithKotlinSources;
+import org.mapstruct.ap.testutil.WithProcessorDependency;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -150,6 +151,15 @@ abstract class CompilingExtension implements BeforeEachCallback {
         }
 
         return classpath;
+    }
+
+    protected static Collection<String> getProcessorClasspathDependencies(CompilationRequest request,
+                                                                          String additionalCompilerClasspath) {
+        List<String> processClassPaths = filterBootClassPath( request.getProcessorDependencies() );
+        if ( additionalCompilerClasspath != null ) {
+            processClassPaths.add( additionalCompilerClasspath );
+        }
+        return processClassPaths;
     }
 
     private static boolean isWhitelisted(String path, Collection<String> whitelist) {
@@ -392,6 +402,17 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return testDependencies;
     }
 
+    private Collection<String> getAdditionalProcessorDependencies(Method testMethod, Class<?> testClass) {
+        Collection<String> processorDependencies = new HashSet<>();
+        findRepeatableAnnotations( testMethod, WithProcessorDependency.class )
+            .forEach( annotation -> Collections.addAll( processorDependencies, annotation.value() ) );
+
+        findRepeatableAnnotations( testClass, WithProcessorDependency.class )
+            .forEach( annotation -> Collections.addAll( processorDependencies, annotation.value() ) );
+
+        return processorDependencies;
+    }
+
     private void addServices(Map<Class<?>, Class<?>> services, List<WithServiceImplementation> withImplementations) {
         for ( WithServiceImplementation withImplementation : withImplementations ) {
             addService( services, withImplementation );
@@ -486,6 +507,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
             getServices( testMethod, testClass ),
             getProcessorOptions( testMethod, testClass ),
             getAdditionalTestDependencies( testMethod, testClass ),
+            getAdditionalProcessorDependencies( testMethod, testClass ),
             getKotlinSources( context )
         );
 
