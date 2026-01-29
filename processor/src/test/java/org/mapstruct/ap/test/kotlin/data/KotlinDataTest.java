@@ -10,6 +10,7 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithKotlin;
 import org.mapstruct.ap.testutil.WithKotlinSources;
+import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
@@ -388,7 +389,10 @@ class KotlinDataTest {
     @WithClasses({
         MultiDefaultConstructorPropertyMapper.class,
     })
-    @WithKotlinSources("MultiDefaultConstructorProperty.kt")
+    @WithKotlinSources({
+        "MultiDefaultConstructorProperty.kt",
+        "Default.kt"
+    })
     class MultiDefaultConstructor {
 
         @ProcessorTest
@@ -419,6 +423,50 @@ class KotlinDataTest {
             assertThat( property.getFirstName() ).isEqualTo( "Kermit" );
             assertThat( property.getLastName() ).isEqualTo( "the Frog" );
             assertThat( property.getDisplayName() ).isNull();
+        }
+    }
+
+    @Nested
+    @WithClasses({
+        UnsignedPropertyMapper.class,
+    })
+    @WithKotlinSources("UnsignedProperty.kt")
+    class Unsigned {
+
+        @ProcessorTest
+        @WithKotlin
+        void shouldCompileWithoutWarnings() {
+
+            UnsignedProperty property = UnsignedPropertyMapper.INSTANCE.map( new UnsignedPropertyMapper.Source( 10 ) );
+            assertThat( property ).isNotNull();
+            assertThat( property.getAge() ).isEqualTo( 10 );
+
+            UnsignedPropertyMapper.Source source = UnsignedPropertyMapper.INSTANCE.map( new UnsignedProperty( 20 ) );
+            assertThat( source ).isNotNull();
+            assertThat( source.getAge() ).isEqualTo( 20 );
+        }
+
+        @ProcessorTest
+        @WithTestDependency( "kotlin-stdlib" )
+        @ExpectedCompilationOutcome(
+            value = CompilationResult.SUCCEEDED,
+            diagnostics = {
+                @Diagnostic(
+                    kind = javax.tools.Diagnostic.Kind.WARNING,
+                    type = UnsignedPropertyMapper.class,
+                    line = 19,
+                    messageRegExp = "Unmapped target property: \"copy-.*\"\\."
+                )
+            }
+        )
+        void shouldCompileWithoutKotlinJvmMetadata() {
+            UnsignedProperty property = UnsignedPropertyMapper.INSTANCE.map( new UnsignedPropertyMapper.Source( 10 ) );
+            assertThat( property ).isNotNull();
+            assertThat( property.getAge() ).isEqualTo( 10 );
+
+            UnsignedPropertyMapper.Source source = UnsignedPropertyMapper.INSTANCE.map( new UnsignedProperty( 20 ) );
+            assertThat( source ).isNotNull();
+            assertThat( source.getAge() ).isEqualTo( 20 );
         }
     }
 }

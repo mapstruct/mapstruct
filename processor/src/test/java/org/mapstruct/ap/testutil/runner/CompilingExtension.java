@@ -601,12 +601,11 @@ abstract class CompilingExtension implements BeforeEachCallback {
                 .getPackageName();
             String sourcePrefix =
                 SOURCE_DIR + File.separator + packageName.replace( ".", File.separator ) + File.separator;
-            k2JvmArguments.setFreeArgs( Arrays.asList(
-                compilationRequest.getKotlinSources()
-                    .stream()
-                    .map( kotlinSource -> sourcePrefix + kotlinSource )
-                    .collect( Collectors.joining( File.pathSeparator ) )
-            ) );
+            k2JvmArguments.setFreeArgs( compilationRequest.getKotlinSources()
+                .stream()
+                .map( kotlinSource -> sourcePrefix + kotlinSource )
+                .collect( Collectors.toList() )
+            );
             k2JvmArguments.setVerbose( true );
             k2JvmArguments.setSuppressWarnings( false );
             k2JvmArguments.setDestination( classOutputDir );

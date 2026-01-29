@@ -8,8 +8,10 @@ package org.mapstruct.ap.test.kotlin.data
 /**
  * @author Filip Hrisafov
  */
-data class MultiDefaultConstructorProperty(val firstName: String?, val lastName: String?, val displayName: String?) {
-    @Default
-    constructor(firstName: String?, lastName: String?) : this(firstName, lastName, null)
-}
+data class UnsignedProperty(val age: UInt?) {
+    // Java-friendly secondary constructor
+    constructor(age: Int?) : this(age?.toUInt())
 
+    @JvmName("getAge")
+    fun getAgeAsLong(): Long? = age?.toLong()
+}

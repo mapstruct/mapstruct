@@ -910,8 +910,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
                     .getEnclosedElements() );
 
-                for ( ExecutableElement constructor : constructors ) {
-                    if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                Iterator<ExecutableElement> constructorIterator = constructors.iterator();
+                while ( constructorIterator.hasNext() ) {
+                    ExecutableElement constructor = constructorIterator.next();
+                    if (constructor.getModifiers().contains(Modifier.PRIVATE)) {
+                        constructorIterator.remove();
                         continue;
                     }
 
