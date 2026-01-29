@@ -469,4 +469,53 @@ class KotlinDataTest {
             assertThat( source.getAge() ).isEqualTo( 20 );
         }
     }
+
+    @Nested
+    @WithClasses({
+        DefaultPropertyMapper.class,
+    })
+    @WithKotlinSources("DefaultProperty.kt")
+    class Default {
+
+        @ProcessorTest
+        @WithKotlin
+        void shouldCompileWithoutWarnings() {
+
+            DefaultPropertyTarget target = DefaultPropertyMapper.INSTANCE.map( new DefaultPropertySource(
+                true,
+                "test"
+            ) );
+            assertThat( target ).isNotNull();
+            assertThat( target.getDefault() ).isTrue();
+            assertThat( target.getIdentifier() ).isEqualTo( "test" );
+
+            DefaultPropertySource source = DefaultPropertyMapper.INSTANCE.map( new DefaultPropertyTarget(
+                false,
+                "private"
+            ) );
+            assertThat( source ).isNotNull();
+            assertThat( source.getDefault() ).isFalse();
+            assertThat( source.getIdentifier() ).isEqualTo( "private" );
+
+        }
+
+        @ProcessorTest
+        void shouldCompileWithoutKotlin() {
+            DefaultPropertyTarget target = DefaultPropertyMapper.INSTANCE.map( new DefaultPropertySource(
+                true,
+                "test"
+            ) );
+            assertThat( target ).isNotNull();
+            assertThat( target.getDefault() ).isTrue();
+            assertThat( target.getIdentifier() ).isEqualTo( "test" );
+
+            DefaultPropertySource source = DefaultPropertyMapper.INSTANCE.map( new DefaultPropertyTarget(
+                false,
+                "private"
+            ) );
+            assertThat( source ).isNotNull();
+            assertThat( source.getDefault() ).isFalse();
+            assertThat( source.getIdentifier() ).isEqualTo( "private" );
+        }
+    }
 }
