@@ -68,6 +68,7 @@ import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
+import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -902,6 +903,27 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     ) );
                 }
                 return new ConstructorAccessor( parameterBindings, constructorAccessors );
+            }
+
+            KotlinMetadata kotlinMetadata = type.getKotlinMetadata();
+            if ( kotlinMetadata != null && kotlinMetadata.isDataClass() ) {
+                List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
+                    .getEnclosedElements() );
+
+                for ( ExecutableElement constructor : constructors ) {
+                    if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
+                        continue;
+                    }
+
+                    // prefer constructor annotated with @Default
+                    if ( hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                        return getConstructorAccessor( type, constructor );
+                    }
+                }
+
+                ExecutableElement primaryConstructor = kotlinMetadata.determinePrimaryConstructor( constructors );
+
+                return primaryConstructor != null ? getConstructorAccessor( type, primaryConstructor ) : null;
             }
 
             List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()

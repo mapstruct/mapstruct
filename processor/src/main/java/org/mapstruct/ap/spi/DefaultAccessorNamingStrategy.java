@@ -7,6 +7,7 @@ package org.mapstruct.ap.spi;
 
 import java.util.regex.Pattern;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -17,6 +18,9 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
+import kotlin.Metadata;
+import kotlin.metadata.Attributes;
+import kotlin.metadata.jvm.KotlinClassMetadata;
 import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
 /**
@@ -27,6 +31,24 @@ import org.mapstruct.ap.spi.util.IntrospectorUtils;
 public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
+
+    private static final boolean KOTLIN_METADATA_JVM_PRESENT;
+
+    static {
+        boolean kotlinMetadataJvmPresent;
+        try {
+            Class.forName(
+                "kotlin.metadata.jvm.KotlinClassMetadata",
+                false,
+                AccessorNamingStrategy.class.getClassLoader()
+            );
+            kotlinMetadataJvmPresent = true;
+        }
+        catch ( ClassNotFoundException e ) {
+            kotlinMetadataJvmPresent = false;
+        }
+        KOTLIN_METADATA_JVM_PRESENT = kotlinMetadataJvmPresent;
+    }
 
     protected Elements elementUtils;
     protected Types typeUtils;
@@ -102,10 +124,48 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
     protected boolean isFluentSetter(ExecutableElement method) {
-        return method.getParameters().size() == 1 &&
-            !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
-            !isAdderWithUpperCase4thCharacter( method ) &&
-            typeUtils.isAssignable( method.getReturnType(), method.getEnclosingElement().asType() );
+        if ( method.getParameters().size() != 1 ) {
+            return false;
+        }
+        Element methodOwnerElement = method.getEnclosingElement();
+        if ( !canMethodOwnerBeUsedInFluentSetter( methodOwnerElement ) ) {
+            return false;
+        }
+        return !isAdderWithUpperCase4thCharacter( method ) &&
+            typeUtils.isAssignable( method.getReturnType(), methodOwnerElement.asType() );
+    }
+
+    private boolean canMethodOwnerBeUsedInFluentSetter(Element methodOwnerElement) {
+        if ( !( methodOwnerElement instanceof TypeElement ) ) {
+            return false;
+        }
+
+        TypeElement typeElement = (TypeElement) methodOwnerElement;
+        if ( JAVA_JAVAX_PACKAGE.matcher( typeElement.getQualifiedName().toString() ).matches() ) {
+            return false;
+        }
+        if ( isKotlinDataClass( typeElement ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isKotlinDataClass(TypeElement typeElement) {
+        if ( !KOTLIN_METADATA_JVM_PRESENT ) {
+            return false;
+        }
+
+        Metadata kotlinMetadata = typeElement.getAnnotation( Metadata.class );
+        if ( kotlinMetadata == null ) {
+            return false;
+        }
+        KotlinClassMetadata classMetadata = KotlinClassMetadata.readLenient( kotlinMetadata );
+        if ( classMetadata instanceof KotlinClassMetadata.Class ) {
+            return Attributes.isData( ( (KotlinClassMetadata.Class) classMetadata ).getKmClass() );
+        }
+
+        return false;
     }
 
     /**

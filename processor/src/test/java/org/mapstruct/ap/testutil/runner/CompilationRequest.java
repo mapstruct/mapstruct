@@ -19,16 +19,19 @@ public class CompilationRequest {
     private final Map<Class<?>, Class<?>> services;
     private final List<String> processorOptions;
     private final Collection<String> testDependencies;
+    private final Collection<String> processorDependencies;
     private final Collection<String> kotlinSources;
 
     CompilationRequest(Compiler compiler, Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services,
                        List<String> processorOptions, Collection<String> testDependencies,
+                       Collection<String> processorDependencies,
                        Collection<String> kotlinSources) {
         this.compiler = compiler;
         this.sourceClasses = sourceClasses;
         this.services = services;
         this.processorOptions = processorOptions;
         this.testDependencies = testDependencies;
+        this.processorDependencies = processorDependencies;
         this.kotlinSources = kotlinSources;
     }
 
@@ -61,6 +64,7 @@ public class CompilationRequest {
             && processorOptions.equals( other.processorOptions )
             && services.equals( other.services )
             && testDependencies.equals( other.testDependencies )
+            && processorDependencies.equals( other.processorDependencies )
             && sourceClasses.equals( other.sourceClasses )
             && kotlinSources.equals( other.kotlinSources );
     }
@@ -79,6 +83,10 @@ public class CompilationRequest {
 
     public Collection<String> getTestDependencies() {
         return testDependencies;
+    }
+
+    public Collection<String> getProcessorDependencies() {
+        return processorDependencies;
     }
 
     public Collection<String> getKotlinSources() {
