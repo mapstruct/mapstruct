@@ -1464,31 +1464,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     // When we implicitly map we first do property name based mapping
                     // i.e. look for matching properties in the source types
                     // and then do parameter name based mapping
-                    for ( Parameter sourceParameter : method.getSourceParameters() ) {
-                        SourceReference matchingSourceRef = getSourceRefByTargetName(
-                            sourceParameter,
-                            targetPropertyName
-                        );
-                        if ( matchingSourceRef != null ) {
-                            if ( sourceRef != null ) {
-                                errorOccured = true;
-                                // This can only happen when the target property matches multiple properties
-                                // within the different source parameters
-                                ctx.getMessager()
-                                    .printMessage(
-                                        method.getExecutable(),
-                                        mappingRef.getMapping().getMirror(),
-                                        Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                                        targetPropertyName
-                                    );
-                                break;
-                            }
-                            // We can't break here since it is possible that the same property exists in multiple
-                            // source parameters
-                            sourceRef = matchingSourceRef;
-                        }
+                    SourceReferenceResult matchingSourceRefResult = findSourceReferenceForTargetProperty(
+                        method.getSourceParameters(),
+                        targetPropertyName,
+                        mappingRef.getMapping().getMirror()
+                    );
+                    sourceRef = matchingSourceRefResult.getSourceReference();
+                    if (matchingSourceRefResult.isErrorOccurred() ) {
+                        errorOccured = true;
                     }
-
                 }
 
                 if ( sourceRef == null ) {
@@ -1612,34 +1596,103 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * Iterates over all target properties and all source parameters.
+         * Iterates over all target properties and all source parameters to find property name matches.
          * <p>
-         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
-         * the set of remaining target properties.
+         * For each target property, the method attempts to find a matching source property
+         * using {@link #findSourceReferenceForTargetProperty}.
+         * <p>
+         * When a match is found, it's added to the list of source references for further processing.
+         * Primary parameters take precedence when multiple source parameters have properties with the same name.
          */
         private void applyPropertyNameBasedMapping() {
             List<SourceReference> sourceReferences = new ArrayList<>();
+
             for ( String targetPropertyName : unprocessedTargetProperties.keySet() ) {
-                for ( Parameter sourceParameter : method.getSourceParameters() ) {
-                    SourceReference sourceRef = getSourceRefByTargetName( sourceParameter, targetPropertyName );
-                    if ( sourceRef != null ) {
-                        sourceReferences.add( sourceRef );
-                    }
+                SourceReferenceResult matchingSourceRefResult = findSourceReferenceForTargetProperty(
+                    method.getSourceParameters(),
+                    targetPropertyName,
+                    null
+                );
+                if ( matchingSourceRefResult.getSourceReference() != null ) {
+                    sourceReferences.add( matchingSourceRefResult.getSourceReference() );
                 }
             }
             applyPropertyNameBasedMapping( sourceReferences );
         }
 
         /**
-         * Iterates over all target properties and all source parameters.
+         * Finds a source reference for a target property name, handling potential conflicts.
          * <p>
-         * When a property name match occurs, the remainder will be checked for duplicates. Matches will be removed from
-         * the set of remaining target properties.
+         * This method iterates through source parameters to find properties matching the target property name,
+         * applying the following rules:
+         * <ul>
+         * <li>If only one matching source reference is found, it's returned</li>
+         * <li>If multiple matching source references are found, their primary status is checked:
+         *   <ul>
+         *   <li>If all matching references have the same primary status (all primary or all non-primary),
+         *       a conflict error is reported and an error result is returned</li>
+         *   <li>If they have different primary status, the reference from the primary parameter is preferred</li>
+         *   </ul>
+         * </li>
+         * </ul>
+         *
+         * @param sourceParameters   the source parameters to search through
+         * @param targetPropertyName the target property name to match
+         * @param positionHint       annotation mirror used for error reporting position, can be null
+         * @return a SourceReferenceResult containing the selected source reference and error status
+         */
+        private SourceReferenceResult findSourceReferenceForTargetProperty(List<Parameter> sourceParameters,
+                                                                           String targetPropertyName,
+                                                                           AnnotationMirror positionHint) {
+            List<Parameter> sortedSourceParameters =
+                sourceParameters
+                    .stream()
+                    .sorted( Comparator.comparing( Parameter::isPrimary ).reversed() )
+                    .collect( Collectors.toList() );
+
+            SourceReference sourceRef = null;
+            boolean errorOccurred = false;
+            for ( Parameter sourceParameter : sortedSourceParameters ) {
+                SourceReference matchingSourceRef = getSourceRefByTargetName( sourceParameter, targetPropertyName );
+                if ( matchingSourceRef != null ) {
+                    if ( sourceRef != null ) {
+                        if ( sourceRef.getParameter().isPrimary() == matchingSourceRef.getParameter().isPrimary() ) {
+                            // Conflict detected - both parameters have the same primary status
+                            // Either:
+                            // 1. Both parameters are marked with @MappingSource(primary = true)
+                            // 2. Neither parameter has primary status
+                            errorOccurred = true;
+                            ctx.getMessager()
+                                .printMessage(
+                                    method.getExecutable(),
+                                    positionHint,
+                                    Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
+                                    targetPropertyName
+                                );
+                        }
+                        break;
+                    }
+                    // We can't break here since it is possible that the same property exists in multiple
+                    // source parameters
+                    sourceRef = matchingSourceRef;
+                }
+            }
+            return new SourceReferenceResult( sourceRef, errorOccurred );
+        }
+
+        /**
+         * Processes a list of source references to create property mappings.
+         * <p>
+         * Each source reference is used to create a property mapping for its target property.
+         * The referenced target property is removed from the set of unprocessed properties.
+         * <p>
+         * Note: This method assumes that conflicts between multiple source references for the same target property
+         * have already been resolved by {@link #findSourceReferenceForTargetProperty}.
+         *
+         * @param sourceReferences the list of source references to process
          */
         private void applyPropertyNameBasedMapping(List<SourceReference> sourceReferences) {
-
             for ( SourceReference sourceRef : sourceReferences ) {
-
                 String targetPropertyName = sourceRef.getDeepestPropertyName();
                 Accessor targetPropertyWriteAccessor = unprocessedTargetProperties.remove( targetPropertyName );
                 unprocessedConstructorProperties.remove( targetPropertyName );
@@ -1740,12 +1793,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             SourceReference sourceRef = null;
 
-            if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
-                return sourceRef;
+            if ( ( sourceParameter.isMappingSource() && !sourceParameter.isImplicitMapping() )
+                || sourceParameter.getType().isPrimitive()
+                || sourceParameter.getType().isArrayType() ) {
+                return null;
             }
 
+            boolean allowedMapToBean =
+                method.getSourceParameters().size() == 1 || sourceParameter.isImplicitMapping();
             ReadAccessor sourceReadAccessor = sourceParameter.getType()
-                .getReadAccessor( targetPropertyName, method.getSourceParameters().size() == 1 );
+                .getReadAccessor( targetPropertyName, allowedMapToBean );
             if ( sourceReadAccessor != null ) {
                 // property mapping
                 PresenceCheckAccessor sourcePresenceChecker =
@@ -1995,6 +2052,24 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
+        }
+    }
+
+    private static class SourceReferenceResult {
+        private final SourceReference sourceReference;
+        private final boolean errorOccurred;
+
+        private SourceReferenceResult(SourceReference sourceReference, boolean errorOccurred) {
+            this.sourceReference = sourceReference;
+            this.errorOccurred = errorOccurred;
+        }
+
+        SourceReference getSourceReference() {
+            return sourceReference;
+        }
+
+        boolean isErrorOccurred() {
+            return errorOccurred;
         }
     }
 
