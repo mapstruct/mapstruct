@@ -52,6 +52,7 @@
         <minimum.java.version>1.8</minimum.java.version>
         <protobuf.version>3.25.5</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
+        <kotlin.version>2.3.0</kotlin.version>
     </properties>
 
     <licenses>
@@ -151,6 +152,13 @@
                 <version>${com.puppycrawl.tools.checkstyle.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -489,6 +497,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila.maven-license-plugin</groupId>

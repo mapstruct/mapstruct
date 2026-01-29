@@ -59,7 +59,10 @@ class JdkCompilingExtension extends CompilingExtension {
             fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
 
         try {
-            fileManager.setLocation( StandardLocation.CLASS_PATH, getCompilerClasspathFiles( compilationRequest ) );
+            fileManager.setLocation(
+                StandardLocation.CLASS_PATH,
+                getCompilerClasspathFiles( compilationRequest, classOutputDir )
+            );
             fileManager.setLocation( StandardLocation.CLASS_OUTPUT, Arrays.asList( new File( classOutputDir ) ) );
             fileManager.setLocation( StandardLocation.SOURCE_OUTPUT, Arrays.asList( new File( sourceOutputDir ) ) );
         }
@@ -99,18 +102,22 @@ class JdkCompilingExtension extends CompilingExtension {
             diagnostics.getDiagnostics() );
     }
 
-    private static List<File> getCompilerClasspathFiles(CompilationRequest request) {
+    private static List<File> getCompilerClasspathFiles(CompilationRequest request, String classOutputDir) {
         Collection<String> testDependencies = request.getTestDependencies();
-        if ( testDependencies.isEmpty() ) {
+        if ( testDependencies.isEmpty() && request.getKotlinSources().isEmpty() ) {
             return COMPILER_CLASSPATH_FILES;
         }
 
         List<File> compilerClasspathFiles = new ArrayList<>(
-            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() );
+            COMPILER_CLASSPATH_FILES.size() + testDependencies.size() + 1 );
 
         compilerClasspathFiles.addAll( COMPILER_CLASSPATH_FILES );
         for ( String testDependencyPath : filterBootClassPath( testDependencies ) ) {
             compilerClasspathFiles.add( new File( testDependencyPath ) );
+        }
+
+        if ( !request.getKotlinSources().isEmpty() ) {
+            compilerClasspathFiles.add( new File( classOutputDir ) );
         }
 
         return compilerClasspathFiles;

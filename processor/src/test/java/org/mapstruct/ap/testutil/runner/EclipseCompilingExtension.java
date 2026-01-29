@@ -68,24 +68,27 @@ class EclipseCompilingExtension extends CompilingExtension {
 
         return clHelper.compileInOtherClassloader(
             compilationRequest,
-            getTestCompilationClasspath( compilationRequest ),
+            getTestCompilationClasspath( compilationRequest, classOutputDir ),
             getSourceFiles( compilationRequest.getSourceClasses() ),
             SOURCE_DIR,
             sourceOutputDir,
             classOutputDir );
     }
 
-    private static List<String> getTestCompilationClasspath(CompilationRequest request) {
+    private static List<String> getTestCompilationClasspath(CompilationRequest request, String classOutputDir) {
         Collection<String> testDependencies = request.getTestDependencies();
-        if ( testDependencies.isEmpty() ) {
+        if ( testDependencies.isEmpty() && request.getKotlinSources().isEmpty() ) {
             return TEST_COMPILATION_CLASSPATH;
         }
 
         List<String> testCompilationPaths = new ArrayList<>(
-            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() );
+            TEST_COMPILATION_CLASSPATH.size() + testDependencies.size() + 1 );
 
         testCompilationPaths.addAll( TEST_COMPILATION_CLASSPATH );
         testCompilationPaths.addAll( filterBootClassPath( testDependencies ) );
+        if ( !request.getKotlinSources().isEmpty() ) {
+            testCompilationPaths.add( classOutputDir );
+        }
         return testCompilationPaths;
     }
 

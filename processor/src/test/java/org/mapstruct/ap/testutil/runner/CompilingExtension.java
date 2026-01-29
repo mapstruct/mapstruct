@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
@@ -30,9 +31,15 @@ import com.puppycrawl.tools.checkstyle.DefaultLogger;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.apache.commons.io.output.NullOutputStream;
+import org.jetbrains.kotlin.cli.common.ExitCode;
+import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollectorImpl;
+import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler;
+import org.jetbrains.kotlin.config.Services;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithKotlinSources;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -455,6 +462,20 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return sourceFiles;
     }
 
+    private Collection<String> getKotlinSources(ExtensionContext context) {
+        Collection<String> kotlinSources = new HashSet<>();
+        Method testMethod = context.getRequiredTestMethod();
+        Class<?> testClass = context.getRequiredTestClass();
+
+        findAnnotation( testMethod, WithKotlinSources.class )
+            .ifPresent( withKotlinSources -> Collections.addAll( kotlinSources, withKotlinSources.value() ) );
+
+        findAnnotation( testClass, WithKotlinSources.class )
+            .ifPresent( withKotlinSources -> Collections.addAll( kotlinSources, withKotlinSources.value() ) );
+
+        return kotlinSources;
+    }
+
     private CompilationOutcomeDescriptor compile(ExtensionContext context) {
         Method testMethod = context.getRequiredTestMethod();
         Class<?> testClass = context.getRequiredTestClass();
@@ -464,7 +485,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
             getTestClasses( testMethod, testClass ),
             getServices( testMethod, testClass ),
             getProcessorOptions( testMethod, testClass ),
-            getAdditionalTestDependencies( testMethod, testClass )
+            getAdditionalTestDependencies( testMethod, testClass ),
+            getKotlinSources( context )
         );
 
         ExtensionContext.Store rootStore = context.getRoot().getStore( NAMESPACE );
@@ -484,7 +506,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
         boolean needsAdditionalCompilerClasspath = prepareServices( compilationRequest );
         CompilationOutcomeDescriptor resultHolder;
 
-        resultHolder = compileWithSpecificCompiler(
+        resultHolder = compile(
+            context,
             compilationRequest,
             sourceOutputDir,
             classOutputDir,
@@ -501,6 +524,81 @@ abstract class CompilingExtension implements BeforeEachCallback {
         catch ( Exception e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    protected CompilationOutcomeDescriptor compile(
+        ExtensionContext context,
+        CompilationRequest compilationRequest,
+        String sourceOutputDir,
+        String classOutputDir,
+        String additionalCompilerClasspath) {
+        CompilationOutcomeDescriptor kotlinCompilationOutcome = compileWithKotlin(
+            context,
+            compilationRequest,
+            sourceOutputDir,
+            classOutputDir
+        );
+
+        if ( kotlinCompilationOutcome != null &&
+            kotlinCompilationOutcome.getCompilationResult() == CompilationResult.FAILED ) {
+            return kotlinCompilationOutcome;
+        }
+
+        CompilationOutcomeDescriptor javaCompilationOutcome = compileWithSpecificCompiler(
+            compilationRequest,
+            sourceOutputDir,
+            classOutputDir,
+            additionalCompilerClasspath
+        );
+        return kotlinCompilationOutcome == null ? javaCompilationOutcome :
+            kotlinCompilationOutcome.merge( javaCompilationOutcome );
+    }
+
+    private CompilationOutcomeDescriptor compileWithKotlin(
+        ExtensionContext context,
+        CompilationRequest compilationRequest,
+        String sourceOutputDir,
+        String classOutputDir
+    ) {
+        CompilationOutcomeDescriptor kotlinCompilationOutcome = null;
+        if ( !compilationRequest.getKotlinSources().isEmpty() ) {
+            K2JVMCompiler k2JvmCompiler = new K2JVMCompiler();
+            MessageCollectorImpl messageCollector = new MessageCollectorImpl();
+            K2JVMCompilerArguments k2JvmArguments = new K2JVMCompilerArguments();
+            k2JvmArguments.setClasspath(
+                String.join(
+                    File.pathSeparator, filterBootClassPath( List.of(
+                        "kotlin-stdlib",
+                        "kotlin-reflect"
+                    ) )
+                )
+            );
+            k2JvmArguments.setNoStdlib( true );
+            k2JvmArguments.setNoReflect( true );
+            String packageName = context.getRequiredTestClass()
+                .getPackageName();
+            String sourcePrefix =
+                SOURCE_DIR + File.separator + packageName.replace( ".", File.separator ) + File.separator;
+            k2JvmArguments.setFreeArgs( Arrays.asList(
+                compilationRequest.getKotlinSources()
+                    .stream()
+                    .map( kotlinSource -> sourcePrefix + kotlinSource )
+                    .collect( Collectors.joining( File.pathSeparator ) )
+            ) );
+            k2JvmArguments.setVerbose( true );
+            k2JvmArguments.setSuppressWarnings( false );
+            k2JvmArguments.setDestination( classOutputDir );
+
+            ExitCode kotlinExitCode = k2JvmCompiler.exec( messageCollector, Services.EMPTY, k2JvmArguments );
+
+            kotlinCompilationOutcome = CompilationOutcomeDescriptor.forResult(
+                sourceOutputDir,
+                kotlinExitCode,
+                messageCollector.getMessages()
+            );
+
+        }
+        return kotlinCompilationOutcome;
     }
 
     protected abstract CompilationOutcomeDescriptor compileWithSpecificCompiler(
