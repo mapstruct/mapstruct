@@ -35,10 +35,10 @@ For Maven based projects add the following to your POM file in order to use MapS
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>3.14.1</version>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -141,10 +141,10 @@ When invoking javac directly, these options are passed to the compiler in the fo
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-compiler-plugin</artifactId>
-    <version>3.5.1</version>
+    <version>3.14.1</version>
     <configuration>
-        <source>1.8</source>
-        <target>1.8</target>
+        <source>${java.version}</source>
+        <target>${java.version}</target>
         <annotationProcessorPaths>
             <path>
                 <groupId>org.mapstruct</groupId>
@@ -323,3 +323,62 @@ Some features include:
 
 * Code completion in `target` and `source`
 * Quick Fixes
+
+[[kotlin-setup]]
+=== Kotlin Support
+
+MapStruct provides support for Kotlin interoperability with Java.
+
+When using MapStruct with Kotlin, it's recommended to add the `org.jetbrains.kotlin:kotlin-metadata-jvm` library to enable proper introspection of Kotlin metadata:
+
+.Maven configuration for Kotlin support
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.14.1</version>
+            <configuration>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                    <path>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-metadata-jvm</artifactId>
+                        <version>${kotlin.version}</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+====
+
+.Gradle configuration for Kotlin support
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+dependencies {
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.jetbrains.kotlin:kotlin-metadata-jvm:${kotlinVersion}"
+}
+----
+====
+
+[NOTE]
+====
+The `org.jetbrains.kotlin:kotlin-metadata-jvm` dependency is optional but highly recommended when working with Kotlin and Java.
+Without it, MapStruct will still work but may not handle complex Kotlin scenarios optimally.
+====
