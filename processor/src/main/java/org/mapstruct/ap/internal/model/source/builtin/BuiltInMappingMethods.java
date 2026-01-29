@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JaxbConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
+import org.mapstruct.ap.internal.util.ProtobufConstants;
 import org.mapstruct.ap.internal.util.XmlConstants;
 
 /**
@@ -62,6 +63,35 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new XmlGregorianCalendarToJodaLocalDate( typeFactory ) );
             builtInMethods.add( new JodaLocalTimeToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToJodaLocalTime( typeFactory ) );
+        }
+
+        registerProtobuf( typeFactory );
+    }
+
+    private void registerProtobuf(TypeFactory typeFactory) {
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.TIMESTAMP_FQN ) ) {
+            builtInMethods.add( new ProtobufTimestampToInstant( typeFactory ) );
+            builtInMethods.add( new InstantToProtobufTimestamp( typeFactory ) );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.DURATION_FQN ) ) {
+            builtInMethods.add( new ProtobufDurationToJavaDuration( typeFactory ) );
+            builtInMethods.add( new JavaDurationToProtobufDuration( typeFactory ) );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.DATE_FQN ) ) {
+            builtInMethods.add( new ProtobufDateToLocalDate( typeFactory ) );
+            builtInMethods.add( new LocalDateToProtobufDate( typeFactory ) );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.DAY_OF_WEEK_FQN ) ) {
+            builtInMethods.add( new ProtobufDayOfWeekToJavaDayOfWeek( typeFactory ) );
+            builtInMethods.add( new JavaDayOfWeekToProtobufDayOfWeek( typeFactory ) );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.MONTH_FQN ) ) {
+            builtInMethods.add( new ProtobufMonthToJavaMonth( typeFactory ) );
+            builtInMethods.add( new JavaMonthToProtobufMonth( typeFactory ) );
+        }
+        if ( typeFactory.isTypeAvailable( ProtobufConstants.TIME_OF_DAY_FQN ) ) {
+            builtInMethods.add( new ProtobufTimeOfDayToLocalTime( typeFactory ) );
+            builtInMethods.add( new LocalTimeToProtobufTimeOfDay( typeFactory ) );
         }
     }
 
