@@ -36,7 +36,7 @@
         <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>6.2.7</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
+        <com.puppycrawl.tools.checkstyle.version>13.0.0</com.puppycrawl.tools.checkstyle.version>
         <org.junit.jupiter.version>5.10.1</org.junit.jupiter.version>
         <junit-pioneer.version>2.2.0</junit-pioneer.version>
         <jreleaser.plugin.version>1.12.0</jreleaser.plugin.version>
@@ -376,7 +376,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>

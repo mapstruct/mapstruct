@@ -26,6 +26,7 @@ public interface SourceTargetMapper {
     String LOCAL_TIME_FORMAT = "HH:mm";
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
     @Mappings( { @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT ),
                     @Mapping( target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
                     @Mapping( target = "localDate", dateFormat = LOCAL_DATE_FORMAT ),

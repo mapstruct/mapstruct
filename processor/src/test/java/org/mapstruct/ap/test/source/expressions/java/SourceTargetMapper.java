@@ -18,7 +18,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper( imports = TimeAndFormat.class )
 public interface SourceTargetMapper {
 
-
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings( {
