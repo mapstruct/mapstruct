@@ -17,7 +17,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(imports = TimeAndFormat.class)
 public interface MultiLineExpressionMapper {
 
-
     MultiLineExpressionMapper INSTANCE = Mappers.getMapper( MultiLineExpressionMapper.class );
 
     @Mappings({

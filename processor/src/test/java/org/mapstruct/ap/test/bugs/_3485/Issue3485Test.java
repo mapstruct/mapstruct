@@ -24,7 +24,7 @@ public class Issue3485Test {
             diagnostics = {
                     @Diagnostic(type = ErroneousIssue3485Mapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 33,
+                            line = 34,
                             message = "Using @Mapping( target = \".\") requires a source property. Expression or " +
                                     "constant cannot be used as a source.")
             })

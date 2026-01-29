@@ -17,6 +17,7 @@ import org.mapstruct.factory.Mappers;
 public interface ErroneousIssue3485Mapper {
 
     ErroneousIssue3485Mapper INSTANCE = Mappers.getMapper( ErroneousIssue3485Mapper.class );
+
     class Target {
         private final String value;
 

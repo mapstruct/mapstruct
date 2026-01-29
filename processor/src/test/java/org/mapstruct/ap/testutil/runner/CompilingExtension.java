@@ -25,11 +25,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.DefaultLogger;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import org.apache.commons.io.output.NullOutputStream;
 import org.jetbrains.kotlin.cli.common.ExitCode;
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments;
@@ -225,10 +225,10 @@ abstract class CompilingExtension implements BeforeEachCallback {
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             checker.addListener(
                 new DefaultLogger(
-                    NullOutputStream.NULL_OUTPUT_STREAM,
-                    AutomaticBean.OutputStreamOptions.CLOSE,
+                    NullOutputStream.INSTANCE,
+                    AbstractAutomaticBean.OutputStreamOptions.CLOSE,
                     errorStream,
-                    AutomaticBean.OutputStreamOptions.CLOSE
+                    AbstractAutomaticBean.OutputStreamOptions.CLOSE
                 )
             );
 
