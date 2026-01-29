@@ -913,7 +913,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 Iterator<ExecutableElement> constructorIterator = constructors.iterator();
                 while ( constructorIterator.hasNext() ) {
                     ExecutableElement constructor = constructorIterator.next();
-                    if (constructor.getModifiers().contains(Modifier.PRIVATE)) {
+                    if ( constructor.getModifiers().contains( Modifier.PRIVATE ) ) {
                         constructorIterator.remove();
                         continue;
                     }
