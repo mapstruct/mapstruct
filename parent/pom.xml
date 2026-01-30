@@ -31,17 +31,17 @@
         <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
 
         <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
-        <org.apache.maven.plugins.enforcer.version>3.4.1</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
-        <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
-        <org.springframework.version>6.2.7</org.springframework.version>
+        <org.apache.maven.plugins.enforcer.version>3.6.2</org.apache.maven.plugins.enforcer.version>
+        <org.apache.maven.plugins.surefire.version>3.5.4</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.javadoc.version>3.12.0</org.apache.maven.plugins.javadoc.version>
+        <org.springframework.version>7.0.3</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
         <com.puppycrawl.tools.checkstyle.version>13.0.0</com.puppycrawl.tools.checkstyle.version>
         <org.junit.jupiter.version>5.10.1</org.junit.jupiter.version>
         <junit-pioneer.version>2.2.0</junit-pioneer.version>
         <jreleaser.plugin.version>1.12.0</jreleaser.plugin.version>
         <forkCount>1</forkCount>
-        <assertj.version>3.24.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the gem tools processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
@@ -371,7 +371,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -408,22 +408,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.9.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
                     </configuration>
@@ -457,12 +457,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -477,17 +477,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.7.1</version>
+                    <version>3.21.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -501,7 +501,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -584,7 +584,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.11</version>
+                    <version>0.8.14</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -609,7 +609,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.15.2</version>
+                    <version>0.25.4</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
