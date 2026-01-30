@@ -1,6 +1,11 @@
 ### Features
 
 * Support for Java 21 Sequenced Collections (#3240)
+* Native support for `java.util.Optional` mapping (#674) - MapStruct now fully supports Optional as both source and target types:
+  - `Optional` to `Optional` - Both source and target wrapped in `Optional`
+  - `Optional` to Non-`Optional` - Unwrapping `Optional` values
+  - Non-`Optional` to `Optional` - Wrapping values in `Optional`
+  - `Optional` properties in beans with automatic presence checks. Note, there is no null check done for `Optional` properties.
 * Improved support for Kotlin. Requires use of `org.jetbrains.kotlin:kotlin-metadata-jvm`.
   - Data Classes (#2281, #2577, #3031) - MapStruct now properly handles:
     - Single field data classes
