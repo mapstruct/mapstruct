@@ -27,7 +27,9 @@ package org.mapstruct;
 public enum NullValuePropertyMappingStrategy {
 
     /**
-     * If a source bean property equals {@code null} the target bean property will be set explicitly to {@code null}.
+     * If a source bean property equals {@code null} the target bean property will be set explicitly to {@code null}
+     * or {@link java.util.Optional#empty() Optional.empty()} in case the target type is an
+     * {@link java.util.Optional Optional}.
      */
     SET_TO_NULL,
 
@@ -36,6 +38,7 @@ public enum NullValuePropertyMappingStrategy {
      * <p>
      * This means:
      * <ol>
+     * <li>For {@code Optional} MapStruct generates an {@code Optional.empty()}</li>
      * <li>For {@code List} MapStruct generates an {@code ArrayList}</li>
      * <li>For {@code Map} a {@code HashMap}</li>
      * <li>For arrays an empty array</li>

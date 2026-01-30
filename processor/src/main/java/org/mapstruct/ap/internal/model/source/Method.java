@@ -183,15 +183,6 @@ public interface Method {
     }
 
     /**
-     *
-     * @return true when @MappingTarget annotated parameter is the same type as the return type. The method has
-     * to be an update method in order for this to be true.
-     */
-    default boolean isMappingTargetAssignableToReturnType() {
-        return isUpdateMethod() && getResultType().isAssignableTo( getReturnType() );
-    }
-
-    /**
      * @return the first source type, intended for mapping methods from single source to target
      */
     default Type getMappingSourceType() {

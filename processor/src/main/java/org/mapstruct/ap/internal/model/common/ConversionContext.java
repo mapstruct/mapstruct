@@ -22,6 +22,13 @@ public interface ConversionContext {
     Type getTargetType();
 
     /**
+     * Returns the source type of this conversion.
+     *
+     * @return The source type of this conversion.
+     */
+    Type getSourceType();
+
+    /**
      * Returns the date format if this conversion or built-in method is from String to a date type (e.g. {@link Date})
      * or vice versa.
      *

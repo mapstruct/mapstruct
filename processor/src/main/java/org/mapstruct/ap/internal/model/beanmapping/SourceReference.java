@@ -325,6 +325,9 @@ public class SourceReference extends AbstractReference {
             for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
                 Type noBoundsType = newType.withoutBounds();
+                if ( noBoundsType.isOptionalType() ) {
+                    noBoundsType = noBoundsType.getOptionalBaseType();
+                }
                 ReadAccessor readAccessor = noBoundsType.getReadAccessor( entryNames[i], i > 0 || allowedMapToBean );
                 if ( readAccessor != null ) {
                     PresenceCheckAccessor presenceChecker = noBoundsType.getPresenceChecker( entryNames[i] );
@@ -463,6 +466,13 @@ public class SourceReference extends AbstractReference {
             }
         }
         return result;
+    }
+
+    public SourceReference withParameter(Parameter parameter) {
+        if ( parameter == null || getParameter() == parameter ) {
+            return this;
+        }
+        return new SourceReference( parameter, getPropertyEntries(), isValid() );
     }
 
 }

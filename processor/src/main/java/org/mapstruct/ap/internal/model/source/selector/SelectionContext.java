@@ -106,8 +106,9 @@ public class SelectionContext {
     }
 
     public static SelectionContext forLifecycleMethods(Method mappingMethod, Type targetType,
-                                                       SelectionParameters selectionParameters,
-                                                       TypeFactory typeFactory) {
+                                               SelectionParameters selectionParameters,
+                                               TypeFactory typeFactory,
+                                               Supplier<List<ParameterBinding>> additionalParameterBindingsProvider) {
         SelectionCriteria criteria = SelectionCriteria.forLifecycleMethods( selectionParameters );
         return new SelectionContext(
             null,
@@ -115,12 +116,16 @@ public class SelectionContext {
             mappingMethod,
             targetType,
             mappingMethod.getResultType(),
-            () -> getAvailableParameterBindingsFromMethod(
-                mappingMethod,
-                targetType,
-                criteria.getSourceRHS(),
-                typeFactory
-            )
+            () -> {
+                List<ParameterBinding> parameterBindings = getAvailableParameterBindingsFromMethod(
+                    mappingMethod,
+                    targetType,
+                    criteria.getSourceRHS(),
+                    typeFactory
+                );
+                parameterBindings.addAll( additionalParameterBindingsProvider.get() );
+                return parameterBindings;
+            }
         );
     }
 

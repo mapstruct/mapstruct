@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.conversion.lossy;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 /**
  * @author Sjaak Derksen
@@ -17,6 +18,11 @@ public class VerySpecialNumberMapper {
     }
 
     BigInteger toBigInteger(VerySpecialNumber v) {
+        return new BigInteger( "10" );
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    BigInteger toBigInteger(Optional<VerySpecialNumber> v) {
         return new BigInteger( "10" );
     }
 }

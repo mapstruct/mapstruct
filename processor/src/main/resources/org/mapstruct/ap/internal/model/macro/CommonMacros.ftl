@@ -13,6 +13,8 @@
 
            requires: caller to implement boolean:getIncludeSourceNullCheck()
 -->
+<#-- @ftlvariable name="ext" type="java.util.Map" -->
+<#-- @ftlvariable name="ext.targetType" type="org.mapstruct.ap.internal.model.common.Type" -->
 <#macro handleSourceReferenceNullCheck>
     <#if sourcePresenceCheckerReference??>
         if ( <@includeModel object=sourcePresenceCheckerReference
@@ -23,7 +25,7 @@
         }
         <@elseDefaultAssignment/>
     <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
-        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
+        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if><#if sourceType.optionalType>.isPresent()<#else> != null</#if> ) {
             <#nested>
         }
         <@elseDefaultAssignment/>
@@ -43,7 +45,7 @@
       }
     <#elseif setExplicitlyToDefault || setExplicitlyToNull>
       else {
-        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
+        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>${ext.targetType.null}</#if></@lib.handleWrite>;
       }
     </#if>
 </#macro>
@@ -156,7 +158,7 @@ Performs a default assignment with a default value.
     <#if factoryMethod??>
         <@includeModel object=factoryMethod targetType=ext.targetType/>
     <#else>
-        <@constructTargetObject/>
+        <@constructTargetObject targetType=ext.targetType/>
     </#if>
 </@compress></#macro>
 <#--
@@ -164,15 +166,18 @@ Performs a default assignment with a default value.
 
   purpose: Either call the constructor of the target object directly or of the implementing type.
 -->
-<#macro constructTargetObject><@compress single_line=true>
-    <#if ext.targetType.implementationType??>
-        new <@includeModel object=ext.targetType.implementationType/>()
-    <#elseif ext.targetType.arrayType>
-        new <@includeModel object=ext.targetType.componentType/>[0]
-    <#elseif ext.targetType.sensibleDefault??>
-        ${ext.targetType.sensibleDefault}
+<#-- @ftlvariable name="targetType" type="org.mapstruct.ap.internal.model.common.Type" -->
+<#macro constructTargetObject targetType><@compress single_line=true>
+    <#if targetType.implementationType??>
+        new <@includeModel object=targetType.implementationType/>()
+    <#elseif targetType.arrayType>
+        new <@includeModel object=targetType.componentType/>[0]
+    <#elseif targetType.sensibleDefault??>
+        ${targetType.sensibleDefault}
+    <#elseif targetType.optionalType>
+        <@includeModel object=targetType.asRawType()/>.of( <@constructTargetObject targetType=targetType.optionalBaseType/> )
     <#else>
-        new <@includeModel object=ext.targetType/>()
+        new <@includeModel object=targetType/>()
     </#if>
 </@compress></#macro>
 <#--
@@ -181,6 +186,7 @@ Performs a default assignment with a default value.
   purpose: assignment for source local variables. The sourceLocalVarName replaces the sourceReference in the
            assignmentcall.
 -->
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.Assignment" -->
 <#macro sourceLocalVarAssignment>
     <#if sourceLocalVarName??>
       <@includeModel object=sourceType/> ${sourceLocalVarName} = ${sourceReference};

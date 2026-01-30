@@ -97,7 +97,11 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
             return name;
         }
         else {
-            String name = getSafeVariableName( getResultType().getName(), existingVarNames );
+            Type resultType = getResultType();
+            if ( resultType.isOptionalType() ) {
+                resultType = resultType.getOptionalBaseType();
+            }
+            String name = getSafeVariableName( resultType.getName(), existingVarNames );
             existingVarNames.add( name );
             return name;
         }

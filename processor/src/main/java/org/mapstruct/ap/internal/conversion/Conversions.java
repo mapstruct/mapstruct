@@ -333,6 +333,41 @@ public class Conversions {
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
+        if ( sourceType.isOptionalType() ) {
+            if ( targetType.isOptionalType() ) {
+                // We cannot convert optional to optional
+                return null;
+            }
+            Type sourceBaseType = sourceType.getOptionalBaseType();
+            if ( sourceBaseType.equals( targetType ) ) {
+                // Optional<Type> -> Type
+                return TypeToOptionalConversion.OPTIONAL_TO_TYPE_CONVERSION;
+            }
+
+            ConversionProvider conversionProvider = getInternalConversion( sourceBaseType, targetType );
+            if ( conversionProvider != null ) {
+                return inverse( new OptionalWrapperConversionProvider( conversionProvider ) );
+            }
+
+        }
+        else if ( targetType.isOptionalType() ) {
+            // Type -> Optional<Type>
+            Type targetBaseType = targetType.getOptionalBaseType();
+            if ( targetBaseType.equals( sourceType )) {
+                return TypeToOptionalConversion.TYPE_TO_OPTIONAL_CONVERSION;
+            }
+            ConversionProvider conversionProvider = getInternalConversion( sourceType, targetBaseType );
+            if ( conversionProvider != null ) {
+                return new OptionalWrapperConversionProvider( conversionProvider );
+            }
+            return null;
+
+        }
+
+        return getInternalConversion( sourceType, targetType );
+    }
+
+    private ConversionProvider getInternalConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() &&
                 ( targetType.equals( stringType ) ||
                   targetType.getBoxedEquivalent().equals( integerType ) )

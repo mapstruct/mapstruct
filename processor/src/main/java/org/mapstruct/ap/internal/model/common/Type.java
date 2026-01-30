@@ -397,9 +397,30 @@ public class Type extends ModelElement implements Comparable<Type> {
         return type.getName().equals( getFullyQualifiedName() );
     }
 
-    private boolean isOptionalType() {
+    public boolean isOptionalType() {
         return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
             isType( OptionalLong.class );
+    }
+
+    public Type getOptionalBaseType() {
+        if ( isType( Optional.class ) ) {
+            return getTypeParameters().get( 0 );
+        }
+
+        if ( isType( OptionalInt.class ) ) {
+            return typeFactory.getType( int.class );
+        }
+
+        if ( isType( OptionalDouble.class ) ) {
+            return typeFactory.getType( double.class );
+        }
+
+        if ( isType( OptionalLong.class ) ) {
+            return typeFactory.getType( long.class );
+        }
+
+        throw new IllegalStateException( "getOptionalBaseType should only be called for Optional types." );
+
     }
 
     public boolean isTypeVar() {

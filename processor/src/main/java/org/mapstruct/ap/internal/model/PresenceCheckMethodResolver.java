@@ -13,6 +13,7 @@ import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -87,7 +88,10 @@ public final class PresenceCheckMethodResolver {
         );
 
         if ( matchingMethods.isEmpty() ) {
-            if ( !sourceParameter.getType().isPrimitive() ) {
+            if ( sourceParameter.getType().isOptionalType() ) {
+                return new OptionalPresenceCheck( sourceParameter.getName(), ctx.getVersionInformation() );
+            }
+            else if ( !sourceParameter.getType().isPrimitive() ) {
                 return new NullPresenceCheck( sourceParameter.getName() );
             }
             return null;
