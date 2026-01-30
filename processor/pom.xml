@@ -307,6 +307,7 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>${minimum.java.version}</jvmTarget>
                             <sourceDirs>
                                 <sourceDir>src/main/kotlin</sourceDir>
                                 <!-- Ensure Kotlin code can reference Java code -->
@@ -321,6 +322,7 @@
                             <goal>test-compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>${minimum.java.version}</jvmTarget>
                             <sourceDirs>
                                 <sourceDir>src/test/java</sourceDir>
                             </sourceDirs>

@@ -5,6 +5,7 @@
  */
 package org.mapstruct.itest.tests;
 
+import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -161,7 +162,8 @@ public class MavenIntegrationTest {
 
     @ProcessorTest(baseDir = "kotlinFullFeatureTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
-    })
+    }, commandLineEnhancer = KotlinFullFeatureCompilationExclusionCliEnhancer.class)
+    @DisabledForJreRange(min = JRE.JAVA_26)
     void kotlinFullFeatureTest() {
     }
 
