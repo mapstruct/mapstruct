@@ -133,6 +133,28 @@ public interface CarMapper {
 * Between `java.util.Locale` and `String`.
 ** When converting from a `Locale`, the resulting `String` will be a well-formed IETF BCP 47 language tag representing the locale. When converting from a `String`, the locale that best represents the language tag will be returned. See https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[Locale.forLanguageTag()] and https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#toLanguageTag--[Locale.toLanguageTag()] for more information.
 
+* Between Protocol Buffers (Protobuf) types and corresponding Java types:
+** Between `com.google.protobuf.ByteString` and `String`
+** Between Protobuf wrapper types and their corresponding Java primitive types:
+*** `com.google.protobuf.DoubleValue` and `Double` / `double`
+*** `com.google.protobuf.FloatValue` and `Float` / `float`
+*** `com.google.protobuf.Int32Value` and `Integer` / `int`
+*** `com.google.protobuf.UInt32Value` and `Integer` / `int`
+*** `com.google.protobuf.Int64Value` and `Long` / `long`
+*** `com.google.protobuf.UInt64Value` and `Long` / `long`
+*** `com.google.protobuf.BoolValue` and `Boolean` / `boolean`
+*** `com.google.protobuf.StringValue` and `String`
+*** `com.google.protobuf.BytesValue` and `com.google.protobuf.ByteString`
+** Between `com.google.protobuf.ProtocolMessageEnum` and `Integer` / `int` (using the enum's numeric value, not ordinal)
+** Between Protobuf well-known types and Java 8 Date-Time types:
+*** `com.google.protobuf.Timestamp` and `java.time.Instant`
+*** `com.google.protobuf.Duration` and `java.time.Duration`
+** Between Protobuf `google.type` package types and Java 8 Date-Time types:
+*** `com.google.type.Date` and `java.time.LocalDate`
+*** `com.google.type.TimeOfDay` and `java.time.LocalTime`
+*** `com.google.type.DayOfWeek` and `java.time.DayOfWeek`
+*** `com.google.type.Month` and `java.time.Month`
+
 [[mapping-object-references]]
 === Mapping object references
 
