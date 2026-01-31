@@ -25,6 +25,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.lang.model.SourceVersion;
+
 import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
@@ -587,6 +589,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
             K2JVMCompiler k2JvmCompiler = new K2JVMCompiler();
             MessageCollectorImpl messageCollector = new MessageCollectorImpl();
             K2JVMCompilerArguments k2JvmArguments = new K2JVMCompilerArguments();
+            k2JvmArguments.setJdkRelease( getKotlinJvmTarget() );
             k2JvmArguments.setClasspath(
                 String.join(
                     File.pathSeparator, filterBootClassPath( List.of(
@@ -620,6 +623,14 @@ abstract class CompilingExtension implements BeforeEachCallback {
 
         }
         return kotlinCompilationOutcome;
+    }
+
+    private static String getKotlinJvmTarget() {
+        SourceVersion latest = SourceVersion.latest();
+        if ( latest.compareTo( SourceVersion.RELEASE_21 ) >= 0 ) {
+            return "21";
+        }
+        return latest.name().replace( "RELEASE_", "" );
     }
 
     protected abstract CompilationOutcomeDescriptor compileWithSpecificCompiler(
