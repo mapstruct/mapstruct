@@ -16,6 +16,11 @@ import javax.lang.model.element.TypeElement;
 import org.mapstruct.tools.gem.Gem;
 
 /**
+ * A base helper class that provides utility methods for working with meta annotations.
+ *
+ * @param <G> The type of the processed annotation
+ * @param <V> The type of the underlying holder for the processed annotation
+ *
  * @author Filip Hrisafov
  */
 public abstract class MetaAnnotations<G extends Gem, V> {

@@ -17,5 +17,11 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 public @interface Experimental {
+
+    /**
+     * The reason why the feature is considered experimental.
+     *
+     * @return the reason why the feature is considered experimental.
+     */
     String value() default "";
 }

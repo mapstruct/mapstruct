@@ -15,7 +15,6 @@ import org.mapstruct.util.Experimental;
  * <p>
  * When generating the implementation of a mapping method, MapStruct will apply the following routine for each
  * attribute pair in the source and target object:
- * <p>
  * <ul>
  *     <li>If source and target attribute have the same type, the value will be simply copied from source to target.
  *     If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target

@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that calls the suffix on the source reference.
+ *
  * @author Filip Hrisafov
  */
 public class SuffixPresenceCheck extends ModelElement implements PresenceCheck {

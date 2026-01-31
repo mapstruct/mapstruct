@@ -188,7 +188,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
      * {@link #getElementName(ExecutableElement) }.
      * <p>
      * The calling MapStruct code guarantees there's only one argument.
-     * <p>
      *
      * @param method to be analyzed
      *

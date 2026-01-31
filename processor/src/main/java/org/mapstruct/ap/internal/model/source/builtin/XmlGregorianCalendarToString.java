@@ -18,6 +18,8 @@ import org.mapstruct.ap.internal.util.XmlConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * A built-in method for converting from {@code XMLGregorianCalendar} to {@link String}.
+ *
  * @author Sjaak Derksen
  */
 public class XmlGregorianCalendarToString extends BuiltInMethod {

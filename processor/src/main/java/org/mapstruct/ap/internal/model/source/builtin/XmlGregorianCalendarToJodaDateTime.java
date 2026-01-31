@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import java.util.Calendar;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -16,6 +17,8 @@ import org.mapstruct.ap.internal.util.XmlConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * A built-in method for converting from Joda {@code DateTime} to {@link Calendar}.
+ *
  * @author Sjaak Derksen
  */
 public class XmlGregorianCalendarToJodaDateTime extends BuiltInMethod {

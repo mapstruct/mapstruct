@@ -16,6 +16,8 @@ import org.mapstruct.ap.internal.util.XmlConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * Conversion from {@code XMLGregorianCalendar} to Joda {@code LocalTime}.
+ *
  * @author Sjaak Derksen
  */
 public class XmlGregorianCalendarToJodaLocalTime extends BuiltInMethod {

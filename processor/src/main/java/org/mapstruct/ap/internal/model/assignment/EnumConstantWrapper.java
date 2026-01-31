@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * Decorates the assignment as an {@link Enum} constant access.
  *
  * @author Sjaak Derksen
  */

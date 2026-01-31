@@ -16,6 +16,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * A built-in method for converting from {@link ZonedDateTime} to {@code XMLGregorianCalendar}.
+ *
  * @author Christian Bandowski
  */
 public class ZonedDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {

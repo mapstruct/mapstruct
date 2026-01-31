@@ -17,6 +17,9 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
 /**
+ * A conversion provider that wraps / unwraps the underlying conversion in Optional.
+ * e.g., For conversion from {@code Optional<String>} to {@code Integer}.
+ *
  * @author Filip Hrisafov
  */
 public class OptionalWrapperConversionProvider implements ConversionProvider {

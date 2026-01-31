@@ -317,7 +317,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * <p>
      * The default implementation uses {@link DefaultBuilderProvider#shouldIgnore(TypeElement)} to check if the
      * {@code builderElement} should be ignored, i.e. not checked for build elements.
-     * <p>
+     *
      * @param builderElement the element for the builder
      * @param typeElement the element for the type that is being built
      * @return the build method for the {@code typeElement} if it exists, or {@code null} if it does not

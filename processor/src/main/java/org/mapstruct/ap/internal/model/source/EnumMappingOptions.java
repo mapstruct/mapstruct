@@ -21,6 +21,8 @@ import static org.mapstruct.ap.internal.util.Message.ENUMMAPPING_MISSING_CONFIGU
 import static org.mapstruct.ap.internal.util.Message.ENUMMAPPING_NO_ELEMENTS;
 
 /**
+ * Represents an enum mapping as configured via {@code @EnumMapping}.
+ *
  * @author Filip Hrisafov
  */
 public class EnumMappingOptions extends DelegatingOptions {

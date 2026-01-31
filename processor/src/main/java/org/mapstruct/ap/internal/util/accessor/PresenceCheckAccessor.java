@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.util.accessor;
 import javax.lang.model.element.ExecutableElement;
 
 /**
+ * Accessor for presence checks.
+ *
  * @author Filip Hrisafov
  */
 public interface PresenceCheckAccessor {
