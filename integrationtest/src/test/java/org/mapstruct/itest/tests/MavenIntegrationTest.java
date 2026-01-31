@@ -89,7 +89,7 @@ public class MavenIntegrationTest {
     @ProcessorTest(baseDir = "lombokBuilderTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void lombokBuilderTest() {
     }
 
@@ -98,7 +98,7 @@ public class MavenIntegrationTest {
         ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
     })
     @EnabledForJreRange(min = JRE.JAVA_11)
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void lombokModuleTest() {
     }
 
@@ -155,7 +155,7 @@ public class MavenIntegrationTest {
     }, forkJvm = true)
     // We have to fork the jvm because there is an NPE in com.intellij.openapi.util.SystemInfo.getRtVersion
     // and the kotlin-maven-plugin uses that. See also https://youtrack.jetbrains.com/issue/IDEA-238907
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void kotlinDataTest() {
     }
 
