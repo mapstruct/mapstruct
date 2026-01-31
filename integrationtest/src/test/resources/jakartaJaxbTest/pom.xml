@@ -52,10 +52,10 @@
                 </executions>
                 <configuration>
                     <xjbSources>
-                        <xjbSource>${project.build.resources[0].directory}/binding</xjbSource>
+                        <xjbSource>\${project.build.resources[0].directory}/binding</xjbSource>
                     </xjbSources>
                     <sources>
-                        <source>${project.build.resources[0].directory}/schema</source>
+                        <source>\${project.build.resources[0].directory}/schema</source>
                     </sources>
                 </configuration>
             </plugin>
