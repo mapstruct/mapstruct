@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.processing.Processor;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -23,10 +21,8 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.junit.jupiter.api.condition.JRE;
 import org.mapstruct.ap.MappingProcessor;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
-import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
 /**
  * Extension that uses the JDK compiler to compile.
@@ -138,35 +134,6 @@ class JdkCompilingExtension extends CompilingExtension {
         }
 
         return classpath;
-    }
-
-    /**
-     * The JDK 8 compiler needs some special treatment for the diagnostics.
-     * See comment in the function.
-     */
-    @Override
-    protected List<DiagnosticDescriptor> filterExpectedDiagnostics(List<DiagnosticDescriptor> expectedDiagnostics) {
-        if ( JRE.currentVersion() != JRE.JAVA_8 ) {
-            // The JDK 8+ compilers report all ERROR diagnostics properly. Also when there are multiple per line.
-            return expectedDiagnostics;
-        }
-        List<DiagnosticDescriptor> filtered = new ArrayList<>(expectedDiagnostics.size());
-
-        // The JDK 8 compiler only reports the first message of kind ERROR that is reported for one source file line,
-        // so we filter out the surplus diagnostics. The input list is already sorted by file name and line number,
-        // with the order for the diagnostics in the same line being kept at the order as given in the test.
-        DiagnosticDescriptor previous = null;
-        for ( DiagnosticDescriptor diag : expectedDiagnostics ) {
-            if ( diag.getKind() != Kind.ERROR
-                || previous == null
-                || !previous.getSourceFileName().equals( diag.getSourceFileName() )
-                || !Objects.equals( previous.getLine(), diag.getLine() ) ) {
-                filtered.add( diag );
-                previous = diag;
-            }
-        }
-
-        return filtered;
     }
 
     private static FilteringParentClassLoader newFilteringClassLoaderForJdk() {
