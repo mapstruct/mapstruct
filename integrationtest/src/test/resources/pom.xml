@@ -98,43 +98,6 @@
             </build>
         </profile>
         <profile>
-            <id>generate-via-processor-plugin</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.bsc.maven</groupId>
-                        <artifactId>maven-processor-plugin</artifactId>
-                        <version>3.3.3</version>
-                        <executions>
-                            <execution>
-                                <id>process</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>process</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <defaultOutputDirectory>\${project.build.directory}/generated-sources/mapstruct</defaultOutputDirectory>
-                            <processors>
-                                <processor>org.mapstruct.ap.MappingProcessor</processor>
-                            </processors>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>mapstruct-processor</artifactId>
-                                <version>${mapstruct.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>debug-forked-javac</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
