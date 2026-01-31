@@ -13,6 +13,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that is based on a {@link MethodReference}.
+ *
  * @author Filip Hrisafov
  */
 public class MethodReferencePresenceCheck extends ModelElement implements PresenceCheck {

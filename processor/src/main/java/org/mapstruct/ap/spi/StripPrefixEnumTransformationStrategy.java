@@ -6,6 +6,8 @@
 package org.mapstruct.ap.spi;
 
 /**
+ * An {@link EnumTransformationStrategy} that strips a prefix from the enum value.
+ *
  * @author Filip Hrisafov
  *
  * @since 1.4

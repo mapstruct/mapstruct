@@ -19,6 +19,8 @@ import java.util.List;
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
+ * @param <B> the builder itself that needs to be used for chaining
+ * @param <M> the method that the builder builds
  * @author Filip Hrisafov
  */
 public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>,

@@ -10,6 +10,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
+ * Decorates the assignment as an {@link java.util.Optional#get()} call.
+ *
  * @author Filip Hrisafov
  */
 public class OptionalGetWrapper extends AssignmentWrapper {

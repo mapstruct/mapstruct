@@ -51,6 +51,8 @@ import org.mapstruct.util.Experimental;
 public @interface SubclassMappings {
 
     /**
+     * The subclassMappings that should be applied.
+     *
      * @return the subclassMappings to apply.
      */
     SubclassMapping[] value();

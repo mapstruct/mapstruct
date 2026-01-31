@@ -12,6 +12,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
+ * A {@link MethodSelector} that selects the most specific result type.
+ *
  * @author Filip Hrisafov
  */
 public class MostSpecificResultTypeSelector implements MethodSelector {

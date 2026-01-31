@@ -13,6 +13,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
 /**
+ * A built-in method for converting from Joda {@code DateTime} to {@code XMLGregorianCalendar}.
+ *
  * @author Sjaak Derksen
  */
 public class JodaDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {

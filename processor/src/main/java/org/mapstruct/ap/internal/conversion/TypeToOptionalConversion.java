@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.conversion.ReverseConversion.inverse;
 
 /**
+ * Conversion between {@link java.util.Optional Optional} and its base type.
+ *
  * @author Filip Hrisafov
  */
 public class TypeToOptionalConversion extends SimpleConversion {

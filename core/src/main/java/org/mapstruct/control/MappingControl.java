@@ -99,8 +99,16 @@ import java.lang.annotation.Target;
 @MappingControl( MappingControl.Use.COMPLEX_MAPPING )
 public @interface MappingControl {
 
+    /**
+     * The type of mapping control that should be used.
+     *
+     * @return What should be used for the mapping control
+     */
     Use value();
 
+    /**
+     * Defines the options that can be used for the mapping control.
+     */
     enum Use {
 
         /**

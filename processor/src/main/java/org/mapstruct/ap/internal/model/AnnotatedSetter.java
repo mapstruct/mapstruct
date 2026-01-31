@@ -12,6 +12,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A method in a generated type that represents a setter with annotations.
+ *
  * @author Lucas Resch
  */
 public class AnnotatedSetter extends GeneratedTypeMethod {

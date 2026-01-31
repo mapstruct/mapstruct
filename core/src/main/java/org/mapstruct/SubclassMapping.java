@@ -73,12 +73,17 @@ import org.mapstruct.util.Experimental;
 @Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Experimental
 public @interface SubclassMapping {
+
     /**
+     * The source subclass to check for before using the default mapping as fallback.
+     *
      * @return the source subclass to check for before using the default mapping as fallback.
      */
     Class<?> source();
 
     /**
+     * The target subclass to map the source to.
+     *
      * @return the target subclass to map the source to.
      */
     Class<?> target();

@@ -44,6 +44,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface ValueMappings {
 
+    /**
+     * The value mappings that should be applied.
+     *
+     * @return the value mappings
+     */
     ValueMapping[] value();
 
 }

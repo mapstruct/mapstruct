@@ -25,6 +25,8 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
+ * Factory for creating {@link PresenceCheck}s.
+ *
  * @author Filip Hrisafov
  */
 public final class PresenceCheckMethodResolver {

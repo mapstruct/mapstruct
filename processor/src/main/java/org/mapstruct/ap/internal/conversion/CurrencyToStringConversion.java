@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.util.Collections;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.currency;
 
 /**
+ * Conversion between {@link Currency} and {@link String}.
+ *
  * @author Darren Rambaud
  */
 public class CurrencyToStringConversion extends SimpleConversion {

@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * An inline conversion from a source to an optional of the source.
+ *
  * @author Filip Hrisafov
  */
 public class ToOptionalTypeConversion extends ModelElement implements Assignment {
