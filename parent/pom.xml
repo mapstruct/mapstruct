@@ -11,7 +11,7 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.7.0.Beta1</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
@@ -28,7 +28,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!-- value comes from property git.commit.author.time -->
-        <project.build.outputTimestamp>2026-02-01T20:59:32Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
 
         <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
         <org.apache.maven.plugins.enforcer.version>3.6.2</org.apache.maven.plugins.enforcer.version>
