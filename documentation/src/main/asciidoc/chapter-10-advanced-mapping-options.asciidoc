@@ -254,6 +254,9 @@ For all other objects an new instance is created. Please note that a default con
 
 2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
 
+3. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the target collection or map will be cleared when the source property is `null`.
+This strategy only applies to `Collection` and `Map` target properties.
+
 The strategy works in a hierarchical fashion. Setting `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MapperConfig#nullValuePropertyMappingStrategy`.
 
 [NOTE]

@@ -56,5 +56,12 @@ public enum NullValuePropertyMappingStrategy {
      * If a source bean property equals {@code null} the target bean property will be ignored and retain its
      * existing value.
      */
-    IGNORE;
+    IGNORE,
+
+    /**
+     * If a source bean property equals {@code null} the target bean property will be cleared.
+     * This strategy is only applicable to target properties that are of type {@link java.util.Collection Collection}
+     * or {@link java.util.Map Map}.
+     */
+    CLEAR;
 }

@@ -22,6 +22,7 @@
 it will be treated as a potential builder. 
 Builders through static methods on the type have a precedence.
 * Behaviour change: Warning when the target has no target properties (#1140)
+* Add new `NullValuePropertyMappingStrategy#CLEAR` for clearing Collection and Map properties when updating a bean (#1830)
 
 
 
