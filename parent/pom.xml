@@ -880,24 +880,21 @@
                                 </checksum>
                                 <deploy>
                                     <maven>
-                                        <nexus2>
-                                            <maven-central>
-                                                <active>ALWAYS</active>
-                                                <url>https://oss.sonatype.org/service/local</url>
-                                                <snapshotUrl>https://oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
-                                                <closeRepository>true</closeRepository>
-                                                <releaseRepository>true</releaseRepository>
+                                        <mavenCentral>
+                                            <sonatype>
+                                                <active>RELEASE</active>
+                                                <url>https://central.sonatype.com/api/v1/publisher</url>
                                                 <stagingRepositories>${maven.multiModuleProjectDirectory}/target/staging-deploy</stagingRepositories>
-                                                <artifactOverrides>
-                                                    <artifactOverride>
-                                                        <groupId>org.mapstruct</groupId>
-                                                        <artifactId>mapstruct-jdk8</artifactId>
-                                                        <sourceJar>false</sourceJar>
-                                                        <javadocJar>false</javadocJar>
-                                                    </artifactOverride>
-                                                </artifactOverrides>
-                                            </maven-central>
-                                        </nexus2>
+                                            </sonatype>
+                                            <artifactOverrides>
+                                                <artifactOverride>
+                                                    <groupId>org.mapstruct</groupId>
+                                                    <artifactId>mapstruct-jdk8</artifactId>
+                                                    <sourceJar>false</sourceJar>
+                                                    <javadocJar>false</javadocJar>
+                                                </artifactOverride>
+                                            </artifactOverrides>
+                                        </mavenCentral>
                                     </maven>
                                 </deploy>
                                 <release>
