@@ -1,12 +1,14 @@
 ﻿Contributors
 ============
 
+Aleksey Ivashin - https://github.com/xumk
 Alexandr Shalugin - https://github.com/shalugin
 Amine Touzani - https://github.com/ttzn
 Andreas Gudian - https://github.com/agudian
 Andrei Arlou - https://github.com/Captain1653
 Andres Jose Sebastian Rincon Gonzalez - https://github.com/stianrincon
 Arne Seime - https://github.com/seime
+Cause Chung - https://github.com/cuzfrog
 Christian Bandowski - https://github.com/chris922
 Chris DeLashmutt - https://github.com/cdelashmutt-pivotal
 Christian Kosmowski - https://github.com/ckosmowski
@@ -15,6 +17,7 @@ Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
 Cindy Wang - https://github.com/birdfriend
 Cornelius Dirmeier - https://github.com/cornzy
+Dennis Melzer - https://github.com/
 David Feinblum - https://github.com/dvfeinblum
 Darren Rambaud - https://github.com/xyzst
 Dekel Pilli - https://github.com/dekelpilli
@@ -53,7 +56,11 @@ Pavel Makhov - https://github.com/streetturtle
 Peter Larson - https://github.com/pjlarson
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
+Roel Mangelschots - https://github.com/rmschots
+Ritesh Chopade - https://github.com/codeswithritesh
 Richard Lea - https://github.com/chigix
+Roman Obolonskyi - https://github.com/Obolrom
+Samil Can - https://github.com/SamilCan
 Saheb Preet Singh - https://github.com/sahebpreet
 Samuel Wright - https://github.com/samwright
 Sebastian Haberey - https://github.com/sebastianhaberey
@@ -65,6 +72,7 @@ Taras Mychaskiw - https://github.com/twentylemon
 Thibault Duperron - https://github.com/Zomzog
 Tomáš Poledný - https://github.com/Saljack
 Tobias Meggendorfer - https://github.com/incaseoftrouble
+Tran Ngoc Nhan - https://github.com/
 Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
@@ -72,3 +80,7 @@ Valentin Kulesh - https://github.com/unshare
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
 Winter Andreas - https://github.dev/wandi34
 Xiu Hong Kooi - https://github.com/kooixh
+Yang Tang - https://github.com/tangyang9464
+Zegveld - https://github.com/Zegveld
+znight1020 - https://github.com/znight1020
+zral - https://github.com/zyberzebra
