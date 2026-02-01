@@ -22,19 +22,22 @@ public class SetterWrapper extends AssignmentWrapper {
     private final boolean includeSourceNullCheck;
     private final boolean setExplicitlyToNull;
     private final boolean setExplicitlyToDefault;
+    private final boolean mustCastForNull;
 
     public SetterWrapper(Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
                          boolean includeSourceNullCheck,
                          boolean setExplicitlyToNull,
-                         boolean setExplicitlyToDefault) {
+                         boolean setExplicitlyToDefault,
+                         boolean mustCastForNull) {
 
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.includeSourceNullCheck = includeSourceNullCheck;
         this.setExplicitlyToDefault = setExplicitlyToDefault;
         this.setExplicitlyToNull = setExplicitlyToNull;
+        this.mustCastForNull = mustCastForNull;
     }
 
     public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment  ) {
@@ -43,6 +46,7 @@ public class SetterWrapper extends AssignmentWrapper {
         this.includeSourceNullCheck = false;
         this.setExplicitlyToNull = false;
         this.setExplicitlyToDefault = false;
+        this.mustCastForNull = false;
     }
 
     @Override
@@ -71,4 +75,7 @@ public class SetterWrapper extends AssignmentWrapper {
         return includeSourceNullCheck;
     }
 
+    public boolean isMustCastForNull() {
+        return mustCastForNull;
+    }
 }

@@ -471,7 +471,9 @@ public class PropertyMapping extends ModelElement {
                     isFieldAssignment(),
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT );
+                    nvpms == SET_TO_DEFAULT,
+                    this.method.getResultType().settersWithName( this.targetWriteAccessor.getSimpleName() ) > 1
+                );
             }
         }
 
@@ -547,7 +549,8 @@ public class PropertyMapping extends ModelElement {
                     isFieldAssignment(),
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    this.method.getResultType().settersWithName( this.targetWriteAccessor.getSimpleName() ) > 1
                 );
             }
             return result;
