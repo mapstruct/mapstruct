@@ -885,15 +885,15 @@
                                                 <active>RELEASE</active>
                                                 <url>https://central.sonatype.com/api/v1/publisher</url>
                                                 <stagingRepositories>${maven.multiModuleProjectDirectory}/target/staging-deploy</stagingRepositories>
+                                                <artifactOverrides>
+                                                    <artifactOverride>
+                                                        <groupId>org.mapstruct</groupId>
+                                                        <artifactId>mapstruct-jdk8</artifactId>
+                                                        <sourceJar>false</sourceJar>
+                                                        <javadocJar>false</javadocJar>
+                                                    </artifactOverride>
+                                                </artifactOverrides>
                                             </sonatype>
-                                            <artifactOverrides>
-                                                <artifactOverride>
-                                                    <groupId>org.mapstruct</groupId>
-                                                    <artifactId>mapstruct-jdk8</artifactId>
-                                                    <sourceJar>false</sourceJar>
-                                                    <javadocJar>false</javadocJar>
-                                                </artifactOverride>
-                                            </artifactOverrides>
                                         </mavenCentral>
                                     </maven>
                                 </deploy>
