@@ -301,8 +301,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // get bean mapping (when specified as annotation )
-            this.missingIgnoredSourceProperties = new HashSet<>();
-            this.redundantIgnoredSourceProperties = new HashSet<>();
+            this.missingIgnoredSourceProperties = new LinkedHashSet<>();
+            this.redundantIgnoredSourceProperties = new LinkedHashSet<>();
             if ( beanMapping != null && !beanMapping.getIgnoreUnmappedSourceProperties().isEmpty() ) {
                 // Get source properties explicitly mapped using @Mapping annotations
                 Set<String> mappedSourceProperties = method.getOptions().getMappings().stream()

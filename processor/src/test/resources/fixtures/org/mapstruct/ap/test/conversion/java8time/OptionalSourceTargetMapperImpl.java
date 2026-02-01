@@ -28,10 +28,10 @@ import javax.annotation.processing.Generated;
 )
 public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMapper {
 
-    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
-    private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
-    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm z" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
+    private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
 
     @Override
     public Target sourceToTarget(OptionalSource source) {
@@ -681,14 +681,6 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         return optionalSource;
     }
 
-    private ZonedDateTime calendarToZonedDateTime(Calendar cal) {
-        if ( cal == null ) {
-            return null;
-        }
-
-        return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
-    }
-
     private Calendar zonedDateTimeToCalendar(ZonedDateTime dateTime) {
         if ( dateTime == null ) {
             return null;
@@ -697,5 +689,13 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
         instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
         return instance;
+    }
+
+    private ZonedDateTime calendarToZonedDateTime(Calendar cal) {
+        if ( cal == null ) {
+            return null;
+        }
+
+        return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
     }
 }

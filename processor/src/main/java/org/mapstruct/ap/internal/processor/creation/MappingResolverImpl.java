@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,12 +98,12 @@ public class MappingResolverImpl implements MappingResolver {
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
      */
-    private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
+    private final Set<SupportingMappingMethod> usedSupportedMappings = new LinkedHashSet<>();
 
     /**
      * Private fields which are added to map certain property types.
      */
-    private final Set<Field> usedSupportedFields = new HashSet<>();
+    private final Set<Field> usedSupportedFields = new LinkedHashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -199,7 +200,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
-            this.supportingMethodCandidates = new HashSet<>();
+            this.supportingMethodCandidates = new LinkedHashSet<>();
             this.selectionCriteria = criteria;
             this.positionHint = positionHint;
             this.forger = forger;
