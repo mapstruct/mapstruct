@@ -801,13 +801,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         @Override
         protected void addInstance(ValueMappingGem gem, Element source, Set<ValueMappingOptions> mappings) {
-            ValueMappingOptions valueMappingOptions = ValueMappingOptions.fromMappingGem( gem );
+            ValueMappingOptions valueMappingOptions = ValueMappingOptions.fromMappingGem( gem, typeUtils );
             mappings.add( valueMappingOptions );
         }
 
         @Override
         protected void addInstances(ValueMappingsGem gems, Element source, Set<ValueMappingOptions> mappings) {
-            ValueMappingOptions.fromMappingsGem( gems, (ExecutableElement) source, messager, mappings );
+            ValueMappingOptions.fromMappingsGem( gems, (ExecutableElement) source, messager, mappings, typeUtils );
         }
     }
 
