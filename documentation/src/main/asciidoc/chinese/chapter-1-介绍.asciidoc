@@ -1,0 +1,18 @@
+[[introduction]]
+== 介绍
+
+MapStruct是一个java https://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html[注解处理器]，旨在生成类型安全的bean映射类。
+
+您只需要定义一个mapper接口，并在其中声明您所需的映射方法。MapStruct会在编译期生成该接口的实现类。 该实现类会使用普通的Java方法调用来实现source对象和target对象之间的映射，即不会用到反射。
+
+MapStruct可以节省开发人员的时间，相比之下，手写映射代码不仅繁琐耗时且容易出错。
+
+MapStruct采用 `约定大于配置` 的方式。默认情况下，MapStruct会使用合适的默认设置，但也支持您按照自己的方式去配置或实现特殊行为。
+
+与动态映射框架相比，MapStruct具有以下优点：
+
+* 执行快：使用普通的方法调用而不是反射。
+* 编译期类型安全：只有指明的对象和属性可以相互映射，不会在运行期出现一个 orderEntity 被映射为 customerDTO 等类似情况。
+* 可在构建期提供清晰的错误报告，比如：
+** 映射不完整（目标字段缺失）
+** 映射不正确（找不到合适的映射方法或类型转换）
