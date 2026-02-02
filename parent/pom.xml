@@ -904,6 +904,11 @@
                                         <changelog>
                                             <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
                                         </changelog>
+                                        <!--
+                                            Let GitHub determine depending on the version
+                                            whether it is the latest version or not
+                                        -->
+                                        <makeLatest>legacy</makeLatest>
                                     </github>
                                 </release>
                                 <files>
