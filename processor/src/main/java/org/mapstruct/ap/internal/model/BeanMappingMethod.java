@@ -39,7 +39,6 @@ import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
-import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReference;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.beanmapping.SourceReference;
@@ -2273,12 +2272,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( propertyMapping.isConstructorMapping() ) {
                 // We need to add the target type imports for a constructor mapper since we define its parameters
                 types.addAll( propertyMapping.getTargetType().getImportTypes() );
-            }
-            if (propertyMapping.getAssignment() instanceof SetterWrapper
-                    && ((SetterWrapper) propertyMapping.getAssignment()).isSetExplicitlyToNull()
-                    && ((SetterWrapper) propertyMapping.getAssignment()).isMustCastForNull()) {
-                // Setting to null with cast might require an import
-                types.add( propertyMapping.getTargetType() );
             }
         }
         for ( SubclassMapping subclassMapping : subclassMappings ) {

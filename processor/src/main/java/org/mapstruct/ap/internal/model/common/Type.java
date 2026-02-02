@@ -916,10 +916,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         return recordComponents;
     }
 
-    public long settersWithName(String name) {
-        return getSetters().stream().filter( setter -> setter.getSimpleName().equals( name ) ).count();
-    }
-
     private Type determinePreferredType(Accessor readAccessor) {
         if ( readAccessor != null ) {
             return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
@@ -1065,7 +1061,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all setters
      */
-    private List<Accessor> getSetters() {
+    public List<Accessor> getSetters() {
         if ( setters == null ) {
             setters = Collections.unmodifiableList( filters.setterMethodsIn( getAllMethods() ) );
         }

@@ -472,7 +472,8 @@ public class PropertyMapping extends ModelElement {
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
-                    this.method.getResultType().settersWithName( this.targetWriteAccessor.getSimpleName() ) > 1
+                        hasTwoOrMoreSettersWithName( method.getResultType(), this.targetWriteAccessor.getSimpleName() ),
+                        targetType
                 );
             }
         }
@@ -550,10 +551,24 @@ public class PropertyMapping extends ModelElement {
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
-                    this.method.getResultType().settersWithName( this.targetWriteAccessor.getSimpleName() ) > 1
+                    hasTwoOrMoreSettersWithName( method.getResultType(), this.targetWriteAccessor.getSimpleName() ),
+                        targetType
                 );
             }
             return result;
+        }
+
+        private static boolean hasTwoOrMoreSettersWithName(Type type, String name) {
+            boolean firstMatchFound = false;
+            for ( Accessor setter : type.getSetters() ) {
+                if ( setter.getSimpleName().equals( name ) ) {
+                    if (firstMatchFound) {
+                        return true;
+                    }
+                    firstMatchFound = true;
+                }
+            }
+            return false;
         }
 
         private Assignment assignToCollection(Type targetType, AccessorType targetAccessorType,
