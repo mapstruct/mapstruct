@@ -17,7 +17,5 @@ public interface ErroneousMapper {
 
     long sourceToLong(Source source);
 
-    Source longToSource(long id);
-
     Target sourceToTargetWithMappingTargetType(Source source, @TargetType Class<?> clazz);
 }
