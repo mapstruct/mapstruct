@@ -151,8 +151,7 @@ public class NestedTargetPropertyMappingHolder {
                     entryByTP.getValue(),
                     groupedByTP.singleTargetReferences.get( targetProperty )
                 );
-                boolean multipleSourceParametersForTP =
-                    groupedBySourceParam.groupedBySourceParameter.keySet().size() > 1;
+                boolean multipleSourceParametersForTP = groupedBySourceParam.groupedBySourceParameter.size() > 1;
 
                 // All not processed mappings that should have been applied to all are part of the unprocessed
                 // defined targets
