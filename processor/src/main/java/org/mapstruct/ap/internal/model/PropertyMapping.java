@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -472,7 +474,7 @@ public class PropertyMapping extends ModelElement {
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
-                        hasTwoOrMoreSettersWithName( method.getResultType(), this.targetWriteAccessor.getSimpleName() ),
+                        hasTwoOrMoreSettersWithName(),
                         targetType
                 );
             }
@@ -551,17 +553,22 @@ public class PropertyMapping extends ModelElement {
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
-                    hasTwoOrMoreSettersWithName( method.getResultType(), this.targetWriteAccessor.getSimpleName() ),
+                    hasTwoOrMoreSettersWithName(),
                         targetType
                 );
             }
             return result;
         }
 
-        private static boolean hasTwoOrMoreSettersWithName(Type type, String name) {
+        private boolean hasTwoOrMoreSettersWithName() {
+            Element enclosingClass = this.targetWriteAccessor.getElement().getEnclosingElement();
+            if ( enclosingClass == null || !ElementKind.CLASS.equals( enclosingClass.getKind() ) ) {
+                return false;
+            }
+            String simpleWriteAccessorName = this.targetWriteAccessor.getSimpleName();
             boolean firstMatchFound = false;
-            for ( Accessor setter : type.getSetters() ) {
-                if ( setter.getSimpleName().equals( name ) ) {
+            for ( Accessor setter : ctx.getTypeFactory().getType( enclosingClass.asType() ).getSetters() ) {
+                if ( setter.getSimpleName().equals( simpleWriteAccessorName ) ) {
                     if (firstMatchFound) {
                         return true;
                     }
