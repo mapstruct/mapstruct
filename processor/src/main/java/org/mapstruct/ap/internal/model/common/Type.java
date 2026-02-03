@@ -1331,7 +1331,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else {
             // name allows for inner classes
-            String name = getFullyQualifiedName().replaceFirst( "^" + getPackageName() + ".", "" );
+            String name = getNameKeepingInnerClasses();
             List<Type> typeParams = getTypeParameters();
             if ( typeParams.isEmpty() ) {
                 return name;
@@ -1341,6 +1341,15 @@ public class Type extends ModelElement implements Comparable<Type> {
                 return String.format( "%s<%s>", name, params );
             }
         }
+    }
+
+    private String getNameKeepingInnerClasses() {
+        String packageNamePrefix = getPackageName() + ".";
+        String fullyQualifiedName = getFullyQualifiedName();
+        if (fullyQualifiedName.startsWith( packageNamePrefix ) ) {
+            return fullyQualifiedName.substring( packageNamePrefix.length() );
+        }
+        return fullyQualifiedName;
     }
 
     /**
