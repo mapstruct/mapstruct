@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -471,7 +473,10 @@ public class PropertyMapping extends ModelElement {
                     isFieldAssignment(),
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT );
+                    nvpms == SET_TO_DEFAULT,
+                        hasTwoOrMoreSettersWithName(),
+                        targetType
+                );
             }
         }
 
@@ -547,10 +552,30 @@ public class PropertyMapping extends ModelElement {
                     isFieldAssignment(),
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    hasTwoOrMoreSettersWithName(),
+                        targetType
                 );
             }
             return result;
+        }
+
+        private boolean hasTwoOrMoreSettersWithName() {
+            Element enclosingClass = this.targetWriteAccessor.getElement().getEnclosingElement();
+            if ( enclosingClass == null || !ElementKind.CLASS.equals( enclosingClass.getKind() ) ) {
+                return false;
+            }
+            String simpleWriteAccessorName = this.targetWriteAccessor.getSimpleName();
+            boolean firstMatchFound = false;
+            for ( Accessor setter : ctx.getTypeFactory().getType( enclosingClass.asType() ).getSetters() ) {
+                if ( setter.getSimpleName().equals( simpleWriteAccessorName ) ) {
+                    if (firstMatchFound) {
+                        return true;
+                    }
+                    firstMatchFound = true;
+                }
+            }
+            return false;
         }
 
         private Assignment assignToCollection(Type targetType, AccessorType targetAccessorType,
