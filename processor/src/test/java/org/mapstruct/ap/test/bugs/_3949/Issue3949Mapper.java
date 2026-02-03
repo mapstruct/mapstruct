@@ -23,6 +23,10 @@ public interface Issue3949Mapper {
 
     void overwriteString(@MappingTarget TargetString target, StringSource stringSource);
 
+    void overwriteDateWithConversion(@MappingTarget TargetDate target, StringSource dateSource);
+
+    void overwriteStringWithConversion(@MappingTarget TargetString target, DateSource stringSource);
+
     class DateSource {
         public LocalDate getDate() {
             return null;
