@@ -202,6 +202,7 @@ public enum Message {
     INHERITCONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s." ),
     INHERITCONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
     INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritConfiguration to select one of them explicitly: %s." ),
+    INHERITCONFIGURATION_PARAMETER_MISMATCH("Method \"%s\" cannot inherit configuration from \"%s\" because their parameters do not match."),
     INHERITINVERSECONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritInverseConfiguration to select one of them explicitly: %s." ),
     INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
 
