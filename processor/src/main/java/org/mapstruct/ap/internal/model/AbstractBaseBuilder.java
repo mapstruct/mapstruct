@@ -132,7 +132,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     private Assignment createAssignment(SourceRHS source, ForgedMethod methodRef) {
         Assignment assignment = MethodReference.forForgedMethod(
             methodRef,
-            ParameterBinding.fromParameters( methodRef.getParameters() )
+            ParameterBinding.fromParameters( methodRef.getSourceParameters() )
         );
         assignment.setAssignment( source );
 

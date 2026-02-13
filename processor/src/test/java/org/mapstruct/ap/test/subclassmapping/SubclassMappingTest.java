@@ -227,21 +227,11 @@ public class SubclassMappingTest {
     void subclassOrderWarning() {
     }
 
+    @IssueKey( "2946" )
     @ProcessorTest
-    @WithClasses({ ErroneousSubclassUpdateMapper.class })
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED, diagnostics = {
-        @Diagnostic(type = ErroneousSubclassUpdateMapper.class,
-            kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 21,
-            message = "SubclassMapping annotation can not be used for update methods."
-        ),
-        @Diagnostic(type = ErroneousSubclassUpdateMapper.class,
-            kind = javax.tools.Diagnostic.Kind.ERROR,
-            line = 25,
-            message = "SubclassMapping annotation can not be used for update methods."
-        )
-    })
-    void unsupportedUpdateMethod() {
+    @WithClasses({ SubclassUpdateMapper.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED)
+    void updateMethod() {
     }
 
     @ProcessorTest

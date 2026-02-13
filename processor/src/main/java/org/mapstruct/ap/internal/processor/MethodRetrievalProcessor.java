@@ -327,7 +327,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         SubclassValidator subclassValidator = new SubclassValidator( messager, typeUtils );
         Set<SubclassMappingOptions> subclassMappingOptions = getSubclassMappings(
             sourceParameters,
-            targetParameter != null ? null : resultType,
+            resultType,
             method,
             beanMappingOptions,
             subclassValidator

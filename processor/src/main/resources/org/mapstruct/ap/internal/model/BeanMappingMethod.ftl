@@ -42,8 +42,12 @@
 
     <#if hasSubclassMappings()>
         <#list subclassMappings as subclass>
-            <#if subclass_index &gt; 0>else</#if> if (${subclass.sourceArgument} instanceof <@includeModel object=subclass.sourceType/>) {
-                <@includeModel object=subclass.assignment existingInstanceMapping=existingInstanceMapping/>
+            <#if isUpdateMethod()>
+                <#if subclass_index &gt; 0>else</#if> if (${subclass.sourceArgument} instanceof <@includeModel object=subclass.sourceType/> && ${subclass.targetArgument} instanceof <@includeModel object=subclass.targetType/>) {
+            <#else>
+                <#if subclass_index &gt; 0>else</#if> if (${subclass.sourceArgument} instanceof <@includeModel object=subclass.sourceType/>) {
+            </#if>
+            <@includeModel object=subclass.assignment existingInstanceMapping=existingInstanceMapping/>
             }
         </#list>
         else {
