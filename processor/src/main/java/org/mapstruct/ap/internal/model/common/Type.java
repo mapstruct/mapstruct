@@ -1303,8 +1303,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         Type other = (Type) obj;
 
         if ( this.isWildCardBoundByTypeVar() && other.isWildCardBoundByTypeVar() ) {
-            return  ( this.hasExtendsBound() == this.hasExtendsBound()
-                || this.hasSuperBound() == this.hasSuperBound() )
+            return  ( this.hasExtendsBound() == other.hasExtendsBound()
+                || this.hasSuperBound() == other.hasSuperBound() )
                 && typeUtils.isSameType( getTypeBound().getTypeMirror(), other.getTypeBound().getTypeMirror() );
         }
         else {
