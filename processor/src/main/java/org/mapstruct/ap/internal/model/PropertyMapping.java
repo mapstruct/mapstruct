@@ -755,7 +755,9 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
             ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
-
+            if ( sourceType.containsSuperBound() && targetType.containsExtendsBound() ) {
+                return null;
+            }
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 

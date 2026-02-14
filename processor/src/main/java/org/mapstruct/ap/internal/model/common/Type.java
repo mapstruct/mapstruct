@@ -465,6 +465,15 @@ public class Type extends ModelElement implements Comparable<Type> {
     /**
      * A wild card type can have two types of bounds (mutual exclusive): extends and super.
      *
+     * @return true if contains a typeParameter which bound has a wild card super bound (e.g. ? super Number)
+     */
+    public boolean containsSuperBound() {
+        return getTypeParameters().stream().anyMatch( Type::hasSuperBound );
+    }
+
+    /**
+     * A wild card type can have two types of bounds (mutual exclusive): extends and super.
+     *
      * @return true if the bound has a wild card super bound (e.g. ? extends Number)
      */
     public boolean hasExtendsBound() {
@@ -474,6 +483,15 @@ public class Type extends ModelElement implements Comparable<Type> {
             result = wildcardType.getExtendsBound() != null;
         }
         return result;
+    }
+
+    /**
+     * A wild card type can have two types of bounds (mutual exclusive): extends and super.
+     *
+     * @return true if contains a typeParameter which bound has a wild card extends bound (e.g. ? extends Number)
+     */
+    public boolean containsExtendsBound() {
+        return getTypeParameters().stream().anyMatch( Type::hasExtendsBound );
     }
 
     /**
