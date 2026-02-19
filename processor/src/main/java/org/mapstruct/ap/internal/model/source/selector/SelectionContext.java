@@ -105,6 +105,25 @@ public class SelectionContext {
         );
     }
 
+    public static SelectionContext forDefaultValueMappingMethod(Method mappingMethod, Type targetType,
+                                                                SelectionParameters selectionParameters,
+                                                                TypeFactory typeFactory) {
+        SelectionCriteria criteria = SelectionCriteria.forDefaultValueMappingMethod( selectionParameters );
+        return new SelectionContext(
+            null,
+            criteria,
+            mappingMethod,
+            targetType,
+            mappingMethod.getResultType(),
+            () -> getAvailableParameterBindingsFromMethod(
+                mappingMethod,
+                targetType,
+                criteria.getSourceRHS(),
+                typeFactory
+            )
+        );
+    }
+
     public static SelectionContext forLifecycleMethods(Method mappingMethod, Type targetType,
                                                SelectionParameters selectionParameters,
                                                TypeFactory typeFactory,

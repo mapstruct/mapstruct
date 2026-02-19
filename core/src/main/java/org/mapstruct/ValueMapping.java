@@ -5,6 +5,7 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -121,4 +122,25 @@ public @interface ValueMapping {
      */
     String target();
 
+    /**
+     * Only effective when {@code source } = {@link MappingConstants#ANY_UNMAPPED }
+     * or {@link MappingConstants#ANY_REMAINING }.
+     * <p>
+     * Specifies qualifier annotations to select a user-defined handler method,
+     * which will be invoked in the {@code default} branch of the generated {@code switch} statement
+     * for unmapped enum values.
+     *
+     * @return the qualifiers
+     * @see Qualifier
+     */
+    Class<? extends Annotation>[] qualifiedBy() default {};
+
+    /**
+     * Similar to {@link #qualifiedBy()}, but used in combination with {@code @}{@link Named} in case no custom
+     * qualifier annotation is defined.
+     *
+     * @return the qualifiers
+     * @see Named
+     */
+    String[] qualifiedByName() default {};
 }
