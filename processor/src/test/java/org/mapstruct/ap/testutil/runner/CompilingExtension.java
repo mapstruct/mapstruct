@@ -55,6 +55,7 @@ import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.xml.sax.InputSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
@@ -237,8 +238,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
             int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
             if ( errors > 0 ) {
                 String errorLog = errorStream.toString( "UTF-8" );
-                assertThat( true ).describedAs( "Expected checkstyle compliant output, but got errors:\n" + errorLog )
-                                  .isEqualTo( false );
+                fail( "Expected checkstyle compliant output, but got errors:\n" + errorLog );
             }
         }
     }
