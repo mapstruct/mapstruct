@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -237,7 +238,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
 
             int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
             if ( errors > 0 ) {
-                String errorLog = errorStream.toString( "UTF-8" );
+                String errorLog = errorStream.toString( StandardCharsets.UTF_8 );
                 fail( "Expected checkstyle compliant output, but got errors:\n" + errorLog );
             }
         }
