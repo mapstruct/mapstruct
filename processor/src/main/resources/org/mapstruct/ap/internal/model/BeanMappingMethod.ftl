@@ -26,7 +26,7 @@
 
     	</#if>
     </#list>
-    <#if !mapNullToDefault && !sourcePresenceChecks.empty>
+    <#if !mapNullToDefault && sourcePresenceChecks?has_content && sourcePresenceChecks?size == sourceParameters?size>
     if ( <#list sourcePresenceChecks as sourcePresenceCheck><@includeModel object=sourcePresenceCheck.negate() /><#if sourcePresenceCheck_has_next> && </#if></#list> ) {
         <#if returnType.name == "void">
             return;
