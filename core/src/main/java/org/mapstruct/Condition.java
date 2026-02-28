@@ -88,6 +88,9 @@ import java.lang.annotation.Target;
 public @interface Condition {
 
     /**
+     * The condition strategy for the condition.
+     * This determines whether the condition is applied to properties, parameters, or both.
+     *
      * @return the places where the condition should apply to
      * @since 1.6
      */

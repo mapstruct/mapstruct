@@ -118,7 +118,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * // we can use {@link #defaultValue()} or {@link #defaultExpression()} for it
  * &#64;Mapper
  * public interface HumanMapper {
- *    &#64;Mapping(source="name", target="name", defaultValue="Somebody")
+ *    &#64;Mapping(source="name", target="fullName", defaultValue="Somebody")
  *    HumanDto toHumanDto(Human human)
  * }
  * </code></pre>
@@ -230,7 +230,6 @@ public @interface Mapping {
      * <p>
      * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
      * type conversion method or built-in conversion.
-     * <p>
      * </li>
      * </ol>
      * <p>
@@ -446,13 +445,11 @@ public @interface Mapping {
      * If not possible, MapStruct will try to apply a user defined mapping method.
      * </li>
      * </ul>
-     * <p>
      * </li>
      * <li>other
      * <p>
      * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
      * type conversion method or built-in conversion.
-     * <p>
      * </li>
      * </ol>
      * <p>

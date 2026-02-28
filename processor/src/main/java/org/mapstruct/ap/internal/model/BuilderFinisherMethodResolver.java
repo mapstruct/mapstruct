@@ -19,6 +19,8 @@ import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
+ * Factory for creating the appropriate builder finisher method.
+ *
  * @author Filip Hrisafov
  */
 public class BuilderFinisherMethodResolver {

@@ -152,15 +152,11 @@ public class TypeFactory {
         );
         implementationTypes.put(
             JavaCollectionConstants.SEQUENCED_SET_FQN,
-            sourceVersionAtLeast19 ?
-                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
-                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
+            withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME )
         );
         implementationTypes.put(
             JavaCollectionConstants.SEQUENCED_MAP_FQN,
-            sourceVersionAtLeast19 ?
-                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
-                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
+            withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME )
         );
 
         this.loggingVerbose = loggingVerbose;

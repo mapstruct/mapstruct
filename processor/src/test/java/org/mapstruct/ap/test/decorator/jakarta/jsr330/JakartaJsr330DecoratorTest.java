@@ -5,6 +5,12 @@
  */
 package org.mapstruct.ap.test.decorator.jakarta.jsr330;
 
+import java.util.Calendar;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.test.decorator.Address;
 import org.mapstruct.ap.test.decorator.AddressDto;
@@ -15,8 +21,13 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJakartaInject;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import static java.lang.System.lineSeparator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Person.class,
@@ -27,13 +38,55 @@ import static java.lang.System.lineSeparator;
     PersonMapperDecorator.class
 })
 @IssueKey("2567")
+@ComponentScan(basePackageClasses = JakartaJsr330DecoratorTest.class)
+@Configuration
 @WithJakartaInject
-// We can't use Spring for testing since Spring 5 does not support Jakarta Inject
-// However, we can test the generated source code
 public class JakartaJsr330DecoratorTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
+
+    @Inject
+    @Named
+    private PersonMapper personMapper;
+    private ConfigurableApplicationContext context;
+
+    @BeforeEach
+    public void springUp() {
+        context = new AnnotationConfigApplicationContext( getClass() );
+        context.getAutowireCapableBeanFactory().autowireBean( this );
+    }
+
+    @AfterEach
+    public void springDown() {
+        if ( context != null ) {
+            context.close();
+        }
+    }
+
+    @ProcessorTest
+    public void shouldInvokeDecoratorMethods() {
+        Calendar birthday = Calendar.getInstance();
+        birthday.set( 1928, Calendar.MAY, 23 );
+        Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
+
+        PersonDto personDto = personMapper.personToPersonDto( person );
+
+        assertThat( personDto ).isNotNull();
+        assertThat( personDto.getName() ).isEqualTo( "Gary Crant" );
+        assertThat( personDto.getAddress() ).isNotNull();
+        assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
+
+    @ProcessorTest
+    public void shouldDelegateNonDecoratedMethodsToDefaultImplementation() {
+        Address address = new Address( "42 Ocean View Drive" );
+
+        AddressDto addressDto = personMapper.addressToAddressDto( address );
+
+        assertThat( addressDto ).isNotNull();
+        assertThat( addressDto.getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
 
     @ProcessorTest
     public void hasCorrectImports() {

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -23,6 +25,8 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
+ * Factory for creating {@link PresenceCheck}s.
+ *
  * @author Filip Hrisafov
  */
 public final class PresenceCheckMethodResolver {
@@ -86,6 +90,12 @@ public final class PresenceCheckMethodResolver {
         );
 
         if ( matchingMethods.isEmpty() ) {
+            if ( sourceParameter.getType().isOptionalType() ) {
+                return new OptionalPresenceCheck( sourceParameter.getName(), ctx.getVersionInformation() );
+            }
+            else if ( !sourceParameter.getType().isPrimitive() ) {
+                return new NullPresenceCheck( sourceParameter.getName() );
+            }
             return null;
         }
 

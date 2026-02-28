@@ -133,6 +133,14 @@ public interface CarMapper {
 * Between `java.util.Locale` and `String`.
 ** When converting from a `Locale`, the resulting `String` will be a well-formed IETF BCP 47 language tag representing the locale. When converting from a `String`, the locale that best represents the language tag will be returned. See https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[Locale.forLanguageTag()] and https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#toLanguageTag--[Locale.toLanguageTag()] for more information.
 
+[NOTE]
+====
+All the above conversions also work when the source or target type is wrapped in `java.util.Optional`, `java.util.OptionalDouble`, `java.util.OptionalLong` or `java.util.OptionalInt`.
+For example, `Optional<Integer>` can be converted to `String`, `int` can be converted to `Optional<String>`,
+or `Optional<Long>` can be converted to `Integer`.
+The same conversion rules apply, with MapStruct automatically handling the wrapping and unwrapping of `Optional` values.
+====
+
 [[mapping-object-references]]
 === Mapping object references
 

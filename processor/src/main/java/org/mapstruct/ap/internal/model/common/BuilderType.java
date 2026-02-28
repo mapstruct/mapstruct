@@ -14,6 +14,9 @@ import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.BuilderInfo;
 
 /**
+ * Represents the information about a builder.
+ * How it can be constructed, the type it is building etc.
+ *
  * @author Filip Hrisafov
  */
 public class BuilderType {

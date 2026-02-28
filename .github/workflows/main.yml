@@ -23,14 +23,20 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          mirrors: '[{"id": "block-plexus-snapshots", "name": "Block Plexus Snapshots", "mirrorOf": "plexus.snapshots", "url": "http://localhost"}]'
       - name: 'Test'
         run: ./mvnw ${MAVEN_ARGS} -Djacoco.skip=${{ matrix.java != 21 }} install -DskipDistribution=${{ matrix.java != 21 }}
       - name: 'Generate coverage report'
         if: matrix.java == 21
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
-        if: matrix.java == 21
-        uses: codecov/codecov-action@v2
+        if: matrix.java == 21 && github.repository == 'mapstruct/mapstruct'
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: 'Publish Snapshots'
         if: matrix.java == 21 && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'mapstruct/mapstruct'
         run: ./mvnw -s etc/ci-settings.xml -DskipTests=true -DskipDistribution=true deploy
@@ -56,5 +62,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          mirrors: '[{"id": "block-plexus-snapshots", "name": "Block Plexus Snapshots", "mirrorOf": "plexus.snapshots", "url": "http://localhost"}]'
       - name: 'Run integration tests'
         run: ./mvnw ${MAVEN_ARGS} verify -pl integrationtest

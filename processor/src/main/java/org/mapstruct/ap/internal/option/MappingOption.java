@@ -6,6 +6,8 @@
 package org.mapstruct.ap.internal.option;
 
 /**
+ * The different compiler mapping options that are available in MapStruct.
+ *
  * @author Filip Hrisafov
  */
 public enum MappingOption {

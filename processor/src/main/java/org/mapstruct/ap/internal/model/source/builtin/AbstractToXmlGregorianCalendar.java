@@ -17,6 +17,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.XmlConstants;
 
 /**
+ * Base class for built-in methods for converting from a particular type to {@code XMLGregorianCalendar}.
+ *
  * @author Sjaak Derksen
  */
 public abstract class AbstractToXmlGregorianCalendar extends BuiltInMethod {

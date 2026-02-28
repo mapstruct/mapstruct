@@ -5,8 +5,8 @@
  */
 package org.mapstruct.itest.jsr330;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public abstract class SecondSourceTargetMapperDecorator implements SecondDecoratedSourceTargetMapper {
 

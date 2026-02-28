@@ -34,6 +34,11 @@ import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
+/**
+ * MapStruct specific abstract implementation of {@link ElementUtils}.
+ * This allows us to provide different implementations for different compilers and / or
+ * to allow us for easier implementation of using the module system.
+ */
 public abstract class AbstractElementUtilsDecorator implements ElementUtils {
 
     private final Elements delegate;
@@ -312,6 +317,8 @@ public abstract class AbstractElementUtilsDecorator implements ElementUtils {
     }
 
     /**
+     * Checks whether the {@code executable} does not have a private modifier.
+     *
      * @param executable the executable to check
      * @return {@code true}, iff the executable does not have a private modifier
      */

@@ -43,6 +43,14 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
+import kotlin.Metadata;
+import kotlin.metadata.Attributes;
+import kotlin.metadata.KmClass;
+import kotlin.metadata.KmConstructor;
+import kotlin.metadata.Modality;
+import kotlin.metadata.jvm.JvmExtensionsKt;
+import kotlin.metadata.jvm.JvmMethodSignature;
+import kotlin.metadata.jvm.KotlinClassMetadata;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
@@ -58,6 +66,7 @@ import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
+import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
 
 import static java.util.Collections.emptyList;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -75,6 +84,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  */
 public class Type extends ModelElement implements Comparable<Type> {
     private static final Method SEALED_PERMITTED_SUBCLASSES_METHOD;
+    private static final boolean KOTLIN_METADATA_JVM_PRESENT;
 
     static {
         Method permittedSubclassesMethod;
@@ -85,6 +95,16 @@ public class Type extends ModelElement implements Comparable<Type> {
             permittedSubclassesMethod = null;
         }
         SEALED_PERMITTED_SUBCLASSES_METHOD = permittedSubclassesMethod;
+
+        boolean kotlinMetadataJvmPresent;
+        try {
+            Class.forName( "kotlin.metadata.jvm.KotlinClassMetadata", false, ModelElement.class.getClassLoader() );
+            kotlinMetadataJvmPresent = true;
+        }
+        catch ( ClassNotFoundException e ) {
+            kotlinMetadataJvmPresent = false;
+        }
+        KOTLIN_METADATA_JVM_PRESENT = kotlinMetadataJvmPresent;
     }
 
     private final TypeUtils typeUtils;
@@ -139,6 +159,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private KotlinMetadata kotlinMetadata;
+    private boolean kotlinMetadataInitialized;
 
     private final Filters filters;
 
@@ -375,9 +397,30 @@ public class Type extends ModelElement implements Comparable<Type> {
         return type.getName().equals( getFullyQualifiedName() );
     }
 
-    private boolean isOptionalType() {
+    public boolean isOptionalType() {
         return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
             isType( OptionalLong.class );
+    }
+
+    public Type getOptionalBaseType() {
+        if ( isType( Optional.class ) ) {
+            return getTypeParameters().get( 0 );
+        }
+
+        if ( isType( OptionalInt.class ) ) {
+            return typeFactory.getType( int.class );
+        }
+
+        if ( isType( OptionalDouble.class ) ) {
+            return typeFactory.getType( double.class );
+        }
+
+        if ( isType( OptionalLong.class ) ) {
+            return typeFactory.getType( long.class );
+        }
+
+        throw new IllegalStateException( "getOptionalBaseType should only be called for Optional types." );
+
     }
 
     public boolean isTypeVar() {
@@ -1260,8 +1303,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         Type other = (Type) obj;
 
         if ( this.isWildCardBoundByTypeVar() && other.isWildCardBoundByTypeVar() ) {
-            return  ( this.hasExtendsBound() == this.hasExtendsBound()
-                || this.hasSuperBound() == this.hasSuperBound() )
+            return  ( this.hasExtendsBound() == other.hasExtendsBound()
+                || this.hasSuperBound() == other.hasSuperBound() )
                 && typeUtils.isSameType( getTypeBound().getTypeMirror(), other.getTypeBound().getTypeMirror() );
         }
         else {
@@ -1288,7 +1331,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else {
             // name allows for inner classes
-            String name = getFullyQualifiedName().replaceFirst( "^" + getPackageName() + ".", "" );
+            String name = getNameKeepingInnerClasses();
             List<Type> typeParams = getTypeParameters();
             if ( typeParams.isEmpty() ) {
                 return name;
@@ -1298,6 +1341,15 @@ public class Type extends ModelElement implements Comparable<Type> {
                 return String.format( "%s<%s>", name, params );
             }
         }
+    }
+
+    private String getNameKeepingInnerClasses() {
+        String packageNamePrefix = getPackageName() + ".";
+        String fullyQualifiedName = getFullyQualifiedName();
+        if (fullyQualifiedName.startsWith( packageNamePrefix ) ) {
+            return fullyQualifiedName.substring( packageNamePrefix.length() );
+        }
+        return fullyQualifiedName;
     }
 
     /**
@@ -1368,6 +1420,23 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
         }
         return hasAccessibleConstructor;
+    }
+
+    public KotlinMetadata getKotlinMetadata() {
+        if ( !kotlinMetadataInitialized ) {
+            kotlinMetadataInitialized = true;
+            if ( typeElement != null && KOTLIN_METADATA_JVM_PRESENT ) {
+                Metadata metadataAnnotation = typeElement.getAnnotation( Metadata.class );
+                if ( metadataAnnotation != null ) {
+                    KotlinClassMetadata classMetadata = KotlinClassMetadata.readLenient( metadataAnnotation );
+                    if ( classMetadata instanceof KotlinClassMetadata.Class ) {
+                        kotlinMetadata = new KotlinMetadataImpl( (KotlinClassMetadata.Class) classMetadata );
+                    }
+                }
+            }
+        }
+
+        return kotlinMetadata;
     }
 
     /**
@@ -1812,6 +1881,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      * return true if this type is a java 17+ sealed class
      */
     public boolean isSealed() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.isSealedClass();
+        }
         return typeElement.getModifiers().stream().map( Modifier::name ).anyMatch( "SEALED"::equals );
     }
 
@@ -1820,6 +1893,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     @SuppressWarnings( "unchecked" )
     public List<? extends TypeMirror> getPermittedSubclasses() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.getPermittedSubclasses();
+        }
         if (SEALED_PERMITTED_SUBCLASSES_METHOD == null) {
             return emptyList();
         }
@@ -1828,6 +1905,141 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
             return emptyList();
+        }
+    }
+
+    private class KotlinMetadataImpl implements KotlinMetadata {
+
+        private final KotlinClassMetadata.Class kotlinClassMetadata;
+
+        private KotlinMetadataImpl(KotlinClassMetadata.Class kotlinClassMetadata) {
+            this.kotlinClassMetadata = kotlinClassMetadata;
+        }
+
+        @Override
+        public boolean isDataClass() {
+            return Attributes.isData( kotlinClassMetadata.getKmClass() );
+        }
+
+        @Override
+        public boolean isSealedClass() {
+            return Attributes.getModality( kotlinClassMetadata.getKmClass() ) == Modality.SEALED;
+        }
+
+        @Override
+        public ExecutableElement determinePrimaryConstructor(List<ExecutableElement> constructors) {
+            if ( constructors.size() == 1 ) {
+                // If we have one constructor, that this constructor is the primary one
+                return constructors.get( 0 );
+            }
+            KmClass kmClass = kotlinClassMetadata.getKmClass();
+            KmConstructor primaryKmConstructor = null;
+            for ( KmConstructor constructor : kmClass.getConstructors() ) {
+                if ( !Attributes.isSecondary( constructor ) ) {
+                    primaryKmConstructor = constructor;
+                }
+
+            }
+
+            if ( primaryKmConstructor == null ) {
+                return null;
+            }
+
+            List<ExecutableElement> sameParametersSizeConstructors = new ArrayList<>();
+            for ( ExecutableElement constructor : constructors ) {
+                if ( constructor.getParameters().size() == primaryKmConstructor.getValueParameters().size() ) {
+                    sameParametersSizeConstructors.add( constructor );
+                }
+            }
+
+            if ( sameParametersSizeConstructors.size() == 1 ) {
+                return sameParametersSizeConstructors.get( 0 );
+            }
+
+            JvmMethodSignature signature = JvmExtensionsKt.getSignature( primaryKmConstructor );
+            if ( signature == null ) {
+                return null;
+            }
+
+            String signatureDescriptor = signature.getDescriptor();
+            for ( ExecutableElement constructor : constructors ) {
+                String constructorDescriptor = buildJvmConstructorDescriptor( constructor );
+                if ( signatureDescriptor.equals( constructorDescriptor ) ) {
+                    return constructor;
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        public List<? extends TypeMirror> getPermittedSubclasses() {
+            List<String> sealedSubclassNames = kotlinClassMetadata.getKmClass().getSealedSubclasses();
+            List<TypeMirror> permittedSubclasses = new ArrayList<>( sealedSubclassNames.size() );
+            for ( String sealedSubclassName : sealedSubclassNames ) {
+                Type subclassType = typeFactory.getType( sealedSubclassName.replace( '/', '.' ) );
+                permittedSubclasses.add( subclassType.getTypeMirror() );
+            }
+
+            return permittedSubclasses;
+        }
+
+        private String buildJvmConstructorDescriptor(ExecutableElement constructor) {
+            StringBuilder signature = new StringBuilder( "(" );
+
+            for ( VariableElement param : constructor.getParameters() ) {
+                signature.append( getJvmTypeDescriptor( param.asType() ) );
+            }
+
+            signature.append( ")V" );
+            return signature.toString();
+        }
+
+        private String getJvmTypeDescriptor(TypeMirror type) {
+            return type.accept(
+                new SimpleTypeVisitor8<String, Void>() {
+                    @Override
+                    public String visitPrimitive(PrimitiveType t, Void p) {
+                        switch ( t.getKind() ) {
+                            case BOOLEAN:
+                                return "Z";
+                            case BYTE:
+                                return "B";
+                            case SHORT:
+                                return "S";
+                            case INT:
+                                return "I";
+                            case LONG:
+                                return "J";
+                            case CHAR:
+                                return "C";
+                            case FLOAT:
+                                return "F";
+                            case DOUBLE:
+                                return "D";
+                            default:
+                                return "";
+                        }
+                    }
+
+                    @Override
+                    public String visitDeclared(DeclaredType t, Void p) {
+                        TypeElement element = (TypeElement) t.asElement();
+                        String binaryName = elementUtils.getBinaryName( element ).toString();
+                        return "L" + binaryName.replace( '.', '/' ) + ";";
+                    }
+
+                    @Override
+                    public String visitArray(ArrayType t, Void p) {
+                        return "[" + getJvmTypeDescriptor( t.getComponentType() );
+                    }
+
+                    @Override
+                    protected String defaultAction(TypeMirror e, Void p) {
+                        return "";
+                    }
+                }, null
+            );
         }
     }
 

@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ * A {@link PresenceCheck} that negates the result of another presence check.
+ *
  * @author Filip Hrisafov
  */
 public class NegatePresenceCheck extends ModelElement implements PresenceCheck {

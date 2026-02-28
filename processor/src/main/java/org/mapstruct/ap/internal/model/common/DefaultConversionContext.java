@@ -62,6 +62,11 @@ public class DefaultConversionContext implements ConversionContext {
     }
 
     @Override
+    public Type getSourceType() {
+        return sourceType;
+    }
+
+    @Override
     public String getNumberFormat() {
         return numberFormat;
     }

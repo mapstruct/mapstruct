@@ -11,6 +11,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
+ * An {@link Accessor} that can be used for reading a property from a bean.
+ *
  * @author Filip Hrisafov
  */
 public interface ReadAccessor extends Accessor {

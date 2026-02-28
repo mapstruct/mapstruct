@@ -46,6 +46,8 @@ public interface ConversionProvider {
     Assignment from(ConversionContext conversionContext);
 
     /**
+     * Retrieves any helper methods required for creating the conversion.
+     *
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return any helper methods when required.
@@ -53,6 +55,8 @@ public interface ConversionProvider {
     List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext);
 
     /**
+     * Retrieves any fields required for creating the conversion.
+     *
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return any fields when required.

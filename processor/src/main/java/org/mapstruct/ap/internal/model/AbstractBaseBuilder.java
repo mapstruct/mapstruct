@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -73,7 +72,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @return See above
      */
-    Assignment createForgedAssignment(SourceRHS sourceRHS, BuilderType builderType, ForgedMethod forgedMethod) {
+    Assignment createForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
 
         Supplier<MappingMethod> forgedMappingMethodCreator;
         if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
@@ -87,7 +86,6 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         else {
             forgedMappingMethodCreator = () -> new BeanMappingMethod.Builder()
                 .forgedMethod( forgedMethod )
-                .returnTypeBuilder( builderType )
                 .mappingContext( ctx )
                 .build();
         }

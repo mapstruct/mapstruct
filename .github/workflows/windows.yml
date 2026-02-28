@@ -16,5 +16,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
+      - uses: s4u/maven-settings-action@v4.0.0
+        with:
+          mirrors: '[{"id": "block-plexus-snapshots", "name": "Block Plexus Snapshots", "mirrorOf": "plexus.snapshots", "url": "http://localhost"}]'
       - name: 'Test'
         run: ./mvnw %MAVEN_ARGS% install

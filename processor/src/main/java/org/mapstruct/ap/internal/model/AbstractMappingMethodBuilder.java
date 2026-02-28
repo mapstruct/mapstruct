@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -20,6 +19,8 @@ import java.util.List;
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
+ * @param <B> the builder itself that needs to be used for chaining
+ * @param <M> the method that the builder builds
  * @author Filip Hrisafov
  */
 public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>,
@@ -94,12 +95,8 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
         ForgedMethod forgedMethod =
             forgeMethodCreator.createMethod( name, sourceType, targetType, method, description, true );
-        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
 
-        return createForgedAssignment(
-            sourceRHS,
-            ctx.getTypeFactory().builderTypeFor( targetType, builder ),
-            forgedMethod );
+        return createForgedAssignment( sourceRHS, forgedMethod );
     }
 
     private String getName(Type sourceType, Type targetType) {

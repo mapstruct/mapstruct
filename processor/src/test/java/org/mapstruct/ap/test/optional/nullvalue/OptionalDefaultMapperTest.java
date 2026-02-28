@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.optional.nullvalue;
 
-import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 
@@ -19,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
     Source.class,
     Target.class
 })
-@IssueKey("3852")
 public class OptionalDefaultMapperTest {
 
     @ProcessorTest

@@ -21,5 +21,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface MappingControls {
 
+    /**
+     * The mapping controls that should be applied to the annotated class.
+     *
+     * @return The mapping controls that should be applied to the annotated class.
+     */
     MappingControl[] value();
 }

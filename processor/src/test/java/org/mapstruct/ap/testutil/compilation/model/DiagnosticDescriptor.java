@@ -15,6 +15,9 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.codehaus.plexus.compiler.CompilerMessage;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollectorImpl;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 
 /**
@@ -98,6 +101,37 @@ public class DiagnosticDescriptor {
             default:
                 return null;
         }
+    }
+
+    public static DiagnosticDescriptor forCompilerMessage(String sourceDir, MessageCollectorImpl.Message message) {
+        CompilerMessageSourceLocation location = message.getLocation();
+        String sourceFileName;
+        Long line;
+        if ( location != null ) {
+            sourceFileName = location.getPath();
+            line = (long) location.getLine();
+        }
+        else {
+            sourceFileName = null;
+            line = null;
+        }
+        return new DiagnosticDescriptor(
+            sourceFileName,
+            toJavaxKind( message.getSeverity() ),
+            line,
+            message.getMessage(),
+            null
+        );
+    }
+
+    private static Kind toJavaxKind(CompilerMessageSeverity severity) {
+        return switch ( severity ) {
+            case ERROR, EXCEPTION -> Kind.ERROR;
+            case WARNING, FIXED_WARNING -> Kind.WARNING;
+            case STRONG_WARNING -> Kind.MANDATORY_WARNING;
+            case INFO, LOGGING -> Kind.NOTE;
+            case OUTPUT -> Kind.OTHER;
+        };
     }
 
     private static String getSourceName(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {

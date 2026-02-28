@@ -6,6 +6,8 @@
 package org.mapstruct.ap.spi;
 
 /**
+ * An {@link EnumTransformationStrategy} that strips a suffix from the enum value.
+ *
  * @author Filip Hrisafov
  *
  * @since 1.4

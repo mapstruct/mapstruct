@@ -10,6 +10,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
 /**
+ * Represent information about the configured formatting.
  *
  * @author Sjaak Derksen
  */

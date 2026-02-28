@@ -6,11 +6,14 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
@@ -63,13 +66,16 @@ public final class LifecycleMethodResolver {
                                                                              Type alternativeTarget,
                                                                              SelectionParameters selectionParameters,
                                                                              MappingBuilderContext ctx,
-                                                                             Set<String> existingVariableNames) {
+                                                         Set<String> existingVariableNames,
+                                                         Supplier<List<ParameterBinding>> parameterBindingsProvider) {
         return collectLifecycleCallbackMethods( method,
                         alternativeTarget,
                         selectionParameters,
                         filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
                         ctx,
-                        existingVariableNames );
+                        existingVariableNames,
+                        parameterBindingsProvider
+            );
     }
 
     /**
@@ -131,13 +137,34 @@ public final class LifecycleMethodResolver {
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
             Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods(
+            method,
+            targetType,
+            selectionParameters,
+            callbackMethods,
+            ctx,
+            existingVariableNames,
+            Collections::emptyList
+        );
+    }
+
+    private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
+        Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+        MappingBuilderContext ctx, Set<String> existingVariableNames,
+        Supplier<List<ParameterBinding>> parameterBindingsProvider) {
 
         MethodSelectors selectors =
             new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager(), ctx.getOptions() );
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             callbackMethods,
-            SelectionContext.forLifecycleMethods( method, targetType, selectionParameters, ctx.getTypeFactory() )
+            SelectionContext.forLifecycleMethods(
+                method,
+                targetType,
+                selectionParameters,
+                ctx.getTypeFactory(),
+                parameterBindingsProvider
+            )
         );
 
         return toLifecycleCallbackMethodRefs(

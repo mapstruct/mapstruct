@@ -40,7 +40,7 @@ public interface ModelElementProcessor<P, R> {
      *
      * @author Gunnar Morling
      */
-    public interface ProcessorContext {
+    interface ProcessorContext {
 
         Filer getFiler();
 

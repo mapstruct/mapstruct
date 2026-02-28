@@ -14,6 +14,8 @@ import org.mapstruct.ap.internal.model.source.Method;
 /**
  * A selected method with additional metadata that might be required for further usage of the selected method.
  *
+ * @param <T> the type of the method
+ *
  * @author Andreas Gudian
  */
 public class SelectedMethod<T extends Method> {
