@@ -16,8 +16,6 @@ public interface Issue3943Mapper {
 
     TargetWithMatchingProperty mapImplicitly(int value);
 
-//    TargetWithMatchingProperty mapImplicitlyWithoutMatchingProperty(int somethingElse);
-
     @Mapping(target = "value", source = "value")
     TargetWithMatchingProperty mapWithMatchingProperty(int value);
 
