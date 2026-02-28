@@ -50,6 +50,7 @@ class Issue3943Test {
             @Diagnostic(type = Issue3943ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 16,
+                alternativeLine = 17,
                 message = "Unmapped target property: \"value\"." )
         }
     )
