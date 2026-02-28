@@ -10,7 +10,9 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.compilation.annotation.*;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +36,8 @@ class Issue3943Test {
 
     @ProcessorTest
     void shouldGenerateValidCodeForBeanWithoutMatchingProperty() {
-        Issue3943Mapper.TargetWithoutMatchingProperty target = Issue3943Mapper.INSTANCE.mapWithoutMatchingProperty( 42 );
+        Issue3943Mapper.TargetWithoutMatchingProperty target =
+            Issue3943Mapper.INSTANCE.mapWithoutMatchingProperty( 42 );
         assertThat( target ).isNotNull();
         assertThat( target.getNonMatchingProperty() ).isEqualTo( 42L );
     }
