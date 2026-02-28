@@ -15,18 +15,34 @@ public interface Issue3943Mapper {
     Issue3943Mapper INSTANCE = Mappers.getMapper( Issue3943Mapper.class );
 
     @Mapping(target = "value", source = "value")
-    Target map(int value);
+    TargetWithMatchingProperty mapWithMatchingProperty(int value);
 
-    class Target {
+    @Mapping(target = "nonMatchingProperty", source = "value")
+    TargetWithoutMatchingProperty mapWithoutMatchingProperty(int value);
+
+    class TargetWithMatchingProperty {
 
         private final long value;
 
-        public Target(long value) {
+        public TargetWithMatchingProperty(long value) {
             this.value = value;
         }
 
         public long getValue() {
             return value;
+        }
+    }
+
+    class TargetWithoutMatchingProperty {
+
+        private final long nonMatchingProperty;
+
+        public TargetWithoutMatchingProperty(long nonMatchingProperty) {
+            this.nonMatchingProperty = nonMatchingProperty;
+        }
+
+        public long getNonMatchingProperty() {
+            return nonMatchingProperty;
         }
     }
 }

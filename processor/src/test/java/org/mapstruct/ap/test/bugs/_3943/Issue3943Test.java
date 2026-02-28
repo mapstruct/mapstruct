@@ -16,9 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Issue3943Test {
 
     @ProcessorTest
-    void shouldGenerateValidCode() {
-        Issue3943Mapper.Target target = Issue3943Mapper.INSTANCE.map( 42 );
+    void shouldGenerateValidCodeForBeanWithMatchingProperty() {
+        Issue3943Mapper.TargetWithMatchingProperty target = Issue3943Mapper.INSTANCE.mapWithMatchingProperty( 42 );
         assertThat( target ).isNotNull();
         assertThat( target.getValue() ).isEqualTo( 42L );
+    }
+
+    @ProcessorTest
+    void shouldGenerateValidCodeForBeanWithoutMatchingProperty() {
+        Issue3943Mapper.TargetWithoutMatchingProperty target = Issue3943Mapper.INSTANCE.mapWithoutMatchingProperty( 42 );
+        assertThat( target ).isNotNull();
+        assertThat( target.getNonMatchingProperty() ).isEqualTo( 42L );
     }
 }
