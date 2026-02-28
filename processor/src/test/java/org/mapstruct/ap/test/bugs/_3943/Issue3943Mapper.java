@@ -16,6 +16,8 @@ public interface Issue3943Mapper {
 
     TargetWithMatchingProperty mapImplicitly(int value);
 
+//    TargetWithMatchingProperty mapImplicitlyWithoutMatchingProperty(int somethingElse);
+
     @Mapping(target = "value", source = "value")
     TargetWithMatchingProperty mapWithMatchingProperty(int value);
 
@@ -24,26 +26,26 @@ public interface Issue3943Mapper {
 
     class TargetWithMatchingProperty {
 
-        private final long value;
+        private final int value;
 
-        public TargetWithMatchingProperty(long value) {
+        public TargetWithMatchingProperty(int value) {
             this.value = value;
         }
 
-        public long getValue() {
+        public int getValue() {
             return value;
         }
     }
 
     class TargetWithoutMatchingProperty {
 
-        private final long nonMatchingProperty;
+        private final int nonMatchingProperty;
 
-        public TargetWithoutMatchingProperty(long nonMatchingProperty) {
+        public TargetWithoutMatchingProperty(int nonMatchingProperty) {
             this.nonMatchingProperty = nonMatchingProperty;
         }
 
-        public long getNonMatchingProperty() {
+        public int getNonMatchingProperty() {
             return nonMatchingProperty;
         }
     }
