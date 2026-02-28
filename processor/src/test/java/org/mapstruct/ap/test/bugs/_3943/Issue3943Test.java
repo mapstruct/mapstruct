@@ -16,6 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Issue3943Test {
 
     @ProcessorTest
+    void shouldGenerateValidCodeForBeanWhenMappingImplicitly() {
+        Issue3943Mapper.TargetWithMatchingProperty target = Issue3943Mapper.INSTANCE.mapImplicitly( 42 );
+        assertThat( target ).isNotNull();
+        assertThat( target.getValue() ).isEqualTo( 42L );
+    }
+
+    @ProcessorTest
     void shouldGenerateValidCodeForBeanWithMatchingProperty() {
         Issue3943Mapper.TargetWithMatchingProperty target = Issue3943Mapper.INSTANCE.mapWithMatchingProperty( 42 );
         assertThat( target ).isNotNull();

@@ -14,6 +14,8 @@ public interface Issue3943Mapper {
 
     Issue3943Mapper INSTANCE = Mappers.getMapper( Issue3943Mapper.class );
 
+    TargetWithMatchingProperty mapImplicitly(int value);
+
     @Mapping(target = "value", source = "value")
     TargetWithMatchingProperty mapWithMatchingProperty(int value);
 
