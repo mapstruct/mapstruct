@@ -21,8 +21,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.SimpleElementVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 
 /**
@@ -126,7 +126,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
         }
 
         return declaredType.asElement().accept(
-            new SimpleElementVisitor6<TypeElement, Void>() {
+            new SimpleElementVisitor8<TypeElement, Void>() {
                 @Override
                 public TypeElement visitType(TypeElement e, Void p) {
                     return e;
@@ -148,7 +148,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
             throw new TypeHierarchyErroneousException( type );
         }
         return type.accept(
-            new SimpleTypeVisitor6<DeclaredType, Void>() {
+            new SimpleTypeVisitor8<DeclaredType, Void>() {
                 @Override
                 public DeclaredType visitDeclared(DeclaredType t, Void p) {
                     return t;
