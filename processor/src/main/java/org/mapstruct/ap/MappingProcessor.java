@@ -30,7 +30,7 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementKindVisitor6;
+import javax.lang.model.util.ElementKindVisitor8;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.gem.MapperGem;
@@ -402,7 +402,7 @@ public class MappingProcessor extends AbstractProcessor {
 
     private TypeElement asTypeElement(Element element) {
         return element.accept(
-            new ElementKindVisitor6<TypeElement, Void>() {
+            new ElementKindVisitor8<TypeElement, Void>() {
                 @Override
                 public TypeElement visitTypeAsInterface(TypeElement e, Void p) {
                     return e;
