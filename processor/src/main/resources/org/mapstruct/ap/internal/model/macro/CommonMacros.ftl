@@ -45,7 +45,7 @@
       }
     <#elseif setExplicitlyToDefault || setExplicitlyToNull>
       else {
-        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>${ext.targetType.null}</#if></@lib.handleWrite>;
+        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else><#if mustCastForNull?? && mustCastForNull>(<@includeModel object=ext.targetType/>) </#if>${ext.targetType.null}</#if></@lib.handleWrite>;
       }
     </#if>
 </#macro>
