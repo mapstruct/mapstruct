@@ -509,9 +509,9 @@
                     <version>${kotlin.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>1.10.b1</version>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>4.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -649,39 +649,43 @@
 
         <plugins>
             <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
-                    <excludes>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/.mvn/**</exclude>
-                        <exclude>**/build-config/checkstyle.xml</exclude>
-                        <exclude>**/build-config/import-control.xml</exclude>
-                        <exclude>copyright.txt</exclude>
-                        <exclude>**/LICENSE.txt</exclude>
-                        <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/ci-settings.xml</exclude>
-                        <exclude>**/eclipse-formatter-config.xml</exclude>
-                        <exclude>**/forbidden-apis.txt</exclude>
-                        <exclude>**/checkstyle-for-generated-sources.xml</exclude>
-                        <exclude>**/nb-configuration.xml</exclude>
-                        <exclude>**/junit-platform.properties</exclude>
-                        <exclude>maven-settings.xml</exclude>
-                        <exclude>readme.md</exclude>
-                        <exclude>CONTRIBUTING.md</exclude>
-                        <exclude>NEXT_RELEASE_CHANGELOG.md</exclude>
-                        <exclude>.gitattributes</exclude>
-                        <exclude>.gitignore</exclude>
-                        <exclude>.factorypath</exclude>
-                        <exclude>.checkstyle</exclude>
-                        <exclude>*.yml</exclude>
-                        <exclude>mvnw*</exclude>
-                        <exclude>**/*.asciidoc</exclude>
-                        <exclude>**/binding.xjb</exclude>
-                        <exclude>**/*.flattened-pom.xml</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>${basedir}/../etc/license.txt</header>
+                            <excludes>
+                                <exclude>**/.idea/**</exclude>
+                                <exclude>**/.mvn/**</exclude>
+                                <exclude>**/build-config/checkstyle.xml</exclude>
+                                <exclude>**/build-config/import-control.xml</exclude>
+                                <exclude>copyright.txt</exclude>
+                                <exclude>**/LICENSE.txt</exclude>
+                                <exclude>**/mapstruct.xml</exclude>
+                                <exclude>**/ci-settings.xml</exclude>
+                                <exclude>**/eclipse-formatter-config.xml</exclude>
+                                <exclude>**/forbidden-apis.txt</exclude>
+                                <exclude>**/checkstyle-for-generated-sources.xml</exclude>
+                                <exclude>**/nb-configuration.xml</exclude>
+                                <exclude>**/junit-platform.properties</exclude>
+                                <exclude>maven-settings.xml</exclude>
+                                <exclude>readme.md</exclude>
+                                <exclude>CONTRIBUTING.md</exclude>
+                                <exclude>NEXT_RELEASE_CHANGELOG.md</exclude>
+                                <exclude>.gitattributes</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>.factorypath</exclude>
+                                <exclude>.checkstyle</exclude>
+                                <exclude>*.yml</exclude>
+                                <exclude>mvnw*</exclude>
+                                <exclude>**/*.asciidoc</exclude>
+                                <exclude>**/binding.xjb</exclude>
+                                <exclude>**/*.flattened-pom.xml</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
                         <proto>SLASHSTAR_STYLE</proto>
