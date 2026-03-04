@@ -22,7 +22,7 @@ public interface ErroneousMapperMC {
     }
 
     default Double methodX2(SourceType s) {
-        return new Double( s.t1 );
+        return Double.valueOf( s.t1 );
     }
 
     // CHECKSTYLE:OFF
