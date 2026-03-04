@@ -6,9 +6,9 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,7 +119,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
         return new JavaFileAssert( new File( sourceOutputDir.get() + "/" + path ) );
     }
 
-    private void handleFixtureComparison() throws UnsupportedEncodingException {
+    private void handleFixtureComparison() {
         for ( Class<?> fixture : fixturesFor ) {
             String fixtureName = getMapperName( fixture );
             URL expectedFile = getExpectedResource( fixtureName );
@@ -131,7 +131,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
                 ) );
             }
             else {
-                File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), "UTF-8" ) );
+                File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), StandardCharsets.UTF_8 ) );
                 forMapper( fixture ).hasSameMapperContent( expectedResource );
             }
             fixture.getPackage().getName();
