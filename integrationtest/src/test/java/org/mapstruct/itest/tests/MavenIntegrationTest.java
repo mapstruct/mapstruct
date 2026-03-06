@@ -69,6 +69,13 @@ public class MavenIntegrationTest {
     void immutablesBuilderTest() {
     }
 
+    @ProcessorTest(baseDir = "immutablesRecordBuilderTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC
+    })
+    @EnabledForJreRange(min = JRE.JAVA_16)
+    void immutablesRecordBuilderTest() {
+    }
+
     @ProcessorTest(baseDir = "java8Test")
     void java8Test() {
     }
