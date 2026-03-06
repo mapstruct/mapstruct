@@ -137,7 +137,7 @@ public class CollectionAssignmentBuilder {
     public Assignment build() {
         Assignment result = assignment;
 
-        CollectionMappingStrategyGem cms = method.getOptions().getMapper().getCollectionMappingStrategy();
+        CollectionMappingStrategyGem cms = method.getOptions().getCollectionMappingStrategyFor( targetPropertyName );
         boolean targetImmutable = cms == CollectionMappingStrategyGem.TARGET_IMMUTABLE || targetReadAccessor == null;
 
         if ( targetAccessorType == AccessorType.SETTER || targetAccessorType.isFieldAssignment() ) {

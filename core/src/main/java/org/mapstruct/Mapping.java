@@ -488,6 +488,22 @@ public @interface Mapping {
         default NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when mapping a target {@code Collection} property.
+     *
+     * Can be overridden by the one on {@link MapperConfig}, {@link Mapper} or {@link BeanMapping}.
+     *
+     * If no strategy is configured, the strategy given via {@link MapperConfig#collectionMappingStrategy()},
+     * {@link BeanMapping#collectionMappingStrategy()} or {@link Mapper#collectionMappingStrategy()} will be applied.
+     *
+     * {@link CollectionMappingStrategy#ACCESSOR_ONLY} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The collection mapping strategy to be applied for the designated target property
+     */
+    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.ACCESSOR_ONLY;
+
+    /**
      * Allows detailed control over the mapping process.
      *
      * @return the mapping control
