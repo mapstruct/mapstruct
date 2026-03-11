@@ -69,6 +69,26 @@
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
                         }
+                        <#if isBuiltInPresenceCheckByParameter(sourceParam)>
+                        <#assign hasConstructorDefaults = false>
+                        <#list constructorPropertyMappingsByParameter(sourceParam) as pm>
+                            <#if pm.defaultValueAssignment??><#assign hasConstructorDefaults = true><#break></#if>
+                        </#list>
+                        <#if hasConstructorDefaults>
+                        else {
+                            <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
+                                <#if propertyMapping.defaultValueAssignment??>
+                                    <@includeModel object=propertyMapping.defaultValueAssignment
+                                        existingInstanceMapping=existingInstanceMapping
+                                        targetReadAccessorName=propertyMapping.targetReadAccessorName
+                                        targetWriteAccessorName=propertyMapping.targetWriteAccessorName
+                                        targetPropertyName=propertyMapping.name
+                                        targetType=propertyMapping.targetType/>
+                                </#if>
+                            </#list>
+                        }
+                        </#if>
+                        </#if>
                     </#if>
                 </#list>
                 <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
@@ -94,6 +114,26 @@
                 </#list>
                 <#if mapNullToDefault>
                     }
+                    <#if isBuiltInPresenceCheckByParameter(sourceParameters[0])>
+                    <#assign hasSingleConstructorDefaults = false>
+                    <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as pm>
+                        <#if pm.defaultValueAssignment??><#assign hasSingleConstructorDefaults = true><#break></#if>
+                    </#list>
+                    <#if hasSingleConstructorDefaults>
+                    else {
+                        <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
+                            <#if propertyMapping.defaultValueAssignment??>
+                                <@includeModel object=propertyMapping.defaultValueAssignment
+                                    existingInstanceMapping=existingInstanceMapping
+                                    targetReadAccessorName=propertyMapping.targetReadAccessorName
+                                    targetWriteAccessorName=propertyMapping.targetWriteAccessorName
+                                    targetPropertyName=propertyMapping.name
+                                    targetType=propertyMapping.targetType/>
+                            </#if>
+                        </#list>
+                    }
+                    </#if>
+                    </#if>
                 </#if>
             </#if>
             <#list constructorConstantMappings as constantMapping>
@@ -129,6 +169,27 @@
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                     </#list>
                 }
+                <#if !existingInstanceMapping && isBuiltInPresenceCheckByParameter(sourceParam)>
+                <#assign hasDefaults = false>
+                <#list propertyMappingsByParameter(sourceParam) as pm>
+                    <#if pm.defaultValueAssignment??><#assign hasDefaults = true><#break></#if>
+                </#list>
+                <#if hasDefaults>
+                else {
+                    <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
+                        <#if propertyMapping.defaultValueAssignment??>
+                            <@includeModel object=propertyMapping.defaultValueAssignment
+                                targetBeanName=resultName
+                                existingInstanceMapping=existingInstanceMapping
+                                targetReadAccessorName=propertyMapping.targetReadAccessorName
+                                targetWriteAccessorName=propertyMapping.targetWriteAccessorName
+                                targetPropertyName=propertyMapping.name
+                                targetType=propertyMapping.targetType/>
+                        </#if>
+                    </#list>
+                }
+                </#if>
+                </#if>
             </#if>
         </#list>
         <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
@@ -149,6 +210,27 @@
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>
         <#if mapNullToDefault>}</#if>
+        <#if mapNullToDefault && !existingInstanceMapping && isBuiltInPresenceCheckByParameter(sourceParameters[0])>
+        <#assign hasSingleDefaults = false>
+        <#list propertyMappingsByParameter(sourceParameters[0]) as pm>
+            <#if pm.defaultValueAssignment??><#assign hasSingleDefaults = true><#break></#if>
+        </#list>
+        <#if hasSingleDefaults>
+        else {
+            <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
+                <#if propertyMapping.defaultValueAssignment??>
+                    <@includeModel object=propertyMapping.defaultValueAssignment
+                        targetBeanName=resultName
+                        existingInstanceMapping=existingInstanceMapping
+                        targetReadAccessorName=propertyMapping.targetReadAccessorName
+                        targetWriteAccessorName=propertyMapping.targetWriteAccessorName
+                        targetPropertyName=propertyMapping.name
+                        targetType=propertyMapping.targetType/>
+                </#if>
+            </#list>
+        }
+        </#if>
+        </#if>
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
