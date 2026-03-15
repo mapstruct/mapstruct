@@ -16,58 +16,58 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@WithClasses(SimpleObject.class)
 public class DistinguishBetweenSuperAndExtendTest {
 
     @ProcessorTest
     @WithClasses({
-            SimpleObject.class,
-            CollectionExtendTypes.class,
-            CollectionSuperTypes.class,
-            ErroneousCollectionSuperToExtendMapper.class
+        CollectionExtendTypes.class,
+        CollectionSuperTypes.class,
+        ErroneousCollectionSuperToExtendMapper.class
     })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-                    @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
-                            message = "Can't map property " +
-                                    "\"Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "simpleObjectsCollection\" to " +
-                                    "\"Collection<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "simpleObjectsCollection\". Consider to declare/implement a mapping method: " +
-                                    "\"Collection<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "map(Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
-                                    " value)\".")
-            })
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionSuperToExtendMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 13,
+                message = "Can't map property " +
+                        "\"Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "simpleObjectsCollection\" to " +
+                        "\"Collection<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "simpleObjectsCollection\". Consider to declare/implement a mapping method: " +
+                        "\"Collection<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "map(Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
+                        " value)\".")
+        })
     public void shouldFailOnSuperToExtendMappingForCollection() {
 
     }
 
     @ProcessorTest
-    @WithClasses({
-            SimpleObject.class,
-            ErroneousStreamSuperToExtendMapper.class
-    })
+    @WithClasses(ErroneousStreamSuperToExtendMapper.class)
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-                    @Diagnostic(kind = javax.tools.Diagnostic.Kind.ERROR,
-                            message = "Can't map property " +
-                                    "\"Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "simpleObjectsStream\" to " +
-                                    "\"Stream<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "simpleObjectsStream\". Consider to declare/implement a mapping method: " +
-                                    "\"Stream<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
-                                    "map(Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
-                                    " value)\".")
-            })
+        diagnostics = {
+            @Diagnostic(type = ErroneousStreamSuperToExtendMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 15,
+                message = "Can't map property " +
+                        "\"Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "simpleObjectsStream\" to " +
+                        "\"Stream<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "simpleObjectsStream\". Consider to declare/implement a mapping method: " +
+                        "\"Stream<? extends org.mapstruct.ap.test.generics.wildcard.SimpleObject> " +
+                        "map(Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
+                        " value)\".")
+        })
     public void shouldFailOnSuperToExtendMappingForStream() {
 
     }
 
     @ProcessorTest
     @WithClasses({
-            SimpleObject.class,
-            CollectionExtendTypes.class,
-            CollectionSuperTypes.class,
-            CollectionExtendToSuperMapper.class
+        CollectionExtendTypes.class,
+        CollectionSuperTypes.class,
+        CollectionExtendToSuperMapper.class
     })
     public void shouldMapExtendBoundToSuperBound() {
         CollectionExtendTypes collectionExtendTypes = new CollectionExtendTypes();
