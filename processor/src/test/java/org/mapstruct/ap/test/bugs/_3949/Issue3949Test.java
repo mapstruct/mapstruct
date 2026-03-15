@@ -36,30 +36,29 @@ public class Issue3949Test {
     })
     void shouldCompileAndSetCorrectlyToNullForClass() {
         TargetDate shouldSetDateToNull = new TargetDate();
-        Issue3949ClassMapper.INSTANCE.overwriteDate(shouldSetDateToNull, new DateSource());
-        assertThat(shouldSetDateToNull.getString()).isNotNull();
-        assertThat(shouldSetDateToNull.getDate()).isNull();
+        Issue3949ClassMapper.INSTANCE.overwriteDate( shouldSetDateToNull, new DateSource() );
+        assertThat( shouldSetDateToNull.getString() ).isNotNull();
+        assertThat( shouldSetDateToNull.getDate() ).isNull();
 
         shouldSetDateToNull = new TargetDate();
-        Issue3949ClassMapper.INSTANCE.overwriteDateWithConversion(shouldSetDateToNull, new StringSource());
-        assertThat(shouldSetDateToNull.getString()).isNotNull();
-        assertThat(shouldSetDateToNull.getDate()).isNull();
+        Issue3949ClassMapper.INSTANCE.overwriteDateWithConversion( shouldSetDateToNull, new StringSource() );
+        assertThat( shouldSetDateToNull.getString() ).isNotNull();
+        assertThat( shouldSetDateToNull.getDate() ).isNull();
 
         TargetString shouldSetStringToNull = new TargetString();
-        Issue3949ClassMapper.INSTANCE.overwriteString(shouldSetStringToNull, new StringSource());
-        assertThat(shouldSetStringToNull.getDate()).isNull();
-        assertThat(shouldSetStringToNull.getDateValue()).isNotNull();
+        Issue3949ClassMapper.INSTANCE.overwriteString( shouldSetStringToNull, new StringSource() );
+        assertThat( shouldSetStringToNull.getDate() ).isNull();
+        assertThat( shouldSetStringToNull.getDateValue() ).isNotNull();
 
         shouldSetStringToNull = new TargetString();
-        Issue3949ClassMapper.INSTANCE.overwriteStringWithConversion(shouldSetStringToNull,
-                new DateSource());
-        assertThat(shouldSetStringToNull.getDate()).isNull();
-        assertThat(shouldSetStringToNull.getDateValue()).isNotNull();
+        Issue3949ClassMapper.INSTANCE.overwriteStringWithConversion( shouldSetStringToNull, new DateSource() );
+        assertThat( shouldSetStringToNull.getDate() ).isNull();
+        assertThat( shouldSetStringToNull.getDateValue() ).isNotNull();
 
         ParentTarget parentTarget = new ParentTarget();
-        parentTarget.setChild(new ParentTarget());
-        Issue3949ClassMapper.INSTANCE.updateParent(parentTarget, new ParentSource());
-        assertThat(parentTarget.getChild()).isNull();
+        parentTarget.setChild( new ParentTarget() );
+        Issue3949ClassMapper.INSTANCE.updateParent( parentTarget, new ParentSource() );
+        assertThat( parentTarget.getChild() ).isNull();
     }
 
     @ProcessorTest
@@ -68,29 +67,28 @@ public class Issue3949Test {
     })
     void shouldCompileAndSetCorrectlyToNullForInterface() {
         TargetDateInterface shouldSetDateToNull = new TargetDate();
-        Issue3949InterfaceMapper.INSTANCE.overwriteDate(shouldSetDateToNull, new DateSource());
-        assertThat(shouldSetDateToNull.getString()).isNotNull();
-        assertThat(shouldSetDateToNull.getDate()).isNull();
+        Issue3949InterfaceMapper.INSTANCE.overwriteDate( shouldSetDateToNull, new DateSource() );
+        assertThat( shouldSetDateToNull.getString() ).isNotNull();
+        assertThat( shouldSetDateToNull.getDate() ).isNull();
 
         shouldSetDateToNull = new TargetDate();
-        Issue3949InterfaceMapper.INSTANCE.overwriteDateWithConversion(shouldSetDateToNull, new StringSource());
-        assertThat(shouldSetDateToNull.getString()).isNotNull();
-        assertThat(shouldSetDateToNull.getDate()).isNull();
+        Issue3949InterfaceMapper.INSTANCE.overwriteDateWithConversion( shouldSetDateToNull, new StringSource() );
+        assertThat( shouldSetDateToNull.getString() ).isNotNull();
+        assertThat( shouldSetDateToNull.getDate() ).isNull();
 
         TargetStringInterface shouldSetStringToNull = new TargetString();
-        Issue3949InterfaceMapper.INSTANCE.overwriteString(shouldSetStringToNull, new StringSource());
-        assertThat(shouldSetStringToNull.getDate()).isNull();
-        assertThat(shouldSetStringToNull.getDateValue()).isNotNull();
+        Issue3949InterfaceMapper.INSTANCE.overwriteString( shouldSetStringToNull, new StringSource() );
+        assertThat( shouldSetStringToNull.getDate() ).isNull();
+        assertThat( shouldSetStringToNull.getDateValue() ).isNotNull();
 
         shouldSetStringToNull = new TargetString();
-        Issue3949InterfaceMapper.INSTANCE.overwriteStringWithConversion(shouldSetStringToNull,
-                new DateSource());
-        assertThat(shouldSetStringToNull.getDate()).isNull();
-        assertThat(shouldSetStringToNull.getDateValue()).isNotNull();
+        Issue3949InterfaceMapper.INSTANCE.overwriteStringWithConversion( shouldSetStringToNull, new DateSource() );
+        assertThat( shouldSetStringToNull.getDate() ).isNull();
+        assertThat( shouldSetStringToNull.getDateValue() ).isNotNull();
 
         ParentTargetInterface parentTarget = new ParentTarget();
-        parentTarget.setChild(new ParentTarget());
-        Issue3949InterfaceMapper.INSTANCE.updateParent(parentTarget, new ParentSource());
-        assertThat(parentTarget.getChild()).isNull();
+        parentTarget.setChild( new ParentTarget() );
+        Issue3949InterfaceMapper.INSTANCE.updateParent( parentTarget, new ParentSource() );
+        assertThat( parentTarget.getChild() ).isNull();
     }
 }

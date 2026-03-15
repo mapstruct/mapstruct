@@ -15,7 +15,7 @@ import org.mapstruct.factory.Mappers;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
 public interface Issue3949InterfaceMapper {
 
-    Issue3949InterfaceMapper INSTANCE = Mappers.getMapper(Issue3949InterfaceMapper.class);
+    Issue3949InterfaceMapper INSTANCE = Mappers.getMapper( Issue3949InterfaceMapper.class );
 
     void overwriteDate(@MappingTarget TargetDateInterface target, DateSource dateSource);
 
