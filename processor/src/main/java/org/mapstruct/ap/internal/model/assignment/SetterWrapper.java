@@ -25,7 +25,7 @@ public class SetterWrapper extends AssignmentWrapper {
     private final boolean setExplicitlyToNull;
     private final boolean setExplicitlyToDefault;
     private final boolean mustCastForNull;
-    private final Type targetImplementationType;
+    private final Type nullCastType;
 
     public SetterWrapper(Assignment rhs,
                          List<Type> thrownTypesToExclude,
@@ -34,7 +34,7 @@ public class SetterWrapper extends AssignmentWrapper {
                          boolean setExplicitlyToNull,
                          boolean setExplicitlyToDefault,
                          boolean mustCastForNull,
-                         Type targetImplementationType) {
+                         Type nullCastType) {
 
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
@@ -42,7 +42,7 @@ public class SetterWrapper extends AssignmentWrapper {
         this.setExplicitlyToDefault = setExplicitlyToDefault;
         this.setExplicitlyToNull = setExplicitlyToNull;
         this.mustCastForNull = mustCastForNull;
-        this.targetImplementationType = targetImplementationType;
+        this.nullCastType = nullCastType;
     }
 
     public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment  ) {
@@ -52,7 +52,7 @@ public class SetterWrapper extends AssignmentWrapper {
         this.setExplicitlyToNull = false;
         this.setExplicitlyToDefault = false;
         this.mustCastForNull = false;
-        this.targetImplementationType = null;
+        this.nullCastType = null;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SetterWrapper extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isSetExplicitlyToNull() && isMustCastForNull() ) {
-            imported.add( targetImplementationType );
+            imported.add( nullCastType );
         }
         return imported;
     }
