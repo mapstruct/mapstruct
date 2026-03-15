@@ -475,8 +475,8 @@ public class PropertyMapping extends ModelElement {
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
-                        hasTwoOrMoreSettersWithName(),
-                        targetType
+                    hasTwoOrMoreSettersWithName(),
+                    targetType
                 );
             }
         }
@@ -555,7 +555,7 @@ public class PropertyMapping extends ModelElement {
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
                     hasTwoOrMoreSettersWithName(),
-                        targetType
+                    targetType
                 );
             }
             return result;
