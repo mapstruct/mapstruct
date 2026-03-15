@@ -165,7 +165,7 @@ public class MethodMatcher {
                 // Represent result as map.
                 Map<Type, Type> resolvedPairs = new HashMap<>();
                 for ( TypeVarCandidate candidate : methodParCandidates.values() ) {
-                    for ( Type.ResolvedPair pair : candidate.pairs) {
+                    for ( Type.ResolvedPair pair : candidate.pairs ) {
                         resolvedPairs.put( pair.getParameter(), pair.getMatch() );
                     }
                 }

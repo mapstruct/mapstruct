@@ -355,7 +355,7 @@ public class Conversions {
         else if ( targetType.isOptionalType() ) {
             // Type -> Optional<Type>
             Type targetBaseType = targetType.getOptionalBaseType();
-            if ( targetBaseType.equals( sourceType )) {
+            if ( targetBaseType.equals( sourceType ) ) {
                 return TypeToOptionalConversion.TYPE_TO_OPTIONAL_CONVERSION;
             }
             ConversionProvider conversionProvider = getInternalConversion( sourceType, targetBaseType );

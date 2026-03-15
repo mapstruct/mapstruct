@@ -84,10 +84,10 @@ public class Mappers {
 
             return constructor.newInstance();
         }
-        catch (ClassNotFoundException e) {
+        catch ( ClassNotFoundException e ) {
             return getMapperFromServiceLoader( clazz, classLoader );
         }
-        catch ( InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch ( InstantiationException | InvocationTargetException | IllegalAccessException e ) {
             throw new RuntimeException( e );
         }
     }

@@ -314,7 +314,7 @@ public class PropertyMapping extends ModelElement {
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
-            else if ( sourceType.isMapType() && !targetType.isMapType()) {
+            else if ( sourceType.isMapType() && !targetType.isMapType() ) {
                 assignment = forgeMapping( sourceType, targetType.withoutBounds(), rightHandSide );
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
@@ -427,7 +427,7 @@ public class PropertyMapping extends ModelElement {
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
 
-                if ( factory == null && targetBuilderType != null) {
+                if ( factory == null && targetBuilderType != null ) {
                     // If there is no dedicated factory method and the target has a builder we will try to use that
                     MethodReference builderFactoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod(
                         targetType,
@@ -732,9 +732,9 @@ public class PropertyMapping extends ModelElement {
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getReadValueSource();
                     Type variableType = propertyEntry.getType();
-                    for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
+                    for ( int i = 1; i < sourceReference.getPropertyEntries().size(); i++ ) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
-                        if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
+                        if ( entry.getPresenceChecker() != null && entry.getReadAccessor() != null ) {
                             if ( variableType.isOptionalType() ) {
                                 presenceChecks.add( new OptionalPresenceCheck(
                                     variableName,
@@ -852,7 +852,7 @@ public class PropertyMapping extends ModelElement {
             // because we are forging a Mapping for a method with multiple source parameters.
             // If the target type is enum, then we can't create an update method
             if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod )
-                && targetWriteAccessorType != AccessorType.ADDER) {
+                && targetWriteAccessorType != AccessorType.ADDER ) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }

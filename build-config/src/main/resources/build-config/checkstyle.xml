@@ -141,7 +141,7 @@
         <module name="NoWhitespaceBefore"/>
         <!-- <module name="OperatorWrap"/> -->
         <module name="ParenPad">
-            <property name="tokens" value="CTOR_CALL, METHOD_CALL, SUPER_CTOR_CALL"/>
+            <property name="tokens" value="CTOR_CALL, LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL, SUPER_CTOR_CALL"/>
             <property name="option" value="space"/>
         </module>
         <module name="TypecastParenPad"/>

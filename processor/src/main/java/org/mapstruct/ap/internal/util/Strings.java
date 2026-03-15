@@ -181,14 +181,14 @@ public class Strings {
                 firstAlphabeticIndex++;
             }
 
-            if ( firstAlphabeticIndex < identifier.length()) {
+            if ( firstAlphabeticIndex < identifier.length() ) {
                 // If it is not consisted of only underscores
                 String firstAlphaString = identifier.substring( firstAlphabeticIndex ).replace( "[]", "Array" );
 
                 StringBuilder sb = new StringBuilder( firstAlphaString.length() );
                 for ( int i = 0; i < firstAlphaString.length(); i++ ) {
                     int codePoint = firstAlphaString.codePointAt( i );
-                    if ( Character.isJavaIdentifierPart( codePoint ) || codePoint == '.') {
+                    if ( Character.isJavaIdentifierPart( codePoint ) || codePoint == '.' ) {
                         sb.appendCodePoint( codePoint );
                     }
                     else {

@@ -23,7 +23,7 @@ public class MostSpecificResultTypeSelector implements MethodSelector {
                                                                          SelectionContext context) {
         SelectionCriteria criteria = context.getSelectionCriteria();
         Type mappingTargetType = context.getMappingTargetType();
-        if ( candidates.size() < 2 || !criteria.isForMapping() || criteria.getQualifyingResultType() != null) {
+        if ( candidates.size() < 2 || !criteria.isForMapping() || criteria.getQualifyingResultType() != null ) {
             return candidates;
         }
 

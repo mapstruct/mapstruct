@@ -214,7 +214,7 @@ public class MappingResolverImpl implements MappingResolver {
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate )) {
+                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate ) ) {
                     result.add( candidate );
                 }
             }
@@ -318,7 +318,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( hasQualfiers() ) {
-                if ((sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()) {
+                if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
                     // Allow forging iterable mapping when no iterable mapping already found
                     return forger.get();
                 }
@@ -450,7 +450,7 @@ public class MappingResolverImpl implements MappingResolver {
             Set<Field> allUsedFields = new HashSet<>( mapperReferences );
             SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
 
-            for ( FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx )) {
+            for ( FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx ) ) {
                 Field field = SupportingField.getSafeField( null, helperField, allUsedFields );
                 allUsedFields.add( field );
                 usedSupportedFields.add( field );

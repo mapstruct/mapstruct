@@ -199,12 +199,12 @@ public class Mapper extends GeneratedType {
      * @return the flat name for the type element
      */
     public static String getFlatName(TypeElement element) {
-        if (!(element.getEnclosingElement() instanceof TypeElement)) {
+        if ( !(element.getEnclosingElement() instanceof TypeElement) ) {
             return element.getSimpleName().toString();
         }
         StringBuilder nameBuilder = new StringBuilder( element.getSimpleName().toString() );
-        for (Element enclosing = element.getEnclosingElement(); enclosing instanceof TypeElement; enclosing =
-                enclosing.getEnclosingElement()) {
+        for ( Element enclosing = element.getEnclosingElement(); enclosing instanceof TypeElement; enclosing =
+                enclosing.getEnclosingElement() ) {
             nameBuilder.insert( 0, '$' );
             nameBuilder.insert( 0, enclosing.getSimpleName().toString() );
         }

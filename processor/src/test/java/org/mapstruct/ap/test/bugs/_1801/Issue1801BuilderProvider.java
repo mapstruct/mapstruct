@@ -55,7 +55,7 @@ public class Issue1801BuilderProvider extends ImmutablesBuilderProvider implemen
      * @return
      */
     private BuilderInfo findBuilderInfoFromInnerBuilderClass(TypeElement typeElement) {
-        if (shouldIgnore( typeElement )) {
+        if ( shouldIgnore( typeElement ) ) {
             return null;
         }
 

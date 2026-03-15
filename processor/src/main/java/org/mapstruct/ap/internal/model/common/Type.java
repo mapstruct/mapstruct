@@ -285,7 +285,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null) {
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
             return nameWithTopLevelTypeName;
         }
 
@@ -1346,7 +1346,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private String getNameKeepingInnerClasses() {
         String packageNamePrefix = getPackageName() + ".";
         String fullyQualifiedName = getFullyQualifiedName();
-        if (fullyQualifiedName.startsWith( packageNamePrefix ) ) {
+        if ( fullyQualifiedName.startsWith( packageNamePrefix ) ) {
             return fullyQualifiedName.substring( packageNamePrefix.length() );
         }
         return fullyQualifiedName;
@@ -1665,7 +1665,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
                 }
             }
-            else if (parameterized.getSuperBound() != null ) {
+            else if ( parameterized.getSuperBound() != null ) {
                 ResolvedPair match = visit( parameterized.getSuperBound(), declared );
                 if ( match.match != null ) {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
@@ -1897,7 +1897,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( kotlinMetadata != null ) {
             return kotlinMetadata.getPermittedSubclasses();
         }
-        if (SEALED_PERMITTED_SUBCLASSES_METHOD == null) {
+        if ( SEALED_PERMITTED_SUBCLASSES_METHOD == null ) {
             return emptyList();
         }
         try {
