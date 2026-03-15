@@ -563,7 +563,8 @@ public class PropertyMapping extends ModelElement {
 
         private boolean hasTwoOrMoreSettersWithName() {
             Element enclosingClass = this.targetWriteAccessor.getElement().getEnclosingElement();
-            if ( enclosingClass == null || !ElementKind.CLASS.equals( enclosingClass.getKind() ) ) {
+            if ( enclosingClass == null || !( ElementKind.CLASS.equals( enclosingClass.getKind() )
+                    || ElementKind.INTERFACE.equals( enclosingClass.getKind() ) ) ) {
                 return false;
             }
             String simpleWriteAccessorName = this.targetWriteAccessor.getSimpleName();
