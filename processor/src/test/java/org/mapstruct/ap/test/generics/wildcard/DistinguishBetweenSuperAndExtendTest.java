@@ -37,7 +37,7 @@ public class DistinguishBetweenSuperAndExtendTest {
                                     "map(Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
                                     " value)\".")
             })
-    public void unableToMapSuperToExtendForCollection() {
+    public void shouldFailOnSuperToExtendMappingForCollection() {
 
     }
 
@@ -58,7 +58,7 @@ public class DistinguishBetweenSuperAndExtendTest {
                                     "map(Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
                                     " value)\".")
             })
-    public void unableToMapSuperToExtendForStream() {
+    public void shouldFailOnSuperToExtendMappingForStream() {
 
     }
 
@@ -69,7 +69,7 @@ public class DistinguishBetweenSuperAndExtendTest {
             CollectionSuperTypes.class,
             CollectionExtendToSuperMapper.class
     })
-    public void allowAssignmentOfExtendBoundToSuperBound() {
+    public void shouldMapExtendBoundToSuperBound() {
         CollectionExtendTypes collectionExtendTypes = new CollectionExtendTypes();
         List<SimpleObject> simpleObjects = new ArrayList<>();
         simpleObjects.add( new SimpleObject() );
