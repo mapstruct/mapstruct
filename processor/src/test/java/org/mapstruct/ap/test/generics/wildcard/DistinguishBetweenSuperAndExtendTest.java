@@ -37,7 +37,7 @@ public class DistinguishBetweenSuperAndExtendTest {
                                     "map(Collection<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
                                     " value)\".")
             })
-    public void unabaleToMapSuperToExtendforCollection() {
+    public void unableToMapSuperToExtendForCollection() {
 
     }
 
@@ -58,7 +58,7 @@ public class DistinguishBetweenSuperAndExtendTest {
                                     "map(Stream<? super org.mapstruct.ap.test.generics.wildcard.SimpleObject>" +
                                     " value)\".")
             })
-    public void unabaleToMapSuperToExtendforStream() {
+    public void unableToMapSuperToExtendForStream() {
 
     }
 
