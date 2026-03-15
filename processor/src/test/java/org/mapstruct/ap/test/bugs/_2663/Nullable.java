@@ -24,7 +24,7 @@ public class Nullable<T> {
     }
 
     public T get() {
-        if (!present) {
+        if ( !present ) {
             throw new NoSuchElementException("Value is undefined");
         }
         return value;

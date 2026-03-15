@@ -228,7 +228,7 @@ public class MappingBuilderContext {
             nameSet.add( method.getName() );
         }
         // add existing names
-        for ( SourceMethod method : sourceModel) {
+        for ( SourceMethod method : sourceModel ) {
             if ( method.isAbstract() ) {
                 nameSet.add( method.getName() );
             }

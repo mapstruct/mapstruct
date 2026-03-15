@@ -629,7 +629,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 List<? extends TypeMirror> unusedPermittedSubclasses =
                     new ArrayList<>( mappingSourceType.getPermittedSubclasses() );
                 method.getOptions().getSubclassMappings().forEach( subClassOption -> {
-                    for (Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
+                    for ( Iterator<? extends TypeMirror> iterator = unusedPermittedSubclasses.iterator();
                          iterator.hasNext(); ) {
                         if ( ctx.getTypeUtils().isSameType( iterator.next(), subClassOption.getSource() ) ) {
                             iterator.remove();

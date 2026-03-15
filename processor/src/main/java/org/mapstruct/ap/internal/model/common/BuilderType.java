@@ -108,7 +108,7 @@ public class BuilderType {
 
         // When the builderCreationMethod is constructor, its return type is Void. In this case the
         // builder type should be the owner type.
-        if (builderInfo.getBuilderCreationMethod().getKind() == ElementKind.CONSTRUCTOR) {
+        if ( builderInfo.getBuilderCreationMethod().getKind() == ElementKind.CONSTRUCTOR ) {
             builder = owner;
         }
 

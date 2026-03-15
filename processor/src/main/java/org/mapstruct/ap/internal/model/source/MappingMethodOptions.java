@@ -246,11 +246,11 @@ public class MappingMethodOptions {
     }
 
     private boolean parametersAreOfIdenticalTypeAndOrder(SourceMethod templateMethod, SourceMethod sourceMethod) {
-        if (templateMethod.getParameters().size() != sourceMethod.getParameters().size()) {
+        if ( templateMethod.getParameters().size() != sourceMethod.getParameters().size() ) {
             return false;
         }
         for ( int i = 0; i < templateMethod.getParameters().size(); i++ ) {
-            if (!templateMethod.getParameters().get( i ).getType().equals(
+            if ( !templateMethod.getParameters().get( i ).getType().equals(
                                        sourceMethod.getParameters().get( i ).getType() ) ) {
                 return false;
             }

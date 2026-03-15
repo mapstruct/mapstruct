@@ -57,7 +57,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
                 imported.add( typeFactory.getType( EnumSet.class ) );
             }
         }
-        if (isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
+        if ( isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
         return imported;

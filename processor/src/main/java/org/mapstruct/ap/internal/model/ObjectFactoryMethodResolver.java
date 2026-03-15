@@ -74,7 +74,7 @@ public class ObjectFactoryMethodResolver {
             ctx
         );
 
-        if (matchingFactoryMethods.isEmpty()) {
+        if ( matchingFactoryMethods.isEmpty() ) {
             return null;
         }
 

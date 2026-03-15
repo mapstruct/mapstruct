@@ -264,7 +264,7 @@ public class MappingProcessor extends AbstractProcessor {
 
             try {
                 Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
-                for (Element mapperElement : annotatedMappers) {
+                for ( Element mapperElement : annotatedMappers ) {
                     TypeElement mapperTypeElement = asTypeElement( mapperElement );
 
                     // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with

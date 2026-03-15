@@ -84,7 +84,7 @@ public interface ConditionalMethodWithTargetPropertyNameInContextMapper {
     @AfterMapping
     default <T>  void after(@TargetType Class<T> targetClass, @Context PresenceUtilsAllPropsWithSource utils) {
         // intermediate method for collection mapping must not change the path
-        if (targetClass != List.class) {
+        if ( targetClass != List.class ) {
             utils.path.pollLast();
         }
     }
