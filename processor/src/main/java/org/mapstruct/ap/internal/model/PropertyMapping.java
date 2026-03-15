@@ -456,7 +456,8 @@ public class PropertyMapping extends ModelElement {
                     targetType,
                     !rhs.isSourceReferenceParameter(),
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    hasTwoOrMoreSettersWithName()
                 );
             }
             else {
@@ -1014,6 +1015,7 @@ public class PropertyMapping extends ModelElement {
                             factoryMethod,
                             isFieldAssignment(),
                             targetType,
+                            false,
                             false,
                             false,
                             false );

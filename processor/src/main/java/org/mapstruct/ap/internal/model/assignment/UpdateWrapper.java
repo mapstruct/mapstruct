@@ -26,6 +26,7 @@ public class UpdateWrapper extends AssignmentWrapper {
     private final boolean includeSourceNullCheck;
     private final boolean setExplicitlyToNull;
     private final boolean setExplicitlyToDefault;
+    private final boolean mustCastForNull;
 
     public UpdateWrapper( Assignment decoratedAssignment,
                           List<Type> thrownTypesToExclude,
@@ -34,7 +35,8 @@ public class UpdateWrapper extends AssignmentWrapper {
                           Type targetType,
                           boolean includeSourceNullCheck,
                           boolean setExplicitlyToNull,
-                          boolean setExplicitlyToDefault ) {
+                          boolean setExplicitlyToDefault,
+                          boolean mustCastForNull) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
@@ -42,6 +44,7 @@ public class UpdateWrapper extends AssignmentWrapper {
         this.includeSourceNullCheck = includeSourceNullCheck;
         this.setExplicitlyToDefault = setExplicitlyToDefault;
         this.setExplicitlyToNull = setExplicitlyToNull;
+        this.mustCastForNull = mustCastForNull;
     }
 
     private static Type determineImplType(Assignment factoryMethod, Type targetType) {
@@ -99,5 +102,9 @@ public class UpdateWrapper extends AssignmentWrapper {
 
     public boolean isSetExplicitlyToDefault() {
         return setExplicitlyToDefault;
+    }
+
+    public boolean isMustCastForNull() {
+        return mustCastForNull;
     }
 }
