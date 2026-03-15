@@ -26,8 +26,6 @@
         <mapstruct.version>${mapstruct.version}</mapstruct.version>
         <compiler-id></compiler-id>
         <compiler-source-target-version></compiler-source-target-version>
-        <!-- As Mapstruct has java 6 requirement we need to use AssertJ 1.x which is compatible with java 6 -->
-        <assertj.version>1.7.1</assertj.version>
     </properties>
 
     <profiles>
