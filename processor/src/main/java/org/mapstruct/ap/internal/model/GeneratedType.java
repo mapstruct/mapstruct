@@ -30,9 +30,9 @@ public abstract class GeneratedType extends ModelElement {
 
     private static final String JAVA_LANG_PACKAGE = "java.lang";
 
-    protected abstract static class GeneratedTypeBuilder<T extends GeneratedTypeBuilder> {
+    protected abstract static class GeneratedTypeBuilder<T extends GeneratedTypeBuilder<T>> {
 
-        private T myself;
+        private final T myself;
         protected TypeFactory typeFactory;
         protected ElementUtils elementUtils;
         protected Options options;
