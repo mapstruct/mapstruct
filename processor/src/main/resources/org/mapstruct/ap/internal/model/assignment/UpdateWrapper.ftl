@@ -18,7 +18,7 @@
     }
     <#if setExplicitlyToDefault || setExplicitlyToNull>
     else {
-      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>${ext.targetType.null}</#if></@lib.handleWrite>;
+      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else><#if mustCastForNull>(<@includeModel object=ext.targetType/>) </#if>${ext.targetType.null}</#if></@lib.handleWrite>;
     }
     </#if>
   <#else>

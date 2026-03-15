@@ -1061,7 +1061,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all setters
      */
-    private List<Accessor> getSetters() {
+    public List<Accessor> getSetters() {
         if ( setters == null ) {
             setters = Collections.unmodifiableList( filters.setterMethodsIn( getAllMethods() ) );
         }
