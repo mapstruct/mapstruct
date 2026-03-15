@@ -71,7 +71,7 @@ public class SetterWrapper extends AssignmentWrapper {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<>(super.getImportTypes());
+        Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isSetExplicitlyToNull() && isMustCastForNull() ) {
             imported.add( targetImplementationType );
         }
