@@ -570,7 +570,7 @@ public class PropertyMapping extends ModelElement {
             boolean firstMatchFound = false;
             for ( Accessor setter : ctx.getTypeFactory().getType( enclosingClass.asType() ).getSetters() ) {
                 if ( setter.getSimpleName().equals( simpleWriteAccessorName ) ) {
-                    if (firstMatchFound) {
+                    if ( firstMatchFound ) {
                         return true;
                     }
                     firstMatchFound = true;
