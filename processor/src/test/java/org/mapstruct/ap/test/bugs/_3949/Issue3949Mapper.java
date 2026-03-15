@@ -27,6 +27,8 @@ public interface Issue3949Mapper {
 
     void overwriteStringWithConversion(@MappingTarget TargetString target, DateSource stringSource);
 
+    void updateParent(@MappingTarget ParentTarget target, ParentSource source);
+
     class DateSource {
         public LocalDate getDate() {
             return null;
@@ -35,6 +37,12 @@ public interface Issue3949Mapper {
 
     class StringSource {
         public String getDate() {
+            return null;
+        }
+    }
+
+    class ParentSource {
+        public ParentSource getChild() {
             return null;
         }
     }
@@ -80,5 +88,21 @@ public interface Issue3949Mapper {
             return date;
         }
 
+    }
+
+    class ParentTarget {
+        private ParentTarget child;
+
+        public ParentTarget getChild() {
+            return child;
+        }
+
+        public void setChild(String child) {
+            throw new IllegalArgumentException();
+        }
+
+        public void setChild(ParentTarget child) {
+            this.child = child;
+        }
     }
 }

@@ -45,5 +45,9 @@ public class Issue3949Test {
         assertThat( shouldSetStringToNull.getDate() ).isNull();
         assertThat( shouldSetStringToNull.getDateValue() ).isNotNull();
 
+        Issue3949Mapper.ParentTarget parentTarget = new Issue3949Mapper.ParentTarget();
+        parentTarget.setChild( new Issue3949Mapper.ParentTarget() );
+        Issue3949Mapper.INSTANCE.updateParent( parentTarget, new Issue3949Mapper.ParentSource() );
+        assertThat( parentTarget.getChild() ).isNull();
     }
 }
