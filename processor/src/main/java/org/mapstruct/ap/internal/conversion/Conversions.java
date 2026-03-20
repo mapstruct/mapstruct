@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -201,7 +202,7 @@ public class Conversions {
         register( UUID.class, String.class, new UUIDToStringConversion() );
         register( Locale.class, String.class, new LocaleToStringConversion() );
 
-        registerURLConversion();
+        registerJavaNetConversions();
     }
 
     private void registerJodaConversions() {
@@ -306,13 +307,14 @@ public class Conversions {
         }
     }
 
-    private void registerURLConversion() {
-        if ( isJavaURLAvailable() ) {
+    private void registerJavaNetConversions() {
+        if ( isJavaNetAvailable() ) {
+            register( URI.class, String.class, new URIToStringConversion() );
             register( URL.class, String.class, new URLToStringConversion() );
         }
     }
 
-    private boolean isJavaURLAvailable() {
+    private boolean isJavaNetAvailable() {
         return typeFactory.isTypeAvailable( "java.net.URL" );
     }
 
