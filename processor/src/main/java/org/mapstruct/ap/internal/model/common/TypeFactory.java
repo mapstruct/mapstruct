@@ -523,15 +523,12 @@ public class TypeFactory {
         }
 
         DeclaredType declaredType = (DeclaredType) mirror;
-        List<Type> typeParameters = new ArrayList<>( declaredType.getTypeArguments().size() );
+        List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+        List<Type> typeParameters = new ArrayList<>( typeArguments.size() );
 
-        for ( TypeMirror typeParameter : declaredType.getTypeArguments() ) {
-            if ( isImplementationType ) {
-                typeParameters.add( getType( typeParameter ).getTypeBound() );
-            }
-            else {
-                typeParameters.add( getType( typeParameter ) );
-            }
+        for ( TypeMirror typeParameter : typeArguments) {
+            Type type = getType( typeParameter );
+            typeParameters.add( isImplementationType ? type.getTypeBound() : type );
         }
 
         return typeParameters;
