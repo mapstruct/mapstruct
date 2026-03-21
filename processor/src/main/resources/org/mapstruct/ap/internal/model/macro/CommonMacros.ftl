@@ -104,11 +104,16 @@
         try {
             <#nested>
         }
-        <#list thrownTypes as exceptionType>
-        catch ( <@includeModel object=exceptionType/> e ) {
+        <@compress single_line=true>catch (
+            <#list thrownTypes as exceptionType>
+                <#if exceptionType_index &gt; 0> | </#if>
+                <@includeModel object=exceptionType/>
+            </#list>
+            e ) {
+        </@compress>
+
             throw new RuntimeException( e );
         }
-        </#list>
   </#if>
 </#macro>
 <#--
