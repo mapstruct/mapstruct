@@ -6,6 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper" -->
+<#import "../macro/CommonMacros.ftl" as lib>
 <#assign sourceVarName><#if assignment.sourceLocalVarName?? >${assignment.sourceLocalVarName}<#else>${assignment.sourceReference}</#if></#assign>
 <#if (thrownTypes?size == 0) >
     <#compress>
@@ -17,14 +18,9 @@
 <#else>
     <#compress>
         ${sourceVarName} -> {
-            try {
+            <@lib.handleExceptions>
                 return <@_assignment/>;
-            }
-            <#list thrownTypes as exceptionType>
-            catch ( <@includeModel object=exceptionType/> e ) {
-                throw new RuntimeException( e );
-            }
-            </#list>
+            </@lib.handleExceptions>
         }
     </#compress>
 </#if>
