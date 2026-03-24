@@ -7,15 +7,15 @@ package org.mapstruct.itest.simple;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.simple.Source;
 import org.mapstruct.itest.simple.SourceTargetMapper;
 import org.mapstruct.itest.simple.Target;
 
-public class ConversionTest {
+class ConversionTest {
 
     @Test
-    public void shouldApplyConversions() {
+    void shouldApplyConversions() {
         Source source = new Source();
         source.setFoo( 42 );
         source.setBar( 23L );
@@ -30,18 +30,18 @@ public class ConversionTest {
     }
 
     @Test
-    public void shouldHandleNulls() {
+    void shouldHandleNulls() {
         Source source = new Source();
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 1 ) );
-        assertThat( target.getBar() ).isEqualTo( 0 );
+        assertThat( target.getBar() ).isZero();
         assertThat( target.getZip() ).isEqualTo( "0" );
     }
 
     @Test
-    public void shouldApplyConversionsToMappedProperties() {
+    void shouldApplyConversionsToMappedProperties() {
         Source source = new Source();
         source.setQax( 42 );
         source.setBaz( 23L );
@@ -54,7 +54,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void shouldApplyConversionsForReverseMapping() {
+    void shouldApplyConversionsForReverseMapping() {
         Target target = new Target();
         target.setFoo( 42L );
         target.setBar( 23 );
@@ -69,7 +69,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void shouldApplyConversionsToMappedPropertiesForReverseMapping() {
+    void shouldApplyConversionsToMappedPropertiesForReverseMapping() {
         Target target = new Target();
         target.setQax( 42 );
         target.setBaz( 23L );
@@ -82,7 +82,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void shouldWorkWithAbstractClass() {
+    void shouldWorkWithAbstractClass() {
         Source source = new Source();
         source.setFoo( 42 );
         source.setBar( 23L );

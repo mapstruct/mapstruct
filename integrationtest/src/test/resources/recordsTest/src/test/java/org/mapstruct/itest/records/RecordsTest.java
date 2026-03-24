@@ -9,15 +9,15 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.records.CustomerDto;
 import org.mapstruct.itest.records.CustomerEntity;
 import org.mapstruct.itest.records.CustomerMapper;
 
-public class RecordsTest {
+class RecordsTest {
 
     @Test
-    public void shouldMapRecord() {
+    void shouldMapRecord() {
         CustomerEntity customer = CustomerMapper.INSTANCE.fromRecord( new CustomerDto( "Kermit", "kermit@test.com" ) );
 
         assertThat( customer ).isNotNull();
@@ -26,7 +26,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapIntoRecord() {
+    void shouldMapIntoRecord() {
         CustomerEntity entity = new CustomerEntity();
         entity.setName( "Kermit" );
         entity.setMail( "kermit@test.com" );
@@ -39,7 +39,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapIntoGenericRecord() {
+    void shouldMapIntoGenericRecord() {
         CustomerEntity entity = new CustomerEntity();
         entity.setName( "Kermit" );
         entity.setMail( "kermit@test.com" );
@@ -51,7 +51,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapIntoRecordWithList() {
+    void shouldMapIntoRecordWithList() {
         Car car = new Car();
         car.setWheelPositions( Arrays.asList( new WheelPosition( "left" ) ) );
 
@@ -63,7 +63,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapMemberRecord() {
+    void shouldMapMemberRecord() {
         MemberEntity member = MemberMapper.INSTANCE.fromRecord( new MemberDto( true, false ) );
 
         assertThat( member ).isNotNull();
@@ -72,7 +72,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapIntoMemberRecord() {
+    void shouldMapIntoMemberRecord() {
         MemberEntity entity = new MemberEntity();
         entity.setIsActive( false );
         entity.setPremium( true );
@@ -80,12 +80,12 @@ public class RecordsTest {
         MemberDto value = MemberMapper.INSTANCE.toRecord( entity );
 
         assertThat( value ).isNotNull();
-        assertThat( value.isActive() ).isEqualTo( false );
-        assertThat( value.premium() ).isEqualTo( true );
+        assertThat( value.isActive() ).isFalse();
+        assertThat( value.premium() ).isTrue();
     }
 
     @Test
-    public void shouldUseDefaultConstructor() {
+    void shouldUseDefaultConstructor() {
         Task entity = new Task( "some-id", 1000L );
 
         TaskDto value = TaskMapper.INSTANCE.toRecord( entity );

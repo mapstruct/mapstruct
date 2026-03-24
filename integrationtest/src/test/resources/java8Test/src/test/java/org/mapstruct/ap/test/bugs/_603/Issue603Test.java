@@ -5,15 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._603;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Issue603Test {
+class Issue603Test {
 
     @Test
-    public void shouldMapDataFromJava8Interface() {
+    void shouldMapDataFromJava8Interface() {
 
         final Source source = new Source();
 

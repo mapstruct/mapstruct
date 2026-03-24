@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.supertypegeneration.usage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.supertypegeneration.usage.Order;
 import org.mapstruct.itest.supertypegeneration.usage.OrderDto;
 import org.mapstruct.itest.supertypegeneration.usage.OrderMapper;
@@ -18,10 +18,10 @@ import org.mapstruct.itest.supertypegeneration.usage.OrderMapper;
  *
  * @author Gunnar Morling
  */
-public class GeneratedBasesTest {
+class GeneratedBasesTest {
 
 	@Test
-	public void considersPropertiesOnGeneratedSourceAndTargetTypes() {
+	void considersPropertiesOnGeneratedSourceAndTargetTypes() {
 		Order order = new Order();
 		order.setItem( "my item" );
 		order.setBaseName2( "my base name 2" );

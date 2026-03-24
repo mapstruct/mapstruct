@@ -26,6 +26,7 @@
         <mapstruct.version>${mapstruct.version}</mapstruct.version>
         <compiler-id></compiler-id>
         <compiler-source-target-version></compiler-source-target-version>
+        <org.junit6.jupiter.version>6.0.3</org.junit6.jupiter.version>
     </properties>
 
     <profiles>
@@ -135,8 +136,8 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

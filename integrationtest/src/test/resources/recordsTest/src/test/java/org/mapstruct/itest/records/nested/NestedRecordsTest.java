@@ -9,12 +9,12 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class NestedRecordsTest {
+class NestedRecordsTest {
 
     @Test
-    public void shouldMapRecord() {
+    void shouldMapRecord() {
         CareProvider source = new CareProvider( "kermit", new Address( "Sesame Street", "New York" ) );
         CareProviderDto target = CareProviderMapper.INSTANCE.map( source );
 
