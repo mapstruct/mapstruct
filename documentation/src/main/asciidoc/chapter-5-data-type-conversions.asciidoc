@@ -128,7 +128,7 @@ public interface CarMapper {
 * Between `String` and `StringBuilder`
 
 * Between `java.net.URI` and `String`.
-** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URI[RFC 2396 URI] otherwise a `IllegalArgumentException` is thrown.
+** When converting from a `String`, the value needs to be a valid https://datatracker.ietf.org/doc/html/rfc2396[RFC 2396 URI] otherwise an `IllegalArgumentException` is thrown.
 
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
