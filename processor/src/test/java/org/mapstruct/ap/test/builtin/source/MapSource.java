@@ -6,7 +6,6 @@
 package org.mapstruct.ap.test.builtin.source;
 
 import java.util.Map;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 

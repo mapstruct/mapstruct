@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 

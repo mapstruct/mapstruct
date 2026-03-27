@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.conversion.lossy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

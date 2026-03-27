@@ -120,6 +120,14 @@
         <module name="ImportControl">
             <property name="file" value="${basedir}/../build-config/src/main/resources/build-config/import-control.xml" />
         </module>
+        <module name="CustomImportOrder">
+            <property name="customImportOrderRules"
+                      value="STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS###STATIC"/>
+            <property name="standardPackageRegExp" value="^(java|javax)\."/>
+            <property name="specialImportsRegExp" value="^org\.hibernate\."/>
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+        </module>
 
 
         <!-- Checks for Size Violations.                    -->

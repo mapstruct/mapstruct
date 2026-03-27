@@ -5,12 +5,12 @@
  */
 package org.mapstruct.itest.kotlin.data;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.kotlin.data.CustomerDto;
 import org.mapstruct.itest.kotlin.data.CustomerEntity;
 import org.mapstruct.itest.kotlin.data.CustomerMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class KotlinDataTest {
 

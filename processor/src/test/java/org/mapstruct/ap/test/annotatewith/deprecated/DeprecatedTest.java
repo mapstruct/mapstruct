@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.annotatewith.deprecated;
 
 import java.lang.reflect.Method;
+
 import org.mapstruct.ap.test.annotatewith.CustomMethodOnlyAnnotation;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

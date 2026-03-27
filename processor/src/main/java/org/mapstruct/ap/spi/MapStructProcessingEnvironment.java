@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.Map;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.Map;
 
 /**
  * MapStruct will provide the implementations of its SPIs with on object implementing this interface so they can use

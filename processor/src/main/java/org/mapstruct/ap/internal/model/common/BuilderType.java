@@ -9,8 +9,8 @@ import java.util.Collection;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.BuilderInfo;
 
 /**

@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.collection.iterabletononiterable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class, FruitsMenu.class,
         FruitSalad.class, Fruit.class, FruitsMapper.class })

@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.cdi;
 
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.cdi.other.DateMapper;
 
 @Mapper( componentModel = MappingConstants.ComponentModel.CDI, uses = DateMapper.class )

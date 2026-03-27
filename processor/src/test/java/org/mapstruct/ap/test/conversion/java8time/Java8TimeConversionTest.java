@@ -17,8 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

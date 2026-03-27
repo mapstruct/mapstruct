@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.targettypegeneration.usage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Integration test for using MapStruct with another annotation processor that generates the target type of a mapping

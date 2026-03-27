@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.SourceVersion;
 
 import org.codehaus.plexus.compiler.CompilerConfiguration;

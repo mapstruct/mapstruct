@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and

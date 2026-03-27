@@ -6,7 +6,6 @@
 package org.mapstruct.ap.spi;
 
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;

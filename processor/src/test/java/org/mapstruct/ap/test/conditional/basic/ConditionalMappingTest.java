@@ -7,8 +7,8 @@ package org.mapstruct.ap.test.conditional.basic;
 
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;

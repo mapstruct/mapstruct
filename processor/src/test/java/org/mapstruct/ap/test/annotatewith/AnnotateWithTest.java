@@ -5,6 +5,11 @@
  */
 package org.mapstruct.ap.test.annotatewith;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.WithProperties;
@@ -16,11 +21,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.conversion.numbers;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;

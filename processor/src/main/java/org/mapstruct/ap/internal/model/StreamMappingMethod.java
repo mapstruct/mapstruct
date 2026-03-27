@@ -5,12 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
-import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +12,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
+import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 

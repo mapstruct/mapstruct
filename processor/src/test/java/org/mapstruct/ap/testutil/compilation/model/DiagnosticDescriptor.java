@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
-
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 

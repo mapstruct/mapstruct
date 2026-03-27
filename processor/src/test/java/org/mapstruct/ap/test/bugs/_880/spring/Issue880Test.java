@@ -8,8 +8,8 @@ package org.mapstruct.ap.test.bugs._880.spring;
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithSpring;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;

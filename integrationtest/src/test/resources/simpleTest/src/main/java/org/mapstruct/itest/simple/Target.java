@@ -6,6 +6,7 @@
 package org.mapstruct.itest.simple;
 
 import java.util.List;
+
 import org.mapstruct.itest.simple.SomeType;
 
 public class Target {

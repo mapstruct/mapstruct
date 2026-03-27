@@ -13,7 +13,6 @@ import org.mapstruct.itest.jaxb.xsd.test2.OrderStatusType;
 import org.mapstruct.itest.jaxb.xsd.test2.ShippingAddressType;
 import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
 
-
 /**
  * @author Sjaak Derksen
  */

@@ -12,8 +12,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@code DateTime} and {@link Calendar}.

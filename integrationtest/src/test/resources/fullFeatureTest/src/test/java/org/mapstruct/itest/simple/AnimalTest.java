@@ -5,13 +5,12 @@
  */
 package org.mapstruct.ap.test.ignore;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
-
-import org.mapstruct.ap.test.ignore.AnimalMapper;
 import org.mapstruct.ap.test.ignore.Animal;
 import org.mapstruct.ap.test.ignore.AnimalDto;
+import org.mapstruct.ap.test.ignore.AnimalMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for ignoring properties during the mapping.

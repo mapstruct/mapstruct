@@ -6,12 +6,13 @@
 package org.mapstruct.itest.simple;
 
 import java.math.BigDecimal;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.mapstruct.itest.externalbeanjar.Source;
 import org.mapstruct.itest.externalbeanjar.Issue1121Mapper;
+import org.mapstruct.itest.externalbeanjar.Source;
 import org.mapstruct.itest.externalbeanjar.Target;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ConversionTest {
 
