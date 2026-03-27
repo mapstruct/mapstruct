@@ -638,6 +638,66 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
+    public Type replaceSuperBoundWith( Type compare, Type replacement ) {
+        if ( typeParameters.isEmpty() ) {
+            return this;
+        }
+        List<Type> targetTypeParameters = compare.getTypeParameters();
+        if ( targetTypeParameters.size() != typeParameters.size() ) {
+            return this;
+        }
+        TypeMirror replacementMirror = replacement.getTypeMirror();
+        boolean noChange = true;
+        List<Type> bounds = new ArrayList<>( typeParameters.size() );
+        TypeMirror[] mirrors = new TypeMirror[ typeParameters.size() ];
+        for ( int x = 0; x < typeParameters.size(); x++ ) {
+            Type type = typeParameters.get( x );
+            if ( !type.hasSuperBound() || type.isRawAssignableTo( targetTypeParameters.get( x ) ) ) {
+                bounds.add( type );
+                mirrors[ x ] = type.getTypeMirror();
+            }
+            else {
+                bounds.add( replacement );
+                mirrors[x] = replacementMirror;
+                noChange = false;
+            }
+        }
+
+        if ( noChange ) {
+            return this;
+        }
+
+        DeclaredType declaredType = typeUtils.getDeclaredType(
+                typeElement,
+                mirrors
+        );
+        return new Type(
+                typeUtils,
+                elementUtils,
+                typeFactory,
+                accessorNaming,
+                declaredType,
+                (TypeElement) declaredType.asElement(),
+                bounds,
+                implementationType,
+                componentType,
+                packageName,
+                name,
+                qualifiedName,
+                isInterface,
+                isEnumType,
+                isIterableType,
+                isCollectionType,
+                isMapType,
+                isStream,
+                toBeImportedTypes,
+                notToBeImportedTypes,
+                isToBeImported,
+                isLiteral,
+                loggingVerbose
+        );
+    }
+
     public Type withoutBounds() {
         if ( typeParameters.isEmpty() ) {
             return this;
