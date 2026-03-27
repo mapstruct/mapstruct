@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.generics.wildcard;
 
-import org.mapstruct.Mapper;
-
 import java.util.stream.Stream;
+
+import org.mapstruct.Mapper;
 
 @Mapper
 public interface ErroneousStreamSuperToExtendMapper {
