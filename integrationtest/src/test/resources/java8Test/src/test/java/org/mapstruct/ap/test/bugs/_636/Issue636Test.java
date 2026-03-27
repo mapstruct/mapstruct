@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Issue636Test {
+class Issue636Test {
 
     @Test
-    public void shouldMapDataFromJava8Interface() {
+    void shouldMapDataFromJava8Interface() {
 
         final long idFoo = 123;
         final String idBar = "Bar456";

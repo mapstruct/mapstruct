@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.faultyAstModifyingProcessor.usage;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Filip Hrisafov
  */
-public class FaultyAstModifyingTestTest {
+class FaultyAstModifyingTestTest {
 
     @Test
-    public void testMapping() {
+    void testMapping() {
         Order order = new Order();
         order.setItem( "my item" );
 

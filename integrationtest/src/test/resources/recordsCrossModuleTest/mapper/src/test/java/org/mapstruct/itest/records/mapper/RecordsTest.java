@@ -7,15 +7,15 @@ package org.mapstruct.itest.records.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.records.api.CustomerDto;
 import org.mapstruct.itest.records.mapper.CustomerEntity;
 import org.mapstruct.itest.records.mapper.CustomerMapper;
 
-public class RecordsTest {
+class RecordsTest {
 
     @Test
-    public void shouldMapRecord() {
+    void shouldMapRecord() {
         CustomerEntity customer = CustomerMapper.INSTANCE.fromRecord( new CustomerDto( "Kermit", "kermit@test.com" ) );
 
         assertThat( customer ).isNotNull();
@@ -24,7 +24,7 @@ public class RecordsTest {
     }
 
     @Test
-    public void shouldMapIntoRecord() {
+    void shouldMapIntoRecord() {
         CustomerEntity entity = new CustomerEntity();
         entity.setName( "Kermit" );
         entity.setMail( "kermit@test.com" );

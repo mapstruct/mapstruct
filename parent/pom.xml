@@ -142,11 +142,6 @@
                 <version>${org.mapstruct.gem.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.puppycrawl.tools</groupId>
                 <artifactId>checkstyle</artifactId>
                 <version>${com.puppycrawl.tools.checkstyle.version}</version>
@@ -201,7 +196,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.6.0.Final</version>
+                <version>1.7.2.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

@@ -7,15 +7,15 @@ package org.mapstruct.itest.modules;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.modules.CustomerDto;
 import org.mapstruct.itest.modules.CustomerEntity;
 import org.mapstruct.itest.modules.CustomerMapper;
 
-public class ModulesTest {
+class ModulesTest {
 
     @Test
-    public void shouldMapRecord() {
+    void shouldMapRecord() {
         CustomerDto dto = new CustomerDto();
         dto.setName( "Kermit" );
         dto.setEmail( "kermit@test.com" );

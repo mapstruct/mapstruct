@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.usestypegeneration.usage;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Filip Hrisafov
  */
-public class GeneratedUsesTypeTest {
+class GeneratedUsesTypeTest {
 
     @Test
-    public void considersPropertiesOnGeneratedSourceAndTargetTypes() {
+    void considersPropertiesOnGeneratedSourceAndTargetTypes() {
         Order order = new Order();
         order.setItem( "my item" );
 

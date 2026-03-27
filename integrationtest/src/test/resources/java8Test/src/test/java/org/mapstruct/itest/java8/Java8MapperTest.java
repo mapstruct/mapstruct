@@ -7,17 +7,17 @@ package org.mapstruct.itest.java8;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for generation of Java8 based mapper implementations.
  *
  * @author Christian Schuster
  */
-public class Java8MapperTest {
+class Java8MapperTest {
 
     @Test
-    public void shouldMapWithRepeatedMappingAnnotation() {
+    void shouldMapWithRepeatedMappingAnnotation() {
         Java8Mapper mapper = Java8Mapper.INSTANCE;
 
         Source source = new Source();

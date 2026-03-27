@@ -13,47 +13,49 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runners.Parameterized.Parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * <p>This is supposed to be run from the mapstruct root project folder.
  * Otherwise, use <code>-Dmapstruct_root=path_to_project</code>.
  */
 @DisabledForJreRange(min = JRE.JAVA_11)
-public class GradleIncrementalCompilationTest {
+class GradleIncrementalCompilationTest {
     private static Path rootPath;
-    private static String projectDir = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
-    private static String compileTaskName = "compileJava";
+    private static final String PROJECT_DIR = "integrationtest/src/test/resources/gradleIncrementalCompilationTest";
+    private static final String COMPILE_TASK_NAME = "compileJava";
 
     @TempDir
-    File testBuildDir;
+    private File testBuildDir;
     @TempDir
-    File testProjectDir;
+    private File testProjectDir;
 
     private GradleRunner runner;
     private File sourceDirectory;
     private List<String> compileArgs; // Gradle compile task arguments
 
-    @Parameters(name = "Gradle {0}")
-    public static List<String> gradleVersions() {
-        return Arrays.asList( "5.0", "6.0" );
+    static Stream<Arguments> gradleVersions() {
+        return Stream.of(
+                Arguments.of( Named.of( "Gradle 5.0", "5.0" ) ),
+                Arguments.of( Named.of( "Gradle 6.0", "6.0" ) ) );
     }
 
     private void replaceInFile(File file, CharSequence target, CharSequence replacement) throws IOException {
@@ -68,15 +70,13 @@ public class GradleIncrementalCompilationTest {
     }
 
     private void assertCompileOutcome(BuildResult result, TaskOutcome outcome) {
-        assertEquals( outcome, result.task( ":" + compileTaskName ).getOutcome() );
+        assertEquals( outcome, result.task( ":" + COMPILE_TASK_NAME ).getOutcome() );
     }
 
     private void assertRecompiled(BuildResult result, int recompiledCount) {
         assertCompileOutcome( result, recompiledCount > 0 ? SUCCESS : UP_TO_DATE );
-        assertThat(
-            result.getOutput(),
-            containsString( String.format( "Incremental compilation of %d classes completed", recompiledCount ) )
-        );
+        assertThat( result.getOutput() )
+                .contains( String.format( "Incremental compilation of %d classes completed", recompiledCount ) );
     }
 
     private List<String> buildCompileArgs() {
@@ -85,11 +85,11 @@ public class GradleIncrementalCompilationTest {
 
         // Inject the path to the folder containing the mapstruct-processor JAR
         String jarDirectoryArg = "-PmapstructRootPath=" + rootPath.toString();
-        return Arrays.asList( compileTaskName, buildDirPropertyArg, jarDirectoryArg );
+        return Arrays.asList( COMPILE_TASK_NAME, buildDirPropertyArg, jarDirectoryArg );
     }
 
     @BeforeAll
-    public static void setupClass() throws Exception {
+    static void setupClass() {
         rootPath = Paths.get( System.getProperty( "mapstruct_root", "." ) ).toAbsolutePath();
     }
 
@@ -102,7 +102,7 @@ public class GradleIncrementalCompilationTest {
             testProjectDir.mkdirs();
         }
         // Copy test project files to the temp dir
-        Path gradleProjectPath = rootPath.resolve( projectDir );
+        Path gradleProjectPath = rootPath.resolve( PROJECT_DIR );
         FileUtils.copyDirectory( gradleProjectPath.toFile(), testProjectDir );
         compileArgs = buildCompileArgs();
         sourceDirectory = new File( testProjectDir, "src/main/java" );
@@ -111,7 +111,7 @@ public class GradleIncrementalCompilationTest {
 
     @ParameterizedTest
     @MethodSource("gradleVersions")
-    public void testBuildSucceeds(String gradleVersion) throws IOException {
+    void testBuildSucceeds(String gradleVersion) throws IOException {
         setup( gradleVersion );
         // Make sure the test build setup actually compiles
         BuildResult buildResult = getRunner().build();
@@ -120,7 +120,7 @@ public class GradleIncrementalCompilationTest {
 
     @ParameterizedTest
     @MethodSource("gradleVersions")
-    public void testUpToDate(String gradleVersion) throws IOException {
+    void testUpToDate(String gradleVersion) throws IOException {
         setup( gradleVersion );
         getRunner().build();
         BuildResult secondBuildResult = getRunner().build();
@@ -129,7 +129,7 @@ public class GradleIncrementalCompilationTest {
 
     @ParameterizedTest
     @MethodSource("gradleVersions")
-    public void testChangeConstant(String gradleVersion) throws IOException {
+    void testChangeConstant(String gradleVersion) throws IOException {
         setup( gradleVersion );
         getRunner().build();
         // Change return value in class Target
@@ -143,7 +143,7 @@ public class GradleIncrementalCompilationTest {
 
     @ParameterizedTest
     @MethodSource("gradleVersions")
-    public void testChangeTargetField(String gradleVersion) throws IOException {
+    void testChangeTargetField(String gradleVersion) throws IOException {
         setup( gradleVersion );
         getRunner().build();
         // Change target field in mapper interface
@@ -157,7 +157,7 @@ public class GradleIncrementalCompilationTest {
 
     @ParameterizedTest
     @MethodSource("gradleVersions")
-    public void testChangeUnrelatedFile(String gradleVersion) throws IOException {
+    void testChangeUnrelatedFile(String gradleVersion) throws IOException {
         setup( gradleVersion );
         getRunner().build();
         File unrelatedFile = new File( sourceDirectory, "org/mapstruct/itest/gradle/lib/UnrelatedComponent.java" );

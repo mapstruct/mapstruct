@@ -9,12 +9,12 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TextBlocksTest {
+class TextBlocksTest {
 
     @Test
-    public void textBlockExpressionShouldWork() {
+    void textBlockExpressionShouldWork() {
         Car car = new Car();
         car.setWheelPosition( new WheelPosition( "left" ) );
 
