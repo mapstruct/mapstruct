@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Helper class for dealing with strings.

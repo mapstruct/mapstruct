@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.lang.model.SourceVersion;
 
 import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean;

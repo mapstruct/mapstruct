@@ -5,14 +5,11 @@
  */
 package org.mapstruct.itest.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -22,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generation of JAXB based mapper implementations.

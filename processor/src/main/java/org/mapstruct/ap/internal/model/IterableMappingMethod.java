@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +15,8 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection

@@ -5,12 +5,12 @@
  */
 package org.mapstruct.itest.naming;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.naming.GolfPlayer;
 import org.mapstruct.itest.naming.GolfPlayerDto;
 import org.mapstruct.itest.naming.GolfPlayerMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for using a custom naming strategy.

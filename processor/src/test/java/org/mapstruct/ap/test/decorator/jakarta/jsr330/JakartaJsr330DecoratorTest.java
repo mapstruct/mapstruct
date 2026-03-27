@@ -6,9 +6,9 @@
 package org.mapstruct.ap.test.decorator.jakarta.jsr330;
 
 import java.util.Calendar;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;

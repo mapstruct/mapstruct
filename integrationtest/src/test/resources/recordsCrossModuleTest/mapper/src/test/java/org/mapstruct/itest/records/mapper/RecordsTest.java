@@ -5,12 +5,12 @@
  */
 package org.mapstruct.itest.records.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.records.api.CustomerDto;
 import org.mapstruct.itest.records.mapper.CustomerEntity;
 import org.mapstruct.itest.records.mapper.CustomerMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RecordsTest {
 

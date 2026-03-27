@@ -5,12 +5,12 @@
  */
 package org.mapstruct.itest.supertypegeneration.usage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.supertypegeneration.usage.Order;
 import org.mapstruct.itest.supertypegeneration.usage.OrderDto;
 import org.mapstruct.itest.supertypegeneration.usage.OrderMapper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Integration test for using MapStruct with another annotation processor that generates super-types of mapping source

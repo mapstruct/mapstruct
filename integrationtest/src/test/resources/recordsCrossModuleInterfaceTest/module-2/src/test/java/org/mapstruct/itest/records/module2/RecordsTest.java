@@ -5,11 +5,11 @@
  */
 package org.mapstruct.itest.records.module2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
-import org.mapstruct.itest.records.module1.SourceRootRecord;
 import org.mapstruct.itest.records.module1.SourceNestedRecord;
+import org.mapstruct.itest.records.module1.SourceRootRecord;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RecordsTest {
 

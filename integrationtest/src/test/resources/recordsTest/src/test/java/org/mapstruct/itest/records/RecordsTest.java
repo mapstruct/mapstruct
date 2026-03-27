@@ -7,12 +7,12 @@ package org.mapstruct.itest.records;
 
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.records.CustomerDto;
 import org.mapstruct.itest.records.CustomerEntity;
 import org.mapstruct.itest.records.CustomerMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RecordsTest {
 

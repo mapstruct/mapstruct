@@ -13,6 +13,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author orange add
  */

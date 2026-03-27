@@ -5,8 +5,6 @@
  */
 package org.mapstruct.itest.cdi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -17,6 +15,8 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.itest.cdi.other.DateMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generation of CDI-based mapper implementations.

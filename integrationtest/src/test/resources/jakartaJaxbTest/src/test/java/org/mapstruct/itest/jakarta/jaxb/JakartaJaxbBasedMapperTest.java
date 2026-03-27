@@ -5,8 +5,6 @@
  */
 package org.mapstruct.itest.jakarta.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,11 +15,12 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.jakarta.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jakarta.jaxb.xsd.test1.OrderType;
 import org.mapstruct.itest.jakarta.jaxb.xsd.underscores.SubType;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generation of Jakarta JAXB based mapper implementations.

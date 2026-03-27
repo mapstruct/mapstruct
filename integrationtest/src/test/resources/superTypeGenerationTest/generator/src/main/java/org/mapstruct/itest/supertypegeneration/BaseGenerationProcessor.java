@@ -8,7 +8,6 @@ package org.mapstruct.itest.supertypegeneration;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;

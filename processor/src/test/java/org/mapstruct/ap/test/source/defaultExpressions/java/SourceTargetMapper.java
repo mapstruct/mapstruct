@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
+import java.util.Date;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
-
-import java.util.Date;
 
 /**
  * @author Jeffrey Smyth

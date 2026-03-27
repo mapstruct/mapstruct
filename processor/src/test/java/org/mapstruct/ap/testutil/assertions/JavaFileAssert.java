@@ -5,12 +5,6 @@
  */
 package org.mapstruct.ap.testutil.assertions;
 
-import org.assertj.core.api.FileAssert;
-import org.assertj.core.error.ShouldHaveSameContent;
-import org.assertj.core.internal.Diff;
-import org.assertj.core.internal.Failures;
-import org.assertj.core.util.diff.Delta;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -18,6 +12,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.assertj.core.api.FileAssert;
+import org.assertj.core.error.ShouldHaveSameContent;
+import org.assertj.core.internal.Diff;
+import org.assertj.core.internal.Failures;
+import org.assertj.core.util.diff.Delta;
 
 import static java.lang.String.format;
 

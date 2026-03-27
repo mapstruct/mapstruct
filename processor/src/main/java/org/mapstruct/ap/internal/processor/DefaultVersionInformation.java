@@ -11,7 +11,6 @@ import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.SourceVersion;
 

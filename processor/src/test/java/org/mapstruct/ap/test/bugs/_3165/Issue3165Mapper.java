@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.bugs._3165;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface Issue3165Mapper {

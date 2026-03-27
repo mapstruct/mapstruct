@@ -7,7 +7,6 @@ package org.mapstruct.itest.jsr330;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.itest.jsr330.Jsr330BasedMapperTest.SpringTestConfig;

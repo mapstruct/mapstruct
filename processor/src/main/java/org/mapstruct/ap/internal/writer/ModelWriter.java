@@ -15,16 +15,14 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.tools.FileObject;
-
-import org.mapstruct.ap.internal.writer.Writable.Context;
 
 import freemarker.cache.StrongCacheStorage;
 import freemarker.cache.TemplateLoader;
 import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.mapstruct.ap.internal.writer.Writable.Context;
 
 /**
  * Writes Java source files based on given mapper models, using a FreeMarker

@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.injectionstrategy.jakarta._default;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;

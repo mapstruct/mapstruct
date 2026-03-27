@@ -5,12 +5,12 @@
  */
 package org.mapstruct.itest.simple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.simple.Source;
 import org.mapstruct.itest.simple.SourceTargetMapper;
 import org.mapstruct.itest.simple.Target;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ConversionTest {
 
