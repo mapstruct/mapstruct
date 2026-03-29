@@ -12,6 +12,6 @@
     <#elseif hasSuperBound()>
         ? super <@includeModel object=typeBound />
     <#else>
-        <#if ext.asVarArgs!false>${createReferenceName()?remove_ending("[]")}...<#else>${createReferenceName()}</#if></#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
+        <#if ext.asVarArgs!false>${createReferenceName()?remove_ending("[]")}...<#else>${createReferenceName()}</#if></#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#if !ext.useDiamondOperator??><#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list></#if>>
     </#if>
 </@compress>

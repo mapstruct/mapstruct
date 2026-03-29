@@ -26,6 +26,6 @@
     <#if enumSet>
       EnumSet.copyOf( ${nullCheckLocalVarName} )
     <#else>
-      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
+      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType useDiamondOperator=true/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
     </#if>
 </@compress></#macro>
