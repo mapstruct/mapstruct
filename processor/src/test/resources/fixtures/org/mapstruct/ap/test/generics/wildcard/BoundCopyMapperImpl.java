@@ -13,13 +13,13 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-29T19:42:23+0200",
+    date = "2026-03-30T02:05:36+0200",
     comments = "version: , compiler: javac, environment: Java 21.0.5 (Eclipse Adoptium)"
 )
-public class SuperBoundCopyMapperImpl implements SuperBoundCopyMapper {
+public class BoundCopyMapperImpl implements BoundCopyMapper {
 
     @Override
-    public CollectionSuperTypes copyCollection(CollectionSuperTypes collectionSuperTypes) {
+    public CollectionSuperTypes copySuperCollection(CollectionSuperTypes collectionSuperTypes) {
         if ( collectionSuperTypes == null ) {
             return null;
         }
@@ -35,7 +35,23 @@ public class SuperBoundCopyMapperImpl implements SuperBoundCopyMapper {
     }
 
     @Override
-    public MapSuperType copyMap(MapSuperType mapSuperType) {
+    public CollectionExtendTypes copyExtendsCollection(CollectionExtendTypes collectionExtendTypes) {
+        if ( collectionExtendTypes == null ) {
+            return null;
+        }
+
+        CollectionExtendTypes collectionExtendTypes1 = new CollectionExtendTypes();
+
+        Collection<? extends SimpleObject> collection = collectionExtendTypes.getSimpleObjectsCollection();
+        if ( collection != null ) {
+            collectionExtendTypes1.setSimpleObjectsCollection( new ArrayList<>( collection ) );
+        }
+
+        return collectionExtendTypes1;
+    }
+
+    @Override
+    public MapSuperType copySuperMap(MapSuperType mapSuperType) {
         if ( mapSuperType == null ) {
             return null;
         }
@@ -48,5 +64,21 @@ public class SuperBoundCopyMapperImpl implements SuperBoundCopyMapper {
         }
 
         return mapSuperType1;
+    }
+
+    @Override
+    public MapExtendType copyExtendMap(MapExtendType mapExtendType) {
+        if ( mapExtendType == null ) {
+            return null;
+        }
+
+        MapExtendType mapExtendType1 = new MapExtendType();
+
+        Map<? extends SimpleObject, ? extends SimpleObject> map = mapExtendType.getSimpleMap();
+        if ( map != null ) {
+            mapExtendType1.setSimpleMap( new LinkedHashMap<>( map ) );
+        }
+
+        return mapExtendType1;
     }
 }

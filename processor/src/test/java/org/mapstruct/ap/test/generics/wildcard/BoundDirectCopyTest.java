@@ -14,16 +14,23 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
  * @author hduelme
  *
  */
-public class SuperBoundCopyTest {
+public class BoundDirectCopyTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
-            SuperBoundCopyMapper.class
+            BoundCopyMapper.class
     );
 
     @ProcessorTest
-    @WithClasses({SimpleObject.class, CollectionSuperTypes.class, MapSuperType.class, SuperBoundCopyMapper.class})
-    public void shouldCopySuperBoundedDirectly() {
+    @WithClasses({
+            SimpleObject.class,
+            CollectionSuperTypes.class,
+            CollectionExtendTypes.class,
+            MapSuperType.class,
+            MapExtendType.class,
+            BoundCopyMapper.class
+    })
+    public void shouldCopyBoundedDirectly() {
 
     }
 }
