@@ -2,6 +2,9 @@ name: Java EA
 
 on: [push]
 
+permissions:
+  contents: read
+
 env:
   MAVEN_ARGS: -V -B --no-transfer-progress -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
