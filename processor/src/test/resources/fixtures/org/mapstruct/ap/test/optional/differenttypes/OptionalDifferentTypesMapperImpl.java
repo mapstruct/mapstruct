@@ -48,7 +48,7 @@ public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesM
 
         String value = null;
 
-        Source.SubType optionalValue = optional.get();
+        Source.SubType optionalValue = optional.orElseThrow();
 
         value = optionalValue.getValue();
 
@@ -64,7 +64,7 @@ public class OptionalDifferentTypesMapperImpl implements OptionalDifferentTypesM
 
         String value = null;
 
-        Source.SubType optionalValue = optional.get();
+        Source.SubType optionalValue = optional.orElseThrow();
 
         value = optionalValue.getValue();
 

@@ -62,7 +62,7 @@
                         if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
                         <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParam)!'' />
                         <#if sourceParamReassignment?has_content>
-                            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.get();
+                            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.orElseThrow();
 
                         </#if>
                         <#list constructorPropertyMappingsByParameter(sourceParam) as propertyMapping>
@@ -86,7 +86,7 @@
                 <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
                 <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParameters[0])!'' />
                 <#if sourceParamReassignment?has_content>
-                    <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.get();
+                    <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.orElseThrow();
 
                 </#if>
                 <#list constructorPropertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
@@ -122,7 +122,7 @@
                 if ( <@includeModel object=getPresenceCheckByParameter(sourceParam) /> ) {
                     <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParam)!'' />
                     <#if sourceParamReassignment?has_content>
-                        <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.get();
+                        <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParam.name}.orElseThrow();
 
                     </#if>
                     <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
@@ -142,7 +142,7 @@
         <#if mapNullToDefault>if ( <@includeModel object=getPresenceCheckByParameter(sourceParameters[0]) /> ) {</#if>
         <#assign sourceParamReassignment = getSourceParameterReassignment(sourceParameters[0])!'' />
         <#if sourceParamReassignment?has_content>
-            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.get();
+            <@includeModel object=sourceParamReassignment.type /> ${sourceParamReassignment.name} = ${sourceParameters[0].name}.orElseThrow();
 
         </#if>
         <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>

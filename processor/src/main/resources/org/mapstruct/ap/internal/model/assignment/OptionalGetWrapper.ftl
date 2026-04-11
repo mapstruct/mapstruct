@@ -10,6 +10,6 @@
 <#if optionalType.optionalBaseType.isPrimitive()>
 ${assignment}.getAs${optionalType.optionalBaseType.name?cap_first}()
 <#else>
-${assignment}.get()
+${assignment}.orElseThrow()
 </#if>
 </@compress>

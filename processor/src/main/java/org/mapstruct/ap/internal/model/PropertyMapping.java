@@ -740,7 +740,7 @@ public class PropertyMapping extends ModelElement {
                                     variableName,
                                     ctx.getVersionInformation()
                                 ) );
-                                variableName = variableName + ".get()";
+                                variableName = variableName + ".orElseThrow()";
                             }
                             else {
                                 presenceChecks.add( new NullPresenceCheck( variableName ) );

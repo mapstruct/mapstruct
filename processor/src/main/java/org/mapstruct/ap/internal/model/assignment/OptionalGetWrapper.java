@@ -30,7 +30,7 @@ public class OptionalGetWrapper extends AssignmentWrapper {
     @Override
     public String toString() {
         if ( optionalType.getFullyQualifiedName().equals( "java.util.Optional" ) ) {
-            return getAssignment() + ".get()";
+            return getAssignment() + ".orElseThrow()";
         }
         return getAssignment() + ".getAs" + Strings.capitalize( optionalType.getOptionalBaseType().getName() ) + "()";
     }

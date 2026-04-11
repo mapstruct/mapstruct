@@ -394,7 +394,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         ParameterBinding.fromParameter( parameter ) :
                         ParameterBinding.fromTypeAndName(
                             parameter.getType(),
-                            parameter.getOriginalName() + ".get()"
+                            parameter.getOriginalName() + ".orElseThrow()"
                         ) )
                     .collect( Collectors.toList() );
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(

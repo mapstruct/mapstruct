@@ -86,7 +86,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
                     presenceCheck = getPresenceCheck( propertyEntry, optionalValueSafeName );
 
-                    String optionalValueSource = previousPropertyName + ".get()";
+                    String optionalValueSource = previousPropertyName + ".orElseThrow()";
                     boolean doesNotNeedFollowUpProperty = false;
                     if ( i == propertyEntries.size() - 1 ) {
                         // If this is the last property, and we do not have a presence check,

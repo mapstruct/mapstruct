@@ -24,19 +24,19 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         TargetAggregate targetAggregate = new TargetAggregate();
 
         if ( song.hasTitle() ) {
-            targetAggregate.setSongTitle( song.getTitle().get() );
+            targetAggregate.setSongTitle( song.getTitle().orElseThrow() );
         }
         String name = songArtistName( song );
-        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().get().hasName() ) {
+        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().orElseThrow().hasName() ) {
             targetAggregate.setArtistName( name );
         }
         String name1 = songArtistLabelStudioName( song );
-        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().get().hasLabel() && song.getArtist().get().getLabel().isPresent() && song.getArtist().get().getLabel().get().hasStudio() ) {
+        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().orElseThrow().hasLabel() && song.getArtist().orElseThrow().getLabel().isPresent() && song.getArtist().orElseThrow().getLabel().orElseThrow().hasStudio() ) {
             targetAggregate.setRecordedAt( name1 );
         }
         Optional<String> city = songArtistLabelStudioCity( song );
-        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().get().hasLabel() && song.getArtist().get().getLabel().isPresent() && song.getArtist().get().getLabel().get().hasStudio() && song.getArtist().get().getLabel().get().getStudio().isPresent() && song.getArtist().get().getLabel().get().getStudio().get().hasCity() ) {
-            targetAggregate.setCity( city.get() );
+        if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().orElseThrow().hasLabel() && song.getArtist().orElseThrow().getLabel().isPresent() && song.getArtist().orElseThrow().getLabel().orElseThrow().hasStudio() && song.getArtist().orElseThrow().getLabel().orElseThrow().getStudio().isPresent() && song.getArtist().orElseThrow().getLabel().orElseThrow().getStudio().orElseThrow().hasCity() ) {
+            targetAggregate.setCity( city.orElseThrow() );
         }
 
         return targetAggregate;
@@ -50,7 +50,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( artist.isEmpty() ) {
             return null;
         }
-        Artist artistValue = artist.get();
+        Artist artistValue = artist.orElseThrow();
         if ( !artistValue.hasName() ) {
             return null;
         }
@@ -65,7 +65,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( artist.isEmpty() ) {
             return null;
         }
-        Artist artistValue = artist.get();
+        Artist artistValue = artist.orElseThrow();
         if ( !artistValue.hasLabel() ) {
             return null;
         }
@@ -73,7 +73,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( label.isEmpty() ) {
             return null;
         }
-        Artist.Label labelValue = label.get();
+        Artist.Label labelValue = label.orElseThrow();
         if ( !labelValue.hasStudio() ) {
             return null;
         }
@@ -81,7 +81,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( studio.isEmpty() ) {
             return null;
         }
-        return studio.get().getName();
+        return studio.orElseThrow().getName();
     }
 
     private Optional<String> songArtistLabelStudioCity(Source source) {
@@ -92,7 +92,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( artist.isEmpty() ) {
             return Optional.empty();
         }
-        Artist artistValue = artist.get();
+        Artist artistValue = artist.orElseThrow();
         if ( !artistValue.hasLabel() ) {
             return Optional.empty();
         }
@@ -100,7 +100,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( label.isEmpty() ) {
             return Optional.empty();
         }
-        Artist.Label labelValue = label.get();
+        Artist.Label labelValue = label.orElseThrow();
         if ( !labelValue.hasStudio() ) {
             return Optional.empty();
         }
@@ -108,7 +108,7 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
         if ( studio.isEmpty() ) {
             return Optional.empty();
         }
-        Artist.Studio studioValue = studio.get();
+        Artist.Studio studioValue = studio.orElseThrow();
         if ( !studioValue.hasCity() ) {
             return Optional.empty();
         }

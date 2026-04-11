@@ -27,7 +27,7 @@ public class OptionalNullCheckAlwaysMapperImpl implements OptionalNullCheckAlway
             target.setOptionalToOptional( source.getOptionalToOptional() );
         }
         if ( source.getOptionalToNonOptional().isPresent() ) {
-            target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
+            target.setOptionalToNonOptional( source.getOptionalToNonOptional().orElseThrow() );
         }
         if ( source.getNonOptionalToOptional() != null ) {
             target.setNonOptionalToOptional( Optional.of( source.getNonOptionalToOptional() ) );
