@@ -50,6 +50,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
+import org.mapstruct.ap.internal.util.NullabilityUtils;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -273,6 +274,26 @@ public class PropertyMapping extends ModelElement {
                 assignment = forge();
             }
 
+            // JSpecify: report error when mapping @Nullable source to @NonNull constructor parameter
+            // without a default value. A null check would leave the variable at null, violating the
+            // @NonNull contract, and passing the value through is equally invalid.
+            if ( targetWriteAccessorType == AccessorType.PARAMETER && !hasDefaultValueOrDefaultExpression() ) {
+                NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
+                NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
+                    targetWriteAccessor.getElement(), targetType::isNullMarked
+                );
+                if ( sourceNullability != NullabilityUtils.Nullability.NON_NULL
+                    && targetNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        positionHint,
+                        Message.PROPERTYMAPPING_NULLABLE_SOURCE_TO_NON_NULL_CONSTRUCTOR_PARAM,
+                        sourcePropertyName != null ? sourcePropertyName : targetPropertyName,
+                        targetPropertyName
+                    );
+                }
+            }
+
             Type sourceType = rightHandSide.getSourceType();
             if ( assignment != null ) {
                 ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
@@ -448,13 +469,21 @@ public class PropertyMapping extends ModelElement {
                     }
 
                 }
+                boolean includeSourceNullCheck = !rhs.isSourceReferenceParameter();
+                if ( includeSourceNullCheck ) {
+                    // JSpecify: source @NonNull means no null check needed
+                    NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
+                    if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                        includeSourceNullCheck = false;
+                    }
+                }
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
                     factory,
                     isFieldAssignment(),
                     targetType,
-                    !rhs.isSourceReferenceParameter(),
+                    includeSourceNullCheck,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
                     nvpms == SET_TO_DEFAULT,
                     hasTwoOrMoreSettersWithName()
@@ -496,9 +525,10 @@ public class PropertyMapping extends ModelElement {
                 return false;
             }
 
-            if ( nvcs == ALWAYS ) {
-                // NullValueCheckStrategy is ALWAYS -> do a null check
-                return true;
+            // JSpecify: source @NonNull means the value is guaranteed non-null, skip all checks
+            NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
+            if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                return false;
             }
 
             if ( rhs.getSourcePresenceCheckerReference() != null ) {
@@ -526,7 +556,40 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
+            // JSpecify annotations take precedence over NullValueCheckStrategy
+            NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
+                targetWriteAccessor.getElement(), targetType::isNullMarked
+            );
+            Boolean jspecifyDecision = NullabilityUtils.requiresNullCheck( sourceNullability, targetNullability );
+            if ( jspecifyDecision != null ) {
+                return jspecifyDecision;
+            }
+
+            if ( nvcs == ALWAYS ) {
+                // NullValueCheckStrategy is ALWAYS -> do a null check
+                return true;
+            }
+
             return false;
+        }
+
+        private NullabilityUtils.Nullability getSourceJSpecifyNullability() {
+            if ( sourceReference != null && !sourceReference.getPropertyEntries().isEmpty() ) {
+                PropertyEntry deepestProperty = sourceReference.getDeepestProperty();
+                if ( deepestProperty != null && deepestProperty.getReadAccessor() != null ) {
+                    // Determine the enclosing type for @NullMarked scope lookup.
+                    // For simple properties (a.b), the enclosing type is the source parameter type.
+                    // For nested properties (a.b.c), the enclosing type is the parent entry's type.
+                    List<PropertyEntry> entries = sourceReference.getPropertyEntries();
+                    Type enclosingType = entries.size() > 1
+                        ? entries.get( entries.size() - 2 ).getType()
+                        : sourceReference.getParameter().getType();
+                    return NullabilityUtils.getNullability(
+                        deepestProperty.getReadAccessor().getElement(), enclosingType::isNullMarked
+                    );
+                }
+            }
+            return NullabilityUtils.Nullability.UNKNOWN;
         }
 
         private boolean hasDefaultValueOrDefaultExpression() {

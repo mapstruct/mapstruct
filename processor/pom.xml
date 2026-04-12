@@ -148,6 +148,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- There is no compile dependency to JSpecify; It's only required for testing the null annotations -->
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>

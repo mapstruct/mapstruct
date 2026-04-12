@@ -52,7 +52,7 @@ class JdkCompilingExtension extends CompilingExtension {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, StandardCharsets.UTF_8 );
 
         Iterable<? extends JavaFileObject> compilationUnits =
-            fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
+            fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest ) );
 
         try {
             fileManager.setLocation(

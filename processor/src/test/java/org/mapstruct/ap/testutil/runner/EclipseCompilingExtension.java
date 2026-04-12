@@ -72,7 +72,7 @@ class EclipseCompilingExtension extends CompilingExtension {
         return clHelper.compileInOtherClassloader(
             compilationRequest,
             getTestCompilationClasspath( compilationRequest, classOutputDir ),
-            getSourceFiles( compilationRequest.getSourceClasses() ),
+            getSourceFiles( compilationRequest ),
             SOURCE_DIR,
             sourceOutputDir,
             classOutputDir );

@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -46,7 +45,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
 
     private Compiler compiler;
 
-    private List<Class<?>> fixturesFor = new ArrayList<>();
+    private List<FixtureComparison> fixturesFor = new ArrayList<>();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
@@ -82,7 +81,25 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      * @return the same rule for chaining
      */
     public GeneratedSource addComparisonToFixtureFor(Class<?>... fixturesFor) {
-        this.fixturesFor.addAll( Arrays.asList( fixturesFor ) );
+        for ( Class<?> fixture : fixturesFor ) {
+            this.fixturesFor.add( new FixtureComparison( fixture, null ) );
+        }
+        return this;
+    }
+
+    /**
+     * Adds a mapper that needs to be compared against a fixture with a variant suffix.
+     * <p>
+     * The fixture is looked up at {@code fixtures/<FQN>Impl_{variant}.java} instead of the default
+     * {@code fixtures/<FQN>Impl.java}. Use this to have multiple fixtures for the same mapper class
+     * (e.g. for testing different compilation inputs that produce different generated code).
+     *
+     * @param fixtureFor the class to compare
+     * @param variant the fixture variant (suffix appended to the file name before {@code .java})
+     * @return the same rule for chaining
+     */
+    public GeneratedSource addComparisonToFixtureFor(Class<?> fixtureFor, String variant) {
+        this.fixturesFor.add( new FixtureComparison( fixtureFor, variant ) );
         return this;
     }
 
@@ -120,26 +137,29 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
     }
 
     private void handleFixtureComparison() {
-        for ( Class<?> fixture : fixturesFor ) {
-            String fixtureName = getMapperName( fixture );
+        for ( FixtureComparison fixture : fixturesFor ) {
+            String fixtureName = getFixtureName( fixture.mapperClass, fixture.variant );
             URL expectedFile = getExpectedResource( fixtureName );
             if ( expectedFile == null ) {
                 fail( String.format(
                     "No reference file could be found for Mapper %s. You should create a file %s",
-                    fixture.getName(),
+                    fixture.mapperClass.getName(),
                     FIXTURES_ROOT + fixtureName
                 ) );
             }
             else {
                 File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), StandardCharsets.UTF_8 ) );
-                forMapper( fixture ).hasSameMapperContent( expectedResource );
+                forMapper( fixture.mapperClass ).hasSameMapperContent( expectedResource );
             }
-            fixture.getPackage().getName();
         }
-
     }
 
-    private URL getExpectedResource( String fixtureName ) {
+    private String getFixtureName(Class<?> mapperClass, String variant) {
+        String suffix = variant != null ? "Impl_" + variant + ".java" : "Impl.java";
+        return mapperClass.getName().replace( '.', '/' ).concat( suffix );
+    }
+
+    private URL getExpectedResource(String fixtureName) {
         ClassLoader classLoader = getClass().getClassLoader();
         for ( int version = Runtime.version().feature(); version >= 11 && compiler != Compiler.ECLIPSE; version-- ) {
             URL resource = classLoader.getResource( FIXTURES_ROOT + "/" + version + "/" + fixtureName );
@@ -149,5 +169,15 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
         }
 
         return classLoader.getResource( FIXTURES_ROOT + fixtureName );
+    }
+
+    private static final class FixtureComparison {
+        private final Class<?> mapperClass;
+        private final String variant;
+
+        FixtureComparison(Class<?> mapperClass, String variant) {
+            this.mapperClass = mapperClass;
+            this.variant = variant;
+        }
     }
 }

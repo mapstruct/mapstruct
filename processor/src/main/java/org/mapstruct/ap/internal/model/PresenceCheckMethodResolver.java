@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityUtils;
 
 /**
  * Factory for creating {@link PresenceCheck}s.
@@ -94,6 +95,15 @@ public final class PresenceCheckMethodResolver {
                 return new OptionalPresenceCheck( sourceParameter.getName(), ctx.getVersionInformation() );
             }
             else if ( !sourceParameter.getType().isPrimitive() ) {
+                // If the source parameter is @NonNull (JSpecify), skip the null guard entirely.
+                // Use the mapper type for @NullMarked scope resolution since the parameter
+                // is declared in the mapper interface.
+                if ( NullabilityUtils.getNullability(
+                    sourceParameter.getElement(),
+                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() )
+                    == NullabilityUtils.Nullability.NON_NULL ) {
+                    return null;
+                }
                 return new NullPresenceCheck( sourceParameter.getName() );
             }
             return null;
