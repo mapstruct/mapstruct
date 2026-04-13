@@ -182,7 +182,7 @@ class JSpecifyNullMarkedTest {
         // Same classes and mapper as packageLevelNullMarked but WITHOUT @WithPackageInfo.
         // Without the package-info.java being compiled, @NullMarked is not visible —
         // unannotated types have unknown nullability and the ALWAYS strategy produces null checks.
-        generatedSource.addComparisonToFixtureFor( PackageNullMarkedMapper.class, "withoutpackageinfo" );
+        generatedSource.addComparisonToFixtureFor( PackageNullMarkedMapper.class, "withoutPackageInfo" );
     }
 
 }
