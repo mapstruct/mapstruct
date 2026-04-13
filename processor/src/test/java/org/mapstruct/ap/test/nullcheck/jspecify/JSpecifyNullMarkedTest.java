@@ -103,6 +103,61 @@ public class JSpecifyNullMarkedTest {
 
     @ProcessorTest
     @WithClasses({
+        NullUnmarkedSourceBean.class,
+        TargetBean.class,
+        JSpecifyNullUnmarkedMapper.class
+    })
+    public void nullUnmarkedReversesEnclosingNullMarkedScope() {
+        // The source class is @NullUnmarked inside a @NullMarked outer class.
+        // Unannotated getter must be UNKNOWN, not promoted to @NonNull.
+        // With NVCS=ALWAYS, a null check is generated and the setter is NOT called when source is null.
+        NullUnmarkedSourceBean.Inner source = new NullUnmarkedSourceBean.Inner();
+        // value is null
+
+        TargetBean target = JSpecifyNullUnmarkedMapper.INSTANCE.map( source );
+
+        assertThat( target.isUnannotatedTargetSet() ).isFalse();
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        SourceBean.class,
+        NullMarkedTargetBean.class,
+        JSpecifyNullMarkedTargetScopeMapper.class
+    })
+    public void nullMarkedTargetPromotesUnannotatedSetterParamToNonNull() {
+        // Target bean is @NullMarked; setNonNullByDefault has an unannotated String parameter
+        // which must be treated as @NonNull by JSpecify semantics. Source getter is @Nullable,
+        // so a null check must be generated and the setter must NOT be called when source is null.
+        SourceBean source = new SourceBean();
+        // nullableValue is null
+
+        NullMarkedTargetBean target = JSpecifyNullMarkedTargetScopeMapper.INSTANCE.map( source );
+
+        assertThat( target.isNonNullByDefaultSet() ).isFalse();
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        NullMarkedSourceBean.class,
+        TargetBean.class,
+        JSpecifyNullableOverridesScopeMapper.class
+    })
+    public void explicitNullableOverridesNullMarkedScope() {
+        // Source getter is explicitly @Nullable inside a @NullMarked class — the explicit
+        // annotation must keep the source NULLABLE instead of being promoted to @NonNull
+        // by the scope. Target setter is explicitly @NonNull, so a null check is required.
+        NullMarkedSourceBean source = new NullMarkedSourceBean();
+        // explicitlyNullable is null
+
+        TargetBean target = JSpecifyNullableOverridesScopeMapper.INSTANCE.map( source );
+
+        // Null check generated -> setter must NOT be called when source value is null.
+        assertThat( target.isNonNullTargetFromNullableSet() ).isFalse();
+    }
+
+    @ProcessorTest
+    @WithClasses({
         PackageNullMarkedSourceBean.class,
         PackageNullMarkedTargetBean.class,
         PackageNullMarkedMapper.class

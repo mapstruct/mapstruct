@@ -13,6 +13,7 @@ import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for JSpecify nullness annotation support in MapStruct.
@@ -94,6 +95,21 @@ public class JSpecifyNullCheckTest {
     @WithClasses(JSpecifyNonNullParamMapper.class)
     public void nonNullParamShouldSkipMethodLevelNullGuard() {
         generatedSource.addComparisonToFixtureFor( JSpecifyNonNullParamMapper.class );
+
+        // Non-null input: mapper maps through normally.
+        SourceBean source = new SourceBean();
+        source.setNonNullValue( "value" );
+        source.setUnannotatedValue( "plain" );
+
+        TargetBean target = JSpecifyNonNullParamMapper.INSTANCE.map( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNonNullTarget() ).isEqualTo( "value" );
+        assertThat( target.getUnannotatedTarget() ).isEqualTo( "plain" );
+
+        // Null input: because the method-level guard was skipped, the mapper must dereference
+        // the source and throw NPE rather than silently returning null.
+        assertThatNullPointerException().isThrownBy( () -> JSpecifyNonNullParamMapper.INSTANCE.map( null ) );
     }
 
     @ProcessorTest

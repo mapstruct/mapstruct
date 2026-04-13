@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -280,7 +281,7 @@ public class PropertyMapping extends ModelElement {
             if ( targetWriteAccessorType == AccessorType.PARAMETER && !hasDefaultValueOrDefaultExpression() ) {
                 NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
                 NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
-                    targetWriteAccessor.getElement(), targetType::isNullMarked
+                    targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
                 );
                 if ( sourceNullability != NullabilityUtils.Nullability.NON_NULL
                     && targetNullability == NullabilityUtils.Nullability.NON_NULL ) {
@@ -558,7 +559,7 @@ public class PropertyMapping extends ModelElement {
 
             // JSpecify annotations take precedence over NullValueCheckStrategy
             NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
-                targetWriteAccessor.getElement(), targetType::isNullMarked
+                targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
             );
             Boolean jspecifyDecision = NullabilityUtils.requiresNullCheck( sourceNullability, targetNullability );
             if ( jspecifyDecision != null ) {
@@ -574,7 +575,10 @@ public class PropertyMapping extends ModelElement {
         }
 
         private NullabilityUtils.Nullability getSourceJSpecifyNullability() {
-            if ( sourceReference != null && !sourceReference.getPropertyEntries().isEmpty() ) {
+            if ( sourceReference == null ) {
+                return NullabilityUtils.Nullability.UNKNOWN;
+            }
+            if ( !sourceReference.getPropertyEntries().isEmpty() ) {
                 PropertyEntry deepestProperty = sourceReference.getDeepestProperty();
                 if ( deepestProperty != null && deepestProperty.getReadAccessor() != null ) {
                     // Determine the enclosing type for @NullMarked scope lookup.
@@ -588,8 +592,37 @@ public class PropertyMapping extends ModelElement {
                         deepestProperty.getReadAccessor().getElement(), enclosingType::isNullMarked
                     );
                 }
+                return NullabilityUtils.Nullability.UNKNOWN;
+            }
+            // Direct parameter mapping: no property entries, the source is the parameter itself.
+            // Use the mapper type for @NullMarked scope resolution since the parameter is declared there.
+            Parameter parameter = sourceReference.getParameter();
+            if ( parameter != null && parameter.getElement() != null ) {
+                return NullabilityUtils.getNullability(
+                    parameter.getElement(),
+                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
+                );
             }
             return NullabilityUtils.Nullability.UNKNOWN;
+        }
+
+        /**
+         * Resolves whether the type that declares the target write accessor (i.e. the bean that
+         * owns the setter or field) is in a JSpecify {@code @NullMarked} scope. This is the correct
+         * scope for deciding whether an unannotated setter parameter or field should be treated as
+         * {@code @NonNull} — walking from the property value type (e.g. {@code String}) does not
+         * reach the bean's declaration.
+         */
+        private boolean targetDeclaringTypeIsNullMarked() {
+            Element targetElement = targetWriteAccessor.getElement();
+            if ( targetElement == null ) {
+                return false;
+            }
+            Element declaring = targetElement.getEnclosingElement();
+            if ( !( declaring instanceof TypeElement ) ) {
+                return false;
+            }
+            return ctx.getTypeFactory().getType( declaring.asType() ).isNullMarked();
         }
 
         private boolean hasDefaultValueOrDefaultExpression() {

@@ -67,4 +67,44 @@ public class JSpecifyConstructorTest {
         })
     public void nullableSourceToNonNullConstructorParamShouldFail() {
     }
+
+    @ProcessorTest
+    @WithClasses(JSpecifyDirectParamConstructorMapper.class)
+    public void nonNullDirectParameterToNonNullConstructorParamCompiles() {
+        // A @NonNull method parameter (source has no property entries — it IS the parameter)
+        // must be accepted by a @NonNull constructor parameter without triggering the
+        // "potentially nullable source" error.
+        ConstructorTargetBean target = JSpecifyDirectParamConstructorMapper.INSTANCE.map(
+            "nn", "nullable", "plain" );
+
+        assertThat( target.getNonNullParam() ).isEqualTo( "nn" );
+        assertThat( target.getNullableParam() ).isEqualTo( "nullable" );
+        assertThat( target.getUnannotatedParam() ).isEqualTo( "plain" );
+    }
+
+    @ProcessorTest
+    @WithClasses(ErroneousJSpecifyDirectParamConstructorMapper.class)
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousJSpecifyDirectParamConstructorMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                message = "Can't map potentially nullable source property \"nullableValue\" to @NonNull " +
+                    "constructor parameter \"nonNullParam\". Consider adding a defaultValue or " +
+                    "defaultExpression.")
+        })
+    public void nullableDirectParameterToNonNullConstructorParamShouldFail() {
+    }
+
+    @ProcessorTest
+    @WithClasses(JSpecifyConstructorDefaultValueMapper.class)
+    public void defaultValueSuppressesNullableToNonNullConstructorParamError() {
+        SourceBean source = new SourceBean();
+        source.setNonNullValue( "present" );
+        // nullableValue left null on purpose — defaultValue "fallback" should kick in.
+
+        ConstructorTargetBean target = JSpecifyConstructorDefaultValueMapper.INSTANCE.map( source );
+
+        assertThat( target.getNonNullParam() ).isEqualTo( "fallback" );
+        assertThat( target.getUnannotatedParam() ).isEqualTo( "present" );
+    }
 }
