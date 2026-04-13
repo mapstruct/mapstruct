@@ -275,9 +275,11 @@ public class PropertyMapping extends ModelElement {
                 assignment = forge();
             }
 
-            // JSpecify: report error when mapping @Nullable source to @NonNull constructor parameter
-            // without a default value. A null check would leave the variable at null, violating the
-            // @NonNull contract, and passing the value through is equally invalid.
+            // JSpecify: report error when a source that is not guaranteed @NonNull (either explicit
+            // @Nullable or unknown nullability outside a @NullMarked scope) is mapped to a @NonNull
+            // constructor parameter without a default value. A null check would leave the variable
+            // at null, violating the @NonNull contract, and passing the value through is equally
+            // invalid — defaultValue / defaultExpression are the supported remedies.
             if ( targetWriteAccessorType == AccessorType.PARAMETER && !hasDefaultValueOrDefaultExpression() ) {
                 NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
                 NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
@@ -529,6 +531,12 @@ public class PropertyMapping extends ModelElement {
             // JSpecify: source @NonNull means the value is guaranteed non-null, skip all checks
             NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
             if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                ctx.getMessager().note( 2,
+                    Message.PROPERTYMAPPING_JSPECIFY_NOTE,
+                    "skipping null check",
+                    targetPropertyName,
+                    "source is @NonNull"
+                );
                 return false;
             }
 
@@ -563,6 +571,12 @@ public class PropertyMapping extends ModelElement {
             );
             Boolean jspecifyDecision = NullabilityUtils.requiresNullCheck( sourceNullability, targetNullability );
             if ( jspecifyDecision != null ) {
+                ctx.getMessager().note( 2,
+                    Message.PROPERTYMAPPING_JSPECIFY_NOTE,
+                    jspecifyDecision ? "adding null check" : "skipping null check",
+                    targetPropertyName,
+                    "source=" + sourceNullability + ", target=" + targetNullability
+                );
                 return jspecifyDecision;
             }
 

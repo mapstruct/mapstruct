@@ -103,6 +103,22 @@ public class JSpecifyNullMarkedTest {
 
     @ProcessorTest
     @WithClasses({
+        SourceBean.class,
+        TargetBean.class,
+        JSpecifyNullUnmarkedMethodMapper.class
+    })
+    public void nullUnmarkedOnMethodReversesEnclosingNullMarkedScope() {
+        // The mapper interface is @NullMarked but the method is @NullUnmarked. The source
+        // parameter is unannotated: with method-level scope, its nullability must be UNKNOWN
+        // (not promoted), so the method-level null guard is generated. Passing null must
+        // return null rather than NPE.
+        TargetBean target = JSpecifyNullUnmarkedMethodMapper.INSTANCE.map( null );
+
+        assertThat( target ).isNull();
+    }
+
+    @ProcessorTest
+    @WithClasses({
         NullUnmarkedSourceBean.class,
         TargetBean.class,
         JSpecifyNullUnmarkedMapper.class

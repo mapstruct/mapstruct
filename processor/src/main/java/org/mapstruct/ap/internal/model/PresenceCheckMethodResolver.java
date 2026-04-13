@@ -102,6 +102,12 @@ public final class PresenceCheckMethodResolver {
                     sourceParameter.getElement(),
                     () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() )
                     == NullabilityUtils.Nullability.NON_NULL ) {
+                    ctx.getMessager().note( 2,
+                        Message.PROPERTYMAPPING_JSPECIFY_NOTE,
+                        "skipping method-level null guard",
+                        sourceParameter.getName(),
+                        "parameter is @NonNull"
+                    );
                     return null;
                 }
                 return new NullPresenceCheck( sourceParameter.getName() );

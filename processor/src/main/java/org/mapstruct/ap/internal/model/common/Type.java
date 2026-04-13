@@ -328,10 +328,14 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Whether this type is within a JSpecify {@code @NullMarked} scope.
-     * The result is computed once and cached.
+     * Whether this type is within a JSpecify {@code @NullMarked} scope. Walks the enclosing-element
+     * chain (type, enclosing classes, package, module) and returns at the first annotation found:
+     * {@code @NullMarked} wins over nothing, but a closer {@code @NullUnmarked} overrides an outer
+     * {@code @NullMarked}. The result is cached on this {@code Type} instance (which is interned by
+     * {@code TypeFactory}), so repeated calls are {@code O(1)}.
      *
-     * @return {@code true} if this type or an enclosing element has {@code @NullMarked}
+     * @return {@code true} if this type or an enclosing element has {@code @NullMarked} and no
+     * closer enclosing element has {@code @NullUnmarked}; {@code false} otherwise
      */
     public boolean isNullMarked() {
         if ( isNullMarked == null ) {
@@ -347,8 +351,13 @@ public class Type extends ModelElement implements Comparable<Type> {
         Element current = typeElement;
         while ( current != null ) {
             for ( AnnotationMirror mirror : current.getAnnotationMirrors() ) {
-                String fqn = ( (TypeElement) mirror.getAnnotationType().asElement() )
-                    .getQualifiedName().toString();
+                Element annotationElement = mirror.getAnnotationType().asElement();
+                if ( !( annotationElement instanceof TypeElement ) ) {
+                    // Defensive: unresolved annotations (e.g. ErrorType during incremental
+                    // builds) can produce a non-TypeElement. Skip instead of crashing.
+                    continue;
+                }
+                String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
                 if ( JSpecifyConstants.NULL_MARKED_FQN.equals( fqn ) ) {
                     return true;
                 }
