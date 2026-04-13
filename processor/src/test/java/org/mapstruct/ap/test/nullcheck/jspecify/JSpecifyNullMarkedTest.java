@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @IssueKey("1243")
 @WithJSpecify
-public class JSpecifyNullMarkedTest {
+class JSpecifyNullMarkedTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

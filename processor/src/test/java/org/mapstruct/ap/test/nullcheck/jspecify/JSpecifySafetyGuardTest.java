@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     JSpecifySafetyGuardMapper.class
 })
 @WithJSpecify
-public class JSpecifySafetyGuardTest {
+class JSpecifySafetyGuardTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

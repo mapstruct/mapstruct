@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     JSpecifyUpdateMapper.class
 })
 @WithJSpecify
-public class JSpecifyUpdateTest {
+class JSpecifyUpdateTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

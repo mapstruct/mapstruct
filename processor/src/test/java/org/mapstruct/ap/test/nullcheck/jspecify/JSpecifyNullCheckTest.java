@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
     TargetBean.class
 })
 @WithJSpecify
-public class JSpecifyNullCheckTest {
+class JSpecifyNullCheckTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

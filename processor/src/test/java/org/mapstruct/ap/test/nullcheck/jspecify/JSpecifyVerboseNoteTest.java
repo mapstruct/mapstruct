@@ -21,7 +21,7 @@ import org.mapstruct.ap.testutil.runner.Compiler;
  */
 @IssueKey("1243")
 @WithJSpecify
-public class JSpecifyVerboseNoteTest {
+class JSpecifyVerboseNoteTest {
 
     @ProcessorTest(Compiler.JDK)
     @ProcessorOption(name = "mapstruct.verbose", value = "true")

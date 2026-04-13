@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     ConstructorTargetBean.class
 })
 @WithJSpecify
-public class JSpecifyConstructorTest {
+class JSpecifyConstructorTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     JSpecifyNestedMapper.class
 })
 @WithJSpecify
-public class JSpecifyNestedTest {
+class JSpecifyNestedTest {
 
     @RegisterExtension
     final GeneratedSource generatedSource = new GeneratedSource();
