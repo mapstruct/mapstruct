@@ -96,6 +96,20 @@ class JSpecifyConstructorTest {
     }
 
     @ProcessorTest
+    @WithClasses({ AddressBean.class, UnmappableConstructorTargetBean.class, ErroneousJSpecifyUnforgeableMapper.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousJSpecifyUnforgeableMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                message = "Can't map property \"String nullableValue\" to \"AddressBean payload\". " +
+                    "Consider to declare/implement a mapping method: \"AddressBean map(String value)\".")
+        })
+    public void failedAssignmentDoesNotAlsoTriggerNullableToNonNullConstructorParamError() {
+        // The JSpecify @NonNull constructor-param error must not fire when the assignment
+        // itself could not be resolved; otherwise users see two errors for one underlying issue.
+    }
+
+    @ProcessorTest
     @WithClasses(JSpecifyConstructorDefaultValueMapper.class)
     public void defaultValueSuppressesNullableToNonNullConstructorParamError() {
         SourceBean source = new SourceBean();

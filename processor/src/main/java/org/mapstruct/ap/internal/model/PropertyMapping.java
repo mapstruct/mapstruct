@@ -280,7 +280,11 @@ public class PropertyMapping extends ModelElement {
             // constructor parameter without a default value. A null check would leave the variable
             // at null, violating the @NonNull contract, and passing the value through is equally
             // invalid — defaultValue / defaultExpression are the supported remedies.
-            if ( targetWriteAccessorType == AccessorType.PARAMETER && !hasDefaultValueOrDefaultExpression() ) {
+            // Skip when assignment resolution already failed: the user sees the primary
+            // "can't find mapping" error and a duplicate would only obscure the root cause.
+            if ( assignment != null
+                && targetWriteAccessorType == AccessorType.PARAMETER
+                && !hasDefaultValueOrDefaultExpression() ) {
                 NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
                 NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
                     targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
