@@ -24,14 +24,14 @@ public final class JSpecifyConstants {
 
     /**
      * Fully qualified name of {@code org.jspecify.annotations.NullMarked}. Its presence on an
-     * element (or any enclosing element) means unannotated types in that scope are effectively
-     * {@code @NonNull}.
+     * element (or an enclosing element closer than any {@code @NullUnmarked} one) means unannotated
+     * types in that scope are effectively {@code @NonNull}.
      */
     public static final String NULL_MARKED_FQN = "org.jspecify.annotations.NullMarked";
 
     /**
      * Fully qualified name of {@code org.jspecify.annotations.NullUnmarked}. Its presence on an
-     * element (or an enclosing element closer than a {@code @NullMarked} one) reverts the scope
+     * element (or an enclosing element closer than any {@code @NullMarked} one) reverts the scope
      * back to unknown nullability.
      */
     public static final String NULL_UNMARKED_FQN = "org.jspecify.annotations.NullUnmarked";

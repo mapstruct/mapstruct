@@ -275,11 +275,12 @@ public class PropertyMapping extends ModelElement {
                 assignment = forge();
             }
 
-            // JSpecify: report error when a source that is not guaranteed @NonNull (either explicit
-            // @Nullable or unknown nullability outside a @NullMarked scope) is mapped to a @NonNull
-            // constructor parameter without a default value. A null check would leave the variable
-            // at null, violating the @NonNull contract, and passing the value through is equally
-            // invalid — defaultValue / defaultExpression are the supported remedies.
+            // JSpecify: raise a hard compile error when a source that is not guaranteed @NonNull
+            // (either explicit @Nullable or unknown nullability outside a @NullMarked scope) is
+            // mapped to a @NonNull constructor parameter without a default value. Neither a null
+            // check (which would leave the variable null, violating the @NonNull contract) nor
+            // passing the value through is safe here — defaultValue / defaultExpression are the
+            // supported remedies.
             // Skip when assignment resolution already failed: the user sees the primary
             // "can't find mapping" error and a duplicate would only obscure the root cause.
             if ( assignment != null
@@ -536,10 +537,8 @@ public class PropertyMapping extends ModelElement {
             NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
             if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
                 ctx.getMessager().note( 2,
-                    Message.PROPERTYMAPPING_JSPECIFY_NOTE,
-                    "skipping null check",
-                    targetPropertyName,
-                    "source is @NonNull"
+                    Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
+                    targetPropertyName
                 );
                 return false;
             }
@@ -576,10 +575,12 @@ public class PropertyMapping extends ModelElement {
             Boolean jspecifyDecision = NullabilityUtils.requiresNullCheck( sourceNullability, targetNullability );
             if ( jspecifyDecision != null ) {
                 ctx.getMessager().note( 2,
-                    Message.PROPERTYMAPPING_JSPECIFY_NOTE,
-                    jspecifyDecision ? "adding null check" : "skipping null check",
+                    jspecifyDecision
+                        ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                        : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
                     targetPropertyName,
-                    "source=" + sourceNullability + ", target=" + targetNullability
+                    sourceNullability,
+                    targetNullability
                 );
                 return jspecifyDecision;
             }

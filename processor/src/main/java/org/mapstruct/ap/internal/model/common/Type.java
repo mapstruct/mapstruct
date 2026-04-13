@@ -329,13 +329,17 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Whether this type is within a JSpecify {@code @NullMarked} scope. Walks the enclosing-element
-     * chain (type, enclosing classes, package, module) and returns at the first annotation found:
-     * {@code @NullMarked} wins over nothing, but a closer {@code @NullUnmarked} overrides an outer
-     * {@code @NullMarked}. The result is cached on this {@code Type} instance (which is interned by
-     * {@code TypeFactory}), so repeated calls are {@code O(1)}.
+     * chain (this type, outer classes, package) and returns at the first {@code @NullMarked} or
+     * {@code @NullUnmarked} encountered &mdash; the closest annotation wins. Module-level annotations
+     * are only reached when the compiler populates {@code PackageElement.getEnclosingElement()}
+     * with a {@link javax.lang.model.element.ModuleElement} (JPMS only).
+     * <p>
+     * The result is memoized on this {@code Type} instance. {@link TypeFactory#getType} does not
+     * intern {@code Type} instances, so callers that invoke this repeatedly should cache the
+     * {@code Type} reference or the result.
      *
-     * @return {@code true} if this type or an enclosing element has {@code @NullMarked} and no
-     * closer enclosing element has {@code @NullUnmarked}; {@code false} otherwise
+     * @return {@code true} if the closest enclosing annotation is {@code @NullMarked};
+     * {@code false} if it is {@code @NullUnmarked} or if no such annotation was found
      */
     public boolean isNullMarked() {
         if ( isNullMarked == null ) {

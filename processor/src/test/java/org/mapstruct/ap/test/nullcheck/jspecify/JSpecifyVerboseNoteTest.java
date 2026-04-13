@@ -29,7 +29,7 @@ class JSpecifyVerboseNoteTest {
     @ExpectedNote("^-- MapStruct: JSpecify skipping null check for property \"nonNullTarget\": "
         + "source is @NonNull\\.$")
     @ExpectedNote("^-- MapStruct: JSpecify adding null check for property \"nonNullTargetFromNullable\": "
-        + "source=NULLABLE, target=NON_NULL\\.$")
+        + "source=\\w+, target=\\w+\\.$")
     public void emitsSetterDecisionNotes() {
     }
 

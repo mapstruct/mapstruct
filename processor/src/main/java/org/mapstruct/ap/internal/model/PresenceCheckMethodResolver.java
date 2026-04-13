@@ -103,10 +103,8 @@ public final class PresenceCheckMethodResolver {
                     () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() )
                     == NullabilityUtils.Nullability.NON_NULL ) {
                     ctx.getMessager().note( 2,
-                        Message.PROPERTYMAPPING_JSPECIFY_NOTE,
-                        "skipping method-level null guard",
-                        sourceParameter.getName(),
-                        "parameter is @NonNull"
+                        Message.PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM,
+                        sourceParameter.getName()
                     );
                     return null;
                 }
