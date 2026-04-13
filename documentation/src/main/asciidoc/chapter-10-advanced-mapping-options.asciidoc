@@ -299,6 +299,40 @@ The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always 
 
 The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MapperConfig#nullValueCheckStrategy`.
 
+[[jspecify-nullness-annotations]]
+=== JSpecify nullness annotations
+
+MapStruct recognises https://jspecify.dev/[JSpecify] nullness annotations on source and target types and uses them to refine when null checks are generated. Only the annotations from `org.jspecify.annotations` are interpreted; MapStruct does not introduce a compile-time dependency on JSpecify, so consumers opt in by adding the dependency themselves.
+
+The following annotations participate:
+
+* `@NonNull`: the annotated value is guaranteed not to be `null`.
+* `@Nullable`: the annotated value may be `null`.
+* `@NullMarked`: within this scope (package, class, or method), unannotated reference types are treated as `@NonNull`.
+* `@NullUnmarked`: reverts to unknown nullability within its scope (overrides a `@NullMarked` outer scope).
+
+==== Property-level rules
+
+For a single property mapping:
+
+* If the source is `@NonNull`, the null check is skipped, since the value is treated as guaranteed non-null.
+* If the target is `@NonNull` (and the source is not `@NonNull`), a null check is always added so the target's contract is not violated.
+* In all other cases, the existing `NullValueCheckStrategy` decides.
+
+The existing safety guards (`defaultValue` / `defaultExpression`, primitive unboxing, and the relevant `NullValuePropertyMappingStrategy` modes) continue to apply.
+
+==== Scope: `@NullMarked` and `@NullUnmarked`
+
+`@NullMarked` and `@NullUnmarked` are resolved by walking from the annotated element outward: method, then declaring class, then outer classes, then package. The closest annotation wins: a `@NullUnmarked` method inside a `@NullMarked` class reverts only that method, while a `@Nullable` annotation on an individual type always overrides the surrounding scope.
+
+==== Method-level source parameter
+
+When the source parameter of a mapping method is annotated `@NonNull` (directly or via a `@NullMarked` scope), MapStruct skips the method-level null guard, since the caller is contractually obliged to pass a non-null value.
+
+==== Constructor parameter constraint
+
+If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
+
 [[source-presence-check]]
 === Source presence checking
 Some frameworks generate bean properties that have a source presence checker. Often this is in the form of a method `hasXYZ`, `XYZ` being a property on the source bean in a bean mapping method. MapStruct will call this `hasXYZ` instead of performing a `null` check when it finds such `hasXYZ` method.
