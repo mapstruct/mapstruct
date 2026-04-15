@@ -61,7 +61,7 @@
                                 <annotationProcessorPath>
                                     <groupId>org.projectlombok</groupId>
                                     <artifactId>lombok</artifactId>
-                                    <version>1.18.22</version>
+                                    <version>1.18.38</version>
                                 </annotationProcessorPath>
                                 <annotationProcessorPath>
                                     <groupId>org.projectlombok</groupId>
