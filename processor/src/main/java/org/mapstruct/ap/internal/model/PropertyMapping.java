@@ -597,21 +597,29 @@ public class PropertyMapping extends ModelElement {
             if ( sourceReference == null ) {
                 return NullabilityUtils.Nullability.UNKNOWN;
             }
-            if ( !sourceReference.getPropertyEntries().isEmpty() ) {
-                PropertyEntry deepestProperty = sourceReference.getDeepestProperty();
-                if ( deepestProperty != null && deepestProperty.getReadAccessor() != null ) {
-                    // Determine the enclosing type for @NullMarked scope lookup.
-                    // For simple properties (a.b), the enclosing type is the source parameter type.
-                    // For nested properties (a.b.c), the enclosing type is the parent entry's type.
-                    List<PropertyEntry> entries = sourceReference.getPropertyEntries();
-                    Type enclosingType = entries.size() > 1
-                        ? entries.get( entries.size() - 2 ).getType()
-                        : sourceReference.getParameter().getType();
-                    return NullabilityUtils.getNullability(
-                        deepestProperty.getReadAccessor().getElement(), enclosingType::isNullMarked
+            List<PropertyEntry> entries = sourceReference.getPropertyEntries();
+            if ( !entries.isEmpty() ) {
+                // A source chain can only be treated as @NonNull when every accessor along the
+                // chain is @NonNull. If any intermediate accessor is @Nullable, the chain may
+                // yield null even when the deepest accessor is @NonNull.
+                Type enclosingType = sourceReference.getParameter().getType();
+                NullabilityUtils.Nullability chain = NullabilityUtils.Nullability.NON_NULL;
+                for ( PropertyEntry entry : entries ) {
+                    if ( entry.getReadAccessor() == null ) {
+                        return NullabilityUtils.Nullability.UNKNOWN;
+                    }
+                    NullabilityUtils.Nullability current = NullabilityUtils.getNullability(
+                        entry.getReadAccessor().getElement(), enclosingType::isNullMarked
                     );
+                    if ( current == NullabilityUtils.Nullability.NULLABLE ) {
+                        return NullabilityUtils.Nullability.NULLABLE;
+                    }
+                    if ( current == NullabilityUtils.Nullability.UNKNOWN ) {
+                        chain = NullabilityUtils.Nullability.UNKNOWN;
+                    }
+                    enclosingType = entry.getType();
                 }
-                return NullabilityUtils.Nullability.UNKNOWN;
+                return chain;
             }
             // Direct parameter mapping: no property entries, the source is the parameter itself.
             // Use the mapper type for @NullMarked scope resolution since the parameter is declared there.

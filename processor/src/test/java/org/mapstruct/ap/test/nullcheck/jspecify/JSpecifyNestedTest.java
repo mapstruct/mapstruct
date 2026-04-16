@@ -64,4 +64,20 @@ class JSpecifyNestedTest {
         // city: source @Nullable -> target @NonNull -> null check -> setter not called
         assertThat( target.isCitySet() ).isFalse();
     }
+
+    @ProcessorTest
+    @WithClasses(JSpecifyNullableIntermediateMapper.class)
+    public void nullableIntermediateMustNotSkipNullCheckOnNonNullLeaf() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyNullableIntermediateMapper.class );
+
+        // nullableAddress is @Nullable; its street is @NonNull; target setter is @NonNull.
+        // When the intermediate is null, the whole source chain yields null and the @NonNull
+        // target setter must NOT be invoked.
+        NestedSourceBean source = new NestedSourceBean();
+        // nullableAddress stays null
+
+        FlatTargetBean target = JSpecifyNullableIntermediateMapper.INSTANCE.map( source );
+
+        assertThat( target.isStreetSet() ).isFalse();
+    }
 }
