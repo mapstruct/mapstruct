@@ -51,7 +51,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
-import org.mapstruct.ap.internal.util.NullabilityUtils;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -286,12 +286,12 @@ public class PropertyMapping extends ModelElement {
             if ( assignment != null
                 && targetWriteAccessorType == AccessorType.PARAMETER
                 && !hasDefaultValueOrDefaultExpression() ) {
-                NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
-                NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
+                NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+                NullabilityResolver.Nullability targetNullability = ctx.getNullabilityResolver().getSetterNullability(
                     targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
                 );
-                if ( sourceNullability != NullabilityUtils.Nullability.NON_NULL
-                    && targetNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                if ( sourceNullability != NullabilityResolver.Nullability.NON_NULL
+                    && targetNullability == NullabilityResolver.Nullability.NON_NULL ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         positionHint,
@@ -480,8 +480,8 @@ public class PropertyMapping extends ModelElement {
                 boolean includeSourceNullCheck = !rhs.isSourceReferenceParameter();
                 if ( includeSourceNullCheck ) {
                     // JSpecify: source @NonNull means no null check needed
-                    NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
-                    if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
+                    NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+                    if ( sourceNullability == NullabilityResolver.Nullability.NON_NULL ) {
                         includeSourceNullCheck = false;
                     }
                 }
@@ -534,8 +534,8 @@ public class PropertyMapping extends ModelElement {
             }
 
             // JSpecify: source @NonNull means the value is guaranteed non-null, skip all checks
-            NullabilityUtils.Nullability sourceNullability = getSourceJSpecifyNullability();
-            if ( sourceNullability == NullabilityUtils.Nullability.NON_NULL ) {
+            NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+            if ( sourceNullability == NullabilityResolver.Nullability.NON_NULL ) {
                 ctx.getMessager().note( 2,
                     Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
                     targetPropertyName
@@ -569,10 +569,11 @@ public class PropertyMapping extends ModelElement {
             }
 
             // JSpecify annotations take precedence over NullValueCheckStrategy
-            NullabilityUtils.Nullability targetNullability = NullabilityUtils.getSetterNullability(
+            NullabilityResolver resolver = ctx.getNullabilityResolver();
+            NullabilityResolver.Nullability targetNullability = resolver.getSetterNullability(
                 targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
             );
-            Boolean jspecifyDecision = NullabilityUtils.requiresNullCheck( sourceNullability, targetNullability );
+            Boolean jspecifyDecision = resolver.requiresNullCheck( sourceNullability, targetNullability );
             if ( jspecifyDecision != null ) {
                 ctx.getMessager().note( 2,
                     jspecifyDecision
@@ -593,9 +594,9 @@ public class PropertyMapping extends ModelElement {
             return false;
         }
 
-        private NullabilityUtils.Nullability getSourceJSpecifyNullability() {
+        private NullabilityResolver.Nullability getSourceJSpecifyNullability() {
             if ( sourceReference == null ) {
-                return NullabilityUtils.Nullability.UNKNOWN;
+                return NullabilityResolver.Nullability.UNKNOWN;
             }
             List<PropertyEntry> entries = sourceReference.getPropertyEntries();
             if ( !entries.isEmpty() ) {
@@ -603,19 +604,19 @@ public class PropertyMapping extends ModelElement {
                 // chain is @NonNull. If any intermediate accessor is @Nullable, the chain may
                 // yield null even when the deepest accessor is @NonNull.
                 Type enclosingType = sourceReference.getParameter().getType();
-                NullabilityUtils.Nullability chain = NullabilityUtils.Nullability.NON_NULL;
+                NullabilityResolver.Nullability chain = NullabilityResolver.Nullability.NON_NULL;
                 for ( PropertyEntry entry : entries ) {
                     if ( entry.getReadAccessor() == null ) {
-                        return NullabilityUtils.Nullability.UNKNOWN;
+                        return NullabilityResolver.Nullability.UNKNOWN;
                     }
-                    NullabilityUtils.Nullability current = NullabilityUtils.getNullability(
+                    NullabilityResolver.Nullability current = ctx.getNullabilityResolver().getNullability(
                         entry.getReadAccessor().getElement(), enclosingType::isNullMarked
                     );
-                    if ( current == NullabilityUtils.Nullability.NULLABLE ) {
-                        return NullabilityUtils.Nullability.NULLABLE;
+                    if ( current == NullabilityResolver.Nullability.NULLABLE ) {
+                        return NullabilityResolver.Nullability.NULLABLE;
                     }
-                    if ( current == NullabilityUtils.Nullability.UNKNOWN ) {
-                        chain = NullabilityUtils.Nullability.UNKNOWN;
+                    if ( current == NullabilityResolver.Nullability.UNKNOWN ) {
+                        chain = NullabilityResolver.Nullability.UNKNOWN;
                     }
                     enclosingType = entry.getType();
                 }
@@ -625,12 +626,12 @@ public class PropertyMapping extends ModelElement {
             // Use the mapper type for @NullMarked scope resolution since the parameter is declared there.
             Parameter parameter = sourceReference.getParameter();
             if ( parameter != null && parameter.getElement() != null ) {
-                return NullabilityUtils.getNullability(
+                return ctx.getNullabilityResolver().getNullability(
                     parameter.getElement(),
                     () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
                 );
             }
-            return NullabilityUtils.Nullability.UNKNOWN;
+            return NullabilityResolver.Nullability.UNKNOWN;
         }
 
         /**

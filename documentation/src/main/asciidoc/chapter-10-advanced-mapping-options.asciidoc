@@ -333,6 +333,10 @@ When the source parameter of a mapping method is annotated `@NonNull` (directly 
 
 If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
 
+==== Disabling JSpecify support
+
+All JSpecify-driven inference can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) and the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised. Null-check generation falls back to the pre-JSpecify behavior driven by `NullValueCheckStrategy`. Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
+
 [[source-presence-check]]
 === Source presence checking
 Some frameworks generate bean properties that have a source presence checker. Often this is in the form of a method `hasXYZ`, `XYZ` being a property on the source bean in a bean mapping method. MapStruct will call this `hasXYZ` instead of performing a `null` check when it finds such `hasXYZ` method.

@@ -16,32 +16,44 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Utility for detecting JSpecify nullness annotations on elements and computing
- * whether a null check is required for a source-to-target property mapping.
+ * Resolver for JSpecify nullness annotations on elements, used to decide whether a null
+ * check is required for a source-to-target property mapping.
+ * <p>
+ * A single instance is created per annotation-processor run and carries the
+ * {@link #enabled} flag derived from the {@code mapstruct.disableJSpecify} option. When
+ * disabled, all public entry points short-circuit to {@link Nullability#UNKNOWN} /
+ * {@code null}, which causes downstream callers to fall back to the pre-JSpecify
+ * {@code NullValueCheckStrategy}-based behavior.
  *
  * @author Filip Hrisafov
  */
-public final class NullabilityUtils {
+public class NullabilityResolver {
 
     /**
-     * Represents the nullability state of a source or target element.
+     * Represents the effective nullability of a source or target element.
      */
     public enum Nullability {
         /**
-         * The element is annotated with {@code @NonNull}.
+         * The element is effectively non-null — either directly annotated {@code @NonNull},
+         * or within a {@code @NullMarked} scope without a closer {@code @NullUnmarked} or
+         * {@code @Nullable} override.
          */
         NON_NULL,
         /**
-         * The element is annotated with {@code @Nullable}.
+         * The element is explicitly annotated {@code @Nullable}.
          */
         NULLABLE,
         /**
-         * No JSpecify nullability annotation is present on the element.
+         * Nullability is unspecified — no annotation applies and the element is not within
+         * an applicable {@code @NullMarked} scope (or JSpecify support is disabled).
          */
         UNKNOWN
     }
 
-    private NullabilityUtils() {
+    private final boolean enabled;
+
+    public NullabilityResolver(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
@@ -52,9 +64,13 @@ public final class NullabilityUtils {
      * For setter parameters ({@link VariableElement}), this checks the parameter type's annotations.
      * For fields ({@link VariableElement}), this checks the field type's annotations.
      * <p>
-     * If no direct annotation is found, {@code enclosingTypeNullMarked} is consulted — when it
-     * returns {@code true}, unannotated types are effectively {@code @NonNull}. The supplier is
-     * invoked at most once, and only if no JSpecify annotation was found on the element or its type.
+     * If no direct annotation is found, the method walks the enclosing element chain looking
+     * for a method-level {@code @NullMarked} / {@code @NullUnmarked}. If nothing is found there
+     * either, {@code enclosingTypeNullMarked} is consulted — when it returns {@code true},
+     * unannotated types are effectively {@code @NonNull}. The supplier is invoked at most once.
+     * <p>
+     * When this resolver is disabled, {@link Nullability#UNKNOWN} is returned without any
+     * inspection — the supplier is not invoked.
      *
      * @param element                 the accessor element to inspect (getter method, setter parameter, or field);
      *                                may be {@code null} in which case {@link Nullability#UNKNOWN} is returned
@@ -62,8 +78,8 @@ public final class NullabilityUtils {
      *                                {@code @NullMarked} scope; must be non-{@code null}
      * @return the nullability state
      */
-    public static Nullability getNullability(Element element, BooleanSupplier enclosingTypeNullMarked) {
-        if ( element == null ) {
+    public Nullability getNullability(Element element, BooleanSupplier enclosingTypeNullMarked) {
+        if ( !enabled || element == null ) {
             return Nullability.UNKNOWN;
         }
 
@@ -111,6 +127,65 @@ public final class NullabilityUtils {
     }
 
     /**
+     * Determines the nullability of a write-accessor element — either a setter method or a field.
+     * <p>
+     * For setter methods ({@link ExecutableElement}) the nullability annotation lives on the
+     * parameter type, not on the method itself, so the first parameter's nullability is returned.
+     * For fields (or any other element type) the element's own type nullability is returned.
+     *
+     * @param element                 the write-accessor element (setter or field); may be
+     *                                {@code null} in which case {@link Nullability#UNKNOWN} is returned
+     * @param enclosingTypeNullMarked supplier for whether the enclosing bean type is in a
+     *                                {@code @NullMarked} scope; must be non-{@code null}
+     * @return the nullability state of the setter's parameter or of the field
+     */
+    public Nullability getSetterNullability(Element element, BooleanSupplier enclosingTypeNullMarked) {
+        if ( !enabled ) {
+            return Nullability.UNKNOWN;
+        }
+        if ( element instanceof ExecutableElement ) {
+            List<? extends VariableElement> parameters = ( (ExecutableElement) element ).getParameters();
+            if ( parameters.isEmpty() ) {
+                // A zero-parameter method is not a valid write accessor. Falling through to
+                // getNullability would inspect the return type, which is meaningless here.
+                return Nullability.UNKNOWN;
+            }
+            return getNullability( parameters.get( 0 ), enclosingTypeNullMarked );
+        }
+        // Field or other write accessor: consult the element's own type nullability.
+        return getNullability( element, enclosingTypeNullMarked );
+    }
+
+    /**
+     * Determines whether a null check is required for a property mapping based on JSpecify annotations
+     * on the source and target elements.
+     * <p>
+     * Only returns a non-null decision for the clear-cut cases:
+     * source {@code @NonNull} (skip check) or target {@code @NonNull} (always check).
+     * All other cases return {@code null} to defer to the existing {@code NullValueCheckStrategy}.
+     *
+     * @param sourceNullability the nullability of the source (getter return type / parameter)
+     * @param targetNullability the nullability of the target (setter parameter / field)
+     * @return {@code Boolean.TRUE} if a null check is needed, {@code Boolean.FALSE} if it should be skipped,
+     * or {@code null} if JSpecify annotations are not present and the existing strategy should be used
+     */
+    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability) {
+        if ( !enabled ) {
+            return null;
+        }
+        if ( sourceNullability == Nullability.NON_NULL ) {
+            // Source is guaranteed non-null, no null check needed
+            return Boolean.FALSE;
+        }
+        if ( targetNullability == Nullability.NON_NULL ) {
+            // Target requires non-null: always check (regardless of source annotation)
+            return Boolean.TRUE;
+        }
+        // All other cases: defer to existing NullValueCheckStrategy
+        return null;
+    }
+
+    /**
      * Walks from {@code element} up to (but not including) its declaring {@link TypeElement},
      * checking for {@code @NullMarked} / {@code @NullUnmarked} on intermediate elements
      * (e.g. the enclosing method of a parameter, or the element itself for a field / getter).
@@ -153,33 +228,6 @@ public final class NullabilityUtils {
         return null;
     }
 
-    /**
-     * Determines the nullability of a write-accessor element — either a setter method or a field.
-     * <p>
-     * For setter methods ({@link ExecutableElement}) the nullability annotation lives on the
-     * parameter type, not on the method itself, so the first parameter's nullability is returned.
-     * For fields (or any other element type) the element's own type nullability is returned.
-     *
-     * @param element                 the write-accessor element (setter or field); may be
-     *                                {@code null} in which case {@link Nullability#UNKNOWN} is returned
-     * @param enclosingTypeNullMarked supplier for whether the enclosing bean type is in a
-     *                                {@code @NullMarked} scope; must be non-{@code null}
-     * @return the nullability state of the setter's parameter or of the field
-     */
-    public static Nullability getSetterNullability(Element element, BooleanSupplier enclosingTypeNullMarked) {
-        if ( element instanceof ExecutableElement ) {
-            List<? extends VariableElement> parameters = ( (ExecutableElement) element ).getParameters();
-            if ( parameters.isEmpty() ) {
-                // A zero-parameter method is not a valid write accessor. Falling through to
-                // getNullability would inspect the return type, which is meaningless here.
-                return Nullability.UNKNOWN;
-            }
-            return getNullability( parameters.get( 0 ), enclosingTypeNullMarked );
-        }
-        // Field or other write accessor: consult the element's own type nullability.
-        return getNullability( element, enclosingTypeNullMarked );
-    }
-
     private static Nullability getNullabilityFromTypeMirror(TypeMirror typeMirror) {
         if ( typeMirror == null ) {
             return Nullability.UNKNOWN;
@@ -205,31 +253,5 @@ public final class NullabilityUtils {
             }
         }
         return Nullability.UNKNOWN;
-    }
-
-    /**
-     * Determines whether a null check is required for a property mapping based on JSpecify annotations
-     * on the source and target elements.
-     * <p>
-     * Only returns a non-null decision for the clear-cut cases:
-     * source {@code @NonNull} (skip check) or target {@code @NonNull} (always check).
-     * All other cases return {@code null} to defer to the existing {@code NullValueCheckStrategy}.
-     *
-     * @param sourceNullability the nullability of the source (getter return type / parameter)
-     * @param targetNullability the nullability of the target (setter parameter / field)
-     * @return {@code Boolean.TRUE} if a null check is needed, {@code Boolean.FALSE} if it should be skipped,
-     * or {@code null} if JSpecify annotations are not present and the existing strategy should be used
-     */
-    public static Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability) {
-        if ( sourceNullability == Nullability.NON_NULL ) {
-            // Source is guaranteed non-null, no null check needed
-            return Boolean.FALSE;
-        }
-        if ( targetNullability == Nullability.NON_NULL ) {
-            // Target requires non-null: always check (regardless of source annotation)
-            return Boolean.TRUE;
-        }
-        // All other cases: defer to existing NullValueCheckStrategy
-        return null;
     }
 }
