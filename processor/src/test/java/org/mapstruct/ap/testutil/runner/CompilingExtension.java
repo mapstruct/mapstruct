@@ -42,6 +42,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithKotlinSources;
+import org.mapstruct.ap.testutil.WithPackageInfo;
 import org.mapstruct.ap.testutil.WithProcessorDependency;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithTestDependency;
@@ -470,10 +471,10 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return String.format( "-A%s=%s", processorOption.name(), processorOption.value() );
     }
 
-    protected static Set<File> getSourceFiles(Collection<Class<?>> classes) {
-        Set<File> sourceFiles = new HashSet<>( classes.size() );
+    protected static Set<File> getSourceFiles(CompilationRequest compilationRequest) {
+        Set<File> sourceFiles = new HashSet<>();
 
-        for ( Class<?> clazz : classes ) {
+        for ( Class<?> clazz : compilationRequest.getSourceClasses() ) {
             sourceFiles.add(
                 new File(
                     SOURCE_DIR + File.separator + clazz.getName().replace( ".", File.separator )
@@ -482,7 +483,36 @@ abstract class CompilingExtension implements BeforeEachCallback {
             );
         }
 
+        for ( String packageName : compilationRequest.getPackageInfoPackages() ) {
+            sourceFiles.add(
+                new File(
+                    SOURCE_DIR + File.separator + packageName.replace( ".", File.separator )
+                        + File.separator + "package-info.java"
+                )
+            );
+        }
+
         return sourceFiles;
+    }
+
+    private Set<String> getPackageInfoPackages(Method testMethod, Class<?> testClass) {
+        Set<String> packages = new HashSet<>();
+
+        findAnnotation( testMethod, WithPackageInfo.class )
+            .ifPresent( annotation -> {
+                for ( Class<?> clazz : annotation.value() ) {
+                    packages.add( clazz.getPackage().getName() );
+                }
+            } );
+
+        findAnnotation( testClass, WithPackageInfo.class )
+            .ifPresent( annotation -> {
+                for ( Class<?> clazz : annotation.value() ) {
+                    packages.add( clazz.getPackage().getName() );
+                }
+            } );
+
+        return packages;
     }
 
     private Collection<String> getKotlinSources(ExtensionContext context) {
@@ -510,7 +540,8 @@ abstract class CompilingExtension implements BeforeEachCallback {
             getProcessorOptions( testMethod, testClass ),
             getAdditionalTestDependencies( testMethod, testClass ),
             getAdditionalProcessorDependencies( testMethod, testClass ),
-            getKotlinSources( context )
+            getKotlinSources( context ),
+            getPackageInfoPackages( testMethod, testClass )
         );
 
         ExtensionContext.Store rootStore = context.getRoot().getStore( NAMESPACE );

@@ -74,6 +74,10 @@ public class Options {
         return parseBoolean( MappingOption.DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR );
     }
 
+    public boolean isDisableJSpecify() {
+        return parseBoolean( MappingOption.DISABLE_JSPECIFY );
+    }
+
     private boolean parseBoolean(MappingOption option) {
         if ( options.isEmpty() ) {
             return false;

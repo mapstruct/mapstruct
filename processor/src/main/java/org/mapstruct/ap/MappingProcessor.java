@@ -159,6 +159,7 @@ public class MappingProcessor extends AbstractProcessor {
             processingEnv.getTypeUtils(),
             processingEnv.getMessager(),
             options.isDisableBuilders(),
+            options.isDisableJSpecify(),
             options.isVerbose(),
             resolveAdditionalOptions( processingEnv.getOptions() )
         );

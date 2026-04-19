@@ -266,6 +266,13 @@
                 <version>1.14.6</version>
             </dependency>
 
+            <!-- JSpecify -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+
             <!-- Joda-Time -->
             <dependency>
                 <groupId>joda-time</groupId>

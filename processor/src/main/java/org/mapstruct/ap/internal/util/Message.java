@@ -96,6 +96,11 @@ public enum Message {
     PROPERTYMAPPING_NO_SUITABLE_COLLECTION_OR_MAP_CONSTRUCTOR( "%s does not have an accessible copy or no-args constructor." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED( "Expression and condition qualified by name are both defined in @Mapping, either define an expression or a condition qualified by name." ),
     PROPERTYMAPPING_TARGET_HAS_NO_TARGET_PROPERTIES( "No target property found for target \"%s\".", Diagnostic.Kind.WARNING ),
+    PROPERTYMAPPING_NULLABLE_SOURCE_TO_NON_NULL_CONSTRUCTOR_PARAM( "Can't map potentially nullable source property \"%s\" to @NonNull constructor parameter \"%s\". Consider adding a defaultValue or defaultExpression." ),
+    PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE( "JSpecify skipping null check for property \"%s\": source is @NonNull.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK( "JSpecify adding null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK( "JSpecify skipping null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM( "JSpecify skipping method-level null guard for property \"%s\": parameter is @NonNull.", Diagnostic.Kind.NOTE ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),

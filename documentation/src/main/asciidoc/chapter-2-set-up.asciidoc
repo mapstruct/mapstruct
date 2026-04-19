@@ -268,6 +268,11 @@ disableBuilders`
 |If set to `true`, then MapStruct will not use builder patterns when doing the mapping. This is equivalent to doing `@Mapper( builder = @Builder( disableBuilder = true ) )` for all of your mappers.
 |`false`
 
+|`mapstruct.
+disableJSpecify`
+|If set to `true`, MapStruct ignores all JSpecify nullness annotations (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) when deciding whether to generate null checks and does not raise the compilation error for a nullable source mapped to a `@NonNull` constructor parameter. Null-check generation falls back to the `NullValueCheckStrategy`-driven behavior.
+|`false`
+
 |`mapstruct.nullValueIterableMappingStrategy`
 |The strategy to be applied when `null` is passed as a source value to an iterable mapping.
 

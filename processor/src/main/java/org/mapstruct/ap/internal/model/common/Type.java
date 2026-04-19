@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -56,6 +57,7 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.JSpecifyConstants;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
@@ -159,6 +161,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private Boolean isNullMarked;
     private KotlinMetadata kotlinMetadata;
     private boolean kotlinMetadataInitialized;
 
@@ -322,6 +325,53 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isString() {
         return String.class.getName().equals( getFullyQualifiedName() );
+    }
+
+    /**
+     * Whether this type is within a JSpecify {@code @NullMarked} scope. Walks the enclosing-element
+     * chain (this type, outer classes, package) and returns at the first {@code @NullMarked} or
+     * {@code @NullUnmarked} encountered &mdash; the closest annotation wins. Module-level annotations
+     * are only reached when the compiler populates {@code PackageElement.getEnclosingElement()}
+     * with a {@link javax.lang.model.element.ModuleElement} (JPMS only).
+     * <p>
+     * The result is memoized on this {@code Type} instance. {@link TypeFactory#getType} does not
+     * intern {@code Type} instances, so callers that invoke this repeatedly should cache the
+     * {@code Type} reference or the result.
+     *
+     * @return {@code true} if the closest enclosing annotation is {@code @NullMarked};
+     * {@code false} if it is {@code @NullUnmarked} or if no such annotation was found
+     */
+    public boolean isNullMarked() {
+        if ( isNullMarked == null ) {
+            isNullMarked = resolveNullMarked();
+        }
+        return isNullMarked;
+    }
+
+    private boolean resolveNullMarked() {
+        if ( typeElement == null ) {
+            return false;
+        }
+        Element current = typeElement;
+        while ( current != null ) {
+            for ( AnnotationMirror mirror : current.getAnnotationMirrors() ) {
+                Element annotationElement = mirror.getAnnotationType().asElement();
+                if ( !( annotationElement instanceof TypeElement ) ) {
+                    // Defensive: unresolved annotations (e.g. ErrorType during incremental
+                    // builds) can produce a non-TypeElement. Skip instead of crashing.
+                    continue;
+                }
+                String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
+                if ( JSpecifyConstants.NULL_MARKED_FQN.equals( fqn ) ) {
+                    return true;
+                }
+                if ( JSpecifyConstants.NULL_UNMARKED_FQN.equals( fqn ) ) {
+                    return false;
+                }
+            }
+            current = current.getEnclosingElement();
+        }
+        return false;
     }
 
     /**

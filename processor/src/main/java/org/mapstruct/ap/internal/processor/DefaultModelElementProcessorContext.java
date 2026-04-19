@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
@@ -44,6 +45,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final TypeUtils delegatingTypes;
     private final ElementUtils delegatingElements;
     private final AccessorNamingUtils accessorNaming;
+    private final NullabilityResolver nullabilityResolver;
     private final RoundContext roundContext;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
@@ -52,6 +54,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager(), options.isVerbose() );
         this.accessorNaming = roundContext.getAnnotationProcessorContext().getAccessorNaming();
+        this.nullabilityResolver = roundContext.getAnnotationProcessorContext().getNullabilityResolver();
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = TypeUtils.create( processingEnvironment, versionInformation );
         this.delegatingElements = ElementUtils.create( processingEnvironment, versionInformation, mapperElement );
@@ -96,6 +99,11 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     @Override
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    @Override
+    public NullabilityResolver getNullabilityResolver() {
+        return nullabilityResolver;
     }
 
     @Override

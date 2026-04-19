@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
@@ -53,6 +54,8 @@ public interface ModelElementProcessor<P, R> {
         FormattingMessager getMessager();
 
         AccessorNamingUtils getAccessorNaming();
+
+        NullabilityResolver getNullabilityResolver();
 
         Map<String, EnumTransformationStrategy> getEnumTransformationStrategies();
 

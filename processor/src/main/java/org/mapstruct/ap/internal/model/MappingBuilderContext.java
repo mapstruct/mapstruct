@@ -27,6 +27,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.version.VersionInformation;
@@ -111,6 +112,7 @@ public class MappingBuilderContext {
     private final FormattingMessager messager;
     private final VersionInformation versionInformation;
     private final AccessorNamingUtils accessorNaming;
+    private final NullabilityResolver nullabilityResolver;
     private final EnumMappingStrategy enumMappingStrategy;
     private final Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private final Options options;
@@ -129,6 +131,7 @@ public class MappingBuilderContext {
                           FormattingMessager messager,
                           VersionInformation versionInformation,
                           AccessorNamingUtils accessorNaming,
+                          NullabilityResolver nullabilityResolver,
                           EnumMappingStrategy enumMappingStrategy,
                           Map<String, EnumTransformationStrategy> enumTransformationStrategies,
                           Options options,
@@ -142,6 +145,7 @@ public class MappingBuilderContext {
         this.messager = messager;
         this.versionInformation = versionInformation;
         this.accessorNaming = accessorNaming;
+        this.nullabilityResolver = nullabilityResolver;
         this.enumMappingStrategy = enumMappingStrategy;
         this.enumTransformationStrategies = enumTransformationStrategies;
         this.options = options;
@@ -199,6 +203,10 @@ public class MappingBuilderContext {
 
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    public NullabilityResolver getNullabilityResolver() {
+        return nullabilityResolver;
     }
 
     public EnumMappingStrategy getEnumMappingStrategy() {

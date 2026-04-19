@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.presence.AnyPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 
@@ -73,9 +74,14 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
             String previousPropertyName = sourceParameter.getName();
             Type previousPropertyType = sourceParameter.getType();
+            boolean previousEntryIsNonNull = false;
             for ( int i = 0; i < propertyEntries.size(); i++ ) {
                 PropertyEntry propertyEntry = propertyEntries.get( i );
                 PresenceCheck presenceCheck;
+                boolean currentEntryIsNonNull = ctx.getNullabilityResolver().getNullability(
+                    propertyEntry.getReadAccessor().getElement(),
+                    previousPropertyType::isNullMarked
+                ) == NullabilityResolver.Nullability.NON_NULL;
 
                 if ( previousPropertyType.isOptionalType() ) {
                     String optionalValueSafeName = Strings.getSafeVariableName(
@@ -112,9 +118,10 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                 }
                 else {
                     presenceCheck = getPresenceCheck( propertyEntry, previousPropertyName );
-                    if ( i > 0 ) {
+                    if ( i > 0 && !previousEntryIsNonNull ) {
                         // If this is not the first property entry,
-                        // then we might need to combine the presence check with a null check of the previous property
+                        // then we need to combine the presence check with a null check of the previous property.
+                        // JSpecify: the null check is skipped when the previous accessor returns @NonNull.
                         if ( presenceCheck != null ) {
                             presenceCheck = new AnyPresenceChecksPresenceCheck( Arrays.asList(
                                 new NullPresenceCheck( previousPropertyName, true ),
@@ -140,6 +147,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                         propertyEntry.getReadAccessor() ) );
                 previousPropertyName = safeName;
                 previousPropertyType = propertyEntry.getType();
+                previousEntryIsNonNull = currentEntryIsNonNull;
             }
             method.addThrownTypes( thrownTypes );
             return new NestedPropertyMappingMethod( method, safePropertyEntries );
