@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.DefaultMapperReference" -->
-private final <@includeModel object=type/> ${variableName} = <#if singleton><@includeModel object=type/>.INSTANCE;<#else><#if annotatedMapper>Mappers.getMapper( <@includeModel object=type/>.class );<#else>new <@includeModel object=type/>();</#if></#if>
+private final <@includeModel object=type/> ${variableName}<#if constructorInjected>;<#else> = <#if singleton><@includeModel object=type/>.INSTANCE;<#else><#if annotatedMapper>Mappers.getMapper( <@includeModel object=type/>.class );<#else>new <@includeModel object=type/>();</#if></#if></#if>
