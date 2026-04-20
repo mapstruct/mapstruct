@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_UNMAPPED;
@@ -29,16 +30,18 @@ public class ValueMappingOptions {
 
     private final String source;
     private final String target;
+    private final SelectionParameters selectionParameters;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
     public static void fromMappingsGem(ValueMappingsGem mappingsGem, ExecutableElement method,
-                                       FormattingMessager messager, Set<ValueMappingOptions> mappings) {
+                                       FormattingMessager messager, Set<ValueMappingOptions> mappings,
+                                       TypeUtils typeUtils) {
 
         boolean anyFound = false;
         for ( ValueMappingGem mappingGem : mappingsGem.value().get() ) {
-            ValueMappingOptions mapping = fromMappingGem( mappingGem );
+            ValueMappingOptions mapping = fromMappingGem( mappingGem, typeUtils );
             if ( mapping != null ) {
 
                 if ( !mappings.contains( mapping ) ) {
@@ -70,10 +73,21 @@ public class ValueMappingOptions {
         }
     }
 
-    public static ValueMappingOptions fromMappingGem(ValueMappingGem mapping ) {
-
-        return new ValueMappingOptions( mapping.source().get(), mapping.target().get(), mapping.mirror(),
-            mapping.source().getAnnotationValue(), mapping.target().getAnnotationValue() );
+    public static ValueMappingOptions fromMappingGem(ValueMappingGem mapping, TypeUtils typeUtils) {
+        SelectionParameters selectionParameters = new SelectionParameters(
+            mapping.qualifiedBy().get(),
+            mapping.qualifiedByName().get(),
+            null,
+            typeUtils
+        );
+        return new ValueMappingOptions(
+            mapping.source().get(),
+            mapping.target().get(),
+            mapping.mirror(),
+            mapping.source().getAnnotationValue(),
+            mapping.target().getAnnotationValue(),
+            selectionParameters
+        );
     }
 
     private ValueMappingOptions(String source, String target, AnnotationMirror mirror,
@@ -83,6 +97,20 @@ public class ValueMappingOptions {
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
+        this.selectionParameters = null;
+    }
+
+    private ValueMappingOptions(String source, String target,
+                                AnnotationMirror mirror,
+                                AnnotationValue sourceAnnotationValue,
+                                AnnotationValue targetAnnotationValue,
+                                SelectionParameters selectionParameters) {
+        this.source = source;
+        this.target = target;
+        this.mirror = mirror;
+        this.sourceAnnotationValue = sourceAnnotationValue;
+        this.targetAnnotationValue = targetAnnotationValue;
+        this.selectionParameters = selectionParameters;
     }
 
     /**
@@ -125,6 +153,10 @@ public class ValueMappingOptions {
             result = null;
         }
         return result;
+    }
+
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
     }
 
     @Override
