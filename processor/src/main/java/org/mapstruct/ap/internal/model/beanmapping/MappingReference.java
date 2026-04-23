@@ -45,7 +45,7 @@ public class MappingReference {
     public MappingReference popTargetReference() {
         if ( targetReference != null ) {
             TargetReference newTargetReference = targetReference.pop();
-            if (newTargetReference != null ) {
+            if ( newTargetReference != null ) {
                 return new MappingReference(mapping, newTargetReference, sourceReference );
             }
         }
@@ -55,7 +55,7 @@ public class MappingReference {
     public MappingReference popSourceReference() {
         if ( sourceReference != null ) {
             SourceReference newSourceReference = sourceReference.pop();
-            if (newSourceReference != null ) {
+            if ( newSourceReference != null ) {
                 return new MappingReference(mapping, targetReference, newSourceReference );
             }
         }
@@ -76,7 +76,7 @@ public class MappingReference {
             return false;
         }
 
-        if (!Objects.equals( mapping.getTargetName(), that.mapping.getTargetName() ) ) {
+        if ( !Objects.equals( mapping.getTargetName(), that.mapping.getTargetName() ) ) {
             return false;
         }
 
@@ -97,7 +97,7 @@ public class MappingReference {
         }
 
 
-        if (!Objects.equals( sourceReference.getPropertyEntries(), that.sourceReference.getPropertyEntries() ) ) {
+        if ( !Objects.equals( sourceReference.getPropertyEntries(), that.sourceReference.getPropertyEntries() ) ) {
             return false;
         }
 

@@ -509,16 +509,16 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         return map;
     }
 
-    private DecimalFormat createDecimalFormatWithLocale( String numberFormat, Locale locale ) {
+    private DecimalFormat createDecimalFormat( String numberFormat ) {
 
-        DecimalFormat df = new DecimalFormat( numberFormat, DecimalFormatSymbols.getInstance( locale ) );
+        DecimalFormat df = new DecimalFormat( numberFormat );
         df.setParseBigDecimal( true );
         return df;
     }
 
-    private DecimalFormat createDecimalFormat( String numberFormat ) {
+    private DecimalFormat createDecimalFormatWithLocale( String numberFormat, Locale locale ) {
 
-        DecimalFormat df = new DecimalFormat( numberFormat );
+        DecimalFormat df = new DecimalFormat( numberFormat, DecimalFormatSymbols.getInstance( locale ) );
         df.setParseBigDecimal( true );
         return df;
     }

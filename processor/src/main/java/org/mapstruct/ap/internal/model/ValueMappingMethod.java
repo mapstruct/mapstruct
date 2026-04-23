@@ -184,8 +184,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
-            boolean targetErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            boolean sourceErrorOccurred = reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean targetErrorOccurred = reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             if ( sourceErrorOccurred || targetErrorOccurred ) {
                 return mappings;
             }
@@ -268,8 +268,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
-            boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
+            boolean sourceErrorOccurred = reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean anyRemainingUsedError = reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
             if ( sourceErrorOccurred || anyRemainingUsedError ) {
                 return mappings;
             }
@@ -298,7 +298,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            boolean sourceErrorOccurred = reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             reportWarningIfAnyRemainingOrAnyUnMappedMissing( method );
             if ( sourceErrorOccurred ) {
                 return mappings;
@@ -372,7 +372,7 @@ public class ValueMappingMethod extends MappingMethod {
                     foundIncorrectMapping = true;
                 }
             }
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private boolean reportErrorIfSourceEnumConstantsContainsAnyRemaining(Method method) {
@@ -388,7 +388,7 @@ public class ValueMappingMethod extends MappingMethod {
                 );
                 foundIncorrectMapping = true;
             }
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private void reportWarningIfAnyRemainingOrAnyUnMappedMissing(Method method) {
@@ -462,7 +462,7 @@ public class ValueMappingMethod extends MappingMethod {
                 );
             }
 
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private Type determineUnexpectedValueMappingException() {

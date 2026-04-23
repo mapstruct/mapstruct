@@ -152,15 +152,11 @@ public class TypeFactory {
         );
         implementationTypes.put(
             JavaCollectionConstants.SEQUENCED_SET_FQN,
-            sourceVersionAtLeast19 ?
-                withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME ) :
-                withLoadFactorAdjustment( getType( LinkedHashSet.class ) )
+            withFactoryMethod( getType( LinkedHashSet.class ), LINKED_HASH_SET_FACTORY_METHOD_NAME )
         );
         implementationTypes.put(
             JavaCollectionConstants.SEQUENCED_MAP_FQN,
-            sourceVersionAtLeast19 ?
-                withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME ) :
-                withLoadFactorAdjustment( getType( LinkedHashMap.class ) )
+            withFactoryMethod( getType( LinkedHashMap.class ), LINKED_HASH_MAP_FACTORY_METHOD_NAME )
         );
 
         this.loggingVerbose = loggingVerbose;
@@ -298,7 +294,7 @@ public class TypeFactory {
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
                 qualifiedName = componentTypeElement.getQualifiedName().toString() + arraySuffix;
             }
-            else if (componentTypeMirror.getKind().isPrimitive()) {
+            else if ( componentTypeMirror.getKind().isPrimitive() ) {
                 // When the component type is primitive and is annotated with ElementType.TYPE_USE then
                 // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
                 name = NativeTypes.getName( componentTypeMirror.getKind() ) + builder.toString();
@@ -501,7 +497,7 @@ public class TypeFactory {
     }
 
     public List<Type> getThrownTypes(Accessor accessor) {
-        if (accessor.getAccessorType().isFieldAssignment()) {
+        if ( accessor.getAccessorType().isFieldAssignment() ) {
             return new ArrayList<>();
         }
         Element element = accessor.getElement();
@@ -527,15 +523,12 @@ public class TypeFactory {
         }
 
         DeclaredType declaredType = (DeclaredType) mirror;
-        List<Type> typeParameters = new ArrayList<>( declaredType.getTypeArguments().size() );
+        List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+        List<Type> typeParameters = new ArrayList<>( typeArguments.size() );
 
-        for ( TypeMirror typeParameter : declaredType.getTypeArguments() ) {
-            if ( isImplementationType ) {
-                typeParameters.add( getType( typeParameter ).getTypeBound() );
-            }
-            else {
-                typeParameters.add( getType( typeParameter ) );
-            }
+        for ( TypeMirror typeParameter : typeArguments ) {
+            Type type = getType( typeParameter );
+            typeParameters.add( isImplementationType ? type.getTypeBound() : type );
         }
 
         return typeParameters;

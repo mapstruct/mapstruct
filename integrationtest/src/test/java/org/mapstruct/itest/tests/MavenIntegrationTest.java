@@ -5,6 +5,7 @@
  */
 package org.mapstruct.itest.tests;
 
+import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -82,14 +83,13 @@ public class MavenIntegrationTest {
 
     @ProcessorTest(baseDir = "jsr330Test")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    @DisabledOnJre(JRE.OTHER)
     void jsr330Test() {
     }
 
     @ProcessorTest(baseDir = "lombokBuilderTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void lombokBuilderTest() {
     }
 
@@ -98,7 +98,7 @@ public class MavenIntegrationTest {
         ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
     })
     @EnabledForJreRange(min = JRE.JAVA_11)
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void lombokModuleTest() {
     }
 
@@ -155,8 +155,15 @@ public class MavenIntegrationTest {
     }, forkJvm = true)
     // We have to fork the jvm because there is an NPE in com.intellij.openapi.util.SystemInfo.getRtVersion
     // and the kotlin-maven-plugin uses that. See also https://youtrack.jetbrains.com/issue/IDEA-238907
-    @DisabledOnJre(JRE.OTHER)
+    @DisabledOnJre(versions = 27)
     void kotlinDataTest() {
+    }
+
+    @ProcessorTest(baseDir = "kotlinFullFeatureTest", processorTypes = {
+        ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
+    }, commandLineEnhancer = KotlinFullFeatureCompilationExclusionCliEnhancer.class)
+    @DisabledForJreRange(min = JRE.JAVA_26)
+    void kotlinFullFeatureTest() {
     }
 
     @ProcessorTest(baseDir = "simpleTest")
@@ -170,7 +177,6 @@ public class MavenIntegrationTest {
 
     @ProcessorTest(baseDir = "springTest")
     @EnabledForJreRange(min = JRE.JAVA_17)
-    @DisabledOnJre(JRE.OTHER)
     void springTest() {
     }
 

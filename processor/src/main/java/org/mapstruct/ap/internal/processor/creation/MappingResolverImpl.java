@@ -5,14 +5,11 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.firstKey;
-import static org.mapstruct.ap.internal.util.Collections.firstValue;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,7 +17,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -67,6 +63,10 @@ import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.firstKey;
+import static org.mapstruct.ap.internal.util.Collections.firstValue;
+
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
  * implementation for the sake of avoiding package dependencies. Specifically, this implementation refers to classes
@@ -97,12 +97,12 @@ public class MappingResolverImpl implements MappingResolver {
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
      */
-    private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
+    private final Set<SupportingMappingMethod> usedSupportedMappings = new LinkedHashSet<>();
 
     /**
      * Private fields which are added to map certain property types.
      */
-    private final Set<Field> usedSupportedFields = new HashSet<>();
+    private final Set<Field> usedSupportedFields = new LinkedHashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -199,7 +199,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
-            this.supportingMethodCandidates = new HashSet<>();
+            this.supportingMethodCandidates = new LinkedHashSet<>();
             this.selectionCriteria = criteria;
             this.positionHint = positionHint;
             this.forger = forger;
@@ -213,7 +213,7 @@ public class MappingResolverImpl implements MappingResolver {
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
             for ( T candidate : candidateMethods ) {
-                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate )) {
+                if ( isCandidateForMapping( candidate ) && isNotSelfOrSelfAllowed( mappingMethod, candidate ) ) {
                     result.add( candidate );
                 }
             }
@@ -317,7 +317,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( hasQualfiers() ) {
-                if ((sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()) {
+                if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
                     // Allow forging iterable mapping when no iterable mapping already found
                     return forger.get();
                 }
@@ -449,7 +449,7 @@ public class MappingResolverImpl implements MappingResolver {
             Set<Field> allUsedFields = new HashSet<>( mapperReferences );
             SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
 
-            for ( FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx )) {
+            for ( FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx ) ) {
                 Field field = SupportingField.getSafeField( null, helperField, allUsedFields );
                 allUsedFields.add( field );
                 usedSupportedFields.add( field );
@@ -464,7 +464,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             Assignment conversion = conversionProvider.to( ctx );
             if ( conversion != null ) {
-                return new ConversionAssignment( sourceType, targetType, conversionProvider.to( ctx ) );
+                return new ConversionAssignment( sourceType, targetType, conversion );
             }
             return null;
         }
@@ -673,7 +673,16 @@ public class MappingResolverImpl implements MappingResolver {
 
         void reportMessageWhenNarrowing(FormattingMessager messager, ResolvingAttempt attempt) {
 
-            if ( NativeTypes.isNarrowing( sourceType.getFullyQualifiedName(), targetType.getFullyQualifiedName() ) ) {
+            Type source = sourceType;
+            if ( sourceType.isOptionalType() ) {
+                source = sourceType.getOptionalBaseType();
+            }
+
+            Type target = targetType;
+            if ( targetType.isOptionalType() ) {
+                target = targetType.getOptionalBaseType();
+            }
+            if ( NativeTypes.isNarrowing( source.getFullyQualifiedName(), target.getFullyQualifiedName() ) ) {
                 ReportingPolicyGem policy = attempt.mappingMethod.getOptions().getMapper().typeConversionPolicy();
                 if ( policy == ReportingPolicyGem.WARN ) {
                     report( messager, attempt, Message.CONVERSION_LOSSY_WARNING );

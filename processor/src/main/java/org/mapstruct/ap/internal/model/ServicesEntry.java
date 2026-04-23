@@ -12,6 +12,8 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * Represents a service entry for the service loader file.
+ *
  * @author Christophe Labouisse on 14/07/2015.
  */
 public class ServicesEntry extends ModelElement {

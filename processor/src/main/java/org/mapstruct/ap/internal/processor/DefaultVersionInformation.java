@@ -11,7 +11,6 @@ import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.SourceVersion;
 
@@ -41,6 +40,7 @@ public class DefaultVersionInformation implements VersionInformation {
     private final String runtimeVendor;
     private final String compiler;
     private final boolean sourceVersionAtLeast9;
+    private final boolean sourceVersionAtLeast11;
     private final boolean sourceVersionAtLeast19;
     private final boolean eclipseJDT;
     private final boolean javac;
@@ -54,6 +54,7 @@ public class DefaultVersionInformation implements VersionInformation {
         this.javac = compiler.startsWith( COMPILER_NAME_JAVAC );
         // If the difference between the source version and RELEASE_6 is more that 2 than we are at least on 9
         this.sourceVersionAtLeast9 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 2;
+        this.sourceVersionAtLeast11 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 4;
         this.sourceVersionAtLeast19 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 12;
     }
 
@@ -80,6 +81,11 @@ public class DefaultVersionInformation implements VersionInformation {
     @Override
     public boolean isSourceVersionAtLeast9() {
         return sourceVersionAtLeast9;
+    }
+
+    @Override
+    public boolean isSourceVersionAtLeast11() {
+        return sourceVersionAtLeast11;
     }
 
     @Override

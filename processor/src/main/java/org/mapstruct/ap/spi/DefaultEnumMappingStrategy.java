@@ -10,6 +10,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
+ * The default implementation of the {@link EnumMappingStrategy} service provider interface.
+ *
  * @author Filip Hrisafov
  *
  * @since 1.4

@@ -31,17 +31,17 @@
         <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
 
         <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
-        <org.apache.maven.plugins.enforcer.version>3.4.1</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>3.2.2</org.apache.maven.plugins.surefire.version>
-        <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
-        <org.springframework.version>6.2.7</org.springframework.version>
+        <org.apache.maven.plugins.enforcer.version>3.6.2</org.apache.maven.plugins.enforcer.version>
+        <org.apache.maven.plugins.surefire.version>3.5.4</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.javadoc.version>3.12.0</org.apache.maven.plugins.javadoc.version>
+        <org.springframework.version>7.0.3</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
-        <org.junit.jupiter.version>5.10.1</org.junit.jupiter.version>
+        <com.puppycrawl.tools.checkstyle.version>13.0.0</com.puppycrawl.tools.checkstyle.version>
+        <org.junit.jupiter.version>5.14.1</org.junit.jupiter.version>
         <junit-pioneer.version>2.2.0</junit-pioneer.version>
         <jreleaser.plugin.version>1.12.0</jreleaser.plugin.version>
         <forkCount>1</forkCount>
-        <assertj.version>3.24.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the gem tools processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
@@ -52,6 +52,7 @@
         <minimum.java.version>1.8</minimum.java.version>
         <protobuf.version>4.33.0</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
+        <kotlin.version>2.3.0</kotlin.version>
     </properties>
 
     <licenses>
@@ -118,7 +119,7 @@
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
-                <version>2.3.32</version>
+                <version>2.3.34</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -141,16 +142,23 @@
                 <version>${org.mapstruct.gem.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.puppycrawl.tools</groupId>
                 <artifactId>checkstyle</artifactId>
                 <version>${com.puppycrawl.tools.checkstyle.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-metadata-jvm</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -188,7 +196,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.6.0.Final</version>
+                <version>1.7.2.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -261,6 +269,13 @@
                 <groupId>org.inferred</groupId>
                 <artifactId>freebuilder</artifactId>
                 <version>1.14.6</version>
+            </dependency>
+
+            <!-- JSpecify -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
             </dependency>
 
             <!-- Joda-Time -->
@@ -363,12 +378,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>
@@ -400,22 +415,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.15.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.9.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
                     </configuration>
@@ -449,12 +464,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -469,17 +484,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.7.1</version>
+                    <version>3.21.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -493,12 +508,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>1.10.b1</version>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>4.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -571,7 +591,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.11</version>
+                    <version>0.8.14</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -596,7 +616,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.15.2</version>
+                    <version>0.25.4</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -636,39 +656,43 @@
 
         <plugins>
             <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
-                    <excludes>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/.mvn/**</exclude>
-                        <exclude>**/build-config/checkstyle.xml</exclude>
-                        <exclude>**/build-config/import-control.xml</exclude>
-                        <exclude>copyright.txt</exclude>
-                        <exclude>**/LICENSE.txt</exclude>
-                        <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/ci-settings.xml</exclude>
-                        <exclude>**/eclipse-formatter-config.xml</exclude>
-                        <exclude>**/forbidden-apis.txt</exclude>
-                        <exclude>**/checkstyle-for-generated-sources.xml</exclude>
-                        <exclude>**/nb-configuration.xml</exclude>
-                        <exclude>**/junit-platform.properties</exclude>
-                        <exclude>maven-settings.xml</exclude>
-                        <exclude>readme.md</exclude>
-                        <exclude>CONTRIBUTING.md</exclude>
-                        <exclude>NEXT_RELEASE_CHANGELOG.md</exclude>
-                        <exclude>.gitattributes</exclude>
-                        <exclude>.gitignore</exclude>
-                        <exclude>.factorypath</exclude>
-                        <exclude>.checkstyle</exclude>
-                        <exclude>*.yml</exclude>
-                        <exclude>mvnw*</exclude>
-                        <exclude>**/*.asciidoc</exclude>
-                        <exclude>**/binding.xjb</exclude>
-                        <exclude>**/*.flattened-pom.xml</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>${basedir}/../etc/license.txt</header>
+                            <excludes>
+                                <exclude>**/.idea/**</exclude>
+                                <exclude>**/.mvn/**</exclude>
+                                <exclude>**/build-config/checkstyle.xml</exclude>
+                                <exclude>**/build-config/import-control.xml</exclude>
+                                <exclude>copyright.txt</exclude>
+                                <exclude>**/LICENSE.txt</exclude>
+                                <exclude>**/mapstruct.xml</exclude>
+                                <exclude>**/ci-settings.xml</exclude>
+                                <exclude>**/eclipse-formatter-config.xml</exclude>
+                                <exclude>**/forbidden-apis.txt</exclude>
+                                <exclude>**/checkstyle-for-generated-sources.xml</exclude>
+                                <exclude>**/nb-configuration.xml</exclude>
+                                <exclude>**/junit-platform.properties</exclude>
+                                <exclude>maven-settings.xml</exclude>
+                                <exclude>readme.md</exclude>
+                                <exclude>CONTRIBUTING.md</exclude>
+                                <exclude>NEXT_RELEASE_CHANGELOG.md</exclude>
+                                <exclude>.gitattributes</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>.factorypath</exclude>
+                                <exclude>.checkstyle</exclude>
+                                <exclude>*.yml</exclude>
+                                <exclude>mvnw*</exclude>
+                                <exclude>**/*.asciidoc</exclude>
+                                <exclude>**/binding.xjb</exclude>
+                                <exclude>**/*.flattened-pom.xml</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
                         <proto>SLASHSTAR_STYLE</proto>
@@ -867,13 +891,10 @@
                                 </checksum>
                                 <deploy>
                                     <maven>
-                                        <nexus2>
-                                            <maven-central>
-                                                <active>ALWAYS</active>
-                                                <url>https://oss.sonatype.org/service/local</url>
-                                                <snapshotUrl>https://oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
-                                                <closeRepository>true</closeRepository>
-                                                <releaseRepository>true</releaseRepository>
+                                        <mavenCentral>
+                                            <sonatype>
+                                                <active>RELEASE</active>
+                                                <url>https://central.sonatype.com/api/v1/publisher</url>
                                                 <stagingRepositories>${maven.multiModuleProjectDirectory}/target/staging-deploy</stagingRepositories>
                                                 <artifactOverrides>
                                                     <artifactOverride>
@@ -883,8 +904,8 @@
                                                         <javadocJar>false</javadocJar>
                                                     </artifactOverride>
                                                 </artifactOverrides>
-                                            </maven-central>
-                                        </nexus2>
+                                            </sonatype>
+                                        </mavenCentral>
                                     </maven>
                                 </deploy>
                                 <release>
@@ -894,6 +915,11 @@
                                         <changelog>
                                             <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
                                         </changelog>
+                                        <!--
+                                            Let GitHub determine depending on the version
+                                            whether it is the latest version or not
+                                        -->
+                                        <makeLatest>legacy</makeLatest>
                                     </github>
                                 </release>
                                 <files>

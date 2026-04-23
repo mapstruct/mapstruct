@@ -35,10 +35,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <header>etc/license.txt</header>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>etc/license.txt</header>
+                        </licenseSet>
+                    </licenseSets>
                     <mapping>
                         <xjb>XML_STYLE</xjb>
                         <java>SLASHSTAR_STYLE</java>

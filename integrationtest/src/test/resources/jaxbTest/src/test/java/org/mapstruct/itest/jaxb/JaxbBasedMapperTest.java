@@ -5,32 +5,31 @@
  */
 package org.mapstruct.itest.jaxb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for generation of JAXB based mapper implementations.
  *
  * @author Sjaak Derksen
  */
-public class JaxbBasedMapperTest {
+class JaxbBasedMapperTest {
     @Test
-    public void shouldMapJaxb() throws ParseException, JAXBException {
+    void shouldMapJaxb() throws ParseException, JAXBException {
 
         SourceTargetMapper mapper = SourceTargetMapper.INSTANCE;
 
@@ -80,7 +79,7 @@ public class JaxbBasedMapperTest {
     }
 
     @Test
-    public void underscores() throws ParseException, JAXBException {
+    void underscores() throws ParseException, JAXBException {
 
         SourceTargetMapper mapper = SourceTargetMapper.INSTANCE;
 

@@ -23,6 +23,8 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
+ * Represents a condition configuration as configured via {@code @Condition}.
+ *
  * @author Filip Hrisafov
  */
 public class ConditionOptions {

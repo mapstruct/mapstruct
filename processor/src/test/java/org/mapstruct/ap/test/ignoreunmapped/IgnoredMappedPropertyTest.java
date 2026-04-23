@@ -5,13 +5,15 @@
  */
 package org.mapstruct.ap.test.ignoreunmapped;
 
+import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapper;
-import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnSourcePolicy;
-import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnPolicyInMapperConfig;
-import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnSourcePolicyInMapper;
-import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithoutBeanMapping;
 import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithIgnorePolicyInMapperConfig;
 import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithIgnoreSourcePolicy;
+import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnPolicyInMapperConfig;
+import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnSourcePolicy;
+import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithWarnSourcePolicyInMapper;
+import org.mapstruct.ap.test.ignoreunmapped.mapper.UserMapperWithoutBeanMapping;
 import org.mapstruct.ap.test.ignoreunmapped.mapper.erroneous.UserMapperWithErrorPolicyInMapperConfig;
 import org.mapstruct.ap.test.ignoreunmapped.mapper.erroneous.UserMapperWithErrorSourcePolicy;
 import org.mapstruct.ap.test.ignoreunmapped.mapper.erroneous.UserMapperWithErrorSourcePolicyInMapper;
@@ -22,8 +24,6 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-
-import javax.tools.Diagnostic.Kind;
 
 /**
  * Verifies that mapped properties listed in ignoreUnmappedSourceProperties trigger a warning.

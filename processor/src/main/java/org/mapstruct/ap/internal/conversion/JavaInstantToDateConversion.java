@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.util.Date;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
-
-import java.util.Date;
-import java.util.Set;
 
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.date;
 

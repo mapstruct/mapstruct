@@ -50,6 +50,8 @@ import org.mapstruct.tools.gem.GemValue;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
+ * Helper class which is responsible for collecting all additional annotations that should be added.
+ *
  * @author Ben Zegveld
  * @since 1.5
  */

@@ -140,7 +140,6 @@ import java.lang.annotation.Target;
  * &#64;javax.inject.Named
  * private PersonMapper personMapper; // injects the decorator, with the injected original mapper
  * </pre>
- * <p>
  *
  * @author Gunnar Morling
  */

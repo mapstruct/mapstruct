@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.test.collection.iterabletolist;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.ProcessorTest;
-import org.mapstruct.ap.testutil.WithClasses;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.ProcessorTest;
+import org.mapstruct.ap.testutil.WithClasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

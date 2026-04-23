@@ -11,7 +11,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Controls which means of mapping are considered between the source and the target in mappings.
  *
@@ -99,8 +98,16 @@ import java.lang.annotation.Target;
 @MappingControl( MappingControl.Use.COMPLEX_MAPPING )
 public @interface MappingControl {
 
+    /**
+     * The type of mapping control that should be used.
+     *
+     * @return What should be used for the mapping control
+     */
     Use value();
 
+    /**
+     * Defines the options that can be used for the mapping control.
+     */
     enum Use {
 
         /**

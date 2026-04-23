@@ -5,16 +5,16 @@
  */
 package org.mapstruct.itest.records.module2;
 
+import org.junit.jupiter.api.Test;
+import org.mapstruct.itest.records.module1.SourceNestedRecord;
+import org.mapstruct.itest.records.module1.SourceRootRecord;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.mapstruct.itest.records.module1.SourceRootRecord;
-import org.mapstruct.itest.records.module1.SourceNestedRecord;
-
-public class RecordsTest {
+class RecordsTest {
 
     @Test
-    public void shouldMap() {
+    void shouldMap() {
         SourceRootRecord source = new SourceRootRecord( new SourceNestedRecord( "test" ) );
         TargetRootRecord target = RecordInterfaceIssueMapper.INSTANCE.map( source );
 

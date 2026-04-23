@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.records.module2;
 
-import org.mapstruct.itest.records.module1.SourceRootRecord;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.itest.records.module1.SourceRootRecord;
 
 @Mapper
 public interface RecordInterfaceIssueMapper {

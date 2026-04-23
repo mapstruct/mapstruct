@@ -12,6 +12,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
+ * A {@link MethodSelector} that selects the most specific result type.
+ *
  * @author Filip Hrisafov
  */
 public class MostSpecificResultTypeSelector implements MethodSelector {
@@ -21,7 +23,7 @@ public class MostSpecificResultTypeSelector implements MethodSelector {
                                                                          SelectionContext context) {
         SelectionCriteria criteria = context.getSelectionCriteria();
         Type mappingTargetType = context.getMappingTargetType();
-        if ( candidates.size() < 2 || !criteria.isForMapping() || criteria.getQualifyingResultType() != null) {
+        if ( candidates.size() < 2 || !criteria.isForMapping() || criteria.getQualifyingResultType() != null ) {
             return candidates;
         }
 

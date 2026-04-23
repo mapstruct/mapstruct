@@ -16,6 +16,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that checks if all the given presence checks are present.
+ *
  * @author Filip Hrisafov
  */
 public class AllPresenceChecksPresenceCheck extends ModelElement implements PresenceCheck {

@@ -59,10 +59,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         try {
             source1.setPets( petMapper.toSourcePets( source.getPets() ) );
         }
-        catch ( CatException e ) {
-            throw new RuntimeException( e );
-        }
-        catch ( DogException e ) {
+        catch ( CatException | DogException e ) {
             throw new RuntimeException( e );
         }
 
@@ -82,10 +79,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                 }
             }
         }
-        catch ( CatException e ) {
-            throw new RuntimeException( e );
-        }
-        catch ( DogException e ) {
+        catch ( CatException | DogException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -161,10 +155,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                 }
             }
         }
-        catch ( CatException e ) {
-            throw new RuntimeException( e );
-        }
-        catch ( DogException e ) {
+        catch ( CatException | DogException e ) {
             throw new RuntimeException( e );
         }
 
@@ -184,10 +175,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                 target.addPet( petMapper.toPet( source.getPet() ) );
             }
         }
-        catch ( CatException e ) {
-            throw new RuntimeException( e );
-        }
-        catch ( DogException e ) {
+        catch ( CatException | DogException e ) {
             throw new RuntimeException( e );
         }
 

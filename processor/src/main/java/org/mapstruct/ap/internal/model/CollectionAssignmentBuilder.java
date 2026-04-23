@@ -163,7 +163,8 @@ public class CollectionAssignmentBuilder {
                     targetType,
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    false
                 );
             }
             else if ( method.isUpdateMethod() && !targetImmutable ) {

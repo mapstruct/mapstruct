@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -50,22 +49,25 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     private Map<String, EnumTransformationStrategy> enumTransformationStrategies;
 
     private AccessorNamingUtils accessorNaming;
+    private NullabilityResolver nullabilityResolver;
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
     private boolean disableBuilder;
+    private boolean disableJSpecify;
     private boolean verbose;
 
     private Map<String, String> options;
 
     public AnnotationProcessorContext(Elements elementUtils, Types typeUtils, Messager messager, boolean disableBuilder,
-                                      boolean verbose, Map<String, String> options) {
+                                      boolean disableJSpecify, boolean verbose, Map<String, String> options) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
             findAstModifyingAnnotationProcessors( messager ) );
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.disableBuilder = disableBuilder;
+        this.disableJSpecify = disableJSpecify;
         this.verbose = verbose;
         this.options = java.util.Collections.unmodifiableMap( options );
     }
@@ -129,6 +131,7 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
             );
         }
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
+        this.nullabilityResolver = new NullabilityResolver( !this.disableJSpecify );
 
         this.enumMappingStrategy = Services.get( EnumMappingStrategy.class, new DefaultEnumMappingStrategy() );
         this.enumMappingStrategy.init( this );
@@ -260,6 +263,11 @@ public class AnnotationProcessorContext implements MapStructProcessingEnvironmen
     public AccessorNamingUtils getAccessorNaming() {
         initialize();
         return accessorNaming;
+    }
+
+    public NullabilityResolver getNullabilityResolver() {
+        initialize();
+        return nullabilityResolver;
     }
 
     public AccessorNamingStrategy getAccessorNamingStrategy() {

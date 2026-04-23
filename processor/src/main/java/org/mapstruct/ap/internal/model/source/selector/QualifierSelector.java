@@ -12,14 +12,14 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
+import org.mapstruct.ap.internal.gem.NamedGem;
+import org.mapstruct.ap.internal.gem.QualifierGem;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.gem.NamedGem;
-import org.mapstruct.ap.internal.gem.QualifierGem;
+import org.mapstruct.ap.internal.util.ElementUtils;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * This selector selects a best match based on qualifier annotations.

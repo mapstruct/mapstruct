@@ -204,7 +204,8 @@ The mechanism is also present on iterable mapping and map mapping. `@IterableMap
 [[mapping-result-for-null-arguments]]
 === Controlling mapping result for 'null' arguments
 
-MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
+MapStruct offers control over the object to create when the source argument of the mapping method equals `null`.
+By default `null` will be returned, or `Optional.empty()` if the return type is `Optional`.
 
 However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MapperConfig`, the mapping result can be altered to return empty *default* values. This means for:
 
@@ -243,7 +244,7 @@ How the value of the `NullValueMappingStrategy` is applied is the same as in <<m
 
 MapStruct offers control over the property to set in an `@MappingTarget` annotated target bean when the source property equals `null` or the presence check method results in 'absent'.
 
-By default the target property will be set to null.
+By default the target property will be set to `null`, or `Optional.empty()` if the target property is `Optional`.
 
 However:
 
@@ -252,6 +253,9 @@ For `List` MapStruct generates an `ArrayList`, for `Map` a `LinkedHashMap`, for 
 For all other objects an new instance is created. Please note that a default constructor is required. If not available, use the `@Mapping#defaultValue`.
 
 2. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the mapping result will be equal to the original value of the `@MappingTarget` annotated target.
+
+3. By specifying `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.CLEAR` on `@Mapping`, `@BeanMapping`, `@Mapper` or `@MapperConfig`, the target collection or map will be cleared when the source property is `null`.
+This strategy only applies to `Collection` and `Map` target properties.
 
 The strategy works in a hierarchical fashion. Setting `nullValuePropertyMappingStrategy` on mapping method level will override `@Mapper#nullValuePropertyMappingStrategy`, and `@Mapper#nullValuePropertyMappingStrategy` will override `@MapperConfig#nullValuePropertyMappingStrategy`.
 
@@ -264,6 +268,18 @@ null check, regardless of the value of the `NullValuePropertyMappingStrategy`, t
 [TIP]
 ====
 `NullValuePropertyMappingStrategy` also applies when the presence checker returns `not present`.
+====
+
+[NOTE]
+====
+When working with `java.util.Optional` types, `NullValuePropertyMappingStrategy` applies to empty Optionals in the same way it applies to null values.
+An empty `Optional` (i.e., `Optional.isEmpty()` returns `true`) is treated similarly to a `null` value for the purposes of this strategy. For example:
+
+* With `IGNORE` strategy: an empty `Optional` source property will not update the target property
+* With `SET_TO_NULL` strategy: an empty `Optional` source will set the target to `null` (for non-`Optional` targets) or `Optional.empty()` (for Optional targets)
+* With `SET_TO_DEFAULT` strategy: an empty `Optional` source will set the target to its default value
+
+See <<optional-null-value-strategies>> for detailed examples and behavior with Optional types.
 ====
 
 [[checking-source-property-for-null-arguments]]
@@ -282,6 +298,44 @@ First calling a mapping method on the source property is not protected by a null
 The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
 
 The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MapperConfig#nullValueCheckStrategy`.
+
+[[jspecify-nullness-annotations]]
+=== JSpecify nullness annotations
+
+MapStruct recognises https://jspecify.dev/[JSpecify] nullness annotations on source and target types and uses them to refine when null checks are generated. Only the annotations from `org.jspecify.annotations` are interpreted; MapStruct does not introduce a compile-time dependency on JSpecify, so consumers opt in by adding the dependency themselves.
+
+The following annotations participate:
+
+* `@NonNull`: the annotated value is guaranteed not to be `null`.
+* `@Nullable`: the annotated value may be `null`.
+* `@NullMarked`: within this scope (package, class, or method), unannotated reference types are treated as `@NonNull`.
+* `@NullUnmarked`: reverts to unknown nullability within its scope (overrides a `@NullMarked` outer scope).
+
+==== Property-level rules
+
+For a single property mapping:
+
+* If the source is `@NonNull`, the null check is skipped, since the value is treated as guaranteed non-null.
+* If the target is `@NonNull` (and the source is not `@NonNull`), a null check is always added so the target's contract is not violated.
+* In all other cases, the existing `NullValueCheckStrategy` decides.
+
+The existing safety guards (`defaultValue` / `defaultExpression`, primitive unboxing, and the relevant `NullValuePropertyMappingStrategy` modes) continue to apply.
+
+==== Scope: `@NullMarked` and `@NullUnmarked`
+
+`@NullMarked` and `@NullUnmarked` are resolved by walking from the annotated element outward: method, then declaring class, then outer classes, then package. The closest annotation wins: a `@NullUnmarked` method inside a `@NullMarked` class reverts only that method, while a `@Nullable` annotation on an individual type always overrides the surrounding scope.
+
+==== Method-level source parameter
+
+When the source parameter of a mapping method is annotated `@NonNull` (directly or via a `@NullMarked` scope), MapStruct skips the method-level null guard, since the caller is contractually obliged to pass a non-null value.
+
+==== Constructor parameter constraint
+
+If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
+
+==== Disabling JSpecify support
+
+All JSpecify-driven inference can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) and the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised. Null-check generation falls back to the pre-JSpecify behavior driven by `NullValueCheckStrategy`. Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
 
 [[source-presence-check]]
 === Source presence checking

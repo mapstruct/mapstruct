@@ -46,9 +46,7 @@ public @interface ProcessorTest {
         JAVAC( "javac" ),
         JAVAC_WITH_PATHS( "javac", JRE.OTHER, "generate-via-compiler-plugin-with-annotation-processor-paths" ),
 
-        ECLIPSE_JDT( "jdt", JRE.JAVA_8 ),
-
-        PROCESSOR_PLUGIN( null, JRE.JAVA_8 );
+        ECLIPSE_JDT( "jdt", JRE.JAVA_8 );
 
         private final String compilerId;
         private final JRE max;
@@ -111,7 +109,6 @@ public @interface ProcessorTest {
         ProcessorType.JAVAC,
         ProcessorType.JAVAC_WITH_PATHS,
         ProcessorType.ECLIPSE_JDT,
-        ProcessorType.PROCESSOR_PLUGIN
     };
 
     /**

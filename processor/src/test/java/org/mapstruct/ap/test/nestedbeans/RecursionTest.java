@@ -37,7 +37,7 @@ public class RecursionTest {
     }
 
     private void assertRootEquals(RecursionMapper.RootDto rootDto, RecursionMapper.Root root) {
-        if (bothNull( root, rootDto )) {
+        if ( bothNull( root, rootDto ) ) {
             return;
         }
         assertNotNull( root );
@@ -78,7 +78,7 @@ public class RecursionTest {
     }
 
     private void assertTreeRootEquals(TreeRecursionMapper.RootDto rootDto, TreeRecursionMapper.Root root) {
-        if (bothNull( root, rootDto )) {
+        if ( bothNull( root, rootDto ) ) {
             return;
         }
         assertNotNull( root );
@@ -88,7 +88,7 @@ public class RecursionTest {
 
     private void assertChildrenEqual(List<TreeRecursionMapper.ChildDto> childrenDto,
                                      List<TreeRecursionMapper.Child> children) {
-        if (bothNull( children, childrenDto )) {
+        if ( bothNull( children, childrenDto ) ) {
             return;
         }
         assertNotNull( childrenDto );

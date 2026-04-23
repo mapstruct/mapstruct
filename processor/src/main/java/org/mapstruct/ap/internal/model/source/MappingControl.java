@@ -14,11 +14,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.gem.MappingControlGem;
 import org.mapstruct.ap.internal.gem.MappingControlUseGem;
 import org.mapstruct.ap.internal.gem.MappingControlsGem;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 public class MappingControl {
 

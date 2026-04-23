@@ -31,7 +31,7 @@ public class ExternalHandWrittenMapper {
     public void toEmployeeEntityList(List<EmployeeDto> dtos, @MappingTarget List<EmployeeEntity> entities) {
 
         if ( entities != null && dtos != null ) {
-            for ( EmployeeDto dto : dtos) {
+            for ( EmployeeDto dto : dtos ) {
                 entities.add( DepartmentMapper.INSTANCE.toEmployeeEntity( dto ) );
             }
         }

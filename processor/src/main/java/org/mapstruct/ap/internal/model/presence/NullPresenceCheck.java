@@ -14,6 +14,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A presence check that checks if the source reference is null.
+ *
  * @author Filip Hrisafov
  */
 public class NullPresenceCheck extends ModelElement implements PresenceCheck {

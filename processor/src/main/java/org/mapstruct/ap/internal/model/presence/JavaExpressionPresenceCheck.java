@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that calls a Java expression.
+ *
  * @author Filip Hrisafov
  */
 public class JavaExpressionPresenceCheck extends ModelElement implements PresenceCheck {

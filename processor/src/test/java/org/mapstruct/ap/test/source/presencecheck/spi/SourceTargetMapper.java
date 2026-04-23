@@ -14,7 +14,6 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-
 /**
  * @author Sean Huang
  */

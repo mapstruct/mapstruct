@@ -109,7 +109,7 @@ public class MappingReferences {
 
         for ( MappingReference mappingRef : mappingReferences ) {
             TargetReference targetReference = mappingRef.getTargetReference();
-            if ( targetReference.isNested()) {
+            if ( targetReference.isNested() ) {
                 return true;
             }
 

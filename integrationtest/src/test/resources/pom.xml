@@ -26,8 +26,7 @@
         <mapstruct.version>${mapstruct.version}</mapstruct.version>
         <compiler-id></compiler-id>
         <compiler-source-target-version></compiler-source-target-version>
-        <!-- As Mapstruct has java 6 requirement we need to use AssertJ 1.x which is compatible with java 6 -->
-        <assertj.version>1.7.1</assertj.version>
+        <org.junit6.jupiter.version>6.0.3</org.junit6.jupiter.version>
     </properties>
 
     <profiles>
@@ -98,43 +97,6 @@
             </build>
         </profile>
         <profile>
-            <id>generate-via-processor-plugin</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.bsc.maven</groupId>
-                        <artifactId>maven-processor-plugin</artifactId>
-                        <version>3.3.3</version>
-                        <executions>
-                            <execution>
-                                <id>process</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>process</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <defaultOutputDirectory>\${project.build.directory}/generated-sources/mapstruct</defaultOutputDirectory>
-                            <processors>
-                                <processor>org.mapstruct.ap.MappingProcessor</processor>
-                            </processors>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>mapstruct-processor</artifactId>
-                                <version>${mapstruct.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>debug-forked-javac</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -174,8 +136,8 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

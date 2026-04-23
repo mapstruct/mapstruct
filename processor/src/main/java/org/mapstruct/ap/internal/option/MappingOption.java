@@ -6,6 +6,8 @@
 package org.mapstruct.ap.internal.option;
 
 /**
+ * The different compiler mapping options that are available in MapStruct.
+ *
  * @author Filip Hrisafov
  */
 public enum MappingOption {
@@ -23,6 +25,7 @@ public enum MappingOption {
     NULL_VALUE_ITERABLE_MAPPING_STRATEGY("mapstruct.nullValueIterableMappingStrategy"),
     NULL_VALUE_MAP_MAPPING_STRATEGY("mapstruct.nullValueMapMappingStrategy"),
     DISABLE_LIFECYCLE_OVERLOAD_DEDUPLICATE_SELECTOR("mapstruct.disableLifecycleOverloadDeduplicateSelector"),
+    DISABLE_JSPECIFY("mapstruct.disableJSpecify"),
     ;
     // CHECKSTYLE:ON
 

@@ -9,11 +9,14 @@ import java.util.Collection;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.BuilderInfo;
 
 /**
+ * Represents the information about a builder.
+ * How it can be constructed, the type it is building etc.
+ *
  * @author Filip Hrisafov
  */
 public class BuilderType {
@@ -105,7 +108,7 @@ public class BuilderType {
 
         // When the builderCreationMethod is constructor, its return type is Void. In this case the
         // builder type should be the owner type.
-        if (builderInfo.getBuilderCreationMethod().getKind() == ElementKind.CONSTRUCTOR) {
+        if ( builderInfo.getBuilderCreationMethod().getKind() == ElementKind.CONSTRUCTOR ) {
             builder = owner;
         }
 

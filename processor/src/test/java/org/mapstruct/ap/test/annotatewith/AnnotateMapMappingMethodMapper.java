@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.annotatewith;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
-
-import java.util.Date;
-import java.util.Map;
 
 /**
  * @author orange add

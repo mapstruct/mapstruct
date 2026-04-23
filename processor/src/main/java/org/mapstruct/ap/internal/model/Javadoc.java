@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Type;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Represents the javadoc information that should be generated for a {@link Mapper}.

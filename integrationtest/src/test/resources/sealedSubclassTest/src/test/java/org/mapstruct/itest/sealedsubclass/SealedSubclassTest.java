@@ -5,14 +5,14 @@
  */
 package org.mapstruct.itest.sealedsubclass;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class SealedSubclassTest {
+class SealedSubclassTest {
 
     @Test
-    public void mappingIsDoneUsingSubclassMapping() {
+    void mappingIsDoneUsingSubclassMapping() {
         VehicleCollection vehicles = new VehicleCollection();
         vehicles.getVehicles().add( new Car() );
         vehicles.getVehicles().add( new Bike() );
@@ -28,7 +28,7 @@ public class SealedSubclassTest {
     }
 
     @Test
-    public void inverseMappingIsDoneUsingSubclassMapping() {
+    void inverseMappingIsDoneUsingSubclassMapping() {
         VehicleCollectionDto vehicles = new VehicleCollectionDto();
         vehicles.getVehicles().add( new CarDto() );
         vehicles.getVehicles().add( new BikeDto() );
@@ -44,7 +44,7 @@ public class SealedSubclassTest {
     }
 
     @Test
-    public void subclassMappingInheritsInverseMapping() {
+    void subclassMappingInheritsInverseMapping() {
         VehicleCollectionDto vehiclesDto = new VehicleCollectionDto();
         CarDto carDto = new CarDto();
         carDto.setMaker( "BenZ" );

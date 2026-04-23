@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.nestedbeans.unmappable.warn;
 
-import static org.mapstruct.ReportingPolicy.IGNORE;
-import static org.mapstruct.ReportingPolicy.WARN;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.BaseDeepMapKeyMapper;
 import org.mapstruct.ap.test.nestedbeans.unmappable.RoofTypeMapper;
+
+import static org.mapstruct.ReportingPolicy.IGNORE;
+import static org.mapstruct.ReportingPolicy.WARN;
 
 @Mapper( uses = RoofTypeMapper.class, unmappedTargetPolicy = IGNORE, unmappedSourcePolicy = WARN )
 public abstract class UnmappableSourceWarnDeepMapKeyMapper extends BaseDeepMapKeyMapper {

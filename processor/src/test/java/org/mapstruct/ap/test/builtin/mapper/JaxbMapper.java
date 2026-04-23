@@ -7,9 +7,9 @@ package org.mapstruct.ap.test.builtin.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.builtin.bean.BigDecimalProperty;
+import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
 import org.mapstruct.ap.test.builtin.bean.SomeType;
 import org.mapstruct.ap.test.builtin.bean.SomeTypeProperty;
-import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
 import org.mapstruct.ap.test.builtin.bean.StringProperty;
 import org.mapstruct.factory.Mappers;
 

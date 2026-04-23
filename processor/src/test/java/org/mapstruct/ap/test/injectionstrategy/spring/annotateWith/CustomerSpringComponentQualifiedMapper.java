@@ -5,11 +5,10 @@
  */
 package org.mapstruct.ap.test.injectionstrategy.spring.annotateWith;
 
-import org.springframework.stereotype.Component;
-
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Ben Zegveld

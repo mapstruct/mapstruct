@@ -19,14 +19,23 @@ public class CompilationRequest {
     private final Map<Class<?>, Class<?>> services;
     private final List<String> processorOptions;
     private final Collection<String> testDependencies;
+    private final Collection<String> processorDependencies;
+    private final Collection<String> kotlinSources;
+    private final Set<String> packageInfoPackages;
 
     CompilationRequest(Compiler compiler, Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services,
-                       List<String> processorOptions, Collection<String> testDependencies) {
+                       List<String> processorOptions, Collection<String> testDependencies,
+                       Collection<String> processorDependencies,
+                       Collection<String> kotlinSources,
+                       Set<String> packageInfoPackages) {
         this.compiler = compiler;
         this.sourceClasses = sourceClasses;
         this.services = services;
         this.processorOptions = processorOptions;
         this.testDependencies = testDependencies;
+        this.processorDependencies = processorDependencies;
+        this.kotlinSources = kotlinSources;
+        this.packageInfoPackages = packageInfoPackages;
     }
 
     @Override
@@ -38,6 +47,7 @@ public class CompilationRequest {
         result = prime * result + ( ( services == null ) ? 0 : services.hashCode() );
         result = prime * result + ( ( sourceClasses == null ) ? 0 : sourceClasses.hashCode() );
         result = prime * result + ( ( testDependencies == null ) ? 0 : testDependencies.hashCode() );
+        result = prime * result + ( ( packageInfoPackages == null ) ? 0 : packageInfoPackages.hashCode() );
         return result;
     }
 
@@ -58,7 +68,10 @@ public class CompilationRequest {
             && processorOptions.equals( other.processorOptions )
             && services.equals( other.services )
             && testDependencies.equals( other.testDependencies )
-            && sourceClasses.equals( other.sourceClasses );
+            && processorDependencies.equals( other.processorDependencies )
+            && sourceClasses.equals( other.sourceClasses )
+            && kotlinSources.equals( other.kotlinSources )
+            && packageInfoPackages.equals( other.packageInfoPackages );
     }
 
     public Set<Class<?>> getSourceClasses() {
@@ -77,7 +90,19 @@ public class CompilationRequest {
         return testDependencies;
     }
 
+    public Collection<String> getProcessorDependencies() {
+        return processorDependencies;
+    }
+
+    public Collection<String> getKotlinSources() {
+        return kotlinSources;
+    }
+
     public Compiler getCompiler() {
         return compiler;
+    }
+
+    public Set<String> getPackageInfoPackages() {
+        return packageInfoPackages;
     }
 }

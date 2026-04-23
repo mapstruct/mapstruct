@@ -16,6 +16,8 @@ import org.mapstruct.ap.internal.util.XmlConstants;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * A built-in method for converting from {@link LocalDate} to {@code XMLGregorianCalendar}.
+ *
  * @author Gunnar Morling
  */
 public class LocalDateToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {

@@ -97,7 +97,6 @@ public interface Method {
      */
     Parameter getTargetTypeParameter();
 
-
     /**
      * Returns the {@link Accessibility} of this method.
      *
@@ -181,15 +180,6 @@ public interface Method {
 
     default ConditionMethodOptions getConditionOptions() {
         return ConditionMethodOptions.empty();
-    }
-
-    /**
-     *
-     * @return true when @MappingTarget annotated parameter is the same type as the return type. The method has
-     * to be an update method in order for this to be true.
-     */
-    default boolean isMappingTargetAssignableToReturnType() {
-        return isUpdateMethod() && getResultType().isAssignableTo( getReturnType() );
     }
 
     /**

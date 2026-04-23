@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConstructorFragment;
@@ -16,7 +14,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.XmlConstants;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 /**
+ * Base class for built-in methods for converting from a particular type to {@code XMLGregorianCalendar}.
+ *
  * @author Sjaak Derksen
  */
 public abstract class AbstractToXmlGregorianCalendar extends BuiltInMethod {

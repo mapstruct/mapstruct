@@ -5,13 +5,13 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.model.common.Type;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.url;
 import static org.mapstruct.ap.internal.util.Collections.asSet;

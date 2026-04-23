@@ -5,19 +5,18 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
-import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
+import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
-import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
+
+import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
+import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
@@ -34,8 +33,8 @@ import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     extends SetterWrapperForCollectionsAndMapsWithNullCheck {
 
-    private final boolean includeElseBranch;
-    private final boolean mapNullToDefault;
+    private final NullValuePropertyMappingStrategyGem nvpms;
+    private final NullValueCheckStrategyGem nvcs;
     private final Type targetType;
 
     public ExistingInstanceSetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
@@ -53,9 +52,9 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
             typeFactory,
             fieldAssignment
         );
-        this.mapNullToDefault = SET_TO_DEFAULT == nvpms;
+        this.nvcs = nvcs;
+        this.nvpms = nvpms;
         this.targetType = targetType;
-        this.includeElseBranch = ALWAYS != nvcs && IGNORE != nvpms;
     }
 
     @Override
@@ -68,11 +67,15 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     }
 
     public boolean isIncludeElseBranch() {
-        return includeElseBranch;
+        return nvcs != ALWAYS && nvpms != IGNORE;
     }
 
     public boolean isMapNullToDefault() {
-        return mapNullToDefault;
+        return nvpms == NullValuePropertyMappingStrategyGem.SET_TO_DEFAULT;
+    }
+
+    public boolean isMapNullToClear() {
+        return nvpms == NullValuePropertyMappingStrategyGem.CLEAR;
     }
 
 }

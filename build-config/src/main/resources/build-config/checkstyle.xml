@@ -120,6 +120,14 @@
         <module name="ImportControl">
             <property name="file" value="${basedir}/../build-config/src/main/resources/build-config/import-control.xml" />
         </module>
+        <module name="CustomImportOrder">
+            <property name="customImportOrderRules"
+                      value="STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS###STATIC"/>
+            <property name="standardPackageRegExp" value="^(java|javax)\."/>
+            <property name="specialImportsRegExp" value="^org\.hibernate\."/>
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+        </module>
 
 
         <!-- Checks for Size Violations.                    -->
@@ -141,7 +149,7 @@
         <module name="NoWhitespaceBefore"/>
         <!-- <module name="OperatorWrap"/> -->
         <module name="ParenPad">
-            <property name="tokens" value="CTOR_CALL, METHOD_CALL, SUPER_CTOR_CALL"/>
+            <property name="tokens" value="CTOR_CALL, LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL, SUPER_CTOR_CALL"/>
             <property name="option" value="space"/>
         </module>
         <module name="TypecastParenPad"/>

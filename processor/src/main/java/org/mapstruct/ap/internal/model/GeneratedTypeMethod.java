@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.model;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 
 /**
+ * Base class for methods available in a generated type.
+ *
  * @author Filip Hrisafov
  */
 public abstract class GeneratedTypeMethod extends ModelElement {

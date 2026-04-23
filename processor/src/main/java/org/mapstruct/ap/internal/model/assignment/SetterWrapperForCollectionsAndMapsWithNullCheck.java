@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +13,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 
 /**
  * This wrapper handles the situation where an assignment is done via the setter and a null check is needed.
@@ -57,7 +57,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
                 imported.add( typeFactory.getType( EnumSet.class ) );
             }
         }
-        if (isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
+        if ( isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
         return imported;

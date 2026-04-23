@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.util.Message;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
+ * Factory for creating the appropriate object factory method.
  *
  * @author Sjaak Derksen
  */
@@ -73,7 +74,7 @@ public class ObjectFactoryMethodResolver {
             ctx
         );
 
-        if (matchingFactoryMethods.isEmpty()) {
+        if ( matchingFactoryMethods.isEmpty() ) {
             return null;
         }
 

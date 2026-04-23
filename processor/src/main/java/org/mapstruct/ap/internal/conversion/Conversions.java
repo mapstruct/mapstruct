@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -202,7 +203,7 @@ public class Conversions {
         register( UUID.class, String.class, new UUIDToStringConversion() );
         register( Locale.class, String.class, new LocaleToStringConversion() );
 
-        registerURLConversion();
+        registerJavaNetConversions();
 
         registerProtobufConversions();
     }
@@ -309,10 +310,15 @@ public class Conversions {
         }
     }
 
-    private void registerURLConversion() {
-        if ( isJavaURLAvailable() ) {
+    private void registerJavaNetConversions() {
+        if ( isJavaNetAvailable() ) {
+            register( URI.class, String.class, new URIToStringConversion() );
             register( URL.class, String.class, new URLToStringConversion() );
         }
+    }
+
+    private boolean isJavaNetAvailable() {
+        return typeFactory.isTypeAvailable( "java.net.URL" );
     }
 
     private void registerProtobufConversions() {
@@ -367,10 +373,6 @@ public class Conversions {
         }
     }
 
-    private boolean isJavaURLAvailable() {
-        return typeFactory.isTypeAvailable( "java.net.URL" );
-    }
-
     private void register(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
         Type sourceType = typeFactory.getType( sourceClass );
         Type targetType = typeFactory.getType( targetClass );
@@ -396,6 +398,41 @@ public class Conversions {
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
+        if ( sourceType.isOptionalType() ) {
+            if ( targetType.isOptionalType() ) {
+                // We cannot convert optional to optional
+                return null;
+            }
+            Type sourceBaseType = sourceType.getOptionalBaseType();
+            if ( sourceBaseType.equals( targetType ) ) {
+                // Optional<Type> -> Type
+                return TypeToOptionalConversion.OPTIONAL_TO_TYPE_CONVERSION;
+            }
+
+            ConversionProvider conversionProvider = getInternalConversion( sourceBaseType, targetType );
+            if ( conversionProvider != null ) {
+                return inverse( new OptionalWrapperConversionProvider( conversionProvider ) );
+            }
+
+        }
+        else if ( targetType.isOptionalType() ) {
+            // Type -> Optional<Type>
+            Type targetBaseType = targetType.getOptionalBaseType();
+            if ( targetBaseType.equals( sourceType ) ) {
+                return TypeToOptionalConversion.TYPE_TO_OPTIONAL_CONVERSION;
+            }
+            ConversionProvider conversionProvider = getInternalConversion( sourceType, targetBaseType );
+            if ( conversionProvider != null ) {
+                return new OptionalWrapperConversionProvider( conversionProvider );
+            }
+            return null;
+
+        }
+
+        return getInternalConversion( sourceType, targetType );
+    }
+
+    public ConversionProvider getInternalConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() &&
                 ( targetType.equals( stringType ) ||
                   targetType.getBoxedEquivalent().equals( integerType ) )

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 
@@ -28,8 +27,10 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
@@ -109,7 +110,9 @@ public class MappingBuilderContext {
     private final ElementUtils elementUtils;
     private final TypeUtils typeUtils;
     private final FormattingMessager messager;
+    private final VersionInformation versionInformation;
     private final AccessorNamingUtils accessorNaming;
+    private final NullabilityResolver nullabilityResolver;
     private final EnumMappingStrategy enumMappingStrategy;
     private final Map<String, EnumTransformationStrategy> enumTransformationStrategies;
     private final Options options;
@@ -126,7 +129,9 @@ public class MappingBuilderContext {
                           ElementUtils elementUtils,
                           TypeUtils typeUtils,
                           FormattingMessager messager,
+                          VersionInformation versionInformation,
                           AccessorNamingUtils accessorNaming,
+                          NullabilityResolver nullabilityResolver,
                           EnumMappingStrategy enumMappingStrategy,
                           Map<String, EnumTransformationStrategy> enumTransformationStrategies,
                           Options options,
@@ -138,7 +143,9 @@ public class MappingBuilderContext {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
+        this.versionInformation = versionInformation;
         this.accessorNaming = accessorNaming;
+        this.nullabilityResolver = nullabilityResolver;
         this.enumMappingStrategy = enumMappingStrategy;
         this.enumTransformationStrategies = enumTransformationStrategies;
         this.options = options;
@@ -190,8 +197,16 @@ public class MappingBuilderContext {
         return messager;
     }
 
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
+    }
+
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    public NullabilityResolver getNullabilityResolver() {
+        return nullabilityResolver;
     }
 
     public EnumMappingStrategy getEnumMappingStrategy() {
@@ -220,7 +235,7 @@ public class MappingBuilderContext {
             nameSet.add( method.getName() );
         }
         // add existing names
-        for ( SourceMethod method : sourceModel) {
+        for ( SourceMethod method : sourceModel ) {
             if ( method.isAbstract() ) {
                 nameSet.add( method.getName() );
             }
@@ -264,6 +279,9 @@ public class MappingBuilderContext {
      * @return {@code true} if the type is not excluded from the {@link MappingExclusionProvider}
      */
     private boolean canGenerateAutoSubMappingFor(Type type) {
+        if ( "java.util.Optional".equals( type.getFullyQualifiedName() ) ) {
+            return !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getOptionalBaseType().getTypeElement() );
+        }
         return type.getTypeElement() != null && !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getTypeElement() );
     }
 

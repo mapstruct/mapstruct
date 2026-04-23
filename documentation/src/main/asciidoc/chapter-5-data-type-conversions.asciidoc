@@ -127,6 +127,9 @@ public interface CarMapper {
 
 * Between `String` and `StringBuilder`
 
+* Between `java.net.URI` and `String`.
+** When converting from a `String`, the value needs to be a valid https://datatracker.ietf.org/doc/html/rfc2396[RFC 2396 URI] otherwise an `IllegalArgumentException` is thrown.
+
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
 
@@ -154,6 +157,14 @@ public interface CarMapper {
 *** `com.google.type.TimeOfDay` and `java.time.LocalTime`
 *** `com.google.type.DayOfWeek` and `java.time.DayOfWeek`
 *** `com.google.type.Month` and `java.time.Month`
+
+[NOTE]
+====
+All the above conversions also work when the source or target type is wrapped in `java.util.Optional`, `java.util.OptionalDouble`, `java.util.OptionalLong` or `java.util.OptionalInt`.
+For example, `Optional<Integer>` can be converted to `String`, `int` can be converted to `Optional<String>`,
+or `Optional<Long>` can be converted to `Integer`.
+The same conversion rules apply, with MapStruct automatically handling the wrapping and unwrapping of `Optional` values.
+====
 
 [[mapping-object-references]]
 === Mapping object references

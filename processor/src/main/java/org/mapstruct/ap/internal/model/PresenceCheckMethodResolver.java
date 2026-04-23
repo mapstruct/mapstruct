@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -21,8 +23,11 @@ import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 
 /**
+ * Factory for creating {@link PresenceCheck}s.
+ *
  * @author Filip Hrisafov
  */
 public final class PresenceCheckMethodResolver {
@@ -86,6 +91,25 @@ public final class PresenceCheckMethodResolver {
         );
 
         if ( matchingMethods.isEmpty() ) {
+            if ( sourceParameter.getType().isOptionalType() ) {
+                return new OptionalPresenceCheck( sourceParameter.getName(), ctx.getVersionInformation() );
+            }
+            else if ( !sourceParameter.getType().isPrimitive() ) {
+                // If the source parameter is @NonNull (JSpecify), skip the null guard entirely.
+                // Use the mapper type for @NullMarked scope resolution since the parameter
+                // is declared in the mapper interface.
+                if ( ctx.getNullabilityResolver().getNullability(
+                    sourceParameter.getElement(),
+                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() )
+                    == NullabilityResolver.Nullability.NON_NULL ) {
+                    ctx.getMessager().note( 2,
+                        Message.PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM,
+                        sourceParameter.getName()
+                    );
+                    return null;
+                }
+                return new NullPresenceCheck( sourceParameter.getName() );
+            }
             return null;
         }
 

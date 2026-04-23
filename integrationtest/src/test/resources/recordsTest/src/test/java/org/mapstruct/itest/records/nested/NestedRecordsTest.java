@@ -7,14 +7,14 @@ package org.mapstruct.itest.records.nested;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class NestedRecordsTest {
+class NestedRecordsTest {
 
     @Test
-    public void shouldMapRecord() {
+    void shouldMapRecord() {
         CareProvider source = new CareProvider( "kermit", new Address( "Sesame Street", "New York" ) );
         CareProviderDto target = CareProviderMapper.INSTANCE.map( source );
 
