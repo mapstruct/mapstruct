@@ -6,14 +6,14 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.url;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.uri;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
@@ -29,12 +29,12 @@ public class URLToStringConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return "new " + url( conversionContext ) + "( <SOURCE> )";
+        return uri( conversionContext ) + ".create( <SOURCE> ).toURL()";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(final ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( URL.class ) );
+        return asSet( conversionContext.getTypeFactory().getType( URI.class ) );
     }
 
     @Override

@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.conversion;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
-import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -279,17 +278,6 @@ public final class ConversionUtils {
      */
     public static String uri(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, URI.class );
-    }
-
-    /**
-     * Name for {@link java.net.URL}.
-     *
-     * @param conversionContext Conversion context
-     *
-     * @return Name or fully-qualified name.
-     */
-    public static String url(ConversionContext conversionContext) {
-        return typeReferenceName( conversionContext, URL.class );
     }
 
     /**
