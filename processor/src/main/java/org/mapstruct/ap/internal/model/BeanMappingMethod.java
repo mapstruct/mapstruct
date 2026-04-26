@@ -54,6 +54,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -2308,6 +2310,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     public PresenceCheck getPresenceCheckByParameter(Parameter parameter) {
         return presenceChecksByParameter.get( parameter.getName() );
+    }
+
+    /**
+     * Returns {@code true} if the presence check for the given parameter is a built-in
+     * null or optional presence check, as opposed to a custom
+     * {@link org.mapstruct.SourceParameterCondition} method.
+     * Used by the template to decide whether to generate a default value fallback
+     * in the else branch of the parameter presence check.
+     *
+     * @param parameter the source parameter
+     * @return {@code true} for built-in null/optional checks, {@code false} for custom condition methods
+     */
+    public boolean isBuiltInPresenceCheckByParameter(Parameter parameter) {
+        PresenceCheck check = getPresenceCheckByParameter( parameter );
+        return check instanceof NullPresenceCheck || check instanceof OptionalPresenceCheck;
     }
 
     public List<Parameter> getSourceParametersNeedingPresenceCheck() {
