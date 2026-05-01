@@ -24,7 +24,7 @@ public class ConverterImpl extends Converter {
             return null;
         }
 
-        Set<Target> set = new LinkedHashSet<Target>();
+        Set<Target> set = new LinkedHashSet<>();
 
         set.addAll( source.map( source1 -> convert( source1 ) )
             .collect( Collectors.toCollection( LinkedHashSet<Target>::new ) )

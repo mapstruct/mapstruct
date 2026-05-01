@@ -40,7 +40,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<AuctionDto> list = new ArrayList<AuctionDto>( auctions.size() );
+        List<AuctionDto> list = new ArrayList<>( auctions.size() );
         for ( Auction auction : auctions ) {
             list.add( map( auction ) );
         }
@@ -54,7 +54,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<? super AuctionDto> list = new ArrayList<AuctionDto>( auctions.size() );
+        List<? super AuctionDto> list = new ArrayList<>( auctions.size() );
         for ( Auction auction : auctions ) {
             list.add( map( auction ) );
         }
@@ -113,7 +113,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<PaymentDto> list1 = new ArrayList<PaymentDto>( list.size() );
+        List<PaymentDto> list1 = new ArrayList<>( list.size() );
         for ( Payment payment : list ) {
             list1.add( paymentToPaymentDto( payment ) );
         }

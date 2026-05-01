@@ -72,7 +72,7 @@ public class ContainerBeanMapperImpl implements ContainerBeanMapper {
             return null;
         }
 
-        Map<String, ContainerBeanDto> map1 = new LinkedHashMap<String, ContainerBeanDto>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
+        Map<String, ContainerBeanDto> map1 = new LinkedHashMap<>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<String, ContainerBean> entry : map.entrySet() ) {
             String key = entry.getKey();

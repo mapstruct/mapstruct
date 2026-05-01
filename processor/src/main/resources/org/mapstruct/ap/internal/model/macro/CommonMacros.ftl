@@ -170,11 +170,13 @@ Performs a default assignment with a default value.
   macro: constructTargetObject
 
   purpose: Either call the constructor of the target object directly or of the implementing type.
+           Emits the diamond operator for generic types so type-arguments are inferred from the
+           assignment context.
 -->
 <#-- @ftlvariable name="targetType" type="org.mapstruct.ap.internal.model.common.Type" -->
 <#macro constructTargetObject targetType><@compress single_line=true>
     <#if targetType.implementationType??>
-        new <@includeModel object=targetType.implementationType/>()
+        new <@includeModel object=targetType.implementationType raw=true/><#if targetType.implementationType.typeParameters?size != 0><></#if>()
     <#elseif targetType.arrayType>
         new <@includeModel object=targetType.componentType/>[0]
     <#elseif targetType.sensibleDefault??>
@@ -182,7 +184,7 @@ Performs a default assignment with a default value.
     <#elseif targetType.optionalType>
         <@includeModel object=targetType.asRawType()/>.of( <@constructTargetObject targetType=targetType.optionalBaseType/> )
     <#else>
-        new <@includeModel object=targetType/>()
+        new <@includeModel object=targetType raw=true/><#if targetType.typeParameters?size != 0><></#if>()
     </#if>
 </@compress></#macro>
 <#--

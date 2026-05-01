@@ -157,7 +157,7 @@ public class UserMapperImpl implements UserMapper {
         contactDataDTO.setAddress( user.getAddress() );
         List<String> list = user.getPreferences();
         if ( list != null ) {
-            contactDataDTO.setPreferences( new ArrayList<String>( list ) );
+            contactDataDTO.setPreferences( new ArrayList<>( list ) );
         }
         String[] settings = user.getSettings();
         if ( settings != null ) {

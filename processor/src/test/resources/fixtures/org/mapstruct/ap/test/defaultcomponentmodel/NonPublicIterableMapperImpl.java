@@ -25,7 +25,7 @@ public class NonPublicIterableMapperImpl implements NonPublicIterableMapper {
             return null;
         }
 
-        List<Target> list1 = new ArrayList<Target>( list.size() );
+        List<Target> list1 = new ArrayList<>( list.size() );
         for ( Source source : list ) {
             list1.add( nonPublicMapper.map( source ) );
         }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.NewInstanceCreation;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
@@ -26,6 +27,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     private final Type targetType;
     private final TypeFactory typeFactory;
+    private final NewInstanceCreation newInstance;
 
     public SetterWrapperForCollectionsAndMapsWithNullCheck(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
@@ -40,19 +42,14 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         );
         this.targetType = targetType;
         this.typeFactory = typeFactory;
+        this.newInstance = NewInstanceCreation.forType( targetType );
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<>( super.getImportTypes() );
         if ( isDirectAssignment() ) {
-            if ( targetType.getImplementationType() != null ) {
-                imported.addAll( targetType.getImplementationType().getImportTypes() );
-            }
-            else {
-                imported.addAll( targetType.getImportTypes() );
-            }
-
+            imported.addAll( newInstance.getImportTypes() );
             if ( isEnumSet() ) {
                 imported.add( typeFactory.getType( EnumSet.class ) );
             }
@@ -61,6 +58,10 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
         return imported;
+    }
+
+    public NewInstanceCreation getNewInstance() {
+        return newInstance;
     }
 
     public boolean isDirectAssignment() {

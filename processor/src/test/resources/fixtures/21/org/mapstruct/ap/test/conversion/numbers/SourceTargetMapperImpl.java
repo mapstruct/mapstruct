@@ -357,7 +357,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        List<String> list = new ArrayList<String>( source.size() );
+        List<String> list = new ArrayList<>( source.size() );
         for ( Float float1 : source ) {
             list.add( new DecimalFormat( "##.00" ).format( float1 ) );
         }
@@ -371,7 +371,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        List<Float> list = new ArrayList<Float>( source.size() );
+        List<Float> list = new ArrayList<>( source.size() );
         for ( String string : source ) {
             try {
                 list.add( new DecimalFormat( "##.00" ).parse( string ).floatValue() );
@@ -390,7 +390,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        List<String> list = new ArrayList<String>( source.size() );
+        List<String> list = new ArrayList<>( source.size() );
         for ( BigDecimal bigDecimal : source ) {
             list.add( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( bigDecimal ) );
         }
@@ -404,7 +404,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        List<BigDecimal> list = new ArrayList<BigDecimal>( source.size() );
+        List<BigDecimal> list = new ArrayList<>( source.size() );
         for ( String string : source ) {
             try {
                 list.add( (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( string ) );

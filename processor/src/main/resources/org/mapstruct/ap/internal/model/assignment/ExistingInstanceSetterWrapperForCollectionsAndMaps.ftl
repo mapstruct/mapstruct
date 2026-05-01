@@ -46,6 +46,6 @@
     <#if enumSet>
       EnumSet.copyOf( ${nullCheckLocalVarName} )
     <#else>
-      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
+      <@includeModel object=newInstance/>( ${nullCheckLocalVarName} )
     </#if>
 </@compress></#macro>

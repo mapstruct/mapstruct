@@ -46,6 +46,7 @@ import org.mapstruct.ap.internal.model.beanmapping.TargetReference;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.NewInstanceCreation;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
@@ -97,6 +98,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<PropertyMapping> constructorConstantMappings;
     private final List<SubclassMapping> subclassMappings;
     private final Type returnTypeToConstruct;
+    private final NewInstanceCreation newInstance;
     private final BuilderType returnTypeBuilder;
     private final MethodReference finalizerMethod;
     private final String finalizedResultName;
@@ -2184,6 +2186,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
         this.returnTypeToConstruct = returnTypeToConstruct;
+        this.newInstance = ( returnTypeToConstruct != null && getFactoryMethod() == null )
+            ? NewInstanceCreation.forType( returnTypeToConstruct )
+            : null;
         this.subclassMappings = subclassMappings;
         this.sourceParametersReassignments = sourceParametersReassignments;
     }
@@ -2246,6 +2251,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return returnTypeToConstruct;
     }
 
+    public NewInstanceCreation getNewInstance() {
+        return newInstance;
+    }
+
     public boolean hasSubclassMappings() {
         return !subclassMappings.isEmpty();
     }
@@ -2279,7 +2288,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         if ( returnTypeToConstruct != null  ) {
-            types.addAll( returnTypeToConstruct.getImportTypes() );
+            if ( newInstance != null ) {
+                types.addAll( newInstance.getImportTypes() );
+            }
+            else {
+                types.addAll( returnTypeToConstruct.getImportTypes() );
+            }
         }
         if ( returnTypeBuilder != null ) {
             types.add( returnTypeBuilder.getOwningType() );

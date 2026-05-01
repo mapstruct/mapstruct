@@ -81,7 +81,7 @@ public class ScienceMapperImpl implements ScienceMapper {
             return null;
         }
 
-        List<ScientistDto> list = new ArrayList<ScientistDto>( scientists.length );
+        List<ScientistDto> list = new ArrayList<>( scientists.length );
         for ( Scientist scientist : scientists ) {
             list.add( scientistToDto( scientist ) );
         }

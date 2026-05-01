@@ -30,21 +30,21 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
 
         if ( source.hasStrings() ) {
             List<String> list = source.getStrings();
-            domain.setStrings( new LinkedHashSet<String>( list ) );
+            domain.setStrings( new LinkedHashSet<>( list ) );
         }
         if ( source.hasStrings() ) {
             domain.setLongs( stringListToLongSet( source.getStrings() ) );
         }
         if ( source.hasStringsInitialized() ) {
             List<String> list1 = source.getStringsInitialized();
-            domain.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
+            domain.setStringsInitialized( new LinkedHashSet<>( list1 ) );
         }
         if ( source.hasStringsInitialized() ) {
             domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
         }
         if ( source.hasStringsWithDefault() ) {
             List<String> list2 = source.getStringsWithDefault();
-            domain.setStringsWithDefault( new ArrayList<String>( list2 ) );
+            domain.setStringsWithDefault( new ArrayList<>( list2 ) );
         }
         else {
             domain.setStringsWithDefault( helper.toList( "3" ) );
@@ -68,7 +68,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStrings() ) {
                 List<String> list = source.getStrings();
-                target.setStrings( new LinkedHashSet<String>( list ) );
+                target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
         if ( target.getLongs() != null ) {
@@ -91,7 +91,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsInitialized() ) {
                 List<String> list1 = source.getStringsInitialized();
-                target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
+                target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
         if ( target.getLongsInitialized() != null ) {
@@ -117,7 +117,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsWithDefault() ) {
                 List<String> list2 = source.getStringsWithDefault();
-                target.setStringsWithDefault( new ArrayList<String>( list2 ) );
+                target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );
@@ -140,7 +140,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStrings() ) {
                 List<String> list = source.getStrings();
-                target.setStrings( new LinkedHashSet<String>( list ) );
+                target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
         if ( target.getLongs() != null ) {
@@ -163,7 +163,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsInitialized() ) {
                 List<String> list1 = source.getStringsInitialized();
-                target.setStringsInitialized( new LinkedHashSet<String>( list1 ) );
+                target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
         if ( target.getLongsInitialized() != null ) {
@@ -189,7 +189,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         else {
             if ( source.hasStringsWithDefault() ) {
                 List<String> list2 = source.getStringsWithDefault();
-                target.setStringsWithDefault( new ArrayList<String>( list2 ) );
+                target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );

@@ -65,7 +65,7 @@ public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
             return null;
         }
 
-        List<WheelDto> list1 = new ArrayList<WheelDto>( list.size() );
+        List<WheelDto> list1 = new ArrayList<>( list.size() );
         for ( Wheel wheel : list ) {
             list1.add( wheelToWheelDto( wheel ) );
         }
@@ -152,7 +152,7 @@ public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
             return null;
         }
 
-        List<org.mapstruct.ap.test.nestedbeans.other.WheelDto> list1 = new ArrayList<org.mapstruct.ap.test.nestedbeans.other.WheelDto>( list.size() );
+        List<org.mapstruct.ap.test.nestedbeans.other.WheelDto> list1 = new ArrayList<>( list.size() );
         for ( Wheel wheel : list ) {
             list1.add( wheelToWheelDto1( wheel ) );
         }

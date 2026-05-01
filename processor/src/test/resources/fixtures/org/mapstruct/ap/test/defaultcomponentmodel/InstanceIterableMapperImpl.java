@@ -24,7 +24,7 @@ public class InstanceIterableMapperImpl implements InstanceIterableMapper {
             return null;
         }
 
-        List<Target> list1 = new ArrayList<Target>( list.size() );
+        List<Target> list1 = new ArrayList<>( list.size() );
         for ( Source source : list ) {
             list1.add( instanceMapper.map( source ) );
         }

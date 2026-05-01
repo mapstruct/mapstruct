@@ -15,10 +15,10 @@
         <#if resultType.implementation.factoryMethodName?? && ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>
             <@includeModel object=resultType.implementationType raw=true />.${resultType.implementation.factoryMethodName}( <@sizeForCreation /> )
         <#else>
-            new <@includeModel object=resultType.implementationType/><#if ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>( <@sizeForCreation /> )<#else>()</#if>
+            <@includeModel object=newInstance/><#if ext.useSizeIfPossible?? && ext.useSizeIfPossible && canUseSize>( <@sizeForCreation /> )<#else>()</#if>
         </#if>
     <#else>
-    new <@includeModel object=resultType/>()
+    <@includeModel object=newInstance/>()
     </#if>
 </@compress>
 <#macro sizeForCreation>
