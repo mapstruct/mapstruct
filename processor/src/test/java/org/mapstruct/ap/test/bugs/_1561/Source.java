@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Source {
 
-    private List<String> properties = new ArrayList<String>();
+    private List<String> properties = new ArrayList<>();
 
     public List<String> getProperties() {
         return properties;

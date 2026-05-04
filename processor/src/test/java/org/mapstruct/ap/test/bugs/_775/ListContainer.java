@@ -12,7 +12,7 @@ import java.util.List;
  * @author Andreas Gudian
  */
 public class ListContainer {
-    private List<String> values = new ArrayList<String>();
+    private List<String> values = new ArrayList<>();
 
     public List<String> getValues() {
         return values;

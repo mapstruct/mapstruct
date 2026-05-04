@@ -42,7 +42,7 @@ public class ParentChildBuilderTest {
     }
 
     private Condition<ImmutableChild> hasMatchingName(final String name) {
-        return new Condition<ImmutableChild>( "Matching name" ) {
+        return new Condition<>( "Matching name" ) {
             @Override
             public boolean matches(ImmutableChild value) {
                 return name.equals( value.getName() );
