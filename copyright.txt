@@ -31,6 +31,7 @@ Florian Tavares - https://github.com/neoXfire
 Gervais Blaise - https://github.com/gervaisb
 Gibou Damien - https://github.com/dmngb
 Gunnar Morling - https://github.com/gunnarmorling
+hduelme - https://github.com/hduelme
 Ivo Smid - https://github.com/bedla
 Jason Bodnar - https://github.com/Blackbaud-JasonBodnar
 Jeroen van Wilgenburg - https://github.com/jvwilge
@@ -45,9 +46,11 @@ Ken Wang - https://github.com/ro0sterjam
 Kevin Grüneberg - https://github.com/kevcodez
 Lukas Lazar - https://github.com/LukeLaz
 Nikolas Charalambidis - https://github.com/Nikolas-Charalambidis
+Maciej Kucharczyk - https://github.com/mk868
 Michael Pardo - https://github.com/pardom
 Muhammad Usama - https://github.com/the-mgi
 Mustafa Caylak - https://github.com/luxmeter
+Neale Upstone - https://github.com/nealeu
 Oliver Ehrenmüller - https://github.com/greuelpirat
 Oliver Erhart - https://github.com/thunderhook
 Paul Strugnell - https://github.com/ps-powa
