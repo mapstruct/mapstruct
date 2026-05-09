@@ -27,6 +27,12 @@ public class Target {
 
     private StringHolderArrayList nonGenericStringList;
 
+    private Integer[] integerArray;
+
+    private Integer[][] integerMultiArray;
+
+    private Comparable<String>[] arrayWithGenerics;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -88,5 +94,29 @@ public class Target {
 
     public void setNonGenericStringList(StringHolderArrayList nonGenericStringList) {
         this.nonGenericStringList = nonGenericStringList;
+    }
+
+    public Integer[] getIntegerArray() {
+        return integerArray;
+    }
+
+    public void setIntegerArray(Integer[] integerArray) {
+        this.integerArray = integerArray;
+    }
+
+    public Integer[][] getIntegerMultiArray() {
+        return integerMultiArray;
+    }
+
+    public void setIntegerMultiArray(Integer[][] integerMultiArray) {
+        this.integerMultiArray = integerMultiArray;
+    }
+
+    public Comparable<String>[] getArrayWithGenerics() {
+        return arrayWithGenerics;
+    }
+
+    public void setArrayWithGenerics(Comparable<String>[] arrayWithGenerics) {
+        this.arrayWithGenerics = arrayWithGenerics;
     }
 }

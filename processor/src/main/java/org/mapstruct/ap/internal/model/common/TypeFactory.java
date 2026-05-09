@@ -518,6 +518,9 @@ public class TypeFactory {
     }
 
     private List<Type> getTypeParameters(TypeMirror mirror, boolean isImplementationType) {
+        while ( mirror.getKind() == TypeKind.ARRAY ) {
+            mirror = getComponentType( mirror );
+        }
         if ( mirror.getKind() != TypeKind.DECLARED ) {
             return java.util.Collections.emptyList();
         }

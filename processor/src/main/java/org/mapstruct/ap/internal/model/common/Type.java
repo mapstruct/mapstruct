@@ -697,35 +697,66 @@ public class Type extends ModelElement implements Comparable<Type> {
             return this;
         }
 
-        DeclaredType declaredType = typeUtils.getDeclaredType(
-                typeElement,
-                mirrors
-        );
-        return new Type(
-                typeUtils,
-                elementUtils,
-                typeFactory,
-                accessorNaming,
-                declaredType,
-                (TypeElement) declaredType.asElement(),
-                bounds,
-                implementationType,
-                componentType,
-                packageName,
-                name,
-                qualifiedName,
-                isInterface,
-                isEnumType,
-                isIterableType,
-                isCollectionType,
-                isMapType,
-                isStream,
-                toBeImportedTypes,
-                notToBeImportedTypes,
-                isToBeImported,
-                isLiteral,
-                loggingVerbose
-        );
+        if ( this.componentType != null ) {
+            Type componentTypeWithoutBounds = this.componentType.replaceSuperBoundWith( compare, replacement );
+
+            return new Type(
+                    typeUtils,
+                    elementUtils,
+                    typeFactory,
+                    accessorNaming,
+                    typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() ),
+                    null,
+                    bounds,
+                    implementationType,
+                    componentTypeWithoutBounds,
+                    packageName,
+                    name,
+                    qualifiedName,
+                    isInterface,
+                    isEnumType,
+                    isIterableType,
+                    isCollectionType,
+                    isMapType,
+                    isStream,
+                    toBeImportedTypes,
+                    notToBeImportedTypes,
+                    isToBeImported,
+                    isLiteral,
+                    loggingVerbose
+            );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
+                    typeElement,
+                    mirrors
+            );
+            return new Type(
+                    typeUtils,
+                    elementUtils,
+                    typeFactory,
+                    accessorNaming,
+                    declaredType,
+                    (TypeElement) declaredType.asElement(),
+                    bounds,
+                    implementationType,
+                    componentType,
+                    packageName,
+                    name,
+                    qualifiedName,
+                    isInterface,
+                    isEnumType,
+                    isIterableType,
+                    isCollectionType,
+                    isMapType,
+                    isStream,
+                    toBeImportedTypes,
+                    notToBeImportedTypes,
+                    isToBeImported,
+                    isLiteral,
+                    loggingVerbose
+            );
+        }
     }
 
     public Type withoutBounds() {
@@ -740,39 +771,69 @@ public class Type extends ModelElement implements Comparable<Type> {
             mirrors.add( typeParameter.getTypeBound().getTypeMirror() );
         }
 
-        DeclaredType declaredType = typeUtils.getDeclaredType(
-            typeElement,
-            mirrors.toArray( new TypeMirror[] {} )
-        );
-        return new Type(
-            typeUtils,
-            elementUtils,
-            typeFactory,
-            accessorNaming,
-            declaredType,
-            (TypeElement) declaredType.asElement(),
-            bounds,
-            implementationType,
-            componentType,
-            packageName,
-            name,
-            qualifiedName,
-            isInterface,
-            isEnumType,
-            isIterableType,
-            isCollectionType,
-            isMapType,
-            isStream,
-            toBeImportedTypes,
-            notToBeImportedTypes,
-            isToBeImported,
-            isLiteral,
-            loggingVerbose
-        );
+        if ( this.componentType != null ) {
+            Type componentTypeWithoutBounds = this.componentType.withoutBounds();
+
+            return new Type(
+                    typeUtils,
+                    elementUtils,
+                    typeFactory,
+                    accessorNaming,
+                    typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() ),
+                   null,
+                    bounds,
+                    implementationType,
+                    componentTypeWithoutBounds,
+                    packageName,
+                    name,
+                    qualifiedName,
+                    isInterface,
+                    isEnumType,
+                    isIterableType,
+                    isCollectionType,
+                    isMapType,
+                    isStream,
+                    toBeImportedTypes,
+                    notToBeImportedTypes,
+                    isToBeImported,
+                    isLiteral,
+                    loggingVerbose
+            );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
+                    typeElement,
+                    mirrors.toArray( new TypeMirror[] {} ) );
+            return new Type(
+                    typeUtils,
+                    elementUtils,
+                    typeFactory,
+                    accessorNaming,
+                    declaredType,
+                    (TypeElement) declaredType.asElement(),
+                    bounds,
+                    implementationType,
+                    null,
+                    packageName,
+                    name,
+                    qualifiedName,
+                    isInterface,
+                    isEnumType,
+                    isIterableType,
+                    isCollectionType,
+                    isMapType,
+                    isStream,
+                    toBeImportedTypes,
+                    notToBeImportedTypes,
+                    isToBeImported,
+                    isLiteral,
+                    loggingVerbose
+            );
+        }
     }
 
     private Type replaceGeneric(Type oldGenericType, Type newType) {
-        if ( !typeParameters.contains( oldGenericType ) || newType == null ) {
+        if ( !typeParameters.contains( oldGenericType ) || newType == null || oldGenericType.equals( newType ) ) {
             return this;
         }
         newType = newType.getBoxedEquivalent();
