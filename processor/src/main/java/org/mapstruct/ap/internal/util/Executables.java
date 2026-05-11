@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -20,19 +18,6 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
  * @author Gunnar Morling
  */
 public class Executables {
-
-    private static final Method DEFAULT_METHOD;
-
-    static {
-        Method method;
-        try {
-            method = ExecutableElement.class.getMethod( "isDefault" );
-        }
-        catch ( NoSuchMethodException e ) {
-            method = null;
-        }
-        DEFAULT_METHOD = method;
-    }
 
     private Executables() {
     }
@@ -54,12 +39,7 @@ public class Executables {
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {
-        try {
-            return DEFAULT_METHOD != null && Boolean.TRUE.equals( DEFAULT_METHOD.invoke( method ) );
-        }
-        catch ( IllegalAccessException | InvocationTargetException e ) {
-            return false;
-        }
+       return method.isDefault();
     }
 
     /**
