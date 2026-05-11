@@ -17,16 +17,19 @@ public class CompilerLauncherInterceptor implements LauncherInterceptor {
     private ModifiableURLClassLoader newClassLoader;
     private ClassLoader orginalClassLoader;
 
+    public CompilerLauncherInterceptor() {
+        FilteringParentClassLoader filteringParentClassLoader = new FilteringParentClassLoader(
+                Thread.currentThread().getContextClassLoader(),
+                "org.mapstruct.ap.test."
+        );
+        newClassLoader = new ModifiableURLClassLoader( filteringParentClassLoader );
+        newClassLoader.withOriginOf( getClass() );
+    }
+
     @Override
     public <T> T intercept(Invocation<T> invocation) {
         orginalClassLoader = Thread.currentThread().getContextClassLoader();
         if ( !orginalClassLoader.getClass().isAssignableFrom( ModifiableURLClassLoader.class ) ) {
-            FilteringParentClassLoader filteringParentClassLoader = new FilteringParentClassLoader(
-                    orginalClassLoader,
-                    "org.mapstruct.ap.test."
-            );
-            newClassLoader = new ModifiableURLClassLoader( filteringParentClassLoader );
-            newClassLoader.withOriginOf( getClass() );
             Thread.currentThread().setContextClassLoader( newClassLoader );
         }
         return invocation.proceed();
