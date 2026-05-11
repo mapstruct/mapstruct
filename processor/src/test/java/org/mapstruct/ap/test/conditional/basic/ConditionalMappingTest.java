@@ -127,6 +127,114 @@ public class ConditionalMappingTest {
 
     @ProcessorTest
     @WithClasses({
+        ConditionalMethodWithOptionalContextMapper.class
+    })
+    @IssueKey("3993")
+    public void conditionalMethodWithOptionalContext() {
+        ConditionalMethodWithOptionalContextMapper mapper = ConditionalMethodWithOptionalContextMapper.INSTANCE;
+
+        // When the @Context is available the context-aware condition method is used. A present source value
+        // changes the existing target value, and the tracker records that change.
+        ConditionalMethodWithOptionalContextMapper.Target target =
+            new ConditionalMethodWithOptionalContextMapper.Target();
+        ConditionalMethodWithOptionalContextMapper.PropertyChangedTracker tracker =
+            new ConditionalMethodWithOptionalContextMapper.PropertyChangedTracker();
+
+        mapper.updateWithTracker(
+            target,
+            new ConditionalMethodWithOptionalContextMapper.Source(
+                ConditionalMethodWithOptionalContextMapper.Nullable.ofNullable( "updated" ) ),
+            tracker
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "updated" );
+        assertThat( tracker.getChangedCount() ).isEqualTo( 1 );
+
+        // An undefined source value leaves the existing target value untouched, so no change is tracked.
+        target = new ConditionalMethodWithOptionalContextMapper.Target();
+        tracker = new ConditionalMethodWithOptionalContextMapper.PropertyChangedTracker();
+
+        mapper.updateWithTracker(
+            target,
+            new ConditionalMethodWithOptionalContextMapper.Source(
+                ConditionalMethodWithOptionalContextMapper.Nullable.undefined() ),
+            tracker
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "initial" );
+        assertThat( tracker.getChangedCount() ).isEqualTo( 0 );
+
+        // When no @Context is available the plain condition method is used, still applying the change.
+        target = new ConditionalMethodWithOptionalContextMapper.Target();
+        mapper.update(
+            target,
+            new ConditionalMethodWithOptionalContextMapper.Source(
+                ConditionalMethodWithOptionalContextMapper.Nullable.ofNullable( "updated" ) )
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "updated" );
+
+        target = new ConditionalMethodWithOptionalContextMapper.Target();
+        mapper.update(
+            target,
+            new ConditionalMethodWithOptionalContextMapper.Source(
+                ConditionalMethodWithOptionalContextMapper.Nullable.undefined() )
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "initial" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ConditionalMethodWithDistinctContextMapper.class
+    })
+    @IssueKey("3993")
+    public void conditionalMethodWithDistinctContext() {
+        ConditionalMethodWithDistinctContextMapper mapper = ConditionalMethodWithDistinctContextMapper.INSTANCE;
+
+        // Both overloads bind the same number of parameters, but only the FirstContext is available, so its
+        // overload is selected without ambiguity.
+        ConditionalMethodWithDistinctContextMapper.FirstContext first =
+            new ConditionalMethodWithDistinctContextMapper.FirstContext();
+
+        ConditionalMethodWithDistinctContextMapper.Target target = mapper.map(
+            new ConditionalMethodWithDistinctContextMapper.Source(
+                ConditionalMethodWithDistinctContextMapper.Nullable.ofNullable( "value" ) ),
+            first
+        );
+
+        assertThat( target.getValue() ).isEqualTo( "value" );
+        assertThat( first.getCheckedCount() ).isEqualTo( 1 );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        ErroneousAmbiguousOverloadedConditionalMethodMapper.class
+    })
+    @IssueKey("3993")
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                type = ErroneousAmbiguousOverloadedConditionalMethodMapper.class,
+                line = 20,
+                message = "Ambiguous presence check methods found for checking " +
+                    "ErroneousAmbiguousOverloadedConditionalMethodMapper.Nullable<String>: " +
+                    "boolean isPresent(ErroneousAmbiguousOverloadedConditionalMethodMapper.Nullable<T> nullable, " +
+                    "@Context ErroneousAmbiguousOverloadedConditionalMethodMapper.FirstContext first), " +
+                    "boolean isPresent(ErroneousAmbiguousOverloadedConditionalMethodMapper.Nullable<T> nullable, " +
+                    "@Context ErroneousAmbiguousOverloadedConditionalMethodMapper.SecondContext second). " +
+                    "See https://mapstruct.org/faq/#ambiguous for more info."
+            )
+        }
+    )
+    public void ambiguousOverloadedConditionalMethod() {
+
+    }
+
+    @ProcessorTest
+    @WithClasses({
         ConditionalMethodWithSourceParameterMapper.class
     })
     public void conditionalMethodWithSourceParameter() {
