@@ -697,20 +697,34 @@ public class Type extends ModelElement implements Comparable<Type> {
             return this;
         }
 
-        DeclaredType declaredType = typeUtils.getDeclaredType(
+        TypeElement typeElementWithoutBounds;
+        Type componentTypeWithoutBounds;
+        TypeMirror typeMirrorWithoutBounds;
+        if ( this.componentType != null ) {
+            typeElementWithoutBounds = null;
+            componentTypeWithoutBounds = this.componentType.replaceSuperBoundWith( compare, replacement );
+            typeMirrorWithoutBounds = typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
                 typeElement,
                 mirrors
-        );
+            );
+            typeMirrorWithoutBounds = declaredType;
+            typeElementWithoutBounds = (TypeElement) declaredType.asElement();
+            componentTypeWithoutBounds = null;
+        }
+
         return new Type(
                 typeUtils,
                 elementUtils,
                 typeFactory,
                 accessorNaming,
-                declaredType,
-                (TypeElement) declaredType.asElement(),
+                typeMirrorWithoutBounds,
+                typeElementWithoutBounds,
                 bounds,
                 implementationType,
-                componentType,
+                componentTypeWithoutBounds,
                 packageName,
                 name,
                 qualifiedName,
@@ -740,20 +754,34 @@ public class Type extends ModelElement implements Comparable<Type> {
             mirrors.add( typeParameter.getTypeBound().getTypeMirror() );
         }
 
-        DeclaredType declaredType = typeUtils.getDeclaredType(
-            typeElement,
-            mirrors.toArray( new TypeMirror[] {} )
-        );
+        TypeElement typeElementWithoutBounds;
+        Type componentTypeWithoutBounds;
+        TypeMirror typeMirrorWithoutBounds;
+        if ( this.componentType != null ) {
+            typeElementWithoutBounds = null;
+            componentTypeWithoutBounds = this.componentType.withoutBounds();
+            typeMirrorWithoutBounds = typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
+                typeElement,
+                mirrors.toArray( new TypeMirror[] {} )
+            );
+            typeMirrorWithoutBounds = declaredType;
+            typeElementWithoutBounds = (TypeElement) declaredType.asElement();
+            componentTypeWithoutBounds = null;
+        }
+
         return new Type(
             typeUtils,
             elementUtils,
             typeFactory,
             accessorNaming,
-            declaredType,
-            (TypeElement) declaredType.asElement(),
+            typeMirrorWithoutBounds,
+            typeElementWithoutBounds,
             bounds,
             implementationType,
-            componentType,
+            componentTypeWithoutBounds,
             packageName,
             name,
             qualifiedName,
@@ -772,7 +800,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type replaceGeneric(Type oldGenericType, Type newType) {
-        if ( !typeParameters.contains( oldGenericType ) || newType == null ) {
+        if ( !typeParameters.contains( oldGenericType ) || newType == null || oldGenericType.equals( newType ) ) {
             return this;
         }
         newType = newType.getBoxedEquivalent();

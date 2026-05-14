@@ -167,6 +167,12 @@ Performs a default assignment with a default value.
     </#if>
 </@compress></#macro>
 <#--
+-->
+<#macro constructArrayType targetType targetSize><@compress single_line=true>
+    <#assign targetTypeString><@includeModel object=targetType raw=true/></#assign>
+    new ${targetTypeString?keep_before("[")}[${targetSize}]${targetTypeString?keep_after("]")}
+</@compress></#macro>
+<#--
   macro: constructTargetObject
 
   purpose: Either call the constructor of the target object directly or of the implementing type.
@@ -178,7 +184,7 @@ Performs a default assignment with a default value.
     <#if targetType.implementationType??>
         new <@includeModel object=targetType.implementationType raw=true/><#if targetType.implementationType.typeParameters?size != 0><></#if>()
     <#elseif targetType.arrayType>
-        new <@includeModel object=targetType.componentType/>[0]
+        <@constructArrayType targetType=targetType targetSize=0/>
     <#elseif targetType.sensibleDefault??>
         ${targetType.sensibleDefault}
     <#elseif targetType.optionalType>

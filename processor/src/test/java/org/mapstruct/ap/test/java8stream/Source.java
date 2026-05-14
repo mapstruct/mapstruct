@@ -16,6 +16,10 @@ public class Source {
 
     private Stream<Integer> integerStream;
 
+    private Stream<Integer> integerStream2;
+
+    private Stream<Integer[]> integerArrayStream;
+
     private Stream<Integer> anotherIntegerStream;
 
     private Stream<Colour> colours;
@@ -23,6 +27,8 @@ public class Source {
     private Stream<String> stringStream2;
 
     private Stream<String> stringStream3;
+
+    private Stream<Comparable<String>> streamWithGenerics;
 
     public Stream<String> getStringStream() {
         return stringStream;
@@ -56,6 +62,22 @@ public class Source {
         this.integerStream = integerStream;
     }
 
+    public Stream<Integer> getIntegerStream2() {
+        return integerStream2;
+    }
+
+    public void setIntegerStream2(Stream<Integer> integerStream2) {
+        this.integerStream2 = integerStream2;
+    }
+
+    public Stream<Integer[]> getIntegerArrayStream() {
+        return integerArrayStream;
+    }
+
+    public void setIntegerArrayStream(Stream<Integer[]> integerArrayStream) {
+        this.integerArrayStream = integerArrayStream;
+    }
+
     public Stream<Integer> getAnotherIntegerStream() {
         return anotherIntegerStream;
     }
@@ -86,5 +108,13 @@ public class Source {
 
     public void setStringStream3(Stream<String> stringStream3) {
         this.stringStream3 = stringStream3;
+    }
+
+    public Stream<Comparable<String>> getStreamWithGenerics() {
+        return streamWithGenerics;
+    }
+
+    public void setStreamWithGenerics(Stream<Comparable<String>> streamWithGenerics) {
+        this.streamWithGenerics = streamWithGenerics;
     }
 }

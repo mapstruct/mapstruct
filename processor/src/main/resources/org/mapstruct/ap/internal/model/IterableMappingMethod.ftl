@@ -6,6 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.IterableMappingMethod" -->
+<#import "macro/CommonMacros.ftl" as lib>
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
@@ -28,7 +29,7 @@
                     }
                     return<#if returnType.name != "void"> ${resultName}</#if>;
                 <#else>
-                    return new <@includeModel object=resultElementType/>[0];
+                    return <@lib.constructArrayType targetType=resultType targetSize=0/>;
                 </#if>
             <#else>
                 <#if existingInstanceMapping>
@@ -43,8 +44,7 @@
 
     <#if resultType.arrayType>
         <#if !existingInstanceMapping>
-            <#assign elementTypeString><@includeModel object=resultElementType/></#assign>
-            ${elementTypeString}[] ${resultName} = new ${elementTypeString?keep_before('[]')}[<@iterableSize/>]${elementTypeString?replace('[^\\[\\]]+', '', 'r')};
+            <@includeModel object=resultElementType/>[] ${resultName} = <@lib.constructArrayType targetType=resultType targetSize=iterableSize()/>;
         </#if>
     <#else>
         <#if existingInstanceMapping>
@@ -64,7 +64,7 @@
         int ${index1Name} = 0;
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
             <#if existingInstanceMapping>
-            if ( ( ${index1Name} >= ${resultName}.length ) || ( ${index1Name} >= <@iterableSize/> ) ) {
+            if ( ( ${index1Name} >= ${resultName}.length ) || ( ${index1Name} >= ${iterableSize()} ) ) {
                 break;
             }
             </#if>
@@ -95,15 +95,13 @@
         </#list>
     </@compress>
 </#macro>
-<#macro iterableSize>
-    <@compress single_line=true>
-        <#if sourceParameter.type.arrayType>
-           ${sourceParameter.name}.length
-        <#else>
-           ${sourceParameter.name}.size()
-        </#if>
-    </@compress>
-</#macro>
+<#function iterableSize>
+    <#if sourceParameter.type.arrayType>
+        <#return sourceParameter.name + ".length">
+    <#else>
+        <#return sourceParameter.name + ".size()">
+    </#if>
+</#function>
 <#macro iterableLocalVarDef>
     <@compress single_line=true>
         <#if resultType.fullyQualifiedName == "java.lang.Iterable">

@@ -6,6 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.StreamMappingMethod" -->
+<#import "macro/CommonMacros.ftl" as lib>
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
@@ -29,7 +30,7 @@
                     }
                     return<#if returnType.name != "void"> ${resultName}</#if>;
                 <#else>
-                    return new <@includeModel object=resultElementType/>[0];
+                    return <@lib.constructArrayType targetType=resultType targetSize=0/>;
                 </#if>
             <#elseif resultType.iterableType>
                 <#if existingInstanceMapping>
@@ -88,7 +89,7 @@
     <#if resultType.arrayType>
         <#if existingInstanceMapping>
         int ${index1Name} = 0;
-        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length )<@streamMapSupplier />.toArray( ${resultElementType}[]::new ) ) {
+        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length )<@streamMapSupplier />.toArray( <@includeModel object=resultElementType raw=true/>[]::new ) ) {
             if ( ( ${index1Name} >= ${resultName}.length ) ) {
                 break;
             }
@@ -96,7 +97,7 @@
         }
         <#else>
             <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#else> <#if needVarDefine>${resultElementType}[] <#else>${resultName} = </#if></#if>${sourceParameter.name}<@streamMapSupplier />
-                        .toArray( <@includeModel object=resultElementType/>[]::new );
+                        .toArray( <@includeModel object=resultElementType raw=true/>[]::new );
         </#if>
     <#elseif resultType.iterableType>
         <#if existingInstanceMapping || !canReturnImmediatelly>

@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mapstruct.ap.test.array._target.GenericScientistDto;
 import org.mapstruct.ap.test.array._target.ScientistDto;
+import org.mapstruct.ap.test.array.source.GenericScientist;
 import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -18,7 +20,8 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
+@WithClasses( { Scientist.class, ScientistDto.class, GenericScientist.class, GenericScientistDto.class,
+        ScienceMapper.class } )
 @IssueKey("108")
 public class ArrayMappingTest {
 
@@ -56,30 +59,134 @@ public class ArrayMappingTest {
     }
 
     @ProcessorTest
-    public void shouldMapArrayToArray() {
+    public void shouldMapArrayToArrayAndNullToNull() {
         ScientistDto[] dtos = ScienceMapper.INSTANCE
-            .scientistsToDtos( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
+            .scientistsToDtosReturnNull( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
 
         assertThat( dtos ).isNotNull();
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosReturnNull( (Scientist[]) null ) ).isNull();
     }
 
     @ProcessorTest
-    public void shouldMapListToArray() {
+    public void shouldMapArrayToArrayAndNullToDefault() {
         ScientistDto[] dtos = ScienceMapper.INSTANCE
-            .scientistsToDtos( Arrays.asList( new Scientist( "Bob" ), new Scientist( "Larry" ) ) );
+                .scientistsToDtosReturnDefault( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
 
         assertThat( dtos ).isNotNull();
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosReturnDefault( (Scientist[]) null ) ).isEmpty();
     }
 
     @ProcessorTest
-    public void shouldMapArrayToList() {
+    public void shouldMapListToArrayAndNullToNull() {
+        ScientistDto[] dtos = ScienceMapper.INSTANCE
+            .scientistsToDtosReturnNull( Arrays.asList( new Scientist( "Bob" ), new Scientist( "Larry" ) ) );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosReturnNull( (List<Scientist>) null ) ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapListToArrayAndNullToDefault() {
+        ScientistDto[] dtos = ScienceMapper.INSTANCE
+                .scientistsToDtosReturnDefault( Arrays.asList( new Scientist( "Bob" ), new Scientist( "Larry" ) ) );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosReturnDefault( (List<Scientist>) null ) ).isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapArrayToListAndNullToNull() {
         List<ScientistDto> dtos = ScienceMapper.INSTANCE
-            .scientistsToDtosAsList( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
+            .scientistsToDtosAsListReturnNull( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
 
         assertThat( dtos ).isNotNull();
         assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosAsListReturnNull( null ) ).isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapArrayToListAndNullToDefault() {
+        List<ScientistDto> dtos = ScienceMapper.INSTANCE
+                .scientistsToDtosAsListReturnDefault(
+                        new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.scientistsToDtosAsListReturnDefault( null ) ).isEmpty();
+    }
+
+    @ProcessorTest
+    @SuppressWarnings("unchecked")
+    public void shouldMapGenericArrayToGenericArrayAndNullToNull() {
+        GenericScientistDto<String>[] dtos = ScienceMapper.INSTANCE
+                .genericScientistToDtosReturnNull(
+                        new GenericScientist[]{ new GenericScientist<>( "Bob" ), new GenericScientist<>( "Larry" ) } );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.genericScientistToDtosReturnNull( (GenericScientist<String>[]) null ) )
+                .isNull();
+    }
+
+    @ProcessorTest
+    @SuppressWarnings("unchecked")
+    public void shouldMapGenericArrayToGenericArrayAndNullToDefault() {
+        GenericScientistDto<String>[] dtos = ScienceMapper.INSTANCE.genericScientistToDtosReturnDefault(
+                new GenericScientist[]{ new GenericScientist<>( "Bob" ), new GenericScientist<>( "Larry" ) } );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.genericScientistToDtosReturnDefault( (GenericScientist<String>[]) null ) )
+                .isEmpty();
+    }
+
+    @ProcessorTest
+    public void shouldMapListToGenericArrayAndNullToNull() {
+        GenericScientistDto<String>[] dtos = ScienceMapper.INSTANCE.genericScientistToDtosReturnNull(
+                Arrays.asList( new GenericScientist<>( "Bob" ), new GenericScientist<>( "Larry" ) ) );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.genericScientistToDtosReturnNull( (List<GenericScientist<String>>) null ) )
+                .isNull();
+    }
+
+    @ProcessorTest
+    public void shouldMapListToGenericArrayAndNullToDefault() {
+        GenericScientistDto<String>[] dtos = ScienceMapper.INSTANCE
+                .genericScientistToDtosReturnDefault(
+                        Arrays.asList( new GenericScientist<>("Bob"), new GenericScientist<>( "Larry" ) ) );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE
+                .genericScientistToDtosReturnDefault( (List<GenericScientist<String>>) null ) ).isEmpty();
+    }
+
+    @ProcessorTest
+    @SuppressWarnings("unchecked")
+    public void shouldMapGenericArrayToListAndNullToNull() {
+        List<GenericScientist<String>> dtos = ScienceMapper.INSTANCE.genericScientistToDtosAsList(
+                new GenericScientist[]{ new GenericScientist<>( "Bob" ), new GenericScientist<>( "Larry" ) } );
+
+        assertThat( dtos ).isNotNull();
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
+
+        assertThat( ScienceMapper.INSTANCE.genericScientistToDtosAsList( null ) ).isNull();
     }
 
     @ProcessorTest

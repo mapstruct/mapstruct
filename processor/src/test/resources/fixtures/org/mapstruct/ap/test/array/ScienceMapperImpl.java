@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Generated;
+import org.mapstruct.ap.test.array._target.GenericScientistDto;
 import org.mapstruct.ap.test.array._target.ScientistDto;
+import org.mapstruct.ap.test.array.source.GenericScientist;
 import org.mapstruct.ap.test.array.source.Scientist;
 
 @Generated(
@@ -44,7 +46,7 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public ScientistDto[] scientistsToDtos(Scientist[] scientists) {
+    public ScientistDto[] scientistsToDtosReturnNull(Scientist[] scientists) {
         if ( scientists == null ) {
             return null;
         }
@@ -60,7 +62,7 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public ScientistDto[] scientistsToDtos(List<Scientist> scientists) {
+    public ScientistDto[] scientistsToDtosReturnNull(List<Scientist> scientists) {
         if ( scientists == null ) {
             return null;
         }
@@ -76,7 +78,7 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public List<ScientistDto> scientistsToDtosAsList(Scientist[] scientists) {
+    public List<ScientistDto> scientistsToDtosAsListReturnNull(Scientist[] scientists) {
         if ( scientists == null ) {
             return null;
         }
@@ -105,6 +107,153 @@ public class ScienceMapperImpl implements ScienceMapper {
         }
 
         return target;
+    }
+
+    @Override
+    public ScientistDto[] scientistsToDtosReturnDefault(Scientist[] scientists) {
+        if ( scientists == null ) {
+            return new ScientistDto[0];
+        }
+
+        ScientistDto[] scientistDtoTmp = new ScientistDto[scientists.length];
+        int i = 0;
+        for ( Scientist scientist : scientists ) {
+            scientistDtoTmp[i] = scientistToDto( scientist );
+            i++;
+        }
+
+        return scientistDtoTmp;
+    }
+
+    @Override
+    public ScientistDto[] scientistsToDtosReturnDefault(List<Scientist> scientists) {
+        if ( scientists == null ) {
+            return new ScientistDto[0];
+        }
+
+        ScientistDto[] scientistDtoTmp = new ScientistDto[scientists.size()];
+        int i = 0;
+        for ( Scientist scientist : scientists ) {
+            scientistDtoTmp[i] = scientistToDto( scientist );
+            i++;
+        }
+
+        return scientistDtoTmp;
+    }
+
+    @Override
+    public List<ScientistDto> scientistsToDtosAsListReturnDefault(Scientist[] scientists) {
+        if ( scientists == null ) {
+            return new ArrayList<>();
+        }
+
+        List<ScientistDto> list = new ArrayList<>( scientists.length );
+        for ( Scientist scientist : scientists ) {
+            list.add( scientistToDto( scientist ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public GenericScientistDto<String> genericScientistToDto(GenericScientist<String> scientist) {
+        if ( scientist == null ) {
+            return null;
+        }
+
+        GenericScientistDto<String> genericScientistDto = new GenericScientistDto<>();
+
+        genericScientistDto.setName( scientist.getName() );
+        String[] publications = scientist.getPublications();
+        if ( publications != null ) {
+            genericScientistDto.setPublications( Arrays.copyOf( publications, publications.length ) );
+        }
+        genericScientistDto.setPublicationYears( stringArrayTointArray( scientist.getPublicationYears() ) );
+        String[] publicPublications = scientist.publicPublications;
+        if ( publicPublications != null ) {
+            genericScientistDto.publicPublications = Arrays.copyOf( publicPublications, publicPublications.length );
+        }
+        genericScientistDto.publicPublicationYears = stringArrayTointArray( scientist.publicPublicationYears );
+
+        return genericScientistDto;
+    }
+
+    @Override
+    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
+            return null;
+        }
+
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.length];
+        int i = 0;
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
+            i++;
+        }
+
+        return genericScientistDtoTmp;
+    }
+
+    @Override
+    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(List<GenericScientist<String>> genericScientists) {
+        if ( genericScientists == null ) {
+            return null;
+        }
+
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.size()];
+        int i = 0;
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
+            i++;
+        }
+
+        return genericScientistDtoTmp;
+    }
+
+    @Override
+    public List<GenericScientistDto<String>> genericScientistToDtosAsList(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
+            return null;
+        }
+
+        List<GenericScientistDto<String>> list = new ArrayList<>( genericScientists.length );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            list.add( genericScientistToDto( genericScientist ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
+            return new GenericScientistDto[0];
+        }
+
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.length];
+        int i = 0;
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
+            i++;
+        }
+
+        return genericScientistDtoTmp;
+    }
+
+    @Override
+    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(List<GenericScientist<String>> genericScientists) {
+        if ( genericScientists == null ) {
+            return new GenericScientistDto[0];
+        }
+
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.size()];
+        int i = 0;
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
+            i++;
+        }
+
+        return genericScientistDtoTmp;
     }
 
     @Override
