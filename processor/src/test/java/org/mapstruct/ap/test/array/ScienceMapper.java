@@ -43,17 +43,17 @@ public interface ScienceMapper {
 
     GenericScientistDto<String> genericScientistToDto(GenericScientist<String> scientist);
 
-    GenericScientistDto<String>[] genericScientistToDtosReturnNull(GenericScientist<String>[] genericScientist);
+    GenericScientistDto<String>[] genericScientistToDtosReturnNull(GenericScientist<String>[] genericScientists);
 
-    GenericScientistDto<String>[] genericScientistToDtosReturnNull(List<GenericScientist<String>> genericScientist);
+    GenericScientistDto<String>[] genericScientistToDtosReturnNull(List<GenericScientist<String>> genericScientists);
 
-    List<GenericScientistDto<String>> genericScientistToDtosAsList(GenericScientist<String>[] genericScientist);
-
-    @IterableMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
-    GenericScientistDto<String>[] genericScientistToDtosReturnDefault(GenericScientist<String>[] genericScientist);
+    List<GenericScientistDto<String>> genericScientistToDtosAsList(GenericScientist<String>[] genericScientists);
 
     @IterableMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
-    GenericScientistDto<String>[] genericScientistToDtosReturnDefault(List<GenericScientist<String>> genericScientist);
+    GenericScientistDto<String>[] genericScientistToDtosReturnDefault(GenericScientist<String>[] genericScientists);
+
+    @IterableMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
+    GenericScientistDto<String>[] genericScientistToDtosReturnDefault(List<GenericScientist<String>> genericScientists);
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     boolean[] nvmMapping(boolean[] source);

@@ -179,15 +179,15 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(GenericScientist<String>[] genericScientist) {
-        if ( genericScientist == null ) {
+    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
             return null;
         }
 
-        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientist.length];
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.length];
         int i = 0;
-        for ( GenericScientist<String> genericScientist1 : genericScientist ) {
-            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist1 );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
             i++;
         }
 
@@ -195,15 +195,15 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(List<GenericScientist<String>> genericScientist) {
-        if ( genericScientist == null ) {
+    public GenericScientistDto<String>[] genericScientistToDtosReturnNull(List<GenericScientist<String>> genericScientists) {
+        if ( genericScientists == null ) {
             return null;
         }
 
-        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientist.size()];
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.size()];
         int i = 0;
-        for ( GenericScientist<String> genericScientist1 : genericScientist ) {
-            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist1 );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
             i++;
         }
 
@@ -211,29 +211,29 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public List<GenericScientistDto<String>> genericScientistToDtosAsList(GenericScientist<String>[] genericScientist) {
-        if ( genericScientist == null ) {
+    public List<GenericScientistDto<String>> genericScientistToDtosAsList(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
             return null;
         }
 
-        List<GenericScientistDto<String>> list = new ArrayList<>( genericScientist.length );
-        for ( GenericScientist<String> genericScientist1 : genericScientist ) {
-            list.add( genericScientistToDto( genericScientist1 ) );
+        List<GenericScientistDto<String>> list = new ArrayList<>( genericScientists.length );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            list.add( genericScientistToDto( genericScientist ) );
         }
 
         return list;
     }
 
     @Override
-    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(GenericScientist<String>[] genericScientist) {
-        if ( genericScientist == null ) {
+    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(GenericScientist<String>[] genericScientists) {
+        if ( genericScientists == null ) {
             return new GenericScientistDto[0];
         }
 
-        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientist.length];
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.length];
         int i = 0;
-        for ( GenericScientist<String> genericScientist1 : genericScientist ) {
-            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist1 );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
             i++;
         }
 
@@ -241,15 +241,15 @@ public class ScienceMapperImpl implements ScienceMapper {
     }
 
     @Override
-    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(List<GenericScientist<String>> genericScientist) {
-        if ( genericScientist == null ) {
+    public GenericScientistDto<String>[] genericScientistToDtosReturnDefault(List<GenericScientist<String>> genericScientists) {
+        if ( genericScientists == null ) {
             return new GenericScientistDto[0];
         }
 
-        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientist.size()];
+        GenericScientistDto<String>[] genericScientistDtoTmp = new GenericScientistDto[genericScientists.size()];
         int i = 0;
-        for ( GenericScientist<String> genericScientist1 : genericScientist ) {
-            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist1 );
+        for ( GenericScientist<String> genericScientist : genericScientists ) {
+            genericScientistDtoTmp[i] = genericScientistToDto( genericScientist );
             i++;
         }
 
