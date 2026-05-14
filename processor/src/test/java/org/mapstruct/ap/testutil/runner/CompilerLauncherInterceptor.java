@@ -28,8 +28,9 @@ public class CompilerLauncherInterceptor implements LauncherInterceptor {
 
     @Override
     public <T> T intercept(Invocation<T> invocation) {
-        orginalClassLoader = Thread.currentThread().getContextClassLoader();
-        if ( !orginalClassLoader.getClass().isAssignableFrom( ModifiableURLClassLoader.class ) ) {
+        ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+        if ( !threadClassLoader.getClass().isAssignableFrom( ModifiableURLClassLoader.class ) ) {
+            orginalClassLoader = threadClassLoader;
             Thread.currentThread().setContextClassLoader( newClassLoader );
         }
         return invocation.proceed();
