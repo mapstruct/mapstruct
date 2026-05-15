@@ -18,6 +18,7 @@
 
     	</#if>
     </#list>
+    <#if sourceParameterPresenceCheck??>
     if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
@@ -49,6 +50,7 @@
             </#if>
         </#if>
     }
+    </#if>
 
     <#-- A variable needs to be defined if there are before or after mappings and this is not exisitingInstanceMapping -->
     <#assign needVarDefine = (beforeMappingReferencesWithMappingTarget?has_content || afterMappingReferences?has_content) && !existingInstanceMapping />

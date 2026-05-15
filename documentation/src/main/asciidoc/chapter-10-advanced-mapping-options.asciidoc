@@ -328,6 +328,11 @@ The existing safety guards (`defaultValue` / `defaultExpression`, primitive unbo
 ==== Method-level source parameter
 
 When the source parameter of a mapping method is annotated `@NonNull` (directly or via a `@NullMarked` scope), MapStruct skips the method-level null guard, since the caller is contractually obliged to pass a non-null value.
+This rule applies uniformly to bean, iterable, map, and stream mapping methods.
+
+==== Method-level return type
+
+When the return type of a mapping method is `@NonNull` (directly or via a `@NullMarked` scope), MapStruct forces `NullValueMappingStrategy.RETURN_DEFAULT` semantics. The generated method returns a default-constructed target (bean methods), an empty collection (`Iterable` / array mappings), an empty map (`Map` mappings), or `Stream.empty()` (stream mappings) rather than `null`, so the return contract is never violated. This rule applies regardless of the explicit `NullValueMappingStrategy` setting.
 
 ==== Constructor parameter constraint
 
