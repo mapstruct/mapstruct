@@ -14,7 +14,6 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
@@ -36,12 +35,14 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
 
+    //CHECKSTYLE:OFF
     ContainerMappingMethod(Method method, List<Annotation> annotations,
                            Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
+        //CHECKSTYLE:ON
         super( method, annotations, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
         this.elementAssignment = parameterAssignment;
@@ -64,7 +65,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         }
 
         this.sourceParameter = sourceParameter;
-        this.sourceParameterPresenceCheck = new NullPresenceCheck( this.sourceParameter.getName() );
+        this.sourceParameterPresenceCheck = sourceParameterPresenceCheck;
 
     }
 

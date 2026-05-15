@@ -101,6 +101,7 @@ public enum Message {
     PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK( "JSpecify adding null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK( "JSpecify skipping null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM( "JSpecify skipping method-level null guard for property \"%s\": parameter is @NonNull.", Diagnostic.Kind.NOTE ),
+    MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT( "JSpecify forcing NullValueMappingStrategy.RETURN_DEFAULT for method \"%s\": return type is @NonNull.", Diagnostic.Kind.NOTE ),
 
     CONVERSION_LOSSY_WARNING( "%s has a possibly lossy conversion from %s to %s.", Diagnostic.Kind.WARNING ),
     CONVERSION_LOSSY_ERROR( "Can't map %s. It has a possibly lossy conversion from %s to %s." ),

@@ -717,6 +717,7 @@ public class PropertyMapping extends ModelElement {
                 .assignment( rhs )
                 .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
+                .sourceJSpecifyNullability( getSourceJSpecifyNullability() )
                 .build();
         }
 
