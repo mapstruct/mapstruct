@@ -372,6 +372,36 @@ include::{processor-ap-test}/value/nametransformation/CustomEnumTransformationSt
 ----
 ====
 
+
+[[custom-implementation-naming-strategy]]
+=== Custom implementation naming Strategy
+
+SPI name: `org.mapstruct.ap.spi.ImplementationNamingStrategy`
+
+MapStruct offers the possibility to customize the implementation name of the generated mapper using the `ImplementationNamingStrategy` via the Service Provider Interface (SPI).
+
+
+.CustomImplementationNamingStrategy example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class CustomImplementationNamingStrategy implements ImplementationNamingStrategy {
+
+    @Override
+    public String generateMapperImplementationName(String className, String implementationName) {
+        return implementationName + "MapperImpl";
+    }
+
+    @Override
+    public String generateDecoratorImplementationName(String className, String implementationName) {
+        return implementationName + "DecoratorImpl";
+    }
+
+}
+----
+====
+
 [[additional-supported-options-provider]]
 === Additional Supported Options Provider
 
