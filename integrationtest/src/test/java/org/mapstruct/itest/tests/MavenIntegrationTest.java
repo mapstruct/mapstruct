@@ -111,10 +111,10 @@ public class MavenIntegrationTest {
     /**
      * ECLIPSE_JDT is not working with Protobuf. Use all other available processor types.
      */
-    @ProcessorTest(baseDir = "protobufBuilderTest", processorTypes = {
+    @ProcessorTest(baseDir = "protobufTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
-    void protobufBuilderTest() {
+    void protobufTest() {
     }
 
     @ProcessorTest(baseDir = "sealedSubclassTest")
