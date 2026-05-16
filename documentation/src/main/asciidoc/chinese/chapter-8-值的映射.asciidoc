@@ -1,0 +1,268 @@
+[[mapping-enum-types]]
+== 值的映射
+
+=== 把enum映射到enum
+
+MapStruct支持生成的方法实现中，把Java里的enum类型映射成另一个enum类型。
+
+默认情况下，source enum的每个常量会被映射为target enum中名字相同的对应常量。如果有需要，您可以通过 `@ValueMapping` 来把source enum中的常量映射为其他名字。source enum中的多个常量可以被映射为target enum中的同一个常量。
+
+例子如下：
+
+.Enum mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface OrderMapper {
+
+    OrderMapper INSTANCE = Mappers.getMapper( OrderMapper.class );
+
+    @ValueMappings({
+        @ValueMapping(target = "SPECIAL", source = "EXTRA"),
+        @ValueMapping(target = "DEFAULT", source = "STANDARD"),
+        @ValueMapping(target = "DEFAULT", source = "NORMAL")
+    })
+    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+}
+----
+====
+
+.Enum mapping method result
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class OrderMapperImpl implements OrderMapper {
+
+    @Override
+    public ExternalOrderType orderTypeToExternalOrderType(OrderType orderType) {
+        if ( orderType == null ) {
+            return null;
+        }
+
+        ExternalOrderType externalOrderType_;
+
+        switch ( orderType ) {
+            case EXTRA: externalOrderType_ = ExternalOrderType.SPECIAL;
+            break;
+            case STANDARD: externalOrderType_ = ExternalOrderType.DEFAULT;
+            break;
+            case NORMAL: externalOrderType_ = ExternalOrderType.DEFAULT;
+            break;
+            case RETAIL: externalOrderType_ = ExternalOrderType.RETAIL;
+            break;
+            case B2B: externalOrderType_ = ExternalOrderType.B2B;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + orderType );
+        }
+
+        return externalOrderType_;
+    }
+}
+----
+====
+
+当发生以下情况时，MapStruct会报错：
+1. 如果source enum类型中的一个常量在target enum类型中没有名字相同的对应常量，也没有通过 `@ValueMapping` 映射为另一个常量，就会抛出一个错误。这点确保了所有常量转换都是安全的、可预期的。
+2. 如果因为某些原因出现了一个未识别到的source值，同样会抛出IllegalStateException异常。
+
+MapStruct也可以把所有剩余的（未指明的）映射都映射成默认值。这在一组值的映射中只能用一次，而且只能应用于source。有两种选择：`<ANY_REMAINING>` 和 `<ANY_UNMAPPED>`，这两个选项不能同时使用。
+
+在source标签上使用 `<ANY_REMAINING>` 时，MapStruct首先仍会把source enum和target enum中名字相同的常量做映射，之后source enum中剩余的的常量会被映射为该 `@ValueMapping` 中指定的target常量。
+
+当使用 `<ANY_UNMAPPED>` 时，MapStruct *不会* 尝试进行基于名称的映射，而是直接把剩下的常量映射为该 `@ValueMapping` 中指定的target常量。
+
+MapStruct可以通过指定 `<NULL>` 关键字来处理source为 `null` 或者target为 `null` 的情况。
+
+[TIP]
+====
+您可以在 `MappingConstants` 类中找到 `<ANY_REMAINING>`, `<ANY_UNMAPPED>` 和 `<NULL>` 常量。
+====
+
+最后， `@InheritInverseConfiguration` 和 `@InheritConfiguration` 可以跟@ValueMappings一起使用。在这种情况下，`<ANY_REMAINING>` 和 `<ANY_UNMAPPED>` 会被忽略。
+
+.Enum mapping method, <NULL> and <ANY_REMAINING>
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface SpecialOrderMapper {
+
+    SpecialOrderMapper INSTANCE = Mappers.getMapper( SpecialOrderMapper.class );
+
+    @ValueMappings({
+        @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
+        @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
+        @ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
+    })
+    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+}
+----
+====
+
+.Enum mapping method result, <NULL> and <ANY_REMAINING>
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class SpecialOrderMapperImpl implements SpecialOrderMapper {
+
+    @Override
+    public ExternalOrderType orderTypeToExternalOrderType(OrderType orderType) {
+        if ( orderType == null ) {
+            return ExternalOrderType.DEFAULT;
+        }
+
+        ExternalOrderType externalOrderType_;
+
+        switch ( orderType ) {
+            case STANDARD: externalOrderType_ = null;
+            break;
+            case RETAIL: externalOrderType_ = ExternalOrderType.RETAIL;
+            break;
+            case B2B: externalOrderType_ = ExternalOrderType.B2B;
+            break;
+            default: externalOrderType_ = ExternalOrderType.SPECIAL;
+        }
+
+        return externalOrderType_;
+    }
+}
+----
+====
+
+*Note:* 如果您使用了 `<ANY_UNMAPPED>` 而不是 `<ANY_UNMAPPED>`，MapStruct不会映射 `RETAIL` 和 `B2B`。
+
+[WARNING]
+====
+通过 `@Mapping` 进行枚举间映射的方式已经 *弃用* 。该特性在未来的版本中会彻底移除，请尽早把存量代码转移为使用 `@ValueMapping` 注解。
+====
+
+=== 把enum映射为String/把String映射为枚举
+
+MapStruct支持把枚举映射为String，具体方式与 <<Mapping enum to enum types, enum-to-enum types>> 中把枚举映射为枚举类似。下面是相同点以及不同点：
+
+*enum to `String`*
+
+1. 相同点：如果没有定义一个显式映射，则MapStruct会将source enum映射为同名常量。
+2. 相同点：`<ANY_UNMAPPED>` 同样仅会仅处理显式映射，并把其余值都处理为默认值。
+3. 不同点：`<ANY_REMAINING>` 会导致报错。该选项的前提是source和target的枚举常量在名称上有相似性，而这对String类型没有意义。
+4. 不同点：考虑到1. 和3. ，绝不会有未映射的值。
+
+*`String` to enum*
+
+1. 相同点: 如果没有定义一个显式映射，target enum会由与其常量同名的source String映射得来。
+2. 相同点: `<ANY_UNMAPPED>` 同样仅会仅处理显式映射，并把其余值都处理为默认值。
+3. 相同点: `<ANY_REMAINING>` 会为target enum中的每个值创造一个映射，并把未匹配的值处理为switch语句中的默认值。
+4. 不同点: 需要设定一个switch/default值来保证一个确定性的结果（枚举的值是有限的集合，String有无穷的可能）。如果 `<ANY_REMAINING>` 和 `<ANY_UNMAPPED`>  都没有指定，那么会有一个warning。
+
+=== 自定义名称映射
+
+当没有定义 `@ValueMapping` 时，source enum中的每个枚举都会映射为常量名称相同的target enum。
+
+然而，在一些场景中，source enum需要先做一些转换再做映射，比如source enum要加个尾缀再转换为target enum。
+
+.Enum types
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public enum CheeseType {
+
+    BRIE,
+    ROQUEFORT
+}
+
+public enum CheeseTypeSuffixed {
+
+    BRIE_TYPE,
+    ROQUEFORT_TYPE
+}
+----
+====
+
+.Enum mapping method with custom name transformation strategy
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CheeseMapper {
+
+    CheeseMapper INSTANCE = Mappers.getMapper( CheeseMapper.class );
+
+    @EnumMapping(nameTransformationStrategy = "suffix", configuration = "_TYPE")
+    CheeseTypeSuffixed map(CheeseType cheese);
+
+    @InheritInverseConfiguration
+    CheeseType map(CheeseTypeSuffix cheese);
+}
+----
+====
+
+.Enum mapping method with custom name transformation strategy result
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CheeseSuffixMapperImpl implements CheeseSuffixMapper {
+
+    @Override
+    public CheeseTypeSuffixed map(CheeseType cheese) {
+        if ( cheese == null ) {
+            return null;
+        }
+
+        CheeseTypeSuffixed cheeseTypeSuffixed;
+
+        switch ( cheese ) {
+            case BRIE: cheeseTypeSuffixed = CheeseTypeSuffixed.BRIE_TYPE;
+            break;
+            case ROQUEFORT: cheeseTypeSuffixed = CheeseTypeSuffixed.ROQUEFORT_TYPE;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return cheeseTypeSuffixed;
+    }
+
+    @Override
+    public CheeseType map(CheeseTypeSuffixed cheese) {
+        if ( cheese == null ) {
+            return null;
+        }
+
+        CheeseType cheeseType;
+
+        switch ( cheese ) {
+            case BRIE_TYPE: cheeseType = CheeseType.BRIE;
+            break;
+            case ROQUEFORT_TYPE: cheeseType = CheeseType.ROQUEFORT;
+            break;
+            default: throw new IllegalArgumentException( "Unexpected enum constant: " + cheese );
+        }
+
+        return cheeseType;
+    }
+}
+----
+====
+
+MapStruct提供了如下开箱即用的名称转换策略：
+
+* _suffix_ - 给source enum加尾缀
+* _stripSuffix_ - 给source enum加strip后的尾缀
+* _prefix_ - 给source enum加前缀
+* _stripPrefix_ - 给source enum加strip后的前缀
+* _case_ - 给source enum提供各种样式的名称转换，提供的样式有：
+** _upper_ - 将source enum转换为大写样式
+** _lower_ - 将source enum转换为大写样式
+** _capital_ - 把source enum中每个单词的第一个字母大写，其余字母小写（单词以"_"分割）
+
+也支持注册自定义策略，更多信息请参见 <<custom-enum-transformation-strategy>> 

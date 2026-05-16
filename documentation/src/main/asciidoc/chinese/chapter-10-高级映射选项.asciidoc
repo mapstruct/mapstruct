@@ -1,0 +1,493 @@
+== Advanced mapping options
+
+该节描述了一些高级选项，让您可以按需对代码生成做个性化调整。
+
+[[default-values-and-constants]]
+=== 默认值和常量
+
+默认值：当source字段为null时，对应的target字段将采用默认值。
+
+常量：source字段值会被忽略，target字段将直接采用常量值。
+
+MapStruct以String来表述默认值和常量。
+
+当target类型是原生类型或者装箱类型时，String值会被处理为字面量。这种情况下，只要字面量合法，是二/八/十/十六进制模式都可以。
+
+其他所有情况下，为了匹配target字段类型，常量/默认值都服从内建的类型转换规则或者其他映射方法调用。
+
+一个带有常量的 `@Mapping` 不能指定source字段。
+
+下例中一些映射展示了如何使用常量/默认值：
+
+.Mapping method with default values and constants
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = StringListMapper.class)
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined")
+    @Mapping(target = "longProperty", source = "longProp", defaultValue = "-1")
+    @Mapping(target = "stringConstant", constant = "Constant Value")
+    @Mapping(target = "integerConstant", constant = "14")
+    @Mapping(target = "longWrapperConstant", constant = "3001")
+    @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014")
+    @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+如果 `s.getStringProp() == null`, 那么target字段 `stringProperty` 会被设置为 `"undefined"`,而不是 `s.getStringProp()` 的值。如果 `s.getLongProperty() == null` ，那么target字段 `longProperty` 会被设置为 `-1`。
+
+target字段 `stringConstant` 则会被设置为 `"Constant Value"`。 `"3001"` 会类型转换为包装类 `Long`，以适应target字段 `longWrapperConstant` 的类型。Date字段需要日期格式。常量 `"jack-jill-tom"` 展示了如何调用手写类 `StringListMapper` 来把以连字符分割的列表映射为 `List<String>`。
+
+[[expressions]]
+=== 表达式
+
+表达式使得调用多语言的构造器成为可能。
+
+目前，MapStruct仅支持Java。在表达式中，您可以调用构造器，也可以使用整个source对象。请注意，务必使用有效的Java代码，在生成代码时，MapStruct不会对表达式进行校验，如果生成的类中有错误，编译器会直接报错。
+
+下面的例子展示了如何把两个属性映射为一个属性：
+
+.Mapping method using an expression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new org.sample.TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+这个例子展示了source属性 `time` 和 `format` 是如何组合成一个属性 `TimeAndFormat` 的。请注意，例子中指明了包名的全路径，这是因为Mapstruct不会导入 `TimeAndFormat` 类（除非您明确使用 `SourceTargetMapper` 引入）。您也可以通过在 `@Mapper` 注解中定义 `imports`，以此来避免指明全路径。
+
+.Declaring an import
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+imports org.sample.TimeAndFormat;
+
+@Mapper( imports = TimeAndFormat.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+[[default-expressions]]
+=== 默认表达式
+
+默认表达式是默认值和表达式的一个组合。只有当source字段为 `null` 时才起作用。
+
+10.2节中对表达式的警告和限制，同样适用于默认表达式。仅支持Java，并且MapStruct不会在生成代码的时候进行语法校验。 
+
+下例展示了当source字段不存在时（比如为 `null` ），如何使用默认表达式设定值。
+
+.Mapping method using a default expression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+imports java.util.UUID;
+
+@Mapper( imports = UUID.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target="id", source="sourceId", defaultExpression = "java( UUID.randomUUID().toString() )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+该例中，当source中 `ID` 字段为null的时候，默认表达式会将其填充，也就是如果source对象中 `sourceId` 字段有值，就设置为既存的值，如果没有，就会给 `Id` 创建一个新值。 请注意，您在默认表达式中必须使用UUID的包全称（除非您在 `SourceTargetMapper` 中已经显式引入该类），因为MapStruct不会自动引入该类。 您也可以在@Mapper注解中引入类(see <<expressions>>)
+
+[[sub-class-mappings]]
+=== 映射子类
+
+当入参类型和返回类型都有一个继承关系，您自然会希望子类会被映射到对应的子类上。
+假设有 `Apple` 类和 `Banana` 类，都是 `Fruit` 类的子类。
+
+.Specifying the sub class mappings of a fruit mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FruitMapper {
+
+    @SubclassMapping( source = AppleDto.class, target = Apple.class )
+    @SubclassMapping( source = BananaDto.class, target = Banana.class )
+    Fruit map( FruitDto source );
+
+}
+----
+====
+
+如果您只用一个常规的映射，那么 `AppleDto` 和 `BananaDto` 对象都会被映射为 `Fruit` 对象，而不是 `Apple` 和 `Banana` 对象。通过使用子类映射，一个 `AppleDtoToApple` 映射方法会去映射 `AppleDto` 对象，一个 `BananaDtoToBanana` 映射方法会去映射 `BananaDto` 对象。如果您试着映射一个 `GrapeDto` ，还是会返回 `Fruit` 类的对象。
+
+如果 `Fruit` 是一个抽象类或者一个接口，那么您会得到一个编译错误。
+
+为了允许抽象类/接口的映射，您需要设置 `subclassExhaustiveStrategy` 为 `RUNTIME_EXCEPTION` ，您可以通过 `@MapperConfig`, `@Mapper` 或者 `@BeanMapping` 注解来完成设置。如果您之后传进去一个 `GrapeDto` 类型的对象，会抛出来一个 `IllegalArgumentException` 异常，因为MapStruct不知道该如何映射一个 `GrapeDto` 。
+请添加缺失的子类映射 (`@SubclassMapping`) 来修复该问题。
+
+[TIP]
+====
+如果子类的映射方法不存在，那么MapStruct会创建一个，并且新生成的映射方法会继承所有打在fruit映射上的注解。
+====
+
+[NOTE]
+====
+不支持将`@SubclassMapping`和更新方法结合起来。
+如果您想使用子类映射，则会有编译器错误。
+对于 `@Context` 和 `@TargetType` 参数来说，也有同样的报错。
+====
+
+[[determining-result-type]]
+=== 决定返回值类型
+
+当返回值类型有继承关系时，该选择映射方法( `@Mapping` )还是工厂方法 ( `@BeanMapping` )会变得有歧义。假设有Apple类和Banana类，都是Fruit类的子类。
+
+.Specifying the result type of a bean mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = FruitFactory.class )
+public interface FruitMapper {
+
+    @BeanMapping( resultType = Apple.class )
+    Fruit map( FruitDto source );
+
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class FruitFactory {
+
+    public Apple createApple() {
+        return new Apple( "Apple" );
+    }
+
+    public Banana createBanana() {
+        return new Banana( "Banana" );
+    }
+}
+----
+====
+
+那么在映射方法 `Fruit map(FruitDto source);` 中，将无法决定该使用哪个方法创建 `Fruit` 。该创建一个 `Banana` 还是一个 `Apple` ？此时 `@BeanMapping#resultType` 就可以很方便地解决这个问题。它决定了该选择哪个工厂方法，或者在工厂方法不存在时该创建哪个返回类型的值。
+
+[TIP]
+====
+同样的机制在映射方法 `@Mapping#resultType` 中也存在。该机制以您期望的方式运行：选择具有期望返回值类型的映射方法。
+====
+
+[TIP]
+====
+该机制在iterable/map映射中也存在。 `@IterableMapping#elementTargetType` 选择的映射方法的返回值期望的返回类型元素。对于`@MapMapping` ，类似的目的以 `#MapMapping#keyTargetType` 和 `MapMapping#valueTargetType` 的方式实现。
+====
+
+[[mapping-result-for-null-arguments]]
+=== 控制'null'入参的映射结果
+
+当映射方法的入参是 `null` 时，您可以控制MapStruct创建对象的方式。而默认情况下，MapStruct会返回一个 `null`。
+
+然而，您可以把映射结果替换成空的 *默认* 值，具体来说，您可以在`@BeanMapping`、`@IterableMapping`、`@MapMapping`上指定 `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT`，如果您想以全局配置的方式指定，请使用`@Mapper` 或者 `@MapperConfig`。这意味着：
+* *Bean映射*: ：会返回一个 '空' 的target bean，当然，如果其中有常量和表达式，那这些值不会为空。
+* *Iterables / Arrays*: 返回空的容器。
+* *Maps*: 返回空的Map。
+
+该策略以继承的方式运行。映射方法的级别设置的 `nullValueMappingStrategy` 会覆盖掉 `@Mapper#nullValueMappingStrategy`，同理，`@Mapper#nullValueMappingStrategy` 会覆盖掉 `@MapperConfig#nullValueMappingStrategy`。
+
+[[mapping-result-for-null-collection-or-map-arguments]]
+=== 控制 集合/map 映射中 'null' 入参的映射结果
+
+在 <<mapping-result-for-null-arguments>> 中，我们可以在入参为 `null` 时控制如何构造返回结果。
+这适用于所有的映射方法（bean/迭代类型/map类型的映射方法）。 
+
+然而，MapStruct对于 集合/map 类型的映射方法提供了更精细的控制。比如返回默认（空）集合/map，而对bean则返回null。 
+
+对于集合（迭代）类型，控制方法如下：
+
+* `MapperConfig#nullValueIterableMappingStrategy`
+* `Mapper#nullValueIterableMappingStrategy`
+* `IterableMapping#nullValueMappingStrategy`
+
+对map类型，控制方法如下：
+
+* `MapperConfig#nullValueMapMappingStrategy`
+* `Mapper#nullValueMapMappingStrategy`
+* `MapMapping#nullValueMappingStrategy`
+
+`NullValueMappingStrategy` 起作用的方式可参见 <<mapping-result-for-null-arguments>> 。
+
+[[mapping-result-for-null-properties]]
+=== 控制bean映射中 'null' 字段的映射结果（仅适用于更新型映射）
+
+当source字段为 `null` 或者无对应source字段时，MapStruct可以通过在target bean上加注解 `@MappingTarget` 来进一步控制target字段的值。
+
+默认情况下target字段会被设置为null。
+
+然而：
+
+1. 如果在 `@Mapping`、`@BeanMapping`、`@Mapper` 或者 `@MapperConfig` 上指定 `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT`，映射结果可以被替换为 *默认* 值。
+对于`List`，MapStruct会生成一个 `ArrayList`，对于 `Map`，则是 `LinkedHashMap`，对于数组则是一个空数组，对于`String`则是 `""`，对于原生/装箱类型则是 `false` 或者 `0`。
+对于所有其他对象，则是创建一个新实例。请注意，这需要一个默认构造器，如果没有默认构造器，请使用 `@Mapping#defaultValue`。
+
+2. 如果在 `@Mapping`、`@BeanMapping`、`@Mapper` 或者 `@MapperConfig` 上指定 `nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE`，则映射结果会和 `@MappingTarget` 所注解的target的原值相同。
+
+该策略以继承的方式运行。映射方法的级别设置的 `nullValuePropertyMappingStrategy` 会覆盖掉 `@Mapper#nullValuePropertyMappingStrategy`，同理，`@Mapper#nullValuePropertyMappingStrategy` 会覆盖掉 `@MapperConfig#nullValuePropertyMappingStrategy`。
+
+[NOTE]
+====
+在某些映射（比如集合/map类型的映射）中，MapStruct会使用getter/adder作为target的accessor（详见 `CollectionMappingStrategy`）。MapStruct对source字段总会生成null校验，以此避免将 `null` 值添加到target集合/map中，无论 `NullValuePropertyMappingStrategy` 的设定值是什么都是如此。这是因为此时target对象理应是初始化过的，所以此策略无效。
+====
+
+[TIP]
+====
+当校验存在的结果是 `不存在` 时，NullValuePropertyMappingStrategy还是会起作用。
+====
+
+[[checking-source-property-for-null-arguments]]
+=== 控制bean映射中 'null' 字段的校验结果
+
+MapStruct可以控制什么时候生成一个 `null` 校验。默认情况(`nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION`)下，`null`值校验会在如下情况生成：
+
+* 直接把source的值赋给target，且target是原生类型，而source不是。
+* 有类型转换，并且：
+.. 调用了target的setter。
+.. 调用了另一个的类型转换，并且随之调用了其target的setter。
+.. 调用了一个映射方法，并且随之调用了其target的setter。
+
+在调用映射方法时，入参没有经过null校验，所以生成的映射方法在实施映射前要先做一层映射校验。手写的映射方法一定要注意null校验，否则会有可能让 `null` 带有一些 `语义`，比如：把 `null` 映射成了一个默认值。
+
+在source不是原生类型时，选项 `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` 总是包含一个null校验，除非source bean中已经定义了一个存在性校验器。
+
+该策略以继承的方式运行，@Mapping#nullValueCheckStrategy会覆盖 `@BeanMapping#nullValueCheckStrategy`，同理，`@BeanMapping#nullValueCheckStrategy` 会覆盖 `@Mapper#nullValueCheckStrategy`，`@Mapper#nullValueCheckStrategy` 会覆盖 `@MaperConfig#nullValueCheckStrategy`。
+
+[[source-presence-check]]
+=== source存在性校验
+一些框架生成的bean字段会带一个存在校验器。其形式通常是 `hasXYZ` 方法，`XYZ` 为source bean中的字段。当MapStruct发现像 `hasXYZ` 这样的方法时，MapStruct就会会调用该 `hasXYZ` 方法，而不是自己做 `null` 校验。
+
+[TIP]
+====
+source存在性校验器的名字可以通过MapStruct的SPI来更改，此方式也可以让其不生效。
+====
+
+[NOTE]
+====
+在某些映射（集合/map）中，MapStruct会使用getter/adder作为target的accessor（详见 `CollectionMappingStrategy`），MapStruct对source字段总会生成null校验，以此避免将 `null` 值添加到target集合/map中，无论 `NullValueCheckStrategy` 的设定值是什么都是如此。
+====
+
+[[conditional-mapping]]
+=== 条件映射
+
+可选映射是 <<source-presence-check>> 的一种。
+不同之处在于，该方式允许用户自己写一个自定义条件方法，该方法会在检查一个字段是否需要被映射时调用。
+
+自定义条件方法：被 `org.mapstruct.Condition` 注解环绕并且返回 `boolean` 的方法。
+
+例如，如果您只想在一个String类型的字段不能 `null` 或者空的时候才对其进行映射，那么您可以这样做：
+
+.Mapper using custom condition check method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+
+    @Condition
+    default boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+生成的mapper会长成这样：
+
+.Custom condition check in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+
+        if ( isNotEmpty( car.getOwner() ) ) {
+            carDto.setOwner( car.getOwner() );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
+和更新式映射方法一起组合使用时，会替代此处的 `null-check`，比如：
+
+.Update mapper using custom condition check method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car, @MappingTarget CarDto carDto);
+
+    @Condition
+    default boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+}
+----
+====
+
+生成的mapper会长成这样：
+
+.Custom condition check in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public CarDto carToCarDto(Car car, CarDto carDto) {
+        if ( car == null ) {
+            return carDto;
+        }
+
+        if ( isNotEmpty( car.getOwner() ) ) {
+            carDto.setOwner( car.getOwner() );
+        } else {
+            carDto.setOwner( null );
+        }
+
+        // Mapping of other properties
+
+        return carDto;
+    }
+}
+----
+====
+
+[IMPORTANT]
+====
+如果一个字段有自定义的 `@Condition` 方法，该方法的优先级会高于该bean中的存在性校验方法。
+====
+
+[NOTE]
+====
+除了source属性的值之外，`@Condition` 所注释的方法也可以使用source参数作为入参。 
+====
+
+<<selection-based-on-qualifiers>>  中的内容对 `@Condition` 方法同样有效。如果需要更具体的可选方法，您需要使用 `Mapping#conditionQualifiedByName` 或者 `Mapping#conditionQualifiedBy`。
+
+[[exceptions]]
+=== 异常
+
+在调用映射方法时，可能会需要处理异常。这些异常可能是手写逻辑throw出来的，也可能是在MapStruct生成的内建映射方法因为类型转换throw出来的。当调用需要异常处理的时候，抛出异常的语句可以在映射方法中定义如下：
+
+.Mapper using custom method declaring checked exception
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = HandWritten.class)
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car) throws GearException;
+}
+----
+====
+
+手写逻辑可能是这样的：
+
+.Custom mapping method declaring checked exception
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class HandWritten {
+
+    private static final String[] GEAR = {"ONE", "TWO", "THREE", "OVERDRIVE", "REVERSE"};
+
+    public String toGear(Integer gear) throws GearException, FatalException {
+        if ( gear == null ) {
+            throw new FatalException("null is not a valid gear");
+        }
+
+        if ( gear < 0 && gear > GEAR.length ) {
+            throw new GearException("invalid gear");
+        }
+        return GEAR[gear];
+    }
+}
+----
+====
+
+MapStruct会在 `try-catch` 块中捕获 `FatalException` 异常，并重新throw一个非受检异常 `RuntimeException`。MapStruct会把 `GearException` 代理给外部的应用逻辑，因为 `carToCarDto` 方法签名中定义了该异常。
+
+.try-catch block in generated implementation
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+@Override
+public CarDto carToCarDto(Car car) throws GearException {
+    if ( car == null ) {
+        return null;
+    }
+
+    CarDto carDto = new CarDto();
+    try {
+        carDto.setGear( handWritten.toGear( car.getGear() ) );
+    }
+    catch ( FatalException e ) {
+        throw new RuntimeException( e );
+    }
+
+    return carDto;
+}
+----
+====
+
+请 **notes** 其中的null校验。MapStruct仅在需要时才提供null校验：当执行类型转换，或者调用构造器创建一个新类型实例。这意味着用户在手写代码里要自己写null检验，来保证返回非空的有效对象。null值也有可能会传给手写代码，因为MapStruct假定用户可能真的会需要传进null值。
