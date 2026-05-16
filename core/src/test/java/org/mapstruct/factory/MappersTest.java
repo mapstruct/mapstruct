@@ -58,4 +58,9 @@ public class MappersTest {
     public void shouldReturnPackagePrivateImplementationClass() {
         assertThat( Mappers.getMapperClass( PackagePrivateMapper.class ) ).isNotNull();
     }
+
+    @Test
+    public void shouldReturnImplementationClassOfMapperWhichDependsOnAnotherOnes() {
+        assertThat( Mappers.getMapper( MapperWithUses.class ) ).isNotNull();
+    }
 }
