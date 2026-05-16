@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -245,6 +246,11 @@ public class Conversions {
         // Java 8 time
         register( LocalDateTime.class, LocalDate.class, new JavaLocalDateTimeToLocalDateConversion() );
 
+        registerUnidirectional( ZonedDateTime.class, LocalDateTime.class,
+                new JavaZonedDateTimeToLocalDateTimeConversion() );
+        registerUnidirectional( OffsetDateTime.class, LocalDateTime.class,
+                new JavaOffsetDateTimeToLocalDateTimeConversion() );
+
     }
 
     private void registerJavaTimeSqlConversions() {
@@ -332,6 +338,13 @@ public class Conversions {
 
         conversions.put( new Key( sourceType, targetType ), conversion );
         conversions.put( new Key( targetType, sourceType ), inverse( conversion ) );
+    }
+
+    private void registerUnidirectional(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceClass );
+        Type targetType = typeFactory.getType( targetClass );
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
