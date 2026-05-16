@@ -20,6 +20,7 @@ public interface MapToBeanUsingMappingMethodMapper {
     MapToBeanUsingMappingMethodMapper INSTANCE = Mappers.getMapper( MapToBeanUsingMappingMethodMapper.class );
 
     @Mapping(target = "normalInt", source = "source.number")
+    @Mapping(target = "normalIntWithDots", source = "source.number\\.with\\.dots")
     Target toTarget(Map<String, Integer> source);
 
     default String mapIntegerToString( Integer input ) {
@@ -29,6 +30,7 @@ public interface MapToBeanUsingMappingMethodMapper {
     class Target {
 
         private String normalInt;
+        private String normalIntWithDots;
 
         public String getNormalInt() {
             return normalInt;
@@ -36,6 +38,14 @@ public interface MapToBeanUsingMappingMethodMapper {
 
         public void setNormalInt(String normalInt) {
             this.normalInt = normalInt;
+        }
+
+        public String getNormalIntWithDots() {
+            return normalIntWithDots;
+        }
+
+        public void setNormalIntWithDots(String normalIntWithDots) {
+            this.normalIntWithDots = normalIntWithDots;
         }
     }
 
