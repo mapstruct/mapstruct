@@ -135,7 +135,11 @@ public class ObjectFactoryMethodResolver {
     }
 
     public static MethodReference getBuilderFactoryMethod(Method method, BuilderType builder ) {
-        return getBuilderFactoryMethod( method.getReturnType(), builder );
+        Type returnType = method.getReturnType();
+        if ( returnType.isOptionalType() ) {
+            returnType = returnType.getOptionalBaseType();
+        }
+        return getBuilderFactoryMethod( returnType, builder );
     }
 
     public static MethodReference getBuilderFactoryMethod(Type typeToBuild, BuilderType builder ) {
