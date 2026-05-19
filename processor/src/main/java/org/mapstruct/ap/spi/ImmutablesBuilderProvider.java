@@ -159,21 +159,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
     }
 
     protected TypeElement asImmutableElement(TypeElement typeElement) {
-        Element enclosingElement = typeElement.getEnclosingElement();
-        StringBuilder builderQualifiedName = new StringBuilder( typeElement.getQualifiedName().length() + 17 );
-        if ( enclosingElement.getKind() == ElementKind.PACKAGE ) {
-            builderQualifiedName.append( ( (PackageElement) enclosingElement ).getQualifiedName().toString() );
-        }
-        else {
-            builderQualifiedName.append( ( (TypeElement) enclosingElement ).getQualifiedName().toString() );
-        }
-
-        if ( builderQualifiedName.length() > 0 ) {
-            builderQualifiedName.append( "." );
-        }
-
-        builderQualifiedName.append( "Immutable" ).append( typeElement.getSimpleName() );
-        return elementUtils.getTypeElement( builderQualifiedName );
+        return findRelatedTypeElement( typeElement, "Immutable", "" );
     }
 
     /**
@@ -184,8 +170,14 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
      * @return the {@link TypeElement} for the generated builder, or {@code null} if not yet available
      */
     protected TypeElement asImmutableRecordBuilderElement(TypeElement typeElement) {
+        return findRelatedTypeElement( typeElement, "", "Builder" );
+    }
+
+    private TypeElement findRelatedTypeElement(TypeElement typeElement, String prefix, String suffix) {
         Element enclosingElement = typeElement.getEnclosingElement();
-        StringBuilder builderQualifiedName = new StringBuilder( typeElement.getQualifiedName().length() + 7 );
+        StringBuilder builderQualifiedName = new StringBuilder(
+            typeElement.getQualifiedName().length() + prefix.length() + suffix.length()
+        );
         if ( enclosingElement.getKind() == ElementKind.PACKAGE ) {
             builderQualifiedName.append( ( (PackageElement) enclosingElement ).getQualifiedName().toString() );
         }
@@ -197,7 +189,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
             builderQualifiedName.append( "." );
         }
 
-        builderQualifiedName.append( typeElement.getSimpleName() ).append( "Builder" );
+        builderQualifiedName.append( prefix ).append( typeElement.getSimpleName() ).append( suffix );
         return elementUtils.getTypeElement( builderQualifiedName );
     }
 

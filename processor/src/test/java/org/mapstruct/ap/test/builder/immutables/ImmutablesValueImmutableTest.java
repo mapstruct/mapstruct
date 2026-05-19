@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.builder.immutables;
 
-import org.immutables.value.Value;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithTestDependency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,8 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code @Value.Immutable}-annotated interface to the Immutables-generated {@code ImmutableXxx} implementation
  * and uses its nested {@code Builder}.
  */
+// Required because @WithClasses sources are compiled in isolation from the test runtime classpath.
+@WithTestDependency("org/immutables/value")
 @WithClasses({
-    Value.class,
     Person.class,
     ImmutablePerson.class,
     PersonDto.class,

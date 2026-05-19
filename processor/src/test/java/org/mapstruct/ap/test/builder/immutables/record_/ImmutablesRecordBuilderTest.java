@@ -5,9 +5,9 @@
  */
 package org.mapstruct.ap.test.builder.immutables.record_;
 
-import org.immutables.value.Value;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithTestDependency;
 import org.mapstruct.ap.testutil.runner.Compiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * mandatory fields: with {@code nullValueCheckStrategy = ALWAYS}, MapStruct skips the builder setter for a
  * {@code null} source value, so {@code build()} throws {@link IllegalStateException} for unset required fields.
  */
+// Required because @WithClasses sources are compiled in isolation from the test runtime classpath.
+@WithTestDependency("org/immutables/value")
 @WithClasses({
-    Value.class,
     GolfPlayer.class,
     GolfPlayerBuilder.class,
     GolfPlayerDto.class,
