@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>immutablesRecordBuilderIntegrationTest</artifactId>
+        <groupId>org.mapstruct</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>itest-immutables-record-builder-mapper</artifactId>
+
+    <properties>
+        <!-- Override Immutables version: @Value.Builder support for records requires 2.11.0+ -->
+        <immutables.version>2.11.0</immutables.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value</artifactId>
+            <version>${immutables.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>itest-immutables-record-builder-mapping-extras</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</project>
