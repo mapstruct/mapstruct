@@ -1,15 +1,11 @@
-/*
- * Copyright MapStruct Authors.
- *
- * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
- */
 package org.mapstruct.ap.test.conversion.java8time.zonedoffsetdatetimetolocaldatetimeconversion;
 
+import java.time.ZoneOffset;
 import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-05-03T13:46:42+0900",
+    date = "2026-05-23T11:15:32+0900",
     comments = "version: , compiler: javac, environment: Java 25.0.2 (Homebrew)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
@@ -30,5 +26,23 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
 
         return target;
+    }
+
+    @Override
+    public Source toSource(Target target) {
+        if ( target == null ) {
+            return null;
+        }
+
+        Source source = new Source();
+
+        if ( target.getZonedDateTime() != null ) {
+            source.setZonedDateTime( target.getZonedDateTime().atZone( ZoneOffset.UTC ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( target.getOffsetDateTime().atOffset( ZoneOffset.UTC ) );
+        }
+
+        return source;
     }
 }

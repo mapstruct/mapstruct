@@ -5,7 +5,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.time.ZoneOffset;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.Collections;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneOffset;
 
 public class JavaOffsetDateTimeToLocalDateTimeConversion extends SimpleConversion {
 
@@ -16,8 +23,13 @@ public class JavaOffsetDateTimeToLocalDateTimeConversion extends SimpleConversio
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        throw new UnsupportedOperationException(
-                "Mapping from LocalDateTime to OffsetDateTime is not supported - Offset information is required"
+        return "<SOURCE>.atOffset( " + zoneOffset( conversionContext ) + ".UTC )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.asSet(
+                conversionContext.getTypeFactory().getType( ZoneOffset.class )
         );
     }
 }

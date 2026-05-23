@@ -49,4 +49,24 @@ public class ZonedOffsetDateTimeToLocalDateTimeConversionTest {
         assertThat( target.getOffsetDateTime() )
                 .isEqualTo( LocalDateTime.of( 2024, 1, 1, 12, 30, 0 ) );
     }
+
+    @ProcessorTest
+    public void testLocalDateTimeToZonedDateTimeMapping() {
+        LocalDateTime localDateTime = LocalDateTime.of( 2024, 1, 1, 12, 30, 0 );
+        Target target = new Target();
+        target.setZonedDateTime( localDateTime );
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+        assertThat( source.getZonedDateTime() )
+                .isEqualTo( ZonedDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC ) );
+    }
+
+    @ProcessorTest
+    public void testLocalDateTimeToOffsetDateTimeMapping() {
+        LocalDateTime localDateTime = LocalDateTime.of( 2024, 1, 1, 12, 30, 0 );
+        Target target = new Target();
+        target.setOffsetDateTime( localDateTime );
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+        assertThat( source.getOffsetDateTime() )
+                .isEqualTo( OffsetDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC ) );
+    }
 }
