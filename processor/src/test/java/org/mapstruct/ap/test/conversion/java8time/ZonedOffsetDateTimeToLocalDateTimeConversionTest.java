@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -67,6 +68,46 @@ public class ZonedOffsetDateTimeToLocalDateTimeConversionTest {
         target.setOffsetDateTime( localDateTime );
         Source source = SourceTargetMapper.INSTANCE.toSource( target );
         assertThat( source.getOffsetDateTime() )
+                .isEqualTo( OffsetDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC ) );
+    }
+
+    @ProcessorTest
+    public void testZonedDateTimeToInstantMapping() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC );
+        Source source = new Source();
+        source.setZonedDateTimeAsInstant( zonedDateTime );
+        Target target = SourceTargetMapper.INSTANCE.toTarget( source );
+        assertThat( target.getZonedDateTimeAsInstant() )
+                .isEqualTo( Instant.parse( "2024-01-01T12:30:00Z" ) );
+    }
+
+    @ProcessorTest
+    public void testOffsetDateTimeToInstantMapping() {
+        OffsetDateTime offsetDateTime = OffsetDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC );
+        Source source = new Source();
+        source.setOffsetDateTimeAsInstant( offsetDateTime );
+        Target target = SourceTargetMapper.INSTANCE.toTarget( source );
+        assertThat( target.getOffsetDateTimeAsInstant() )
+                .isEqualTo( Instant.parse( "2024-01-01T12:30:00Z" ) );
+    }
+
+    @ProcessorTest
+    public void testInstantToZonedDateTimeMapping() {
+        Instant instant = Instant.parse( "2024-01-01T12:30:00Z" );
+        Target target = new Target();
+        target.setZonedDateTimeAsInstant( instant );
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+        assertThat( source.getZonedDateTimeAsInstant() )
+                .isEqualTo( ZonedDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC ) );
+    }
+
+    @ProcessorTest
+    public void testInstantToOffsetDateTimeMapping() {
+        Instant instant = Instant.parse( "2024-01-01T12:30:00Z" );
+        Target target = new Target();
+        target.setOffsetDateTimeAsInstant( instant );
+        Source source = SourceTargetMapper.INSTANCE.toSource( target );
+        assertThat( source.getOffsetDateTimeAsInstant() )
                 .isEqualTo( OffsetDateTime.of( 2024, 1, 1, 12, 30, 0, 0, ZoneOffset.UTC ) );
     }
 }

@@ -247,6 +247,9 @@ public class Conversions {
         register( LocalDateTime.class, LocalDate.class, new JavaLocalDateTimeToLocalDateConversion() );
         register( ZonedDateTime.class, LocalDateTime.class, new JavaZonedDateTimeToLocalDateTimeConversion() );
         register( OffsetDateTime.class, LocalDateTime.class, new JavaOffsetDateTimeToLocalDateTimeConversion() );
+
+        register( ZonedDateTime.class, Instant.class, new JavaZonedDateTimeToInstantConversion() );
+        register( OffsetDateTime.class, Instant.class, new JavaOffsetDateTimeToInstantConversion() );
     }
 
     private void registerJavaTimeSqlConversions() {
