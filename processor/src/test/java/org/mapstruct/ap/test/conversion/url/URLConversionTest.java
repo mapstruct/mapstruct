@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.conversion.url;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -25,7 +25,7 @@ public class URLConversionTest {
     @ProcessorTest
     public void shouldApplyURLConversion() throws MalformedURLException {
         Source source = new Source();
-        source.setURL( new URL("https://mapstruct.org/") );
+        source.setURL( URI.create( "https://mapstruct.org/" ).toURL() );
 
         Target target = URLMapper.INSTANCE.sourceToTarget( source );
 
@@ -41,13 +41,13 @@ public class URLConversionTest {
         Source source = URLMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getURL() ).isEqualTo( new URL( target.getURL() ) );
+        assertThat( source.getURL() ).isEqualTo( URI.create( target.getURL() ).toURL() );
     }
 
     @ProcessorTest
     public void shouldHandleInvalidURLString() {
         Target target = new Target();
-        target.setInvalidURL( "XXXXXXXXX" );
+        target.setInvalidURL( "xxxxxx://mapstruct.org/" );
 
         assertThatThrownBy( () -> URLMapper.INSTANCE.targetToSource( target ) )
                 .isInstanceOf( RuntimeException.class )
@@ -57,7 +57,7 @@ public class URLConversionTest {
     @ProcessorTest
     public void shouldHandleInvalidURLStringWithMalformedURLException() {
         Target target = new Target();
-        target.setInvalidURL( "XXXXXXXXX" );
+        target.setInvalidURL( "xxxxxx://mapstruct.org/" );
 
         assertThatThrownBy( () -> URLMapper.INSTANCE.targetToSourceWithMalformedURLException( target ) )
                 .isInstanceOf( MalformedURLException.class );
