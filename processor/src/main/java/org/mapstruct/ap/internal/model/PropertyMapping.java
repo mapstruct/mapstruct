@@ -485,6 +485,7 @@ public class PropertyMapping extends ModelElement {
                         includeSourceNullCheck = false;
                     }
                 }
+                reportErrorWhenSetToDefaultCannotConstructTarget( targetType, factory );
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
@@ -505,6 +506,7 @@ public class PropertyMapping extends ModelElement {
                     // however, a local var is not needed if there's no need to check for null.
                     rhs.setSourceLocalVarName( null );
                 }
+                reportErrorWhenSetToDefaultCannotConstructTarget( targetType, null );
                 return new SetterWrapper(
                     rhs,
                     method.getThrownTypes(),
@@ -514,6 +516,41 @@ public class PropertyMapping extends ModelElement {
                     nvpms == SET_TO_DEFAULT,
                     hasTwoOrMoreSettersWithName(),
                     targetType
+                );
+            }
+        }
+
+        /**
+         * For {@code NullValuePropertyMappingStrategy.SET_TO_DEFAULT} the target property is reset to a new
+         * default instance when the source is {@code null}. When that default instance is constructed via a
+         * parameterless constructor ({@code new Target()}) and the target type does not provide one, MapStruct
+         * would generate uncompilable code such as {@code target.setLocalDate( new LocalDate() )}. Report a
+         * compilation error in that case instead.
+         *
+         * @param targetType the type of the target property
+         * @param factory the factory used to construct the default instance, or {@code null} if none is used
+         */
+        private void reportErrorWhenSetToDefaultCannotConstructTarget(Type targetType, Assignment factory) {
+            if ( nvpms != SET_TO_DEFAULT || factory != null ) {
+                // the default instance is either not created or created through a factory / builder method
+                return;
+            }
+
+            Type typeToConstruct = targetType.isOptionalType() ? targetType.getOptionalBaseType() : targetType;
+            if ( typeToConstruct.getImplementationType() != null
+                || typeToConstruct.isArrayType()
+                || typeToConstruct.isOptionalType()
+                || typeToConstruct.getSensibleDefault() != null ) {
+                // these are initialized without invoking a parameterless constructor on the target type
+                return;
+            }
+
+            if ( !typeToConstruct.hasAccessibleParameterlessConstructor() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    positionHint,
+                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    typeToConstruct.describe()
                 );
             }
         }
