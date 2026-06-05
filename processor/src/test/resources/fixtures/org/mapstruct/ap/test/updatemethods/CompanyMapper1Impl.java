@@ -25,11 +25,12 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
         }
 
         entity.setName( dto.getName() );
-        if ( dto.getDepartment() != null ) {
+        UnmappableDepartmentDto department = dto.getDepartment();
+        if ( department != null ) {
             if ( entity.getDepartment() == null ) {
                 entity.setDepartment( departmentEntityFactory.createDepartmentEntity() );
             }
-            unmappableDepartmentDtoToDepartmentEntity( dto.getDepartment(), entity.getDepartment() );
+            unmappableDepartmentDtoToDepartmentEntity( department, entity.getDepartment() );
         }
         else {
             entity.setDepartment( null );
@@ -100,8 +101,9 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
         }
 
         mappingTarget.setName( unmappableDepartmentDto.getName() );
+        Map<SecretaryDto, EmployeeDto> secretaryToEmployee = unmappableDepartmentDto.getSecretaryToEmployee();
         if ( mappingTarget.getSecretaryToEmployee() != null ) {
-            Map<SecretaryEntity, EmployeeEntity> map = secretaryDtoEmployeeDtoMapToSecretaryEntityEmployeeEntityMap( unmappableDepartmentDto.getSecretaryToEmployee() );
+            Map<SecretaryEntity, EmployeeEntity> map = secretaryDtoEmployeeDtoMapToSecretaryEntityEmployeeEntityMap( secretaryToEmployee );
             if ( map != null ) {
                 mappingTarget.getSecretaryToEmployee().clear();
                 mappingTarget.getSecretaryToEmployee().putAll( map );
@@ -111,7 +113,7 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
             }
         }
         else {
-            Map<SecretaryEntity, EmployeeEntity> map = secretaryDtoEmployeeDtoMapToSecretaryEntityEmployeeEntityMap( unmappableDepartmentDto.getSecretaryToEmployee() );
+            Map<SecretaryEntity, EmployeeEntity> map = secretaryDtoEmployeeDtoMapToSecretaryEntityEmployeeEntityMap( secretaryToEmployee );
             if ( map != null ) {
                 mappingTarget.setSecretaryToEmployee( map );
             }

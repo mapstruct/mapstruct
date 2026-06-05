@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-10-16T21:06:53+0200",
-    comments = "version: , compiler: javac, environment: Java 17 (Oracle Corporation)"
+    date = "2026-06-05T14:56:03+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class BeanWithInnerEnumMapperImpl implements BeanWithInnerEnumMapper {
 
@@ -23,8 +23,9 @@ public class BeanWithInnerEnumMapperImpl implements BeanWithInnerEnumMapper {
         BeanWithInnerEnum beanWithInnerEnum = new BeanWithInnerEnum();
 
         beanWithInnerEnum.setTest( beanFacade.getTest() );
-        if ( beanFacade.getInnerEnum() != null ) {
-            beanWithInnerEnum.setInnerEnum( Enum.valueOf( BeanWithInnerEnum.InnerEnum.class, beanFacade.getInnerEnum() ) );
+        String innerEnum = beanFacade.getInnerEnum();
+        if ( innerEnum != null ) {
+            beanWithInnerEnum.setInnerEnum( Enum.valueOf( BeanWithInnerEnum.InnerEnum.class, innerEnum ) );
         }
 
         return beanWithInnerEnum;
@@ -39,8 +40,9 @@ public class BeanWithInnerEnumMapperImpl implements BeanWithInnerEnumMapper {
         BeanFacade beanFacade = new BeanFacade();
 
         beanFacade.setTest( beanWithInnerEnum.getTest() );
-        if ( beanWithInnerEnum.getInnerEnum() != null ) {
-            beanFacade.setInnerEnum( beanWithInnerEnum.getInnerEnum().name() );
+        BeanWithInnerEnum.InnerEnum innerEnum = beanWithInnerEnum.getInnerEnum();
+        if ( innerEnum != null ) {
+            beanFacade.setInnerEnum( innerEnum.name() );
         }
 
         return beanFacade;

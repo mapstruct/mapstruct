@@ -55,8 +55,9 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             return;
         }
 
+        List<String> strings = source.getStrings();
         if ( target.getStrings() != null ) {
-            List<String> list = source.getStrings();
+            List<String> list = strings;
             if ( list != null ) {
                 target.getStrings().clear();
                 target.getStrings().addAll( list );
@@ -66,13 +67,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list = source.getStrings();
+            List<String> list = strings;
             if ( list != null ) {
                 target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
+        List<String> strings1 = source.getStrings();
         if ( target.getLongs() != null ) {
-            Set<Long> set = stringListToLongSet( source.getStrings() );
+            Set<Long> set = stringListToLongSet( strings1 );
             if ( set != null ) {
                 target.getLongs().clear();
                 target.getLongs().addAll( set );
@@ -82,13 +84,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            Set<Long> set = stringListToLongSet( source.getStrings() );
+            Set<Long> set = stringListToLongSet( strings1 );
             if ( set != null ) {
                 target.setLongs( set );
             }
         }
+        List<String> stringsInitialized = source.getStringsInitialized();
         if ( target.getStringsInitialized() != null ) {
-            List<String> list1 = source.getStringsInitialized();
+            List<String> list1 = stringsInitialized;
             if ( list1 != null ) {
                 target.getStringsInitialized().clear();
                 target.getStringsInitialized().addAll( list1 );
@@ -98,13 +101,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list1 = source.getStringsInitialized();
+            List<String> list1 = stringsInitialized;
             if ( list1 != null ) {
                 target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
+        List<String> stringsInitialized1 = source.getStringsInitialized();
         if ( target.getLongsInitialized() != null ) {
-            Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
+            Set<Long> set1 = stringListToLongSet( stringsInitialized1 );
             if ( set1 != null ) {
                 target.getLongsInitialized().clear();
                 target.getLongsInitialized().addAll( set1 );
@@ -114,13 +118,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
+            Set<Long> set1 = stringListToLongSet( stringsInitialized1 );
             if ( set1 != null ) {
                 target.setLongsInitialized( set1 );
             }
         }
+        List<String> stringsWithDefault = source.getStringsWithDefault();
         if ( target.getStringsWithDefault() != null ) {
-            List<String> list2 = source.getStringsWithDefault();
+            List<String> list2 = stringsWithDefault;
             if ( list2 != null ) {
                 target.getStringsWithDefault().clear();
                 target.getStringsWithDefault().addAll( list2 );
@@ -130,7 +135,7 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list2 = source.getStringsWithDefault();
+            List<String> list2 = stringsWithDefault;
             if ( list2 != null ) {
                 target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }
@@ -146,8 +151,9 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             return target;
         }
 
+        List<String> strings = source.getStrings();
         if ( target.getStrings() != null ) {
-            List<String> list = source.getStrings();
+            List<String> list = strings;
             if ( list != null ) {
                 target.getStrings().clear();
                 target.getStrings().addAll( list );
@@ -157,13 +163,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list = source.getStrings();
+            List<String> list = strings;
             if ( list != null ) {
                 target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
+        List<String> strings1 = source.getStrings();
         if ( target.getLongs() != null ) {
-            Set<Long> set = stringListToLongSet( source.getStrings() );
+            Set<Long> set = stringListToLongSet( strings1 );
             if ( set != null ) {
                 target.getLongs().clear();
                 target.getLongs().addAll( set );
@@ -173,13 +180,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            Set<Long> set = stringListToLongSet( source.getStrings() );
+            Set<Long> set = stringListToLongSet( strings1 );
             if ( set != null ) {
                 target.setLongs( set );
             }
         }
+        List<String> stringsInitialized = source.getStringsInitialized();
         if ( target.getStringsInitialized() != null ) {
-            List<String> list1 = source.getStringsInitialized();
+            List<String> list1 = stringsInitialized;
             if ( list1 != null ) {
                 target.getStringsInitialized().clear();
                 target.getStringsInitialized().addAll( list1 );
@@ -189,13 +197,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list1 = source.getStringsInitialized();
+            List<String> list1 = stringsInitialized;
             if ( list1 != null ) {
                 target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
+        List<String> stringsInitialized1 = source.getStringsInitialized();
         if ( target.getLongsInitialized() != null ) {
-            Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
+            Set<Long> set1 = stringListToLongSet( stringsInitialized1 );
             if ( set1 != null ) {
                 target.getLongsInitialized().clear();
                 target.getLongsInitialized().addAll( set1 );
@@ -205,13 +214,14 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
+            Set<Long> set1 = stringListToLongSet( stringsInitialized1 );
             if ( set1 != null ) {
                 target.setLongsInitialized( set1 );
             }
         }
+        List<String> stringsWithDefault = source.getStringsWithDefault();
         if ( target.getStringsWithDefault() != null ) {
-            List<String> list2 = source.getStringsWithDefault();
+            List<String> list2 = stringsWithDefault;
             if ( list2 != null ) {
                 target.getStringsWithDefault().clear();
                 target.getStringsWithDefault().addAll( list2 );
@@ -221,7 +231,7 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             }
         }
         else {
-            List<String> list2 = source.getStringsWithDefault();
+            List<String> list2 = stringsWithDefault;
             if ( list2 != null ) {
                 target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }

@@ -7,6 +7,8 @@ package org.mapstruct.ap.test.updatemethods.selection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
@@ -31,20 +33,22 @@ public class DepartmentMapperImpl implements DepartmentMapper {
         }
 
         entity.setName( dto.getName() );
-        if ( dto.getEmployees() != null ) {
+        List<EmployeeDto> employees = dto.getEmployees();
+        if ( employees != null ) {
             if ( entity.getEmployees() == null ) {
                 entity.setEmployees( new ArrayList<>() );
             }
-            externalHandWrittenMapper.toEmployeeEntityList( dto.getEmployees(), entity.getEmployees() );
+            externalHandWrittenMapper.toEmployeeEntityList( employees, entity.getEmployees() );
         }
         else {
             entity.setEmployees( null );
         }
-        if ( dto.getSecretaryToEmployee() != null ) {
+        Map<SecretaryDto, EmployeeDto> secretaryToEmployee = dto.getSecretaryToEmployee();
+        if ( secretaryToEmployee != null ) {
             if ( entity.getSecretaryToEmployee() == null ) {
                 entity.setSecretaryToEmployee( new LinkedHashMap<>() );
             }
-            externalHandWrittenMapper.toSecretaryEmployeeEntityMap( dto.getSecretaryToEmployee(), entity.getSecretaryToEmployee() );
+            externalHandWrittenMapper.toSecretaryEmployeeEntityMap( secretaryToEmployee, entity.getSecretaryToEmployee() );
         }
         else {
             entity.setSecretaryToEmployee( null );

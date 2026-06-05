@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-23T10:02:54+0100",
-    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
+    date = "2026-06-05T14:56:21+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class OptionalNullCheckAlwaysMapperImpl implements OptionalNullCheckAlwaysMapper {
 
@@ -23,14 +23,17 @@ public class OptionalNullCheckAlwaysMapperImpl implements OptionalNullCheckAlway
 
         Target target = new Target();
 
-        if ( source.getOptionalToOptional().isPresent() ) {
-            target.setOptionalToOptional( source.getOptionalToOptional() );
+        Optional<String> optionalToOptional = source.getOptionalToOptional();
+        if ( optionalToOptional.isPresent() ) {
+            target.setOptionalToOptional( optionalToOptional );
         }
-        if ( source.getOptionalToNonOptional().isPresent() ) {
-            target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
+        Optional<String> optionalToNonOptional = source.getOptionalToNonOptional();
+        if ( optionalToNonOptional.isPresent() ) {
+            target.setOptionalToNonOptional( optionalToNonOptional.get() );
         }
-        if ( source.getNonOptionalToOptional() != null ) {
-            target.setNonOptionalToOptional( Optional.of( source.getNonOptionalToOptional() ) );
+        String nonOptionalToOptional = source.getNonOptionalToOptional();
+        if ( nonOptionalToOptional != null ) {
+            target.setNonOptionalToOptional( Optional.of( nonOptionalToOptional ) );
         }
 
         return target;

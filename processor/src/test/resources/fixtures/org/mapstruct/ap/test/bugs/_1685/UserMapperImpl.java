@@ -8,12 +8,12 @@ package org.mapstruct.ap.test.bugs._1685;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2019-01-27T12:40:32+0100",
-    comments = "version: , compiler: Eclipse JDT (Batch) 1.2.100.v20160418-1457, environment: Java 1.8.0_181 (Oracle Corporation)"
+    date = "2026-06-05T14:55:19+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class UserMapperImpl implements UserMapper {
 
@@ -52,9 +52,9 @@ public class UserMapperImpl implements UserMapper {
                 user.addPreference( contactDataDTOPreference );
             }
         }
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        String[] settings = userDTOContactDataDTOSettings( userDTO );
+        if ( settings != null ) {
+            user.setSettings( Arrays.copyOf( settings, settings.length ) );
         }
         else {
             user.setSettings( null );
@@ -86,12 +86,13 @@ public class UserMapperImpl implements UserMapper {
                 user.addPreference( contactDataDTOPreference );
             }
         }
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        String[] settings = userDTOContactDataDTOSettings( userDTO );
+        if ( settings != null ) {
+            user.setSettings( Arrays.copyOf( settings, settings.length ) );
         }
-        if ( userDTO.getName() != null ) {
-            user.setName( userDTO.getName() );
+        String name = userDTO.getName();
+        if ( name != null ) {
+            user.setName( name );
         }
     }
 
@@ -128,15 +129,16 @@ public class UserMapperImpl implements UserMapper {
                 user.addPreference( contactDataDTOPreference );
             }
         }
-        String[] settings1 = userDTOContactDataDTOSettings( userDTO );
-        if ( settings1 != null ) {
-            user.setSettings( Arrays.copyOf( settings1, settings1.length ) );
+        String[] settings = userDTOContactDataDTOSettings( userDTO );
+        if ( settings != null ) {
+            user.setSettings( Arrays.copyOf( settings, settings.length ) );
         }
         else {
             user.setSettings( new String[0] );
         }
-        if ( userDTO.getName() != null ) {
-            user.setName( userDTO.getName() );
+        String name = userDTO.getName();
+        if ( name != null ) {
+            user.setName( name );
         }
         else {
             user.setName( "" );
@@ -151,8 +153,9 @@ public class UserMapperImpl implements UserMapper {
         ContactDataDTO contactDataDTO = new ContactDataDTO();
 
         contactDataDTO.setEmail( user.getEmail() );
-        if ( user.getPhone() != null ) {
-            contactDataDTO.setPhone( String.valueOf( user.getPhone() ) );
+        Integer phone = user.getPhone();
+        if ( phone != null ) {
+            contactDataDTO.setPhone( String.valueOf( phone ) );
         }
         contactDataDTO.setAddress( user.getAddress() );
         List<String> list = user.getPreferences();

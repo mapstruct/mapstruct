@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-15T15:17:03+0100",
-    comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
+    date = "2026-06-05T14:54:55+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class JSpecifyUpdateMapperImpl implements JSpecifyUpdateMapper {
 
@@ -21,14 +21,17 @@ public class JSpecifyUpdateMapperImpl implements JSpecifyUpdateMapper {
         }
 
         target.setNonNullTarget( source.getNonNullValue() );
-        if ( source.getNullableValue() != null ) {
-            target.setNullableTarget( source.getNullableValue() );
+        String nullableValue = source.getNullableValue();
+        if ( nullableValue != null ) {
+            target.setNullableTarget( nullableValue );
         }
-        if ( source.getUnannotatedValue() != null ) {
-            target.setUnannotatedTarget( source.getUnannotatedValue() );
+        String unannotatedValue = source.getUnannotatedValue();
+        if ( unannotatedValue != null ) {
+            target.setUnannotatedTarget( unannotatedValue );
         }
-        if ( source.getNullableValue() != null ) {
-            target.setNonNullTargetFromNullable( source.getNullableValue() );
+        String nullableValue1 = source.getNullableValue();
+        if ( nullableValue1 != null ) {
+            target.setNonNullTargetFromNullable( nullableValue1 );
         }
     }
 }
