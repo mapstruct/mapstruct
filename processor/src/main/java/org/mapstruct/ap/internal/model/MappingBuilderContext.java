@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -210,6 +211,21 @@ public class MappingBuilderContext {
     }
 
     /**
+     * Resolves the JSpecify nullability of an element declared directly on the mapper (e.g. a mapping method's
+     * return type or one of its source parameters), using the mapper type's {@code @NullMarked} scope as the
+     * enclosing scope for unannotated elements.
+     *
+     * @param element the element declared on the mapper to inspect
+     *
+     * @return the resolved nullability ({@link NullabilityResolver.Nullability#UNKNOWN} when JSpecify is disabled)
+     */
+    public NullabilityResolver.Nullability getNullabilityInMapperScope(Element element) {
+        return nullabilityResolver.getNullability(
+            element,
+            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
+    }
+
+    /**
      * Whether the return type of the given mapping method is JSpecify {@code @NonNull} (directly or via a
      * {@code @NullMarked} scope). When it is, a mapping method must not generate {@code return null}, so callers
      * force {@link org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem#RETURN_DEFAULT} semantics.
@@ -225,10 +241,7 @@ public class MappingBuilderContext {
             return false;
         }
 
-        NullabilityResolver.Nullability returnNullability = nullabilityResolver.getNullability(
-            method.getExecutable(),
-            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
-        return returnNullability == NullabilityResolver.Nullability.NON_NULL;
+        return getNullabilityInMapperScope( method.getExecutable() ) == NullabilityResolver.Nullability.NON_NULL;
     }
 
     public EnumMappingStrategy getEnumMappingStrategy() {
