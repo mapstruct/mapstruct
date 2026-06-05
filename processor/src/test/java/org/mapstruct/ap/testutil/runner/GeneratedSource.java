@@ -6,9 +6,6 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +16,7 @@ import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.mapstruct.ap.testutil.runner.CompilingExtension.NAMESPACE;
+import static org.mapstruct.ap.testutil.runner.CompilingExtension.getBasePath;
 
 /**
  * A {@link org.junit.jupiter.api.extension.RegisterExtension RegisterExtension} to perform assertions on generated
@@ -36,6 +34,7 @@ import static org.mapstruct.ap.testutil.runner.CompilingExtension.NAMESPACE;
 public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     private static final String FIXTURES_ROOT = "fixtures/";
+    private static final String FIXTURES_DIR = getBasePath() + "/src/test/resources/fixtures/";
 
     /**
      * ThreadLocal, as the source dir must be injected for this extension to gain access
@@ -139,8 +138,8 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
     private void handleFixtureComparison() {
         for ( FixtureComparison fixture : fixturesFor ) {
             String fixtureName = getFixtureName( fixture.mapperClass, fixture.variant );
-            URL expectedFile = getExpectedResource( fixtureName );
-            if ( expectedFile == null ) {
+            File expectedFile = getExpectedResource( fixtureName );
+            if ( !expectedFile.exists() ) {
                 fail( String.format(
                     "No reference file could be found for Mapper %s. You should create a file %s",
                     fixture.mapperClass.getName(),
@@ -148,8 +147,7 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
                 ) );
             }
             else {
-                File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), StandardCharsets.UTF_8 ) );
-                forMapper( fixture.mapperClass ).hasSameMapperContent( expectedResource );
+                forMapper( fixture.mapperClass ).hasSameMapperContent( expectedFile );
             }
         }
     }
@@ -159,16 +157,15 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
         return mapperClass.getName().replace( '.', '/' ).concat( suffix );
     }
 
-    private URL getExpectedResource(String fixtureName) {
-        ClassLoader classLoader = getClass().getClassLoader();
+    private File getExpectedResource(String fixtureName) {
         for ( int version = Runtime.version().feature(); version >= 11 && compiler != Compiler.ECLIPSE; version-- ) {
-            URL resource = classLoader.getResource( FIXTURES_ROOT + "/" + version + "/" + fixtureName );
-            if ( resource != null ) {
-                return resource;
+            File fixtureFile = new File( FIXTURES_DIR + version + File.separator + fixtureName );
+            if ( fixtureFile.exists() ) {
+                return fixtureFile;
             }
         }
 
-        return classLoader.getResource( FIXTURES_ROOT + fixtureName );
+        return new File( FIXTURES_DIR + fixtureName );
     }
 
     private static final class FixtureComparison {
