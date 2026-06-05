@@ -209,6 +209,28 @@ public class MappingBuilderContext {
         return nullabilityResolver;
     }
 
+    /**
+     * Whether the return type of the given mapping method is JSpecify {@code @NonNull} (directly or via a
+     * {@code @NullMarked} scope). When it is, a mapping method must not generate {@code return null}, so callers
+     * force {@link org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem#RETURN_DEFAULT} semantics.
+     * <p>
+     * Update methods and {@code void}-returning methods never generate a {@code return null} and are excluded.
+     *
+     * @param method the mapping method to inspect
+     *
+     * @return {@code true} if the return type is {@code @NonNull}, {@code false} otherwise
+     */
+    public boolean isJSpecifyNonNullReturn(Method method) {
+        if ( method.isUpdateMethod() || method.getReturnType().isVoid() ) {
+            return false;
+        }
+
+        NullabilityResolver.Nullability returnNullability = nullabilityResolver.getNullability(
+            method.getExecutable(),
+            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
+        return returnNullability == NullabilityResolver.Nullability.NON_NULL;
+    }
+
     public EnumMappingStrategy getEnumMappingStrategy() {
         return enumMappingStrategy;
     }

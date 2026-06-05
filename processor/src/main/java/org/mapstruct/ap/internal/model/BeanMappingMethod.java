@@ -64,7 +64,6 @@ import org.mapstruct.ap.internal.model.source.SubclassMappingOptions;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -508,22 +507,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
-            // JSpecify: @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
-            // Only applies when there are nullable source parameters (presence checks exist), since without them
-            // the template never generates a `return null` block in the first place.
+            // JSpecify: a @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+            // The extra presence-check guard is bean-specific and required for correctness, not just an
+            // optimization: the bean template only emits a `return null` (and the presence-check wrapping that
+            // forcing mapNullToDefault would alter) when there are nullable source parameters. With none,
+            // getPresenceCheckByParameter would resolve to null in the single-source template branches.
+            // Container/Map/Stream methods instead gate this in their templates via `sourceParameterPresenceCheck??`,
+            // so they force unconditionally.
             if ( !mapNullToDefault
-                    && !method.isUpdateMethod()
-                    && !method.getReturnType().isVoid()
-                    && !presenceChecksByParameter.isEmpty() ) {
-                NullabilityResolver.Nullability returnNullability = ctx.getNullabilityResolver().getNullability(
-                    method.getExecutable(),
-                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() );
-                if ( returnNullability == NullabilityResolver.Nullability.NON_NULL ) {
-                    ctx.getMessager().note( 2,
-                        Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
-                        method.getName() );
-                    mapNullToDefault = true;
-                }
+                    && !presenceChecksByParameter.isEmpty()
+                    && ctx.isJSpecifyNonNullReturn( method ) ) {
+                ctx.getMessager().note( 2,
+                    Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
+                    method.getName() );
+                mapNullToDefault = true;
             }
 
             return new BeanMappingMethod(

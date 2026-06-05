@@ -22,7 +22,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -182,21 +181,16 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
             }
 
-            // mapNullToDefault — JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+            // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+            // Forcing is unconditional here (unlike BeanMappingMethod): when the source is @NonNull the template skips
+            // the whole guard block via `sourceParameterPresenceCheck??`, so the forced value is simply unused there.
             boolean mapNullToDefault =
                 method.getOptions().getMapMapping().getNullValueMappingStrategy().isReturnDefault();
-            if ( !mapNullToDefault
-                    && !method.isUpdateMethod()
-                    && !method.getReturnType().isVoid() ) {
-                NullabilityResolver.Nullability returnNullability = ctx.getNullabilityResolver().getNullability(
-                    method.getExecutable(),
-                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked() );
-                if ( returnNullability == NullabilityResolver.Nullability.NON_NULL ) {
-                    ctx.getMessager().note( 2,
-                        Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
-                        method.getName() );
-                    mapNullToDefault = true;
-                }
+            if ( !mapNullToDefault && ctx.isJSpecifyNonNullReturn( method ) ) {
+                ctx.getMessager().note( 2,
+                    Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
+                    method.getName() );
+                mapNullToDefault = true;
             }
 
             MethodReference factoryMethod = null;

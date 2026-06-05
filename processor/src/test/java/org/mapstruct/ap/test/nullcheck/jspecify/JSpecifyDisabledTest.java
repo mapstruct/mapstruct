@@ -54,4 +54,30 @@ class JSpecifyDisabledTest {
         // The JSpecify-driven hard error for a @Nullable source mapped to a @NonNull constructor
         // parameter is purely a JSpecify signal; with the flag disabled it must not be raised.
     }
+
+    @ProcessorTest
+    @WithClasses({
+        NullMarkedSourceBean.class,
+        NullMarkedTargetBean.class,
+        JSpecifyDisabledContainerSourceMapper.class
+    })
+    public void disabledFlagKeepsContainerMethodSourceGuard() {
+        // With JSpecify enabled the @NonNull source parameter skips the method-level null guard. When disabled,
+        // the resolver reports UNKNOWN, so the unconditional "if (sources == null) return null;" guard is kept and
+        // mapping a null source returns null rather than throwing an NPE.
+        assertThat( JSpecifyDisabledContainerSourceMapper.INSTANCE.mapAll( null ) ).isNull();
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        NullMarkedSourceBean.class,
+        NullMarkedTargetBean.class,
+        JSpecifyDisabledNonNullReturnMapper.class
+    })
+    public void disabledFlagSkipsNonNullReturnForcing() {
+        // With JSpecify enabled the @NonNull return forces RETURN_DEFAULT (empty list for a null source). When
+        // disabled, that forcing is suppressed and the default RETURN_NULL strategy applies, so a null source
+        // maps to null.
+        assertThat( JSpecifyDisabledNonNullReturnMapper.INSTANCE.mapAll( null ) ).isNull();
+    }
 }
