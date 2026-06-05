@@ -15,6 +15,7 @@ import java.util.stream.StreamSupport;
 
 import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -51,7 +52,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            PresenceCheck sourceParameterPresenceCheck) {
 
             Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {
@@ -74,7 +76,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 beforeMappingMethods,
                 afterMappingMethods,
                 selectionParameters,
-                helperImports
+                helperImports,
+                sourceParameterPresenceCheck
             );
         }
     }
@@ -84,7 +87,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                                 MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters, Set<Type> helperImports) {
+        SelectionParameters selectionParameters, Set<Type> helperImports, PresenceCheck sourceParameterPresenceCheck) {
         super(
             method,
             annotations,
@@ -95,7 +98,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
+            selectionParameters,
+            sourceParameterPresenceCheck
         );
         //CHECKSTYLE:ON
         this.helperImports = helperImports;

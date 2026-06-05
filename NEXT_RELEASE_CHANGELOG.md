@@ -3,6 +3,9 @@
 * Add support for JSpecify nullness annotations (#1243) - MapStruct now detects `@NonNull`, `@Nullable`, `@NullMarked` and `@NullUnmarked` from `org.jspecify.annotations` to control null check generation:
   - Source `@NonNull` skips null checks; target `@NonNull` always adds them
   - `@NonNull` source parameters skip the method-level null guard
+  - `@NonNull` source on collection-typed property mappings skips the wrapping null guard
+  - Container mapping methods (`Iterable`, `Map`, `Stream`, arrays) honor JSpecify on their source parameter
+  - `@NonNull` mapping-method return type implies `NullValueMappingStrategy.RETURN_DEFAULT` semantics across bean, iterable, map and stream mapping methods
   - `@NullMarked` / `@NullUnmarked` scope is resolved by walking method &rarr; class &rarr; outer class &rarr; package
   - Compile error when mapping a potentially nullable source to a `@NonNull` constructor parameter without a `defaultValue`
   - Can be disabled with the `mapstruct.disableJSpecify` compiler option

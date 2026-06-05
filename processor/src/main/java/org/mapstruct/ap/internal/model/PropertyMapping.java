@@ -626,10 +626,7 @@ public class PropertyMapping extends ModelElement {
             // Use the mapper type for @NullMarked scope resolution since the parameter is declared there.
             Parameter parameter = sourceReference.getParameter();
             if ( parameter != null && parameter.getElement() != null ) {
-                return ctx.getNullabilityResolver().getNullability(
-                    parameter.getElement(),
-                    () -> ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
-                );
+                return ctx.getNullabilityInMapperScope( parameter.getElement() );
             }
             return NullabilityResolver.Nullability.UNKNOWN;
         }
@@ -717,6 +714,7 @@ public class PropertyMapping extends ModelElement {
                 .assignment( rhs )
                 .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
+                .sourceJSpecifyNullability( getSourceJSpecifyNullability() )
                 .build();
         }
 

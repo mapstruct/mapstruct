@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -207,6 +208,40 @@ public class MappingBuilderContext {
 
     public NullabilityResolver getNullabilityResolver() {
         return nullabilityResolver;
+    }
+
+    /**
+     * Resolves the JSpecify nullability of an element declared directly on the mapper (e.g. a mapping method's
+     * return type or one of its source parameters), using the mapper type's {@code @NullMarked} scope as the
+     * enclosing scope for unannotated elements.
+     *
+     * @param element the element declared on the mapper to inspect
+     *
+     * @return the resolved nullability ({@link NullabilityResolver.Nullability#UNKNOWN} when JSpecify is disabled)
+     */
+    public NullabilityResolver.Nullability getNullabilityInMapperScope(Element element) {
+        return nullabilityResolver.getNullability(
+            element,
+            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
+    }
+
+    /**
+     * Whether the return type of the given mapping method is JSpecify {@code @NonNull} (directly or via a
+     * {@code @NullMarked} scope). When it is, a mapping method must not generate {@code return null}, so callers
+     * force {@link org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem#RETURN_DEFAULT} semantics.
+     * <p>
+     * Update methods and {@code void}-returning methods never generate a {@code return null} and are excluded.
+     *
+     * @param method the mapping method to inspect
+     *
+     * @return {@code true} if the return type is {@code @NonNull}, {@code false} otherwise
+     */
+    public boolean isJSpecifyNonNullReturn(Method method) {
+        if ( method.isUpdateMethod() || method.getReturnType().isVoid() ) {
+            return false;
+        }
+
+        return getNullabilityInMapperScope( method.getExecutable() ) == NullabilityResolver.Nullability.NON_NULL;
     }
 
     public EnumMappingStrategy getEnumMappingStrategy() {

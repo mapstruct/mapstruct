@@ -27,6 +27,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 
@@ -73,6 +74,7 @@ public class CollectionAssignmentBuilder {
     private SourceRHS sourceRHS;
     private NullValueCheckStrategyGem nvcs;
     private NullValuePropertyMappingStrategyGem nvpms;
+    private NullabilityResolver.Nullability sourceJSpecifyNullability = NullabilityResolver.Nullability.UNKNOWN;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -131,6 +133,15 @@ public class CollectionAssignmentBuilder {
 
     public CollectionAssignmentBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyGem nvpms ) {
         this.nvpms = nvpms;
+        return this;
+    }
+
+    public CollectionAssignmentBuilder sourceJSpecifyNullability(
+        NullabilityResolver.Nullability sourceJSpecifyNullability
+    ) {
+        this.sourceJSpecifyNullability = sourceJSpecifyNullability != null
+            ? sourceJSpecifyNullability
+            : NullabilityResolver.Nullability.UNKNOWN;
         return this;
     }
 
@@ -262,6 +273,14 @@ public class CollectionAssignmentBuilder {
      * @return whether to include a null / presence check or not
      */
     private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs) {
+        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper
+        if ( sourceJSpecifyNullability == NullabilityResolver.Nullability.NON_NULL ) {
+            ctx.getMessager().note( 2,
+                Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
+                targetPropertyName );
+            return false;
+        }
+
         if ( rhs.getSourcePresenceCheckerReference() != null ) {
             // If there is a source presence check then we should do a null check
             return true;

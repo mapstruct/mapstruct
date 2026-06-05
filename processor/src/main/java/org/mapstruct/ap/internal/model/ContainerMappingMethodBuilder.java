@@ -13,6 +13,8 @@ import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -124,11 +126,19 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         }
         assignment = getWrapper( assignment, method );
 
-        // mapNullToDefault
+        // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+        // Forcing is unconditional here (unlike BeanMappingMethod): when the source is @NonNull the template skips
+        // the whole guard block via `sourceParameterPresenceCheck??`, so the forced value is simply unused there.
         boolean mapNullToDefault = method.getOptions()
             .getIterableMapping()
             .getNullValueMappingStrategy()
             .isReturnDefault();
+        if ( !mapNullToDefault && ctx.isJSpecifyNonNullReturn( method ) ) {
+            ctx.getMessager().note( 2,
+                Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
+                method.getName() );
+            mapNullToDefault = true;
+        }
 
         MethodReference factoryMethod = null;
         if ( !method.isUpdateMethod() ) {
@@ -151,6 +161,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             existingVariables
         );
 
+        // Resolve presence check via JSpecify-aware resolver — returns null when source is @NonNull.
+        Parameter sourceParam = first( method.getSourceParameters() );
+        PresenceCheck sourceParameterPresenceCheck =
+            PresenceCheckMethodResolver.getPresenceCheckForSourceParameter( method, null, sourceParam, ctx );
+
         return instantiateMappingMethod(
             method,
             existingVariables,
@@ -160,7 +175,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
-            selectionParameters
+            selectionParameters,
+            sourceParameterPresenceCheck
         );
     }
 
@@ -177,7 +193,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-        SelectionParameters selectionParameters);
+        SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck);
 
     protected abstract Type getElementType(Type parameterType);
 

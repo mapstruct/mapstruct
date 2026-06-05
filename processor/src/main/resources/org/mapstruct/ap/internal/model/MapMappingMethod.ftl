@@ -16,6 +16,7 @@
 
     	</#if>
     </#list>
+    <#if sourceParameterPresenceCheck??>
     if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
@@ -28,6 +29,7 @@
             </#if>
         </#if>
     }
+    </#if>
 
     <#if existingInstanceMapping>
         ${resultName}.clear();

@@ -371,7 +371,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             reportErrorForUnusedSourceParameters();
             reportErrorForRedundantIgnoredSourceProperties();
 
-            // mapNullToDefault
+            // mapNullToDefault — JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
             boolean mapNullToDefault = method.getOptions()
                 .getBeanMapping()
                 .getNullValueMappingStrategy()
@@ -507,6 +507,21 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
+            // JSpecify: a @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+            // The extra presence-check guard is bean-specific and required for correctness, not just an
+            // optimization: the bean template only emits a `return null` (and the presence-check wrapping that
+            // forcing mapNullToDefault would alter) when there are nullable source parameters. With none,
+            // getPresenceCheckByParameter would resolve to null in the single-source template branches.
+            // Container/Map/Stream methods instead gate this in their templates via `sourceParameterPresenceCheck??`,
+            // so they force unconditionally.
+            if ( !mapNullToDefault
+                    && !presenceChecksByParameter.isEmpty()
+                    && ctx.isJSpecifyNonNullReturn( method ) ) {
+                ctx.getMessager().note( 2,
+                    Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
+                    method.getName() );
+                mapNullToDefault = true;
+            }
 
             return new BeanMappingMethod(
                 method,
