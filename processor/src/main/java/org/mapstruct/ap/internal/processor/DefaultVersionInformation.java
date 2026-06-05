@@ -41,12 +41,13 @@ public class DefaultVersionInformation implements VersionInformation {
     private final String compiler;
     private final boolean sourceVersionAtLeast9;
     private final boolean sourceVersionAtLeast11;
+    private final boolean sourceVersionAtLeast14;
     private final boolean sourceVersionAtLeast19;
     private final boolean eclipseJDT;
     private final boolean javac;
 
     DefaultVersionInformation(String runtimeVersion, String runtimeVendor, String compiler,
-        SourceVersion sourceVersion) {
+                              SourceVersion sourceVersion) {
         this.runtimeVersion = runtimeVersion;
         this.runtimeVendor = runtimeVendor;
         this.compiler = compiler;
@@ -55,6 +56,7 @@ public class DefaultVersionInformation implements VersionInformation {
         // If the difference between the source version and RELEASE_6 is more that 2 than we are at least on 9
         this.sourceVersionAtLeast9 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 2;
         this.sourceVersionAtLeast11 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 4;
+        this.sourceVersionAtLeast14 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 7;
         this.sourceVersionAtLeast19 = sourceVersion.compareTo( SourceVersion.RELEASE_6 ) > 12;
     }
 
@@ -86,6 +88,11 @@ public class DefaultVersionInformation implements VersionInformation {
     @Override
     public boolean isSourceVersionAtLeast11() {
         return sourceVersionAtLeast11;
+    }
+
+    @Override
+    public boolean isSourceVersionAtLeast14() {
+        return sourceVersionAtLeast14;
     }
 
     @Override
