@@ -1842,6 +1842,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 for ( int i = 0; i < parameterized.getTypeArguments().size(); i++ ) {
                     TypeMirror parameterizedTypeArg = parameterized.getTypeArguments().get( i );
                     Type declaredTypeArg = declared.getTypeParameters().get( i );
+                    if ( parameterizedTypeArg.getKind() == TypeKind.DECLARED &&
+                            !types.isSameType( types.erasure( parameterizedTypeArg ),
+                                    types.erasure( declaredTypeArg.getTypeMirror() ) ) ) {
+                        // Comparable<Long> can never be assigned Comparable<Number>
+                        // Generics enforce exact matches for declared types
+                       return DEFAULT_VALUE;
+                    }
                     ResolvedPair result = visit( parameterizedTypeArg, declaredTypeArg );
                     if ( result != super.DEFAULT_VALUE ) {
                         results.add( result );
