@@ -674,7 +674,7 @@ abstract class CompilingExtension implements BeforeEachCallback {
         return !compilationRequest.equals( compilationCache.getLastRequest() );
     }
 
-    private static String getBasePath() {
+    static String getBasePath() {
         try {
             return new File( "." ).getCanonicalPath();
         }

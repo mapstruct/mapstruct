@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.assertj.core.error.ShouldHaveSameContent;
 import org.assertj.core.internal.Diff;
 import org.assertj.core.internal.Failures;
 import org.assertj.core.util.diff.Delta;
+import org.opentest4j.FileInfo;
 
 import static java.lang.String.format;
 
@@ -81,8 +83,22 @@ public class JavaFileAssert extends FileAssert {
             ) );
             diffs.removeIf( this::ignoreDelta );
             if ( !diffs.isEmpty() ) {
+                FileInfo actualInfo;
+                FileInfo expectedInfo;
+                try {
+                    actualInfo = new FileInfo( actual.getAbsolutePath(), Files.readAllBytes( actual.toPath() ) );
+                    expectedInfo = new FileInfo( expected.getAbsolutePath(), Files.readAllBytes( expected.toPath() ) );
+                }
+                catch ( IOException e ) {
+                    throw new RuntimeException( e );
+                }
                 throw Failures.instance()
-                    .failure( info, ShouldHaveSameContent.shouldHaveSameContent( actual, expected, diffs ) );
+                    .failure(
+                        info,
+                        ShouldHaveSameContent.shouldHaveSameContent( actual, expected, diffs ),
+                        actualInfo,
+                        expectedInfo
+                    );
             }
         }
         catch ( IOException e ) {
