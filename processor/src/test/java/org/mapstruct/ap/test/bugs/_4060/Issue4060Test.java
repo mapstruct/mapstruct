@@ -23,16 +23,36 @@ public class Issue4060Test {
         diagnostics = {
             @Diagnostic(type = ErroneousSetToDefaultMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 56,
-                message = "LocalDate does not have an accessible constructor."),
+                line = 87,
+                message = "LocalDate does not have an accessible parameterless constructor. " +
+                    "Either change the nullValuePropertyMappingStrategy or define a defaultValue " +
+                    "or a defaultExpression."),
             @Diagnostic(type = ErroneousSetToDefaultMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 59,
-                message = "BigDecimal does not have an accessible constructor."),
+                line = 90,
+                message = "BigDecimal does not have an accessible parameterless constructor. " +
+                    "Either change the nullValuePropertyMappingStrategy or define a defaultValue " +
+                    "or a defaultExpression."),
             @Diagnostic(type = ErroneousSetToDefaultMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 62,
-                message = "Comparable<String> does not have an accessible constructor.")
+                line = 93,
+                message = "Comparable<String> does not have an accessible parameterless constructor. " +
+                    "Either change the nullValuePropertyMappingStrategy or define a defaultValue " +
+                    "or a defaultExpression."),
+            @Diagnostic(type = ErroneousSetToDefaultMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 96,
+                message = "ErroneousSetToDefaultMapper.AbstractValue does not have an accessible " +
+                    "parameterless constructor. " +
+                    "Either change the nullValuePropertyMappingStrategy or define a defaultValue " +
+                    "or a defaultExpression."),
+            @Diagnostic(type = ErroneousSetToDefaultMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 99,
+                message = "ErroneousSetToDefaultMapper.EnumValue does not have an accessible " +
+                    "parameterless constructor. " +
+                    "Either change the nullValuePropertyMappingStrategy or define a defaultValue " +
+                    "or a defaultExpression.")
         })
     void setToDefaultWithoutParameterlessConstructorFails() {
     }

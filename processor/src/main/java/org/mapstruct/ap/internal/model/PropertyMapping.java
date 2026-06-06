@@ -549,7 +549,7 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     positionHint,
-                    Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                    Message.PROPERTYMAPPING_NO_ACCESSIBLE_PARAMETERLESS_CONSTRUCTOR,
                     typeToConstruct.describe()
                 );
             }

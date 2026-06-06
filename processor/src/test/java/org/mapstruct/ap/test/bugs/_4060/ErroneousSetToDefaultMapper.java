@@ -52,6 +52,37 @@ public interface ErroneousSetToDefaultMapper {
         }
     }
 
+    abstract class AbstractValue {
+    }
+
+    class WithAbstractValue {
+        private AbstractValue value;
+
+        public AbstractValue getValue() {
+            return value;
+        }
+
+        public void setValue(AbstractValue value) {
+            this.value = value;
+        }
+    }
+
+    enum EnumValue {
+        FIRST
+    }
+
+    class WithEnumValue {
+        private EnumValue value;
+
+        public EnumValue getValue() {
+            return value;
+        }
+
+        public void setValue(EnumValue value) {
+            this.value = value;
+        }
+    }
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     void updateLocalDate(@MappingTarget WithLocalDate target, WithLocalDate source);
 
@@ -60,4 +91,10 @@ public interface ErroneousSetToDefaultMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     void updateComparable(@MappingTarget WithComparable target, WithComparable source);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    void updateAbstractValue(@MappingTarget WithAbstractValue target, WithAbstractValue source);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    void updateEnumValue(@MappingTarget WithEnumValue target, WithEnumValue source);
 }
