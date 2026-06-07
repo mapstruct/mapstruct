@@ -1560,6 +1560,30 @@ public class Type extends ModelElement implements Comparable<Type> {
         return hasAccessibleConstructor;
     }
 
+    /**
+     * Whether this type can be instantiated through an accessible parameterless constructor, i.e. via
+     * {@code new Type()}. Unlike {@link #hasAccessibleConstructor()} this returns {@code false} for types that
+     * only expose constructors with parameters (e.g. {@code BigDecimal}).
+     *
+     * @return {@code true} if a {@code new Type()} call would compile, {@code false} otherwise
+     */
+    public boolean hasAccessibleParameterlessConstructor() {
+        if ( typeElement == null || isInterface() || isAbstract() || isEnumType() ) {
+            return false;
+        }
+        List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+        if ( constructors.isEmpty() ) {
+            // no declared constructors means the implicit, accessible default constructor is available
+            return true;
+        }
+        for ( ExecutableElement constructor : constructors ) {
+            if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) && constructor.getParameters().isEmpty() ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public KotlinMetadata getKotlinMetadata() {
         if ( !kotlinMetadataInitialized ) {
             kotlinMetadataInitialized = true;
