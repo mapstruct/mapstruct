@@ -33,7 +33,7 @@ jobs:
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
         if: matrix.java == 21 && github.repository == 'mapstruct/mapstruct'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
