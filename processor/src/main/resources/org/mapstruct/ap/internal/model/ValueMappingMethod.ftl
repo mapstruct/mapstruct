@@ -28,7 +28,7 @@
         case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
         break;</#if>
     </#list>
-    default: <#if defaultTarget.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget.target/></#if>;
+        <@writeDefaultBranch/>
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>
@@ -72,4 +72,26 @@
             <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
+</#macro>
+
+<#macro writeDefaultBranch >
+    default:<#t>
+    <#if defaultTarget.targetReference ??>
+        <#if !defaultTarget.targetReference.returnType.isVoid()>
+ return <@includeModel object=defaultTarget.targetReference/>;
+        <#else><#nt>
+            <@includeModel object=defaultTarget.targetReference/>;<#lt>
+            <#if !defaultTarget.targetAsException>
+                ${resultName} = <@writeTarget target=defaultTarget.target/>;<#lt>
+            <#else><#t>
+                throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#lt>
+            </#if>
+        </#if>
+    <#else>
+        <#if defaultTarget.targetAsException>
+ throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );
+        <#else>
+ ${resultName} = <@writeTarget target=defaultTarget.target/>;
+        </#if>
+    </#if>
 </#macro>

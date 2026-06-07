@@ -137,10 +137,28 @@ public class ValueMappingMethod extends MappingMethod {
                 annotations,
                 mappingEntries,
                 valueMappings.nullValueTarget,
-                valueMappings.defaultTargetValue,
+                getDefaultMappingEntry(),
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
                 afterMappingMethods
+            );
+        }
+
+        private MappingEntry getDefaultMappingEntry() {
+            MethodReference reference = null;
+            ValueMappingOptions defaultTargetOptions = valueMappings.defaultTarget;
+            if ( defaultTargetOptions != null ) {
+                reference = DefaultValueMappingMethodResolver.getMatchingMethods(
+                    method,
+                    defaultTargetOptions.getSelectionParameters(),
+                    defaultTargetOptions.getMirror(),
+                    ctx
+                );
+            }
+            return new MappingEntry(
+                null,
+                valueMappings.defaultTargetValue != null ? valueMappings.defaultTargetValue : THROW_EXCEPTION,
+                reference
             );
         }
 
@@ -551,14 +569,14 @@ public class ValueMappingMethod extends MappingMethod {
                                List<Annotation> annotations,
                                List<MappingEntry> enumMappings,
                                String nullTarget,
-                               String defaultTarget,
+                               MappingEntry defaultTarget,
                                Type unexpectedValueMappingException,
                                List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = new MappingEntry( null, nullTarget );
-        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION);
+        this.defaultTarget = defaultTarget;
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
         this.annotations = annotations;
@@ -618,6 +636,7 @@ public class ValueMappingMethod extends MappingMethod {
         private final String source;
         private final String target;
         private boolean targetAsException = false;
+        private MethodReference targetReference;
 
         MappingEntry(String source, String target) {
             this.source = source;
@@ -630,6 +649,12 @@ public class ValueMappingMethod extends MappingMethod {
             else {
                 this.target = null;
             }
+            this.targetReference = null;
+        }
+
+        MappingEntry(String source, String target, MethodReference targetReference) {
+            this( source, target );
+            this.targetReference = targetReference;
         }
 
         public boolean isTargetAsException() {
@@ -642,6 +667,10 @@ public class ValueMappingMethod extends MappingMethod {
 
         public String getTarget() {
             return target;
+        }
+
+        public MethodReference getTargetReference() {
+            return targetReference;
         }
     }
 }
