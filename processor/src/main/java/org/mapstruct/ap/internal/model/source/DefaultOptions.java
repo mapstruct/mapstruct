@@ -127,6 +127,14 @@ public class DefaultOptions extends DelegatingOptions {
             mapper.nullValuePropertyMappingStrategy().getDefaultValue() );
     }
 
+    public NullValuePropertyMappingStrategyGem getNullValueIterablePropertyMappingStrategy() {
+        return null;
+    }
+
+    public NullValuePropertyMappingStrategyGem getNullValueMapPropertyMappingStrategy() {
+        return null;
+    }
+
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().getDefaultValue() );
     }
