@@ -21,6 +21,7 @@
 
 * Prevent mapper generation from a type with a generic super bound to a type with a generic extends bound (#3994)
 * Fix location for Javadoc when generating the distribution zip
+* Stop binding a property-level `@Condition` method to an unrelated source parameter when its type matches by accident (#4037)
 
 ### Documentation
 
