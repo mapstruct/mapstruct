@@ -17,6 +17,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import static org.mapstruct.ap.internal.gem.ClassAccessibilityGem.LIKE_ABSTRACTION;
+
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
  * mapper model.
@@ -109,6 +111,10 @@ public class Mapper extends GeneratedType {
 
             Type definitionType = typeFactory.getType( element );
 
+            Accessibility accessibility =
+                classAccessibility == LIKE_ABSTRACTION ? Accessibility.fromModifiers( element.getModifiers() ) :
+                    Accessibility.valueOf( classAccessibility.name() );
+
             return new Mapper(
                 typeFactory,
                 packageName,
@@ -121,7 +127,7 @@ public class Mapper extends GeneratedType {
                 options,
                 versionInformation,
                 suppressGeneratorTimestamp,
-                Accessibility.fromModifiers( element.getModifiers() ),
+                accessibility,
                 fields,
                 constructor,
                 decorator,

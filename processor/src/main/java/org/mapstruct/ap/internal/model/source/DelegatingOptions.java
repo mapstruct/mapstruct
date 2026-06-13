@@ -12,6 +12,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
@@ -82,6 +83,10 @@ public abstract class DelegatingOptions {
 
     public Boolean isDisableSubMappingMethodsGeneration() {
         return next.isDisableSubMappingMethodsGeneration();
+    }
+
+    public ClassAccessibilityGem accessibility() {
+        return next.accessibility();
     }
 
     // BeanMapping and Mapping

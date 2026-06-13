@@ -10,6 +10,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MapperConfigGem;
@@ -167,6 +168,13 @@ public class MapperConfigOptions extends DelegatingOptions {
             return NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueMappingStrategy().get() );
         }
         return next().getNullValueMapMappingStrategy();
+    }
+
+    @Override
+    public ClassAccessibilityGem accessibility() {
+        return mapperConfig.accessibility().hasValue() ?
+            ClassAccessibilityGem.valueOf( mapperConfig.accessibility().get() ) :
+            next().accessibility();
     }
 
     @Override
