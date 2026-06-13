@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MapperConfigGem;
@@ -168,6 +169,13 @@ public class MapperOptions extends DelegatingOptions {
         return mapper.subclassExhaustiveStrategy().hasValue() ?
             SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().get() ) :
             next().getSubclassExhaustiveStrategy();
+    }
+
+    @Override
+    public ClassAccessibilityGem accessibility() {
+        return mapper.accessibility().hasValue() ?
+            ClassAccessibilityGem.valueOf( mapper.accessibility().get() ) :
+            next().accessibility();
     }
 
     @Override

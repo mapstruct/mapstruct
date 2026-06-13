@@ -11,6 +11,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
@@ -153,6 +154,11 @@ public class DefaultOptions extends DelegatingOptions {
             return nullValueMapMappingStrategy;
         }
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().getDefaultValue() );
+    }
+
+    @Override
+    public ClassAccessibilityGem accessibility() {
+        return ClassAccessibilityGem.valueOf( mapper.accessibility().getDefaultValue() );
     }
 
     public BuilderGem getBuilder() {
