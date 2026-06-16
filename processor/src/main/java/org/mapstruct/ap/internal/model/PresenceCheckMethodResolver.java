@@ -7,11 +7,14 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -46,6 +49,24 @@ public final class PresenceCheckMethodResolver {
             SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() ),
             ctx
         );
+
+        // For a property-level @Condition, the candidate parameter bindings include every source
+        // parameter of the mapping method alongside the property's source value (SourceRHS). When
+        // the SourceRHS type does not match any parameter of the @Condition method but an unrelated
+        // sibling source parameter happens to match by type, the type selector used to silently
+        // bind that sibling and the generated check ran on the wrong value. A sibling source
+        // parameter is only a valid binding when it is the root of the property's source path
+        // (e.g. @Mapping(source = "rootParam.nested.value") may bind a method parameter to
+        // rootParam itself), otherwise reject the match and let the default null check take over.
+        // See #4037.
+        SourceRHS sourceRHS = selectionParameters == null ? null : selectionParameters.getSourceRHS();
+        if ( sourceRHS != null && !sourceRHS.isSourceReferenceParameter() ) {
+            String rootSourceParameterName = sourceRHS.getSourceParameterName();
+            matchingMethods.removeIf( selected -> bindsUnrelatedSourceParameter(
+                selected.getParameterBindings(),
+                rootSourceParameterName
+            ) );
+        }
 
         if ( matchingMethods.isEmpty() ) {
             return null;
@@ -177,6 +198,23 @@ public final class PresenceCheckMethodResolver {
                 matchingMethod.getParameterBindings()
             );
         }
+    }
+
+    private static boolean bindsUnrelatedSourceParameter(List<ParameterBinding> bindings,
+                                                          String rootSourceParameterName) {
+        for ( ParameterBinding binding : bindings ) {
+            if ( !binding.isSourceParameter() ) {
+                continue;
+            }
+            if ( binding.isMappingTarget() || binding.isTargetType() || binding.isMappingContext()
+                || binding.isSourcePropertyName() || binding.isTargetPropertyName() ) {
+                continue;
+            }
+            if ( !Objects.equals( binding.getVariableName(), rootSourceParameterName ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<SourceMethod> getAllAvailableMethods(Method method, List<SourceMethod> sourceModelMethods,
