@@ -13,7 +13,9 @@ import org.mapstruct.ReportingPolicy;
  *
  * @author Sjaak Derksen
  */
-@MapperConfig(uses = { CustomMapperViaMapperConfig.class }, unmappedTargetPolicy = ReportingPolicy.ERROR, accessibility = ClassAccessibility.DEFAULT)
+@MapperConfig(uses = {CustomMapperViaMapperConfig.class},
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        accessibility = ClassAccessibility.DEFAULT)
 public class CentralConfig {
 
 }

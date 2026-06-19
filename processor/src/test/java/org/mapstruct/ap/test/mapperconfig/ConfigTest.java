@@ -56,7 +56,7 @@ public class ConfigTest {
     @WithClasses( { Target.class, SourceTargetMapper.class } )
     public void shouldDeclareMapperImplementationAsPackagePrivate() throws ClassNotFoundException {
         Class<?> implementation = loadForMapper( SourceTargetMapper.class );
-        assertThat( isDefault( implementation.getModifiers() )).isTrue();
+        assertThat( isDefault( implementation.getModifiers() ) ).isTrue();
     }
 
     @ProcessorTest
