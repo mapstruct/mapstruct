@@ -6,7 +6,7 @@
 package org.mapstruct;
 
 /**
- * Indicates whether a generated Mapper implementation class should be declared {@code public} or not.
+ * Determines whether a generated Mapper implementation class will be declared {@code public} or not.
  *
  * @author Raimund Klein
  *
@@ -14,16 +14,15 @@ package org.mapstruct;
  */
 public enum ClassAccessibility {
     /**
-     * Indicates that the generated Mapper should have the same modifier ({@code public} or none) as the annotated
-     * class or interface.
+     * The generated Mapper will have the same modifier ({@code public} or none) as the annotated class or interface.
      */
     LIKE_ABSTRACTION,
     /**
-     * Indicates that the generated Mapoer should be declared {@code public}.
+     * The generated Mapper will be declared {@code public}.
      */
     PUBLIC,
     /**
-     * Indicates that the generated Mapper should have no visibility modifier ("package-private").
+     * The generated Mapper will have no visibility modifier ("package-private").
      */
     DEFAULT
 }

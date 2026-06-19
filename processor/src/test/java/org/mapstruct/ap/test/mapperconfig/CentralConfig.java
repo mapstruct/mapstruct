@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.mapperconfig;
 
+import org.mapstruct.ClassAccessibility;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
 
@@ -12,7 +13,7 @@ import org.mapstruct.ReportingPolicy;
  *
  * @author Sjaak Derksen
  */
-@MapperConfig(uses = { CustomMapperViaMapperConfig.class }, unmappedTargetPolicy = ReportingPolicy.ERROR )
+@MapperConfig(uses = { CustomMapperViaMapperConfig.class }, unmappedTargetPolicy = ReportingPolicy.ERROR, accessibility = ClassAccessibility.DEFAULT)
 public class CentralConfig {
 
 }

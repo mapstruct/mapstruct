@@ -12,6 +12,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
+import static java.lang.reflect.Modifier.isPrivate;
+import static java.lang.reflect.Modifier.isProtected;
+import static java.lang.reflect.Modifier.isPublic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -50,6 +53,13 @@ public class ConfigTest {
     }
 
     @ProcessorTest
+    @WithClasses( { Target.class, SourceTargetMapper.class } )
+    public void shouldDeclareMapperImplementationAsPackagePrivate() throws ClassNotFoundException {
+        Class<?> implementation = loadForMapper( SourceTargetMapper.class );
+        assertThat( isDefault( implementation.getModifiers() )).isTrue();
+    }
+
+    @ProcessorTest
     @WithClasses( { TargetNoFoo.class, SourceTargetMapperWarn.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
@@ -69,5 +79,13 @@ public class ConfigTest {
                 message = "Unmapped target property: \"noFoo\".")
         })
     public void shouldUseERRORViaMapperConfig() {
+    }
+
+    private static Class<?> loadForMapper(Class<?> mapper) throws ClassNotFoundException {
+        return Thread.currentThread().getContextClassLoader().loadClass( mapper.getName() + "Impl" );
+    }
+
+    private static boolean isDefault(int modifiers) {
+        return !isPublic( modifiers ) && !isProtected( modifiers ) && !isPrivate( modifiers );
     }
 }
