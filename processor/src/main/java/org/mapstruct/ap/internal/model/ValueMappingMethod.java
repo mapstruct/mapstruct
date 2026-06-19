@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
@@ -46,6 +47,7 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final MappingEntry defaultTarget;
     private final MappingEntry nullTarget;
+    private final VersionInformation versionInformation;
 
     private final Type unexpectedValueMappingException;
 
@@ -128,19 +130,22 @@ public class ValueMappingMethod extends MappingMethod {
                     new AdditionalAnnotationsBuilder(
                         ctx.getElementUtils(),
                         ctx.getTypeFactory(),
-                        ctx.getMessager() );
+                        ctx.getMessager()
+                    );
 
                 annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
             }
             // finally return a mapping
-            return new ValueMappingMethod( method,
+            return new ValueMappingMethod(
+                method,
                 annotations,
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                ctx.getVersionInformation()
             );
         }
 
@@ -154,8 +159,10 @@ public class ValueMappingMethod extends MappingMethod {
 
                 String nameTransformationStrategy = enumMapping.getNameTransformationStrategy();
                 if ( enumTransformationStrategies.containsKey( nameTransformationStrategy ) ) {
-                    enumTransformationInvoker = new EnumTransformationStrategyInvoker( enumTransformationStrategies.get(
-                        nameTransformationStrategy ), enumMapping.getNameTransformationConfiguration() );
+                    enumTransformationInvoker = new EnumTransformationStrategyInvoker(
+                        enumTransformationStrategies.get(
+                            nameTransformationStrategy ), enumMapping.getNameTransformationConfiguration()
+                    );
                 }
             }
 
@@ -180,7 +187,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
         }
 
-        private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType ) {
+        private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
@@ -252,7 +259,8 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
                         Message.VALUEMAPPING_UNMAPPED_SOURCES,
                         sourceErrorMessage,
                         targetErrorMessage,
@@ -264,7 +272,7 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-         private List<MappingEntry> enumToStringMapping(Method method, Type sourceType ) {
+        private List<MappingEntry> enumToStringMapping(Method method, Type sourceType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
@@ -294,7 +302,7 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-        private List<MappingEntry> stringToEnumMapping(Method method, Type targetType ) {
+        private List<MappingEntry> stringToEnumMapping(Method method, Type targetType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
@@ -439,7 +447,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( valueMappings.nullTarget != null && NULL.equals( valueMappings.nullTarget.getTarget() )
                 && !targetEnumConstants.contains( valueMappings.nullTarget.getTarget() ) ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     valueMappings.nullTarget.getMirror(),
                     valueMappings.nullTarget.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -554,14 +563,29 @@ public class ValueMappingMethod extends MappingMethod {
                                String defaultTarget,
                                Type unexpectedValueMappingException,
                                List<LifecycleCallbackMethodReference> beforeMappingMethods,
-                               List<LifecycleCallbackMethodReference> afterMappingMethods) {
+                               List<LifecycleCallbackMethodReference> afterMappingMethods,
+                               VersionInformation versionInformation) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = new MappingEntry( null, nullTarget );
-        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION);
+        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION );
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
         this.annotations = annotations;
+        this.versionInformation = versionInformation;
+    }
+
+    public boolean isDefaultTargetRequired() {
+        if ( !versionInformation.isSourceVersionAtLeast14() ) {
+            return true;
+        }
+
+        Type sourceType = getSourceParameter().getType();
+        if ( !sourceType.isEnumType() ) {
+            return true;
+        }
+
+        return sourceType.getEnumConstants().size() != getValueMappings().size();
     }
 
     @Override
@@ -569,7 +593,8 @@ public class ValueMappingMethod extends MappingMethod {
         Set<Type> importTypes = super.getImportTypes();
 
         if ( unexpectedValueMappingException != null && !unexpectedValueMappingException.isJavaLangType() ) {
-            if ( defaultTarget.isTargetAsException() || nullTarget.isTargetAsException() ||
+            if ( ( isDefaultTargetRequired() && defaultTarget.isTargetAsException() ) ||
+                nullTarget.isTargetAsException() ||
                 hasMappingWithTargetAsException() ) {
                 importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
             }
@@ -596,6 +621,10 @@ public class ValueMappingMethod extends MappingMethod {
 
     public MappingEntry getNullTarget() {
         return nullTarget;
+    }
+
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 
     public Type getUnexpectedValueMappingException() {
