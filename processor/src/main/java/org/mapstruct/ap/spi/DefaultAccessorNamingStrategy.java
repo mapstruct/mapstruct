@@ -242,7 +242,14 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
                 return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
             }
             else {
-                return methodName;
+                // [#4000] Apply the same JavaBean-style decapitalization as for `getXyz` /
+                // `setXyz` accessors so that a fluent setter `xNameField(...)` resolves to
+                // the same property name as a JavaBean accessor `getXNameField()` /
+                // `setXNameField(...)`. Without this, the two are recognised as different
+                // properties when the second character is upper case (see Introspector spec).
+                return IntrospectorUtils.decapitalize(
+                    Character.toUpperCase( methodName.charAt( 0 ) ) + methodName.substring( 1 )
+                );
             }
         }
         return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );

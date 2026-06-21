@@ -24,6 +24,7 @@
 
 * Prevent mapper generation from a type with a generic super bound to a type with a generic extends bound (#3994)
 * Fix location for Javadoc when generating the distribution zip
+* Fix property name resolution for fluent setters whose second character is upper case (#4000)
 
 ### Documentation
 
