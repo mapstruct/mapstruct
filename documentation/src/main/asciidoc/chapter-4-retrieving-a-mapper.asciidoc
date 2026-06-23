@@ -141,7 +141,7 @@ By default, the generated Mapper implementation will have the same accessibility
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, accessibility = ClassAccessibility.DEFAULT)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, accessibility = ClassAccessibility.PACKAGE_PRIVATE)
 public interface CarMapper {
 
     CarDto carToCarDto(Car car);
@@ -150,4 +150,4 @@ public interface CarMapper {
 ----
 ====
 
-In this case, the generated Mapper will have no modifier. Possible values are `ClassAccessibility.LIKE_ABSTRACTION` (the default behavior described above), `ClassAccessibility.PUBLIC`, and `ClassAccessibility.DEFAULT` (no modifier, i.e. package-private).
+In this case, the generated Mapper will have no modifier. Possible values are `ClassAccessibility.DEFAULT` (the behavior described above), `ClassAccessibility.PUBLIC`, and `ClassAccessibility.PACKAGE_PRIVATE` (no modifier).

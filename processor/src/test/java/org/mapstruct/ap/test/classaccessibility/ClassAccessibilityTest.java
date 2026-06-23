@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     PublicAbstractionMapper.class,
     PackageAbstractionMapper.class,
     ForcedPublicMapper.class,
-    ForcedDefaultMapper.class
+    ForcedPackagePrivateMapper.class
 })
 public class ClassAccessibilityTest {
 
@@ -34,7 +34,7 @@ public class ClassAccessibilityTest {
         Class<?> forcedPublic = loadForMapper( ForcedPublicMapper.class );
         assertThat( isPublic( forcedPublic.getModifiers() ) ).isTrue();
 
-        Class<?> forcedDefault = loadForMapper( ForcedDefaultMapper.class );
+        Class<?> forcedDefault = loadForMapper( ForcedPackagePrivateMapper.class );
         assertThat( isDefault( forcedDefault.getModifiers() ) ).isTrue();
     }
 

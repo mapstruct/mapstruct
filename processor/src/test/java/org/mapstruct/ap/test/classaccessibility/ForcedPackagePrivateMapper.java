@@ -8,8 +8,8 @@ package org.mapstruct.ap.test.classaccessibility;
 import org.mapstruct.ClassAccessibility;
 import org.mapstruct.Mapper;
 
-@Mapper(accessibility = ClassAccessibility.DEFAULT)
-public interface ForcedDefaultMapper {
+@Mapper(accessibility = ClassAccessibility.PACKAGE_PRIVATE)
+public interface ForcedPackagePrivateMapper {
     Target map(Source value);
 }
 

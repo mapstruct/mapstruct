@@ -11,5 +11,5 @@ package org.mapstruct.ap.internal.gem;
  * @author Raimund Klein
  */
 public enum ClassAccessibilityGem {
-    LIKE_ABSTRACTION, PUBLIC, DEFAULT
+    DEFAULT, PUBLIC, PACKAGE_PRIVATE
 }

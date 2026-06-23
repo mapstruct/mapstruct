@@ -16,7 +16,7 @@ public enum ClassAccessibility {
     /**
      * The generated Mapper will have the same modifier ({@code public} or none) as the annotated class or interface.
      */
-    LIKE_ABSTRACTION,
+    DEFAULT,
     /**
      * The generated Mapper will be declared {@code public}.
      */
@@ -24,5 +24,5 @@ public enum ClassAccessibility {
     /**
      * The generated Mapper will have no visibility modifier ("package-private").
      */
-    DEFAULT
+    PACKAGE_PRIVATE
 }
