@@ -14,7 +14,7 @@ import javax.lang.model.element.Modifier;
  * @author Andreas Gudian
  */
 public enum Accessibility {
-    PRIVATE( "private" ), PACKAGE_PRIVATE("" ), PROTECTED("protected" ), PUBLIC("public" );
+    PRIVATE( "private" ), PACKAGE_PRIVATE( "" ), PROTECTED( "protected" ), PUBLIC( "public" );
 
     private final String keyword;
 
