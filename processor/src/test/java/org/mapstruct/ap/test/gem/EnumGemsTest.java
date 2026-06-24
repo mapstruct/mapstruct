@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.mapstruct.ClassAccessibility;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ConditionStrategy;
 import org.mapstruct.InjectionStrategy;
@@ -17,6 +18,7 @@ import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
@@ -73,6 +75,12 @@ public class EnumGemsTest {
     public void conditionStrategyGemIsCorrect() {
         assertThat( namesOf( ConditionStrategy.values() ) ).isEqualTo(
             namesOf( ConditionStrategyGem.values() ) );
+    }
+
+    @Test
+    public void classAccesibilityGemIsCorrect() {
+        assertThat( namesOf( ClassAccessibility.values() ) ).isEqualTo(
+            namesOf( ClassAccessibilityGem.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

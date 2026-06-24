@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.type.TypeKind;
 
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -40,6 +41,7 @@ public abstract class GeneratedType extends ModelElement {
         protected SortedSet<Type> extraImportedTypes;
 
         protected List<MappingMethod> methods;
+        protected ClassAccessibilityGem classAccessibility;
 
         GeneratedTypeBuilder(Class<T> selfType) {
             myself = selfType.cast( this );
@@ -75,6 +77,10 @@ public abstract class GeneratedType extends ModelElement {
             return myself;
         }
 
+        public T classAccessibility(ClassAccessibilityGem classAccessibility) {
+            this.classAccessibility = classAccessibility;
+            return myself;
+        }
     }
 
     private final String packageName;

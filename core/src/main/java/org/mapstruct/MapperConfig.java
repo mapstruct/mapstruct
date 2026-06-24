@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 import org.mapstruct.control.MappingControl;
 import org.mapstruct.factory.Mappers;
 
+import static org.mapstruct.ClassAccessibility.DEFAULT;
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 
@@ -357,5 +358,14 @@ public @interface MapperConfig {
      * @since 1.5
      */
     boolean suppressTimestampInGenerated() default false;
+
+    /**
+     * Determines the {@link ClassAccessibility} ({@code public} or package-private) for the generated Mapper
+     * implementation. Default is to mirror the interface or abstract class annotated by {@code Mapper}.
+     *
+     * @return The {@link ClassAccessibility} ({@code public} or package-private) for the generated Mapper
+     *         implementation
+     */
+    ClassAccessibility accessibility() default DEFAULT;
 }
 

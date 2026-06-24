@@ -131,3 +131,23 @@ In that case utilize the `InjectionStrategy#SETTER` strategy.
 ====
 For abstract classes or decorators setter injection should be used.
 ====
+
+[[class-accessibility]]
+=== Class accessibility
+
+By default, the generated Mapper implementation will have the same accessibility (`public` or none) as the interface or abstract class carrying the `@Mapper` annotation. Especially in conjunction with a DI framework, this might not be desired. If you wish to reduce the visibility of the generated class, you can make use of the `accessibility` attribute like this:
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, accessibility = ClassAccessibility.PACKAGE_PRIVATE)
+public interface CarMapper {
+
+    CarDto carToCarDto(Car car);
+}
+
+----
+====
+
+In this case, the generated Mapper will have no modifier. Possible values are `ClassAccessibility.DEFAULT` (the behavior described above), `ClassAccessibility.PUBLIC`, and `ClassAccessibility.PACKAGE_PRIVATE` (no modifier).

@@ -217,6 +217,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
             .javadoc( getJavadoc( element ) )
+            .classAccessibility( mapperOptions.accessibility() )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
