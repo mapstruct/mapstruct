@@ -89,7 +89,7 @@ public class MavenIntegrationTest {
     @ProcessorTest(baseDir = "lombokBuilderTest", processorTypes = {
         ProcessorTest.ProcessorType.JAVAC
     })
-    @DisabledOnJre(versions = 27)
+    @DisabledOnJre(versions = { 27, 28 })
     void lombokBuilderTest() {
     }
 
@@ -98,7 +98,7 @@ public class MavenIntegrationTest {
         ProcessorTest.ProcessorType.JAVAC_WITH_PATHS
     })
     @EnabledForJreRange(min = JRE.JAVA_11)
-    @DisabledOnJre(versions = 27)
+    @DisabledOnJre(versions = { 27, 28 })
     void lombokModuleTest() {
     }
 
