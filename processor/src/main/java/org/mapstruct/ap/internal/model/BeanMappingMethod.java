@@ -150,7 +150,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             method( forgedMethod );
             mappingReferences = forgedMethod.getMappingReferences();
             Parameter sourceParameter = first( Parameter.getSourceParameters( forgedMethod.getParameters() ) );
-            for ( MappingReference mappingReference : mappingReferences.getMappingReferences() ) {
+            for ( MappingReference mappingReference: mappingReferences.getMappingReferences() ) {
                 SourceReference sourceReference = mappingReference.getSourceReference();
                 if ( sourceReference != null ) {
                     mappingReference.setSourceReference( new SourceReference.BuilderFromSourceReference()
@@ -2376,7 +2376,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return false;
         }
 
-        return mapping.getAssignment().isSourceReferenceParameter();
+        return mapping.getAssignment().isSourceReferenceParameter()
+            || isCheckedByGuardClause( mapping );
+    }
+
+    private boolean isCheckedByGuardClause(PropertyMapping mapping) {
+        boolean isUpdateMethod = getReturnTypeToConstruct() == null && isMapNullToDefault();
+        return !isUpdateMethod
+            && presenceChecksByParameter.size() == 1
+            && presenceChecksByParameter.containsKey( mapping.getSourceBeanName() );
     }
 
     @Override
