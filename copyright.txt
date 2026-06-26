@@ -8,6 +8,7 @@ Andreas Gudian - https://github.com/agudian
 Andrei Arlou - https://github.com/Captain1653
 Andres Jose Sebastian Rincon Gonzalez - https://github.com/stianrincon
 Arne Seime - https://github.com/seime
+Burak Yildirim - https://github.com/bydrim
 Cause Chung - https://github.com/cuzfrog
 Christian Bandowski - https://github.com/chris922
 Chris DeLashmutt - https://github.com/cdelashmutt-pivotal
@@ -36,6 +37,7 @@ Ivo Smid - https://github.com/bedla
 Jason Bodnar - https://github.com/Blackbaud-JasonBodnar
 Jeroen van Wilgenburg - https://github.com/jvwilge
 Jeff Smyth - https://github.com/smythie86
+jmwbRyDWLeNsvtzrihGoY - https://github.com/jmwbRyDWLeNsvtzrihGoY
 João Paulo Bassinello - https://github.com/jpbassinello
 Jonathan Kraska - https://github.com/jakraska
 Joshua Spoerri - https://github.com/spoerri
@@ -57,6 +59,7 @@ Paul Strugnell - https://github.com/ps-powa
 Pascal Grün - https://github.com/pascalgn
 Pavel Makhov - https://github.com/streetturtle
 Peter Larson - https://github.com/pjlarson
+Raimund Klein - https://github.com/Chessray
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
 Roel Mangelschots - https://github.com/rmschots
@@ -69,8 +72,10 @@ Samuel Wright - https://github.com/samwright
 Sebastian Haberey - https://github.com/sebastianhaberey
 Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
+seonwoojung - https://github.com/seonwooj0810
 Sjaak Derksen - https://github.com/sjaakd
 Stefan May - https://github.com/osthus-sm
+Takch02 - https://github.com/Takch02
 Taras Mychaskiw - https://github.com/twentylemon
 Thibault Duperron - https://github.com/Zomzog
 Tomáš Poledný - https://github.com/Saljack
@@ -84,6 +89,7 @@ Vincent Alexander Beelte - https://github.com/grandmasterpixel
 Winter Andreas - https://github.dev/wandi34
 Xiu Hong Kooi - https://github.com/kooixh
 Yang Tang - https://github.com/tangyang9464
+Yevhen Vasyliev - https://github.com/yvasyliev
 Zegveld - https://github.com/Zegveld
 znight1020 - https://github.com/znight1020
 zral - https://github.com/zyberzebra

@@ -10,10 +10,14 @@
   - Compile error when mapping a potentially nullable source to a `@NonNull` constructor parameter without a `defaultValue`
   - Can be disabled with the `mapstruct.disableJSpecify` compiler option
 * Add `URI` to `String` built-in conversions (#4018)
+* Add `ClassAccessibility` enum to control the declared accessibility of generated mappers (#2513)
 
 ### Enhancements
 
 * Support `SET_TO_NULL` for overloaded target methods, requiring a cast (#3949)
+* Use switch expressions in generated code when targeting JDK 14 or later (#4062)
+* Make `URLToStringConversion` generate `URI.create(String).toURL()` instead of the deprecated `new URL(String)` (#4041)
+* Report a compilation error for `SET_TO_DEFAULT` when the target has no accessible no-args constructor (#4060)
 * Use multi-catch in generated code (#4021)
 * Use diamond operator for `new` expressions in generated code (#4045)
 * Always use factory methods for `LinkedHashMap` and `LinkedHashSet` when targeting `SequencedSet` and `SequencedMap` (#3990)
@@ -24,6 +28,9 @@
 
 * Prevent mapper generation from a type with a generic super bound to a type with a generic extends bound (#3994)
 * Fix location for Javadoc when generating the distribution zip
+* Fix `Optional` target not using the static builder factory method (#4046)
+* Match generic types of a declared type exactly to prevent incorrect mappings and infinite resolution loops (#3948)
+* Fix mapping `ZonedDateTime` or `OffsetDateTime` to `LocalDateTime` or `Instant` (#4027)
 
 ### Documentation
 
@@ -48,6 +55,9 @@
 * Let GitHub determine whether or not the released version is the latest
 * Simplify parallel-capable registration in `ModifiableURLClassLoader` test util (#4052)
 * Improve class loading for tests by replacing `LauncherDiscoveryListener` with `CompilerLauncherInterceptor` (#4051)
+* Enforce `ParenPad` for `ENUM_CONSTANT_DEF` via Checkstyle (#4075)
+* Upgrade codecov-action to v7 (#4067)
+* Improve `JavaFileAssert#hasSameMapperContent` to include file information in the diff (#4063)
 
 ### Internal
 
