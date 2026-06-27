@@ -913,6 +913,9 @@
                                         <changelog>
                                             <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
                                         </changelog>
+                                        <prerelease>
+                                            <pattern>\d+\.\d+\.\d+\.(Alpha|Beta|M|RC)\d*</pattern>
+                                        </prerelease>
                                         <!--
                                             Let GitHub determine depending on the version
                                             whether it is the latest version or not

@@ -25,3 +25,7 @@ test-output
 .DS_Store
 checkstyle.cache
 .flattened-pom.xml
+
+.claude/settings.local.json
+.claude/worktrees
+.mcp.json
