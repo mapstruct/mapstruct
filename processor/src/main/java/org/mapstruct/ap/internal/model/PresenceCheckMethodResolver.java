@@ -6,11 +6,13 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
@@ -52,27 +54,39 @@ public final class PresenceCheckMethodResolver {
         }
 
         if ( matchingMethods.size() > 1 ) {
-            ctx.getMessager().printMessage(
-                method.getExecutable(),
-                Message.GENERAL_AMBIGUOUS_PRESENCE_CHECK_METHOD,
-                selectionParameters.getSourceRHS().getSourceType().describe(),
-                matchingMethods.stream()
-                    .map( SelectedMethod::getMethod )
-                    .map( Method::describe )
-                    .collect( Collectors.joining( ", " ) )
-            );
-
-            return null;
+            // When multiple condition methods match, select the most specific one
+            // (the one with the most parameters that can be bound)
+            SelectedMethod<SourceMethod> mostSpecificMethod = selectMostSpecificConditionMethod( matchingMethods );
+            if ( mostSpecificMethod == null ) {
+                // If still ambiguous, report the error
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.GENERAL_AMBIGUOUS_PRESENCE_CHECK_METHOD,
+                    selectionParameters.getSourceRHS().getSourceType().describe(),
+                    matchingMethods.stream()
+                        .map( SelectedMethod::getMethod )
+                        .map( Method::describe )
+                        .collect( Collectors.joining( ", " ) )
+                );
+                return null;
+            }
+            matchingMethods = Arrays.asList( mostSpecificMethod );
         }
 
         SelectedMethod<SourceMethod> matchingMethod = matchingMethods.get( 0 );
-
         MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
-
         return new MethodReferencePresenceCheck( methodReference );
-
     }
 
+    /**
+     * Creates a {@link PresenceCheck} for the given source parameter.
+     *
+     * @param method the method
+     * @param selectionParameters the selection parameters
+     * @param sourceParameter the source parameter
+     * @param ctx the mapping builder context
+     * @return the presence check, or null if no matching methods are found
+     */
     public static PresenceCheck getPresenceCheckForSourceParameter(
         Method method,
         SelectionParameters selectionParameters,
@@ -111,25 +125,28 @@ public final class PresenceCheckMethodResolver {
         }
 
         if ( matchingMethods.size() > 1 ) {
-            ctx.getMessager().printMessage(
-                method.getExecutable(),
-                Message.GENERAL_AMBIGUOUS_SOURCE_PARAMETER_CHECK_METHOD,
-                sourceParameter.getType().describe(),
-                matchingMethods.stream()
-                    .map( SelectedMethod::getMethod )
-                    .map( Method::describe )
-                    .collect( Collectors.joining( ", " ) )
-            );
-
-            return null;
+            // When multiple condition methods match, select the most specific one
+            // (the one with the most parameters that can be bound)
+            SelectedMethod<SourceMethod> mostSpecificMethod = selectMostSpecificConditionMethod( matchingMethods );
+            if ( mostSpecificMethod == null ) {
+                // If still ambiguous, report the error
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.GENERAL_AMBIGUOUS_SOURCE_PARAMETER_CHECK_METHOD,
+                    sourceParameter.getType().describe(),
+                    matchingMethods.stream()
+                        .map( SelectedMethod::getMethod )
+                        .map( Method::describe )
+                        .collect( Collectors.joining( ", " ) )
+                );
+                return null;
+            }
+            matchingMethods = Arrays.asList( mostSpecificMethod );
         }
 
         SelectedMethod<SourceMethod> matchingMethod = matchingMethods.get( 0 );
-
         MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
-
         return new MethodReferencePresenceCheck( methodReference );
-
     }
 
     private static List<SelectedMethod<SourceMethod>> findMatchingMethods(
@@ -148,6 +165,40 @@ public final class PresenceCheckMethodResolver {
             getAllAvailableMethods( method, ctx.getSourceModel(), selectionContext.getSelectionCriteria() ),
             selectionContext
         );
+    }
+
+    /**
+     * When multiple condition methods match, select the most specific one based on parameter count.
+     * The method with the most parameters that can be bound is considered most specific.
+     * If multiple methods have the same maximum parameter count, returns null (ambiguous).
+     */
+    private static SelectedMethod<SourceMethod> selectMostSpecificConditionMethod(
+        List<SelectedMethod<SourceMethod>> matchingMethods) {
+
+        if ( matchingMethods.size() <= 1 ) {
+            return matchingMethods.isEmpty() ? null : matchingMethods.get( 0 );
+        }
+
+        // Find the method with the highest number of bindable parameters
+        SelectedMethod<SourceMethod> mostSpecific = null;
+        int maxParameterCount = -1;
+        boolean hasAmbiguity = false;
+
+        for ( SelectedMethod<SourceMethod> method : matchingMethods ) {
+            List<ParameterBinding> bindings = method.getParameterBindings();
+            int paramCount = bindings != null ? bindings.size() : 0;
+
+            if ( paramCount > maxParameterCount ) {
+                maxParameterCount = paramCount;
+                mostSpecific = method;
+                hasAmbiguity = false;
+            }
+            else if ( paramCount == maxParameterCount ) {
+                hasAmbiguity = true;
+            }
+        }
+
+        return hasAmbiguity ? null : mostSpecific;
     }
 
     private static MethodReference getPresenceCheckMethodReference(
@@ -179,8 +230,11 @@ public final class PresenceCheckMethodResolver {
         }
     }
 
-    private static List<SourceMethod> getAllAvailableMethods(Method method, List<SourceMethod> sourceModelMethods,
-                                                             SelectionCriteria selectionCriteria) {
+    private static List<SourceMethod> getAllAvailableMethods(
+        Method method,
+        List<SourceMethod> sourceModelMethods,
+        SelectionCriteria selectionCriteria
+    ) {
         ParameterProvidedMethods contextProvidedMethods = method.getContextProvidedMethods();
         if ( contextProvidedMethods.isEmpty() ) {
             return sourceModelMethods;
