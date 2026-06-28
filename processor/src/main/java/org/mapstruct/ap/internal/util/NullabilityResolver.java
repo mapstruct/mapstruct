@@ -187,8 +187,7 @@ public class NullabilityResolver {
             return Boolean.TRUE;
         }
         if ( paramNullability == Nullability.NON_NULL ) {
-            // The reused method's parameter is @NonNull: the @Nullable source must be null-checked
-            // before it is passed to the method
+            // Reused method parameter requires non-null: always check
             return Boolean.TRUE;
         }
         // All other cases: defer to existing NullValueCheckStrategy
