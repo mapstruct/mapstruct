@@ -680,19 +680,20 @@ public class PropertyMapping extends ModelElement {
          * {@code @NullMarked} scope alone.
          */
         private NullabilityResolver.Nullability getMethodParamNullability(Assignment rhs) {
-            if ( !( rhs instanceof MethodReference methodRef ) ) {
-                return NullabilityResolver.Nullability.UNKNOWN;
+            if (  rhs instanceof MethodReference ) {
+                MethodReference methodRef = (MethodReference) rhs;
+                if ( methodRef.getSourceParameters().isEmpty() ) {
+                    return NullabilityResolver.Nullability.UNKNOWN;
+                }
+                Element paramElement = methodRef.getSourceParameters().get( 0 ).getElement();
+                if ( paramElement != null ) {
+                    return ctx.getNullabilityInMapperScope( paramElement );
+                }
+                return ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
+                        ? NullabilityResolver.Nullability.NON_NULL
+                        : NullabilityResolver.Nullability.UNKNOWN;
             }
-            if ( methodRef.getSourceParameters().isEmpty() ) {
-                return NullabilityResolver.Nullability.UNKNOWN;
-            }
-            Element paramElement = methodRef.getSourceParameters().getFirst().getElement();
-            if ( paramElement != null ) {
-                return ctx.getNullabilityInMapperScope( paramElement );
-            }
-            return ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
-                ? NullabilityResolver.Nullability.NON_NULL
-                : NullabilityResolver.Nullability.UNKNOWN;
+            return NullabilityResolver.Nullability.UNKNOWN;
         }
 
         /**
