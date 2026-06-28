@@ -23,10 +23,10 @@ public class Issue4079Test {
     final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
-    @WithClasses( { Issue4079Mapper.class, Source.class, Target.class } )
+    @WithClasses( { ErroneousIssue4079Mapper.class, Source.class, Target.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = Issue4079Mapper.class,
+            @Diagnostic(type = ErroneousIssue4079Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 message = "Can't map potentially nullable source property \"nested\" to @NonNull " +
                     "constructor parameter \"nested\". Consider adding a defaultValue or " +

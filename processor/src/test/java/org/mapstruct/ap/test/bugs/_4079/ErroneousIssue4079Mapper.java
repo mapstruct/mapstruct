@@ -10,6 +10,6 @@ import org.mapstruct.Mapper;
 
 @Mapper
 @NullMarked
-public interface Issue4079Mapper {
+public interface ErroneousIssue4079Mapper {
     Target map(Source source);
 }
