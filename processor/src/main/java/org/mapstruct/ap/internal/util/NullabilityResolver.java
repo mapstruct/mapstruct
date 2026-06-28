@@ -158,18 +158,23 @@ public class NullabilityResolver {
 
     /**
      * Determines whether a null check is required for a property mapping based on JSpecify annotations
-     * on the source and target elements.
+     * on the source, target and —when the assignment reuses a method— the method parameter.
      * <p>
      * Only returns a non-null decision for the clear-cut cases:
-     * source {@code @NonNull} (skip check) or target {@code @NonNull} (always check).
+     * source {@code @NonNull} (skip check), target {@code @NonNull} (always check),
+     * or method parameter {@code @NonNull} (always check — the source value must not be
+     * passed as {@code null} to a non-null parameter).
      * All other cases return {@code null} to defer to the existing {@code NullValueCheckStrategy}.
      *
-     * @param sourceNullability the nullability of the source (getter return type / parameter)
-     * @param targetNullability the nullability of the target (setter parameter / field)
+     * @param sourceNullability        the nullability of the source (getter return type / parameter)
+     * @param targetNullability        the nullability of the target (setter parameter / field)
+     * @param setterParamNullability   the nullability of the reused method's source parameter, or
+     *                                 {@link Nullability#UNKNOWN} when the assignment is not a method call
      * @return {@code Boolean.TRUE} if a null check is needed, {@code Boolean.FALSE} if it should be skipped,
      * or {@code null} if JSpecify annotations are not present and the existing strategy should be used
      */
-    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability) {
+    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability,
+                                     Nullability setterParamNullability) {
         if ( !enabled ) {
             return null;
         }
@@ -179,6 +184,11 @@ public class NullabilityResolver {
         }
         if ( targetNullability == Nullability.NON_NULL ) {
             // Target requires non-null: always check (regardless of source annotation)
+            return Boolean.TRUE;
+        }
+        if ( setterParamNullability == Nullability.NON_NULL ) {
+            // The reused method's parameter is @NonNull: the @Nullable source must be null-checked
+            // before it is passed to the method
             return Boolean.TRUE;
         }
         // All other cases: defer to existing NullValueCheckStrategy

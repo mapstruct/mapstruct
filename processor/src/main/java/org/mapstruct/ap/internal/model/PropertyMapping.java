@@ -610,7 +610,10 @@ public class PropertyMapping extends ModelElement {
             NullabilityResolver.Nullability targetNullability = resolver.getSetterNullability(
                 targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
             );
-            Boolean jspecifyDecision = resolver.requiresNullCheck( sourceNullability, targetNullability );
+            NullabilityResolver.Nullability setterParamNullability = getMethodParamNullability( rhs );
+            Boolean jspecifyDecision = resolver.requiresNullCheck(
+                sourceNullability, targetNullability, setterParamNullability
+            );
             if ( jspecifyDecision != null ) {
                 ctx.getMessager().note( 2,
                     jspecifyDecision
@@ -666,6 +669,30 @@ public class PropertyMapping extends ModelElement {
                 return ctx.getNullabilityInMapperScope( parameter.getElement() );
             }
             return NullabilityResolver.Nullability.UNKNOWN;
+        }
+
+        /**
+         * Resolves the JSpecify nullability of the source parameter of a reused method.
+         * When the assignment is a {@link MethodReference}, the source value is passed to that
+         * method's first source parameter. If the parameter has a real element (existing mapper
+         * method), nullability is resolved from annotations and enclosing scope. For synthetic
+         * parameters (forged methods), nullability is derived from the mapper's
+         * {@code @NullMarked} scope alone.
+         */
+        private NullabilityResolver.Nullability getMethodParamNullability(Assignment rhs) {
+            if ( !( rhs instanceof MethodReference methodRef ) ) {
+                return NullabilityResolver.Nullability.UNKNOWN;
+            }
+            if ( methodRef.getSourceParameters().isEmpty() ) {
+                return NullabilityResolver.Nullability.UNKNOWN;
+            }
+            Element paramElement = methodRef.getSourceParameters().getFirst().getElement();
+            if ( paramElement != null ) {
+                return ctx.getNullabilityInMapperScope( paramElement );
+            }
+            return ctx.getTypeFactory().getType( ctx.getMapperTypeElement().asType() ).isNullMarked()
+                ? NullabilityResolver.Nullability.NON_NULL
+                : NullabilityResolver.Nullability.UNKNOWN;
         }
 
         /**
