@@ -681,7 +681,10 @@ public class PropertyMapping extends ModelElement {
                 return false;
             }
             Element declaring = targetElement.getEnclosingElement();
-            if ( !( declaring instanceof TypeElement ) ) {
+            while ( declaring != null && !( declaring instanceof TypeElement ) ) {
+                declaring = declaring.getEnclosingElement();
+            }
+            if ( declaring == null ) {
                 return false;
             }
             return ctx.getTypeFactory().getType( declaring.asType() ).isNullMarked();
