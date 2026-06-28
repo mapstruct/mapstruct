@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.bugs._4077;
 
 import java.io.File;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -28,9 +29,7 @@ public class Issue4077Test {
     @ProcessorTest
     @WithClasses( { Issue4077Mapper.class, Source.class, Target.class } )
     public void shouldAddNullCheckBeforeReusingMethod() {
-        generatedSource.forMapper( Issue4077Mapper.class )
-                .hasSameMapperContent(
-                        new File("src/test/resources/fixtures/org/mapstruct/ap/test/bugs/_4077/Issue4077MapperImpl.java")
-                );
+        String path = "src/test/resources/fixtures/org/mapstruct/ap/test/bugs/_4077/Issue4077MapperImpl.java";
+        generatedSource.forMapper( Issue4077Mapper.class ).hasSameMapperContent( new File( path ) );
     }
 }
