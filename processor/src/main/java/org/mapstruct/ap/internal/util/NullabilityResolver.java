@@ -166,15 +166,15 @@ public class NullabilityResolver {
      * passed as {@code null} to a non-null parameter).
      * All other cases return {@code null} to defer to the existing {@code NullValueCheckStrategy}.
      *
-     * @param sourceNullability        the nullability of the source (getter return type / parameter)
-     * @param targetNullability        the nullability of the target (setter parameter / field)
-     * @param setterParamNullability   the nullability of the reused method's source parameter, or
-     *                                 {@link Nullability#UNKNOWN} when the assignment is not a method call
+     * @param sourceNullability the nullability of the source (getter return type / parameter)
+     * @param targetNullability the nullability of the target (setter parameter / field)
+     * @param paramNullability  the nullability of the reused method's source parameter, or
+     *                          {@link Nullability#UNKNOWN} when the assignment is not a method call
      * @return {@code Boolean.TRUE} if a null check is needed, {@code Boolean.FALSE} if it should be skipped,
      * or {@code null} if JSpecify annotations are not present and the existing strategy should be used
      */
     public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability,
-                                     Nullability setterParamNullability) {
+                                     Nullability paramNullability) {
         if ( !enabled ) {
             return null;
         }
@@ -186,7 +186,7 @@ public class NullabilityResolver {
             // Target requires non-null: always check (regardless of source annotation)
             return Boolean.TRUE;
         }
-        if ( setterParamNullability == Nullability.NON_NULL ) {
+        if ( paramNullability == Nullability.NON_NULL ) {
             // The reused method's parameter is @NonNull: the @Nullable source must be null-checked
             // before it is passed to the method
             return Boolean.TRUE;

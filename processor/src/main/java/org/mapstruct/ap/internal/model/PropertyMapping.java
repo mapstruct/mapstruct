@@ -610,9 +610,9 @@ public class PropertyMapping extends ModelElement {
             NullabilityResolver.Nullability targetNullability = resolver.getSetterNullability(
                 targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
             );
-            NullabilityResolver.Nullability setterParamNullability = getMethodParamNullability( rhs );
+            NullabilityResolver.Nullability paramNullability = getMethodParamNullability( rhs );
             Boolean jspecifyDecision = resolver.requiresNullCheck(
-                sourceNullability, targetNullability, setterParamNullability
+                sourceNullability, targetNullability, paramNullability
             );
             if ( jspecifyDecision != null ) {
                 ctx.getMessager().note( 2,
