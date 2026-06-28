@@ -20,7 +20,7 @@ public class Issue4077MapperImpl implements Issue4077Mapper {
         Target.Nested nested = null;
 
         if ( source.getNested() != null ) {
-            nested = mapNested(source.getNested());
+            nested = mapNested( source.getNested() );
         }
 
         Target target = new Target( nested );
