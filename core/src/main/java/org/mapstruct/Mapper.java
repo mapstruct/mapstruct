@@ -250,6 +250,36 @@ public @interface Mapper {
         NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when a source bean property of an {@link Iterable} type is {@code null} or not
+     * present. If no strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValueIterablePropertyMappingStrategy()} will be applied. If neither strategy is
+     * configured, the strategy given via {@link #nullValuePropertyMappingStrategy()} will be applied,
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as an {@link Iterable} source property value or
+     * the source property is not present.
+     */
+    NullValuePropertyMappingStrategy nullValueIterablePropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * The strategy to be applied when a source bean property of a {@link java.util.Map} type is {@code null} or not
+     * present. If no strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValueMapPropertyMappingStrategy()} will be applied. If neither strategy is configured,
+     * the strategy given via {@link #nullValuePropertyMappingStrategy()} will be applied,
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as a {@link java.util.Map} source property value
+     * or the source property is not present.
+     */
+    NullValuePropertyMappingStrategy nullValueMapPropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
      * specified with {@link #config()}. Annotations that can be inherited are for example {@link Mapping},
      * {@link IterableMapping}, {@link MapMapping}, or {@link BeanMapping}.
