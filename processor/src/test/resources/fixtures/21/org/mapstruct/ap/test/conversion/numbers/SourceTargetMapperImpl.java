@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.conversion.numbers;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -18,8 +19,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-14T11:37:30+0300",
-    comments = "version: , compiler: javac, environment: Java 21.0.2 (Amazon.com Inc.)"
+    date = "2026-06-05T15:54:34+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.2 (Oracle Corporation)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
@@ -32,32 +33,39 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Target target = new Target();
 
         target.setI( new DecimalFormat( "##.00" ).format( source.getI() ) );
-        if ( source.getIi() != null ) {
-            target.setIi( new DecimalFormat( "##.00" ).format( source.getIi() ) );
+        Integer ii = source.getIi();
+        if ( ii != null ) {
+            target.setIi( new DecimalFormat( "##.00" ).format( ii ) );
         }
         target.setD( new DecimalFormat( "##.00" ).format( source.getD() ) );
-        if ( source.getDd() != null ) {
-            target.setDd( new DecimalFormat( "##.00" ).format( source.getDd() ) );
+        Double dd = source.getDd();
+        if ( dd != null ) {
+            target.setDd( new DecimalFormat( "##.00" ).format( dd ) );
         }
         target.setF( new DecimalFormat( "##.00" ).format( source.getF() ) );
-        if ( source.getFf() != null ) {
-            target.setFf( new DecimalFormat( "##.00" ).format( source.getFf() ) );
+        Float ff = source.getFf();
+        if ( ff != null ) {
+            target.setFf( new DecimalFormat( "##.00" ).format( ff ) );
         }
         target.setL( new DecimalFormat( "##.00" ).format( source.getL() ) );
-        if ( source.getLl() != null ) {
-            target.setLl( new DecimalFormat( "##.00" ).format( source.getLl() ) );
+        Long ll = source.getLl();
+        if ( ll != null ) {
+            target.setLl( new DecimalFormat( "##.00" ).format( ll ) );
         }
         target.setB( new DecimalFormat( "##.00" ).format( source.getB() ) );
-        if ( source.getBb() != null ) {
-            target.setBb( new DecimalFormat( "##.00" ).format( source.getBb() ) );
+        Byte bb = source.getBb();
+        if ( bb != null ) {
+            target.setBb( new DecimalFormat( "##.00" ).format( bb ) );
         }
         target.setComplex1( new DecimalFormat( "##0.##E0" ).format( source.getComplex1() ) );
         target.setComplex2( new DecimalFormat( "$#.00" ).format( source.getComplex2() ) );
-        if ( source.getBigDecimal1() != null ) {
-            target.setBigDecimal1( createDecimalFormat( "#0.#E0" ).format( source.getBigDecimal1() ) );
+        BigDecimal bigDecimal1 = source.getBigDecimal1();
+        if ( bigDecimal1 != null ) {
+            target.setBigDecimal1( createDecimalFormat( "#0.#E0" ).format( bigDecimal1 ) );
         }
-        if ( source.getBigInteger1() != null ) {
-            target.setBigInteger1( createDecimalFormat( "0.#############E0" ).format( source.getBigInteger1() ) );
+        BigInteger bigInteger1 = source.getBigInteger1();
+        if ( bigInteger1 != null ) {
+            target.setBigInteger1( createDecimalFormat( "0.#############E0" ).format( bigInteger1 ) );
         }
 
         return target;
@@ -72,32 +80,39 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Target target = new Target();
 
         target.setI( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getI() ) );
-        if ( source.getIi() != null ) {
-            target.setIi( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getIi() ) );
+        Integer ii = source.getIi();
+        if ( ii != null ) {
+            target.setIi( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( ii ) );
         }
         target.setD( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getD() ) );
-        if ( source.getDd() != null ) {
-            target.setDd( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getDd() ) );
+        Double dd = source.getDd();
+        if ( dd != null ) {
+            target.setDd( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( dd ) );
         }
         target.setF( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getF() ) );
-        if ( source.getFf() != null ) {
-            target.setFf( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getFf() ) );
+        Float ff = source.getFf();
+        if ( ff != null ) {
+            target.setFf( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( ff ) );
         }
         target.setL( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getL() ) );
-        if ( source.getLl() != null ) {
-            target.setLl( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getLl() ) );
+        Long ll = source.getLl();
+        if ( ll != null ) {
+            target.setLl( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( ll ) );
         }
         target.setB( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getB() ) );
-        if ( source.getBb() != null ) {
-            target.setBb( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getBb() ) );
+        Byte bb = source.getBb();
+        if ( bb != null ) {
+            target.setBb( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( bb ) );
         }
         target.setComplex1( new DecimalFormat( "##0.##E0", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getComplex1() ) );
         target.setComplex2( new DecimalFormat( "$#.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).format( source.getComplex2() ) );
-        if ( source.getBigDecimal1() != null ) {
-            target.setBigDecimal1( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "ru" ) ).format( source.getBigDecimal1() ) );
+        BigDecimal bigDecimal1 = source.getBigDecimal1();
+        if ( bigDecimal1 != null ) {
+            target.setBigDecimal1( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "ru" ) ).format( bigDecimal1 ) );
         }
-        if ( source.getBigInteger1() != null ) {
-            target.setBigInteger1( createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "ru" ) ).format( source.getBigInteger1() ) );
+        BigInteger bigInteger1 = source.getBigInteger1();
+        if ( bigInteger1 != null ) {
+            target.setBigInteger1( createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "ru" ) ).format( bigInteger1 ) );
         }
 
         return target;
@@ -112,112 +127,126 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Source source = new Source();
 
         try {
-            if ( target.getI() != null ) {
-                source.setI( new DecimalFormat( "##.00" ).parse( target.getI() ).intValue() );
+            String i = target.getI();
+            if ( i != null ) {
+                source.setI( new DecimalFormat( "##.00" ).parse( i ).intValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getIi() != null ) {
-                source.setIi( new DecimalFormat( "##.00" ).parse( target.getIi() ).intValue() );
+            String ii = target.getIi();
+            if ( ii != null ) {
+                source.setIi( new DecimalFormat( "##.00" ).parse( ii ).intValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getD() != null ) {
-                source.setD( new DecimalFormat( "##.00" ).parse( target.getD() ).doubleValue() );
+            String d = target.getD();
+            if ( d != null ) {
+                source.setD( new DecimalFormat( "##.00" ).parse( d ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getDd() != null ) {
-                source.setDd( new DecimalFormat( "##.00" ).parse( target.getDd() ).doubleValue() );
+            String dd = target.getDd();
+            if ( dd != null ) {
+                source.setDd( new DecimalFormat( "##.00" ).parse( dd ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getF() != null ) {
-                source.setF( new DecimalFormat( "##.00" ).parse( target.getF() ).floatValue() );
+            String f = target.getF();
+            if ( f != null ) {
+                source.setF( new DecimalFormat( "##.00" ).parse( f ).floatValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getFf() != null ) {
-                source.setFf( new DecimalFormat( "##.00" ).parse( target.getFf() ).floatValue() );
+            String ff = target.getFf();
+            if ( ff != null ) {
+                source.setFf( new DecimalFormat( "##.00" ).parse( ff ).floatValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getL() != null ) {
-                source.setL( new DecimalFormat( "##.00" ).parse( target.getL() ).longValue() );
+            String l = target.getL();
+            if ( l != null ) {
+                source.setL( new DecimalFormat( "##.00" ).parse( l ).longValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getLl() != null ) {
-                source.setLl( new DecimalFormat( "##.00" ).parse( target.getLl() ).longValue() );
+            String ll = target.getLl();
+            if ( ll != null ) {
+                source.setLl( new DecimalFormat( "##.00" ).parse( ll ).longValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getB() != null ) {
-                source.setB( new DecimalFormat( "##.00" ).parse( target.getB() ).byteValue() );
+            String b = target.getB();
+            if ( b != null ) {
+                source.setB( new DecimalFormat( "##.00" ).parse( b ).byteValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBb() != null ) {
-                source.setBb( new DecimalFormat( "##.00" ).parse( target.getBb() ).byteValue() );
+            String bb = target.getBb();
+            if ( bb != null ) {
+                source.setBb( new DecimalFormat( "##.00" ).parse( bb ).byteValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getComplex1() != null ) {
-                source.setComplex1( new DecimalFormat( "##0.##E0" ).parse( target.getComplex1() ).doubleValue() );
+            String complex1 = target.getComplex1();
+            if ( complex1 != null ) {
+                source.setComplex1( new DecimalFormat( "##0.##E0" ).parse( complex1 ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getComplex2() != null ) {
-                source.setComplex2( new DecimalFormat( "$#.00" ).parse( target.getComplex2() ).doubleValue() );
+            String complex2 = target.getComplex2();
+            if ( complex2 != null ) {
+                source.setComplex2( new DecimalFormat( "$#.00" ).parse( complex2 ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBigDecimal1() != null ) {
-                source.setBigDecimal1( (BigDecimal) createDecimalFormat( "#0.#E0" ).parse( target.getBigDecimal1() ) );
+            String bigDecimal1 = target.getBigDecimal1();
+            if ( bigDecimal1 != null ) {
+                source.setBigDecimal1( (BigDecimal) createDecimalFormat( "#0.#E0" ).parse( bigDecimal1 ) );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBigInteger1() != null ) {
-                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0" ).parse( target.getBigInteger1() ) ).toBigInteger() );
+            String bigInteger1 = target.getBigInteger1();
+            if ( bigInteger1 != null ) {
+                source.setBigInteger1( ( (BigDecimal) createDecimalFormat( "0.#############E0" ).parse( bigInteger1 ) ).toBigInteger() );
             }
         }
         catch ( ParseException e ) {
@@ -236,112 +265,126 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Source source = new Source();
 
         try {
-            if ( target.getI() != null ) {
-                source.setI( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getI() ).intValue() );
+            String i = target.getI();
+            if ( i != null ) {
+                source.setI( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( i ).intValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getIi() != null ) {
-                source.setIi( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getIi() ).intValue() );
+            String ii = target.getIi();
+            if ( ii != null ) {
+                source.setIi( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( ii ).intValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getD() != null ) {
-                source.setD( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getD() ).doubleValue() );
+            String d = target.getD();
+            if ( d != null ) {
+                source.setD( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( d ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getDd() != null ) {
-                source.setDd( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getDd() ).doubleValue() );
+            String dd = target.getDd();
+            if ( dd != null ) {
+                source.setDd( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( dd ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getF() != null ) {
-                source.setF( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getF() ).floatValue() );
+            String f = target.getF();
+            if ( f != null ) {
+                source.setF( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( f ).floatValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getFf() != null ) {
-                source.setFf( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getFf() ).floatValue() );
+            String ff = target.getFf();
+            if ( ff != null ) {
+                source.setFf( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( ff ).floatValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getL() != null ) {
-                source.setL( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getL() ).longValue() );
+            String l = target.getL();
+            if ( l != null ) {
+                source.setL( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( l ).longValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getLl() != null ) {
-                source.setLl( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getLl() ).longValue() );
+            String ll = target.getLl();
+            if ( ll != null ) {
+                source.setLl( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( ll ).longValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getB() != null ) {
-                source.setB( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getB() ).byteValue() );
+            String b = target.getB();
+            if ( b != null ) {
+                source.setB( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( b ).byteValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBb() != null ) {
-                source.setBb( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getBb() ).byteValue() );
+            String bb = target.getBb();
+            if ( bb != null ) {
+                source.setBb( new DecimalFormat( "##.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( bb ).byteValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getComplex1() != null ) {
-                source.setComplex1( new DecimalFormat( "##0.##E0", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getComplex1() ).doubleValue() );
+            String complex1 = target.getComplex1();
+            if ( complex1 != null ) {
+                source.setComplex1( new DecimalFormat( "##0.##E0", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( complex1 ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getComplex2() != null ) {
-                source.setComplex2( new DecimalFormat( "$#.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( target.getComplex2() ).doubleValue() );
+            String complex2 = target.getComplex2();
+            if ( complex2 != null ) {
+                source.setComplex2( new DecimalFormat( "$#.00", DecimalFormatSymbols.getInstance( Locale.forLanguageTag( "ru " ) ) ).parse( complex2 ).doubleValue() );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBigDecimal1() != null ) {
-                source.setBigDecimal1( (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "ru" ) ).parse( target.getBigDecimal1() ) );
+            String bigDecimal1 = target.getBigDecimal1();
+            if ( bigDecimal1 != null ) {
+                source.setBigDecimal1( (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "ru" ) ).parse( bigDecimal1 ) );
             }
         }
         catch ( ParseException e ) {
             throw new RuntimeException( e );
         }
         try {
-            if ( target.getBigInteger1() != null ) {
-                source.setBigInteger1( ( (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "ru" ) ).parse( target.getBigInteger1() ) ).toBigInteger() );
+            String bigInteger1 = target.getBigInteger1();
+            if ( bigInteger1 != null ) {
+                source.setBigInteger1( ( (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "ru" ) ).parse( bigInteger1 ) ).toBigInteger() );
             }
         }
         catch ( ParseException e ) {

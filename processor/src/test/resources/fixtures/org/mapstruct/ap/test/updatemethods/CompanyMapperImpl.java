@@ -23,11 +23,12 @@ public class CompanyMapperImpl implements CompanyMapper {
         }
 
         entity.setName( dto.getName() );
-        if ( dto.getDepartment() != null ) {
+        DepartmentDto department = dto.getDepartment();
+        if ( department != null ) {
             if ( entity.getDepartment() == null ) {
                 entity.setDepartment( departmentEntityFactory.createDepartmentEntity() );
             }
-            toDepartmentEntity( toInBetween( dto.getDepartment() ), entity.getDepartment() );
+            toDepartmentEntity( toInBetween( department ), entity.getDepartment() );
         }
         else {
             entity.setDepartment( null );

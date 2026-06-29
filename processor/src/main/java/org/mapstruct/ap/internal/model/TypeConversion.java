@@ -49,6 +49,14 @@ public class TypeConversion extends ModelElement implements Assignment {
 
     @Override
     public Set<Type> getImportTypes() {
+        if ( assignment != null ) {
+            Set<Type> assignmentImports = assignment.getImportTypes();
+            if ( !assignmentImports.isEmpty() ) {
+                Set<Type> combined = new HashSet<>( importTypes );
+                combined.addAll( assignmentImports );
+                return combined;
+            }
+        }
         return importTypes;
     }
 

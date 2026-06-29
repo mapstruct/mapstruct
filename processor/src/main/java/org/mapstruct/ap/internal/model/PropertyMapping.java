@@ -35,6 +35,7 @@ import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -694,6 +695,11 @@ public class PropertyMapping extends ModelElement {
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
 
             Assignment result = rightHandSide;
+            if ( sourceReference == null || !sourceReference.isNested() ) {
+                // For non-nested properties, reset the local var name: the adder wrapper handles
+                // the source reference inline without needing a local variable.
+                result.setSourceLocalVarName( null );
+            }
 
             String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
             if ( result.getSourceType().isIterableType() ) {
@@ -802,6 +808,9 @@ public class PropertyMapping extends ModelElement {
                     sourceReference,
                     sourceRHS
                 ) );
+                if ( presenceCheckAllowsLocalVar( sourceRHS.getSourcePresenceCheckerReference() ) ) {
+                    sourceRHS.setSourceLocalVarName( sourceRHS.createUniqueVarName( propertyEntry.getName() ) );
+                }
                 return sourceRHS;
             }
             // nested property given as dot path
@@ -854,6 +863,14 @@ public class PropertyMapping extends ModelElement {
                 return sourceRhs;
 
             }
+        }
+
+        private boolean presenceCheckAllowsLocalVar(PresenceCheck presenceCheck) {
+            if ( presenceCheck instanceof MethodReferencePresenceCheck ) {
+                return ((MethodReferencePresenceCheck) presenceCheck).getMethodReference().getParameterBindings()
+                    .stream().anyMatch( ParameterBinding::isForSourceRhs );
+            }
+            return true;
         }
 
         private PresenceCheck getSourcePresenceCheckerRef(SourceReference sourceReference,

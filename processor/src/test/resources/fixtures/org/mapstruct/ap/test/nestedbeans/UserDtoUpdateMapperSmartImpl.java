@@ -22,35 +22,39 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
             return;
         }
 
-        if ( user.getName() != null ) {
-            userDto.setName( user.getName() );
+        String name = user.getName();
+        if ( name != null ) {
+            userDto.setName( name );
         }
         else {
             userDto.setName( null );
         }
-        if ( user.getCar() != null ) {
+        Car car = user.getCar();
+        if ( car != null ) {
             if ( userDto.getCar() == null ) {
                 userDto.setCar( new CarDto() );
             }
-            carToCarDto( user.getCar(), userDto.getCar() );
+            carToCarDto( car, userDto.getCar() );
         }
         else {
             userDto.setCar( null );
         }
-        if ( user.getSecondCar() != null ) {
+        Car secondCar = user.getSecondCar();
+        if ( secondCar != null ) {
             if ( userDto.getSecondCar() == null ) {
                 userDto.setSecondCar( new CarDto() );
             }
-            carToCarDto( user.getSecondCar(), userDto.getSecondCar() );
+            carToCarDto( secondCar, userDto.getSecondCar() );
         }
         else {
             userDto.setSecondCar( null );
         }
-        if ( user.getHouse() != null ) {
+        House house = user.getHouse();
+        if ( house != null ) {
             if ( userDto.getHouse() == null ) {
                 userDto.setHouse( new HouseDto() );
             }
-            houseToHouseDto( user.getHouse(), userDto.getHouse() );
+            houseToHouseDto( house, userDto.getHouse() );
         }
         else {
             userDto.setHouse( null );
@@ -88,22 +92,24 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
             return;
         }
 
-        if ( car.getName() != null ) {
-            mappingTarget.setName( car.getName() );
+        String name = car.getName();
+        if ( name != null ) {
+            mappingTarget.setName( name );
         }
         else {
             mappingTarget.setName( null );
         }
         mappingTarget.setYear( car.getYear() );
+        List<Wheel> wheels = car.getWheels();
         if ( mappingTarget.getWheels() != null ) {
-            List<WheelDto> list = wheelListToWheelDtoList( car.getWheels() );
+            List<WheelDto> list = wheelListToWheelDtoList( wheels );
             if ( list != null ) {
                 mappingTarget.getWheels().clear();
                 mappingTarget.getWheels().addAll( list );
             }
         }
         else {
-            List<WheelDto> list = wheelListToWheelDtoList( car.getWheels() );
+            List<WheelDto> list = wheelListToWheelDtoList( wheels );
             if ( list != null ) {
                 mappingTarget.setWheels( list );
             }
@@ -136,8 +142,9 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
         }
 
         mappingTarget.setColor( String.valueOf( roof.getColor() ) );
-        if ( roof.getType() != null ) {
-            mappingTarget.setType( roofTypeToExternalRoofType( roof.getType() ) );
+        RoofType type = roof.getType();
+        if ( type != null ) {
+            mappingTarget.setType( roofTypeToExternalRoofType( type ) );
         }
         else {
             mappingTarget.setType( null );
@@ -149,18 +156,20 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
             return;
         }
 
-        if ( house.getName() != null ) {
-            mappingTarget.setName( house.getName() );
+        String name = house.getName();
+        if ( name != null ) {
+            mappingTarget.setName( name );
         }
         else {
             mappingTarget.setName( null );
         }
         mappingTarget.setYear( house.getYear() );
-        if ( house.getRoof() != null ) {
+        Roof roof = house.getRoof();
+        if ( roof != null ) {
             if ( mappingTarget.getRoof() == null ) {
                 mappingTarget.setRoof( new RoofDto() );
             }
-            roofToRoofDto( house.getRoof(), mappingTarget.getRoof() );
+            roofToRoofDto( roof, mappingTarget.getRoof() );
         }
         else {
             mappingTarget.setRoof( null );

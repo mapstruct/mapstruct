@@ -5,12 +5,12 @@
  */
 package org.mapstruct.ap.test.conversion.string;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-10-24T17:41:29+0300",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_265 (AdoptOpenJDK)"
+    date = "2026-06-05T14:55:53+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
@@ -23,39 +23,48 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Target target = new Target();
 
         target.setB( String.valueOf( source.getB() ) );
-        if ( source.getBb() != null ) {
-            target.setBb( String.valueOf( source.getBb() ) );
+        Byte bb = source.getBb();
+        if ( bb != null ) {
+            target.setBb( String.valueOf( bb ) );
         }
         target.setS( String.valueOf( source.getS() ) );
-        if ( source.getSs() != null ) {
-            target.setSs( String.valueOf( source.getSs() ) );
+        Short ss = source.getSs();
+        if ( ss != null ) {
+            target.setSs( String.valueOf( ss ) );
         }
         target.setI( String.valueOf( source.getI() ) );
-        if ( source.getIi() != null ) {
-            target.setIi( String.valueOf( source.getIi() ) );
+        Integer ii = source.getIi();
+        if ( ii != null ) {
+            target.setIi( String.valueOf( ii ) );
         }
         target.setL( String.valueOf( source.getL() ) );
-        if ( source.getLl() != null ) {
-            target.setLl( String.valueOf( source.getLl() ) );
+        Long ll = source.getLl();
+        if ( ll != null ) {
+            target.setLl( String.valueOf( ll ) );
         }
         target.setF( String.valueOf( source.getF() ) );
-        if ( source.getFf() != null ) {
-            target.setFf( String.valueOf( source.getFf() ) );
+        Float ff = source.getFf();
+        if ( ff != null ) {
+            target.setFf( String.valueOf( ff ) );
         }
         target.setD( String.valueOf( source.getD() ) );
-        if ( source.getDd() != null ) {
-            target.setDd( String.valueOf( source.getDd() ) );
+        Double dd = source.getDd();
+        if ( dd != null ) {
+            target.setDd( String.valueOf( dd ) );
         }
         target.setBool( String.valueOf( source.getBool() ) );
-        if ( source.getBoolBool() != null ) {
-            target.setBoolBool( String.valueOf( source.getBoolBool() ) );
+        Boolean boolBool = source.getBoolBool();
+        if ( boolBool != null ) {
+            target.setBoolBool( String.valueOf( boolBool ) );
         }
         target.setC( String.valueOf( source.getC() ) );
-        if ( source.getCc() != null ) {
-            target.setCc( source.getCc().toString() );
+        Character cc = source.getCc();
+        if ( cc != null ) {
+            target.setCc( cc.toString() );
         }
-        if ( source.getSb() != null ) {
-            target.setSb( source.getSb().toString() );
+        StringBuilder sb = source.getSb();
+        if ( sb != null ) {
+            target.setSb( sb.toString() );
         }
 
         return target;
@@ -69,57 +78,74 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         Source source = new Source();
 
-        if ( target.getB() != null ) {
-            source.setB( Byte.parseByte( target.getB() ) );
+        String b = target.getB();
+        if ( b != null ) {
+            source.setB( Byte.parseByte( b ) );
         }
-        if ( target.getBb() != null ) {
-            source.setBb( Byte.parseByte( target.getBb() ) );
+        String bb = target.getBb();
+        if ( bb != null ) {
+            source.setBb( Byte.parseByte( bb ) );
         }
-        if ( target.getS() != null ) {
-            source.setS( Short.parseShort( target.getS() ) );
+        String s = target.getS();
+        if ( s != null ) {
+            source.setS( Short.parseShort( s ) );
         }
-        if ( target.getSs() != null ) {
-            source.setSs( Short.parseShort( target.getSs() ) );
+        String ss = target.getSs();
+        if ( ss != null ) {
+            source.setSs( Short.parseShort( ss ) );
         }
-        if ( target.getI() != null ) {
-            source.setI( Integer.parseInt( target.getI() ) );
+        String i = target.getI();
+        if ( i != null ) {
+            source.setI( Integer.parseInt( i ) );
         }
-        if ( target.getIi() != null ) {
-            source.setIi( Integer.parseInt( target.getIi() ) );
+        String ii = target.getIi();
+        if ( ii != null ) {
+            source.setIi( Integer.parseInt( ii ) );
         }
-        if ( target.getL() != null ) {
-            source.setL( Long.parseLong( target.getL() ) );
+        String l = target.getL();
+        if ( l != null ) {
+            source.setL( Long.parseLong( l ) );
         }
-        if ( target.getLl() != null ) {
-            source.setLl( Long.parseLong( target.getLl() ) );
+        String ll = target.getLl();
+        if ( ll != null ) {
+            source.setLl( Long.parseLong( ll ) );
         }
-        if ( target.getF() != null ) {
-            source.setF( Float.parseFloat( target.getF() ) );
+        String f = target.getF();
+        if ( f != null ) {
+            source.setF( Float.parseFloat( f ) );
         }
-        if ( target.getFf() != null ) {
-            source.setFf( Float.parseFloat( target.getFf() ) );
+        String ff = target.getFf();
+        if ( ff != null ) {
+            source.setFf( Float.parseFloat( ff ) );
         }
-        if ( target.getD() != null ) {
-            source.setD( Double.parseDouble( target.getD() ) );
+        String d = target.getD();
+        if ( d != null ) {
+            source.setD( Double.parseDouble( d ) );
         }
-        if ( target.getDd() != null ) {
-            source.setDd( Double.parseDouble( target.getDd() ) );
+        String dd = target.getDd();
+        if ( dd != null ) {
+            source.setDd( Double.parseDouble( dd ) );
         }
-        if ( target.getBool() != null ) {
-            source.setBool( Boolean.parseBoolean( target.getBool() ) );
+        String bool = target.getBool();
+        if ( bool != null ) {
+            source.setBool( Boolean.parseBoolean( bool ) );
         }
-        if ( target.getBoolBool() != null ) {
-            source.setBoolBool( Boolean.parseBoolean( target.getBoolBool() ) );
+        String boolBool = target.getBoolBool();
+        if ( boolBool != null ) {
+            source.setBoolBool( Boolean.parseBoolean( boolBool ) );
         }
-        if ( target.getC() != null ) {
-            source.setC( target.getC().charAt( 0 ) );
+        String c = target.getC();
+        if ( c != null ) {
+            source.setC( c.charAt( 0 ) );
         }
-        if ( target.getCc() != null ) {
-            source.setCc( target.getCc().charAt( 0 ) );
+        String cc = target.getCc();
+        if ( cc != null ) {
+            source.setCc( cc.charAt( 0 ) );
         }
         source.setObject( target.getObject() );
-        if ( target.getSb() != null ) {
-            source.setSb( new StringBuilder( target.getSb() ) );
+        String sb = target.getSb();
+        if ( sb != null ) {
+            source.setSb( new StringBuilder( sb ) );
         }
 
         return source;

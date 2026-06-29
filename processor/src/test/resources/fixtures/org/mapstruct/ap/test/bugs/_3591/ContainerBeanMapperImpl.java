@@ -23,8 +23,9 @@ public class ContainerBeanMapperImpl implements ContainerBeanMapper {
             return containerBeanDto;
         }
 
+        Map<String, ContainerBean> beanMap = containerBean.getBeanMap();
         if ( containerBeanDto.getBeanMap() != null ) {
-            Map<String, ContainerBeanDto> map = stringContainerBeanMapToStringContainerBeanDtoMap( containerBean.getBeanMap() );
+            Map<String, ContainerBeanDto> map = stringContainerBeanMapToStringContainerBeanDtoMap( beanMap );
             if ( map != null ) {
                 containerBeanDto.getBeanMap().clear();
                 containerBeanDto.getBeanMap().putAll( map );
@@ -34,7 +35,7 @@ public class ContainerBeanMapperImpl implements ContainerBeanMapper {
             }
         }
         else {
-            Map<String, ContainerBeanDto> map = stringContainerBeanMapToStringContainerBeanDtoMap( containerBean.getBeanMap() );
+            Map<String, ContainerBeanDto> map = stringContainerBeanMapToStringContainerBeanDtoMap( beanMap );
             if ( map != null ) {
                 containerBeanDto.setBeanMap( map );
             }
