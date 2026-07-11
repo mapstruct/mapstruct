@@ -24,11 +24,14 @@ import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping} (no intermediate state).
@@ -493,8 +496,15 @@ public class MappingOptions extends DelegatingOptions {
     public MappingOptions copyForInverseInheritance(SourceMethod templateMethod,
                                                     BeanMappingOptions beanMappingOptions ) {
 
+        // When the original source path includes the source parameter name (e.g. "source.client.id"),
+        // strip that prefix so the inverse target is the property path ("client.id"). Otherwise
+        // ignore/redefinition matching fails on the raw target name (#3997).
+        String inverseTargetName = sourceName != null
+            ? stripSourceParameterPrefix( sourceName, templateMethod )
+            : targetName;
+
         MappingOptions mappingOptions = new MappingOptions(
-            sourceName != null ? sourceName : targetName,
+            inverseTargetName,
             templateMethod.getExecutable(),
             targetAnnotationValue,
             sourceName != null ? targetName : null,
@@ -514,6 +524,31 @@ public class MappingOptions extends DelegatingOptions {
         );
         return mappingOptions;
 
+    }
+
+    /**
+     * Strips a source-parameter-name prefix from a source path when forming the inverse target.
+     * <p>
+     * With a single source parameter, {@code source = "param.prop.nested"} may use {@code param}
+     * only as the parameter name. On inverse that must become target {@code "prop.nested"}.
+     * Mirrors {@code SourceReference} / {@code TargetReference}: if the first segment is also a
+     * property of the source type, the full path is kept (property path takes precedence).
+     */
+    private static String stripSourceParameterPrefix(String originalSourceName, SourceMethod templateMethod) {
+        Parameter sourceParameter = first( templateMethod.getSourceParameters() );
+        String parameterName = sourceParameter.getName();
+        String prefix = parameterName + ".";
+
+        if ( !originalSourceName.startsWith( prefix ) ) {
+            return originalSourceName;
+        }
+
+        // Property path takes precedence over parameter-name interpretation
+        if ( sourceParameter.getType().getPropertyReadAccessors().containsKey( parameterName ) ) {
+            return originalSourceName;
+        }
+
+        return originalSourceName.substring( prefix.length() );
     }
 
     /**
