@@ -218,6 +218,34 @@ public @interface MapperConfig {
         NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when the source bean property is {@code null} or not present and the target
+     * property is of {@link java.util.Collection}, {@link Iterable} or array type. If no strategy is configured,
+     * the strategy set with {@link #nullValuePropertyMappingStrategy()} will be applied, using
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Iterable (including array) type.
+     */
+    NullValuePropertyMappingStrategy nullValueIterablePropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * The strategy to be applied when the source bean property is {@code null} or not present and the target
+     * property is of {@link java.util.Map} type. If no strategy is configured, the strategy set with
+     * {@link #nullValuePropertyMappingStrategy()} will be applied, using
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Map type.
+     */
+    NullValuePropertyMappingStrategy nullValueMapPropertyMappingStrategy() default
+        NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
      * annotated with this annotation. Annotations that can be inherited are for example {@link Mapping},
      * {@link IterableMapping}, {@link MapMapping}, or {@link BeanMapping}.
