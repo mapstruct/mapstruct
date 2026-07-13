@@ -265,6 +265,48 @@ Some types of mappings (collections, maps), in which MapStruct is instructed to 
 null check, regardless of the value of the `NullValuePropertyMappingStrategy`, to avoid addition of `null` to the target collection or map. Since the target is assumed to be initialised this strategy will not be applied.
 ====
 
+[[mapping-result-for-null-iterable-or-map-properties]]
+=== Controlling mapping result for 'null' Iterable or Map properties
+
+With <<mapping-result-for-null-properties>> it is possible to control how a target property is set when the corresponding source property is `null` or not present. That strategy is applied uniformly, regardless of the type of the target property.
+
+However, MapStruct also offers a more dedicated way to control this for target properties of Iterable (including array) or Map type, e.g. reset collections / maps to their *default* (empty) value, while setting plain bean properties to `null`.
+
+For target properties of `Collection`, `Iterable` or array type this can be controlled through:
+
+* `MapperConfig#nullValueIterablePropertyMappingStrategy`
+* `Mapper#nullValueIterablePropertyMappingStrategy`
+* `BeanMapping#nullValueIterablePropertyMappingStrategy`
+* `Mapping#nullValueIterablePropertyMappingStrategy`
+
+For target properties of `Map` type this can be controlled through:
+
+* `MapperConfig#nullValueMapPropertyMappingStrategy`
+* `Mapper#nullValueMapPropertyMappingStrategy`
+* `BeanMapping#nullValueMapPropertyMappingStrategy`
+* `Mapping#nullValueMapPropertyMappingStrategy`
+
+If left unconfigured on a given annotation, the more specific (Iterable / Map) strategy falls back to `nullValuePropertyMappingStrategy` configured on that same annotation, before falling back to the next, less specific, annotation level. How the resulting `NullValuePropertyMappingStrategy` value is applied is the same as in <<mapping-result-for-null-properties>>.
+
+.Mapper with dedicated null strategies for Iterable / Map properties
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL,
+    nullValueIterablePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT,
+    nullValueMapPropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT
+)
+public interface OrderMapper {
+
+    void update(OrderDto dto, @MappingTarget Order target);
+}
+----
+====
+
+Given the mapper above, a `null` `tags` (`List`) or `meta` (`Map`) source property resets the corresponding target property to an empty collection / map, while a `null` `address` (a plain bean property) sets the target property to `null`, without having to repeat `nullValuePropertyMappingStrategy = SET_TO_DEFAULT` on every Iterable / Map `@Mapping` individually.
+
 [TIP]
 ====
 `NullValuePropertyMappingStrategy` also applies when the presence checker returns `not present`.
