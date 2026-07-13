@@ -473,6 +473,40 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     @Override
+    public NullValuePropertyMappingStrategyGem getNullValueIterablePropertyMappingStrategy() {
+        Optional<NullValuePropertyMappingStrategyGem> specific =
+            Optional.ofNullable( mapping ).map( MappingGem::nullValueIterablePropertyMappingStrategy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( NullValuePropertyMappingStrategyGem::valueOf );
+        if ( specific.isPresent() ) {
+            return specific.get();
+        }
+        return Optional.ofNullable( mapping ).map( MappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueIterablePropertyMappingStrategy() );
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValueMapPropertyMappingStrategy() {
+        Optional<NullValuePropertyMappingStrategyGem> specific =
+            Optional.ofNullable( mapping ).map( MappingGem::nullValueMapPropertyMappingStrategy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( NullValuePropertyMappingStrategyGem::valueOf );
+        if ( specific.isPresent() ) {
+            return specific.get();
+        }
+        return Optional.ofNullable( mapping ).map( MappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueMapPropertyMappingStrategy() );
+    }
+
+    @Override
     public MappingControl getMappingControl(ElementUtils elementUtils) {
         return Optional.ofNullable( mapping ).map( MappingGem::mappingControl )
             .filter( GemValue::hasValue )

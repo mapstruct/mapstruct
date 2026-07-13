@@ -128,6 +128,16 @@ public class DefaultOptions extends DelegatingOptions {
             mapper.nullValuePropertyMappingStrategy().getDefaultValue() );
     }
 
+    public NullValuePropertyMappingStrategyGem getNullValueIterablePropertyMappingStrategy() {
+        return NullValuePropertyMappingStrategyGem.valueOf(
+            mapper.nullValueIterablePropertyMappingStrategy().getDefaultValue() );
+    }
+
+    public NullValuePropertyMappingStrategyGem getNullValueMapPropertyMappingStrategy() {
+        return NullValuePropertyMappingStrategyGem.valueOf(
+            mapper.nullValueMapPropertyMappingStrategy().getDefaultValue() );
+    }
+
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().getDefaultValue() );
     }

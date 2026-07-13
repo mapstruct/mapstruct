@@ -158,6 +158,29 @@ public class MapperOptions extends DelegatingOptions {
     }
 
     @Override
+    public NullValuePropertyMappingStrategyGem getNullValueIterablePropertyMappingStrategy() {
+        if ( mapper.nullValueIterablePropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf(
+                mapper.nullValueIterablePropertyMappingStrategy().get() );
+        }
+        if ( mapper.nullValuePropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValuePropertyMappingStrategy().get() );
+        }
+        return next().getNullValueIterablePropertyMappingStrategy();
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValueMapPropertyMappingStrategy() {
+        if ( mapper.nullValueMapPropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValueMapPropertyMappingStrategy().get() );
+        }
+        if ( mapper.nullValuePropertyMappingStrategy().hasValue() ) {
+            return NullValuePropertyMappingStrategyGem.valueOf( mapper.nullValuePropertyMappingStrategy().get() );
+        }
+        return next().getNullValueMapPropertyMappingStrategy();
+    }
+
+    @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
         return mapper.nullValueMappingStrategy().hasValue() ?
             NullValueMappingStrategyGem.valueOf( mapper.nullValueMappingStrategy().get() ) :
