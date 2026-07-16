@@ -485,6 +485,11 @@ public class PropertyMapping extends ModelElement {
                         includeSourceNullCheck = false;
                     }
                 }
+                if ( !includeSourceNullCheck ) {
+                    // solution for #834 introduced a local var and null check for nested properties always.
+                    // however, a local var is not needed if there's no need to check for null.
+                    rhs.setSourceLocalVarName( null );
+                }
                 reportErrorWhenSetToDefaultCannotConstructTarget( targetType, factory );
                 return new UpdateWrapper(
                     rhs,
