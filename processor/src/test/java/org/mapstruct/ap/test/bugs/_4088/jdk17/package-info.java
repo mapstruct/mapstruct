@@ -4,6 +4,6 @@
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
 @NullMarked
-package org.mapstruct.ap.test.bugs._4088;
+package org.mapstruct.ap.test.bugs._4088.jdk17;
 
 import org.jspecify.annotations.NullMarked;
