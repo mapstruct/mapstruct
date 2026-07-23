@@ -141,7 +141,10 @@ class JSpecifyNullMarkedTest {
         NullMarkedTargetBean.class,
         JSpecifyNullMarkedTargetScopeMapper.class
     })
+    @IssueKey("4079")
     public void nullMarkedTargetPromotesUnannotatedSetterParamToNonNull() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyNullMarkedTargetScopeMapper.class );
+
         // Target bean is @NullMarked; setNonNullByDefault has an unannotated String parameter
         // which must be treated as @NonNull by JSpecify semantics. Source getter is @Nullable,
         // so a null check must be generated and the setter must NOT be called when source is null.
@@ -151,6 +154,28 @@ class JSpecifyNullMarkedTest {
         NullMarkedTargetBean target = JSpecifyNullMarkedTargetScopeMapper.INSTANCE.map( source );
 
         assertThat( target.isNonNullByDefaultSet() ).isFalse();
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        SourceBean.class,
+        NullUnmarkedTargetBean.class,
+        JSpecifyNullUnmarkedTargetScopeMapper.class
+    })
+    @IssueKey("4079")
+    public void nullUnmarkedTargetReversesEnclosingNullMarkedScopeForSetterParam() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyNullUnmarkedTargetScopeMapper.class );
+
+        // The target class is @NullUnmarked inside a @NullMarked outer class.
+        // The unannotated setter parameter must remain UNKNOWN, so the default
+        // NullValueCheckStrategy does not generate a null check for direct String -> String mapping.
+        SourceBean source = new SourceBean();
+        // nullableValue is null
+
+        NullUnmarkedTargetBean.Inner target = JSpecifyNullUnmarkedTargetScopeMapper.INSTANCE.map( source );
+
+        assertThat( target.isValueSet() ).isTrue();
+        assertThat( target.getValue() ).isNull();
     }
 
     @ProcessorTest

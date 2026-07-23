@@ -69,6 +69,40 @@ class JSpecifyConstructorTest {
     }
 
     @ProcessorTest
+    @WithClasses({
+        NullMarkedConstructorTargetBean.class,
+        ErroneousJSpecifyNullMarkedConstructorScopeMapper.class
+    })
+    @IssueKey("4079")
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousJSpecifyNullMarkedConstructorScopeMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                message = "Can't map potentially nullable source property \"nullableValue\" to @NonNull " +
+                    "constructor parameter \"value\". Consider adding a defaultValue or defaultExpression.")
+        })
+    public void nullMarkedTargetPromotesUnannotatedConstructorParamToNonNull() {
+    }
+
+    @ProcessorTest
+    @WithClasses({
+        NullUnmarkedConstructorTargetBean.class,
+        JSpecifyNullUnmarkedConstructorScopeMapper.class
+    })
+    @IssueKey("4079")
+    public void nullUnmarkedTargetReversesEnclosingNullMarkedScopeForConstructorParam() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyNullUnmarkedConstructorScopeMapper.class );
+
+        SourceBean source = new SourceBean();
+        // nullableValue is null
+
+        NullUnmarkedConstructorTargetBean.Inner target =
+            JSpecifyNullUnmarkedConstructorScopeMapper.INSTANCE.map( source );
+
+        assertThat( target.getValue() ).isNull();
+    }
+
+    @ProcessorTest
     @WithClasses(JSpecifyDirectParamConstructorMapper.class)
     public void nonNullDirectParameterToNonNullConstructorParamCompiles() {
         // A @NonNull method parameter (source has no property entries — it IS the parameter)
