@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -80,10 +80,12 @@ public class Decorator extends GeneratedType {
                 Mapper.getFlatName( mapperElement ) );
 
             Type decoratorType = typeFactory.getType( decorator.value().get() );
+            boolean delegateFieldNeeded = !methods.isEmpty();
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
                 implementationName,
                 implementationName + "_",
-                hasDelegateConstructor );
+                hasDelegateConstructor,
+                delegateFieldNeeded );
 
 
             Type mapperType = typeFactory.getType( mapperElement );
@@ -97,6 +99,7 @@ public class Decorator extends GeneratedType {
                 decoratorType,
                 mapperType,
                 methods,
+                delegateFieldNeeded,
                 options,
                 versionInformation,
                 suppressGeneratorTimestamp,
@@ -110,11 +113,12 @@ public class Decorator extends GeneratedType {
 
     private final Type decoratorType;
     private final Type mapperType;
+    private final boolean delegateFieldNeeded;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Decorator(TypeFactory typeFactory, String packageName, String name, Type decoratorType,
                       Type mapperType,
-                      List<MappingMethod> methods,
+                      List<MappingMethod> methods, boolean delegateFieldNeeded,
                       Options options, VersionInformation versionInformation,
                       boolean suppressGeneratorTimestamp,
                       Accessibility accessibility, SortedSet<Type> extraImports,
@@ -126,7 +130,9 @@ public class Decorator extends GeneratedType {
             name,
             decoratorType,
             methods,
-            Arrays.asList( new Field( mapperType, "delegate", true ) ),
+            delegateFieldNeeded
+                ? Collections.singletonList( new Field( mapperType, "delegate", true ) )
+                : Collections.emptyList(),
             options,
             versionInformation,
             suppressGeneratorTimestamp,
@@ -137,6 +143,7 @@ public class Decorator extends GeneratedType {
 
         this.decoratorType = decoratorType;
         this.mapperType = mapperType;
+        this.delegateFieldNeeded = delegateFieldNeeded;
 
         // Add custom annotations
         if ( customAnnotations != null ) {
@@ -163,7 +170,22 @@ public class Decorator extends GeneratedType {
         else {
             importTypes.add( decoratorType );
         }
+
+        if ( !delegateFieldNeeded && decoratorType.getTypeElement() != null &&
+            decoratorType.getTypeElement().getNestingKind().isNested() && !isMapperTypeUsedInAnnotations() ) {
+            importTypes.remove( mapperType );
+        }
+
         return importTypes;
+    }
+
+    private boolean isMapperTypeUsedInAnnotations() {
+        for ( Annotation annotation : getAnnotations() ) {
+            if ( annotation.getImportTypes().contains( mapperType ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

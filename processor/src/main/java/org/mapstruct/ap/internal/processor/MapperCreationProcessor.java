@@ -304,7 +304,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .versionInformation( versionInformation )
             .implName( mapperOptions.implementationName() )
             .implPackage( mapperOptions.implementationPackage() )
-            .extraImports( getExtraImports( element, mapperOptions ) )
+            .extraImports( getExtraImports( element, mapperOptions, !mappingMethods.isEmpty() ) )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .additionalAnnotations( decoratorAnnotations )
             .build();
@@ -312,17 +312,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return decorator;
     }
 
-    private SortedSet<Type> getExtraImports(TypeElement element,  MapperOptions mapperOptions) {
-        SortedSet<Type> extraImports = new TreeSet<>();
+    private SortedSet<Type> getExtraImports(TypeElement element, MapperOptions mapperOptions) {
+        return getExtraImports( element, mapperOptions, true );
+    }
 
+    private SortedSet<Type> getExtraImports(TypeElement element, MapperOptions mapperOptions,
+                                            boolean includeMapperType) {
+        SortedSet<Type> extraImports = new TreeSet<>();
 
         for ( TypeMirror extraImport : mapperOptions.imports() ) {
             Type type = typeFactory.getAlwaysImportedType( extraImport );
             extraImports.add( type );
         }
 
-        // Add original package if a dest package has been set
-        if ( !"default".equals( mapperOptions.implementationPackage() ) ) {
+        // Add the original mapper type if a destination package has been set
+        if ( includeMapperType && !"default".equals( mapperOptions.implementationPackage() ) ) {
             extraImports.add( typeFactory.getType( element ) );
         }
 

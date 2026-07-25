@@ -21,11 +21,14 @@ public class DecoratorConstructor extends ModelElement implements Constructor {
     private final String name;
     private final String delegateName;
     private final boolean invokeSuperConstructor;
+    private final boolean delegateFieldNeeded;
 
-    public DecoratorConstructor(String name, String delegateName, boolean invokeSuperConstructor) {
+    public DecoratorConstructor(String name, String delegateName, boolean invokeSuperConstructor,
+                                boolean delegateFieldNeeded) {
         this.name = name;
         this.delegateName = delegateName;
         this.invokeSuperConstructor = invokeSuperConstructor;
+        this.delegateFieldNeeded = delegateFieldNeeded;
     }
 
     @Override
@@ -44,5 +47,9 @@ public class DecoratorConstructor extends ModelElement implements Constructor {
 
     public boolean isInvokeSuperConstructor() {
         return invokeSuperConstructor;
+    }
+
+    public boolean isDelegateFieldNeeded() {
+        return delegateFieldNeeded;
     }
 }

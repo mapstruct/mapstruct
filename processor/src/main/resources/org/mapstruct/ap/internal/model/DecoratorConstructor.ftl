@@ -6,6 +6,7 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.DecoratorConstructor" -->
+<#if invokeSuperConstructor || delegateFieldNeeded>
 public ${name}() {
     this( new ${delegateName}() );
 }
@@ -14,5 +15,11 @@ private ${name}(${delegateName} delegate) {
     <#if invokeSuperConstructor>
     super( delegate );
     </#if>
+    <#if delegateFieldNeeded>
     this.delegate = delegate;
+    </#if>
 }
+<#else>
+public ${name}() {
+}
+</#if>
