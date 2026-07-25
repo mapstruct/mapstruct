@@ -39,6 +39,7 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
 import org.mapstruct.ap.internal.model.SupportingField;
 import org.mapstruct.ap.internal.model.SupportingMappingMethod;
+import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
@@ -78,6 +79,15 @@ public class MappingResolverImpl implements MappingResolver {
 
     private static final int LIMIT_REPORTING_AMBIGUOUS = 5;
 
+    private static final String JL_OBJECT_NAME = Object.class.getName();
+
+    /**
+     * Fully-qualified names of mutable JDK types that must be cloned when direct mapping is disabled
+     * (e.g. {@code @DeepClone}), instead of sharing a reference.
+     */
+    private static final String JAVA_UTIL_DATE = "java.util.Date";
+    private static final String JAVA_UTIL_CALENDAR = "java.util.Calendar";
+
     private final FormattingMessager messager;
     private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
@@ -90,8 +100,6 @@ public class MappingResolverImpl implements MappingResolver {
     private final MethodSelectors methodSelectors;
 
     private final boolean verboseLogging;
-
-    private static final String JL_OBJECT_NAME = Object.class.getName();
 
     /**
      * Private methods which are not present in the original mapper interface and are added to map certain property
@@ -262,6 +270,17 @@ public class MappingResolverImpl implements MappingResolver {
                 return null;
             }
 
+            // Mutable JDK types (Date, Calendar) from the java package are normally always assigned
+            // directly, even when DIRECT is disabled. That would share a mutable reference (e.g. with
+            // @DeepClone), so clone instead once direct assignment was ruled out above.
+            if ( !hasQualfiers() ) {
+                Assignment javaTypeClone = resolveMutableJavaTypeClone( sourceType, targetType );
+                if ( javaTypeClone != null ) {
+                    javaTypeClone.setAssignment( sourceRHS );
+                    return javaTypeClone;
+                }
+            }
+
             // then type conversion
             if ( allowConversion() ) {
                 if ( !hasQualfiers() ) {
@@ -416,7 +435,51 @@ public class MappingResolverImpl implements MappingResolver {
                     ( allowDirect( typeParameters.get( 0 ) ) && allowDirect( typeParameters.get( 1 ) ) );
             }
 
+            // Mutable JDK types must not be assigned by reference when DIRECT is disabled
+            // (e.g. @DeepClone). See resolveMutableJavaTypeClone for the corresponding clone.
+            if ( isMutableJavaTypeRequiringClone( type ) ) {
+                return false;
+            }
+
             return type.isJavaLangType();
+        }
+
+        /**
+         * {@link java.util.Date} and {@link java.util.Calendar} are mutable. When DIRECT is disabled they
+         * must not fall under the general "always direct for {@code java.*}" rule.
+         */
+        private boolean isMutableJavaTypeRequiringClone(Type type) {
+            String fqn = type.getFullyQualifiedName();
+            return JAVA_UTIL_DATE.equals( fqn ) || JAVA_UTIL_CALENDAR.equals( fqn );
+        }
+
+        /**
+         * Builds an inline clone for same-type mapping of known mutable JDK types.
+         * Returns {@code null} when the pair is not handled here.
+         */
+        private Assignment resolveMutableJavaTypeClone(Type sourceType, Type targetType) {
+            String sourceFqn = sourceType.getFullyQualifiedName();
+            if ( !sourceFqn.equals( targetType.getFullyQualifiedName() ) ) {
+                return null;
+            }
+
+            if ( JAVA_UTIL_DATE.equals( sourceFqn ) ) {
+                return new TypeConversion(
+                    Collections.asSet( sourceType ),
+                    java.util.Collections.emptyList(),
+                    "new Date( <SOURCE>.getTime() )"
+                );
+            }
+
+            if ( JAVA_UTIL_CALENDAR.equals( sourceFqn ) ) {
+                return new TypeConversion(
+                    Collections.asSet( sourceType ),
+                    java.util.Collections.emptyList(),
+                    "((Calendar) <SOURCE>.clone())"
+                );
+            }
+
+            return null;
         }
 
         private boolean allowConversion() {
