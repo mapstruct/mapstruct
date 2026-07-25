@@ -166,6 +166,40 @@ public class BeanMappingOptions extends DelegatingOptions {
     }
 
     @Override
+    public NullValuePropertyMappingStrategyGem getNullValueIterablePropertyMappingStrategy() {
+        Optional<NullValuePropertyMappingStrategyGem> specific =
+            Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValueIterablePropertyMappingStrategy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( NullValuePropertyMappingStrategyGem::valueOf );
+        if ( specific.isPresent() ) {
+            return specific.get();
+        }
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueIterablePropertyMappingStrategy() );
+    }
+
+    @Override
+    public NullValuePropertyMappingStrategyGem getNullValueMapPropertyMappingStrategy() {
+        Optional<NullValuePropertyMappingStrategyGem> specific =
+            Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValueMapPropertyMappingStrategy )
+                .filter( GemValue::hasValue )
+                .map( GemValue::getValue )
+                .map( NullValuePropertyMappingStrategyGem::valueOf );
+        if ( specific.isPresent() ) {
+            return specific.get();
+        }
+        return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValuePropertyMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( NullValuePropertyMappingStrategyGem::valueOf )
+            .orElse( next().getNullValueMapPropertyMappingStrategy() );
+    }
+
+    @Override
     public NullValueMappingStrategyGem getNullValueMappingStrategy() {
         return Optional.ofNullable( beanMapping ).map( BeanMappingGem::nullValueMappingStrategy )
             .filter( GemValue::hasValue )

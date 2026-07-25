@@ -113,6 +113,36 @@ public @interface BeanMapping {
         default NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when the source bean property is {@code null} or not present and the target
+     * property is of {@link java.util.Collection}, {@link Iterable} or array type. If no strategy is configured,
+     * the strategy given via {@link MapperConfig#nullValueIterablePropertyMappingStrategy()} or
+     * {@link Mapper#nullValueIterablePropertyMappingStrategy()} will be applied,
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Iterable (including array) type.
+     */
+    NullValuePropertyMappingStrategy nullValueIterablePropertyMappingStrategy()
+        default NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * The strategy to be applied when the source bean property is {@code null} or not present and the target
+     * property is of {@link java.util.Map} type. If no strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValueMapPropertyMappingStrategy()} or
+     * {@link Mapper#nullValueMapPropertyMappingStrategy()} will be applied,
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Map type.
+     */
+    NullValuePropertyMappingStrategy nullValueMapPropertyMappingStrategy()
+        default NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * Determines when to include a null check on the source property value of a bean mapping.
      *
      * Can be overridden by the one on {@link MapperConfig}, {@link Mapper}  or {@link Mapping}.

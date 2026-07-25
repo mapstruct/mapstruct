@@ -488,6 +488,40 @@ public @interface Mapping {
         default NullValuePropertyMappingStrategy.SET_TO_NULL;
 
     /**
+     * The strategy to be applied when the source property is {@code null} or not present and the target property is
+     * of {@link java.util.Collection}, {@link Iterable} or array type. If no strategy is configured, the strategy
+     * given via {@link MapperConfig#nullValueIterablePropertyMappingStrategy()},
+     * {@link BeanMapping#nullValueIterablePropertyMappingStrategy()} or
+     * {@link Mapper#nullValueIterablePropertyMappingStrategy()} will be applied.
+     *
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Iterable (including array) type.
+     */
+    NullValuePropertyMappingStrategy nullValueIterablePropertyMappingStrategy()
+        default NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
+     * The strategy to be applied when the source property is {@code null} or not present and the target property is
+     * of {@link java.util.Map} type. If no strategy is configured, the strategy given via
+     * {@link MapperConfig#nullValueMapPropertyMappingStrategy()},
+     * {@link BeanMapping#nullValueMapPropertyMappingStrategy()} or
+     * {@link Mapper#nullValueMapPropertyMappingStrategy()} will be applied.
+     *
+     * {@link NullValuePropertyMappingStrategy#SET_TO_NULL} will be used by default.
+     *
+     * @since 1.7
+     *
+     * @return The strategy to be applied when {@code null} is passed as source property value or the source
+     * property is not present, for a target property of Map type.
+     */
+    NullValuePropertyMappingStrategy nullValueMapPropertyMappingStrategy()
+        default NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+    /**
      * Allows detailed control over the mapping process.
      *
      * @return the mapping control

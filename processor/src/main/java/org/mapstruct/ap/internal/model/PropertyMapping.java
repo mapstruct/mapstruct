@@ -226,7 +226,15 @@ public class PropertyMapping extends ModelElement {
             this.mappingControl = options.getMappingControl( ctx.getElementUtils() );
             this.nvcs = options.getNullValueCheckStrategy();
             if ( method.isUpdateMethod() ) {
-                this.nvpms = options.getNullValuePropertyMappingStrategy();
+                if ( targetType.isMapType() ) {
+                    this.nvpms = options.getNullValueMapPropertyMappingStrategy();
+                }
+                else if ( targetType.isIterableType() ) {
+                    this.nvpms = options.getNullValueIterablePropertyMappingStrategy();
+                }
+                else {
+                    this.nvpms = options.getNullValuePropertyMappingStrategy();
+                }
             }
             return this;
         }
