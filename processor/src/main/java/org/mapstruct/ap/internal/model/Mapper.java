@@ -15,7 +15,10 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.DefaultImplementationNamingStrategy;
+import org.mapstruct.ap.spi.ImplementationNamingStrategy;
 
 import static org.mapstruct.ap.internal.gem.ClassAccessibilityGem.DEFAULT;
 
@@ -31,6 +34,8 @@ public class Mapper extends GeneratedType {
     static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
     static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
     static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
+    static final ImplementationNamingStrategy IMPLEMENTATION_NAMING_STRATEGY =
+            Services.get( ImplementationNamingStrategy.class, new DefaultImplementationNamingStrategy() );
 
     public static class Builder extends GeneratedTypeBuilder<Builder> {
 
@@ -40,7 +45,6 @@ public class Mapper extends GeneratedType {
 
         private Decorator decorator;
         private String implName;
-        private boolean customName;
         private String implPackage;
         private boolean customPackage;
         private boolean suppressGeneratorTimestamp;
@@ -78,7 +82,6 @@ public class Mapper extends GeneratedType {
 
         public Builder implName(String implName) {
             this.implName = implName;
-            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
             return this;
         }
 
@@ -99,9 +102,7 @@ public class Mapper extends GeneratedType {
         }
 
         public Mapper build() {
-            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
-                ( decorator == null ? "" : "_" );
-
+            String implementationName = generateImplementationName( );
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
             Constructor constructor = null;
@@ -121,7 +122,7 @@ public class Mapper extends GeneratedType {
                 implementationName,
                 definitionType,
                 customPackage,
-                customName,
+                hasCustomName( implementationName ),
                 customAnnotations,
                 methods,
                 options,
@@ -134,6 +135,21 @@ public class Mapper extends GeneratedType {
                 extraImportedTypes,
                 javadoc
             );
+        }
+
+        private boolean hasCustomName( String implementationName ) {
+            String defaultImplementationName = decorator != null ?
+                    generateDelegateImplementationNameFromExpression( DEFAULT_IMPLEMENTATION_CLASS, element ) :
+                    generateImplementationNameFromExpression( DEFAULT_IMPLEMENTATION_CLASS, element );
+            return !implementationName.equals( defaultImplementationName );
+        }
+
+        private String generateImplementationName( ) {
+            String implementationNameCandidate = decorator != null ?
+                    generateDelegateImplementationNameFromExpression( this.implName, element ) :
+                    generateImplementationNameFromExpression( this.implName, element );
+            return IMPLEMENTATION_NAMING_STRATEGY.generateMapperImplementationName( getFlatName( element ),
+                    implementationNameCandidate );
         }
 
     }
@@ -216,4 +232,52 @@ public class Mapper extends GeneratedType {
         }
         return nameBuilder.toString();
     }
+
+    /**
+     * Generates the name of a delegate implementation class by evaluating
+     * the given implementation name expression against the specified element.
+     * <p>
+     * This method appends an underscore (<code>_</code>) at the end of the
+     * generated implementation name to clearly distinguish delegate
+     * implementations from regular ones.
+     * </p>
+     *
+     * Important Note: the retuned name can still be overridden afterward by the {@link ImplementationNamingStrategy}
+     *
+     * @param implementationNameExpression the expression template for generating
+     *                                     the implementation name; must contain
+     *                                     {@link #CLASS_NAME_PLACEHOLDER} as a placeholder
+     * @param element the type element (e.g., class or interface) whose name will
+     *                be substituted into the expression
+     * @return the generated delegate implementation name, ending with an underscore
+     */
+    static String generateDelegateImplementationNameFromExpression(
+            String implementationNameExpression,
+            TypeElement element) {
+        return generateImplementationNameFromExpression( implementationNameExpression, element ) + "_";
+    }
+
+    /**
+     * Generates an implementation class name by substituting the given
+     * element's flattened name into the provided expression.
+     * <p>
+     * The placeholder {@link #CLASS_NAME_PLACEHOLDER} in the expression will
+     * be replaced with the result of {@link #getFlatName(TypeElement)}.
+     * </p>
+     *
+     * Important Note: this name can still be overridden afterward by the {@link ImplementationNamingStrategy}
+     *
+     * @param implementationNameExpression the expression template for generating
+     *                                     the implementation name; must contain
+     *                                     {@link #CLASS_NAME_PLACEHOLDER}
+     * @param element the type element (e.g., class or interface) whose flattened
+     *                name will be inserted into the expression
+     * @return the generated implementation name with the placeholder replaced
+     */
+    static String generateImplementationNameFromExpression(
+            String implementationNameExpression,
+            TypeElement element) {
+        return implementationNameExpression.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) );
+    }
+
 }
