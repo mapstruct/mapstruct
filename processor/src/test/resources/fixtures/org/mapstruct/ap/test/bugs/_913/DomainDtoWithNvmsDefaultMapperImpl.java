@@ -44,6 +44,9 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                 domain.setStringsWithDefault( helper.toList( "3" ) );
             }
         }
+        else {
+            domain.setStringsWithDefault( helper.toList( "3" ) );
+        }
 
         return domain;
     }

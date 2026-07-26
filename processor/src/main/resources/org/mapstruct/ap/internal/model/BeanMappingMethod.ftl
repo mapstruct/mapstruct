@@ -69,6 +69,11 @@
                             <@includeModel object=propertyMapping existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                         </#list>
                         }
+                        <#if isBuiltInPresenceCheckByParameter(sourceParam)>
+                            <@renderDefaultValueFallback
+                                propertyMappings=constructorPropertyMappingsByParameter(sourceParam)
+                                existingInstanceMapping=existingInstanceMapping/>
+                        </#if>
                     </#if>
                 </#list>
                 <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
@@ -94,6 +99,11 @@
                 </#list>
                 <#if mapNullToDefault>
                     }
+                    <#if isBuiltInPresenceCheckByParameter(sourceParameters[0])>
+                        <@renderDefaultValueFallback
+                            propertyMappings=constructorPropertyMappingsByParameter(sourceParameters[0])
+                            existingInstanceMapping=existingInstanceMapping/>
+                    </#if>
                 </#if>
             </#if>
             <#list constructorConstantMappings as constantMapping>
@@ -129,6 +139,12 @@
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                     </#list>
                 }
+                <#if !existingInstanceMapping && isBuiltInPresenceCheckByParameter(sourceParam)>
+                    <@renderDefaultValueFallback
+                        propertyMappings=propertyMappingsByParameter(sourceParam)
+                        targetBeanName=resultName
+                        existingInstanceMapping=existingInstanceMapping/>
+                </#if>
             </#if>
         </#list>
         <#list sourceParametersNotNeedingPresenceCheck as sourceParam>
@@ -149,6 +165,12 @@
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>
         <#if mapNullToDefault>}</#if>
+        <#if mapNullToDefault && !existingInstanceMapping && isBuiltInPresenceCheckByParameter(sourceParameters[0])>
+            <@renderDefaultValueFallback
+                propertyMappings=propertyMappingsByParameter(sourceParameters[0])
+                targetBeanName=resultName
+                existingInstanceMapping=existingInstanceMapping/>
+        </#if>
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
@@ -215,4 +237,28 @@
         </#if>
 <#--    </@compress>-->
 
+</#macro>
+<#macro renderDefaultValueFallback propertyMappings targetBeanName="" existingInstanceMapping=false>
+    <#local hasDefaultValueAssignment = false>
+    <#list propertyMappings as propertyMapping>
+        <#if propertyMapping.defaultValueAssignment??>
+            <#local hasDefaultValueAssignment = true>
+            <#break>
+        </#if>
+    </#list>
+    <#if hasDefaultValueAssignment>
+        else {
+            <#list propertyMappings as propertyMapping>
+                <#if propertyMapping.defaultValueAssignment??>
+                    <@includeModel object=propertyMapping.defaultValueAssignment
+                        targetBeanName=targetBeanName
+                        existingInstanceMapping=existingInstanceMapping
+                        targetReadAccessorName=propertyMapping.targetReadAccessorName
+                        targetWriteAccessorName=propertyMapping.targetWriteAccessorName
+                        targetPropertyName=propertyMapping.name
+                        targetType=propertyMapping.targetType/>
+                </#if>
+            </#list>
+        }
+    </#if>
 </#macro>
