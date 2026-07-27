@@ -370,6 +370,23 @@ class FromMapMappingTest {
     }
 
     @ProcessorTest
+    @IssueKey("3861")
+    @WithClasses({
+        MapToBeanNonStringMapUsedInExpressionMapper.class
+    })
+    void shouldNotWarnIfMapParameterIsUsedInExpression() {
+        Map<Integer, Integer> values = new HashMap<>();
+        values.put( 1, 10 );
+        values.put( 2, 20 );
+
+        MapToBeanNonStringMapUsedInExpressionMapper.Target target =
+            MapToBeanNonStringMapUsedInExpressionMapper.INSTANCE.toTarget( "test", values );
+
+        assertThat( target.getValue() ).isEqualTo( "test" );
+        assertThat( target.getSum() ).isEqualTo( 30 );
+    }
+
+    @ProcessorTest
     @WithClasses(MapToBeanImplicitUnmappedSourcePolicyMapper.class)
     void shouldNotReportUnmappedSourcePropertiesWithMap() {
         Map<String, String> sourceMap = new HashMap<>();
