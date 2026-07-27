@@ -24,6 +24,7 @@ public class DefaultMapperReference extends MapperReference {
     private final boolean isSingleton;
     private final boolean isAnnotatedMapper;
     private final Set<Type> importTypes;
+    private boolean isConstructorInjected;
 
     private DefaultMapperReference(Type type, boolean isAnnotatedMapper, boolean isSingleton,
                                    Set<Type> importTypes, String variableName) {
@@ -31,6 +32,7 @@ public class DefaultMapperReference extends MapperReference {
         this.isAnnotatedMapper = isAnnotatedMapper;
         this.importTypes = importTypes;
         this.isSingleton = isSingleton;
+        this.isConstructorInjected = false;
     }
 
     public static DefaultMapperReference getInstance(Type type, boolean isAnnotatedMapper, boolean isSingleton,
@@ -61,4 +63,11 @@ public class DefaultMapperReference extends MapperReference {
       return isSingleton;
     }
 
+    public boolean isConstructorInjected() {
+        return isConstructorInjected;
+    }
+
+    public void setConstructorInjected(boolean constructorInjected) {
+        isConstructorInjected = constructorInjected;
+    }
 }
