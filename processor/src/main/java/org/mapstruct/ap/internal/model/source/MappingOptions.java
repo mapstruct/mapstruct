@@ -19,6 +19,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -470,6 +471,16 @@ public class MappingOptions extends DelegatingOptions {
             .map( GemValue::getValue )
             .map( NullValuePropertyMappingStrategyGem::valueOf )
             .orElse( next().getNullValuePropertyMappingStrategy() );
+    }
+
+    @Override
+    public CollectionMappingStrategyGem getCollectionMappingStrategy() {
+        return Optional.ofNullable( mapping )
+            .map( MappingGem::collectionMappingStrategy )
+            .filter( GemValue::hasValue )
+            .map( GemValue::getValue )
+            .map( CollectionMappingStrategyGem::valueOf )
+            .orElse( next().getCollectionMappingStrategy() );
     }
 
     @Override
