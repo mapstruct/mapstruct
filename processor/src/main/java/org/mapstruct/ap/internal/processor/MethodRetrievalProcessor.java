@@ -571,11 +571,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
-            if ( parameterType.isPrimitive() ) {
-                messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
-                return false;
-            }
-
             for ( Type typeParameter : parameterType.getTypeParameters() ) {
                 if ( typeParameter.hasSuperBound() ) {
                     messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );

@@ -44,10 +44,6 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 20,
-                message = "Can't generate mapping method with primitive parameter type."),
-            @Diagnostic(type = ErroneousMapper.class,
-                kind = Kind.ERROR,
-                line = 22,
                 message =
                     "Can't generate mapping method that has a parameter annotated with @TargetType.")
         }
