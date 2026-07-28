@@ -120,7 +120,7 @@ public class SourceReference extends AbstractReference {
                 );
             }
 
-            String[] segments = sourceNameTrimmed.split( "\\." );
+            String[] segments = splitEscapedTextIntoSegments( sourceNameTrimmed );
 
             // start with an invalid source reference
             SourceReference result = new SourceReference( null, new ArrayList<>(  ), false );
@@ -161,6 +161,7 @@ public class SourceReference extends AbstractReference {
                 }
             }
             String[] propertyNames = segments;
+
             List<PropertyEntry> entries = matchWithSourceAccessorTypes(
                 parameter.getType(),
                 propertyNames,
@@ -353,6 +354,26 @@ public class SourceReference extends AbstractReference {
         private void reportMappingError(Message msg, Object... objects) {
             messager.printMessage( method.getExecutable(), annotationMirror, sourceAnnotationValue, msg, objects );
         }
+    }
+
+    /**
+     * Splits a value into segments separated by a period if it is not escaped with a leading "\" escape character.
+     * Also removes the escape character from the result:
+     *
+     * <pre>
+     * "a.b.c.d" -> ["a", "b", "c", "d"]
+     * "a.b\\.c.d" -> ["a", "b.c", "d"]
+     * </pre>
+     * @param value the possibly escaped text to split into segments
+     * @return array containing segments without escape characters
+     */
+    private static String[] splitEscapedTextIntoSegments(String value) {
+
+        String[] segments = value.split( "(?<!\\\\)\\." );
+        for ( int i = 0; i < segments.length; i++ ) {
+            segments[i] = segments[i].replaceAll( "\\\\", "" );
+        }
+        return segments;
     }
 
     /**
