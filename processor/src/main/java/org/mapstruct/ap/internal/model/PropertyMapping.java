@@ -161,6 +161,8 @@ public class PropertyMapping extends ModelElement {
         private boolean forgedNamedBased = true;
         private NullValueCheckStrategyGem nvcs;
         private NullValuePropertyMappingStrategyGem nvpms;
+        private NullValuePropertyMappingStrategyGem nvpmsIterable;
+        private NullValuePropertyMappingStrategyGem nvpmsMap;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
@@ -227,6 +229,8 @@ public class PropertyMapping extends ModelElement {
             this.nvcs = options.getNullValueCheckStrategy();
             if ( method.isUpdateMethod() ) {
                 this.nvpms = options.getNullValuePropertyMappingStrategy();
+                this.nvpmsIterable = options.getNullValueIterablePropertyMappingStrategy();
+                this.nvpmsMap = options.getNullValueMapPropertyMappingStrategy();
             }
             return this;
         }
@@ -235,6 +239,17 @@ public class PropertyMapping extends ModelElement {
 
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
+
+            // resolve the most specific null value property mapping strategy based on source type
+            if ( nvpms != null ) {
+                Type sourceType = rightHandSide.getSourceType();
+                if ( sourceType.isIterableType() && nvpmsIterable != null ) {
+                    nvpms = nvpmsIterable;
+                }
+                else if ( sourceType.isMapType() && nvpmsMap != null ) {
+                    nvpms = nvpmsMap;
+                }
+            }
 
             ctx.getMessager().note( 2, Message.PROPERTYMAPPING_MAPPING_NOTE, rightHandSide, targetWriteAccessor );
 

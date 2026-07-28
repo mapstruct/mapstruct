@@ -179,6 +179,29 @@ public class NullValuePropertyMappingTest {
     public void testBothIgnoreAndNvpmsDefined() {
     }
 
+    @ProcessorTest
+    @IssueKey("3387")
+    @WithClasses(CustomerNvpmsIterableOnMapperMapper.class)
+    public void testIterablePropertyIgnoredWhenNullWithIterableStrategy() {
+
+        Customer customer = new Customer();
+        customer.setAddress( null );
+        customer.setDetails( null );
+
+        CustomerDTO customerDto = new CustomerDTO();
+        customerDto.setAddress( new AddressDTO() );
+        customerDto.getAddress().setHouseNo( 5 );
+        customerDto.setDetails( Arrays.asList( "green hair" ) );
+
+        CustomerNvpmsIterableOnMapperMapper.INSTANCE.map( customer, customerDto );
+
+        // address is null in source and strategy is SET_TO_NULL (default for non-iterable)
+        assertThat( customerDto.getAddress() ).isNull();
+        // details is null in source but strategy is IGNORE for Iterable, so existing value preserved
+        assertThat( customerDto.getDetails() ).isNotNull();
+        assertThat( customerDto.getDetails() ).containsExactly( "green hair" );
+    }
+
     private void testConfig(BiConsumer<Customer, CustomerDTO> customerMapper) {
 
         Customer customer = new Customer();
